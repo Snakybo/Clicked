@@ -15,13 +15,11 @@ Use a diff tool to compare the differences between the files, or re-apply the
 modifications manually after updating.
 -------------------------------------------------------------------------------]]
 -- CLICKED MODIFICATION 
--- original: local Type, Version = "TreeGroup", 44
-local Type, Version = "ClickedTreeGroup", 1
+-- original: local Type, Version = "TreeGroup", 45
+local Type, Version = "ClickedTreeGroup", 2
 
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
-
-local WoW80 = select(4, GetBuildInfo()) >= 80000
 
 -- Lua APIs
 local next, pairs, ipairs, assert, type = next, pairs, ipairs, assert, type
@@ -529,7 +527,7 @@ local methods = {
 		if maxlines <= 0 then return end
 
 		-- workaround for lag spikes on WoW 8.0
-		if WoW80 and self.frame:GetParent() == UIParent and not fromOnUpdate then
+		if self.frame:GetParent() == UIParent and not fromOnUpdate then
 			self.frame:SetScript("OnUpdate", FirstFrameUpdate)
 			return
 		end
@@ -738,7 +736,7 @@ local PaneBackdrop  = {
 local DraggerBackdrop  = {
 	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 	edgeFile = nil,
-	tile = true, tileSize = 16, edgeSize = 0,
+	tile = true, tileSize = 16, edgeSize = 1,
 	insets = { left = 3, right = 3, top = 7, bottom = 7 }
 }
 
@@ -746,7 +744,7 @@ local function Constructor()
 	local num = AceGUI:GetNextWidgetNum(Type)
 	local frame = CreateFrame("Frame", nil, UIParent)
 
-	local treeframe = CreateFrame("Frame", nil, frame)
+	local treeframe = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	treeframe:SetPoint("TOPLEFT")
 	treeframe:SetPoint("BOTTOMLEFT")
 	treeframe:SetWidth(DEFAULT_TREE_WIDTH)
@@ -761,7 +759,7 @@ local function Constructor()
 	treeframe:SetScript("OnSizeChanged", Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)
 
-	local dragger = CreateFrame("Frame", nil, treeframe)
+	local dragger = CreateFrame("Frame", nil, treeframe, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	dragger:SetWidth(8)
 	dragger:SetPoint("TOP", treeframe, "TOPRIGHT")
 	dragger:SetPoint("BOTTOM", treeframe, "BOTTOMRIGHT")
@@ -786,7 +784,7 @@ local function Constructor()
 	scrollbg:SetAllPoints(scrollbar)
 	scrollbg:SetColorTexture(0,0,0,0.4)
 
-	local border = CreateFrame("Frame",nil,frame)
+	local border = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	border:SetPoint("TOPLEFT", treeframe, "TOPRIGHT")
 	border:SetPoint("BOTTOMRIGHT")
 	border:SetBackdrop(PaneBackdrop)
