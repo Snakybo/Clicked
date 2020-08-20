@@ -1,0 +1,18 @@
+## Interface: 80300
+## Title: Clicked
+## Author: Snakybo
+## Version: 1.0
+## Notes: Powerful and intuitive keybind management
+## SavedVariables: ClickedDB
+
+## X-Localizations: enUS, enGB
+## X-CompatibleLocales: enUS, enGB
+
+Embeds.xml
+AceGUIContainer-ClickedTreeGroup.lua
+
+Clicked.xml
+Clicked.lua
+Database.lua
+AddonConfig.lua
+BindingConfig.lua
