@@ -273,10 +273,6 @@ local function DrawBindingActions(container, tab, binding)
                     end)
 
                     ShowUIPanel(SpellBookFrame)
-                    
-                    SpellBookFrame:ClearAllPoints()
-                    SpellBookFrame:SetParent(root.frame)
-                    SpellBookFrame:SetPoint("RIGHT", root.frame, "LEFT", -55, 0)
 
                     EnableSpellbookHandlers(function(name)
                         binding.action.spell = name
