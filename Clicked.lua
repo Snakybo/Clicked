@@ -56,7 +56,8 @@ end
 function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEnteringCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnLeavingCombat")
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "OnActiveTalentGroupChanged")
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindingsAndConfig")
 
 	self:ReloadBindings()
 end
@@ -64,15 +65,15 @@ end
 function Clicked:OnDisable()
 	self:UnregisterEvent("OnEnteringCombat")
 	self:UnregisterEvent("OnLeavingCombat")
-	self:UnregisterEvent("OnActiveTalentGroupChanged")
+	self:UnregisterEvent("ReloadActiveBindings")
+	self:UnregisterEvent("ReloadActiveBindingsAndConfig")
 end
 
 function Clicked:ReloadBindings()
 	self.bindings = self.db.profile.bindings
 	self.activeBindings = {}
 	
-	self:ReloadBindingConfig()
-	self:ReloadActiveBindings()
+	self:ReloadActiveBindingsAndConfig()
 
 	if self.db.profile.minimap.hide then
         Icon:Hide("Clicked")
@@ -91,7 +92,8 @@ function Clicked:OnLeavingCombat()
 	self:ReloadActiveBindings()
 end
 
-function Clicked:OnActiveTalentGroupChanged()
+function Clicked:ReloadActiveBindingsAndConfig()
+	self:ReloadBindingConfig()
 	self:ReloadActiveBindings()
 end
 
@@ -115,53 +117,58 @@ local function RegisterBindings()
 			local macro = {}
 
 			if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
-				if binding.action_stop_casting then
+				if binding.action.stopCasting then
 					table.insert(macro, "/stopcasting")
 				end
+				binding.targets = binding.targets or {}
 
 				local text = "/use "
 
-				if binding.target_unit ~= Clicked.TARGET_UNIT_MOUSEOVER_FRAME and binding.keybind ~= "BUTTON1" and  binding.keybind ~= "BUTTON2" then
-					local flags = ""
-					
-					if binding.target_unit == Clicked.TARGET_UNIT_PLAYER then
-						flags = AddFlag(flags, "@player")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_TARGET then
-						flags = AddFlag(flags, "@target")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_MOUSEOVER then
-						flags = AddFlag(flags, "@mouseover")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_PARTY_1 then
-						flags = AddFlag(flags, "@party1")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_PARTY_2 then
-						flags = AddFlag(flags, "@party2")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_PARTY_3 then
-						flags = AddFlag(flags, "@party3")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_PARTY_4 then
-						flags = AddFlag(flags, "@party4")
-					elseif binding.target_unit == Clicked.TARGET_UNIT_PARTY_5 then
-						flags = AddFlag(flags, "@party5")
-					end
+				if not Clicked:IsRestrictedKeybind(binding.keybind) then
+					for i, target in ipairs(binding.targets) do
+						local flags = ""
+						
+						if target.unit == Clicked.TARGET_UNIT_PLAYER then
+							flags = AddFlag(flags, "@player")
+						elseif target.unit == Clicked.TARGET_UNIT_TARGET then
+							flags = AddFlag(flags, "@target")
+						elseif target.unit == Clicked.TARGET_UNIT_MOUSEOVER then
+							flags = AddFlag(flags, "@mouseover")
+						elseif target.unit == Clicked.TARGET_UNIT_PARTY_1 then
+							flags = AddFlag(flags, "@party1")
+						elseif target.unit == Clicked.TARGET_UNIT_PARTY_2 then
+							flags = AddFlag(flags, "@party2")
+						elseif target.unit == Clicked.TARGET_UNIT_PARTY_3 then
+							flags = AddFlag(flags, "@party3")
+						elseif target.unit == Clicked.TARGET_UNIT_PARTY_4 then
+							flags = AddFlag(flags, "@party4")
+						elseif target.unit == Clicked.TARGET_UNIT_PARTY_5 then
+							flags = AddFlag(flags, "@party5")
+						end
 
-					if binding.target_type == Clicked.TARGET_TYPE_HELP then
-						flags = AddFlag(flags, "help")
-					elseif binding.target_type == Clicked.TARGET_TYPE_HARM then
-						flags = AddFlag(flags, "harm")
-					end
+						if target.type == Clicked.TARGET_TYPE_HELP then
+							flags = AddFlag(flags, "help")
+						elseif target.type == Clicked.TARGET_TYPE_HARM then
+							flags = AddFlag(flags, "harm")
+						end
 
-					if #flags > 0 then
-						text = text .. "[" .. flags .. "] "
+						if #flags > 0 then
+							flags = AddFlag(flags, "exists")
+
+							text = text .. "[" .. flags .. "] "
+						end
 					end
 				end
 				
 				if binding.type == Clicked.TYPE_SPELL then
-					text = text .. binding.action_spell
+					text = text .. binding.action.spell
 				elseif binding.type == Clicked.TYPE_ITEM then
-					text = text .. binding.action_item
+					text = text .. binding.action.item
 				end
 
 				table.insert(macro, text)
 			elseif binding.type == Clicked.TYPE_MACRO then
-				table.insert(macro, binding.action_macro_text)
+				table.insert(macro, binding.action.macro)
 			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
 				-- TODO: Select unit
 			elseif binding.type == Clicked.TYPE_UNIT_MENU then
@@ -169,10 +176,10 @@ local function RegisterBindings()
 			end
 			
 			if #macro > 0 then
-				if binding.target_unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME or binding.keybind == "BUTTON1" or binding.keybind == "BUTTON2" then
+				--if binding.target_unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME or binding.keybind == "BUTTON1" or binding.keybind == "BUTTON2" then
 					-- TODO: Handle MOUSEOVER_FRAME
 					-- TODO: Handle BUTTON1 and BUTTON2 interaction overrides
-				else
+				--else
 					local handler = nil
 
 					if nextHandlerIndex > #handlers then
@@ -191,7 +198,7 @@ local function RegisterBindings()
 					
 					ClearOverrideBindings(handler)
 					SetOverrideBindingClick(handler, true, binding.keybind, handler:GetName())
-				end
+				--end
 			end
 		end
 	end
@@ -235,15 +242,15 @@ function Clicked:IsBindingValid(binding)
 		return false
 	end
 	
-	if binding.type == Clicked.TYPE_SPELL and binding.action_spell == "" then
+	if binding.type == Clicked.TYPE_SPELL and binding.action.spell == "" then
 		return false
 	end
 
-	if binding.type == Clicked.TYPE_MACRO and binding.action_macro_text == "" then
+	if binding.type == Clicked.TYPE_MACRO and binding.action.macro == "" then
 		return false
 	end
 
-	if binding.type == Clicked.TYPE_ITEM and binding.action_item == "" then
+	if binding.type == Clicked.TYPE_ITEM and binding.action.item == "" then
 		return false
 	end
 
@@ -251,20 +258,20 @@ function Clicked:IsBindingValid(binding)
 end
 
 function Clicked:ShouldBindingLoad(binding)
-	if binding.load_never then
+	if binding.load.never then
 		return false
 	end
 
-	if binding.load_enable_spec == 1 then
-		if binding.load_spec ~= GetSpecialization() then
+	if binding.load.specialization.selected == 1 then
+		if binding.load.specialization.single ~= GetSpecialization() then
 			return false
 		end
-	elseif binding.load_enable_spec == 2 then
+	elseif binding.load.specialization.selected == 2 then
 		local spec = GetSpecialization()
 		local contains = false
 
-		for i = 1, #binding.load_specs do
-			if binding.load_specs[i] == spec then
+		for i = 1, #binding.load.specialization.multiple do
+			if binding.load.specialization.multiple[i] == spec then
 				contains = true
 			end
 		end
@@ -274,10 +281,18 @@ function Clicked:ShouldBindingLoad(binding)
 		end
 	end
 	
-	if binding.load_enable_combat then
-		if binding.load_combat == Clicked.COMBAT_STATE_TRUE and not inCombat then
+	if binding.load.combat.selected == 1 then
+		if binding.load.combat.state == Clicked.COMBAT_STATE_TRUE and not inCombat then
 			return false
-		elseif binding.load_combat == Clicked.COMBAT_STATE_FALSE and inCombat then
+		elseif binding.load.combat.state == Clicked.COMBAT_STATE_FALSE and inCombat then
+			return false
+		end
+	end
+
+	if binding.load.spellKnown.selected == 1 then
+		local name = GetSpellInfo(binding.load.spellKnown.spell)
+
+		if name == nil then
 			return false
 		end
 	end
@@ -293,7 +308,7 @@ function Clicked:PrioritizeBindings(bindings)
 	local ordered = {}
 
 	for _, binding in ipairs(bindings) do
-		if binding.load_enable_combat then
+		if binding.load.combat.selected == 1 then
 			table.insert(ordered, 1, binding)
 		else
 			table.insert(ordered, binding)
@@ -304,9 +319,26 @@ function Clicked:PrioritizeBindings(bindings)
 end
 
 function Clicked:IsBindingActive(binding)
-	if binding == nil or binding.keybind == nil then
+	if binding == nil or binding.keybind == "" then
 		return false
 	end
 
 	return self.activeBindings[binding.keybind] == binding
 end
+
+function Clicked:IsRestrictedKeybind(keybind)
+    return keybind == "BUTTON1" or keybind == "BUTTON2"
+end
+
+function dump(o)
+	if type(o) == 'table' then
+	   local s = '{ '
+	   for k,v in pairs(o) do
+		  if type(k) ~= 'number' then k = '"'..k..'"' end
+		  s = s .. '['..k..'] = ' .. dump(v) .. ','
+	   end
+	   return s .. '} '
+	else
+	   return tostring(o)
+	end
+ end
