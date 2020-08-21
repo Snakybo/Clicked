@@ -153,7 +153,7 @@ local function EnableSpellbookHandlers(handler)
             local parent = _G["SpellButton" .. i]
             local button = CreateFrame("Button", "ClickedSpellbookButton" .. i, parent, "ClickedSpellbookButtonTemplate")
             button.parent = parent
-            button:RegisterForClicks("LeftButtonDown")
+            button:RegisterForClicks("LeftButtonUp")
             button:SetID(parent:GetID())
 
             spellbookButtons[i] = button
