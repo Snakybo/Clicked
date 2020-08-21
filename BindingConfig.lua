@@ -106,7 +106,7 @@ local function GetTreeViewItems()
 
         item.text2 = binding.keybind
 
-        if Clicked:IsBindingValid(binding) and Clicked:ShouldBindingLoad(binding) then
+        if Clicked:IsBindingActive(binding) then
             item.text3 = "L"
         else
             item.text3 = "U"
@@ -753,7 +753,7 @@ local function DrawBindingLoadOptions(container, tab, binding)
     end
 end
 
-local function DrawBinding(container, index, binding)
+local function DrawBinding(container, binding)
     -- keybinding button
     do
         local widget = AceGUI:Create("Keybinding")
@@ -779,7 +779,16 @@ local function DrawBinding(container, index, binding)
         widget:SetRelativeWidth(0.25)
         widget:SetCallback("OnClick", function()
             if CanUpdateBinding() then
-                table.remove(Clicked.bindings, index)
+                local index = 1
+
+                for i, other in ipairs(Clicked.bindings) do
+                    if other == binding then
+                        table.remove(Clicked.bindings, i)
+                        index = i
+                        break
+                    end
+                end
+
                 Clicked:ReloadActiveBindingsAndConfig()
 
                 if index <= #items then
@@ -903,9 +912,9 @@ function Clicked:OpenBindingConfig()
             container:ReleaseChildren()
             DisableSpellbookHandlers()
 
-            for i = 1, #items do
-                if items[i].value == group then
-                    DrawBinding(container, i, items[i].binding)
+            for _, item in ipairs(items) do
+                if item.value == group then
+                    DrawBinding(container, item.binding)
                     break
                 end
             end
@@ -931,7 +940,7 @@ function Clicked:OpenBindingConfig()
 
                 text = text .. "\n\n"
 
-                if Clicked:IsBindingValid(binding) and Clicked:ShouldBindingLoad(binding) then
+                if Clicked:IsBindingActive(binding) then
                     text = text .. "Loaded"
                 else
                     text = text .. "Not Loaded"
