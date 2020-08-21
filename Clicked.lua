@@ -31,7 +31,9 @@ local handlers = {}
 local inCombat = false
 
 function Clicked:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), true)
+	local defaultProfile = UnitName("player") .. " - " .. GetRealmName()
+
+	self.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	self.db.RegisterCallback(self, "OnProfileChanged", "ReloadBindings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "ReloadBindings")
 	self.db.RegisterCallback(self, "OnProfileReset", "ReloadBindings")
