@@ -53,16 +53,16 @@ function Clicked:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileReset", "ReloadBindings")
 
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
-        type = "launcher",
-        label = "Clicked",
-        icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
-        OnClick = function()
-            self:OpenBindingConfig()
+		type = "launcher",
+		label = "Clicked",
+		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
+		OnClick = function()
+			self:OpenBindingConfig()
 		end,
 		OnTooltipShow = function(tooltip)
 			tooltip:AddLine("Clicked")
 		end
-    })
+	})
 	LibDBIcon:Register("Clicked", iconData, self.db.profile.minimap)
 
 	self:RegisterBlizzardUnitFrames()
@@ -93,14 +93,14 @@ end
 function Clicked:ReloadBindings()
 	self.bindings = self.db.profile.bindings
 	self.activeBindings = {}
-	
+
 	self:ReloadActiveBindingsAndConfig()
 
 	if self.db.profile.minimap.hide then
-        LibDBIcon:Hide("Clicked")
-    else
-        LibDBIcon:Show("Clicked")
-    end
+		LibDBIcon:Hide("Clicked")
+	else
+		LibDBIcon:Show("Clicked")
+	end
 end
 
 function Clicked:OnEnteringCombat()
@@ -140,7 +140,7 @@ local function AddMacroFlags(target)
 		if #flags > 0 then
 			flags = flags .. ","
 		end
-	
+
 		return flags .. new
 	end
 
@@ -188,7 +188,7 @@ local function GetMacroForBinding(binding)
 	-- sanity checking to remove empty strings so we don't end up with frames
 	-- that aren't functional.
 	-- Though this shouldn't ever be the case when using IsBindingActive
-	
+
 	if binding.type == Clicked.TYPE_MACRO then
 		return Trim(binding.action.macro)
 	end
@@ -200,7 +200,7 @@ local function GetMacroForBinding(binding)
 		local macro = ""
 
 		-- Prepend the /stopcasting command if desired
-		
+
 		if binding.action.stopCasting then
 			macro = macro .. "/stopcasting\n"
 		end
@@ -213,7 +213,7 @@ local function GetMacroForBinding(binding)
 		if not Clicked:IsRestrictedKeybind(binding.keybind) then
 			for _, target in ipairs(binding.targets) do
 				local flags = AddMacroFlags(target)
-				
+
 				if #flags > 0 then
 					macro = macro .. "[" .. flags .. "] "
 				end
@@ -223,7 +223,7 @@ local function GetMacroForBinding(binding)
 		end
 
 		-- Append the actual spell or item to use
-		
+
 		if binding.type == Clicked.TYPE_SPELL then
 			macro = macro .. binding.action.spell
 		elseif binding.type == Clicked.TYPE_ITEM then
@@ -275,16 +275,16 @@ local function ApplyBindings(bindings)
 			if nextMacroFrameHandler > #macroFrameHandlers then
 				frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. nextMacroFrameHandler, UIParent, "SecureActionButtonTemplate")
 				frame:SetAttribute("type", "macro")
-				
+
 				table.insert(macroFrameHandlers, frame)
 			else
 				frame = macroFrameHandlers[nextMacroFrameHandler]
 			end
 
 			nextMacroFrameHandler = nextMacroFrameHandler + 1
-			
+
 			frame:SetAttribute("macrotext", handler.macro)
-			
+
 			ClearOverrideBindings(frame)
 			SetOverrideBindingClick(frame, false, handler.keybind, frame:GetName())
 		end
@@ -302,7 +302,7 @@ local function ApplyBindings(bindings)
 
 	for i = nextMacroFrameHandler, #macroFrameHandlers do
 		local handler = macroFrameHandlers[i]
-		
+
 		handler:SetAttribute("macrotext", "")
 		ClearOverrideBindings(handler)
 	end
@@ -394,11 +394,11 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 	-- end
 
 	-- if not AceHook:IsHooked(frame, "OnLeave") then
-	-- 	AceHook:SecureHookScript(frame, "OnLeave", function(frame) 
+	-- 	AceHook:SecureHookScript(frame, "OnLeave", function(frame)
 	-- 		hoveredUnitFrame = nil
 	-- 	end)
 	-- end
-	
+
 	SetFrameAttributes(frame, unitFrameAttributes)
 
 	Clicked.UnitFrames[frame] = options
@@ -435,7 +435,7 @@ local function RegisterBindings(bindings)
 	if InCombatLockdown() then
 		return
 	end
-	
+
 	local data = {}
 
 	for _, binding in ipairs(bindings) do
@@ -451,7 +451,7 @@ local function RegisterBindings(bindings)
 		-- 	-- todo
 		-- else
 			local macro = GetMacroForBinding(binding)
-			
+
 			if macro ~= "" then
 				table.insert(data, {
 					keybind = binding.keybind,
@@ -460,7 +460,7 @@ local function RegisterBindings(bindings)
 			end
 		-- end
 	end
-	
+
 	ApplyBindings(data)
 end
 
@@ -480,7 +480,7 @@ function Clicked:ReloadActiveBindings()
 
 	for i = 1, #self.bindings do
 		local binding = self.bindings[i]
-		
+
 		if self:IsBindingActive(binding) then
 			activatable[binding.keybind] = activatable[binding.keybind] or {}
 			table.insert(activatable[binding.keybind], binding)
@@ -493,7 +493,7 @@ function Clicked:ReloadActiveBindings()
 
 		table.insert(active, binding)
 	end
-	
+
 	RegisterBindings(active)
 end
 
@@ -506,7 +506,7 @@ function Clicked:IsBindingActive(binding)
 	end
 
 	local action = binding.action
-	
+
 	if binding.type == Clicked.TYPE_SPELL and Trim(action.spell) == "" then
 		return false
 	end
@@ -553,13 +553,13 @@ function Clicked:IsBindingActive(binding)
 	end
 
 	-- If the combat limiter has been enabled, see if the player's current combat state
-	-- matches the specified value. 
+	-- matches the specified value.
 	--
 	-- Note: This works because the OnEnteringCombat event seems to happen _just_ before
 	-- the InCombatLockdown() status changes.
 
 	local combat = load.combat
-	
+
 	if combat.selected == 1 then
 		if combat.state == Clicked.COMBAT_STATE_TRUE and not inCombat then
 			return false
@@ -567,7 +567,7 @@ function Clicked:IsBindingActive(binding)
 			return false
 		end
 	end
-	
+
 	-- If the known spell limiter has been enabled, see if the spell is currrently
 	-- avaialble for the player. This is not limited to just spells as the name
 	-- implies, using the GetSpellInfo function on an item also returns a valid value.
@@ -588,7 +588,7 @@ end
 -- Since there can be multiple bindings active with the same keybind, we need to
 -- prioritize them at runtime somehow, this function will attempt to order the
 -- input list of bindings in a way that makes sense to the user.
--- 
+--
 -- For example, if there is a binding that should only load in combat, it should
 -- be prioritzed over generic or out-of-combat only bindings.
 function Clicked:PrioritizeBindings(bindings)
@@ -619,7 +619,7 @@ end
 -- Restricted keybinds can still be used for bindings, but they will
 -- have limited functionality.
 function Clicked:IsRestrictedKeybind(keybind)
-    return keybind == "BUTTON1" or keybind == "BUTTON2"
+	return keybind == "BUTTON1" or keybind == "BUTTON2"
 end
 
 function Clicked:CanTargetUnitBeHostile(unit)
