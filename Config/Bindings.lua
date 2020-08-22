@@ -224,7 +224,7 @@ local function DrawBindingActions(container, tab, binding)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
 		do
 			local widget = AceGUI:Create("Label")
-			widget:SetText("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be cast on the targeted unit frame")
+			widget:SetText("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be cast on the targeted unit frame.")
 			widget:SetFullWidth(true)
 
 			container:AddChild(widget)
