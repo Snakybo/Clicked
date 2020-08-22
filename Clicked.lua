@@ -73,8 +73,9 @@ end
 function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEnteringCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnLeavingCombat")
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindingsAndConfig")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindingsAndConfig")
+	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindingsAndConfig")
 	self:RegisterEvent("ADDON_LOADED", "OnAddonLoaded")
 
 	self:ReloadBindings()
@@ -83,7 +84,6 @@ end
 function Clicked:OnDisable()
 	self:UnregisterEvent("OnEnteringCombat")
 	self:UnregisterEvent("OnLeavingCombat")
-	self:UnregisterEvent("ReloadActiveBindings")
 	self:UnregisterEvent("ReloadActiveBindingsAndConfig")
 	self:UnregisterEvent("OnAddonLoaded")
 end
@@ -577,6 +577,18 @@ function Clicked:IsBindingActive(binding)
 		if name == nil then
 			return false
 		end
+	end
+
+	-- Lastly, if the binding is set to a spell or item, make sure that we can cast it,
+	-- since custom macros can contain pretty much anything we will keep them active even
+	-- if they attempt to cast spells or use items that we can't obey
+
+	if binding.type == Clicked.TYPE_SPELL then
+		return GetSpellInfo(binding.action.spell) ~= nil
+	end
+
+	if binding.type == Clicked.TYPE_ITEM then
+		return GetSpellInfo(binding.action.spell) ~= nil
 	end
 	
 	return true
