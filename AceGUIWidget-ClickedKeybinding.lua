@@ -16,7 +16,7 @@ Use a diff tool to compare the differences between the files, or re-apply the
 modifications manually after updating.
 -------------------------------------------------------------------------------]]
 -- CLICKED MODIFICATION 
--- original: local Type, Version = "Keybinding", 25
+-- original: local Type, Version = "Keybinding", 26
 local Type, Version = "ClickedKeybinding", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
@@ -45,10 +45,28 @@ local function Control_OnLeave(frame)
 end
 
 local function Keybinding_OnClick(frame, button)
+	-- CLICKED MODIFICATION 
+	-- original: if button == "LeftButton" or button == "RightButton" then
 	if button == "LeftButton" then
-        local self = frame.obj
-        local passed = GetTime() - (self.lastClickTime or 0)
-        
+		local self = frame.obj
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		local passed = GetTime() - (self.lastClickTime or 0)
+		
+		-- CLICKED MODIFICATION 
+		-- original: if self.waitingForKey then
+		-- CLICKED MODIFICATION 
+		-- original: frame:EnableKeyboard(false)
+		-- CLICKED MODIFICATION 
+		-- original: frame:EnableMouseWheel(false)
+		-- CLICKED MODIFICATION 
+		-- original: self.msgframe:Hide()
+		-- CLICKED MODIFICATION 
+		-- original: frame:UnlockHighlight()
+		-- CLICKED MODIFICATION 
+		-- original: self.waitingForKey = nil
+		-- CLICKED MODIFICATION 
+		-- original: else
 		if not self.waitingForKey and passed > 0.01 then
 			frame:EnableKeyboard(true)
 			frame:EnableMouseWheel(true)
@@ -61,6 +79,8 @@ local function Keybinding_OnClick(frame, button)
 end
 
 local ignoreKeys = {
+	-- CLICKED MODIFICATION 
+	-- original: ["BUTTON1"] = true, ["BUTTON2"] = true,
 	["UNKNOWN"] = true,
 	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true,
 	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true,
@@ -88,8 +108,10 @@ local function Keybinding_OnKeyDown(frame, key)
 		frame:EnableMouseWheel(false)
 		self.msgframe:Hide()
 		frame:UnlockHighlight()
-        self.waitingForKey = nil
-        self.lastClickTime = GetTime()
+		self.waitingForKey = nil
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		self.lastClickTime = GetTime()
 
 		if not self.disabled then
 			self:SetKey(keyPressed)
@@ -99,9 +121,17 @@ local function Keybinding_OnKeyDown(frame, key)
 end
 
 local function Keybinding_OnMouseDown(frame, button)
-    if button == "LeftButton" then
-        button = "BUTTON1"
-    elseif button == "RightButton" then
+	-- CLICKED MODIFICATION 
+	-- original: if button == "LeftButton" or button == "RightButton" then
+	if button == "LeftButton" then
+		-- CLICKED MODIFICATION 
+		-- original: return
+		button = "BUTTON1"
+	-- CLICKED MODIFICATION 
+	-- original: <nothing>
+	elseif button == "RightButton" then
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
         button = "BUTTON2"
     elseif button == "MiddleButton" then
 		button = "BUTTON3"
@@ -109,9 +139,8 @@ local function Keybinding_OnMouseDown(frame, button)
 		button = "BUTTON4"
 	elseif button == "Button5" then
 		button = "BUTTON5"
-    end
-    
-    Keybinding_OnKeyDown(frame, button)
+	end
+	Keybinding_OnKeyDown(frame, button)
 end
 
 local function Keybinding_OnMouseWheel(frame, direction)
@@ -179,7 +208,7 @@ local methods = {
 			self.alignoffset = 30
 			self:SetHeight(44)
 		end
-    end
+	end,
 }
 
 --[[-----------------------------------------------------------------------------
@@ -228,7 +257,7 @@ local function Constructor()
 	label:SetJustifyH("CENTER")
 	label:SetHeight(18)
 
-	local msgframe = CreateFrame("Frame", nil, UIParent)
+	local msgframe = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	msgframe:SetHeight(30)
 	msgframe:SetBackdrop(ControlBackdrop)
 	msgframe:SetBackdropColor(0,0,0)
@@ -237,6 +266,8 @@ local function Constructor()
 	msgframe:SetToplevel(true)
 
 	local msg = msgframe:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	-- CLICKED MODIFICATION 
+	-- original: msg:SetText("Press a key to bind, ESC to clear the binding or click the button again to cancel.")
 	msg:SetText("Press a key to bind, or ESC to clear the binding.")
 	msgframe.msg = msg
 	msg:SetPoint("TOPLEFT", 5, -5)
