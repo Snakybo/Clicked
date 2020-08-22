@@ -1,5 +1,6 @@
-local DataBroker = LibStub("LibDataBroker-1.1")
-local Icon = LibStub("LibDBIcon-1.0")
+local LibDataBroker = LibStub("LibDataBroker-1.1")
+local LibDBIcon = LibStub("LibDBIcon-1.0")
+local AceHook = LibStub("AceHook-3.0")
 
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 
@@ -9,8 +10,8 @@ Clicked.VERSION = GetAddOnMetadata(Clicked.NAME, "Version")
 Clicked.TYPE_SPELL = "SPELL"
 Clicked.TYPE_ITEM = "ITEM"
 Clicked.TYPE_MACRO = "MACRO"
-Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT"	-- nyi
-Clicked.TYPE_UNIT_MENU = "UNIT_MENU"		-- nyi
+Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT" -- not yet implemented
+Clicked.TYPE_UNIT_MENU = "UNIT_MENU" -- not yet implemented
 
 Clicked.TARGET_UNIT_GLOBAL = "GLOBAL"
 Clicked.TARGET_UNIT_PLAYER = "PLAYER"
@@ -20,8 +21,9 @@ Clicked.TARGET_UNIT_PARTY_2 = "PARTY_2"
 Clicked.TARGET_UNIT_PARTY_3 = "PARTY_3"
 Clicked.TARGET_UNIT_PARTY_4 = "PARTY_4"
 Clicked.TARGET_UNIT_PARTY_5 = "PARTY_5"
+Clicked.TARGET_UNIT_FOCUS = "FOCUS"
 Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
-Clicked.TARGET_UNIT_MOUSEOVER_FRAME = "MOUSEOVER_FRAME"		-- nyi
+Clicked.TARGET_UNIT_MOUSEOVER_FRAME = "MOUSEOVER_FRAME"	-- not yet implemented
 
 Clicked.TARGET_TYPE_ANY = "ANY"
 Clicked.TARGET_TYPE_HELP = "HELP"
@@ -30,8 +32,46 @@ Clicked.TARGET_TYPE_HARM = "HARM"
 Clicked.COMBAT_STATE_TRUE = "IN_COMBAT"
 Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 
+local BLIZZARD_UNIT_FRAMES = {
+	[""] = {
+		"PlayerFrame",
+		"PetFrame",
+		"TargetFrame",
+		"TargetFrameToT",
+		"FocusFrame",
+		"FocusFrameToT",
+		"PartyMemberFrame1",
+		"PartyMemberFrame1PetFrame",
+		"PartyMemberFrame2",
+		"PartyMemberFrame2PetFrame",
+		"PartyMemberFrame3",
+		"PartyMemberFrame3PetFrame",
+		"PartyMemberFrame4",
+		"PartyMemberFrame4PetFrame",
+		"Boss1TargetFrame",
+		"Boss2TargetFrame",
+		"Boss3TargetFrame",
+		"Boss4TargetFrame"
+	},
+	["Blizzard_ArenaUI"] = {
+		"ArenaEnemyFrame1",
+		"ArenaEnemyFrame2",
+		"ArenaEnemyFrame3"
+	}
+}
+
 local handlers = {}
-local inCombat = false
+
+local unitFrames = {}
+local unitFramesQueue = {}
+local unitFrameAttributes = {}
+
+local additionalUnitFrameHandler
+local additionalUnitFrames = {}
+
+local clickHandlerFrame
+local hoveredUnitFrame
+local inCombat
 
 function Clicked:OnInitialize()
 	local defaultProfile = UnitName("player") .. " - " .. GetRealmName()
@@ -41,7 +81,7 @@ function Clicked:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", "ReloadBindings")
 	self.db.RegisterCallback(self, "OnProfileReset", "ReloadBindings")
 
-	local iconData = DataBroker:NewDataObject("Clicked", {
+	local iconData = LibDataBroker:NewDataObject("Clicked", {
         type = "launcher",
         label = "Clicked",
         icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
@@ -52,7 +92,7 @@ function Clicked:OnInitialize()
 			tooltip:AddLine("Clicked")
 		end
     })
-    Icon:Register("Clicked", iconData, self.db.profile.minimap)
+	LibDBIcon:Register("Clicked", iconData, self.db.profile.minimap)
 	
 	self:RegisterAddonConfig()
 	self:RegisterBindingConfig()
@@ -63,6 +103,7 @@ function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnLeavingCombat")
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindingsAndConfig")
+	self:RegisterEvent("ADDON_LOADED", "OnAddonLoaded")
 
 	self:ReloadBindings()
 end
@@ -72,6 +113,7 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("OnLeavingCombat")
 	self:UnregisterEvent("ReloadActiveBindings")
 	self:UnregisterEvent("ReloadActiveBindingsAndConfig")
+	self:UnregisterEvent("OnAddonLoaded")
 end
 
 function Clicked:ReloadBindings()
@@ -81,9 +123,9 @@ function Clicked:ReloadBindings()
 	self:ReloadActiveBindingsAndConfig()
 
 	if self.db.profile.minimap.hide then
-        Icon:Hide("Clicked")
+        LibDBIcon:Hide("Clicked")
     else
-        Icon:Show("Clicked")
+        LibDBIcon:Show("Clicked")
     end
 end
 
@@ -95,6 +137,19 @@ end
 function Clicked:OnLeavingCombat()
 	inCombat = false
 	self:ReloadActiveBindings()
+end
+
+function Clicked:OnAddonLoaded(event, addon)
+	for i, queued in ipairs(unitFramesQueue) do
+		if queued == addon then
+			for _, name in ipairs(BLIZZARD_UNIT_FRAMES[addon]) do
+				RegisterUnitFrame(name)
+			end
+			
+			table.remove(unitFramesQueue, i)
+			break
+		end
+	end
 end
 
 function Clicked:ReloadActiveBindingsAndConfig()
@@ -133,12 +188,16 @@ local function AddMacroFlags(target)
 		flags = AddFlag(flags, "@party4")
 	elseif target.unit == Clicked.TARGET_UNIT_PARTY_5 then
 		flags = AddFlag(flags, "@party5")
+	elseif target.unit == Clicked.TARGET_UNIT_FOCUS then
+		flags = AddFlag(flags, "@focus")
 	end
 
-	if target.type == Clicked.TARGET_TYPE_HELP then
-		flags = AddFlag(flags, "help")
-	elseif target.type == Clicked.TARGET_TYPE_HARM then
-		flags = AddFlag(flags, "harm")
+	if Clicked:CanTargetUnitBeHostile(target.unit) then
+		if target.type == Clicked.TARGET_TYPE_HELP then
+			flags = AddFlag(flags, "help")
+		elseif target.type == Clicked.TARGET_TYPE_HARM then
+			flags = AddFlag(flags, "harm")
+		end
 	end
 
 	flags = Trim(flags)
@@ -199,7 +258,7 @@ local function GetMacroForBinding(binding)
 	end
 	
 	if binding.type == Clicked.TYPE_UNIT_SELECT then
-		return "/target @mouseover"
+		return "/target [@mouseover]"
 	end
 
 	if binding.type == Clicked.TYPE_UNIT_MENU then
@@ -209,7 +268,7 @@ local function GetMacroForBinding(binding)
 end
 
 -- Note: This is a secure function and may not be called during combat
-local function InitializeHandlerFrames(macros)
+local function InitializeMacroFrames(macros)
 	if InCombatLockdown() then
 		return
 	end
@@ -251,14 +310,108 @@ local function RegisterMacroBindings(macros)
 		return
 	end
 
-	InitializeHandlerFrames(macros)
+	InitializeMacroFrames(macros)
 
 	for _, handler in ipairs(macros) do
 		handler.frame:SetAttribute("macrotext", handler.macro)
 				
 		ClearOverrideBindings(handler.frame)
-		SetOverrideBindingClick(handler.frame, true, handler.keybind, handler.frame:GetName())
+		SetOverrideBindingClick(handler.frame, false, handler.keybind, handler.frame:GetName())
 	end
+end
+
+local function RegisterAttribute(add, key, suffix, value)
+	table.insert(add, { key = key .. suffix, value = value })
+end
+
+local function GetAttributesForBinding(binding)
+	local attributes = {}
+
+	local suffix = ""
+
+	if binding.keybind == "BUTTON1" then
+		suffix = "1"
+	elseif binding.keybind == "BUTTON2" then
+		suffix = "2"
+	end
+
+	if binding.type == Clicked.TYPE_SPELL then
+		RegisterAttribute(attributes, "type", suffix, "spell")
+		RegisterAttribute(attributes, "spell", suffix, binding.action.spell)
+		RegisterAttribute(attributes, "unit", suffix, "mouseover")
+	elseif binding.type == Clicked.TYPE_ITEM then
+		RegisterAttribute(attributes, "type", suffix, "item")
+		RegisterAttribute(attributes, "item", suffix, binding.action.item)
+		RegisterAttribute(attributes, "unit", suffix, "mouseover")
+	elseif binding.type == Clicked.TYPE_MACRO then
+		RegisterAttribute(attributes, "type", suffix, "macro")
+		RegisterAttribute(attributes, "macrotext", suffix, binding.action.macro)
+	end
+
+	return attributes
+end
+
+local function RegisterUnitFrame(name)
+	local frame = _G[name]
+
+	if not frame then
+		print("Unable to load " .. name)
+		return
+	end
+	
+	if not frame.RegisterForClicks then
+		return
+	end
+
+	if not AceHook:IsHooked(frame, "OnEnter") then
+		AceHook:SecureHookScript(frame, "OnEnter", function(frame) 
+			hoveredUnitFrame = frame.unit
+		end)
+	end
+
+	if not AceHook:IsHooked(frame, "OnLeave") then
+		AceHook:SecureHookScript(frame, "OnLeave", function(frame) 
+			hoveredUnitFrame = nil
+		end)
+	end
+
+	for _, attribute in ipairs(unitFrameAttributes) do
+		frame:SetAttribute(attribute.key, attribute.value)
+	end
+
+	table.insert(unitFrames, frame)
+end
+
+local function UnregisterUnitFrame(frame)
+	AceHook:Unhook(frame, "OnEnter")
+	AceHook:Unhook(frame, "OnLeave")
+
+	for _, attribute in ipairs(unitFrameAttributes) do
+		frame:SetAttribute(attribute.key, "")
+	end
+end
+
+local function ConfigureUnitFrameIntegration(attributes)
+	unitFrameAttributes = attributes
+	
+	for addon, frames in pairs(BLIZZARD_UNIT_FRAMES) do
+		if addon == "" or IsAddOnLoaded(addon) then
+			for _, name in ipairs(frames) do
+				RegisterUnitFrame(name)
+			end
+		else
+			table.insert(unitFramesQueue, addon)
+		end
+	end
+end
+
+local function ClearUnitFrameIntegration()
+	for _, frame in ipairs(unitFrames) do
+		UnregisterUnitFrame(frame)
+	end
+
+	unitFrames = {}
+	unitFrameAttributes = {}
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -268,17 +421,36 @@ local function RegisterBindings(bindings)
 	end
 	
 	local macros = {}
+	local attributes = {}
 
 	for _, binding in ipairs(bindings) do
-		local macro = GetMacroForBinding(binding)
-		print(binding.keybind .. ": " .. macro)
-		if macro ~= "" then
-			table.insert(macros, {
-				keybind = binding.keybind,
-				macro = macro,
-				handler = nil
-			})
+		if Clicked:IsRestrictedKeybind(binding.keybind) then
+			for _, attribute in ipairs(GetAttributesForBinding(binding)) do
+				table.insert(attributes, attribute)
+			end
+		elseif binding.type == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+			-- todo
+		elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+			-- todo
+		elseif binding.type == Clicked.TYPE_UNIT_MENU then
+			-- todo
+		else
+			local macro = GetMacroForBinding(binding)
+			
+			if macro ~= "" then
+				table.insert(macros, {
+					keybind = binding.keybind,
+					macro = macro,
+					handler = nil
+				})
+			end
 		end
+	end
+
+	ClearUnitFrameIntegration()
+
+	if #attributes > 0 then
+		ConfigureUnitFrameIntegration(attributes)
 	end
 
 	if #macros > 0 then
@@ -442,6 +614,26 @@ end
 -- have limited functionality.
 function Clicked:IsRestrictedKeybind(keybind)
     return keybind == "BUTTON1" or keybind == "BUTTON2"
+end
+
+function Clicked:CanTargetUnitBeHostile(unit)
+	if unit == Clicked.TARGET_UNIT_TARGET then
+		return true
+	end
+
+	if unit == Clicked.TARGET_UNIT_FOCUS then
+		return true
+	end
+
+	if unit == Clicked.TARGET_UNIT_MOUSEOVER then
+		return true
+	end
+
+	if unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+		return true
+	end
+
+	return false
 end
 
 function dump(o)

@@ -10,6 +10,7 @@
 
 Embeds.xml
 AceGUIContainer-ClickedTreeGroup.lua
+AceGUIWidget-ClickedKeybinding.lua
 
 Clicked.xml
 Clicked.lua

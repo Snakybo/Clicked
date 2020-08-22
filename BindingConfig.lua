@@ -102,6 +102,10 @@ local function GetTreeViewItems()
             item.icon = select(10, GetItemInfo(binding.action.item)) or item.icon
         elseif binding.type == Clicked.TYPE_MACRO then
             item.text1 = "Run Custom Macro"
+        elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+            item.text1 = "Target the selected unit"
+        elseif binding.type == Clicked.TYPE_UNIT_MENU then
+            item.text1 = "Open a context menu"
         end
 
         item.text2 = binding.keybind
@@ -213,8 +217,17 @@ local function DrawBindingActions(container, tab, binding)
         widget:SetList({
             SPELL = "Cast a spell",
             ITEM = "Use an item",
-            MACRO = "Run a macro"
-        }, { "SPELL", "ITEM", "MACRO" })
+            MACRO = "Run a macro",
+            --UNIT_SELECT = "Target the selected unit",
+            --UNIT_MENU = "Open the unit's context menu"
+        },
+        {
+            "SPELL",
+            "ITEM",
+            "MACRO",
+            --"UNIT_SELECT",
+            --"UNIT_MENU"
+        })
         widget:SetValue(binding.type)
         widget:SetLabel("When the keybind has been pressed")
         widget:SetFullWidth(true)
@@ -360,6 +373,7 @@ local function DrawBindingActions(container, tab, binding)
                         TARGET = "Target",
                         --MOUSEOVER_FRAME = "Mouseover (unit frame)",
                         MOUSEOVER = "Mouseover (unit frame and 3D world)",
+                        FOCUS = "Focus",
                         PARTY_1 = "Party 1",
                         PARTY_2 = "Party 2",
                         PARTY_3 = "Party 3",
@@ -372,6 +386,7 @@ local function DrawBindingActions(container, tab, binding)
                         "TARGET",
                         --"MOUSEOVER_FRAME",
                         "MOUSEOVER",
+                        "FOCUS",
                         "PARTY_1",
                         "PARTY_2",
                         "PARTY_3",
@@ -400,9 +415,7 @@ local function DrawBindingActions(container, tab, binding)
                         widget:SetLabel("Or")
                     end
 
-                    if target.unit == Clicked.TARGET_UNIT_TARGET or
-                       target.unit == Clicked.TARGET_UNIT_MOUSEOVER or
-                       target.unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+                    if Clicked:CanTargetUnitBeHostile(target.unit) then
                         widget:SetRelativeWidth(0.5)
                     else
                         widget:SetRelativeWidth(1)
@@ -472,9 +485,7 @@ local function DrawBindingActions(container, tab, binding)
                 for i, target in ipairs(binding.targets) do
                     DrawTargetUnitDropdown(target, i)
 
-                    if target.unit == Clicked.TARGET_UNIT_TARGET or
-                       target.unit == Clicked.TARGET_UNIT_MOUSEOVER or
-                       target.unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+                    if Clicked:CanTargetUnitBeHostile(target.unit) then
                         DrawTargetTypeDropdown(target, i)
                     end
                 end
@@ -756,7 +767,7 @@ end
 local function DrawBinding(container, binding)
     -- keybinding button
     do
-        local widget = AceGUI:Create("Keybinding")
+        local widget = AceGUI:Create("ClickedKeybinding")
         widget:SetKey(binding.keybind)
         widget:SetRelativeWidth(0.75)
         widget:SetCallback("OnKeyChanged", function(...)
