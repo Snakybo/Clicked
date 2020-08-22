@@ -1,5 +1,9 @@
 Clicked.ClickCastHeader = nil
 
+local CreateFrame = CreateFrame
+local GetAddOnEnableState = GetAddOnEnableState
+local InCombatLockdown = InCombatLockdown
+
 local clickCastRegisterQueue = {}
 
 local function ShowIncompatibilityPopup(addon)
@@ -83,7 +87,7 @@ function Clicked:RegisterOUF()
 	-- 	print("onleave: " .. (...))
     -- end)
 
-    self.ClickCastHeader:HookScript("OnAttributeChanged", function(frame, name, value)
+    self.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
         local frameName = value and value.GetName and value:GetName()
 
         if frameName == nil then
@@ -101,7 +105,7 @@ function Clicked:RegisterOUF()
     local originalClickCastFrames = ClickCastFrames or {}
 
     ClickCastFrames = setmetatable({}, {
-        __newindex = function(t, frame, options)
+        __newindex = function(_, frame, options)
             if options ~= nil and options ~= false then
                 self:RegisterUnitFrame("", frame, options)
             else

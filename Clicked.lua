@@ -1,6 +1,9 @@
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
-local AceHook = LibStub("AceHook-3.0")
+
+local CreateFrame = CreateFrame
+local GetSpellInfo = GetSpellInfo
+local InCombatLockdown = InCombatLockdown
 
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 
@@ -39,7 +42,6 @@ Clicked.UnitFrameUnregisterQueue = {}
 local macroFrameHandlers = {}
 local unitFrameAttributes = {}
 
-local hoveredUnitFrame
 local inCombat
 
 function Clicked:OnInitialize()
@@ -116,7 +118,7 @@ function Clicked:OnLeavingCombat()
 	self:ReloadActiveBindings()
 end
 
-function Clicked:OnAddonLoaded(event, addon)
+function Clicked:OnAddonLoaded()
 	self:ProcessUnitFrameQueue()
 end
 
@@ -578,7 +580,7 @@ function Clicked:IsBindingActive(binding)
 			return false
 		end
 	end
-		
+
 	return true
 end
 
