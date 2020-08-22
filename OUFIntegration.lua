@@ -42,7 +42,7 @@ function Clicked:ProcessClickCastQueue()
     local queue = clickCastRegisterQueue
     clickCastRegisterQueue = {}
 
-    for _, frame in ipairs(clickCastRegisterQueue) do
+    for _, frame in ipairs(queue) do
         UpdateRegisteredClicks(frame)
     end
 end
