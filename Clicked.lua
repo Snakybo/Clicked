@@ -267,7 +267,9 @@ local function ApplyBindings(bindings)
 
 			RegisterAttribute(attributes, "type", buttonIndex, "macro")
 			RegisterAttribute(attributes, "macrotext", buttonIndex, handler.macro)
-		else
+		end
+
+		if not Clicked:IsRestrictedKeybind(handler.keybind) then
 			local frame
 
 			if nextMacroFrameHandler > #macroFrameHandlers then
