@@ -11,9 +11,11 @@
 Embeds.xml
 AceGUIContainer-ClickedTreeGroup.lua
 AceGUIWidget-ClickedKeybinding.lua
-
+ClickCastTemplate.xml
 Clicked.xml
 Clicked.lua
+BlizzardUnitFrameIntegration.lua
+OUFIntegration.lua
 Database.lua
 AddonConfig.lua
 BindingConfig.lua
