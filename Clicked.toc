@@ -8,7 +8,7 @@
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
 
-Embeds.xml
+Libs.xml
 AceGUIContainer-ClickedTreeGroup.lua
 AceGUIWidget-ClickedKeybinding.lua
 ClickCastTemplate.xml
