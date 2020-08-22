@@ -2,7 +2,7 @@
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 0.1
-## Notes: Powerful and intuitive keybind management
+## Notes: Keybindings made easy
 ## SavedVariables: ClickedDB
 
 ## X-Localizations: enUS, enGB
