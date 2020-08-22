@@ -612,6 +612,38 @@ local methods = {
 			buttonnum = buttonnum + 1
 		end
 
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		-- This entire block has been copied from AddOnSkins/Ace3 integration for tree groups
+		if IsAddOnLoaded("AddOnSkins") and AddOnSkins then
+			if not self.tree then
+				return
+			end
+
+			local status = self.status or self.localstatus
+			local groupstatus = status.groups
+			local lines = self.lines
+			local buttons = self.buttons
+			local offset = status.scrollvalue
+
+			for i = offset + 1, #lines do
+				local button = buttons[i - offset]
+
+				if button then
+					if groupstatus[lines[i].uniquevalue] then
+						button.toggle:SetNormalTexture([[Interface\AddOns\AddOnSkins\Media\Textures\Minus]])
+						button.toggle:SetPushedTexture([[Interface\AddOns\AddOnSkins\Media\Textures\Minus]])
+						button.toggle:SetHighlightTexture('')
+					else
+						button.toggle:SetNormalTexture([[Interface\AddOns\AddOnSkins\Media\Textures\Plus]])
+						button.toggle:SetPushedTexture([[Interface\AddOns\AddOnSkins\Media\Textures\Plus]])
+						button.toggle:SetHighlightTexture('')
+					end
+
+					button.text:SetTextColor(1, 1, 1, 1)
+				end
+			end
+		end
 	end,
 
 	["SetSelected"] = function(self, value)
@@ -797,6 +829,29 @@ local function Constructor()
 	local content = CreateFrame("Frame", nil, border)
 	content:SetPoint("TOPLEFT", 10, -10)
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
+
+	-- CLICKED MODIFICATION 
+	-- original: <nothing>
+	if IsAddOnLoaded("AddOnSkins") and AddOnSkins then
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		local AS = unpack(AddOnSkins)
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		local frame = content:GetParent()
+
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		AS:SetTemplate(frame)
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		AS:SetTemplate(treeframe)
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		frame:SetPoint('TOPLEFT', treeframe, 'TOPRIGHT', 1, 0)
+	-- CLICKED MODIFICATION 
+	-- original: <nothing>
+	end
 
 	local widget = {
 		frame        = frame,

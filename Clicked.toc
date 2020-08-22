@@ -2,9 +2,11 @@
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 0.2
-## Notes: Keybindings made easy
+## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
+## OptionalDeps: Ace3, AddOnSkins
 
+## X-Embeds: Ace3
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
 
