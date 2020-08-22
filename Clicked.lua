@@ -214,6 +214,8 @@ local function GetMacroForBinding(binding)
 					macro = macro .. "[" .. flags .. "] "
 				end
 			end
+		else
+			macro = macro .. "[@mouseover] "
 		end
 
 		-- Append the actual spell or item to use
@@ -285,7 +287,6 @@ local function ApplyBindings(bindings)
 
 			RegisterAttribute(attributes, "type", suffix, "macro")
 			RegisterAttribute(attributes, "macrotext", suffix, handler.macro)
-			RegisterAttribute(attributes, "unit", suffix, "mouseover")
 		end
 	end
 
