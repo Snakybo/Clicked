@@ -2,9 +2,6 @@ Clicked.ClickCastHeader = nil
 
 local CreateFrame = CreateFrame
 local GetAddOnEnableState = GetAddOnEnableState
-local InCombatLockdown = InCombatLockdown
-
-local clickCastRegisterQueue = {}
 
 local function ShowIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedIncompatibilityMessage" .. addon] = {
@@ -28,29 +25,6 @@ local function ShowIncompatibilityPopup(addon)
 	StaticPopup_Show("ClickedIncompatibilityMessage" .. addon)
 end
 
-local function UpdateRegisteredClicks(frame)
-	if frame == nil or frame.RegisterForClicks == nil then
-		return
-	end
-
-	if InCombatLockdown() then
-		table.insert(clickCastRegisterQueue, frame)
-		return
-	end
-
-	frame:RegisterForClicks("AnyUp")
-	frame:EnableMouseWheel(true)
-end
-
-function Clicked:ProcessClickCastQueue()
-	local queue = clickCastRegisterQueue
-	clickCastRegisterQueue = {}
-
-	for _, frame in ipairs(queue) do
-		UpdateRegisteredClicks(frame)
-	end
-end
-
 function Clicked:RegisterOUF()
 	if GetAddOnEnableState(UnitName("player"), "Clique") == 2 then
 		ShowIncompatibilityPopup("Clique")
@@ -67,7 +41,7 @@ function Clicked:RegisterOUF()
 
 	Clique = {}
 	Clique.header = self.ClickCastHeader
-	Clique.UpdateRegisteredClicks = UpdateRegisteredClicks
+	Clique.UpdateRegisteredClicks = Clicked.UpdateRegisteredClicks
 
 	self.ClickCastHeader:SetAttribute("clickcast_register", [===[
 		local frame = self:GetAttribute("clickcast_button")
@@ -96,7 +70,6 @@ function Clicked:RegisterOUF()
 
 		if name == "export_register" then
 			Clicked:RegisterUnitFrame("", frameName, true)
-			UpdateRegisteredClicks(_G[frameName])
 		elseif name == "export_unregister" then
 			Clicked:UnregisterUnitFrame(frameName)
 		end

@@ -38,6 +38,7 @@ Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 Clicked.UnitFrames = {}
 Clicked.UnitFrameRegisterQueue = {}
 Clicked.UnitFrameUnregisterQueue = {}
+Clicked.ClickCastRegisterQueue = {}
 
 local macroFrameHandlers = {}
 local unitFrameAttributes = {}
@@ -248,8 +249,8 @@ local function ClearFrameAttributes(frame, attributes)
 	end
 end
 
-local function RegisterAttribute(add, key, suffix, value)
-	table.insert(add, { key = key .. suffix, value = value })
+local function RegisterAttribute(registry, key,  value)
+	table.insert(registry, { key = key, value = value })
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -260,13 +261,13 @@ local function ApplyBindings(bindings)
 
 	local attributes = {}
 	local nextMacroFrameHandler = 1
-
+	
 	for _, handler in ipairs(bindings) do
 		if StartsWith(handler.keybind, "BUTTON") then
 			local buttonIndex = handler.keybind:match("^BUTTON(%d+)$")
 
-			RegisterAttribute(attributes, "type", buttonIndex, "macro")
-			RegisterAttribute(attributes, "macrotext", buttonIndex, handler.macro)
+			RegisterAttribute(attributes, "type" .. buttonIndex, "macro")
+			RegisterAttribute(attributes, "macrotext" .. buttonIndex, handler.macro)
 		end
 
 		if not Clicked:IsRestrictedKeybind(handler.keybind) then
@@ -313,18 +314,28 @@ function Clicked:ProcessUnitFrameQueue()
 		return
 	end
 
-	local unregisterQueue = Clicked.UnitFrameUnregisterQueue
-	Clicked.UnitFrameUnregisterQueue = {}
+	local unregisterQueue = self.UnitFrameUnregisterQueue
+	self.UnitFrameUnregisterQueue = {}
 
 	for _, frame in ipairs(unregisterQueue) do
 		self:UnregisterUnitFrame(frame)
 	end
 
-	local registerQueue = Clicked.UnitFrameRegisterQueue
-	Clicked.UnitFrameRegisterQueue = {}
+	local registerQueue = self.UnitFrameRegisterQueue
+	self.UnitFrameRegisterQueue = {}
 
 	for _, frame in ipairs(registerQueue) do
 		self:RegisterUnitFrame(frame.addon, frame.frame, frame.options)
+	end
+end
+
+
+function Clicked:ProcessClickCastQueue()
+	local queue = self.ClickCastRegisterQueue
+	self.clickCastRegisterQueue = {}
+
+	for _, frame in ipairs(queue) do
+		self:UpdateRegisteredClicks(frame)
 	end
 end
 
@@ -336,8 +347,8 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 	-- Already registered, so just update the options in case they have
 	-- changed for whatever reason.
 
-	if Clicked.UnitFrames[frame] then
-		Clicked.UnitFrames[frame] = options
+	if self.UnitFrames[frame] then
+		self.UnitFrames[frame] = options
 		return
 	end
 
@@ -345,7 +356,7 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 	-- gets processed when we exit combat.
 
 	if InCombatLockdown() then
-		table.insert(Clicked.UnitFrameRegisterQueue, {
+		table.insert(self.UnitFrameRegisterQueue, {
 			addon = addon,
 			frame = frame,
 			options = options
@@ -363,7 +374,7 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 
 	if type(frame) == "string" then
 		if addon ~= "" and not IsAddOnLoaded(addon) then
-			table.insert(Clicked.UnitFrameRegisterQueue, {
+			table.insert(self.UnitFrameRegisterQueue, {
 				addon = addon,
 				frame = frame,
 				options = options
@@ -400,8 +411,9 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 	-- end
 
 	SetFrameAttributes(frame, unitFrameAttributes)
-
-	Clicked.UnitFrames[frame] = options
+	
+	self:UpdateRegisteredClicks(frame)
+	self.UnitFrames[frame] = options
 end
 
 function Clicked:UnregisterUnitFrame(frame)
@@ -409,7 +421,7 @@ function Clicked:UnregisterUnitFrame(frame)
 		return
 	end
 
-	if not Clicked.UnitFrames[frame] then
+	if not self.UnitFrames[frame] then
 		return
 	end
 
@@ -418,7 +430,7 @@ function Clicked:UnregisterUnitFrame(frame)
 	-- we leave combat.
 
 	if InCombatLockdown() then
-		table.insert(Clicked.UnitFrameUnregisterQueue, frame)
+		table.insert(self.UnitFrameUnregisterQueue, frame)
 		return
 	end
 
@@ -427,7 +439,21 @@ function Clicked:UnregisterUnitFrame(frame)
 	-- AceHook:Unhook(frame, "OnEnter")
 	-- AceHook:Unhook(frame, "OnLeave")
 
-	Clicked.UnitFrames[frame] = nil
+	self.UnitFrames[frame] = nil
+end
+
+function Clicked:UpdateRegisteredClicks(frame)
+	if frame == nil or frame.RegisterForClicks == nil then
+		return
+	end
+
+	if InCombatLockdown() then
+		table.insert(self.ClickCastRegisterQueue, frame)
+		return
+	end
+
+	frame:RegisterForClicks("AnyUp")
+	frame:EnableMouseWheel(true)
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -507,15 +533,15 @@ function Clicked:IsBindingActive(binding)
 
 	local action = binding.action
 
-	if binding.type == Clicked.TYPE_SPELL and Trim(action.spell) == "" then
+	if binding.type == self.TYPE_SPELL and Trim(action.spell) == "" then
 		return false
 	end
 
-	if binding.type == Clicked.TYPE_MACRO and Trim(action.macro) == "" then
+	if binding.type == self.TYPE_MACRO and Trim(action.macro) == "" then
 		return false
 	end
 
-	if binding.type == Clicked.TYPE_ITEM and Trim(action.item) == "" then
+	if binding.type == self.TYPE_ITEM and Trim(action.item) == "" then
 		return false
 	end
 
@@ -561,9 +587,9 @@ function Clicked:IsBindingActive(binding)
 	local combat = load.combat
 
 	if combat.selected == 1 then
-		if combat.state == Clicked.COMBAT_STATE_TRUE and not inCombat then
+		if combat.state == self.COMBAT_STATE_TRUE and not inCombat then
 			return false
-		elseif combat.state == Clicked.COMBAT_STATE_FALSE and inCombat then
+		elseif combat.state == self.COMBAT_STATE_FALSE and inCombat then
 			return false
 		end
 	end
@@ -623,19 +649,19 @@ function Clicked:IsRestrictedKeybind(keybind)
 end
 
 function Clicked:CanTargetUnitBeHostile(unit)
-	if unit == Clicked.TARGET_UNIT_TARGET then
+	if unit == self.TARGET_UNIT_TARGET then
 		return true
 	end
 
-	if unit == Clicked.TARGET_UNIT_FOCUS then
+	if unit == self.TARGET_UNIT_FOCUS then
 		return true
 	end
 
-	if unit == Clicked.TARGET_UNIT_MOUSEOVER then
+	if unit == self.TARGET_UNIT_MOUSEOVER then
 		return true
 	end
 
-	if unit == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+	if unit == self.TARGET_UNIT_MOUSEOVER_FRAME then
 		return true
 	end
 
