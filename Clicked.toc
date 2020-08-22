@@ -1,7 +1,7 @@
 ## Interface: 90001
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 1.0
+## Version: 0.1
 ## Notes: Powerful and intuitive keybind management
 ## SavedVariables: ClickedDB
 
@@ -10,6 +10,7 @@
 
 Embeds.xml
 AceGUIContainer-ClickedTreeGroup.lua
+AceGUIWidget-ClickedKeybinding.lua
 
 Clicked.xml
 Clicked.lua

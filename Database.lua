@@ -1,15 +1,16 @@
 function Clicked:GetDatabaseDefaults()
-    local unitSelect = self:GetNewBinding()
+    local unitSelect = self:GetNewBindingTemplate()
     unitSelect.type = Clicked.TYPE_UNIT_SELECT
     unitSelect.keybind = "BUTTON1"
 
-    local unitMenu = self:GetNewBinding()
+    local unitMenu = self:GetNewBindingTemplate()
     unitMenu.type = Clicked.TYPE_UNIT_MENU
     unitMenu.keybind = "BUTTON2"
     
     return {
         profile = {
             bindings = {
+                ["*"] = self:GetNewBindingTemplate(),
                 -- unitSelect,
                 -- unitMenu
             },
@@ -20,22 +21,43 @@ function Clicked:GetDatabaseDefaults()
     }
 end
 
-function Clicked:GetNewBinding()
+function Clicked:GetNewBindingTemplate()
     return {
         type = Clicked.TYPE_SPELL,
         keybind = "",
-        action_spell = "",
-        action_item = "",
-        action_macro_name = "",
-        action_macro_text = "",
-        action_stop_casting = false,
-        target_unit = Clicked.TARGET_UNIT_TARGET,
-        target_type = Clicked.TARGET_TYPE_ANY,
-        load_lever = false,
-        load_enable_spec = 0,
-        load_spec = GetSpecialization(),
-        load_specs = { GetSpecialization() },
-        load_enable_combat = false,
-        load_combat = Clicked.COMBAT_STATE_TRUE
+        action = {
+            stopCasting = false,
+            spell = "",
+            item = "",
+            macro = ""
+        },
+        targets = {
+            self:GetNewBindingTargetTemplate()
+        },
+        load = {
+            never = false,
+            specialization = {
+                selected = 0,
+                single = GetSpecialization(),
+                multiple = {
+                    GetSpecialization()
+                }
+            },
+            combat = {
+                selected = 0,
+                state = Clicked.COMBAT_STATE_TRUE
+            },
+            spellKnown = {
+                selected = 0,
+                spell = ""
+            }
+        }
+    }
+end
+
+function Clicked:GetNewBindingTargetTemplate()
+    return {
+        unit = Clicked.TARGET_UNIT_TARGET,
+        type = Clicked.TARGET_TYPE_ANY
     }
 end
