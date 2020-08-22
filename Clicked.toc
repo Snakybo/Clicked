@@ -8,14 +8,14 @@
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
 
-Libs.xml
-AceGUIContainer-ClickedTreeGroup.lua
-AceGUIWidget-ClickedKeybinding.lua
-ClickCastTemplate.xml
-Clicked.xml
-Clicked.lua
-BlizzardUnitFrameIntegration.lua
-OUFIntegration.lua
-Database.lua
-AddonConfig.lua
-BindingConfig.lua
+Libs\Libs.xml
+Widgets\AceGUIContainer-ClickedTreeGroup.lua
+Widgets\AceGUIWidget-ClickedKeybinding.lua
+Templates\ClickCastTemplate.xml
+Templates\Clicked.xml
+Core\Clicked.lua
+Core\Database.lua
+Integrations\Blizzard.lua
+Integrations\oUF.lua
+Config\Addon.lua
+Config\Bindings.lua
