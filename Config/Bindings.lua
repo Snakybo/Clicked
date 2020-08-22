@@ -576,7 +576,13 @@ local function DrawBindingLoadOptions(container, tab, binding)
 		-- spec toggle
 		do
 			local widget = AceGUI:Create("CheckBox")
-			widget:SetRelativeWidth(0.5)
+
+			if binding.load.specialization.selected == 0 then
+				widget:SetRelativeWidth(1)
+			else
+				widget:SetRelativeWidth(0.5)
+			end
+
 			widget:SetType("checkbox")
 			widget:SetValue(GetToggleValueFromIndex(binding.load.specialization.selected))
 			widget:SetLabel("Specialization")
@@ -665,14 +671,6 @@ local function DrawBindingLoadOptions(container, tab, binding)
 
 			container:AddChild(widget)
 		end
-
-		-- separator
-		do
-			local widget = AceGUI:Create("SimpleGroup")
-			widget:SetFullWidth(true)
-
-			container:AddChild(widget)
-		end
 	end
 
 	-- combat selection
@@ -680,7 +678,13 @@ local function DrawBindingLoadOptions(container, tab, binding)
 		-- combat toggle
 		do
 			local widget = AceGUI:Create("CheckBox")
-			widget:SetRelativeWidth(0.5)
+			
+			if binding.load.combat.selected == 0 then
+				widget:SetRelativeWidth(1)
+			else
+				widget:SetRelativeWidth(0.5)
+			end
+
 			widget:SetType("checkbox")
 			widget:SetValue(GetToggleValueFromIndex(binding.load.combat.selected))
 			widget:SetLabel("Combat")
@@ -722,14 +726,6 @@ local function DrawBindingLoadOptions(container, tab, binding)
 				container:AddChild(widget)
 			end
 		end
-
-		-- separator
-		do
-			local widget = AceGUI:Create("SimpleGroup")
-			widget:SetFullWidth(true)
-
-			container:AddChild(widget)
-		end
 	end
 
 	-- spell known
@@ -737,7 +733,13 @@ local function DrawBindingLoadOptions(container, tab, binding)
 		-- spell known toggle
 		do
 			local widget = AceGUI:Create("CheckBox")
-			widget:SetRelativeWidth(0.5)
+			
+			if binding.load.spellKnown.selected == 0 then
+				widget:SetRelativeWidth(1)
+			else
+				widget:SetRelativeWidth(0.5)
+			end
+
 			widget:SetType("checkbox")
 			widget:SetValue(GetToggleValueFromIndex(binding.load.spellKnown.selected))
 			widget:SetLabel("Spell Known")
@@ -772,14 +774,6 @@ local function DrawBindingLoadOptions(container, tab, binding)
 
 				container:AddChild(widget)
 			end
-		end
-
-		-- separator
-		do
-			local widget = AceGUI:Create("SimpleGroup")
-			widget:SetFullWidth(true)
-
-			container:AddChild(widget)
 		end
 	end
 end
