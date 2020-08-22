@@ -578,19 +578,7 @@ function Clicked:IsBindingActive(binding)
 			return false
 		end
 	end
-
-	-- Lastly, if the binding is set to a spell or item, make sure that we can cast it,
-	-- since custom macros can contain pretty much anything we will keep them active even
-	-- if they attempt to cast spells or use items that we can't obey
-
-	if binding.type == Clicked.TYPE_SPELL then
-		return GetSpellInfo(binding.action.spell) ~= nil
-	end
-
-	if binding.type == Clicked.TYPE_ITEM then
-		return GetSpellInfo(binding.action.spell) ~= nil
-	end
-	
+		
 	return true
 end
 
