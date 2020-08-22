@@ -36,9 +36,9 @@ You can specify a target on a per-keybind basis without having to create macros.
 
 You can configure a keybind to only activate if the specified target is hostile or friendly towards you.
 
-  * Always activate
-  * Only activate if the target is friendly
-  * Only activate if the target is hostile
+* Always activate
+* Only activate if the target is friendly
+* Only activate if the target is hostile
 
 ## Upcoming Features
 
@@ -50,4 +50,4 @@ Clicked is still in active development and will gain the following features in t
 
 ## Credits
 
-Clicked is inspired by the [Clique](https://www.wowinterface.com/downloads/fileinfo.php?id=5108) addon
+Clicked is inspired by the [Clique](https://www.wowinterface.com/downloads/fileinfo.php?id=5108) addon. A lot of the click casting functionality is based of Clique.

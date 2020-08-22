@@ -1,7 +1,12 @@
 local AceConsole = LibStub("AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
+local CreateFrame = CreateFrame
+local GetSpellInfo = GetSpellInfo
+local InCombatLockdown = InCombatLockdown
+
 local keybindOrderMapping = {
+    "BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5",
     "`", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "=",
     "NUMPAD0", "NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPAD4", "NUMPAD5", "NUMPAD6", "NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS", "NUMPADPLUS", "NUMPADDECIMAL",
     "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13",
@@ -35,6 +40,14 @@ local function TreeSortFunc(left, right)
 
     if left.binding.keybind == right.binding.keybind then
         return left.index < right.index
+    end
+
+    if Clicked:IsBindingActive(left.binding) and not Clicked:IsBindingActive(right.binding) then
+        return true
+    end
+
+    if not Clicked:IsBindingActive(left.binding) and Clicked:IsBindingActive(right.binding) then
+        return false
     end
 
     local function GetKeybindKey(bind)
@@ -143,10 +156,6 @@ local function GetIndexFromToggleValue(value)
     end
 end
 
-local function UpdateStatusText(text)
-    root:SetStatusText(text)
-end
-
 local function EnableSpellbookHandlers(handler)
     if not SpellBookFrame:IsVisible() then
         return
@@ -181,7 +190,7 @@ local function EnableSpellbookHandlers(handler)
                     self:GetHighlightTexture():Hide()
                 end
             end)
-            button:SetScript("OnLeave", function(self)
+            button:SetScript("OnLeave", function()
                 GameTooltip:Hide()
             end)
 
@@ -209,6 +218,17 @@ local function DrawBindingActions(container, tab, binding)
         widget:SetFullWidth(true)
 
         container:AddChild(widget)
+    end
+
+    -- restricted keybind help label
+    if Clicked:IsRestrictedKeybind(binding.keybind) then
+        do
+            local widget = AceGUI:Create("Label")
+            widget:SetText("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be cast on the targeted unit frame")
+            widget:SetFullWidth(true)
+
+            container:AddChild(widget)
+        end
     end
     
     -- action dropdown
@@ -455,7 +475,7 @@ local function DrawBindingActions(container, tab, binding)
                     container:AddChild(widget)
                 end
 
-                local function DrawTargetTypeDropdown(target, index)
+                local function DrawTargetTypeDropdown(target)
                     local widget = AceGUI:Create("Dropdown")
                     widget:SetList({
                         ANY = "Either friendly or hostile",
@@ -486,7 +506,7 @@ local function DrawBindingActions(container, tab, binding)
                     DrawTargetUnitDropdown(target, i)
 
                     if Clicked:CanTargetUnitBeHostile(target.unit) then
-                        DrawTargetTypeDropdown(target, i)
+                        DrawTargetTypeDropdown(target)
                     end
                 end
                 
@@ -831,7 +851,7 @@ local function DrawBinding(container, binding)
                 }
             }
         )
-        widget:SetCallback("OnGroupSelected", function(container, evt, group)
+        widget:SetCallback("OnGroupSelected", function(container, _, group)
             container:ReleaseChildren()
 
             local scrollFrame = AceGUI:Create("ScrollFrame")
@@ -919,7 +939,7 @@ function Clicked:OpenBindingConfig()
         tree:SetFullHeight(true)
         tree:SetTree(items)
         tree:EnableButtonTooltips(false)
-        tree:SetCallback("OnGroupSelected", function(container, evt, group)
+        tree:SetCallback("OnGroupSelected", function(container, _, group)
             container:ReleaseChildren()
             DisableSpellbookHandlers()
 
@@ -932,7 +952,7 @@ function Clicked:OpenBindingConfig()
 
             selected = group
         end)
-        tree:SetCallback("OnButtonEnter", function(container, evt, group, frame)
+        tree:SetCallback("OnButtonEnter", function(_, _, group, frame)
             local tooltip = AceGUI.tooltip
             local text = frame.text:GetText()
             local binding
@@ -964,7 +984,7 @@ function Clicked:OpenBindingConfig()
             tooltip:SetText(text or "", 1, 0.82, 0, true)
             tooltip:Show()
         end)
-        tree:SetCallback("OnButtonLeave", function(...)
+        tree:SetCallback("OnButtonLeave", function()
             local tooltip = AceGUI.tooltip
             tooltip:Hide()
         end)
@@ -978,7 +998,7 @@ function Clicked:OpenBindingConfig()
 end
 
 function Clicked:RegisterBindingConfig()
-    AceConsole:RegisterChatCommand("clicked", function(input)
+    AceConsole:RegisterChatCommand("clicked", function()
         self:OpenBindingConfig()
     end)
 end

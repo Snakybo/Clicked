@@ -1,6 +1,9 @@
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
-local AceHook = LibStub("AceHook-3.0")
+
+local CreateFrame = CreateFrame
+local GetSpellInfo = GetSpellInfo
+local InCombatLockdown = InCombatLockdown
 
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 
@@ -32,45 +35,13 @@ Clicked.TARGET_TYPE_HARM = "HARM"
 Clicked.COMBAT_STATE_TRUE = "IN_COMBAT"
 Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 
-local BLIZZARD_UNIT_FRAMES = {
-	[""] = {
-		"PlayerFrame",
-		"PetFrame",
-		"TargetFrame",
-		"TargetFrameToT",
-		"FocusFrame",
-		"FocusFrameToT",
-		"PartyMemberFrame1",
-		"PartyMemberFrame1PetFrame",
-		"PartyMemberFrame2",
-		"PartyMemberFrame2PetFrame",
-		"PartyMemberFrame3",
-		"PartyMemberFrame3PetFrame",
-		"PartyMemberFrame4",
-		"PartyMemberFrame4PetFrame",
-		"Boss1TargetFrame",
-		"Boss2TargetFrame",
-		"Boss3TargetFrame",
-		"Boss4TargetFrame"
-	},
-	["Blizzard_ArenaUI"] = {
-		"ArenaEnemyFrame1",
-		"ArenaEnemyFrame2",
-		"ArenaEnemyFrame3"
-	}
-}
+Clicked.UnitFrames = {}
+Clicked.UnitFrameRegisterQueue = {}
+Clicked.UnitFrameUnregisterQueue = {}
 
-local handlers = {}
-
-local unitFrames = {}
-local unitFramesQueue = {}
+local macroFrameHandlers = {}
 local unitFrameAttributes = {}
 
-local additionalUnitFrameHandler
-local additionalUnitFrames = {}
-
-local clickHandlerFrame
-local hoveredUnitFrame
 local inCombat
 
 function Clicked:OnInitialize()
@@ -93,7 +64,10 @@ function Clicked:OnInitialize()
 		end
     })
 	LibDBIcon:Register("Clicked", iconData, self.db.profile.minimap)
-	
+
+	self:RegisterBlizzardUnitFrames()
+	self:RegisterOUF()
+
 	self:RegisterAddonConfig()
 	self:RegisterBindingConfig()
 end
@@ -101,8 +75,9 @@ end
 function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEnteringCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnLeavingCombat")
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindingsAndConfig")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindingsAndConfig")
+	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindingsAndConfig")
 	self:RegisterEvent("ADDON_LOADED", "OnAddonLoaded")
 
 	self:ReloadBindings()
@@ -111,7 +86,6 @@ end
 function Clicked:OnDisable()
 	self:UnregisterEvent("OnEnteringCombat")
 	self:UnregisterEvent("OnLeavingCombat")
-	self:UnregisterEvent("ReloadActiveBindings")
 	self:UnregisterEvent("ReloadActiveBindingsAndConfig")
 	self:UnregisterEvent("OnAddonLoaded")
 end
@@ -131,25 +105,21 @@ end
 
 function Clicked:OnEnteringCombat()
 	inCombat = true
+
 	self:ReloadActiveBindings()
 end
 
 function Clicked:OnLeavingCombat()
 	inCombat = false
+
+	self:ProcessUnitFrameQueue()
+	self:ProcessClickCastQueue()
+
 	self:ReloadActiveBindings()
 end
 
-function Clicked:OnAddonLoaded(event, addon)
-	for i, queued in ipairs(unitFramesQueue) do
-		if queued == addon then
-			for _, name in ipairs(BLIZZARD_UNIT_FRAMES[addon]) do
-				RegisterUnitFrame(name)
-			end
-			
-			table.remove(unitFramesQueue, i)
-			break
-		end
-	end
+function Clicked:OnAddonLoaded()
+	self:ProcessUnitFrameQueue()
 end
 
 function Clicked:ReloadActiveBindingsAndConfig()
@@ -159,6 +129,10 @@ end
 
 local function Trim(s)
 	return s:gsub("^%s*(.-)%s*$", "%1")
+end
+
+local function StartsWith(str, start)
+	return str:sub(1, #start) == start
 end
 
 local function AddMacroFlags(target)
@@ -244,6 +218,8 @@ local function GetMacroForBinding(binding)
 					macro = macro .. "[" .. flags .. "] "
 				end
 			end
+		else
+			macro = macro .. "[@mouseover] "
 		end
 
 		-- Append the actual spell or item to use
@@ -256,67 +232,19 @@ local function GetMacroForBinding(binding)
 
 		return macro
 	end
-	
-	if binding.type == Clicked.TYPE_UNIT_SELECT then
-		return "/target [@mouseover]"
-	end
 
-	if binding.type == Clicked.TYPE_UNIT_MENU then
-		-- TODO: Open unit menu
-		return ""
+	return nil
+end
+
+local function SetFrameAttributes(frame, attributes)
+	for _, attribute in ipairs(attributes) do
+		frame:SetAttribute(attribute.key, attribute.value)
 	end
 end
 
--- Note: This is a secure function and may not be called during combat
-local function InitializeMacroFrames(macros)
-	if InCombatLockdown() then
-		return
-	end
-	
-	-- Retrieve existing handlers from a cache, or create and cache a new one
-
-	for i, macro in ipairs(macros) do
-		local frame
-
-		if i > #handlers then
-			frame = CreateFrame("Button", "Clicked Handler (" .. #handlers .. ")", UIParent, "SecureActionButtonTemplate")
-			frame:SetAttribute("type", "macro")
-
-			table.insert(handlers, frame)
-		else
-			frame = handlers[i]
-		end
-
-		macro.frame = frame
-	end
-
-	-- Fully unregister handlers that are not currently required
-
-	if #handlers > #macros then
-		for i = #macros + 1, #handlers do
-			local handler = handlers[i]
-			
-			handler:SetAttribute("macrotext", "")
-			ClearOverrideBindings(handler)
-		end
-	end
-
-	return result
-end
-
--- Note: This is a secure function and may not be called during combat
-local function RegisterMacroBindings(macros)
-	if InCombatLockdown() then
-		return
-	end
-
-	InitializeMacroFrames(macros)
-
-	for _, handler in ipairs(macros) do
-		handler.frame:SetAttribute("macrotext", handler.macro)
-				
-		ClearOverrideBindings(handler.frame)
-		SetOverrideBindingClick(handler.frame, false, handler.keybind, handler.frame:GetName())
+local function ClearFrameAttributes(frame, attributes)
+	for _, attribute in ipairs(attributes) do
+		frame:SetAttribute(attribute.key, "")
 	end
 end
 
@@ -324,94 +252,180 @@ local function RegisterAttribute(add, key, suffix, value)
 	table.insert(add, { key = key .. suffix, value = value })
 end
 
-local function GetAttributesForBinding(binding)
-	local attributes = {}
-
-	local suffix = ""
-
-	if binding.keybind == "BUTTON1" then
-		suffix = "1"
-	elseif binding.keybind == "BUTTON2" then
-		suffix = "2"
-	end
-
-	if binding.type == Clicked.TYPE_SPELL then
-		RegisterAttribute(attributes, "type", suffix, "spell")
-		RegisterAttribute(attributes, "spell", suffix, binding.action.spell)
-		RegisterAttribute(attributes, "unit", suffix, "mouseover")
-	elseif binding.type == Clicked.TYPE_ITEM then
-		RegisterAttribute(attributes, "type", suffix, "item")
-		RegisterAttribute(attributes, "item", suffix, binding.action.item)
-		RegisterAttribute(attributes, "unit", suffix, "mouseover")
-	elseif binding.type == Clicked.TYPE_MACRO then
-		RegisterAttribute(attributes, "type", suffix, "macro")
-		RegisterAttribute(attributes, "macrotext", suffix, binding.action.macro)
-	end
-
-	return attributes
-end
-
-local function RegisterUnitFrame(name)
-	local frame = _G[name]
-
-	if not frame then
-		print("Unable to load " .. name)
+-- Note: This is a secure function and may not be called during combat
+local function ApplyBindings(bindings)
+	if InCombatLockdown() then
 		return
 	end
-	
+
+	local attributes = {}
+	local nextMacroFrameHandler = 1
+
+	for _, handler in ipairs(bindings) do
+		if StartsWith(handler.keybind, "BUTTON") then
+			local buttonIndex = handler.keybind:match("^BUTTON(%d+)$")
+
+			RegisterAttribute(attributes, "type", buttonIndex, "macro")
+			RegisterAttribute(attributes, "macrotext", buttonIndex, handler.macro)
+		else
+			local frame
+
+			if nextMacroFrameHandler > #macroFrameHandlers then
+				frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. nextMacroFrameHandler, UIParent, "SecureActionButtonTemplate")
+				frame:SetAttribute("type", "macro")
+				
+				table.insert(macroFrameHandlers, frame)
+			else
+				frame = macroFrameHandlers[nextMacroFrameHandler]
+			end
+
+			nextMacroFrameHandler = nextMacroFrameHandler + 1
+			
+			frame:SetAttribute("macrotext", handler.macro)
+			
+			ClearOverrideBindings(frame)
+			SetOverrideBindingClick(frame, false, handler.keybind, frame:GetName())
+		end
+	end
+
+	for frame, _ in pairs(Clicked.UnitFrames) do
+		ClearFrameAttributes(frame, unitFrameAttributes)
+
+		if #attributes > 0 then
+			SetFrameAttributes(frame, attributes)
+		end
+	end
+
+	unitFrameAttributes = attributes
+
+	for i = nextMacroFrameHandler, #macroFrameHandlers do
+		local handler = macroFrameHandlers[i]
+		
+		handler:SetAttribute("macrotext", "")
+		ClearOverrideBindings(handler)
+	end
+end
+
+function Clicked:ProcessUnitFrameQueue()
+	if InCombatLockdown() then
+		return
+	end
+
+	local unregisterQueue = Clicked.UnitFrameUnregisterQueue
+	Clicked.UnitFrameUnregisterQueue = {}
+
+	for _, frame in ipairs(unregisterQueue) do
+		self:UnregisterUnitFrame(frame)
+	end
+
+	local registerQueue = Clicked.UnitFrameRegisterQueue
+	Clicked.UnitFrameRegisterQueue = {}
+
+	for _, frame in ipairs(registerQueue) do
+		self:RegisterUnitFrame(frame.addon, frame.frame, frame.options)
+	end
+end
+
+function Clicked:RegisterUnitFrame(addon, frame, options)
+	if frame == nil then
+		return
+	end
+
+	-- Already registered, so just update the options in case they have
+	-- changed for whatever reason.
+
+	if Clicked.UnitFrames[frame] then
+		Clicked.UnitFrames[frame] = options
+		return
+	end
+
+	-- We can't do anything while in combat, so put the items in a queue that
+	-- gets processed when we exit combat.
+
+	if InCombatLockdown() then
+		table.insert(Clicked.UnitFrameRegisterQueue, {
+			addon = addon,
+			frame = frame,
+			options = options
+		})
+
+		return
+	end
+
+	-- If the input frame is a string (from for example Blizzard frame integration),
+	-- check if the associated addon is currently loaded and try to convert it to a
+	-- frame in the global table.
+	--
+	-- Built-in Blizzard frames such as the Blizzard_ArenaUI are loaded on-demand
+	-- and thus will have to be queued until the addon actually loads.
+
+	if type(frame) == "string" then
+		if addon ~= "" and not IsAddOnLoaded(addon) then
+			table.insert(Clicked.UnitFrameRegisterQueue, {
+				addon = addon,
+				frame = frame,
+				options = options
+			})
+
+			return
+		else
+			local name = frame
+			frame = _G[name]
+
+			if frame == nil then
+				print("[Clicked] Unablet to register unit frame: " .. tostring(name))
+				return
+			end
+		end
+	end
+
+	-- Skip anything that is not clickable
+
 	if not frame.RegisterForClicks then
 		return
 	end
 
-	if not AceHook:IsHooked(frame, "OnEnter") then
-		AceHook:SecureHookScript(frame, "OnEnter", function(frame) 
-			hoveredUnitFrame = frame.unit
-		end)
-	end
+	-- if not AceHook:IsHooked(frame, "OnEnter") then
+	-- 	AceHook:SecureHookScript(frame, "OnEnter", function(frame)
+	-- 		hoveredUnitFrame = frame.unit
+	-- 	end)
+	-- end
 
-	if not AceHook:IsHooked(frame, "OnLeave") then
-		AceHook:SecureHookScript(frame, "OnLeave", function(frame) 
-			hoveredUnitFrame = nil
-		end)
-	end
-
-	for _, attribute in ipairs(unitFrameAttributes) do
-		frame:SetAttribute(attribute.key, attribute.value)
-	end
-
-	table.insert(unitFrames, frame)
-end
-
-local function UnregisterUnitFrame(frame)
-	AceHook:Unhook(frame, "OnEnter")
-	AceHook:Unhook(frame, "OnLeave")
-
-	for _, attribute in ipairs(unitFrameAttributes) do
-		frame:SetAttribute(attribute.key, "")
-	end
-end
-
-local function ConfigureUnitFrameIntegration(attributes)
-	unitFrameAttributes = attributes
+	-- if not AceHook:IsHooked(frame, "OnLeave") then
+	-- 	AceHook:SecureHookScript(frame, "OnLeave", function(frame) 
+	-- 		hoveredUnitFrame = nil
+	-- 	end)
+	-- end
 	
-	for addon, frames in pairs(BLIZZARD_UNIT_FRAMES) do
-		if addon == "" or IsAddOnLoaded(addon) then
-			for _, name in ipairs(frames) do
-				RegisterUnitFrame(name)
-			end
-		else
-			table.insert(unitFramesQueue, addon)
-		end
-	end
+	SetFrameAttributes(frame, unitFrameAttributes)
+
+	Clicked.UnitFrames[frame] = options
 end
 
-local function ClearUnitFrameIntegration()
-	for _, frame in ipairs(unitFrames) do
-		UnregisterUnitFrame(frame)
+function Clicked:UnregisterUnitFrame(frame)
+	if frame == nil then
+		return
 	end
 
-	unitFrames = {}
-	unitFrameAttributes = {}
+	if not Clicked.UnitFrames[frame] then
+		return
+	end
+
+	-- If we're in combat we can't modify any frames, so put any
+	-- unregister requests in a queue that gets processed when
+	-- we leave combat.
+
+	if InCombatLockdown() then
+		table.insert(Clicked.UnitFrameUnregisterQueue, frame)
+		return
+	end
+
+	ClearFrameAttributes(frame, unitFrameAttributes)
+
+	-- AceHook:Unhook(frame, "OnEnter")
+	-- AceHook:Unhook(frame, "OnLeave")
+
+	Clicked.UnitFrames[frame] = nil
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -420,42 +434,32 @@ local function RegisterBindings(bindings)
 		return
 	end
 	
-	local macros = {}
-	local attributes = {}
+	local data = {}
 
 	for _, binding in ipairs(bindings) do
-		if Clicked:IsRestrictedKeybind(binding.keybind) then
-			for _, attribute in ipairs(GetAttributesForBinding(binding)) do
-				table.insert(attributes, attribute)
-			end
-		elseif binding.type == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
-			-- todo
-		elseif binding.type == Clicked.TYPE_UNIT_SELECT then
-			-- todo
-		elseif binding.type == Clicked.TYPE_UNIT_MENU then
-			-- todo
-		else
+		-- if Clicked:IsRestrictedKeybind(binding.keybind) then
+		-- 	for _, attribute in ipairs(GetAttributesForBinding(binding)) do
+		-- 		table.insert(attributes, attribute)
+		-- 	end
+		-- elseif binding.type == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
+		-- 	-- todo
+		-- elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+		-- 	-- todo
+		-- elseif binding.type == Clicked.TYPE_UNIT_MENU then
+		-- 	-- todo
+		-- else
 			local macro = GetMacroForBinding(binding)
 			
 			if macro ~= "" then
-				table.insert(macros, {
+				table.insert(data, {
 					keybind = binding.keybind,
-					macro = macro,
-					handler = nil
+					macro = macro
 				})
 			end
-		end
+		-- end
 	end
-
-	ClearUnitFrameIntegration()
-
-	if #attributes > 0 then
-		ConfigureUnitFrameIntegration(attributes)
-	end
-
-	if #macros > 0 then
-		RegisterMacroBindings(macros)
-	end
+	
+	ApplyBindings(data)
 end
 
 -- Reloads the active bindings, this will go through all configured bindings
@@ -575,7 +579,7 @@ function Clicked:IsBindingActive(binding)
 			return false
 		end
 	end
-	
+
 	return true
 end
 
@@ -635,16 +639,3 @@ function Clicked:CanTargetUnitBeHostile(unit)
 
 	return false
 end
-
-function dump(o)
-	if type(o) == 'table' then
-	   local s = '{ '
-	   for k,v in pairs(o) do
-		  if type(k) ~= 'number' then k = '"'..k..'"' end
-		  s = s .. '['..k..'] = ' .. dump(v) .. ','
-	   end
-	   return s .. '} '
-	else
-	   return tostring(o)
-	end
- end
