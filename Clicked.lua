@@ -13,8 +13,8 @@ Clicked.VERSION = GetAddOnMetadata(Clicked.NAME, "Version")
 Clicked.TYPE_SPELL = "SPELL"
 Clicked.TYPE_ITEM = "ITEM"
 Clicked.TYPE_MACRO = "MACRO"
-Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT" -- not yet implemented
-Clicked.TYPE_UNIT_MENU = "UNIT_MENU" -- not yet implemented
+Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT"
+Clicked.TYPE_UNIT_MENU = "UNIT_MENU"
 
 Clicked.TARGET_UNIT_GLOBAL = "GLOBAL"
 Clicked.TARGET_UNIT_PLAYER = "PLAYER"
@@ -35,13 +35,17 @@ Clicked.TARGET_TYPE_HARM = "HARM"
 Clicked.COMBAT_STATE_TRUE = "IN_COMBAT"
 Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 
+Clicked.COMMAND_ACTION_TARGET = "target"
+Clicked.COMMAND_ACTION_MENU = "menu"
+Clicked.COMMAND_ACTION_MACRO = "macro"
+
 Clicked.UnitFrames = {}
 Clicked.UnitFrameRegisterQueue = {}
 Clicked.UnitFrameUnregisterQueue = {}
 Clicked.ClickCastRegisterQueue = {}
 
 local macroFrameHandlers = {}
-local unitFrameAttributes = {}
+local clickCastAttributes = {}
 
 local inCombat
 
@@ -237,75 +241,97 @@ local function GetMacroForBinding(binding)
 	return nil
 end
 
-local function SetFrameAttributes(frame, attributes)
-	for _, attribute in ipairs(attributes) do
-		frame:SetAttribute(attribute.key, attribute.value)
-	end
-end
-
-local function ClearFrameAttributes(frame, attributes)
-	for _, attribute in ipairs(attributes) do
-		frame:SetAttribute(attribute.key, "")
-	end
-end
-
 local function RegisterAttribute(registry, key,  value)
 	table.insert(registry, { key = key, value = value })
 end
 
+local function CreateAttributes(register, command, suffix)
+	suffix = suffix or ""
+	
+	if command.action == Clicked.COMMAND_ACTION_TARGET then
+		RegisterAttribute(register, "type" .. suffix, "target")
+		RegisterAttribute(register, "unit" .. suffix, "mouseover")
+	elseif command.action == Clicked.COMMAND_ACTION_MENU then
+		RegisterAttribute(register, "type" .. suffix, "menu")
+		RegisterAttribute(register, "unit" .. suffix, "mouseover")
+	elseif command.action == Clicked.COMMAND_ACTION_MACRO then
+		RegisterAttribute(register, "type" .. suffix, "macro")
+		RegisterAttribute(register, "macrotext" .. suffix, command.data)
+	else
+		error("Clicked: Unhandled action type: " .. command.action)
+	end
+end
+
+local function ApplyAttributes(previousAttributes, newAttributes, frame)
+	if frame == nil then
+		return
+	end
+
+	if previousAttributes ~= nil and #previousAttributes > 0 then
+		for _, attribute in ipairs(previousAttributes) do
+			frame:SetAttribute(attribute.key, "")
+		end
+	end
+	
+	if newAttributes ~= nil and #newAttributes > 0 then
+		for _, attribute in ipairs(newAttributes) do
+			frame:SetAttribute(attribute.key, attribute.value)
+		end
+	end
+end
+
 -- Note: This is a secure function and may not be called during combat
-local function ApplyBindings(bindings)
+local function ApplyBindings(commands)
 	if InCombatLockdown() then
 		return
 	end
 
-	local attributes = {}
+	local newClickCastAttributes = {}
 	local nextMacroFrameHandler = 1
 	
-	for _, handler in ipairs(bindings) do
-		if StartsWith(handler.keybind, "BUTTON") then
-			local buttonIndex = handler.keybind:match("^BUTTON(%d+)$")
-
-			RegisterAttribute(attributes, "type" .. buttonIndex, "macro")
-			RegisterAttribute(attributes, "macrotext" .. buttonIndex, handler.macro)
+	for _, command in ipairs(commands) do
+		if StartsWith(command.keybind, "BUTTON") then
+			local buttonIndex = command.keybind:match("^BUTTON(%d+)$")
+			CreateAttributes(newClickCastAttributes, command, buttonIndex)
 		end
 
-		if not Clicked:IsRestrictedKeybind(handler.keybind) then
+		if not Clicked:IsRestrictedKeybind(command.keybind) then
 			local frame
 
 			if nextMacroFrameHandler > #macroFrameHandlers then
 				frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. nextMacroFrameHandler, UIParent, "SecureActionButtonTemplate")
-				frame:SetAttribute("type", "macro")
-
 				table.insert(macroFrameHandlers, frame)
 			else
 				frame = macroFrameHandlers[nextMacroFrameHandler]
 			end
-
+			
 			nextMacroFrameHandler = nextMacroFrameHandler + 1
 
-			frame:SetAttribute("macrotext", handler.macro)
+			local target = frame:GetName()
+			local attributes = {}
+			
+			CreateAttributes(attributes, command, "")
+			ApplyAttributes(frame.clickedRegisteredAttributes, attributes, frame)
+			frame.clickedRegisteredAttributes = attributes
 
 			ClearOverrideBindings(frame)
-			SetOverrideBindingClick(frame, false, handler.keybind, frame:GetName())
+			SetOverrideBindingClick(frame, false, command.keybind, target)
 		end
 	end
 
 	for frame, _ in pairs(Clicked.UnitFrames) do
-		ClearFrameAttributes(frame, unitFrameAttributes)
-
-		if #attributes > 0 then
-			SetFrameAttributes(frame, attributes)
-		end
+		ApplyAttributes(clickCastAttributes, newClickCastAttributes, frame)
 	end
 
-	unitFrameAttributes = attributes
+	clickCastAttributes = newClickCastAttributes
 
 	for i = nextMacroFrameHandler, #macroFrameHandlers do
-		local handler = macroFrameHandlers[i]
+		local frame = macroFrameHandlers[i]
 
-		handler:SetAttribute("macrotext", "")
-		ClearOverrideBindings(handler)
+		ApplyAttributes(frame.clickedRegisteredAttributes, nil, frame)
+		frame.clickedRegisteredAttributes = nil
+		
+		ClearOverrideBindings(frame)
 	end
 end
 
@@ -410,7 +436,7 @@ function Clicked:RegisterUnitFrame(addon, frame, options)
 	-- 	end)
 	-- end
 
-	SetFrameAttributes(frame, unitFrameAttributes)
+	ApplyAttributes(nil, clickCastAttributes, frame)
 	
 	self:UpdateRegisteredClicks(frame)
 	self.UnitFrames[frame] = options
@@ -434,7 +460,7 @@ function Clicked:UnregisterUnitFrame(frame)
 		return
 	end
 
-	ClearFrameAttributes(frame, unitFrameAttributes)
+	ApplyAttributes(clickCastAttributes, nil, frame)
 
 	-- AceHook:Unhook(frame, "OnEnter")
 	-- AceHook:Unhook(frame, "OnLeave")
@@ -462,32 +488,34 @@ local function RegisterBindings(bindings)
 		return
 	end
 
-	local data = {}
+	local commands = {}
 
 	for _, binding in ipairs(bindings) do
-		-- if Clicked:IsRestrictedKeybind(binding.keybind) then
-		-- 	for _, attribute in ipairs(GetAttributesForBinding(binding)) do
-		-- 		table.insert(attributes, attribute)
-		-- 	end
-		-- elseif binding.type == Clicked.TARGET_UNIT_MOUSEOVER_FRAME then
-		-- 	-- todo
-		-- elseif binding.type == Clicked.TYPE_UNIT_SELECT then
-		-- 	-- todo
-		-- elseif binding.type == Clicked.TYPE_UNIT_MENU then
-		-- 	-- todo
-		-- else
-			local macro = GetMacroForBinding(binding)
+		local command = {
+			keybind = binding.keybind,
+			valid = false
+		}
 
-			if macro ~= "" then
-				table.insert(data, {
-					keybind = binding.keybind,
-					macro = macro
-				})
-			end
-		-- end
+		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or type == Clicked.TYPE_MACRO then
+			command.action = Clicked.COMMAND_ACTION_MACRO
+			command.data = GetMacroForBinding(binding)
+			command.valid = command.valid or (command.data ~= nil and command.data ~= "")
+		elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+			command.action = Clicked.COMMAND_ACTION_TARGET
+			command.valid = command.valid or true
+		elseif binding.type == Clicked.TYPE_UNIT_MENU then
+			command.action = Clicked.COMMAND_ACTION_MENU
+			command.valid = command.valid or true
+		else
+			error("Clicked: Unhandled binding type: " .. binding.type)
+		end
+
+		if command.valid then
+			table.insert(commands, command)
+		end
 	end
 
-	ApplyBindings(data)
+	ApplyBindings(commands)
 end
 
 -- Reloads the active bindings, this will go through all configured bindings

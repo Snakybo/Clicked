@@ -238,15 +238,15 @@ local function DrawBindingActions(container, tab, binding)
 			SPELL = "Cast a spell",
 			ITEM = "Use an item",
 			MACRO = "Run a macro",
-			--UNIT_SELECT = "Target the selected unit",
-			--UNIT_MENU = "Open the unit's context menu"
+			UNIT_SELECT = "Target the selected unit",
+			UNIT_MENU = "Open the unit's context menu"
 		},
 		{
 			"SPELL",
 			"ITEM",
 			"MACRO",
-			--"UNIT_SELECT",
-			--"UNIT_MENU"
+			"UNIT_SELECT",
+			"UNIT_MENU"
 		})
 		widget:SetValue(binding.type)
 		widget:SetLabel("When the keybind has been pressed")
