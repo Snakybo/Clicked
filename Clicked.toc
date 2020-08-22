@@ -17,6 +17,11 @@ Templates\ClickCastTemplate.xml
 Templates\Clicked.xml
 Core\Clicked.lua
 Core\Database.lua
+Core\AttributeHandler.lua
+Core\BindingProcessor.lua
+Core\CommandProcessor.lua
+Core\Utils.lua
+Integrations\IntegrationManager.lua
 Integrations\Blizzard.lua
 Integrations\oUF.lua
 Config\Addon.lua

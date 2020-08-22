@@ -340,7 +340,7 @@ local function DrawBindingActions(container, tab, binding)
 				widget:SetLabel("Target Item")
 				widget:SetCallback("OnEnterPressed", function(...)
 					if CanUpdateBinding() then
-						binding.action.item = select(3, ...)
+						binding.action.item = Clicked:Trim(select(3, ...))
 						Clicked:ReloadActiveBindingsAndConfig()
 						root:SetStatusText("")
 					else
@@ -435,7 +435,7 @@ local function DrawBindingActions(container, tab, binding)
 						widget:SetLabel("Or")
 					end
 
-					if Clicked:CanTargetUnitBeHostile(target.unit) then
+					if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
 						widget:SetRelativeWidth(0.5)
 					else
 						widget:SetRelativeWidth(1)
@@ -505,7 +505,7 @@ local function DrawBindingActions(container, tab, binding)
 				for i, target in ipairs(binding.targets) do
 					DrawTargetUnitDropdown(target, i)
 
-					if Clicked:CanTargetUnitBeHostile(target.unit) then
+					if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
 						DrawTargetTypeDropdown(target)
 					end
 				end
@@ -525,7 +525,7 @@ local function DrawBindingActions(container, tab, binding)
 			widget:SetFullHeight(true)
 			widget:SetCallback("OnEnterPressed", function(...)
 				if CanUpdateBinding() then
-					binding.action.macro = select(3, ...)
+					binding.action.macro = Clicked:Trim(select(3, ...))
 					Clicked:ReloadActiveBindings()
 				else
 					widget:SetText(binding.action.macro)
@@ -627,7 +627,7 @@ local function DrawBindingLoadOptions(container, tab, binding)
 			local widget = AceGUI:Create("Dropdown")
 
 			local function SetInitialState()
-				for key, _ in pairs(specs) do
+				for key in pairs(specs) do
 					local index = tonumber(string.sub(key, -1))
 					local found = false
 
@@ -764,7 +764,7 @@ local function DrawBindingLoadOptions(container, tab, binding)
 				widget:SetText(binding.load.spellKnown.spell)
 				widget:SetCallback("OnEnterPressed", function(...)
 					if CanUpdateBinding() then
-						binding.load.spellKnown.spell = select(3, ...)
+						binding.load.spellKnown.spell = Clicked:Trim(select(3, ...))
 						Clicked:ReloadActiveBindingsAndConfig()
 						tab:SelectTab("load_options")
 					else

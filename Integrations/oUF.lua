@@ -1,8 +1,5 @@
 Clicked.ClickCastHeader = nil
 
-local CreateFrame = CreateFrame
-local GetAddOnEnableState = GetAddOnEnableState
-
 local function ShowIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedIncompatibilityMessage" .. addon] = {
 		text = Clicked.NAME .. " is not compatible with " .. addon .. " and requires one of the two to be disabled.",
@@ -69,7 +66,7 @@ function Clicked:RegisterOUF()
 		end
 
 		if name == "export_register" then
-			Clicked:RegisterUnitFrame("", frameName, true)
+			Clicked:RegisterUnitFrame("", frameName)
 		elseif name == "export_unregister" then
 			Clicked:UnregisterUnitFrame(frameName)
 		end
@@ -80,7 +77,7 @@ function Clicked:RegisterOUF()
 	ClickCastFrames = setmetatable({}, {
 		__newindex = function(_, frame, options)
 			if options ~= nil and options ~= false then
-				self:RegisterUnitFrame("", frame, options)
+				self:RegisterUnitFrame("", frame)
 			else
 				self:UnregisterUnitFrame(frame)
 			end
@@ -88,6 +85,6 @@ function Clicked:RegisterOUF()
 	})
 
 	for frame, options in pairs(originalClickCastFrames) do
-		self:RegisterUnitFrame("", frame, options)
+		self:RegisterUnitFrame("", frame)
 	end
 end
