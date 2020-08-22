@@ -131,6 +131,10 @@ local function Trim(s)
 	return s:gsub("^%s*(.-)%s*$", "%1")
 end
 
+local function StartsWith(str, start)
+	return str:sub(1, #start) == start
+end
+
 local function AddMacroFlags(target)
 	local function AddFlag(flags, new)
 		if #flags > 0 then
@@ -258,7 +262,12 @@ local function ApplyBindings(bindings)
 	local nextMacroFrameHandler = 1
 
 	for _, handler in ipairs(bindings) do
-		if not Clicked:IsRestrictedKeybind(handler.keybind) then
+		if StartsWith(handler.keybind, "BUTTON") then
+			local buttonIndex = handler.keybind:match("^BUTTON(%d+)$")
+
+			RegisterAttribute(attributes, "type", buttonIndex, "macro")
+			RegisterAttribute(attributes, "macrotext", buttonIndex, handler.macro)
+		else
 			local frame
 
 			if nextMacroFrameHandler > #macroFrameHandlers then
@@ -276,17 +285,6 @@ local function ApplyBindings(bindings)
 			
 			ClearOverrideBindings(frame)
 			SetOverrideBindingClick(frame, false, handler.keybind, frame:GetName())
-		else
-			local suffix = ""
-
-			if handler.keybind == "BUTTON1" then
-				suffix = "1"
-			elseif handler.keybind == "BUTTON2" then
-				suffix = "2"
-			end
-
-			RegisterAttribute(attributes, "type", suffix, "macro")
-			RegisterAttribute(attributes, "macrotext", suffix, handler.macro)
 		end
 	end
 
