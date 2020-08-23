@@ -2,20 +2,28 @@
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 0.2
-## Notes: Keybindings made easy
+## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
+## OptionalDeps: Ace3, AddOnSkins
 
+## X-Embeds: Ace3
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
 
-Embeds.xml
-AceGUIContainer-ClickedTreeGroup.lua
-AceGUIWidget-ClickedKeybinding.lua
-ClickCastTemplate.xml
-Clicked.xml
-Clicked.lua
-BlizzardUnitFrameIntegration.lua
-OUFIntegration.lua
-Database.lua
-AddonConfig.lua
-BindingConfig.lua
+Libs\Libs.xml
+Widgets\AceGUIContainer-ClickedTreeGroup.lua
+Widgets\AceGUIWidget-ClickedKeybinding.lua
+Templates\ClickCastTemplate.xml
+Templates\Clicked.xml
+Core\Clicked.lua
+Core\Database.lua
+Core\AttributeHandler.lua
+Core\BindingProcessor.lua
+Core\CommandProcessor.lua
+Core\Utils.lua
+Integrations\IntegrationManager.lua
+Integrations\Blizzard.lua
+Integrations\oUF.lua
+Config\GUI.lua
+Config\Addon.lua
+Config\Bindings.lua

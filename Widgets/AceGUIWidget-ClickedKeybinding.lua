@@ -275,6 +275,30 @@ local function Constructor()
 	msgframe:SetPoint("BOTTOM", button, "TOP")
 	msgframe:Hide()
 
+	-- CLICKED MODIFICATION 
+	-- original: <nothing>
+	if IsAddOnLoaded("AddOnSkins") and AddOnSkins then
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		local AS = unpack(AddOnSkins)
+
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		AS:SkinButton(button)
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		AS:SkinFrame(msgframe)
+
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		msg:ClearAllPoints()
+		-- CLICKED MODIFICATION 
+		-- original: <nothing>
+		msg:SetPoint("CENTER")
+	-- CLICKED MODIFICATION 
+	-- original: <nothing>
+	end
+
 	local widget = {
 		button      = button,
 		label       = label,
