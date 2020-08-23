@@ -40,13 +40,13 @@ function Clicked:RegisterUnitFrame(addon, frame)
 	end
 
 	-- Already registered, so just update the options in case they have
-    -- changed for whatever reason.
-    
-    for _, existing in ipairs(unitFrames) do
-        if existing == frame then
-            return
-        end
-    end
+	-- changed for whatever reason.
+	
+	for _, existing in ipairs(unitFrames) do
+		if existing == frame then
+			return
+		end
+	end
 
 	-- We can't do anything while in combat, so put the items in a queue that
 	-- gets processed when we exit combat.
@@ -102,8 +102,8 @@ function Clicked:RegisterUnitFrame(addon, frame)
 	-- 	AceHook:SecureHookScript(frame, "OnLeave", function(frame)
 	-- 		hoveredUnitFrame = nil
 	-- 	end)
-    -- end
-    
+	-- end
+	
 	self:ApplyAttributesToFrame(nil, clickCastAttributes, frame)
 	self:UpdateRegisteredClicks(frame)
 	
@@ -115,14 +115,14 @@ function Clicked:UnregisterUnitFrame(frame)
 		return
 	end
 
-    local index = 0
+	local index = 0
 
-    for i, existing in ipairs(unitFrames) do
-        if existing == frame then
-            index = i
-            break
-        end
-    end
+	for i, existing in ipairs(unitFrames) do
+		if existing == frame then
+			index = i
+			break
+		end
+	end
 
 	if index == 0 then
 		return
@@ -140,9 +140,9 @@ function Clicked:UnregisterUnitFrame(frame)
 	self:ApplyAttributesToFrame(clickCastAttributes, nil, frame)
 
 	-- AceHook:Unhook(frame, "OnEnter")
-    -- AceHook:Unhook(frame, "OnLeave")
-    
-    table.remove(unitFrames, index)
+	-- AceHook:Unhook(frame, "OnLeave")
+	
+	table.remove(unitFrames, index)
 end
 
 function Clicked:UpdateRegisteredClicks(frame)
@@ -160,11 +160,11 @@ function Clicked:UpdateRegisteredClicks(frame)
 end
 
 function Clicked:UpdateClickCastAttributes(attributes)
-    self:ApplyAttributesToFrames(clickCastAttributes, attributes, unitFrames)
+	self:ApplyAttributesToFrames(clickCastAttributes, attributes, unitFrames)
 	clickCastAttributes = attributes
 end
 
 function Clicked:RegisterIntegrations()
-    self:RegisterBlizzardUnitFrames()
+	self:RegisterBlizzardUnitFrames()
 	self:RegisterOUF()
 end
