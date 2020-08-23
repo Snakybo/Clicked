@@ -29,11 +29,11 @@ local configuredBindings = {}
 local activeBindings = {}
 
 local function AddFlag(flags, new)
-    if #flags > 0 then
-        flags = flags .. ","
-    end
+	if #flags > 0 then
+		flags = flags .. ","
+	end
 
-    return flags .. new
+	return flags .. new
 end
 
 local function AddMacroFlags(target)

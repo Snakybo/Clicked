@@ -136,7 +136,7 @@ function GUI:TristateCheckBox(label, ref, key)
 	widget:SetType("checkbox")
 	widget:SetLabel(label)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
-	widget:SetTriState(tristate)
+	widget:SetTriState(true)
 	widget:SetValue(IndexToValue(ref[key]))
 
 	widgets[widget] = {

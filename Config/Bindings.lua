@@ -274,7 +274,7 @@ local function DrawSpellSelection(container, action)
 			tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
 			tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-			tooltip:SetText(text or "Click on a spell book entry to select it", 1, 0.82, 0, true)
+			tooltip:SetText("Click on a spell book entry to select it", 1, 0.82, 0, true)
 			tooltip:Show()
 		end
 
@@ -364,9 +364,9 @@ local function DrawTargetSelection(container, binding)
 				Clicked:ReloadActiveBindings()
 			else
 				if index ~= 0 then
-					widget:SetValue(unit)
+					frame:SetValue(target.unit)
 				else
-					widget:SetValue("_NONE")
+					frame:SetValue("_NONE")
 				end
 			end
 		end
