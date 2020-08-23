@@ -364,9 +364,9 @@ local function DrawTargetSelection(container, binding)
 				Clicked:ReloadActiveBindings()
 			else
 				if index ~= 0 then
-					widget:SetValue(unit)
+					frame:SetValue(target.unit)
 				else
-					widget:SetValue("_NONE")
+					frame:SetValue("_NONE")
 				end
 			end
 		end
