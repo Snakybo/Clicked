@@ -1,24 +1,24 @@
-Clicked.UnitFrames = {}
-Clicked.UnitFrameRegisterQueue = {}
-Clicked.UnitFrameUnregisterQueue = {}
+local unitFrames = {}
+local unitFrameRegisterQueue = {}
+local unitFrameUnregisterQueue = {}
 
-Clicked.ClickCastRegisterQueue = {}
-Clicked.ClickCastAttributes = {}
+local clickCastRegisterQueue = {}
+local clickCastAttributes = {}
 
 function Clicked:ProcessUnitFrameQueue()
 	if InCombatLockdown() then
 		return
 	end
 
-	local unregisterQueue = self.UnitFrameUnregisterQueue
-	self.UnitFrameUnregisterQueue = {}
+	local unregisterQueue = unitFrameUnregisterQueue
+	unitFrameUnregisterQueue = {}
 
 	for _, frame in ipairs(unregisterQueue) do
 		self:UnregisterUnitFrame(frame)
 	end
 
-	local registerQueue = self.UnitFrameRegisterQueue
-	self.UnitFrameRegisterQueue = {}
+	local registerQueue = unitFrameRegisterQueue
+	unitFrameRegisterQueue = {}
 
 	for _, frame in ipairs(registerQueue) do
 		self:RegisterUnitFrame(frame.addon, frame.frame)
@@ -26,8 +26,8 @@ function Clicked:ProcessUnitFrameQueue()
 end
 
 function Clicked:ProcessClickCastQueue()
-	local queue = self.ClickCastRegisterQueue
-	self.clickCastRegisterQueue = {}
+	local queue = clickCastRegisterQueue
+	clickCastRegisterQueue = {}
 
 	for _, frame in ipairs(queue) do
 		self:UpdateRegisteredClicks(frame)
@@ -42,7 +42,7 @@ function Clicked:RegisterUnitFrame(addon, frame)
 	-- Already registered, so just update the options in case they have
     -- changed for whatever reason.
     
-    for _, existing in ipairs(self.UnitFrames) do
+    for _, existing in ipairs(unitFrames) do
         if existing == frame then
             return
         end
@@ -52,7 +52,7 @@ function Clicked:RegisterUnitFrame(addon, frame)
 	-- gets processed when we exit combat.
 
 	if InCombatLockdown() then
-		table.insert(self.UnitFrameRegisterQueue, {
+		table.insert(unitFrameRegisterQueue, {
 			addon = addon,
 			frame = frame
 		})
@@ -69,7 +69,7 @@ function Clicked:RegisterUnitFrame(addon, frame)
 
 	if type(frame) == "string" then
 		if addon ~= "" and not IsAddOnLoaded(addon) then
-			table.insert(self.UnitFrameRegisterQueue, {
+			table.insert(unitFrameRegisterQueue, {
 				addon = addon,
 				frame = frame
 			})
@@ -104,10 +104,10 @@ function Clicked:RegisterUnitFrame(addon, frame)
 	-- 	end)
     -- end
     
-	self:ApplyAttributesToFrame(nil, Clicked.ClickCastAttributes, frame)
+	self:ApplyAttributesToFrame(nil, clickCastAttributes, frame)
 	self:UpdateRegisteredClicks(frame)
 	
-	table.insert(self.UnitFrames, frame)
+	table.insert(unitFrames, frame)
 end
 
 function Clicked:UnregisterUnitFrame(frame)
@@ -117,7 +117,7 @@ function Clicked:UnregisterUnitFrame(frame)
 
     local index = 0
 
-    for i, existing in ipairs(self.UnitFrames) do
+    for i, existing in ipairs(unitFrames) do
         if existing == frame then
             index = i
             break
@@ -133,16 +133,16 @@ function Clicked:UnregisterUnitFrame(frame)
 	-- we leave combat.
 
 	if InCombatLockdown() then
-		table.insert(self.UnitFrameUnregisterQueue, frame)
+		table.insert(unitFrameUnregisterQueue, frame)
 		return
 	end
 
-	self:ApplyAttributesToFrame(Clicked.ClickCastAttributes, nil, frame)
+	self:ApplyAttributesToFrame(clickCastAttributes, nil, frame)
 
 	-- AceHook:Unhook(frame, "OnEnter")
     -- AceHook:Unhook(frame, "OnLeave")
     
-    table.remove(self.UnitFrames, index)
+    table.remove(unitFrames, index)
 end
 
 function Clicked:UpdateRegisteredClicks(frame)
@@ -151,7 +151,7 @@ function Clicked:UpdateRegisteredClicks(frame)
 	end
 
 	if InCombatLockdown() then
-		table.insert(self.ClickCastRegisterQueue, frame)
+		table.insert(clickCastRegisterQueue, frame)
 		return
 	end
 
@@ -160,8 +160,8 @@ function Clicked:UpdateRegisteredClicks(frame)
 end
 
 function Clicked:UpdateClickCastAttributes(attributes)
-    self:ApplyAttributesToFrames(self.ClickCastAttributes, attributes, self.UnitFrames)
-	self.ClickCastAttributes = attributes
+    self:ApplyAttributesToFrames(clickCastAttributes, attributes, unitFrames)
+	clickCastAttributes = attributes
 end
 
 function Clicked:RegisterIntegrations()
