@@ -84,7 +84,7 @@ function Clicked:RegisterOUF()
 		end
 	})
 
-	for frame, options in pairs(originalClickCastFrames) do
+	for frame in pairs(originalClickCastFrames) do
 		self:RegisterUnitFrame("", frame)
 	end
 end
