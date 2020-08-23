@@ -16,24 +16,24 @@ local function OnSerialize(frame, event, value)
 		return
 	end
 	
-    data.ref[data.key] = value
-    
-    Clicked:SendMessage(GUI.EVENT_UPDATE)
+	data.ref[data.key] = value
+	
+	Clicked:SendMessage(GUI.EVENT_UPDATE)
 end
 
 local function CreateGUI(type)
-    local widget = AceGUI:Create(type)
-    local orgininalOnRelease = widget.OnRelease
-    
-    widget.OnRelease = function()
-        GUI.widgets[widget] = nil
+	local widget = AceGUI:Create(type)
+	local orgininalOnRelease = widget.OnRelease
+	
+	widget.OnRelease = function()
+		GUI.widgets[widget] = nil
 
-        if orgininalOnRelease ~= nil then
-            orgininalOnRelease(widget)
-        end
-    end
+		if orgininalOnRelease ~= nil then
+			orgininalOnRelease(widget)
+		end
+	end
 
-    return widget
+	return widget
 end
 
 function GUI:Label(text, fontSize)
@@ -251,7 +251,7 @@ function GUI:TabGroup(items, handler)
 	widget:SetFullHeight(true)
 	widget:SetLayout("Fill")
 	widget:SetTabs(items)
-    widget:SetCallback("OnGroupSelected", OnGroupSelected)
-    
+	widget:SetCallback("OnGroupSelected", OnGroupSelected)
+	
 	return widget
 end
