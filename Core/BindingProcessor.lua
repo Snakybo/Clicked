@@ -25,6 +25,9 @@ Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 
+local configuredBindings = {}
+local activeBindings = {}
+
 local function AddFlag(flags, new)
     if #flags > 0 then
         flags = flags .. ","
@@ -125,14 +128,14 @@ local function GetMacroForBinding(binding)
 end
 
 -- Note: This is a secure function and may not be called during combat
-local function ProcessBindings(bindings)
+local function ProcessActiveBindings()
 	if InCombatLockdown() then
 		return
 	end
 
 	local commands = {}
 
-	for _, binding in ipairs(bindings) do
+	for _, binding in Clicked:IterateActiveBindings() do
 		local command = {
 			keybind = binding.keybind,
 			valid = false
@@ -190,16 +193,16 @@ end
 function Clicked:CreateNewBinding()
 	local binding = self:GetNewBindingTemplate()
 
-	table.insert(self.bindings, binding)
+	table.insert(configuredBindings, binding)
 	self:ReloadActiveBindings()
 
 	return binding
 end
 
 function Clicked:DeleteBinding(binding)
-	for index, other in ipairs(self.bindings) do
+	for index, other in ipairs(configuredBindings) do
 		if other == binding then
-			table.remove(self.bindings, index)
+			table.remove(configuredBindings, index)
 			self:ReloadActiveBindings()
 			break
 		end
@@ -217,12 +220,12 @@ function Clicked:ReloadActiveBindings()
 		return false
 	end
 
-	local active = {}
+	activeBindings = {}
+	configuredBindings = self.db.profile.bindings
+
 	local activatable = {}
 
-	for i = 1, #self.bindings do
-		local binding = self.bindings[i]
-
+	for _, binding in self:IterateConfiguredBindings() do
 		if self:IsBindingActive(binding) then
 			activatable[binding.keybind] = activatable[binding.keybind] or {}
 			table.insert(activatable[binding.keybind], binding)
@@ -233,12 +236,28 @@ function Clicked:ReloadActiveBindings()
 		local sorted = PrioritizeBindings(bindings)
 		local binding = sorted[1]
 
-		table.insert(active, binding)
+		table.insert(activeBindings, binding)
 	end
 
-	ProcessBindings(active)
+	ProcessActiveBindings()
 
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
+end
+
+function Clicked:GetNumConfiguredBindings()
+	return #configuredBindings
+end
+
+function Clicked:IterateConfiguredBindings()
+	return ipairs(configuredBindings)
+end
+
+function Clicked:GetNumActiveBindings()
+	return #activeBindings
+end
+
+function Clicked:IterateActiveBindings()
+	return ipairs(activeBindings)
 end
 
 -- Check if the specified binding is currently active based on the configuration
@@ -305,9 +324,9 @@ function Clicked:IsBindingActive(binding)
 	local combat = load.combat
 
 	if combat.selected then
-		if combat.state == self.COMBAT_STATE_TRUE and not self.isPlayerInCombat then
+		if combat.state == self.COMBAT_STATE_TRUE and not self:IsPlayerInCombat() then
 			return false
-		elseif combat.state == self.COMBAT_STATE_FALSE and self.isPlayerInCombat then
+		elseif combat.state == self.COMBAT_STATE_FALSE and self:IsPlayerInCombat() then
 			return false
 		end
 	end

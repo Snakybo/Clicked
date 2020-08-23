@@ -6,7 +6,7 @@ Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 Clicked.NAME = "Clicked"
 Clicked.VERSION = GetAddOnMetadata(Clicked.NAME, "Version")
 
-Clicked.isPlayerInCombat = false
+local isPlayerInCombat = false
 
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
@@ -25,8 +25,6 @@ local function RegisterMinimapIcon()
 end
 
 local function ReloadDatabase()
-	Clicked.bindings = Clicked.db.profile.bindings
-
 	if Clicked.db.profile.minimap.hide then
 		LibDBIcon:Hide("Clicked")
 	else
@@ -37,13 +35,13 @@ local function ReloadDatabase()
 end
 
 local function OnEnteringCombat()
-	Clicked.isPlayerInCombat = true
+	isPlayerInCombat = true
 
 	Clicked:ReloadActiveBindings()
 end
 
 local function OnLeavingCombat()
-	Clicked.isPlayerInCombat = false
+	isPlayerInCombat = false
 
 	Clicked:ProcessUnitFrameQueue()
 	Clicked:ProcessClickCastQueue()
@@ -88,4 +86,8 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	self:UnregisterEvent("BAG_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
+end
+
+function Clicked:IsPlayerInCombat()
+	return isPlayerInCombat
 end

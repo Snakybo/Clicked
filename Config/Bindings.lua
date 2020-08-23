@@ -166,7 +166,7 @@ end
 local function ConstructTreeView()
 	local items = {}
 
-	for index, binding in ipairs(Clicked.bindings) do
+	for index, binding in Clicked:IterateConfiguredBindings() do
 		local item = ConstructTreeViewItem(index, binding)
 		table.insert(items, item)
 	end
@@ -744,7 +744,7 @@ local function DrawHeader(container)
 			end
 
 			Clicked:CreateNewBinding()
-			options.tree.container:SelectByValue(#Clicked.bindings)
+			options.tree.container:SelectByValue(Clicked:GetNumConfiguredBindings())
 		end
 
 		local widget = GUI:Button("Create Binding", OnClick)
