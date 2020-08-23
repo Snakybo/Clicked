@@ -9,7 +9,7 @@ function Clicked:ApplyAttributesToFrame(previousAttributes, newAttributes, frame
 
 	if previousAttributes ~= nil and #previousAttributes > 0 then
 		for _, attribute in ipairs(previousAttributes) do
-			frame:SetAttribute(attribute.key, "")
+			frame:SetAttribute(attribute.key, nil)
 		end
 	end
 	
