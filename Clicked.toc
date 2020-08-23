@@ -24,5 +24,6 @@ Core\Utils.lua
 Integrations\IntegrationManager.lua
 Integrations\Blizzard.lua
 Integrations\oUF.lua
+Config\GUI.lua
 Config\Addon.lua
 Config\Bindings.lua

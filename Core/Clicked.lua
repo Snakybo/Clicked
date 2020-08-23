@@ -33,7 +33,7 @@ local function ReloadDatabase()
 		LibDBIcon:Show("Clicked")
 	end
 
-	Clicked:ReloadActiveBindingsAndConfig()
+	Clicked:ReloadActiveBindings()
 end
 
 local function OnEnteringCombat()
@@ -73,24 +73,19 @@ end
 function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", OnEnteringCombat)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", OnLeavingCombat)
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
+	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
+	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
-	
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindingsAndConfig")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindingsAndConfig")
-	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindingsAndConfig")
 
 	ReloadDatabase()
 end
 
 function Clicked:OnDisable()
-	self:UnregisterEvent(OnEnteringCombat)
-	self:UnregisterEvent(OnLeavingCombat)
-	self:UnregisterEvent(OnAddonLoaded)
-	
-	self:UnregisterEvent("ReloadActiveBindingsAndConfig")
-end
-
-function Clicked:ReloadActiveBindingsAndConfig()
-	self:ReloadBindingConfig()
-	self:ReloadActiveBindings()
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_TALENT_UPDATE")
+	self:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	self:UnregisterEvent("BAG_UPDATE")
+	self:UnregisterEvent("ADDON_LOADED")
 end

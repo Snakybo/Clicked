@@ -23,6 +23,8 @@ Clicked.TARGET_TYPE_HARM = "HARM"
 Clicked.COMBAT_STATE_TRUE = "IN_COMBAT"
 Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
 
+Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
+
 local function AddFlag(flags, new)
     if #flags > 0 then
         flags = flags .. ","
@@ -185,6 +187,25 @@ local function PrioritizeBindings(bindings)
 	return ordered
 end
 
+function Clicked:CreateNewBinding()
+	local binding = self:GetNewBindingTemplate()
+
+	table.insert(self.bindings, binding)
+	self:ReloadActiveBindings()
+
+	return binding
+end
+
+function Clicked:DeleteBinding(binding)
+	for index, other in ipairs(self.bindings) do
+		if other == binding then
+			table.remove(self.bindings, index)
+			self:ReloadActiveBindings()
+			break
+		end
+	end
+end
+
 -- Reloads the active bindings, this will go through all configured bindings
 -- and check their (current) validity using the IsBindingActive function.
 -- If there are multiple bindings that use the same keybind it will use the
@@ -216,6 +237,8 @@ function Clicked:ReloadActiveBindings()
 	end
 
 	ProcessBindings(active)
+
+	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
 end
 
 -- Check if the specified binding is currently active based on the configuration
@@ -281,7 +304,7 @@ function Clicked:IsBindingActive(binding)
 
 	local combat = load.combat
 
-	if combat.selected == 1 then
+	if combat.selected then
 		if combat.state == self.COMBAT_STATE_TRUE and not self.isPlayerInCombat then
 			return false
 		elseif combat.state == self.COMBAT_STATE_FALSE and self.isPlayerInCombat then
@@ -295,7 +318,7 @@ function Clicked:IsBindingActive(binding)
 
 	local spellKnown = load.spellKnown
 
-	if spellKnown.selected == 1 then
+	if spellKnown.selected then
 		local name = GetSpellInfo(spellKnown.spell)
 
 		if name == nil then
@@ -304,4 +327,45 @@ function Clicked:IsBindingActive(binding)
 	end
 
 	return true
+end
+
+function Clicked:GetNewBindingTemplate()
+	return {
+		type = Clicked.TYPE_SPELL,
+		keybind = "",
+		action = {
+			stopCasting = false,
+			spell = "",
+			item = "",
+			macro = ""
+		},
+		targets = {
+			self:GetNewBindingTargetTemplate()
+		},
+		load = {
+			never = false,
+			specialization = {
+				selected = 0,
+				single = GetSpecialization(),
+				multiple = {
+					GetSpecialization()
+				}
+			},
+			combat = {
+				selected = false,
+				state = Clicked.COMBAT_STATE_TRUE
+			},
+			spellKnown = {
+				selected = false,
+				spell = ""
+			}
+		}
+	}
+end
+
+function Clicked:GetNewBindingTargetTemplate()
+	return {
+		unit = Clicked.TARGET_UNIT_TARGET,
+		type = Clicked.TARGET_TYPE_ANY
+	}
 end
