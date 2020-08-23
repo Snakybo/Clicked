@@ -1,7 +1,7 @@
 ## Interface: 80300
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.2
+## Version: 0.3.0
 ## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
 ## OptionalDeps: Ace3, AddOnSkins
