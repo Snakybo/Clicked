@@ -26,8 +26,7 @@ local function ClearOptionsTable()
 			status = {},
 			items = {},
 			container = nil
-		},
-		widgets = {}
+		}
 	}
 end
 

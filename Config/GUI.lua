@@ -6,10 +6,10 @@ Clicked.GUI = GUI
 
 GUI.EVENT_UPDATE = "CLICKED_GUI_UPDATE"
 
-GUI.widgets = {}
+local widgets = {}
 
 local function OnSerialize(frame, event, value)
-	local data = GUI.widgets[frame]
+	local data = widgets[frame]
 
 	if InCombatLockdown() then
 		data.setValueFunc(frame, data.ref[data.key])
@@ -26,7 +26,7 @@ local function CreateGUI(type)
 	local orgininalOnRelease = widget.OnRelease
 	
 	widget.OnRelease = function()
-		GUI.widgets[widget] = nil
+		widgets[widget] = nil
 
 		if orgininalOnRelease ~= nil then
 			orgininalOnRelease(widget)
@@ -62,7 +62,7 @@ function GUI:EditBox(label, callback, ref, key)
 	widget:SetLabel(label)
 	widget:SetCallback(callback, OnCallback)
 	
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = widget.SetText,
 		ref = ref,
 		key = key
@@ -77,7 +77,7 @@ function GUI:MultilineEditBox(label, callback, ref, key)
 	widget:SetText(ref[key])
 	widget:SetCallback(callback, OnSerialize)
 
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = widget.SetText,
 		ref = ref,
 		key = key
@@ -93,7 +93,7 @@ function GUI:CheckBox(label, ref, key)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
 	
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = widget.SetValue,
 		ref = ref,
 		key = key
@@ -139,7 +139,7 @@ function GUI:TristateCheckBox(label, ref, key)
 	widget:SetTriState(tristate)
 	widget:SetValue(IndexToValue(ref[key]))
 
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = SetValue,
 		ref = ref,
 		key = key
@@ -163,7 +163,7 @@ function GUI:Dropdown(label, items, order, ref, key)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
 
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = widget.SetValue,
 		ref = ref,
 		key = key
@@ -216,7 +216,7 @@ function GUI:MultiselectDropdown(label, items, order, ref, key)
 	
 	SetValue(ref[key])
 
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = SetValue,
 		ref = ref,
 		key = key
@@ -231,7 +231,7 @@ function GUI:KeybindingButton(label, ref, key)
 	widget:SetKey(ref[key])
 	widget:SetCallback("OnKeyChanged", OnSerialize)
 
-	self.widgets[widget] = {
+	widgets[widget] = {
 		setValueFunc = widget.SetKey,
 		ref = ref,
 		key = key
