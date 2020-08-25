@@ -32,6 +32,13 @@ function Clicked:SetPendingFrameAttributes(frame, attributes)
 	EnsureCache(frame)
 
 	for key, value in pairs(attributes) do
+		-- Some unit frames use "togglemenu" instead of "menu",
+		-- so to ensure both work convert the value to whatever is
+		-- bound to *type2
+		if value == "menu" then
+			value = frame:GetAttribute("*type2")
+		end
+
 		frameCache[frame].pending[key] = value
 	end
 end
