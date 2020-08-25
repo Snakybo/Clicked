@@ -1,32 +1,26 @@
 Clicked.ClickCastHeader = nil
 
-local function ShowIncompatibilityPopup(addon)
-	StaticPopupDialogs["ClickedIncompatibilityMessage" .. addon] = {
-		text = Clicked.NAME .. " is not compatible with " .. addon .. " and requires one of the two to be disabled.",
-		button1 = "Keep " .. Clicked.NAME,
-		button2 = "Keep " .. addon,
-		OnAccept = function()
-			DisableAddOn(addon)
-			ReloadUI()
-		end,
-		OnCancel = function()
-			DisableAddOn(Clicked.NAME)
-			ReloadUI()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = false,
-		preferredIndex = 3
-	}
+local function SetupKeybindCommands(keybindings)
+	local register = {}
+	local unregister = {}
 
-	StaticPopup_Show("ClickedIncompatibilityMessage" .. addon)
+	local setTemplate = "self:SetBindingClick(true, %q, self, %q)"
+	local clearTemplate = "self:ClearBinding(%q)"
+
+	for _, keybind in ipairs(keybindings) do
+		local set = setTemplate:format(keybind.key, keybind.identifier)
+		local clear = clearTemplate:format(keybind.key)
+		
+		table.insert(register, set)
+		table.insert(unregister, clear)
+	end
+
+	return table.concat(register, "\n"), table.concat(unregister, "\n")
 end
 
-function Clicked:RegisterOUF()
+function Clicked:RegisterClickCastHeader()
 	if GetAddOnEnableState(UnitName("player"), "Clique") == 2 then
 		ShowIncompatibilityPopup("Clique")
-
-		-- Cancel oUF integration to prevent corrupting the current session
 		return
 	end
 
@@ -38,7 +32,10 @@ function Clicked:RegisterOUF()
 
 	Clique = {}
 	Clique.header = self.ClickCastHeader
-	Clique.UpdateRegisteredClicks = Clicked.UpdateRegisteredClicks
+	Clique.UpdateRegisteredClicks = Clicked.RegisterClickCastFrameClicks
+
+	self.ClickCastHeader:SetAttribute("setup-keybinds", "")
+	self.ClickCastHeader:SetAttribute("clear-keybinds", "")
 
 	self.ClickCastHeader:SetAttribute("clickcast_register", [===[
 		local frame = self:GetAttribute("clickcast_button")
@@ -66,9 +63,9 @@ function Clicked:RegisterOUF()
 		end
 
 		if name == "export_register" then
-			Clicked:RegisterUnitFrame("", frameName)
+			Clicked:RegisterClickCastFrame("", frameName)
 		elseif name == "export_unregister" then
-			Clicked:UnregisterUnitFrame(frameName)
+			Clicked:UnregisterClickCastFrame(frameName)
 		end
 	end)
 
@@ -77,14 +74,21 @@ function Clicked:RegisterOUF()
 	ClickCastFrames = setmetatable({}, {
 		__newindex = function(_, frame, options)
 			if options ~= nil and options ~= false then
-				self:RegisterUnitFrame("", frame)
+				self:RegisterClickCastFrame("", frame)
 			else
-				self:UnregisterUnitFrame(frame)
+				self:UnregisterClickCastFrame(frame)
 			end
 		end
 	})
 
 	for frame in pairs(originalClickCastFrames) do
-		self:RegisterUnitFrame("", frame)
+		self:RegisterClickCastFrame("", frame)
 	end
+end
+
+function Clicked:UpdateClickCastHeader(keybindings)
+	local set, clear = SetupKeybindCommands(keybindings)
+	
+	self.ClickCastHeader:SetAttribute("setup-keybinds", set)
+	self.ClickCastHeader:SetAttribute("clear-keybinds", clear)
 end

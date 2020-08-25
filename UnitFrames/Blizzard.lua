@@ -29,7 +29,7 @@ local BLIZZARD_UNIT_FRAMES = {
 function Clicked:RegisterBlizzardUnitFrames()
 	for addon, names in pairs(BLIZZARD_UNIT_FRAMES) do
 		for _, name in ipairs(names) do
-			self:RegisterUnitFrame(addon, name)
+			self:RegisterClickCastFrame(addon, name)
 		end
 	end
 end

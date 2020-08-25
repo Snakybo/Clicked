@@ -6,6 +6,28 @@ function Clicked:StartsWith(str, start)
 	return str:sub(1, #start) == start
 end
 
+function Clicked:ShowAddonIncompatibilityPopup(addon)
+	StaticPopupDialogs["ClickedAddonIncompatibilityMessage" .. addon] = {
+		text = Clicked.NAME .. " is not compatible with " .. addon .. " and requires one of the two to be disabled.",
+		button1 = "Keep " .. Clicked.NAME,
+		button2 = "Keep " .. addon,
+		OnAccept = function()
+			DisableAddOn(addon)
+			ReloadUI()
+		end,
+		OnCancel = function()
+			DisableAddOn(Clicked.NAME)
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3
+	}
+
+	StaticPopup_Show("ClickedAddonIncompatibilityMessage" .. addon)
+end
+
 -- Check if the specified keybind is "restricted", a restricted keybind
 -- is not allowed to do various actions as it is required for core game
 -- input (such as left and right mouse buttons).

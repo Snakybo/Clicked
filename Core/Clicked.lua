@@ -43,14 +43,12 @@ end
 local function OnLeavingCombat()
 	isPlayerInCombat = false
 
-	Clicked:ProcessUnitFrameQueue()
-	Clicked:ProcessClickCastQueue()
-
+	Clicked:ProcessClickCastFrameQueue()
 	Clicked:ReloadActiveBindings()
 end
 
 local function OnAddonLoaded()
-	Clicked:ProcessUnitFrameQueue()
+	Clicked:ProcessClickCastFrameQueue()
 end
 
 function Clicked:OnInitialize()
@@ -61,11 +59,13 @@ function Clicked:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", ReloadDatabase)
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadDatabase)
 
-	self:RegisterIntegrations()
+	RegisterMinimapIcon()
+
+	self:RegisterClickCastHeader()
+	self:RegisterBlizzardUnitFrames()
+
 	self:RegisterAddonConfig()
 	self:RegisterBindingConfig()
-
-	RegisterMinimapIcon()
 end
 
 function Clicked:OnEnable()
