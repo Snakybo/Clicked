@@ -51,7 +51,6 @@ Clicked will dynamically and seamlessly switch active bindings based on your cur
 
 Clicked is still in active development and will gain the following features in the future:
 
-* Support for binding keyboard keys to the targetting and menu actions
 * Support for a "mouseover (frame)" target to exclude targeting units from the 3D world
 * Support to select an item from your bags or equipment panel
 
