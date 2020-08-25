@@ -899,9 +899,8 @@ function Clicked:RegisterBindingConfig()
 	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
 	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
 
-	AceConsole:RegisterChatCommand("clicked", function()
-		self:OpenBindingConfig()
-	end)
+	AceConsole:RegisterChatCommand("clicked", self.OpenBindingConfig)
+	AceConsole:RegisterChatCommand("cc", self.OpenBindingConfig)
 
 	ClearOptionsTable()
 end

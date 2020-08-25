@@ -4,13 +4,13 @@
 
 Clicked is a World of Warcraft addon that allows you to manage both keybindings and click-cast bindings in an inuitive yet powerful manner. It allows you to bind virtually any keyboard or mouse button to perform a specic action, such as casting an ability or using an item. You can also configure the left and right mouse buttons to immediately cast an ability on a the targeted unit frame.
 
-The Clicked configuration panel can be accessed using the `/clicked` command, or clicking on the minimap button.
+The Clicked configuration panel can be accessed using the `/clicked` or `/cc` command, or clicking on the minimap button.
 
 ## Features
 
 ### Bind spells, items, and custom macros
 
-In order to bind a spell, item, or macro to a keyboard key or mouse button, simply open the Clicked configuration panel (`/clicked`) and use the new binding button. You'll be able to configure a variety of options, but in order to get started only the keybind and spell are required for the binding to function.
+In order to bind a spell, item, or macro to a keyboard key or mouse button, simply open the Clicked configuration panel (`/cc`) and use the new binding button. You'll be able to configure a variety of options, but in order to get started only the keybind and spell are required for the binding to function.
 
 The keybind can be set to virtually any keyboard or mouse button. The spell can be configured in multiple ways, the easiest is to use the selection button, that will automatically open the spellbook and allow you to click on any spell to select it. Alternatively you can enter a spell name or spell ID manually.
 
@@ -26,7 +26,7 @@ When configuring a binding you will be able to specify a chain of targets for ea
 2. Cast on my target
 3. Cast on myself.
 
-This will dynamically target the correct unit and find the first one that is valid. When used in a macro this will look similar to: `/cast [@mouseover, exists] [@target, exists] [@player] Holy Light`
+This will dynamically target the correct unit and find the first one that is valid. When used in a macro this will look similar to: `/cast [@mouseover,exists] [@target,exists] [@player] Holy Light`
 
 Clicked supports a variety of relevant units out of the box:
 
