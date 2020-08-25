@@ -140,8 +140,8 @@ local function ProcessActiveBindings()
 			keybind = binding.keybind,
 			valid = false
 		}
-
-		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or type == Clicked.TYPE_MACRO then
+		
+		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or binding.type == Clicked.TYPE_MACRO then
 			command.action = Clicked.COMMAND_ACTION_MACRO
 			command.data = GetMacroForBinding(binding)
 			command.valid = command.valid or (command.data ~= nil and command.data ~= "")
