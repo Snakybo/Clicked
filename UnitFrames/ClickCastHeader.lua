@@ -20,7 +20,7 @@ end
 
 function Clicked:RegisterClickCastHeader()
 	if GetAddOnEnableState(UnitName("player"), "Clique") == 2 then
-		ShowIncompatibilityPopup("Clique")
+		self:ShowAddonIncompatibilityPopup("Clique")
 		return
 	end
 
