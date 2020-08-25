@@ -89,6 +89,10 @@ function Clicked:RegisterClickCastHeader()
 end
 
 function Clicked:UpdateClickCastHeader(keybindings)
+	if self.ClickCastHeader == nil then
+		return
+	end
+
 	local set, clear = SetupKeybindCommands(keybindings)
 	
 	self.ClickCastHeader:SetAttribute("setup-keybinds", set)

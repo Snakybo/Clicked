@@ -95,8 +95,10 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		return
 	end
 
-	self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
-	self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+	if self.ClickCastHeader ~= nil then
+		self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
+		self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+	end
 	
 	self:ApplyAttributesToFrame(nil, attributes, frame)
 	self:RegisterClickCastFrameClicks(frame)
@@ -159,10 +161,12 @@ function Clicked:UpdateClickCastFrames(newAtributes)
 		self:SetPendingFrameAttributes(frame, newAtributes)
 		self:ApplyAttributesToFrame(frame)
 		
-		self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
-		self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
-		self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
-		self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+		if self.ClickCastHeader ~= nil then
+			self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
+			self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
+			self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
+			self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+		end
 	end
 
 	attributes = newAtributes
