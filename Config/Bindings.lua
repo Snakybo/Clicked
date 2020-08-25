@@ -215,14 +215,10 @@ local function EnableSpellbookHandlers()
 				end
 			end)
 			button:SetScript("OnEnter", function(self)
-				if self.parent:IsEnabled() then
-					SpellButton_OnEnter(self.parent)
-				else
-					self:GetHighlightTexture():Hide()
-				end
+				SpellButton_OnEnter(self.parent)
 			end)
-			button:SetScript("OnLeave", function()
-				GameTooltip:Hide()
+			button:SetScript("OnLeave", function(self)
+				SpellButton_OnLeave(self.parent)
 			end)
 
 			button:Show()
