@@ -178,7 +178,7 @@ end
 
 -- Spell book integration
 
-local function EnableSpellbookHandlers(handler)
+local function EnableSpellbookHandlers()
 	if not SpellBookFrame:IsVisible() then
 		return
 	end
@@ -204,9 +204,14 @@ local function EnableSpellbookHandlers(handler)
 			button:SetScript("OnClick", function(self)
 				local slot = SpellBook_GetSpellBookSlot(self:GetParent())
 				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+				
+				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
+					local binding = options.item.binding
 
-				if name ~= nil and name ~= "" then
-					handler(name)
+					if binding.type == Clicked.TYPE_SPELL then
+						binding.action.spell = name
+						Clicked:ReloadActiveBindings()
+					end
 				end
 			end)
 			button:SetScript("OnEnter", function(self)
@@ -256,15 +261,7 @@ local function DrawSpellSelection(container, action)
 				end)
 
 				ShowUIPanel(SpellBookFrame)
-
-				EnableSpellbookHandlers(function(name)
-					if not InCombatLockdown() then
-						action.spell = name
-						Clicked:ReloadActiveBindings()
-
-						HideUIPanel(SpellBookFrame)
-					end
-				end)
+				EnableSpellbookHandlers()
 			end
 		end
 
@@ -763,7 +760,6 @@ local function DrawTreeView(container)
 	do
 		local function OnGroupSelected(container, event, group)
 			container:ReleaseChildren()
-			DisableSpellbookHandlers()
 
 			local previous = options.item
 
@@ -876,6 +872,7 @@ function Clicked:OpenBindingConfig()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
+			DisableSpellbookHandlers()
 			ClearOptionsTable()
 		end
 
