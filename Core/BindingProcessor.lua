@@ -28,103 +28,195 @@ Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 local configuredBindings = {}
 local activeBindings = {}
 
-local function AddFlag(flags, new)
-	if #flags > 0 then
-		flags = flags .. ","
+local function GetMacroSegmentFromAction(action)
+	local flags = {}
+
+	if action.unit == Clicked.TARGET_UNIT_PLAYER then
+		table.insert(flags, "@player")
+	elseif action.unit == Clicked.TARGET_UNIT_TARGET then
+		table.insert(flags, "@target")
+	elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER then
+		table.insert(flags, "@mouseover")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
+		table.insert(flags, "@party1")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
+		table.insert(flags, "@party2")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
+		table.insert(flags, "@party3")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
+		table.insert(flags, "@party4")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
+		table.insert(flags, "@party5")
+	elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
+		table.insert(flags, "@focus")
 	end
 
-	return flags .. new
-end
-
-local function AddMacroFlags(target)
-	local flags = ""
-
-	if target.unit == Clicked.TARGET_UNIT_PLAYER then
-		flags = AddFlag(flags, "@player")
-	elseif target.unit == Clicked.TARGET_UNIT_TARGET then
-		flags = AddFlag(flags, "@target")
-	elseif target.unit == Clicked.TARGET_UNIT_MOUSEOVER then
-		flags = AddFlag(flags, "@mouseover")
-	elseif target.unit == Clicked.TARGET_UNIT_PARTY_1 then
-		flags = AddFlag(flags, "@party1")
-	elseif target.unit == Clicked.TARGET_UNIT_PARTY_2 then
-		flags = AddFlag(flags, "@party2")
-	elseif target.unit == Clicked.TARGET_UNIT_PARTY_3 then
-		flags = AddFlag(flags, "@party3")
-	elseif target.unit == Clicked.TARGET_UNIT_PARTY_4 then
-		flags = AddFlag(flags, "@party4")
-	elseif target.unit == Clicked.TARGET_UNIT_PARTY_5 then
-		flags = AddFlag(flags, "@party5")
-	elseif target.unit == Clicked.TARGET_UNIT_FOCUS then
-		flags = AddFlag(flags, "@focus")
-	end
-
-	if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
-		if target.type == Clicked.TARGET_TYPE_HELP then
-			flags = AddFlag(flags, "help")
-		elseif target.type == Clicked.TARGET_TYPE_HARM then
-			flags = AddFlag(flags, "harm")
+	if Clicked:CanBindingTargetUnitBeHostile(action.unit) then
+		if action.type == Clicked.TARGET_TYPE_HELP then
+			table.insert(flags, "help")
+		elseif action.type == Clicked.TARGET_TYPE_HARM then
+			table.insert(flags, "harm")
 		end
 	end
 
 	if #flags > 0 then
-		flags = AddFlag(flags, "exists")
+		table.insert(flags, "exists")
 	end
 
-	return flags
+	if action.combat == Clicked.COMBAT_STATE_TRUE then
+		table.insert(flags, "combat")
+	elseif action.combat == Clicked.COMBAT_STATE_FALSE then
+		table.insert(flags, "nocombat")
+	end
+
+	return table.concat(flags, ",")
 end
 
-local function GetMacroForBinding(binding)
-	-- If the player provieded a custom macro, just return that with some basic
-	-- sanity checking to remove empty strings so we don't end up with frames
-	-- that aren't functional.
-	-- Though this shouldn't ever be the case when using IsBindingActive
+local function ConstructAction(binding, target)
+	local action = {}
 
-	if binding.type == Clicked.TYPE_MACRO then
-		return binding.action.macro
+	if binding.type == Clicked.TYPE_SPELL then
+		action.ability = binding.action.spell
+	elseif binding.type == Clicked.TYPE_ITEM then
+		action.ability = binding.action.item
 	end
 
-	-- If the action is to cast a spell or use an item, we can create a custom
-	-- macro on-demand.
+	if binding.load.combat.selected then
+		action.combat = binding.load.combat.state
+	else
+		action.combat = ""
+	end
 
+	action.unit = target.unit
+	action.type = target.type
+
+	return action
+end
+
+local function ConstructActions(binding)
+	local actions = {}
+	
 	if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
-		local macro = ""
-
-		-- Prepend the /stopcasting command if desired
-
-		if binding.action.stopCasting then
-			macro = macro .. "/stopcasting\n"
-		end
-
-		macro = macro .. "/use "
-
-		-- If the keybinding is not restricted, we can append a bunch of target
-		-- and type flags to the macro.
-
 		if not Clicked:IsRestrictedKeybind(binding.keybind) then
 			for _, target in ipairs(binding.targets) do
-				local flags = AddMacroFlags(target)
-
-				if #flags > 0 then
-					macro = macro .. "[" .. flags .. "] "
-				end
+				local action = ConstructAction(binding, target)
+				table.insert(actions, action)
 			end
 		else
-			macro = macro .. "[@mouseover] "
+			local action = ConstructAction(binding, {
+				unit = Clicked.TARGET_UNIT_MOUSEOVER,
+				type = Clicked.TARGET_TYPE_ANY
+			})
+			table.insert(actions, action)
 		end
-
-		-- Append the actual spell or item to use
-
-		if binding.type == Clicked.TYPE_SPELL then
-			macro = macro .. binding.action.spell
-		elseif binding.type == Clicked.TYPE_ITEM then
-			macro = macro .. binding.action.item
-		end
-
-		return macro
 	end
 
-	return nil
+	return actions
+end
+
+local function SortActions(left, right)
+	if #left.combat > 0 and #right.combat == 0 then
+		return true
+	end
+
+	if #left.combat == 0 and #right.combat > 0 then
+		return true
+	end
+
+	if left.unit == Clicked.TARGET_UNIT_MOUSEOVER and right.unit ~= Clicked.TARGET_UNIT_MOUSEOVER then
+		return true
+	end
+
+	if left.unit ~= Clicked.TARGET_UNIT_MOUSEOVER and right.unit == Clicked.TARGET_UNIT_MOUSEOVER then
+		return false
+	end
+
+	if left.type ~= Clicked.TARGET_TYPE_ANY and right == Clicked.TARGET_TYPE_ANY then
+		return true
+	end
+
+	if left.type == Clicked.TARGET_TYPE_ANY and right ~= Clicked.TARGET_TYPE_ANY then
+		return false
+	end
+
+	return false
+end
+
+local function GetMacroForBindings(bindings)
+	local result = {}
+	local stopCasting = false
+	
+	-- First go through all passed bindings and insert any custom macros
+	-- or /stopcasting prefixes if required, custom macros will always
+	-- have presendence over spells or items, so when mixing and matching
+	-- macro bindings with the other types will require some attention from
+	-- the user in order to not early-out as soon as the macro is executed,
+	-- mainly the macro shouldn't end with a [] clause as that will always be
+	-- activated.
+
+	for _, binding in ipairs(bindings) do
+		if binding.type == Clicked.TYPE_MACRO then
+			table.insert(result, binding.action.macro)
+		elseif binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
+			if not stopCasting and binding.action.stopCasting then
+				stopCasting = true
+				table.insert(result, 1, "/stopcasting")
+			end
+		end
+	end
+
+	-- Construct an /use command that correctly prioritizes all specified bindings.
+	-- It will prioritize bindings in the following order:
+	--
+	-- 1. all @mouseover bindings with the help or harm tag and a combat/nocombat flag
+	-- 2. all remaining @mouseover bindings with a combat/nocombat flag
+	-- 3. any remaining bindings with the help or harm tag and a combat/nocombat flag
+	-- 4. any remaining bindings with the combat/nocombat
+	-- 5. all @mouseover bindings with the help or harm tag
+	-- 6. all remaining @mouseover bindings
+	-- 7. any remaining bindings with the help or harm tag
+	-- 8. any remaining bindings
+	--
+	-- In text, this boils down to: combat -> mouseover -> hostility -> default
+	--
+	-- It will construct an /use command that is mix-and-matched from all configured
+	-- bindings, so if there are two bindings, and one of them has Holy Light with the
+	-- [@mouseover,help] and [@target] target priority order, and the other one has
+	-- Crusader Strike with [@target,harm], it will create a command like this:
+	-- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
+
+	local actions = {}
+
+	for _, binding in ipairs(bindings) do
+		for _, action in ipairs(ConstructActions(binding)) do
+			table.insert(actions, action)
+		end
+	end
+
+	-- Now sort the actions according to the above schema
+
+	table.sort(actions, SortActions)
+
+	-- Construct a valid macro from the data
+
+	local segments = {}
+
+	for _, action in ipairs(actions) do
+		local flags = GetMacroSegmentFromAction(action)
+
+		if #flags > 0 then
+			flags = "[" .. flags .. "] "
+		end
+
+		table.insert(segments, flags .. action.ability)
+	end
+
+	if #segments > 0 then
+		local prefix = "/use "
+		table.insert(result, prefix .. table.concat(segments, "; "))
+	end
+
+	return table.concat(result, "\n")
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -135,15 +227,17 @@ local function ProcessActiveBindings()
 
 	local commands = {}
 
-	for _, binding in Clicked:IterateActiveBindings() do
+	for keybind, bindings in Clicked:IterateActiveBindings() do
 		local command = {
-			keybind = binding.keybind,
+			keybind = keybind,
+			data = GetMacroForBindings(bindings),
 			valid = false
 		}
-		
+
+		local binding = bindings[1]
+
 		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or binding.type == Clicked.TYPE_MACRO then
 			command.action = Clicked.COMMAND_ACTION_MACRO
-			command.data = GetMacroForBinding(binding)
 			command.valid = command.valid or (command.data ~= nil and command.data ~= "")
 		elseif binding.type == Clicked.TYPE_UNIT_SELECT then
 			command.action = Clicked.COMMAND_ACTION_TARGET
@@ -163,31 +257,31 @@ local function ProcessActiveBindings()
 	Clicked:ProcessCommands(commands)
 end
 
--- Since there can be multiple bindings active with the same keybind, we need to
--- prioritize them at runtime somehow, this function will attempt to order the
--- input list of bindings in a way that makes sense to the user.
---
--- For example, if there is a binding that should only load in combat, it should
--- be prioritzed over generic or out-of-combat only bindings.
-local function PrioritizeBindings(bindings)
-	if #bindings == 1 then
-		return bindings
+local function FilterBindings(bindings)
+	local function ConvertType(binding)
+		if binding.type == Clicked.TYPE_SPELL then
+			return Clicked.TYPE_MACRO
+		end
+
+		if binding.type == Clicked.TYPE_ITEM then
+			return Clicked.TYPE_MACRO
+		end
+
+		return binding.type
 	end
 
-	local ordered = {}
+	local filtered = {}
+	local last = ""
 
 	for _, binding in ipairs(bindings) do
-		local load = binding.load
-		local combat = load.combat
+		local type = ConvertType(binding)
 
-		if combat.selected == 1 then
-			table.insert(ordered, 1, binding)
-		else
-			table.insert(ordered, binding)
+		if last == "" or type == last then
+			table.insert(filtered, binding)
 		end
 	end
 
-	return ordered
+	return filtered
 end
 
 function Clicked:CreateNewBinding()
@@ -232,11 +326,9 @@ function Clicked:ReloadActiveBindings()
 		end
 	end
 
-	for _, bindings in pairs(activatable) do
-		local sorted = PrioritizeBindings(bindings)
-		local binding = sorted[1]
-
-		table.insert(activeBindings, binding)
+	for keybind, bindings in pairs(activatable) do
+		local filtered = FilterBindings(bindings)
+		activeBindings[keybind] = filtered
 	end
 
 	ProcessActiveBindings()
@@ -257,7 +349,7 @@ function Clicked:GetNumActiveBindings()
 end
 
 function Clicked:IterateActiveBindings()
-	return ipairs(activeBindings)
+	return pairs(activeBindings)
 end
 
 -- Check if the specified binding is currently active based on the configuration
