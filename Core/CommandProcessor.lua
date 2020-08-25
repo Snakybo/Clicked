@@ -54,23 +54,22 @@ function Clicked:ProcessCommands(commands)
 		end
 
 		if not self:IsRestrictedKeybind(command.keybind) then
-			
-			if command.action == self.COMMAND_ACTION_TARGET or command.action == self.COMMAND_ACTION_MENU then				
-				self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)				
+			if command.action == self.COMMAND_ACTION_TARGET or command.action == self.COMMAND_ACTION_MENU then
+				self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)
 				table.insert(newClickCastFrameKeybindings, { key = command.keybind, identifier = suffix })
 			else
 				local frame = GetFrame(nextMacroFrameHandler)
-				local target = frame:GetName()
 				local attributes = {}
 
 				nextMacroFrameHandler = nextMacroFrameHandler + 1
-
-				self:CreateCommandAttributes(attributes, command, prefix, suffix)
+				-- TODO: add CreateCommandAttributes(attributes, command, prefix, suffix) when mouseover (frame) is supported
+				self:CreateCommandAttributes(attributes, command, "", "")
 				self:SetPendingFrameAttributes(frame, attributes)
 				self:ApplyAttributesToFrame(frame)
 				
 				ClearOverrideBindings(frame)
-				SetOverrideBindingClick(frame, false, command.keybind, target, suffix)
+				-- TODO: add SetOverrideBindingClick(frame, false, command.keybind, frame:GetName(), suffix) when mouseover (frame) is supported
+				SetOverrideBindingClick(frame, false, command.keybind, frame:GetName())
 			end
 		end
 	end
