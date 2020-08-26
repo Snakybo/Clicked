@@ -1,10 +1,10 @@
 ## Interface: 90001
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.3.0
+## Version: 0.4.0
 ## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
-## OptionalDeps: Ace3, AddOnSkins
+## OptionalDeps: Ace3
 
 ## X-Embeds: Ace3
 ## X-Localizations: enUS, enGB
@@ -21,9 +21,9 @@ Core\AttributeHandler.lua
 Core\BindingProcessor.lua
 Core\CommandProcessor.lua
 Core\Utils.lua
-Integrations\IntegrationManager.lua
-Integrations\Blizzard.lua
-Integrations\oUF.lua
+UnitFrames\ClickCastHeader.lua
+UnitFrames\ClickCastFrames.lua
+UnitFrames\Blizzard.lua
 Config\GUI.lua
 Config\Addon.lua
 Config\Bindings.lua

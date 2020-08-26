@@ -1,47 +1,82 @@
-local function CreateAttribute(registry, key,  value)
-	table.insert(registry, { key = key, value = value })
+local frameCache = {}
+
+local function EnsureCache(frame)
+	if frameCache[frame] ~= nil then
+		return
+	end
+	
+	frameCache[frame] = {
+		pending = {},
+		applied = {}
+	}
 end
 
-function Clicked:ApplyAttributesToFrame(previousAttributes, newAttributes, frame)
+local function CreateAttribute(register, prefix, type, suffix, value)
+	if #prefix > 0 then
+		prefix = prefix .. "-"
+	end
+
+	if #suffix > 0 and tonumber(suffix) == nil then
+		suffix = "-" .. suffix
+	end
+
+	local key = prefix .. type .. suffix
+	register[key] = value
+end
+
+function Clicked:SetPendingFrameAttributes(frame, attributes)
 	if frame == nil then
 		return
 	end
 
-	if previousAttributes ~= nil and #previousAttributes > 0 then
-		for _, attribute in ipairs(previousAttributes) do
-			frame:SetAttribute(attribute.key, nil)
+	EnsureCache(frame)
+
+	for key, value in pairs(attributes) do
+		-- Some unit frames use "togglemenu" instead of "menu",
+		-- so to ensure both work convert the value to whatever is
+		-- bound to *type2
+		if value == "menu" then
+			value = frame:GetAttribute("*type2")
 		end
-	end
-	
-	if newAttributes ~= nil and #newAttributes > 0 then
-		for _, attribute in ipairs(newAttributes) do
-			frame:SetAttribute(attribute.key, attribute.value)
-		end
+
+		frameCache[frame].pending[key] = value
 	end
 end
 
-function Clicked:ApplyAttributesToFrames(previousAttributes, newAttributes, frames)
-	if frames == nil or #frames == 0 then
+function Clicked:ApplyAttributesToFrame(frame)
+	if frame == nil or frameCache[frame] == nil then
+		return
+	end
+
+	local applied = frameCache[frame].applied
+	local pending = frameCache[frame].pending
+
+	frameCache[frame].applied = frameCache[frame].pending
+	frameCache[frame].pending = {}
+
+	for key in pairs(applied) do
+		frame:SetAttribute(key, nil)
+	end
+	
+	for key, value in pairs(pending) do
+		frame:SetAttribute(key, value)
+	end
+end
+
+function Clicked:CreateCommandAttributes(register, command, prefix, suffix)
+	if command.keybind == "" then
 		return
 	end
 	
-	for _, frame in ipairs(frames) do
-		self:ApplyAttributesToFrame(previousAttributes, newAttributes, frame)
-	end
-end
-
-function Clicked:CreateCommandAttributes(register, command, suffix)
-	suffix = suffix or ""
-	
 	if command.action == Clicked.COMMAND_ACTION_TARGET then
-		CreateAttribute(register, "type" .. suffix, "target")
-		CreateAttribute(register, "unit" .. suffix, "mouseover")
+		CreateAttribute(register, prefix, "type", suffix, "target")
+		CreateAttribute(register, prefix, "unit", suffix, "mouseover")
 	elseif command.action == Clicked.COMMAND_ACTION_MENU then
-		CreateAttribute(register, "type" .. suffix, "menu")
-		CreateAttribute(register, "unit" .. suffix, "mouseover")
+		CreateAttribute(register, prefix, "type", suffix, "menu")
+		CreateAttribute(register, prefix, "unit", suffix, "mouseover")
 	elseif command.action == Clicked.COMMAND_ACTION_MACRO then
-		CreateAttribute(register, "type" .. suffix, "macro")
-		CreateAttribute(register, "macrotext" .. suffix, command.data)
+		CreateAttribute(register, prefix, "type", suffix, "macro")
+		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
 		error("Clicked: Unhandled action type: " .. command.action)
 	end

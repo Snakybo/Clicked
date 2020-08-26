@@ -178,7 +178,7 @@ end
 
 -- Spell book integration
 
-local function EnableSpellbookHandlers(handler)
+local function EnableSpellbookHandlers()
 	if not SpellBookFrame:IsVisible() then
 		return
 	end
@@ -204,20 +204,21 @@ local function EnableSpellbookHandlers(handler)
 			button:SetScript("OnClick", function(self)
 				local slot = SpellBook_GetSpellBookSlot(self:GetParent())
 				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+				
+				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
+					local binding = options.item.binding
 
-				if name ~= nil and name ~= "" then
-					handler(name)
+					if binding.type == Clicked.TYPE_SPELL then
+						binding.action.spell = name
+						Clicked:ReloadActiveBindings()
+					end
 				end
 			end)
 			button:SetScript("OnEnter", function(self)
-				if self.parent:IsEnabled() then
-					SpellButton_OnEnter(self.parent)
-				else
-					self:GetHighlightTexture():Hide()
-				end
+				SpellButton_OnEnter(self.parent)
 			end)
-			button:SetScript("OnLeave", function()
-				GameTooltip:Hide()
+			button:SetScript("OnLeave", function(self)
+				SpellButton_OnLeave(self.parent)
 			end)
 
 			button:Show()
@@ -256,15 +257,7 @@ local function DrawSpellSelection(container, action)
 				end)
 
 				ShowUIPanel(SpellBookFrame)
-
-				EnableSpellbookHandlers(function(name)
-					if not InCombatLockdown() then
-						action.spell = name
-						Clicked:ReloadActiveBindings()
-
-						HideUIPanel(SpellBookFrame)
-					end
-				end)
+				EnableSpellbookHandlers()
 			end
 		end
 
@@ -763,7 +756,6 @@ local function DrawTreeView(container)
 	do
 		local function OnGroupSelected(container, event, group)
 			container:ReleaseChildren()
-			DisableSpellbookHandlers()
 
 			local previous = options.item
 
@@ -876,6 +868,7 @@ function Clicked:OpenBindingConfig()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
+			DisableSpellbookHandlers()
 			ClearOptionsTable()
 		end
 
@@ -906,9 +899,8 @@ function Clicked:RegisterBindingConfig()
 	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
 	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
 
-	AceConsole:RegisterChatCommand("clicked", function()
-		self:OpenBindingConfig()
-	end)
+	AceConsole:RegisterChatCommand("clicked", self.OpenBindingConfig)
+	AceConsole:RegisterChatCommand("cc", self.OpenBindingConfig)
 
 	ClearOptionsTable()
 end
