@@ -69,7 +69,7 @@ function Clicked:ProcessCommands(commands)
 				
 				ClearOverrideBindings(frame)
 				-- TODO: add SetOverrideBindingClick(frame, false, command.keybind, frame:GetName(), suffix) when mouseover (frame) is supported
-				SetOverrideBindingClick(frame, false, command.keybind, frame:GetName())
+				SetOverrideBindingClick(frame, true, command.keybind, frame:GetName())
 			end
 		end
 	end
