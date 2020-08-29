@@ -15,16 +15,16 @@ local function OnSerialize(frame, event, value)
 		data.setValueFunc(frame, data.ref[data.key])
 		return
 	end
-	
+
 	data.ref[data.key] = value
-	
+
 	Clicked:SendMessage(GUI.EVENT_UPDATE)
 end
 
 local function CreateGUI(type)
 	local widget = AceGUI:Create(type)
 	local orgininalOnRelease = widget.OnRelease
-	
+
 	widget.OnRelease = function()
 		widgets[widget] = nil
 
@@ -39,7 +39,7 @@ end
 function GUI:Label(text, fontSize)
 	local widget = CreateGUI("Label")
 	widget:SetText(text)
-	
+
 	if fontSize == "medium" then
 		widget:SetFontObject(GameFontHighlight)
 	elseif fontSize == "large" then
@@ -61,13 +61,13 @@ function GUI:EditBox(label, callback, ref, key)
 	widget:SetText(ref[key])
 	widget:SetLabel(label)
 	widget:SetCallback(callback, OnCallback)
-	
+
 	widgets[widget] = {
 		setValueFunc = widget.SetText,
 		ref = ref,
 		key = key
 	}
-	
+
 	return widget
 end
 
@@ -92,13 +92,13 @@ function GUI:CheckBox(label, ref, key)
 	widget:SetLabel(label)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
-	
+
 	widgets[widget] = {
 		setValueFunc = widget.SetValue,
 		ref = ref,
 		key = key
 	}
-	
+
 	return widget
 end
 
@@ -109,10 +109,10 @@ function GUI:TristateCheckBox(label, ref, key)
 		elseif state == 2 then
 			return nil
 		end
-	
+
 		return false
 	end
-	
+
 	local function ValueToIndex(value)
 		if value == false then
 			return 0
@@ -175,7 +175,7 @@ end
 function GUI:MultiselectDropdown(label, items, order, ref, key)
 	local function OnValueChanged(frame, event, value, state)
 		local total = {}
-		
+
 		for _, item in ipairs(ref[key]) do
 			table.insert(total, item)
 		end
@@ -190,7 +190,7 @@ function GUI:MultiselectDropdown(label, items, order, ref, key)
 				end
 			end
 		end
-		
+
 		OnSerialize(frame, event, total)
 	end
 
@@ -213,7 +213,7 @@ function GUI:MultiselectDropdown(label, items, order, ref, key)
 			widget:SetItemValue(value, state)
 		end
 	end
-	
+
 	SetValue(ref[key])
 
 	widgets[widget] = {
@@ -252,6 +252,6 @@ function GUI:TabGroup(items, handler)
 	widget:SetLayout("Fill")
 	widget:SetTabs(items)
 	widget:SetCallback("OnGroupSelected", OnGroupSelected)
-	
+
 	return widget
 end

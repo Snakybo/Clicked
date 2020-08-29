@@ -36,7 +36,7 @@ local function GetSelectedItem(original, items)
 	end
 
 	local selected = original
-	
+
 	if selected ~= nil then
 		local exists = false
 
@@ -172,7 +172,7 @@ local function ConstructTreeView()
 	end
 
 	table.sort(items, TreeSortFunc)
-	
+
 	options.tree.items = items
 end
 
@@ -204,7 +204,7 @@ local function EnableSpellbookHandlers()
 			button:SetScript("OnClick", function(self)
 				local slot = SpellBook_GetSpellBookSlot(self:GetParent())
 				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
-				
+
 				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
 					local binding = options.item.binding
 
@@ -403,7 +403,7 @@ local function DrawTargetSelection(container, binding)
 
 		local widget = GUI:Dropdown("On this target", items, order, target, "unit")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
-		
+
 		if index > 1 then
 			widget:SetLabel("Or")
 		end
@@ -463,7 +463,7 @@ local function DrawBindingActionPage(container, binding)
 		do
 			local widget = GUI:Label("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be cast on the targeted unit frame.")
 			widget:SetFullWidth(true)
-			
+
 			container:AddChild(widget)
 		end
 	end
@@ -514,7 +514,7 @@ local function DrawLoadNeverSelection(container, load)
 	do
 		local widget = GUI:CheckBox("Never load", load, "never")
 		widget:SetFullWidth(true)
-		
+
 		container:AddChild(widget)
 	end
 end
@@ -576,13 +576,13 @@ local function DrawLoadCombat(container, combat)
 	-- combat toggle
 	do
 		local widget = GUI:CheckBox("Combat", combat, "selected")
-		
+
 		if not combat.selected then
 			widget:SetRelativeWidth(1)
 		else
 			widget:SetRelativeWidth(0.5)
 		end
-		
+
 		container:AddChild(widget)
 	end
 
@@ -608,7 +608,7 @@ local function DrawLoadSpellKnown(container, spellKnown)
 	-- spell known toggle
 	do
 		local widget = GUI:CheckBox("Spell Known", spellKnown, "selected")
-		
+
 		if spellKnown.selected == 0 then
 			widget:SetRelativeWidth(1)
 		else
@@ -623,7 +623,7 @@ local function DrawLoadSpellKnown(container, spellKnown)
 		do
 			local widget = GUI:EditBox(nil, "OnEnterPressed", spellKnown, "spell")
 			widget:SetRelativeWidth(0.5)
-			
+
 			container:AddChild(widget)
 		end
 	end
@@ -631,7 +631,7 @@ end
 
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
-	
+
 	DrawLoadNeverSelection(container, load)
 	DrawLoadSpecialization(container, load.specialization)
 	DrawLoadCombat(container, load.combat)
@@ -669,7 +669,7 @@ local function DrawBinding(container)
 			end
 
 			Clicked:DeleteBinding(item.binding)
-			
+
 			local items = options.tree.items
 			local selected = nil
 
@@ -695,7 +695,7 @@ local function DrawBinding(container)
 		local function OnGroupSelected(container, event, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
 			scrollFrame:SetLayout("Flow")
-			
+
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -718,10 +718,10 @@ local function DrawBinding(container)
 
 		local selected = GetSelectedItem(options.tab.selected, items)
 
-		local widget = GUI:TabGroup(items, OnGroupSelected)		
+		local widget = GUI:TabGroup(items, OnGroupSelected)
 		widget:SetStatusTable(options.tab)
 		widget:SelectTab(selected)
-		
+
 		container:AddChild(widget)
 	end
 end
@@ -846,7 +846,7 @@ local function OnBindingsChangedEvent()
 	if options.root == nil or not options.root:IsVisible() then
 		return
 	end
-	
+
 	ConstructTreeView()
 	options.tree.container:SetTree(options.tree.items)
 
