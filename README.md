@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Clicked is a World of Warcraft addon that allows you to manage both keybindings and click-cast bindings in an inuitive yet powerful manner. It allows you to bind virtually any keyboard or mouse button to perform a specic action, such as casting an ability or using an item. You can also configure the left and right mouse buttons to immediately cast an ability on a the targeted unit frame.
+Clicked is a World of Warcraft addon that allows you to manage both keybindings and click-cast bindings in an intuitive yet powerful manner. It allows you to bind virtually any keyboard or mouse button to perform a specific action, such as casting an ability or using an item. You can also configure the left and right mouse buttons to immediately cast an ability on a the targeted unit frame.
 
 The Clicked configuration panel can be accessed using the `/clicked` or `/cc` command, or clicking on the minimap button.
 
@@ -39,7 +39,7 @@ Clicked supports a variety of relevant units out of the box:
 
 In addition to specifying the target, you're also able to change the behavior depending on the unit's hostility towards you. For example, target the focus target if it's friendly, or the player otherwise.
 
-### Bind unit targetting and context menu actions
+### Bind unit targeting and context menu actions
 
 Since Clicked allows you to rebind the left and right mouse button, you can configure another button to act as a replacement for those actions. If you haven't rebound the left or right mouse buttons it is safe to not include these as the default click functionality will persist.
 
