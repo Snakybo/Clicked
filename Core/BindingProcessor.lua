@@ -131,6 +131,14 @@ local function SortActions(left, right)
 		return false
 	end
 
+	if left.unit == Clicked.TARGET_UNIT_PLAYER and right.unit ~= Clicked.TARGET_UNIT_PLAYER then
+		return false
+	end
+
+	if left.unit ~= Clicked.TARGET_UNIT_PLAYER and right.unit == Clicked.TARGET_UNIT_PLAYER then
+		return true
+	end
+
 	if left.type ~= Clicked.TARGET_TYPE_ANY and right == Clicked.TARGET_TYPE_ANY then
 		return true
 	end
