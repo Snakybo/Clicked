@@ -298,22 +298,23 @@ local function DrawItemSelection(container, action)
 	-- target item text
 	do
 		local widget = GUI:EditBox("Target Item", "OnEnterPressed", action, "item")
-		widget:SetRelativeWidth(0.75)
+		-- widget:SetRelativeWidth(0.75)
+		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
 
 	-- pick from inventory button
-	do
-		local function OnClick()
-		end
+	-- do
+	-- 	local function OnClick()
+	-- 	end
 
-		local widget = GUI:Button("Select", OnClick)
-		widget:SetRelativeWidth(0.25)
-		widget:SetDisabled(true)
+	-- 	local widget = GUI:Button("Select", OnClick)
+	-- 	widget:SetRelativeWidth(0.25)
+	-- 	widget:SetDisabled(true)
 
-		container:AddChild(widget)
-	end
+	-- 	container:AddChild(widget)
+	-- end
 
 	-- interrupt cast toggle
 	do
