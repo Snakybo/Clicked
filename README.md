@@ -47,18 +47,23 @@ Since Clicked allows you to rebind the left and right mouse button, you can conf
 
 Clicked will dynamically and seamlessly switch active bindings based on your current specialization, combat state, or whether a spell is currently known. You can configure these on a per-binding basis which allows you to activate or deactivate certain bindings on a per-spec basis, or disable the fishing rod binding when you enter combat.
 
-## Upcoming Features
+## Upcoming features
 
 Clicked is still in active development and will gain the following features in the future:
 
 * Support for a "mouseover (frame)" target to exclude targeting units from the 3D world
 * Support to select an item from your bags or equipment panel
+* Support for localization
 
 ## Compatibility
 
 Clicked should be compatible with all unit frame addons, click-casting support is available if the unit frame addon is based on [oUF](https://github.com/oUF-wow/oUF) or uses the same `ClickCastHeader` to register its frames.
 
 Due to Clicked using the same namespace for click-casting support as Clique, it's not possible to use both addons at the same time. When logging in with both addons enabled Clicked will prompt you to disable one of them.
+
+## Support and feedback
+
+All suggestions, feedback, and bug reports a highly appreciated! The [issue tracker](https://github.com/Snakybo/Clicked/issues) is the go-to portal for this.
 
 ## Credits
 
