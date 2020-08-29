@@ -6,6 +6,10 @@ Clicked is a World of Warcraft addon that allows you to manage both keybindings 
 
 The Clicked configuration panel can be accessed using the `/clicked` or `/cc` command, or clicking on the minimap button.
 
+## Downloads
+
+* [CurseForge](https://www.curseforge.com/wow/addons/clicked)
+
 ## Features
 
 ### Bind spells, items, and custom macros
