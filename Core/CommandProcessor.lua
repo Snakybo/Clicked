@@ -8,22 +8,22 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 	-- separate modifiers from the actual binding
 	local prefix, suffix = command.keybind:match("^(.-)([^%-]+)$")
 	local buttonIndex = suffix:match("^BUTTON(%d+)$")
-	
+
 	-- convert the parts to lowercase so it fits the attribute naming style
 	prefix = prefix:lower()
 	suffix = suffix:lower()
 
-    if buttonIndex ~= nil and isClickCastCommand then
+	if buttonIndex ~= nil and isClickCastCommand then
 		suffix = buttonIndex
-    elseif buttonIndex ~= nil then
+	elseif buttonIndex ~= nil then
 		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
-        prefix = ""
-    else
-        suffix = "clicked-button-" .. tostring(prefix) .. tostring(suffix)
-        prefix = ""
+		prefix = ""
+	else
+		suffix = "clicked-button-" .. tostring(prefix) .. tostring(suffix)
+		prefix = ""
 	end
-    
-    return prefix, suffix
+
+	return prefix, suffix
 end
 
 local function GetFrame(index)
@@ -40,15 +40,15 @@ function Clicked:ProcessCommands(commands)
 	if InCombatLockdown() then
 		return
 	end
-	
+
 	local newClickCastFrameKeybindings = {}
 	local newClickCastFrameAttributes = {}
 	local nextMacroFrameHandler = 1
-	
+
 	for _, command in ipairs(commands) do
 		local isClickCastCommand = self:StartsWith(command.keybind, "BUTTON")
 		local prefix, suffix = GetCommandAttributeIdentifier(command, isClickCastCommand)
-		
+
 		if isClickCastCommand then
 			self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)
 		end
@@ -66,14 +66,14 @@ function Clicked:ProcessCommands(commands)
 				self:CreateCommandAttributes(attributes, command, "", "")
 				self:SetPendingFrameAttributes(frame, attributes)
 				self:ApplyAttributesToFrame(frame)
-				
+
 				ClearOverrideBindings(frame)
 				-- TODO: add SetOverrideBindingClick(frame, false, command.keybind, frame:GetName(), suffix) when mouseover (frame) is supported
 				SetOverrideBindingClick(frame, true, command.keybind, frame:GetName())
 			end
 		end
 	end
-	
+
 	self:UpdateClickCastHeader(newClickCastFrameKeybindings)
 	self:UpdateClickCastFrames(newClickCastFrameAttributes)
 
@@ -81,7 +81,7 @@ function Clicked:ProcessCommands(commands)
 		local frame = macroFrameHandlers[i]
 
 		self:ApplyAttributesToFrame(frame)
-		
+
 		ClearOverrideBindings(frame)
 	end
 end

@@ -95,7 +95,7 @@ end
 
 local function ConstructActions(binding)
 	local actions = {}
-	
+
 	if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
 		if not Clicked:IsRestrictedKeybind(binding.keybind) then
 			for _, target in ipairs(binding.targets) do
@@ -145,7 +145,7 @@ end
 local function GetMacroForBindings(bindings)
 	local result = {}
 	local stopCasting = false
-	
+
 	-- First go through all passed bindings and insert any custom macros
 	-- or /stopcasting prefixes if required, custom macros will always
 	-- have presendence over spells or items, so when mixing and matching

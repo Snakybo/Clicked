@@ -44,7 +44,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 
 	-- Already registered, so just update the options in case they have
 	-- changed for whatever reason.
-	
+
 	for _, existing in ipairs(frames) do
 		if existing == frame then
 			return
@@ -99,10 +99,10 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
 		self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
 	end
-	
+
 	self:ApplyAttributesToFrame(nil, attributes, frame)
 	self:RegisterClickCastFrameClicks(frame)
-	
+
 	table.insert(frames, frame)
 end
 
@@ -138,7 +138,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 
 	self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 	self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
-	
+
 	table.remove(frames, index)
 end
 
@@ -160,7 +160,7 @@ function Clicked:UpdateClickCastFrames(newAtributes)
 	for _, frame in ipairs(frames) do
 		self:SetPendingFrameAttributes(frame, newAtributes)
 		self:ApplyAttributesToFrame(frame)
-		
+
 		if self.ClickCastHeader ~= nil then
 			self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 			self.ClickCastHeader:UnwrapScript(frame, "OnLeave")

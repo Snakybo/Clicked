@@ -10,7 +10,7 @@ local function SetupKeybindCommands(keybindings)
 	for _, keybind in ipairs(keybindings) do
 		local set = setTemplate:format(keybind.key, keybind.identifier)
 		local clear = clearTemplate:format(keybind.key)
-		
+
 		table.insert(register, set)
 		table.insert(unregister, clear)
 	end
@@ -49,12 +49,12 @@ function Clicked:RegisterClickCastHeader()
 
 	self.ClickCastHeader:SetAttribute("clickcast_onenter", [===[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
-        frame:RunFor(self, frame:GetAttribute("setup-keybinds"))
+		frame:RunFor(self, frame:GetAttribute("setup-keybinds"))
 	]===])
 
 	self.ClickCastHeader:SetAttribute("clickcast_onleave", [===[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
-        frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
+		frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
 	]===])
 
 	self.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
@@ -94,7 +94,7 @@ function Clicked:UpdateClickCastHeader(keybindings)
 	end
 
 	local set, clear = SetupKeybindCommands(keybindings)
-	
+
 	self.ClickCastHeader:SetAttribute("setup-keybinds", set)
 	self.ClickCastHeader:SetAttribute("clear-keybinds", clear)
 end

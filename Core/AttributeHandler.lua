@@ -4,7 +4,7 @@ local function EnsureCache(frame)
 	if frameCache[frame] ~= nil then
 		return
 	end
-	
+
 	frameCache[frame] = {
 		pending = {},
 		applied = {}
@@ -57,7 +57,7 @@ function Clicked:ApplyAttributesToFrame(frame)
 	for key in pairs(applied) do
 		frame:SetAttribute(key, nil)
 	end
-	
+
 	for key, value in pairs(pending) do
 		frame:SetAttribute(key, value)
 	end
@@ -67,7 +67,7 @@ function Clicked:CreateCommandAttributes(register, command, prefix, suffix)
 	if command.keybind == "" then
 		return
 	end
-	
+
 	if command.action == Clicked.COMMAND_ACTION_TARGET then
 		CreateAttribute(register, prefix, "type", suffix, "target")
 		CreateAttribute(register, prefix, "unit", suffix, "mouseover")
