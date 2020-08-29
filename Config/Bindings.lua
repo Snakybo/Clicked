@@ -395,7 +395,7 @@ local function DrawTargetSelection(container, binding)
 			items["GLOBAL"] = "None (global)"
 			table.insert(order, 1, "GLOBAL")
 		elseif index == 0 then
-			items["_NONE"] = ""
+			items["_NONE"] = "<No one>"
 			table.insert(order, 1, "_NONE")
 		else
 			items["_DELETE"] = "<Remove this option>"
@@ -405,7 +405,7 @@ local function DrawTargetSelection(container, binding)
 		local widget = GUI:Dropdown("On this target", items, order, target, "unit")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 
-		if index > 1 then
+		if index ~= 1 then
 			widget:SetLabel("Or")
 		end
 
