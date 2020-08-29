@@ -210,6 +210,7 @@ local function EnableSpellbookHandlers()
 
 					if binding.type == Clicked.TYPE_SPELL then
 						binding.action.spell = name
+						HideUIPanel(SpellBookFrame)
 						Clicked:ReloadActiveBindings()
 					end
 				end
