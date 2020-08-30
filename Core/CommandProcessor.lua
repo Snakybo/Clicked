@@ -47,17 +47,24 @@ function Clicked:ProcessCommands(commands)
 
 	for _, command in ipairs(commands) do
 		local isHoverCastBinding = command.mode == self.TARGETING_MODE_HOVERCAST
-		local prefix, suffix = GetCommandAttributeIdentifier(command, isHoverCastBinding)
+		local isMouseButton = self:StartsWith(command.keybind, "BUTTON")
 
-		if isHoverCastBinding then
+		local prefix, suffix = GetCommandAttributeIdentifier(command, isHoverCastBinding or isMouseButton)
+
+		if isHoverCastBinding or isMouseButton then
 			local keybind = {
 				key = command.keybind,
 				identifier = suffix
 			}
 
 			self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)
-			table.insert(newClickCastFrameKeybindings, keybind)
-		else
+
+			if not isMouseButton then
+				table.insert(newClickCastFrameKeybindings, keybind)
+			end
+		end
+
+		if not isHoverCastBinding then
 			local frame = GetFrame(nextMacroFrameHandler)
 			local attributes = {}
 
