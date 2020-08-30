@@ -51,9 +51,21 @@ function Clicked:CanBindingTargetUnitBeHostile(unit)
 		return true
 	end
 
-	if unit == self.TARGET_UNIT_MOUSEOVER_FRAME then
-		return true
+	return false
+end
+
+function Clicked:GetBindingTargetingMode(binding)
+	if binding.type == self.TYPE_MACRO then
+		return self.TARGETING_MODE_GLOBAL
 	end
 
-	return false
+	if binding.type == self.TYPE_UNIT_SELECT or binding.type == self.TYPE_UNIT_MENU then
+		return self.TARGETING_MODE_HOVERCAST
+	end
+
+	if self:IsRestrictedKeybind(binding.keybind) then
+		return self.TARGETING_MODE_HOVERCAST
+	end
+
+	return binding.targetingMode
 end

@@ -4,7 +4,10 @@ Clicked.TYPE_MACRO = "MACRO"
 Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT"
 Clicked.TYPE_UNIT_MENU = "UNIT_MENU"
 
-Clicked.TARGET_UNIT_GLOBAL = "GLOBAL"
+Clicked.TARGETING_MODE_DYNAMIC_PRIORITY = "DYNAMIC_PRIORITY"
+Clicked.TARGETING_MODE_HOVERCAST = "HOVERCAST"
+Clicked.TARGETING_MODE_GLOBAL = "GLOBAL"
+
 Clicked.TARGET_UNIT_PLAYER = "PLAYER"
 Clicked.TARGET_UNIT_TARGET = "TARGET"
 Clicked.TARGET_UNIT_PARTY_1 = "PARTY_1"
@@ -14,7 +17,6 @@ Clicked.TARGET_UNIT_PARTY_4 = "PARTY_4"
 Clicked.TARGET_UNIT_PARTY_5 = "PARTY_5"
 Clicked.TARGET_UNIT_FOCUS = "FOCUS"
 Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
-Clicked.TARGET_UNIT_MOUSEOVER_FRAME = "MOUSEOVER_FRAME"	-- not yet implemented
 
 Clicked.TARGET_TYPE_ANY = "ANY"
 Clicked.TARGET_TYPE_HELP = "HELP"
@@ -29,6 +31,10 @@ local configuredBindings = {}
 local activeBindings = {}
 
 local function GetMacroSegmentFromAction(action)
+	if action.mode ~= Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
+		return ""
+	end
+
 	local flags = {}
 
 	if action.unit == Clicked.TARGET_UNIT_PLAYER then
@@ -87,6 +93,7 @@ local function ConstructAction(binding, target)
 		action.combat = ""
 	end
 
+	action.mode = Clicked:GetBindingTargetingMode(binding)
 	action.unit = target.unit
 	action.type = target.type
 
@@ -96,19 +103,17 @@ end
 local function ConstructActions(binding)
 	local actions = {}
 
-	if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
-		if not Clicked:IsRestrictedKeybind(binding.keybind) then
-			for _, target in ipairs(binding.targets) do
-				local action = ConstructAction(binding, target)
-				table.insert(actions, action)
-			end
-		else
-			local action = ConstructAction(binding, {
-				unit = Clicked.TARGET_UNIT_MOUSEOVER,
-				type = Clicked.TARGET_TYPE_ANY
-			})
+	if Clicked:GetBindingTargetingMode(binding) == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
+		for _, target in ipairs(binding.targets) do
+			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
 		end
+	else
+		local action = ConstructAction(binding, {
+			unit = Clicked.TARGET_UNIT_MOUSEOVER,
+			type = Clicked.TARGET_TYPE_ANY
+		})
+		table.insert(actions, action)
 	end
 
 	return actions
@@ -235,37 +240,40 @@ local function ProcessActiveBindings()
 
 	local commands = {}
 
-	for keybind, bindings in Clicked:IterateActiveBindings() do
-		local command = {
-			keybind = keybind,
-			data = GetMacroForBindings(bindings),
-			valid = false
-		}
+	for keybind, group in Clicked:IterateActiveBindings() do
+		for mode, bindings in pairs(group) do
+			local valid = false
+			local command = {
+				keybind = keybind,
+				mode = mode
+			}
 
-		local binding = bindings[1]
+			local binding = bindings[1]
 
-		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or binding.type == Clicked.TYPE_MACRO then
-			command.action = Clicked.COMMAND_ACTION_MACRO
-			command.valid = command.valid or (command.data ~= nil and command.data ~= "")
-		elseif binding.type == Clicked.TYPE_UNIT_SELECT then
-			command.action = Clicked.COMMAND_ACTION_TARGET
-			command.valid = command.valid or true
-		elseif binding.type == Clicked.TYPE_UNIT_MENU then
-			command.action = Clicked.COMMAND_ACTION_MENU
-			command.valid = command.valid or true
-		else
-			error("Clicked: Unhandled binding type: " .. binding.type)
-		end
+			if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or binding.type == Clicked.TYPE_MACRO then
+				command.action = Clicked.COMMAND_ACTION_MACRO
+				command.data = GetMacroForBindings(bindings)
+				valid = command.data ~= nil and command.data ~= ""
+			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+				command.action = Clicked.COMMAND_ACTION_TARGET
+				valid = true
+			elseif binding.type == Clicked.TYPE_UNIT_MENU then
+				command.action = Clicked.COMMAND_ACTION_MENU
+				valid = true
+			else
+				error("Clicked: Unhandled binding type: " .. binding.type)
+			end
 
-		if command.valid then
-			table.insert(commands, command)
+			if valid then
+				table.insert(commands, command)
+			end
 		end
 	end
 
 	Clicked:ProcessCommands(commands)
 end
 
-local function FilterBindings(bindings)
+local function FilterBindings(activatable)
 	local function ConvertType(binding)
 		if binding.type == Clicked.TYPE_SPELL then
 			return Clicked.TYPE_MACRO
@@ -278,18 +286,28 @@ local function FilterBindings(bindings)
 		return binding.type
 	end
 
-	local filtered = {}
-	local last = ""
+	local result = {}
 
-	for _, binding in ipairs(bindings) do
-		local type = ConvertType(binding)
+	for keybind, bindings in pairs(activatable) do
+		result[keybind] = {}
 
-		if last == "" or type == last then
-			table.insert(filtered, binding)
+		for _, binding in ipairs(bindings) do
+			local mode = Clicked:GetBindingTargetingMode(binding)
+
+			if result[keybind][mode] == nil then
+				result[keybind][mode] = {}
+				table.insert(result[keybind][mode], binding)
+			else
+				local reference = result[keybind][mode][1]
+
+				if ConvertType(binding) == ConvertType(reference) then
+					table.insert(result[keybind][mode], binding)
+				end
+			end
 		end
 	end
 
-	return filtered
+	return result
 end
 
 function Clicked:CreateNewBinding()
@@ -312,7 +330,7 @@ function Clicked:DeleteBinding(binding)
 end
 
 -- Reloads the active bindings, this will go through all configured bindings
--- and check their (current) validity using the IsBindingActive function.
+-- and check their (current) validity using the CanBindingLoad function.
 -- If there are multiple bindings that use the same keybind it will use the
 -- PrioritizeBindings function to sort them.
 --
@@ -328,17 +346,13 @@ function Clicked:ReloadActiveBindings()
 	local activatable = {}
 
 	for _, binding in self:IterateConfiguredBindings() do
-		if self:IsBindingActive(binding) then
+		if self:CanBindingLoad(binding) then
 			activatable[binding.keybind] = activatable[binding.keybind] or {}
 			table.insert(activatable[binding.keybind], binding)
 		end
 	end
 
-	for keybind, bindings in pairs(activatable) do
-		local filtered = FilterBindings(bindings)
-		activeBindings[keybind] = filtered
-	end
-
+	activeBindings = FilterBindings(activatable)
 	ProcessActiveBindings()
 
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
@@ -360,10 +374,26 @@ function Clicked:IterateActiveBindings()
 	return pairs(activeBindings)
 end
 
+function Clicked:IsBindingActive(binding)
+	local mode = self:GetBindingTargetingMode(binding)
+
+	if activeBindings[binding.keybind] ~= nil and activeBindings[binding.keybind][mode] ~= nil then
+		local bindings = activeBindings[binding.keybind][mode]
+
+		for _, other in ipairs(bindings) do
+			if other == binding then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
 -- Check if the specified binding is currently active based on the configuration
 -- provided in the binding's Load Options, and whether the binding is actually
 -- valid (it has a keybind and an action to perform)
-function Clicked:IsBindingActive(binding)
+function Clicked:CanBindingLoad(binding)
 	if binding.keybind == "" then
 		return false
 	end
@@ -458,6 +488,7 @@ function Clicked:GetNewBindingTemplate()
 			item = "",
 			macro = ""
 		},
+		targetingMode = self.TARGETING_MODE_DYNAMIC_PRIORITY,
 		targets = {
 			self:GetNewBindingTargetTemplate()
 		},
