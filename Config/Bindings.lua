@@ -76,14 +76,6 @@ local function TreeSortFunc(left, right)
 		return left.value < right.value
 	end
 
-	if Clicked:IsBindingActive(left.binding) and not Clicked:IsBindingActive(right.binding) then
-		return true
-	end
-
-	if not Clicked:IsBindingActive(left.binding) and Clicked:IsBindingActive(right.binding) then
-		return false
-	end
-
 	local function GetKeybindKey(bind)
 		local mods = {}
 		local result = ""
