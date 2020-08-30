@@ -356,7 +356,7 @@ local function DrawModeSelection(container, binding)
 end
 
 local function DrawTargetSelection(container, binding)
-	local function DrawTargetUnitDropdown(target, index)
+	local function DrawTargetUnitDropdown(target, index, count)
 		local function OnValueChanged(frame, event, value)
 			if not InCombatLockdown()then
 				if index == 0 then
@@ -406,7 +406,7 @@ local function DrawTargetSelection(container, binding)
 		if index == 0 then
 			items["_NONE"] = "<No one>"
 			table.insert(order, 1, "_NONE")
-		else
+		elseif count > 1 then
 			items["_DELETE"] = "<Remove this option>"
 			table.insert(order, "_DELETE")
 		end
@@ -447,7 +447,7 @@ local function DrawTargetSelection(container, binding)
 	end
 
 	for i, target in ipairs(binding.targets) do
-		DrawTargetUnitDropdown(target, i)
+		DrawTargetUnitDropdown(target, i, #binding.targets)
 
 		if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
 			DrawTargetTypeDropdown(target)
@@ -455,7 +455,7 @@ local function DrawTargetSelection(container, binding)
 	end
 
 	if #binding.targets == 0 or binding.targets[#binding.targets].unit ~= Clicked.TARGET_UNIT_PLAYER then
-		DrawTargetUnitDropdown({ unit = "_NONE" }, 0)
+		DrawTargetUnitDropdown({ unit = "_NONE" }, 0, #binding.targets)
 	end
 end
 
