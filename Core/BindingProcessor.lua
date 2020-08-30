@@ -102,13 +102,14 @@ end
 
 local function ConstructActions(binding)
 	local actions = {}
+	local mode = Clicked:GetBindingTargetingMode(binding)
 
-	if Clicked:GetBindingTargetingMode(binding) == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
+	if mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
 		for _, target in ipairs(binding.targets) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
 		end
-	else
+	elseif mode == Clicked.TARGETING_MODE_HOVERCAST then
 		local action = ConstructAction(binding, {
 			unit = Clicked.TARGET_UNIT_MOUSEOVER,
 			type = Clicked.TARGET_TYPE_ANY
