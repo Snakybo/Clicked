@@ -36,7 +36,9 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			for _, binding in ipairs(profile.bindings) do
 				if #binding.targets > 0 and binding.targets[1].unit == "GLOBAL" then
 					binding.targetingMode = "GLOBAL"
-					binding.targets = {}
+					binding.targets = {
+						self:GetNewBindingTargetTemplate()
+					}
 				else
 					binding.targetingMode = "DYNAMIC_PRIORITY"
 				end
