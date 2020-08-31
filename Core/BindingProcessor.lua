@@ -187,14 +187,14 @@ end
 -- It will prioritize bindings in the following order:
 --
 -- 1. All custom macros
--- 2. all @mouseover bindings with the help or harm tag and a combat/nocombat flag
--- 3. all remaining @mouseover bindings with a combat/nocombat flag
--- 4. any remaining bindings with the help or harm tag and a combat/nocombat flag
--- 5. any remaining bindings with the combat/nocombat
--- 6. all @mouseover bindings with the help or harm tag
--- 7. all remaining @mouseover bindings
--- 8. any remaining bindings with the help or harm tag
--- 9. any remaining bindings
+-- 2. All @mouseover bindings with the help or harm tag and a combat/nocombat flag
+-- 3. All remaining @mouseover bindings with a combat/nocombat flag
+-- 4. Any remaining bindings with the help or harm tag and a combat/nocombat flag
+-- 5. Any remaining bindings with the combat/nocombat
+-- 6. All @mouseover bindings with the help or harm tag
+-- 7. All remaining @mouseover bindings
+-- 8. Any remaining bindings with the help or harm tag
+-- 9. Any remaining bindings
 --
 -- In text, this boils down to: combat -> mouseover -> hostility -> default
 --
