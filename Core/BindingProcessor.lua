@@ -104,12 +104,19 @@ end
 
 local function ConstructActions(binding)
 	local actions = {}
+
 	local mode = Clicked:GetBindingTargetingMode(binding)
+	local realMode = binding.targetingMode
 
 	if mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
-		for _, target in ipairs(binding.targets) do
-			local action = ConstructAction(binding, target)
+		if realMode == Clicked.TARGETING_MODE_GLOBAL then
+			local action = ConstructAction(binding, {})
 			table.insert(actions, action)
+		else
+			for _, target in ipairs(binding.targets) do
+				local action = ConstructAction(binding, target)
+				table.insert(actions, action)
+			end
 		end
 	elseif mode == Clicked.TARGETING_MODE_HOVERCAST then
 		local action = ConstructAction(binding, {
@@ -117,6 +124,8 @@ local function ConstructActions(binding)
 			type = Clicked.TARGET_TYPE_ANY
 		})
 		table.insert(actions, action)
+	else
+		error("Unsupported binding mode: " .. mode)
 	end
 
 	return actions
@@ -129,6 +138,14 @@ local function SortActions(left, right)
 
 	if #left.combat == 0 and #right.combat > 0 then
 		return true
+	end
+
+	if left.unit ~= nil and right.unit == nil then
+		return true
+	end
+
+	if left.unit == nil and right.unit ~= nil then
+		return false
 	end
 
 	if left.unit == Clicked.TARGET_UNIT_MOUSEOVER and right.unit ~= Clicked.TARGET_UNIT_MOUSEOVER then
@@ -147,6 +164,14 @@ local function SortActions(left, right)
 		return true
 	end
 
+	if left.type ~= nil and right.type == nil then
+		return true
+	end
+
+	if left.type == nil and right.type ~= nil then
+		return false
+	end
+
 	if left.type ~= Clicked.TARGET_TYPE_ANY and right == Clicked.TARGET_TYPE_ANY then
 		return true
 	end
@@ -158,54 +183,44 @@ local function SortActions(left, right)
 	return false
 end
 
+-- Construct a valid macro that correctly prioritizes all specified bindings.
+-- It will prioritize bindings in the following order:
+--
+-- 1. All custom macros
+-- 2. all @mouseover bindings with the help or harm tag and a combat/nocombat flag
+-- 3. all remaining @mouseover bindings with a combat/nocombat flag
+-- 4. any remaining bindings with the help or harm tag and a combat/nocombat flag
+-- 5. any remaining bindings with the combat/nocombat
+-- 6. all @mouseover bindings with the help or harm tag
+-- 7. all remaining @mouseover bindings
+-- 8. any remaining bindings with the help or harm tag
+-- 9. any remaining bindings
+--
+-- In text, this boils down to: combat -> mouseover -> hostility -> default
+--
+-- It will construct an /use command that is mix-and-matched from all configured
+-- bindings, so if there are two bindings, and one of them has Holy Light with the
+-- [@mouseover,help] and [@target] target priority order, and the other one has
+-- Crusader Strike with [@target,harm], it will create a command like this:
+-- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
 local function GetMacroForBindings(bindings)
 	local result = {}
 	local stopCasting = false
 
-	-- First go through all passed bindings and insert any custom macros
-	-- or /stopcasting prefixes if required, custom macros will always
-	-- have presendence over spells or items, so when mixing and matching
-	-- macro bindings with the other types will require some attention from
-	-- the user in order to not early-out as soon as the macro is executed,
-	-- mainly the macro shouldn't end with a [] clause as that will always be
-	-- activated.
+	local actions = {}
 
 	for _, binding in ipairs(bindings) do
 		if binding.type == Clicked.TYPE_MACRO then
 			table.insert(result, binding.action.macro)
-		elseif binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
-			if not stopCasting and binding.action.stopCasting then
+		else
+			if not stopCasting and binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM and binding.action.stopCasting then
 				stopCasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
-		end
-	end
 
-	-- Construct an /use command that correctly prioritizes all specified bindings.
-	-- It will prioritize bindings in the following order:
-	--
-	-- 1. all @mouseover bindings with the help or harm tag and a combat/nocombat flag
-	-- 2. all remaining @mouseover bindings with a combat/nocombat flag
-	-- 3. any remaining bindings with the help or harm tag and a combat/nocombat flag
-	-- 4. any remaining bindings with the combat/nocombat
-	-- 5. all @mouseover bindings with the help or harm tag
-	-- 6. all remaining @mouseover bindings
-	-- 7. any remaining bindings with the help or harm tag
-	-- 8. any remaining bindings
-	--
-	-- In text, this boils down to: combat -> mouseover -> hostility -> default
-	--
-	-- It will construct an /use command that is mix-and-matched from all configured
-	-- bindings, so if there are two bindings, and one of them has Holy Light with the
-	-- [@mouseover,help] and [@target] target priority order, and the other one has
-	-- Crusader Strike with [@target,harm], it will create a command like this:
-	-- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
-
-	local actions = {}
-
-	for _, binding in ipairs(bindings) do
-		for _, action in ipairs(ConstructActions(binding)) do
-			table.insert(actions, action)
+			for _, action in ipairs(ConstructActions(binding)) do
+				table.insert(actions, action)
+			end
 		end
 	end
 
