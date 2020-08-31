@@ -213,7 +213,7 @@ local function GetMacroForBindings(bindings)
 		if binding.type == Clicked.TYPE_MACRO then
 			table.insert(result, binding.action.macro)
 		else
-			if not stopCasting and binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM and binding.action.stopCasting then
+			if not stopCasting and (binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM) and binding.action.stopCasting then
 				stopCasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
