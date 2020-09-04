@@ -42,6 +42,16 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				else
 					binding.targetingMode = "DYNAMIC_PRIORITY"
 				end
+				
+				binding.load.inGroup = {
+					selected = false,
+					state = "IN_GROUP_PARTY_OR_RAID"
+				}
+
+				binding.load.playerInGroup = {
+					selected = false,
+					player = ""
+				}
 			end
 
 			print(self.NAME .. ": Upgraded profile from version " .. (profile.version or "UNKNOWN") .. " to 0.5.0")

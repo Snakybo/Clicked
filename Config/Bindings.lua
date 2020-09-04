@@ -602,7 +602,10 @@ local function DrawLoadCombat(container, combat)
 				NOT_IN_COMBAT = "Not in combat"
 			}
 
-			local order = nil
+			local order = {
+				"IN_COMBAT",
+				"NOT_IN_COMBAT"
+			}
 
 			local widget = GUI:Dropdown(nil, items, order, combat, "state")
 			widget:SetRelativeWidth(0.5)
@@ -637,6 +640,70 @@ local function DrawLoadSpellKnown(container, spellKnown)
 	end
 end
 
+local function DrawLoadInGroup(container, inGroup)
+	-- in group toggle
+	do
+		local widget = GUI:CheckBox("In Group", inGroup, "selected")
+
+		if not inGroup.selected then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	-- in group state
+	if inGroup.selected then
+		do
+			local items = {
+				IN_GROUP_PARTY_OR_RAID = "In party or raid",
+				IN_GROUP_PARTY = "In party",
+				IN_GROUP_RAID = "In raid",
+				IN_GROUP_SOLO = "Solo"
+			}
+
+			local order = {
+				"IN_GROUP_PARTY_OR_RAID",
+				"IN_GROUP_PARTY",
+				"IN_GROUP_RAID",
+				"IN_GROUP_SOLO"
+			}
+
+			local widget = GUI:Dropdown(nil, items, order, inGroup, "state")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
+local function DrawLoadPlayerInGroup(container, playerInGroup)
+	-- player in group toggle
+	do
+		local widget = GUI:CheckBox("Player In Group", playerInGroup, "selected")
+
+		if not playerInGroup.selected then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	if playerInGroup.selected then
+		-- player in group
+		do
+			local widget = GUI:EditBox(nil, "OnEnterPressed", playerInGroup, "player")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
@@ -644,6 +711,8 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadSpecialization(container, load.specialization)
 	DrawLoadCombat(container, load.combat)
 	DrawLoadSpellKnown(container, load.spellKnown)
+	DrawLoadInGroup(container, load.inGroup)
+	DrawLoadPlayerInGroup(container, load.playerInGroup)
 end
 
 -- Main binding frame
