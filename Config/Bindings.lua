@@ -620,7 +620,7 @@ local function DrawLoadSpellKnown(container, spellKnown)
 	do
 		local widget = GUI:CheckBox("Spell Known", spellKnown, "selected")
 
-		if spellKnown.selected == 0 then
+		if not spellKnown.selected then
 			widget:SetRelativeWidth(1)
 		else
 			widget:SetRelativeWidth(0.5)
