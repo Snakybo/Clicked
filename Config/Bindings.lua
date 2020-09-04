@@ -76,14 +76,6 @@ local function TreeSortFunc(left, right)
 		return left.value < right.value
 	end
 
-	if Clicked:IsBindingActive(left.binding) and not Clicked:IsBindingActive(right.binding) then
-		return true
-	end
-
-	if not Clicked:IsBindingActive(left.binding) and Clicked:IsBindingActive(right.binding) then
-		return false
-	end
-
 	local function GetKeybindKey(bind)
 		local mods = {}
 		local result = ""
@@ -174,6 +166,14 @@ local function ConstructTreeView()
 	table.sort(items, TreeSortFunc)
 
 	options.tree.items = items
+end
+
+local function CanBindingTargetingModeChange(binding)
+	if Clicked:IsRestrictedKeybind(binding.keybind) then
+		return false
+	end
+
+	return binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM
 end
 
 -- Spell book integration
@@ -298,22 +298,23 @@ local function DrawItemSelection(container, action)
 	-- target item text
 	do
 		local widget = GUI:EditBox("Target Item", "OnEnterPressed", action, "item")
-		widget:SetRelativeWidth(0.75)
+		-- widget:SetRelativeWidth(0.75)
+		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
 
 	-- pick from inventory button
-	do
-		local function OnClick()
-		end
+	-- do
+	-- 	local function OnClick()
+	-- 	end
 
-		local widget = GUI:Button("Select", OnClick)
-		widget:SetRelativeWidth(0.25)
-		widget:SetDisabled(true)
+	-- 	local widget = GUI:Button("Select", OnClick)
+	-- 	widget:SetRelativeWidth(0.25)
+	-- 	widget:SetDisabled(true)
 
-		container:AddChild(widget)
-	end
+	-- 	container:AddChild(widget)
+	-- end
 
 	-- interrupt cast toggle
 	do
@@ -335,8 +336,27 @@ local function DrawMacroSelection(container, action)
 	end
 end
 
+local function DrawModeSelection(container, binding)
+	local items = {
+		DYNAMIC_PRIORITY = "Dynamic priority",
+		HOVERCAST = "Hovercast",
+		GLOBAL = "Global (no target)"
+	}
+
+	local order = {
+		"DYNAMIC_PRIORITY",
+		"HOVERCAST",
+		"GLOBAL"
+	}
+
+	local widget = GUI:Dropdown("Targeting Mode", items, order, binding, "targetingMode")
+	widget:SetFullWidth(true)
+
+	container:AddChild(widget)
+end
+
 local function DrawTargetSelection(container, binding)
-	local function DrawTargetUnitDropdown(target, index)
+	local function DrawTargetUnitDropdown(target, index, count)
 		local function OnValueChanged(frame, event, value)
 			if not InCombatLockdown()then
 				if index == 0 then
@@ -346,13 +366,7 @@ local function DrawTargetSelection(container, binding)
 				elseif value == "_DELETE" then
 					table.remove(binding.targets, index)
 				else
-					if value == Clicked.TARGET_UNIT_GLOBAL then
-						local new = Clicked:GetNewBindingTargetTemplate()
-						new.unit = value
-						binding.targets = { new }
-					else
-						target.unit = value
-					end
+					target.unit = value
 				end
 
 				Clicked:ReloadActiveBindings()
@@ -368,8 +382,7 @@ local function DrawTargetSelection(container, binding)
 		local items = {
 			PLAYER = "Player (you)",
 			TARGET = "Target",
-			--MOUSEOVER_FRAME = "Mouseover (unit frame)",
-			MOUSEOVER = "Mouseover (unit frame and 3D world)",
+			MOUSEOVER = "Mouseover",
 			FOCUS = "Focus",
 			PARTY_1 = "Party 1",
 			PARTY_2 = "Party 2",
@@ -381,7 +394,6 @@ local function DrawTargetSelection(container, binding)
 		local order = {
 			"PLAYER",
 			"TARGET",
-			--"MOUSEOVER_FRAME",
 			"MOUSEOVER",
 			"FOCUS",
 			"PARTY_1",
@@ -391,13 +403,10 @@ local function DrawTargetSelection(container, binding)
 			"PARTY_5"
 		}
 
-		if index == 1 then
-			items["GLOBAL"] = "None (global)"
-			table.insert(order, 1, "GLOBAL")
-		elseif index == 0 then
-			items["_NONE"] = ""
+		if index == 0 then
+			items["_NONE"] = "<No one>"
 			table.insert(order, 1, "_NONE")
-		else
+		elseif count > 1 then
 			items["_DELETE"] = "<Remove this option>"
 			table.insert(order, "_DELETE")
 		end
@@ -405,7 +414,7 @@ local function DrawTargetSelection(container, binding)
 		local widget = GUI:Dropdown("On this target", items, order, target, "unit")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 
-		if index > 1 then
+		if index ~= 1 then
 			widget:SetLabel("Or")
 		end
 
@@ -438,15 +447,15 @@ local function DrawTargetSelection(container, binding)
 	end
 
 	for i, target in ipairs(binding.targets) do
-		DrawTargetUnitDropdown(target, i)
+		DrawTargetUnitDropdown(target, i, #binding.targets)
 
 		if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
 			DrawTargetTypeDropdown(target)
 		end
 	end
 
-	if #binding.targets == 0 or (binding.targets[1].unit ~= Clicked.TARGET_UNIT_GLOBAL and binding.targets[#binding.targets].unit ~= Clicked.TARGET_UNIT_PLAYER) then
-		DrawTargetUnitDropdown({ unit = "_NONE" }, 0)
+	if #binding.targets == 0 or binding.targets[#binding.targets].unit ~= Clicked.TARGET_UNIT_PLAYER then
+		DrawTargetUnitDropdown({ unit = "_NONE" }, 0, #binding.targets)
 	end
 end
 
@@ -457,16 +466,6 @@ local function DrawBindingActionPage(container, binding)
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
-	end
-
-	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		-- restricted keybind help label
-		do
-			local widget = GUI:Label("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be cast on the targeted unit frame.")
-			widget:SetFullWidth(true)
-
-			container:AddChild(widget)
-		end
 	end
 
 	-- action dropdown
@@ -501,10 +500,18 @@ local function DrawBindingActionPage(container, binding)
 		DrawMacroSelection(container, binding.action)
 	end
 
-	if not Clicked:IsRestrictedKeybind(binding.keybind) then
-		if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM then
+	if CanBindingTargetingModeChange(binding) then
+		DrawModeSelection(container, binding)
+
+		if binding.targetingMode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
 			DrawTargetSelection(container, binding)
 		end
+	elseif Clicked:IsRestrictedKeybind(binding.keybind) then
+		-- restricted keybind help label
+		local widget = GUI:Label("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be hovercast bindings.")
+		widget:SetFullWidth(true)
+
+		container:AddChild(widget)
 	end
 end
 

@@ -46,31 +46,36 @@ function Clicked:ProcessCommands(commands)
 	local nextMacroFrameHandler = 1
 
 	for _, command in ipairs(commands) do
-		local isClickCastCommand = self:StartsWith(command.keybind, "BUTTON")
-		local prefix, suffix = GetCommandAttributeIdentifier(command, isClickCastCommand)
+		local isHoverCastBinding = command.mode == self.TARGETING_MODE_HOVERCAST
+		local isMouseButton = self:StartsWith(command.keybind, "BUTTON")
 
-		if isClickCastCommand then
+		local prefix, suffix = GetCommandAttributeIdentifier(command, isHoverCastBinding or isMouseButton)
+
+		if isHoverCastBinding or isMouseButton then
+			local keybind = {
+				key = command.keybind,
+				identifier = suffix
+			}
+
 			self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)
+
+			if not isMouseButton then
+				table.insert(newClickCastFrameKeybindings, keybind)
+			end
 		end
 
-		if not self:IsRestrictedKeybind(command.keybind) then
-			if command.action == self.COMMAND_ACTION_TARGET or command.action == self.COMMAND_ACTION_MENU then
-				self:CreateCommandAttributes(newClickCastFrameAttributes, command, prefix, suffix)
-				table.insert(newClickCastFrameKeybindings, { key = command.keybind, identifier = suffix })
-			else
-				local frame = GetFrame(nextMacroFrameHandler)
-				local attributes = {}
+		if not isHoverCastBinding then
+			local frame = GetFrame(nextMacroFrameHandler)
+			local attributes = {}
 
-				nextMacroFrameHandler = nextMacroFrameHandler + 1
-				-- TODO: add CreateCommandAttributes(attributes, command, prefix, suffix) when mouseover (frame) is supported
-				self:CreateCommandAttributes(attributes, command, "", "")
-				self:SetPendingFrameAttributes(frame, attributes)
-				self:ApplyAttributesToFrame(frame)
+			nextMacroFrameHandler = nextMacroFrameHandler + 1
 
-				ClearOverrideBindings(frame)
-				-- TODO: add SetOverrideBindingClick(frame, false, command.keybind, frame:GetName(), suffix) when mouseover (frame) is supported
-				SetOverrideBindingClick(frame, true, command.keybind, frame:GetName())
-			end
+			self:CreateCommandAttributes(attributes, command, "", "")
+			self:SetPendingFrameAttributes(frame, attributes)
+			self:ApplyAttributesToFrame(frame)
+
+			ClearOverrideBindings(frame)
+			SetOverrideBindingClick(frame, true, command.keybind, frame:GetName())
 		end
 	end
 

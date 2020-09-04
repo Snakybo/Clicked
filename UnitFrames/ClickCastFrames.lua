@@ -2,7 +2,19 @@ local frames = {}
 local registerQueue = {}
 local unregisterQueue = {}
 local registerClicksQueue = {}
-local attributes = {}
+local cachedAttributes = {}
+
+local function UpdateClickCastFrame(frame, attributes)
+	Clicked:SetPendingFrameAttributes(frame, attributes)
+	Clicked:ApplyAttributesToFrame(frame)
+
+	if Clicked.ClickCastHeader ~= nil then
+		Clicked.ClickCastHeader:UnwrapScript(frame, "OnEnter")
+		Clicked.ClickCastHeader:UnwrapScript(frame, "OnLeave")
+		Clicked.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
+		Clicked.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+	end
+end
 
 function Clicked:ProcessClickCastFrameQueue()
 	if InCombatLockdown() then
@@ -95,13 +107,8 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		return
 	end
 
-	if self.ClickCastHeader ~= nil then
-		self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
-		self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
-	end
-
-	self:ApplyAttributesToFrame(nil, attributes, frame)
 	self:RegisterClickCastFrameClicks(frame)
+	UpdateClickCastFrame(frame, cachedAttributes)
 
 	table.insert(frames, frame)
 end
@@ -133,7 +140,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 		return
 	end
 
-	self:SetPendingFrameAttributes(frame, attributes)
+	self:SetPendingFrameAttributes(frame, {})
 	self:ApplyAttributesToFrame(frame)
 
 	self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
@@ -158,16 +165,8 @@ end
 
 function Clicked:UpdateClickCastFrames(newAtributes)
 	for _, frame in ipairs(frames) do
-		self:SetPendingFrameAttributes(frame, newAtributes)
-		self:ApplyAttributesToFrame(frame)
-
-		if self.ClickCastHeader ~= nil then
-			self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
-			self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
-			self.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
-			self.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
-		end
+		UpdateClickCastFrame(frame, newAtributes)
 	end
 
-	attributes = newAtributes
+	cachedAttributes = newAtributes
 end
