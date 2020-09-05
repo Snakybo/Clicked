@@ -20,7 +20,7 @@ jobs:
       uses: "actions/upload-artifact@v2"
       if: success()
       with:
-        name: retail
+        name: clicked-retail
         path: ".release/*.zip"
     - name: Package Classic
       uses: BigWigsMods/packager@master
@@ -30,5 +30,5 @@ jobs:
       uses: "actions/upload-artifact@v2"
       if: success()
       with:
-        name: classic
+        name: clicked-classic
         path: ".release/*-classic.zip"
