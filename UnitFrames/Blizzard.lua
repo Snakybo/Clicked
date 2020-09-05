@@ -1,4 +1,4 @@
-local BLIZZARD_UNIT_FRAMES = {
+local BLIZZARD_UNIT_FRAMES_MAINLINE = {
 	[""] = {
 		"PlayerFrame",
 		"PetFrame",
@@ -23,6 +23,27 @@ local BLIZZARD_UNIT_FRAMES = {
 		"ArenaEnemyFrame1",
 		"ArenaEnemyFrame2",
 		"ArenaEnemyFrame3"
+	}
+}
+
+local BLIZZARD_UNIT_FRAMES_CLASSIC = {
+	[""] = {
+		"PlayerFrame",
+		"PetFrame",
+		"TargetFrame",
+		"TargetFrameToT",
+		"PartyMemberFrame1",
+		"PartyMemberFrame1PetFrame",
+		"PartyMemberFrame2",
+		"PartyMemberFrame2PetFrame",
+		"PartyMemberFrame3",
+		"PartyMemberFrame3PetFrame",
+		"PartyMemberFrame4",
+		"PartyMemberFrame4PetFrame",
+		"Boss1TargetFrame",
+		"Boss2TargetFrame",
+		"Boss3TargetFrame",
+		"Boss4TargetFrame"
 	}
 }
 
@@ -52,7 +73,9 @@ local function HookCompactUnitFrame(frame, ...)
 end
 
 function Clicked:RegisterBlizzardUnitFrames()
-	for addon, names in pairs(BLIZZARD_UNIT_FRAMES) do
+	local frames = self.WOW_MAINLINE_RELEASE and BLIZZARD_UNIT_FRAMES_MAINLINE or BLIZZARD_UNIT_FRAMES_CLASSIC
+
+	for addon, names in pairs(frames) do
 		for _, name in ipairs(names) do
 			self:RegisterClickCastFrame(addon, name)
 		end

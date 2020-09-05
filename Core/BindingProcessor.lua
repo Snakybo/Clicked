@@ -444,27 +444,29 @@ function Clicked:CanBindingLoad(binding)
 		return false
 	end
 
-	-- If the specialization limiter has been enabled, see if the player's current
-	-- specialization matches one of the specified specializations.
+	if self.WOW_MAINLINE_RELEASE then
+		-- If the specialization limiter has been enabled, see if the player's current
+		-- specialization matches one of the specified specializations.
 
-	local specialization = load.specialization
+		local specialization = load.specialization
 
-	if specialization.selected == 1 then
-		if specialization.single ~= GetSpecialization() then
-			return false
-		end
-	elseif specialization.selected == 2 then
-		local spec = GetSpecialization()
-		local contains = false
-
-		for i = 1, #specialization.multiple do
-			if specialization.multiple[i] == spec then
-				contains = true
+		if specialization.selected == 1 then
+			if specialization.single ~= GetSpecialization() then
+				return false
 			end
-		end
+		elseif specialization.selected == 2 then
+			local spec = GetSpecialization()
+			local contains = false
 
-		if not contains then
-			return false
+			for i = 1, #specialization.multiple do
+				if specialization.multiple[i] == spec then
+					contains = true
+				end
+			end
+
+			if not contains then
+				return false
+			end
 		end
 	end
 
@@ -548,7 +550,7 @@ function Clicked:CanBindingLoad(binding)
 end
 
 function Clicked:GetNewBindingTemplate()
-	return {
+	local template = {
 		type = Clicked.TYPE_SPELL,
 		keybind = "",
 		action = {
@@ -563,13 +565,6 @@ function Clicked:GetNewBindingTemplate()
 		},
 		load = {
 			never = false,
-			specialization = {
-				selected = 0,
-				single = GetSpecialization(),
-				multiple = {
-					GetSpecialization()
-				}
-			},
 			combat = {
 				selected = false,
 				state = Clicked.LOAD_IN_COMBAT_TRUE
@@ -588,6 +583,18 @@ function Clicked:GetNewBindingTemplate()
 			}
 		}
 	}
+	
+	if self.WOW_MAINLINE_RELEASE then
+		template.load.specialization = {
+			selected = 0,
+			single = GetSpecialization(),
+			multiple = {
+				GetSpecialization()
+			}
+		}
+	end
+
+	return template
 end
 
 function Clicked:GetNewBindingTargetTemplate()

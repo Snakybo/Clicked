@@ -708,7 +708,11 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
 	DrawLoadNeverSelection(container, load)
-	DrawLoadSpecialization(container, load.specialization)
+
+	if Clicked.WOW_MAINLINE_RELEASE then
+		DrawLoadSpecialization(container, load.specialization)
+	end
+	
 	DrawLoadCombat(container, load.combat)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)

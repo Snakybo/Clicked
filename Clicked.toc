@@ -1,4 +1,10 @@
+#@retail@
 ## Interface: 80300
+#@end-retail@
+#@non-retail@
+# ## Interface: 11305
+#@end-non-retail@
+
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 0.5.0
@@ -6,6 +12,7 @@
 ## SavedVariables: ClickedDB
 ## OptionalDeps: Ace3
 
+## X-Curse-Project-ID: 405267
 ## X-Embeds: Ace3
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
