@@ -1,20 +1,23 @@
-name: Package Release
+name: Create Release
 on:
   push:
     tags:
-      - '*'
+      - "**"
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
     steps:
-    - uses: actions/checkout@v1
+    - name: Clone repository
+      uses: actions/checkout@v1
     - name: Package Retail
-      run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
-      env:
-        CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+      uses: BigWigMods/packager@master
     - name: Package Classic
-      run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.5
-      env:
-        CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+      uses: BigWigMods/packager@master
+      with:
+        args: -g 1.13.5
+    - name: "Archive artifacts"
+      uses: "actions/upload-artifact@v2"
+      path: ".release/*.zip"
