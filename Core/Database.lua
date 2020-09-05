@@ -42,7 +42,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				else
 					binding.targetingMode = "DYNAMIC_PRIORITY"
 				end
-				
+
 				binding.load.inGroup = {
 					selected = false,
 					state = "IN_GROUP_PARTY_OR_RAID"

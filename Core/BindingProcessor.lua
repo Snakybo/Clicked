@@ -518,7 +518,7 @@ function Clicked:CanBindingLoad(binding)
 
 	if playerInGroup.selected then
 		local found = false
-		
+
 		if playerInGroup.player == UnitName("player") then
 			found = true
 		else
