@@ -22,4 +22,6 @@ jobs:
         args: -d
     - name: "Archive artifacts"
       uses: "actions/upload-artifact@v2"
-      path: ".release/*.zip"
+      if: success()
+      with:
+        path: ".release/*.zip"
