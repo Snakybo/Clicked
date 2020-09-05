@@ -1,10 +1,10 @@
-name: Create Release
+name: CI
 on:
   push:
     branches:
       - master
 jobs:
-  build:
+  retail:
     runs-on: ubuntu-latest
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -22,6 +22,14 @@ jobs:
       with:
         name: clicked-retail
         path: ".release/*.zip"
+  classic:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v1
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
@@ -31,4 +39,4 @@ jobs:
       if: success()
       with:
         name: clicked-classic
-        path: ".release/*-classic.zip"
+        path: ".release/*.zip"
