@@ -11,6 +11,7 @@
 ## X-CompatibleLocales: enUS, enGB
 
 Libs\Libs.xml
+Locales\Locales.xml
 Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
 Templates\ClickCastTemplate.xml

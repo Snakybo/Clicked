@@ -4,6 +4,8 @@ Set Keybindings in the Config UI.
 -------------------------------------------------------------------------------]]
 local Type, Version = "ClickedKeybinding", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- WoW APIs
@@ -111,7 +113,7 @@ local function Constructor()
 
 	local msgframe = keybinding.msgframe
 	local msg = msgframe.msg
-	msg:SetText("Press a key to bind, or ESC to clear the binding.")
+	msg:SetText(L["CFG_UI_BINDING_SET_TOOLTIP"])
 
 	return keybinding
 end

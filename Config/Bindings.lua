@@ -1,5 +1,6 @@
 local AceConsole = LibStub("AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local GUI = Clicked.GUI
 
@@ -131,25 +132,25 @@ local function ConstructTreeViewItem(index, binding)
 	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
 	if binding.type == Clicked.TYPE_SPELL then
-		item.text1 = "Cast " .. (binding.action.spell or "")
+		item.text1 = L["CFG_UI_TREE_LABEL_CAST"]:format(binding.action.spell or "")
 		item.icon = select(3, GetSpellInfo(binding.action.spell)) or item.icon
 	elseif binding.type == Clicked.TYPE_ITEM then
-		item.text1 = "Use " .. (binding.action.item or "")
+		item.text1 = L["CFG_UI_TREE_LABEL_USE"]:format(binding.action.item or "")
 		item.icon = select(10, GetItemInfo(binding.action.item)) or item.icon
 	elseif binding.type == Clicked.TYPE_MACRO then
-		item.text1 = "Run Custom Macro"
+		item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
 	elseif binding.type == Clicked.TYPE_UNIT_SELECT then
-		item.text1 = "Target the unit"
+		item.text1 = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
 	elseif binding.type == Clicked.TYPE_UNIT_MENU then
-		item.text1 = "Open the unit menu"
+		item.text1 = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
 	end
 
 	item.text2 = binding.keybind
 
 	if Clicked:IsBindingActive(binding) then
-		item.text3 = "L"
+		item.text3 = L["CFG_UI_TREE_LOAD_STATE_LOADED"]
 	else
-		item.text3 = "U"
+		item.text3 = L["CFG_UI_TREE_LOAD_STATE_UNLOADED"]
 	end
 
 	return item
@@ -243,8 +244,8 @@ end
 local function DrawSpellSelection(container, action)
 	-- target spell text
 	do
-		local widget = GUI:EditBox("Target Spell", "OnEnterPressed", action, "spell")
-		widget:SetRelativeWidth(0.75)
+		local widget = GUI:EditBox(L["CFG_UI_ACTION_TARGET_SPELL"], "OnEnterPressed", action, "spell")
+		widget:SetRelativeWidth(0.6)
 
 		container:AddChild(widget)
 	end
@@ -268,7 +269,7 @@ local function DrawSpellSelection(container, action)
 			tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
 			tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-			tooltip:SetText("Click on a spell book entry to select it", 1, 0.82, 0, true)
+			tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, true)
 			tooltip:Show()
 		end
 
@@ -277,8 +278,8 @@ local function DrawSpellSelection(container, action)
 			tooltip:Hide()
 		end
 
-		local widget = GUI:Button("Select", OnClick)
-		widget:SetRelativeWidth(0.25)
+		local widget = GUI:Button(L["CFG_UI_ACTION_TARGET_SPELL_BOOK"], OnClick)
+		widget:SetRelativeWidth(0.4)
 		widget:SetCallback("OnEnter", OnEnter)
 		widget:SetCallback("OnLeave", OnLeave)
 
@@ -287,7 +288,7 @@ local function DrawSpellSelection(container, action)
 
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox("Interrupt current cast?", action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -308,7 +309,7 @@ local function DrawItemSelection(container, action)
 			GUI:Serialize(frame, event, value)
 		end
 
-		local widget = GUI:EditBox("Target Item", "OnEnterPressed", action, "item")
+		local widget = GUI:EditBox(L["CFG_UI_ACTION_TARGET_ITEM"], "OnEnterPressed", action, "item")
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 		widget:SetFullWidth(true)
 
@@ -317,7 +318,7 @@ local function DrawItemSelection(container, action)
 
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox("Interrupt current cast?", action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -327,7 +328,7 @@ end
 local function DrawMacroSelection(container, action)
 	-- macro text field
 	do
-		local widget = GUI:MultilineEditBox("Macro Text", "OnEnterPressed", action, "macro")
+		local widget = GUI:MultilineEditBox(L["CFG_UI_ACTION_MACRO_TEXT"], "OnEnterPressed", action, "macro")
 		widget:SetFullWidth(true)
 		widget:SetFullHeight(true)
 
@@ -337,9 +338,9 @@ end
 
 local function DrawModeSelection(container, binding)
 	local items = {
-		DYNAMIC_PRIORITY = "Dynamic priority",
-		HOVERCAST = "Hovercast",
-		GLOBAL = "Global (no target)"
+		DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"],
+		HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"],
+		GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"] 
 	}
 
 	local order = {
@@ -348,7 +349,7 @@ local function DrawModeSelection(container, binding)
 		"GLOBAL"
 	}
 
-	local widget = GUI:Dropdown("Targeting Mode", items, order, binding, "targetingMode")
+	local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, binding, "targetingMode")
 	widget:SetFullWidth(true)
 
 	container:AddChild(widget)
@@ -379,15 +380,15 @@ local function DrawTargetSelection(container, binding)
 		end
 
 		local items = {
-			PLAYER = "Player (you)",
-			TARGET = "Target",
-			MOUSEOVER = "Mouseover",
-			FOCUS = "Focus",
-			PARTY_1 = "Party 1",
-			PARTY_2 = "Party 2",
-			PARTY_3 = "Party 3",
-			PARTY_4 = "Party 4",
-			PARTY_5 = "Party 5"
+			PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
+			TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
+			MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
+			FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+			PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
+			PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
+			PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
+			PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
+			PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
 		}
 
 		local order = {
@@ -403,18 +404,18 @@ local function DrawTargetSelection(container, binding)
 		}
 
 		if index == 0 then
-			items["_NONE"] = "<No one>"
+			items["_NONE"] = L["CFG_UI_ACTION_TARGET_UNIT_NONE"]
 			table.insert(order, 1, "_NONE")
 		elseif count > 1 then
-			items["_DELETE"] = "<Remove this option>"
+			items["_DELETE"] = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
 			table.insert(order, "_DELETE")
 		end
 
-		local widget = GUI:Dropdown("On this target", items, order, target, "unit")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_UNIT"], items, order, target, "unit")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 
 		if index ~= 1 then
-			widget:SetLabel("Or")
+			widget:SetLabel(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
 		end
 
 		if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
@@ -428,9 +429,9 @@ local function DrawTargetSelection(container, binding)
 
 	local function DrawTargetTypeDropdown(target)
 		local items = {
-			ANY = "Either friendly or hostile",
-			HELP = "Friendly",
-			HARM = "Hostile"
+			ANY = L["CFG_UI_ACTION_TARGET_TYPE_ANY"],
+			HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
+			HARM = L["CFG_UI_ACTION_TARGET_TYPE_HARM"]
 		}
 
 		local order = {
@@ -439,7 +440,7 @@ local function DrawTargetSelection(container, binding)
 			"HARM"
 		}
 
-		local widget = GUI:Dropdown("If it is", items, order, target, "type")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_TYPE"], items, order, target, "type")
 		widget:SetRelativeWidth(0.5)
 
 		container:AddChild(widget)
@@ -461,7 +462,7 @@ end
 local function DrawBindingActionPage(container, binding)
 	-- action help label
 	do
-		local widget = GUI:Label(container, "Here you can configure the action that will be performed when the key has been pressed.")
+		local widget = GUI:Label(container, L["CFG_UI_ACTION_HELP"])
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -470,11 +471,11 @@ local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
 		local items = {
-			SPELL = "Cast a spell",
-			ITEM = "Use an item",
-			MACRO = "Run a macro",
-			UNIT_SELECT = "Target the unit",
-			UNIT_MENU = "Open the unit menu"
+			SPELL = L["CFG_UI_ACTION_TYPE_SPELL"],
+			ITEM = L["CFG_UI_ACTION_TYPE_ITEM"],
+			MACRO = L["CFG_UI_ACTION_TYPE_MACRO"],
+			UNIT_SELECT = L["CFG_UI_ACTION_TYPE_UNIT_TARGET"],
+			UNIT_MENU = L["CFG_UI_ACTION_TYPE_UNIT_MENU"]
 		}
 
 		local order = {
@@ -485,7 +486,7 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local widget = GUI:Dropdown("When the keybind has been pressed", items, order, binding, "type")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TYPE"], items, order, binding, "type")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -507,7 +508,7 @@ local function DrawBindingActionPage(container, binding)
 		end
 	elseif Clicked:IsRestrictedKeybind(binding.keybind) then
 		-- restricted keybind help label
-		local widget = GUI:Label("Note: Bindings using the left or right mouse button are considered 'restricted' and will always be hovercast bindings.")
+		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"])
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -519,7 +520,7 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = GUI:CheckBox("Never load", load, "never")
+		local widget = GUI:CheckBox(L["CFG_UI_LOAD_NEVER"] , load, "never")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -542,7 +543,7 @@ local function DrawLoadSpecialization(container, specialization)
 
 	-- spec toggle
 	do
-		local widget = GUI:TristateCheckBox("Specialization", specialization, "selected")
+		local widget = GUI:TristateCheckBox(L["CFG_UI_LOAD_SPECIALIZATION"], specialization, "selected")
 		widget:SetTriState(true)
 
 		if specialization.selected == 0 then
@@ -582,7 +583,7 @@ end
 local function DrawLoadCombat(container, combat)
 	-- combat toggle
 	do
-		local widget = GUI:CheckBox("Combat", combat, "selected")
+		local widget = GUI:CheckBox(L["CFG_UI_LOAD_COMBAT"], combat, "selected")
 
 		if not combat.selected then
 			widget:SetRelativeWidth(1)
@@ -597,8 +598,8 @@ local function DrawLoadCombat(container, combat)
 	if combat.selected then
 		do
 			local items = {
-				IN_COMBAT = "In combat",
-				NOT_IN_COMBAT = "Not in combat"
+				IN_COMBAT = L["CFG_UI_LOAD_COMBAT_TRUE"],
+				NOT_IN_COMBAT = L["CFG_UI_LOAD_COMBAT_FALSE"]
 			}
 
 			local order = {
@@ -617,7 +618,7 @@ end
 local function DrawLoadSpellKnown(container, spellKnown)
 	-- spell known toggle
 	do
-		local widget = GUI:CheckBox("Spell Known", spellKnown, "selected")
+		local widget = GUI:CheckBox(L["CFG_UI_LOAD_SPELL_KNOWN"], spellKnown, "selected")
 
 		if not spellKnown.selected then
 			widget:SetRelativeWidth(1)
@@ -642,7 +643,7 @@ end
 local function DrawLoadInGroup(container, inGroup)
 	-- in group toggle
 	do
-		local widget = GUI:CheckBox("In Group", inGroup, "selected")
+		local widget = GUI:CheckBox(L["CFG_UI_LOAD_IN_GROUP"], inGroup, "selected")
 
 		if not inGroup.selected then
 			widget:SetRelativeWidth(1)
@@ -657,10 +658,10 @@ local function DrawLoadInGroup(container, inGroup)
 	if inGroup.selected then
 		do
 			local items = {
-				IN_GROUP_PARTY_OR_RAID = "In party or raid",
-				IN_GROUP_PARTY = "In party",
-				IN_GROUP_RAID = "In raid",
-				IN_GROUP_SOLO = "Solo"
+				IN_GROUP_PARTY_OR_RAID = L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"],
+				IN_GROUP_PARTY = L["CFG_UI_LOAD_IN_GROUP_PARTY"],
+				IN_GROUP_RAID = L["CFG_UI_LOAD_IN_GROUP_RAID"],
+				IN_GROUP_SOLO = L["CFG_UI_LOAD_IN_GROUP_SOLO"]
 			}
 
 			local order = {
@@ -681,7 +682,7 @@ end
 local function DrawLoadPlayerInGroup(container, playerInGroup)
 	-- player in group toggle
 	do
-		local widget = GUI:CheckBox("Player In Group", playerInGroup, "selected")
+		local widget = GUI:CheckBox(L["CFG_UI_LOAD_PLAYER_IN_GROUP"], playerInGroup, "selected")
 
 		if not playerInGroup.selected then
 			widget:SetRelativeWidth(1)
@@ -760,7 +761,7 @@ local function DrawBinding(container)
 			end
 		end
 
-		local widget = GUI:Button("Delete", OnClick)
+		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -783,11 +784,11 @@ local function DrawBinding(container)
 
 		local items = {
 			{
-				text = "Action",
+				text = L["CFG_UI_ACTION"],
 				value = "action"
 			},
 			{
-				text = "Load Options",
+				text = L["CFG_UI_LOAD"],
 				value = "load"
 			}
 		}
@@ -816,8 +817,8 @@ local function DrawHeader(container)
 			options.tree.container:SelectByValue(Clicked:GetNumConfiguredBindings())
 		end
 
-		local widget = GUI:Button("Create Binding", OnClick)
-		widget:SetWidth(210) -- coming from AceGUIContainer-ClickedTreeGroup
+		local widget = GUI:Button(L["CFG_UI_BINDING_CREATE"], OnClick)
+		widget:SetWidth(210) -- from AceGUIContainer-ClickedTreeGroup
 
 		container:AddChild(widget)
 	end
@@ -869,9 +870,9 @@ local function DrawTreeView(container)
 				text = text .. "\n\n"
 
 				if Clicked:IsBindingActive(binding) then
-					text = text .. "Loaded"
+					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
 				else
-					text = text .. "Not Loaded"
+					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"]
 				end
 			end
 
@@ -961,7 +962,7 @@ function Clicked:OpenBindingConfig()
 		options.root = widget
 
 		widget:SetCallback("OnClose", OnClose)
-		widget:SetTitle("Clicked Binding Config")
+		widget:SetTitle(L["CFG_UI_TITLE"])
 		widget:SetLayout("Flow")
 
 		widget.frame:SetScript("OnKeyDown", OnKeyDown)

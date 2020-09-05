@@ -1,3 +1,5 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 function Clicked:GetDatabaseDefaults()
 	return {
 		profile = {
@@ -15,6 +17,19 @@ end
 -- read from the database.
 
 function Clicked:UpgradeDatabaseProfile(profile)
+	-- DEV
+	for _, binding in ipairs(profile.bindings) do
+		binding.load.inGroup = binding.load.inGroup or {
+			selected = false,
+			state = Clicked.LOAD_IN_GROUP_PARTY_OR_RAID
+		}
+		binding.load.playerInGroup = binding.load.playerInGroup or {
+			selected = false,
+			player = ""
+		}
+	end
+	-- DEV
+
 	if profile.version == self.VERSION then
 		return
 	end
@@ -54,7 +69,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				}
 			end
 
-			print(self.NAME .. ": Upgraded profile from version " .. (profile.version or "UNKNOWN") .. " to 0.5.0")
+			print(L["MSG_PROFILE_UPDATED"]:format(profile.version or "UNKNOWN", "0.5.0"))
 			profile.version = "0.5.0"
 		end
 	end

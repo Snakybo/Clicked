@@ -1,23 +1,22 @@
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
-
-Clicked.NAME = "Clicked"
-Clicked.VERSION = GetAddOnMetadata(Clicked.NAME, "Version")
+Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 local isPlayerInCombat = false
 
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
 		type = "launcher",
-		label = "Clicked",
+		label = L["NAME"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
 			Clicked:OpenBindingConfig()
 		end,
 		OnTooltipShow = function(tooltip)
-			tooltip:AddLine("Clicked")
+			tooltip:AddLine(L["NAME"])
 		end
 	})
 

@@ -284,7 +284,7 @@ local function ProcessActiveBindings()
 				command.action = Clicked.COMMAND_ACTION_MENU
 				valid = true
 			else
-				error("Clicked: Unhandled binding type: " .. binding.type)
+				error("Unhandled binding type: " .. binding.type)
 			end
 
 			if valid then
