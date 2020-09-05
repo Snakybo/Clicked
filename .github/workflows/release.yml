@@ -1,10 +1,10 @@
-name: Create Release
+name: Release
 on:
   push:
     tags:
       - "**"
 jobs:
-  build:
+  retail:
     runs-on: ubuntu-latest
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -13,11 +13,28 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@v1
     - name: Package Retail
-      uses: BigWigMods/packager@master
+      uses: BigWigsMods/packager@master
+    - name: "Archive artifact"
+      uses: "actions/upload-artifact@v2"
+      if: success()
+      with:
+        name: clicked-retail
+        path: ".release/*.zip"
+  classic:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v1
     - name: Package Classic
-      uses: BigWigMods/packager@master
+      uses: BigWigsMods/packager@master
       with:
         args: -g 1.13.5
     - name: "Archive artifacts"
       uses: "actions/upload-artifact@v2"
-      path: ".release/*.zip"
+      if: success()
+      with:
+        name: clicked-classic
+        path: ".release/*.zip"
