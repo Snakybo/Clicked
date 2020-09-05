@@ -1,3 +1,5 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 function Clicked:Trim(str)
 	return str:gsub("^%s*(.-)%s*$", "%1")
 end
@@ -8,15 +10,15 @@ end
 
 function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedAddonIncompatibilityMessage" .. addon] = {
-		text = Clicked.NAME .. " is not compatible with " .. addon .. " and requires one of the two to be disabled.",
-		button1 = "Keep " .. Clicked.NAME,
-		button2 = "Keep " .. addon,
+		text = L["ERR_ADDON_INCOMPATIBILITY"]:format(addon),
+		button1 = L["ERR_ADDON_INCOMPATIBILITY_KEEP"]:format(L["NAME"]),
+		button2 = L["ERR_ADDON_INCOMPATIBILITY_KEEP"]:format(addon),
 		OnAccept = function()
 			DisableAddOn(addon)
 			ReloadUI()
 		end,
 		OnCancel = function()
-			DisableAddOn(Clicked.NAME)
+			DisableAddOn("Clicked")
 			ReloadUI()
 		end,
 		timeout = 0,

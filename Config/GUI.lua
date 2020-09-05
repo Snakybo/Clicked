@@ -36,6 +36,10 @@ local function CreateGUI(type)
 	return widget
 end
 
+function GUI:Serialize(...)
+	OnSerialize(...)
+end
+
 function GUI:Label(text, fontSize)
 	local widget = CreateGUI("Label")
 	widget:SetText(text)

@@ -1,3 +1,5 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 local frames = {}
 local registerQueue = {}
 local unregisterQueue = {}
@@ -95,7 +97,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 			frame = _G[name]
 
 			if frame == nil then
-				print("[" .. self.NAME .. "] Unablet to register unit frame: " .. tostring(name))
+				print(L["ERR_FRAME_REGISTRATION"]:format(tostring(name)))
 				return
 			end
 		end

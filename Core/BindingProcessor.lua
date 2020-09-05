@@ -22,8 +22,13 @@ Clicked.TARGET_TYPE_ANY = "ANY"
 Clicked.TARGET_TYPE_HELP = "HELP"
 Clicked.TARGET_TYPE_HARM = "HARM"
 
-Clicked.COMBAT_STATE_TRUE = "IN_COMBAT"
-Clicked.COMBAT_STATE_FALSE = "NOT_IN_COMBAT"
+Clicked.LOAD_IN_COMBAT_TRUE = "IN_COMBAT"
+Clicked.LOAD_IN_COMBAT_FALSE = "NOT_IN_COMBAT"
+
+Clicked.LOAD_IN_GROUP_PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID"
+Clicked.LOAD_IN_GROUP_PARTY = "IN_GROUP_PARTY"
+Clicked.LOAD_IN_GROUP_RAID = "IN_GROUP_RAID"
+Clicked.LOAD_IN_GROUP_SOLO = "IN_GROUP_SOLO"
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 
@@ -68,9 +73,9 @@ local function GetMacroSegmentFromAction(action)
 			table.insert(flags, "exists")
 		end
 
-		if action.combat == Clicked.COMBAT_STATE_TRUE then
+		if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then
 			table.insert(flags, "combat")
-		elseif action.combat == Clicked.COMBAT_STATE_FALSE then
+		elseif action.combat == Clicked.LOAD_IN_COMBAT_FALSE then
 			table.insert(flags, "nocombat")
 		end
 
@@ -279,7 +284,7 @@ local function ProcessActiveBindings()
 				command.action = Clicked.COMMAND_ACTION_MENU
 				valid = true
 			else
-				error("Clicked: Unhandled binding type: " .. binding.type)
+				error("Unhandled binding type: " .. binding.type)
 			end
 
 			if valid then
@@ -439,27 +444,29 @@ function Clicked:CanBindingLoad(binding)
 		return false
 	end
 
-	-- If the specialization limiter has been enabled, see if the player's current
-	-- specialization matches one of the specified specializations.
+	if self.WOW_MAINLINE_RELEASE then
+		-- If the specialization limiter has been enabled, see if the player's current
+		-- specialization matches one of the specified specializations.
 
-	local specialization = load.specialization
+		local specialization = load.specialization
 
-	if specialization.selected == 1 then
-		if specialization.single ~= GetSpecialization() then
-			return false
-		end
-	elseif specialization.selected == 2 then
-		local spec = GetSpecialization()
-		local contains = false
-
-		for i = 1, #specialization.multiple do
-			if specialization.multiple[i] == spec then
-				contains = true
+		if specialization.selected == 1 then
+			if specialization.single ~= GetSpecialization() then
+				return false
 			end
-		end
+		elseif specialization.selected == 2 then
+			local spec = GetSpecialization()
+			local contains = false
 
-		if not contains then
-			return false
+			for i = 1, #specialization.multiple do
+				if specialization.multiple[i] == spec then
+					contains = true
+				end
+			end
+
+			if not contains then
+				return false
+			end
 		end
 	end
 
@@ -472,9 +479,9 @@ function Clicked:CanBindingLoad(binding)
 	local combat = load.combat
 
 	if combat.selected then
-		if combat.state == self.COMBAT_STATE_TRUE and not self:IsPlayerInCombat() then
+		if combat.state == self.LOAD_IN_COMBAT_TRUE and not self:IsPlayerInCombat() then
 			return false
-		elseif combat.state == self.COMBAT_STATE_FALSE and self:IsPlayerInCombat() then
+		elseif combat.state == self.LOAD_IN_COMBAT_FALSE and self:IsPlayerInCombat() then
 			return false
 		end
 	end
@@ -493,11 +500,57 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	local inGroup = load.inGroup
+
+	if inGroup.selected then
+		if inGroup.state == self.LOAD_IN_GROUP_SOLO and GetNumGroupMembers() > 0 then
+			return false
+		else
+			if inGroup.state == self.LOAD_IN_GROUP_PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				return false
+			elseif inGroup.state == self.LOAD_IN_GROUP_PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				return false
+			elseif inGroup.state == self.LOAD_IN_GROUP_RAID and not IsInRaid() then
+				return false
+			end
+		end
+	end
+
+	local playerInGroup = load.playerInGroup
+
+	if playerInGroup.selected then
+		local found = false
+
+		if playerInGroup.player == UnitName("player") then
+			found = true
+		else
+			local unit = IsInRaid() and "raid" or "party"
+			local numGroupMembers = GetNumGroupMembers()
+
+			if numGroupMembers == 0 then
+				return false
+			end
+
+			for i = 1, numGroupMembers do
+				local name = UnitName(unit .. i)
+
+				if name == playerInGroup.player then
+					found = true
+					break
+				end
+			end
+		end
+
+		if not found then
+			return false
+		end
+	end
+
 	return true
 end
 
 function Clicked:GetNewBindingTemplate()
-	return {
+	local template = {
 		type = Clicked.TYPE_SPELL,
 		keybind = "",
 		action = {
@@ -512,23 +565,36 @@ function Clicked:GetNewBindingTemplate()
 		},
 		load = {
 			never = false,
-			specialization = {
-				selected = 0,
-				single = GetSpecialization(),
-				multiple = {
-					GetSpecialization()
-				}
-			},
 			combat = {
 				selected = false,
-				state = Clicked.COMBAT_STATE_TRUE
+				state = Clicked.LOAD_IN_COMBAT_TRUE
 			},
 			spellKnown = {
 				selected = false,
 				spell = ""
+			},
+			inGroup = {
+				selected = false,
+				state = Clicked.LOAD_IN_GROUP_PARTY_OR_RAID
+			},
+			playerInGroup = {
+				selected = false,
+				player = ""
 			}
 		}
 	}
+	
+	if self.WOW_MAINLINE_RELEASE then
+		template.load.specialization = {
+			selected = 0,
+			single = GetSpecialization(),
+			multiple = {
+				GetSpecialization()
+			}
+		}
+	end
+
+	return template
 end
 
 function Clicked:GetNewBindingTargetTemplate()

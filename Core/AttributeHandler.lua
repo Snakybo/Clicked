@@ -78,6 +78,6 @@ function Clicked:CreateCommandAttributes(register, command, prefix, suffix)
 		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
-		error("Clicked: Unhandled action type: " .. command.action)
+		error("Unhandled action type: " .. command.action)
 	end
 end
