@@ -28,11 +28,10 @@ function Clicked:RegisterAddonConfig()
 			}
 		}
 	}
-	local profile = AceDBOptions:GetOptionsTable(self.db)
+	
+	AceConfig:RegisterOptionsTable("Clicked", config)
+	AceConfigDialog:AddToBlizOptions("Clicked", L["OPT_UI_LIST_TITLE"])
 
-	AceConfig:RegisterOptionsTable("Clicked_AddonOptions", config)
-	AceConfigDialog:AddToBlizOptions("Clicked_AddonOptions", L["OPT_UI_LIST_TITLE"])
-
-	AceConfig:RegisterOptionsTable("Clicked_AddonOptions_Profile", profile)
-	AceConfigDialog:AddToBlizOptions("Clicked_AddonOptions_Profile", L["OPT_UI_LIST_TITLE_PROFILES"], config)
+	AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(self.db))
+	AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_UI_LIST_TITLE_PROFILES"], "Clicked")
 end
