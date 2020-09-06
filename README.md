@@ -1,74 +1,38 @@
 # Clicked
 
-## Introduction
+![CI Status](https://github.com/Snakybo/Clicked/workflows/CI/badge.svg)
 
-Clicked is a World of Warcraft addon that allows you to manage both keybindings and click-cast bindings in an intuitive yet powerful manner. It allows you to bind virtually any keyboard or mouse button to perform a specific action, such as casting an ability or using an item. You can also configure the left and right mouse buttons to immediately cast an ability on a the targeted unit frame.
+Clicked is a World of Warcraft addon aimed to improve keybindings and macros. The addon adds a configuration window (`/clicked` or `/cc`) from where all all bindings can be configured to do _something_. You can configure exactly what it does on a per-binding basis, and even merge keys to do different things depending on who the target it.
 
-The Clicked configuration panel can be accessed using the `/clicked` or `/cc` command, or clicking on the minimap button.
-
-## Downloads
-
-* [CurseForge](https://www.curseforge.com/wow/addons/clicked)
+Additionally it adds support for the binding of the left and right mouse buttons if you prefer clicking on unit frames to cast something.
 
 ## Features
 
-### Bind spells, items, and custom macros
+* Create keyboard/mouse button bindings for spells, items, and custom macros
+* Fallback targets for bindings
+  1. Cast on my mouseover target
+  2. Cast on my target
+  3. Cast on myself
+* Cast abilities by clicking on unit frames
+* Rebind left and right mouse buttons
+* Run custom macros without taking up a macro slot or 255 character limitations
+* Combine keys to do different things depending on the target
+  * Cast a heal when hovering over a friendly unit frame
+  * Cast Smite when hovering over an enemy unit frame
+* Remove the need for action bar keybindings
+* Dynamically load and unload bindings
+  * Talent specialization(s)
+  * Combat status
+  * Group status
+  * Specific player in group
+* Pick spells from the spellbook
 
-In order to bind a spell, item, or macro to a keyboard key or mouse button, simply open the Clicked configuration panel (`/cc`) and use the new binding button. You'll be able to configure a variety of options, but in order to get started only the keybind and spell are required for the binding to function.
+## Support
 
-The keybind can be set to virtually any keyboard or mouse button. The spell can be configured in multiple ways, the easiest is to use the selection button, that will automatically open the spellbook and allow you to click on any spell to select it. Alternatively you can enter a spell name or spell ID manually.
+[Issue tracker](https://github.com/Snakybo/Clicked/issues)
 
-In addition to spells, Clicked also allows you to bind any item or custom macro in the same manner, simply switch between the various types with the dropdown in the configuration window.
-
-Custom macros do not take up a slot in the default macro interface, so you'll be able to configure as many as you'd like. They also are not limited to the 255 character limit. The process to configure custom macros is very similar to the default macro interface and you can use and macro conditionals that also exist in the default interface.
-
-### Powerful target priority configuration
-
-When configuring a binding you will be able to specify a chain of targets for each binding, this allows you to change the behavior of the binding depending on what you've specified as the target, for example a simple example is:
-
-1. Cast on my mouseover target
-2. Cast on my target
-3. Cast on myself.
-
-This will dynamically target the correct unit and find the first one that is valid. When used in a macro this will look similar to: `/cast [@mouseover,exists] [@target,exists] [@player] Holy Light`
-
-Clicked supports a variety of relevant units out of the box:
-
-* Global (no target is required for this spell)
-* The player itself
-* The current target
-* The focus target
-* The mouseover target (works for unit frames and 3D world units)
-* Party member 1 to 5
-
-In addition to specifying the target, you're also able to change the behavior depending on the unit's hostility towards you. For example, target the focus target if it's friendly, or the player otherwise.
-
-### Bind unit targeting and context menu actions
-
-Since Clicked allows you to rebind the left and right mouse button, you can configure another button to act as a replacement for those actions. If you haven't rebound the left or right mouse buttons it is safe to not include these as the default click functionality will persist.
-
-### Dynamically load or unload bindings
-
-Clicked will dynamically and seamlessly switch active bindings based on your current specialization, combat state, or whether a spell is currently known. You can configure these on a per-binding basis which allows you to activate or deactivate certain bindings on a per-spec basis, or disable the fishing rod binding when you enter combat.
-
-## Upcoming features
-
-Clicked is still in active development and will gain the following features in the future:
-
-* Support for a "mouseover (frame)" target to exclude targeting units from the 3D world
-* Support to select an item from your bags or equipment panel
-* Support for localization
-
-## Compatibility
-
-Clicked should be compatible with all unit frame addons, click-casting support is available if the unit frame addon is based on [oUF](https://github.com/oUF-wow/oUF) or uses the same `ClickCastHeader` to register its frames.
-
-Due to Clicked using the same namespace for click-casting support as Clique, it's not possible to use both addons at the same time. When logging in with both addons enabled Clicked will prompt you to disable one of them.
-
-## Support and feedback
-
-All suggestions, feedback, and bug reports a highly appreciated! The [issue tracker](https://github.com/Snakybo/Clicked/issues) is the go-to portal for this.
+Please include which version and unit frame addon you're using (`/dump Clicked.VERSION`). If there are specific bindings that are not working include the configurations for those as well.
 
 ## Credits
 
-Clicked is inspired by the [Clique](https://www.wowinterface.com/downloads/fileinfo.php?id=5108) addon. A lot of the click casting functionality is based of Clique.
+Clicked is inspired by [Clique](https://www.curseforge.com/wow/addons/clique). A lot of the click casting functionality is based of Clique.
