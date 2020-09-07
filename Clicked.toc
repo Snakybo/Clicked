@@ -4,7 +4,6 @@
 #@non-retail@
 # ## Interface: 11305
 #@end-non-retail@
-
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 0.5.0
