@@ -367,6 +367,23 @@ local function DrawTargetSelection(container, binding)
 					table.remove(binding.targets, index)
 				else
 					target.unit = value
+
+					local last = nil
+
+					for i, target in ipairs(binding.targets) do
+						local unit = target.unit
+						
+						if not Clicked:CanBindingTargetHaveFollowUp(unit) then
+							last = i
+							break
+						end
+					end
+					
+					if last ~= nil then
+						for i = 1, #binding.targets - last do
+							table.remove(binding.targets, #binding.targets)
+						end
+					end
 				end
 
 				Clicked:ReloadActiveBindings()
