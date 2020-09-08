@@ -9,11 +9,16 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 	local prefix, suffix = command.keybind:match("^(.-)([^%-]+)$")
 	local buttonIndex = suffix:match("^BUTTON(%d+)$")
 
+	-- remove any trailing dashes (shift- becomes shift, ctrl- becomes ctrl, etc.)
+	if prefix:sub(-1, -1) == "-" then
+        prefix = prefix:sub(1, -2)
+    end
+	
 	-- convert the parts to lowercase so it fits the attribute naming style
 	prefix = prefix:lower()
 	suffix = suffix:lower()
 
-	if buttonIndex ~= nil and isClickCastCommand then
+	if buttonIndex ~= nil and (isClickCastCommand or buttonIndex ~= nil) then
 		suffix = buttonIndex
 	elseif buttonIndex ~= nil then
 		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
@@ -23,7 +28,7 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 		prefix = ""
 	end
 
-	return prefix, suffix
+	return prefix, suffix, buttonIndex ~= nil
 end
 
 local function GetFrame(index)
@@ -47,9 +52,7 @@ function Clicked:ProcessCommands(commands)
 
 	for _, command in ipairs(commands) do
 		local isHoverCastBinding = command.mode == self.TARGETING_MODE_HOVERCAST
-		local isMouseButton = self:StartsWith(command.keybind, "BUTTON")
-
-		local prefix, suffix = GetCommandAttributeIdentifier(command, isHoverCastBinding or isMouseButton)
+		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, isHoverCastBinding)
 
 		if isHoverCastBinding or isMouseButton then
 			local keybind = {
