@@ -384,6 +384,7 @@ local function DrawTargetSelection(container, binding)
 			TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
 			MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
 			FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+			CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
 			PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
 			PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
 			PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
@@ -396,6 +397,7 @@ local function DrawTargetSelection(container, binding)
 			"TARGET",
 			"MOUSEOVER",
 			"FOCUS",
+			"CURSOR",
 			"PARTY_1",
 			"PARTY_2",
 			"PARTY_3",
@@ -454,7 +456,9 @@ local function DrawTargetSelection(container, binding)
 		end
 	end
 
-	if #binding.targets == 0 or binding.targets[#binding.targets].unit ~= Clicked.TARGET_UNIT_PLAYER then
+	local last = binding.targets[#binding.targets]
+
+	if last == nil or Clicked:CanBindingTargetHaveFollowUp(last.unit) then
 		DrawTargetUnitDropdown({ unit = "_NONE" }, 0, #binding.targets)
 	end
 end

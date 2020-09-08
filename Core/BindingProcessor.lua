@@ -17,6 +17,7 @@ Clicked.TARGET_UNIT_PARTY_4 = "PARTY_4"
 Clicked.TARGET_UNIT_PARTY_5 = "PARTY_5"
 Clicked.TARGET_UNIT_FOCUS = "FOCUS"
 Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
+Clicked.TARGET_UNIT_CURSOR = "CURSOR"
 
 Clicked.TARGET_TYPE_ANY = "ANY"
 Clicked.TARGET_TYPE_HELP = "HELP"
@@ -41,36 +42,40 @@ local function GetMacroSegmentFromAction(action)
 	elseif action.mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
 		local flags = {}
 
-		if action.unit == Clicked.TARGET_UNIT_PLAYER then
-			table.insert(flags, "@player")
-		elseif action.unit == Clicked.TARGET_UNIT_TARGET then
-			table.insert(flags, "@target")
-		elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER then
-			table.insert(flags, "@mouseover")
-		elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
-			table.insert(flags, "@party1")
-		elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
-			table.insert(flags, "@party2")
-		elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
-			table.insert(flags, "@party3")
-		elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
-			table.insert(flags, "@party4")
-		elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
-			table.insert(flags, "@party5")
-		elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
-			table.insert(flags, "@focus")
-		end
-
-		if Clicked:CanBindingTargetUnitBeHostile(action.unit) then
-			if action.type == Clicked.TARGET_TYPE_HELP then
-				table.insert(flags, "help")
-			elseif action.type == Clicked.TARGET_TYPE_HARM then
-				table.insert(flags, "harm")
+		if action.unit ~= nil then
+			if action.unit == Clicked.TARGET_UNIT_PLAYER then
+				table.insert(flags, "@player")
+			elseif action.unit == Clicked.TARGET_UNIT_TARGET then
+				table.insert(flags, "@target")
+			elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER then
+				table.insert(flags, "@mouseover")
+			elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
+				table.insert(flags, "@party1")
+			elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
+				table.insert(flags, "@party2")
+			elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
+				table.insert(flags, "@party3")
+			elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
+				table.insert(flags, "@party4")
+			elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
+				table.insert(flags, "@party5")
+			elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
+				table.insert(flags, "@focus")
+			elseif action.unit == Clicked.TARGET_UNIT_CURSOR then
+				table.insert(flags, "@cursor")
 			end
-		end
 
-		if #flags > 0 then
-			table.insert(flags, "exists")
+			if Clicked:CanBindingTargetUnitBeHostile(action.unit) then
+				if action.type == Clicked.TARGET_TYPE_HELP then
+					table.insert(flags, "help")
+				elseif action.type == Clicked.TARGET_TYPE_HARM then
+					table.insert(flags, "harm")
+				end
+			end
+
+			if Clicked:CanBindingTargetHaveFollowUp(action.unit) then
+				table.insert(flags, "exists")
+			end
 		end
 
 		if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then

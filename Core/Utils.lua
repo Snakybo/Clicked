@@ -61,6 +61,23 @@ function Clicked:CanBindingTargetUnitBeHostile(unit)
 	return false
 end
 
+-- Check if a binding's target unit can have a follow up target.
+-- This will be the case for most targets, but some targets act
+-- as a stop sign in macro code as they will always be valid.
+-- For example [@player] or [@cursor] will always be 'true' and
+-- thus it doesn't make sense to allow targets beyond.
+function Clicked:CanBindingTargetHaveFollowUp(unit)
+	if unit == self.TARGET_UNIT_PLAYER then
+		return false
+	end
+
+	if unit == self.TARGET_UNIT_CURSOR then
+		return false
+	end
+
+	return true
+end
+
 -- Gets the virtual targeting mode of a binding. This may differ
 -- from what can be visualized in the UI. In the majority
 -- of these we simply don't show the UI and thus don't allow the user
