@@ -17,19 +17,6 @@ end
 -- read from the database.
 
 function Clicked:UpgradeDatabaseProfile(profile)
-	-- DEV
-	for _, binding in ipairs(profile.bindings) do
-		binding.load.inGroup = binding.load.inGroup or {
-			selected = false,
-			state = Clicked.LOAD_IN_GROUP_PARTY_OR_RAID
-		}
-		binding.load.playerInGroup = binding.load.playerInGroup or {
-			selected = false,
-			player = ""
-		}
-	end
-	-- DEV
-
 	if profile.version == self.VERSION then
 		return
 	end
