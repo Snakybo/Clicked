@@ -276,8 +276,15 @@ local function DrawSpellSelection(container, action)
 				SpellBookFrame:HookScript("OnHide", function()
 					DisableSpellbookHandlers()
 				end)
+				
+				SpellBookFrame.bookType = BOOKTYPE_SPELL
 
-				ShowUIPanel(SpellBookFrame)
+				if not SpellBookFrame:IsVisible() then
+					ShowUIPanel(SpellBookFrame)
+				else
+					SpellBookFrame_Update();
+				end
+
 				EnableSpellbookHandlers()
 			end
 		end
