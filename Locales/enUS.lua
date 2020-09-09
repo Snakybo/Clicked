@@ -42,6 +42,8 @@ L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"] = "Loaded"
 L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"] = "Not loaded"
 
 L["CFG_UI_BINDING_CREATE"] = "Create binding"
+L["CFG_UI_BINDING_COPY"] = "Copy"
+L["CFG_UI_BINDING_PASTE"] = "Paste"
 L["CFG_UI_BINDING_DELETE"] = "Delete"
 L["CFG_UI_BINDING_SET_TOOLTIP"] = "Press a key to bind, or ESC to clear the binding."
 

@@ -15,6 +15,7 @@ local KEYBIND_ORDER_LIST = {
 
 local spellbookButtons = {}
 local options = {}
+local bindingCopyBuffer = nil
 
 -- Utility functions
 
@@ -175,6 +176,24 @@ local function CanBindingTargetingModeChange(binding)
 	end
 
 	return binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM
+end
+
+local function DeepCopy(original)
+	if original == nil then
+		return nil
+	end
+
+	local result = {}
+
+	for k, v in pairs(original) do
+		if type(v) == "table" then
+			v = DeepCopy(v)
+		end
+
+		result[k] = v
+	end
+
+	return result
 end
 
 -- Spell book integration
@@ -831,6 +850,13 @@ end
 -- Main frame
 
 local function DrawHeader(container)
+	local line = AceGUI:Create("SimpleGroup")
+	line:SetFullWidth(true)
+	line:SetLayout("table")
+	line:SetUserData("table", { columns = { 1, 0, 0} })
+
+	container:AddChild(line)
+
 	-- create binding button
 	do
 		local function OnClick()
@@ -845,7 +871,50 @@ local function DrawHeader(container)
 		local widget = GUI:Button(L["CFG_UI_BINDING_CREATE"], OnClick)
 		widget:SetWidth(210) -- from AceGUIContainer-ClickedTreeGroup
 
-		container:AddChild(widget)
+		line:AddChild(widget)
+	end
+
+	local pasteBindingButton
+
+	-- copy binding button
+	do
+		local function OnClick()
+			local original = options.item.binding
+
+			-- create a deep copy of the binding so that any modifications
+			-- after the copy was made aren't reflected in the copy behavior
+			bindingCopyBuffer = nil
+			bindingCopyBuffer = DeepCopy(original)
+
+			pasteBindingButton:SetDisabled(bindingCopyBuffer == nil)
+		end
+
+		local widget = GUI:Button(L["CFG_UI_BINDING_COPY"], OnClick)
+		widget:SetWidth(100)
+		widget:SetDisabled(options.item ~= nil and options.item.binding == nil)
+		
+		line:AddChild(widget)
+	end
+
+	-- paste binding button
+	do
+		local function OnClick()
+			local original = options.item.binding
+
+			-- copy the buffer again to prevent dirtying it
+			local clone = DeepCopy(bindingCopyBuffer)
+			clone.keybind = original.keybind
+
+			Clicked:SetBindingAt(options.item.value, clone)
+		end
+
+		local widget = GUI:Button(L["CFG_UI_BINDING_PASTE"], OnClick)
+		widget:SetWidth(100)
+		widget:SetDisabled(bindingCopyBuffer == nil)
+
+		line:AddChild(widget)
+
+		pasteBindingButton = widget
 	end
 end
 
@@ -972,6 +1041,8 @@ function Clicked:OpenBindingConfig()
 			AceGUI:Release(container)
 			DisableSpellbookHandlers()
 			ClearOptionsTable()
+
+			bindingCopyBuffer = nil
 		end
 
 		local function OnKeyDown(self, key)

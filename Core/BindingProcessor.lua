@@ -357,6 +357,11 @@ function Clicked:DeleteBinding(binding)
 	end
 end
 
+function Clicked:SetBindingAt(index, binding)
+	configuredBindings[index] = binding
+	self:ReloadActiveBindings()
+end
+
 -- Reloads the active bindings, this will go through all configured bindings
 -- and check their (current) validity using the CanBindingLoad function.
 -- If there are multiple bindings that use the same keybind it will use the
