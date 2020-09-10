@@ -80,6 +80,7 @@ function Clicked:OnEnable()
 	end
 
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "ReloadActiveBindings")
 	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
 
@@ -96,6 +97,7 @@ function Clicked:OnDisable()
 	end
 
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
 	self:UnregisterEvent("BAG_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
 end

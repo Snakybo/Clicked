@@ -107,6 +107,10 @@ L["CFG_UI_LOAD_NEVER"] = "Never load"
 -- Only load for specific specialization(s)
 L["CFG_UI_LOAD_SPECIALIZATION"] = "Specialization"
 
+-- Only load for specific stance(s)
+L["CFG_UI_LOAD_STANCE"] = "Stance"
+L["CFG_UI_LOAD_STANCE_NONE"] = "None"
+
 -- Only load in or out of combat
 L["CFG_UI_LOAD_COMBAT"] = "Combat"
 L["CFG_UI_LOAD_COMBAT_TRUE"] = "In combat"

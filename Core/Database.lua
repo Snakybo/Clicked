@@ -61,5 +61,23 @@ function Clicked:UpgradeDatabaseProfile(profile)
 		end
 	end
 
+	-- version 0.5.x to 0.6.0
+	do
+		if self:StartsWith(profile.version, "0.5") then
+			for _, binding in ipairs(profile.bindings) do
+				binding.load.stance = {
+					selected = 0,
+					single = 1,
+					multiple = {
+						1
+					}
+				}
+			end
+
+			print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.6.0"))
+			profile.version = "0.6.0"
+		end
+	end
+
 	profile.version = self.VERSION
 end

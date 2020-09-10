@@ -84,6 +84,10 @@ local function GetMacroSegmentFromAction(action)
 			table.insert(flags, "nocombat")
 		end
 
+		if #action.stance > 0 then
+			table.insert(flags, "stance:" .. action.stance)
+		end
+
 		return table.concat(flags, ",")
 	end
 
@@ -99,10 +103,33 @@ local function ConstructAction(binding, target)
 		action.ability = binding.action.item
 	end
 
-	if binding.load.combat.selected then
-		action.combat = binding.load.combat.state
-	else
-		action.combat = ""
+	do
+		local combat = binding.load.combat
+
+		if combat.selected then
+			action.combat = combat.state
+		else
+			action.combat = ""
+		end
+	end
+
+	do
+		local stance = binding.load.stance
+
+		-- stances need to be 0 indexed
+		if stance.selected == 1 then
+			action.stance = tostring(stance.single - 1)
+		elseif stance.selected == 2 then
+			local stances = {}
+
+			for i = 1, #stance.multiple do
+				stances[i] = stance.multiple[i] - 1
+			end
+
+			action.stance = table.concat(stances, "/")
+		else
+			action.stance = ""
+		end
 	end
 
 	action.mode = Clicked:GetBindingTargetingMode(binding)
@@ -147,7 +174,15 @@ local function SortActions(left, right)
 	end
 
 	if #left.combat == 0 and #right.combat > 0 then
+		return false
+	end
+
+	if #left.stance > 0 and #right.stance == 0 then
 		return true
+	end
+
+	if #left.stance == 0 and #right.stance > 0 then
+		return false
 	end
 
 	if left.unit ~= nil and right.unit == nil then
@@ -590,6 +625,13 @@ function Clicked:GetNewBindingTemplate()
 			playerInGroup = {
 				selected = false,
 				player = ""
+			},
+			stance = {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
 			}
 		}
 	}

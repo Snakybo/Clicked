@@ -752,6 +752,61 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 	end
 end
 
+local function DrawLoadInStance(container, stance)
+	local function GetStances()
+		local result = { L["CFG_UI_LOAD_STANCE_NONE"] }
+
+		local numStances = GetNumShapeshiftForms()
+
+		for i = 1, numStances do
+			local _, _, _, spellId = GetShapeshiftFormInfo(i)
+			local name = GetSpellInfo(spellId)
+			
+			table.insert(result, name)
+		end
+
+		return result
+	end
+
+	-- stance toggle
+	do
+		local widget = GUI:TristateCheckBox(L["CFG_UI_LOAD_STANCE"], stance, "selected")
+		widget:SetTriState(true)
+
+		if stance.selected == 0 then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	if stance.selected == 1 then
+		-- stance (single)
+		do
+			local items = GetStances()
+			local order = nil
+
+			local widget = GUI:Dropdown(nil, items, order, stance, "single")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	elseif stance.selected == 2 then
+		-- stance (multiple)
+		do
+			local items = GetStances()
+			local order = nil
+
+			local widget = GUI:MultiselectDropdown(nil, items, order, stance, "multiple")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
@@ -765,6 +820,10 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)
+
+	if GetNumShapeshiftForms() > 0 then
+		DrawLoadInStance(container, load.stance)
+	end
 end
 
 -- Main binding frame
