@@ -92,9 +92,10 @@ local function GetFrameHandler(index)
 		if Clicked.WOW_MAINLINE_RELEASE then
 			CreateStateDriverAttribute(frame, "vehicle", "[@vehicle,exists] enabled; disabled")
 			CreateStateDriverAttribute(frame, "vehicleui", "[vehicleui] enabled; disabled")
-			CreateStateDriverAttribute(frame, "possessbar", "[possessbar] enabled; disabled")
 			CreateStateDriverAttribute(frame, "petbattle", "[petbattle] enabled; disabled")
 		end
+
+		CreateStateDriverAttribute(frame, "possessbar", "[possessbar] enabled; disabled")
 
 		table.insert(macroFrameHandlers, frame)
 	end
