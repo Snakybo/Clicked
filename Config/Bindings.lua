@@ -28,7 +28,8 @@ local function ClearOptionsTable()
 			status = {},
 			items = {},
 			container = nil
-		}
+		},
+		refreshHeaderFunc = nil
 	}
 end
 
@@ -809,6 +810,12 @@ local function DrawBinding(container)
 
 			if selected ~= nil then
 				options.tree.container:SelectByValue(selected.value)
+			else
+				options.item = nil
+			end
+
+			if options.refreshHeaderFunc ~= nil then
+				options.refreshHeaderFunc()
 			end
 		end
 
@@ -881,6 +888,7 @@ local function DrawHeader(container)
 		line:AddChild(widget)
 	end
 
+	local copyBindingButton
 	local pasteBindingButton
 
 	-- copy binding button
@@ -893,14 +901,18 @@ local function DrawHeader(container)
 			bindingCopyBuffer = nil
 			bindingCopyBuffer = DeepCopy(original)
 
-			pasteBindingButton:SetDisabled(bindingCopyBuffer == nil)
+			if options.refreshHeaderFunc ~= nil then
+				options.refreshHeaderFunc()
+			end
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_COPY"], OnClick)
 		widget:SetWidth(100)
-		widget:SetDisabled(options.item ~= nil and options.item.binding == nil)
+		widget:SetDisabled(options.item == nil or options.item.binding == nil)
 		
 		line:AddChild(widget)
+
+		copyBindingButton = widget
 	end
 
 	-- paste binding button
@@ -922,6 +934,11 @@ local function DrawHeader(container)
 		line:AddChild(widget)
 
 		pasteBindingButton = widget
+	end
+
+	options.refreshHeaderFunc = function()
+		copyBindingButton:SetDisabled(options.item == nil or options.item.binding == nil)
+		pasteBindingButton:SetDisabled(options.item == nil or options.item.binding == nil or bindingCopyBuffer == nil)
 	end
 end
 
@@ -946,6 +963,10 @@ local function DrawTreeView(container)
 
 			if previous ~= nil and previous.value ~= options.item.value then
 				options.tab = {}
+			end
+
+			if options.refreshHeaderFunc ~= nil then
+				options.refreshHeaderFunc()
 			end
 
 			DrawBinding(container)
@@ -1034,6 +1055,10 @@ local function OnBindingsChangedEvent()
 		options.tree.container:SelectByValue(selected)
 	else
 		options.tree.container:ReleaseChildren()
+	end
+
+	if options.refreshHeaderFunc ~= nil then
+		options.refreshHeaderFunc()
 	end
 end
 
