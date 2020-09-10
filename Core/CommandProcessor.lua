@@ -45,7 +45,7 @@ end
 
 local function GetFrameHandler(index)
 	if index > #macroFrameHandlers then
-		frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. index, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
+		local frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. index, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
 		frame:Hide()
 
 		-- set required data first
