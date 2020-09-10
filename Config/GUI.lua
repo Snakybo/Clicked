@@ -132,8 +132,8 @@ function GUI:TristateCheckBox(label, ref, key)
 		OnSerialize(frame, event, value)
 	end
 
-	local function SetValue(self, value)
-		self:SetValue(IndexToValue(value))
+	local function SetValue(widget, value)
+		widget:SetValue(IndexToValue(value))
 	end
 
 	local widget = CreateGUI("CheckBox")

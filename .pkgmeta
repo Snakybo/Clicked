@@ -1,2 +1,7 @@
 package-as: Clicked
 enable-nolib-creation: no
+
+ignore:
+  - .luacheckrc
+  - .editorconfig
+  - README.md

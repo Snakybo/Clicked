@@ -4,37 +4,35 @@ on:
     tags:
       - "**"
 jobs:
-  retail:
+  build:
     runs-on: ubuntu-latest
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
       GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
     steps:
-    - name: Clone repository
-      uses: actions/checkout@v1
+    - uses: actions/checkout@v1
+    - name: "Run Luacheck"
+      run: |
+        sudo apt-get install luarocks
+        luarocks install --local luacheck
+        /home/runner/.luarocks/bin/luacheck . --no-color -q
     - name: Package Retail
       uses: BigWigsMods/packager@master
-    - name: "Archive artifact"
+    - name: "Archive Retail"
       uses: "actions/upload-artifact@v2"
       if: success()
       with:
         name: clicked-retail
         path: ".release/*.zip"
-  classic:
-    runs-on: ubuntu-latest
-    env:
-      CF_API_KEY: ${{ secrets.CF_API_KEY }}
-      GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
-    steps:
     - name: Clone repository
       uses: actions/checkout@v1
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
         args: -g 1.13.5
-    - name: "Archive artifacts"
+    - name: "Archive Classic"
       uses: "actions/upload-artifact@v2"
       if: success()
       with:
         name: clicked-classic
-        path: ".release/*.zip"
+        path: ".release/*-classic.zip"

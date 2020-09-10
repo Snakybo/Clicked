@@ -28,7 +28,7 @@ function Clicked:RegisterAddonConfig()
 			}
 		}
 	}
-	
+
 	AceConfig:RegisterOptionsTable("Clicked", config)
 	AceConfigDialog:AddToBlizOptions("Clicked", L["OPT_UI_LIST_TITLE"])
 

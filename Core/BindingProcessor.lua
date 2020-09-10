@@ -633,7 +633,7 @@ function Clicked:GetNewBindingTemplate()
 			}
 		}
 	}
-	
+
 	if self.WOW_MAINLINE_RELEASE then
 		template.load.specialization = {
 			selected = 0,

@@ -277,7 +277,7 @@ local function DrawSpellSelection(container, action)
 				SpellBookFrame:HookScript("OnHide", function()
 					DisableSpellbookHandlers()
 				end)
-				
+
 				SpellBookFrame.bookType = BOOKTYPE_SPELL
 
 				if not SpellBookFrame:IsVisible() then
@@ -367,7 +367,7 @@ local function DrawModeSelection(container, binding)
 	local items = {
 		DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"],
 		HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"],
-		GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"] 
+		GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"]
 	}
 
 	local order = {
@@ -397,15 +397,15 @@ local function DrawTargetSelection(container, binding)
 
 					local last = nil
 
-					for i, target in ipairs(binding.targets) do
-						local unit = target.unit
-						
+					for i, t in ipairs(binding.targets) do
+						local unit = t.unit
+
 						if not Clicked:CanBindingTargetHaveFollowUp(unit) then
 							last = i
 							break
 						end
 					end
-					
+
 					if last ~= nil then
 						for i = 1, #binding.targets - last do
 							table.remove(binding.targets, #binding.targets)
@@ -761,7 +761,7 @@ local function DrawLoadInStance(container, stance)
 		for i = 1, numStances do
 			local _, _, _, spellId = GetShapeshiftFormInfo(i)
 			local name = GetSpellInfo(spellId)
-			
+
 			table.insert(result, name)
 		end
 
@@ -815,7 +815,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	if Clicked.WOW_MAINLINE_RELEASE then
 		DrawLoadSpecialization(container, load.specialization)
 	end
-	
+
 	DrawLoadCombat(container, load.combat)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
@@ -886,6 +886,7 @@ local function DrawBinding(container)
 
 	-- tabs
 	do
+		-- luacheck: ignore container
 		local function OnGroupSelected(container, event, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
 			scrollFrame:SetLayout("Flow")
@@ -968,7 +969,7 @@ local function DrawHeader(container)
 		local widget = GUI:Button(L["CFG_UI_BINDING_COPY"], OnClick)
 		widget:SetWidth(100)
 		widget:SetDisabled(options.item == nil or options.item.binding == nil)
-		
+
 		line:AddChild(widget)
 
 		copyBindingButton = widget
@@ -1008,6 +1009,7 @@ local function DrawTreeView(container)
 
 	-- tree view
 	do
+		-- luacheck: ignore container
 		local function OnGroupSelected(container, event, group)
 			container:ReleaseChildren()
 
@@ -1031,6 +1033,7 @@ local function DrawTreeView(container)
 			DrawBinding(container)
 		end
 
+		-- luacheck: ignore container
 		local function OnButtonEnter(container, event, group, frame)
 			local tooltip = AceGUI.tooltip
 			local text = frame.text:GetText()
@@ -1064,6 +1067,7 @@ local function DrawTreeView(container)
 			tooltip:Show()
 		end
 
+		-- luacheck: ignore container
 		local function OnButtonLeave(container, event, group, frame)
 			local tooltip = AceGUI.tooltip
 			tooltip:Hide()
@@ -1136,12 +1140,12 @@ function Clicked:OpenBindingConfig()
 			bindingCopyBuffer = nil
 		end
 
-		local function OnKeyDown(self, key)
+		local function OnKeyDown(widget, key)
 			if key == "ESCAPE" then
-				self:SetPropagateKeyboardInput(false)
-				self:Hide()
+				widget:SetPropagateKeyboardInput(false)
+				widget:Hide()
 			else
-				self:SetPropagateKeyboardInput(true)
+				widget:SetPropagateKeyboardInput(true)
 			end
 		end
 

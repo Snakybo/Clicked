@@ -18,7 +18,7 @@ local function Keybinding_OnClick(frame, button)
 	if button == "LeftButton" then
 		local self = frame.obj
 		local passed = GetTime() - (self.lastClickTime or 0)
-		
+
 		if not self.waitingForKey and passed > 0.01 then
 			frame:EnableKeyboard(true)
 			frame:EnableMouseWheel(true)
@@ -83,17 +83,6 @@ local function Keybinding_OnMouseDown(frame, button)
 	elseif button == "Button5" then
 		button = "BUTTON5"
 	end
-	Keybinding_OnKeyDown(frame, button)
-end
-
-local function Keybinding_OnMouseWheel(frame, direction)
-	local button
-	if direction >= 0 then
-		button = "MOUSEWHEELUP"
-	else
-		button = "MOUSEWHEELDOWN"
-	end
-
 	Keybinding_OnKeyDown(frame, button)
 end
 

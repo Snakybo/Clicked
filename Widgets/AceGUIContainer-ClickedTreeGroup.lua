@@ -56,7 +56,6 @@ local function GetButtonUniqueValue(line)
 end
 
 local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
-	local self = button.obj
 	local toggle = button.toggle
 	local text1 = treeline.text1 or ""
 	local text2 = treeline.text2 or ""
@@ -427,7 +426,7 @@ local function Constructor()
 	tree.TreeOnRelease = tree.OnRelease
 	tree.TreeCreateButton = tree.CreateButton
 	tree.TreeSetStatusTable = tree.SetStatusTable
-	
+
 	for method, func in pairs(methods) do
 		tree[method] = func
 	end
