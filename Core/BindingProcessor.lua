@@ -37,11 +37,11 @@ local configuredBindings = {}
 local activeBindings = {}
 
 local function GetMacroSegmentFromAction(action)
-	if action.mode == Clicked.TARGETING_MODE_HOVERCAST then
-		return "@mouseover"
-	elseif action.mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
-		local flags = {}
+	local flags = {}
 
+	if action.mode == Clicked.TARGETING_MODE_HOVERCAST then
+		table.insert(flags, "@mouseover")
+	elseif action.mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
 		if action.unit ~= nil then
 			if action.unit == Clicked.TARGET_UNIT_PLAYER then
 				table.insert(flags, "@player")
@@ -77,21 +77,19 @@ local function GetMacroSegmentFromAction(action)
 				table.insert(flags, "exists")
 			end
 		end
-
-		if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then
-			table.insert(flags, "combat")
-		elseif action.combat == Clicked.LOAD_IN_COMBAT_FALSE then
-			table.insert(flags, "nocombat")
-		end
-
-		if #action.stance > 0 then
-			table.insert(flags, "stance:" .. action.stance)
-		end
-
-		return table.concat(flags, ",")
 	end
 
-	return ""
+	if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then
+		table.insert(flags, "combat")
+	elseif action.combat == Clicked.LOAD_IN_COMBAT_FALSE then
+		table.insert(flags, "nocombat")
+	end
+
+	if #action.stance > 0 then
+		table.insert(flags, "stance:" .. action.stance)
+	end
+
+	return table.concat(flags, ",")
 end
 
 local function ConstructAction(binding, target)
