@@ -136,6 +136,8 @@ function Clicked:ProcessCommands(commands)
 
 			nextMacroFrameHandler = nextMacroFrameHandler + 1
 
+			frame:Hide()
+
 			self:CreateCommandAttributes(attributes, command, prefix, suffix)
 			self:SetPendingFrameAttributes(frame, attributes)
 			self:ApplyAttributesToFrame(frame)
