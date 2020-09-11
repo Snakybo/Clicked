@@ -9,7 +9,7 @@ Additionally it adds support for the binding of the left and right mouse buttons
 ## Features
 
 * Create keyboard/mouse button bindings for spells, items, and custom macros
-* Fallback targets for bindings
+* Target priority order
   1. Cast on my mouseover target
   2. Cast on my target
   3. Cast on myself
@@ -25,7 +25,9 @@ Additionally it adds support for the binding of the left and right mouse buttons
   * Combat status
   * Group status
   * Specific player in group
+  * Stances/shapeshift forms
 * Pick spells from the spellbook
+* Unlock bindings in a vehicle
 
 ## Support
 
