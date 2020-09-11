@@ -78,6 +78,25 @@ L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"] = "Dynamic priority"
 L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"] = "Unit frame only"
 L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"] = "Global (no target)"
 
+-- Help texts for the various targeting modes
+L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC_HELP"] = [[
+Dynamic priority bindings provide a customizable configuration interface, you can select valid targets for this binding using dropdown menus, and optionally specify the hostility of the target unit.
+
+You can combine as many bindings using the same keybind with this targeting mode as you like as long as they have a different configuration (two bindings that require a friendly mouseover target won't work).
+
+The system will automatically prioritize the bindings based on the current situation. You can combine bindings with a hostile ability when targeting an enemy with healing abilities if you're hovering over a friendly unit frame.
+]]
+
+L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST_HELP"] = [[
+Bindings using this targeting mode will only activate when hovering over a unit frame.
+]]
+
+L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL_HELP"] = [[
+Bindings using this targeting mode do not need an explicit target defined, this is useful for abilities such as defensives or untargeted AoE effects.
+
+The global targeting mode can also be combined (once per keybind) with the dynamic priority targeting mode. When configured like that the binding using this targeting mode will always be the last fallback option, so make sure other bindings do not include a target that will always be valid, such as player or cursor.
+]]
+
 -- Used for target unit filters (dynamic prioritization)
 L["CFG_UI_ACTION_TARGET_UNIT"] = "On this target"
 L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"] = "Or"

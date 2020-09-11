@@ -296,7 +296,7 @@ local function DrawSpellSelection(container, action)
 			tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
 			tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-			tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, true)
+			tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, 1, true)
 			tooltip:Show()
 		end
 
@@ -364,22 +364,51 @@ local function DrawMacroSelection(container, action)
 end
 
 local function DrawModeSelection(container, binding)
-	local items = {
-		DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"],
-		HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"],
-		GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"]
-	}
+	do
+		local help = {
+			DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC_HELP"],
+			HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST_HELP"],
+			GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL_HELP"]
+		}
 
-	local order = {
-		"DYNAMIC_PRIORITY",
-		"HOVERCAST",
-		"GLOBAL"
-	}
+		local function OnItemEnter(item, event)
+			local tooltip = AceGUI.tooltip
+			local text = help[item.userdata.value]
 
-	local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, binding, "targetingMode")
-	widget:SetFullWidth(true)
+			tooltip:SetOwner(item.frame, "ANCHOR_NONE")
+			tooltip:ClearAllPoints()
+			tooltip:SetPoint("LEFT", item.frame, "RIGHT")
+			tooltip:SetText(text, 1, 0.82, 0, 1, true)
+			tooltip:Show()
+		end
 
-	container:AddChild(widget)
+		local function OnItemLeave(item, event)
+			local tooltip = AceGUI.tooltip
+			tooltip:Hide()
+		end
+
+		local items = {
+			DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"],
+			HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"],
+			GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"]
+		}
+
+		local order = {
+			"DYNAMIC_PRIORITY",
+			"HOVERCAST",
+			"GLOBAL"
+		}
+
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, binding, "targetingMode")
+		widget:SetFullWidth(true)
+
+		for _, item in widget.pullout:IterateItems() do
+			item:SetCallback("OnEnter", OnItemEnter)
+			item:SetCallback("OnLeave", OnItemLeave)
+		end
+
+		container:AddChild(widget)
+	end
 end
 
 local function DrawTargetSelection(container, binding)
@@ -1063,7 +1092,7 @@ local function DrawTreeView(container)
 			tooltip:SetOwner(frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
 			tooltip:SetPoint("RIGHT", frame, "LEFT")
-			tooltip:SetText(text or "", 1, 0.82, 0, true)
+			tooltip:SetText(text or "", 1, 0.82, 0, 1, true)
 			tooltip:Show()
 		end
 
