@@ -37,25 +37,25 @@ function Clicked:RegisterClickCastHeader()
 	self.ClickCastHeader:SetAttribute("setup-keybinds", "")
 	self.ClickCastHeader:SetAttribute("clear-keybinds", "")
 
-	self.ClickCastHeader:SetAttribute("clickcast_register", [===[
+	self.ClickCastHeader:SetAttribute("clickcast_register", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_register", frame)
-	]===])
+	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_unregister", [===[
+	self.ClickCastHeader:SetAttribute("clickcast_unregister", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_unregister", frame)
-	]===])
+	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_onenter", [===[
+	self.ClickCastHeader:SetAttribute("clickcast_onenter", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("setup-keybinds"))
-	]===])
+	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_onleave", [===[
+	self.ClickCastHeader:SetAttribute("clickcast_onleave", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
-	]===])
+	]])
 
 	self.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
 		local frameName = value and value.GetName and value:GetName()

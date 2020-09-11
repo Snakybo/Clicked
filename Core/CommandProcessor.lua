@@ -32,13 +32,13 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 end
 
 local function CreateStateDriverAttribute(frame, state, condition)
-	frame:SetAttribute("_onstate-" .. state, [===[
+	frame:SetAttribute("_onstate-" .. state, [[
 		if newstate == "enabled" then
 			self:RunAttribute("clicked-clear-binding")
 		else
 			self:RunAttribute("clicked-register-binding")
 		end
-	]===])
+	]])
 
 	RegisterStateDriver(frame, state, condition)
 end
@@ -59,7 +59,7 @@ local function GetFrameHandler(index)
 
 		-- attempt to register a binding, this will also check if the binding
 		-- is currently allowed to be active (e.g. not in a vehicle or pet battle)
-		frame:SetAttribute("clicked-register-binding", [===[
+		frame:SetAttribute("clicked-register-binding", [[
 			if not self:IsShown() then
 				return
 			end
@@ -78,13 +78,13 @@ local function GetFrameHandler(index)
 
 			local keybind = self:GetAttribute("clicked-keybind")
 			self:SetBindingClick(true, keybind, self)
-		]===])
+		]])
 
 		-- unregister a binding
-		frame:SetAttribute("clicked-clear-binding", [===[
+		frame:SetAttribute("clicked-clear-binding", [[
 			local keybind = self:GetAttribute("clicked-keybind")
 			self:ClearBinding(keybind)
-		]===])
+		]])
 
 		if Clicked.WOW_MAINLINE_RELEASE then
 			CreateStateDriverAttribute(frame, "vehicle", "[@vehicle,exists] enabled; disabled")
