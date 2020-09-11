@@ -259,6 +259,96 @@ local function DisableSpellbookHandlers()
 	end
 end
 
+-- Common draw functions
+
+local function DrawTristateLoadOption(container, title, options, data)
+	-- enabled toggle
+	do
+		local widget = GUI:TristateCheckBox(title, data, "selected")
+		widget:SetTriState(true)
+
+		if data.selected == 0 then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	local items = {}
+	local icons = {}
+
+	for i = 1, #options do
+		items[i] = options[i].text
+		icons[i] = options[i].icon
+	end
+
+	local widget
+	local itemType = "Dropdown-Item-Toggle"
+
+	if #icons > 0 then
+		itemType = "Dropdown-Item-Toggle-Icon"
+	end
+
+	if data.selected == 1 then -- single option variant
+		widget = GUI:Dropdown(nil, items, nil, itemType, data, "single")
+	elseif data.selected == 2 then -- multiple option variant
+		local function UpdateText(widget)
+			local selected = {}
+			local text
+
+			for _, item in widget.pullout:IterateItems() do
+				if item.type == itemType then
+					if item:GetValue() then
+						table.insert(selected, item:GetText())
+					end
+				end
+			end
+
+			if #selected == 0 then
+				text = "Nothing"
+			elseif #selected == 1 then
+				text = selected[1]
+			elseif #selected == #items then
+				text = "Everything"
+			else
+				text = "Mixed..."
+			end
+
+			widget:SetText(text)
+		end
+
+		widget = GUI:MultiselectDropdown(nil, items, nil, itemType, data, "multiple")
+		widget.ClickedUpdateText = UpdateText
+		widget:ClickedUpdateText()
+
+		for _, item in widget.pullout:IterateItems() do
+			if item.type == itemType then
+				item:SetCallback("OnValueChanged", function()
+					 widget:ClickedUpdateText()
+				end)
+			end
+		end
+	end
+
+	if widget ~= nil then
+		widget:SetRelativeWidth(0.5)
+
+		container:AddChild(widget)
+
+		if #icons > 0 then
+			for i, item in widget.pullout:IterateItems() do
+				local icon = item.icon
+
+				if icon ~= nil then
+					icon:SetTexture(icons[i])
+				end
+			end
+		end
+	end
+end
+
 -- Binding action page and components
 
 local function DrawSpellSelection(container, action)
@@ -399,7 +489,7 @@ local function DrawModeSelection(container, binding)
 			"GLOBAL"
 		}
 
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, binding, "targetingMode")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, nil, binding, "targetingMode")
 		widget:SetFullWidth(true)
 
 		for _, item in widget.pullout:IterateItems() do
@@ -486,7 +576,7 @@ local function DrawTargetSelection(container, binding)
 			table.insert(order, "_DELETE")
 		end
 
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_UNIT"], items, order, target, "unit")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_UNIT"], items, order, nil, target, "unit")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 
 		if index ~= 1 then
@@ -515,7 +605,7 @@ local function DrawTargetSelection(container, binding)
 			"HARM"
 		}
 
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_TYPE"], items, order, target, "type")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_TYPE"], items, order, nil, target, "type")
 		widget:SetRelativeWidth(0.5)
 
 		container:AddChild(widget)
@@ -563,7 +653,7 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TYPE"], items, order, binding, "type")
+		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TYPE"], items, order, nil, binding, "type")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -605,56 +695,35 @@ local function DrawLoadNeverSelection(container, load)
 end
 
 local function DrawLoadSpecialization(container, specialization)
-	local function GetSpecializations()
-		local result = {}
+	local options = {}
 
-		local numSpecs = GetNumSpecializations()
+	for i = 1, GetNumSpecializations() do
+		local _, name, _, icon = GetSpecializationInfo(i)
 
-		for i = 1, numSpecs do
-			local _, name = GetSpecializationInfo(i)
-			table.insert(result, name)
-		end
-
-		return result
+		table.insert(options, {
+			text = name,
+			icon = icon
+		})
 	end
 
-	-- spec toggle
-	do
-		local widget = GUI:TristateCheckBox(L["CFG_UI_LOAD_SPECIALIZATION"], specialization, "selected")
-		widget:SetTriState(true)
+	DrawTristateLoadOption(container, L["CFG_UI_LOAD_SPECIALIZATION"], options, specialization)
+end
 
-		if specialization.selected == 0 then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
+local function DrawLoadTalent(container, talent)
+	local options = {}
 
-		container:AddChild(widget)
-	end
+	for tier = 1, MAX_TALENT_TIERS do
+		for column = 1, NUM_TALENT_COLUMNS do
+			local _, name, texture = GetTalentInfo(tier, column, 1)
 
-	if specialization.selected == 1 then
-		-- spec (single)
-		do
-			local items = GetSpecializations()
-			local order = nil
-
-			local widget = GUI:Dropdown(nil, items, order, specialization, "single")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	elseif specialization.selected == 2 then
-		-- spec (multiple)
-		do
-			local items = GetSpecializations()
-			local order = nil
-
-			local widget = GUI:MultiselectDropdown(nil, items, order, specialization, "multiple")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
+			table.insert(options, {
+				text = name,
+				icon = texture
+			})
 		end
 	end
+
+	DrawTristateLoadOption(container, L["CFG_UI_LOAD_TALENT"], options, talent)
 end
 
 local function DrawLoadCombat(container, combat)
@@ -684,7 +753,7 @@ local function DrawLoadCombat(container, combat)
 				"NOT_IN_COMBAT"
 			}
 
-			local widget = GUI:Dropdown(nil, items, order, combat, "state")
+			local widget = GUI:Dropdown(nil, items, order, nil, combat, "state")
 			widget:SetRelativeWidth(0.5)
 
 			container:AddChild(widget)
@@ -748,7 +817,7 @@ local function DrawLoadInGroup(container, inGroup)
 				"IN_GROUP_SOLO"
 			}
 
-			local widget = GUI:Dropdown(nil, items, order, inGroup, "state")
+			local widget = GUI:Dropdown(nil, items, order, nil, inGroup, "state")
 			widget:SetRelativeWidth(0.5)
 
 			container:AddChild(widget)
@@ -782,58 +851,19 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 end
 
 local function DrawLoadInStance(container, stance)
-	local function GetStances()
-		local result = { L["CFG_UI_LOAD_STANCE_NONE"] }
+	local options = { L["CFG_UI_LOAD_STANCE_NONE"] }
 
-		local numStances = GetNumShapeshiftForms()
+	for i = 1, GetNumShapeshiftForms() do
+		local _, _, _, spellId = GetShapeshiftFormInfo(i)
+		local name, _, icon = GetSpellInfo(spellId)
 
-		for i = 1, numStances do
-			local _, _, _, spellId = GetShapeshiftFormInfo(i)
-			local name = GetSpellInfo(spellId)
-
-			table.insert(result, name)
-		end
-
-		return result
+		table.insert(options, {
+			text = name,
+			icon = icon
+		})
 	end
 
-	-- stance toggle
-	do
-		local widget = GUI:TristateCheckBox(L["CFG_UI_LOAD_STANCE"], stance, "selected")
-		widget:SetTriState(true)
-
-		if stance.selected == 0 then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
-
-		container:AddChild(widget)
-	end
-
-	if stance.selected == 1 then
-		-- stance (single)
-		do
-			local items = GetStances()
-			local order = nil
-
-			local widget = GUI:Dropdown(nil, items, order, stance, "single")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	elseif stance.selected == 2 then
-		-- stance (multiple)
-		do
-			local items = GetStances()
-			local order = nil
-
-			local widget = GUI:MultiselectDropdown(nil, items, order, stance, "multiple")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	end
+	DrawTristateLoadOption(container, L["CFG_UI_LOAD_STANCE"], options, stance)
 end
 
 local function DrawBindingLoadOptionsPage(container, binding)
@@ -843,6 +873,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 
 	if Clicked.WOW_MAINLINE_RELEASE then
 		DrawLoadSpecialization(container, load.specialization)
+		DrawLoadTalent(container, load.talent)
 	end
 
 	DrawLoadCombat(container, load.combat)

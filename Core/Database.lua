@@ -72,6 +72,14 @@ function Clicked:UpgradeDatabaseProfile(profile)
 						1
 					}
 				}
+
+				binding.load.talent = {
+					selected = 0,
+					single = 1,
+					multiple = {
+						1
+					}
+				}
 			end
 
 			print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.6.0"))

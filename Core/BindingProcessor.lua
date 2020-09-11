@@ -480,112 +480,159 @@ function Clicked:CanBindingLoad(binding)
 
 	local load = binding.load
 
-	-- If the "never load" toggle has been enabled, there's no point in checking other
-	-- values.
+	do
+		-- If the "never load" toggle has been enabled, there's no point in checking other
+		-- values.
 
-	if load.never then
-		return false
+		if load.never then
+			return false
+		end
 	end
 
 	if self.WOW_MAINLINE_RELEASE then
-		-- If the specialization limiter has been enabled, see if the player's current
-		-- specialization matches one of the specified specializations.
+		do
+			-- If the specialization limiter has been enabled, see if the player's current
+			-- specialization matches one of the specified specializations.
 
-		local specialization = load.specialization
+			local specialization = load.specialization
 
-		if specialization.selected == 1 then
-			if specialization.single ~= GetSpecialization() then
-				return false
-			end
-		elseif specialization.selected == 2 then
-			local spec = GetSpecialization()
-			local contains = false
-
-			for i = 1, #specialization.multiple do
-				if specialization.multiple[i] == spec then
-					contains = true
+			if specialization.selected == 1 then
+				if specialization.single ~= GetSpecialization() then
+					return false
 				end
-			end
+			elseif specialization.selected == 2 then
+				local spec = GetSpecialization()
+				local contains = false
 
-			if not contains then
-				return false
-			end
-		end
-	end
+				for i = 1, #specialization.multiple do
+					if specialization.multiple[i] == spec then
+						contains = true
+					end
+				end
 
-	-- If the combat limiter has been enabled, see if the player's current combat state
-	-- matches the specified value.
-	--
-	-- Note: This works because the OnEnteringCombat event seems to happen _just_ before
-	-- the InCombatLockdown() status changes.
-
-	local combat = load.combat
-
-	if combat.selected then
-		if combat.state == self.LOAD_IN_COMBAT_TRUE and not self:IsPlayerInCombat() then
-			return false
-		elseif combat.state == self.LOAD_IN_COMBAT_FALSE and self:IsPlayerInCombat() then
-			return false
-		end
-	end
-
-	-- If the known spell limiter has been enabled, see if the spell is currrently
-	-- avaialble for the player. This is not limited to just spells as the name
-	-- implies, using the GetSpellInfo function on an item also returns a valid value.
-
-	local spellKnown = load.spellKnown
-
-	if spellKnown.selected then
-		local name = GetSpellInfo(spellKnown.spell)
-
-		if name == nil then
-			return false
-		end
-	end
-
-	local inGroup = load.inGroup
-
-	if inGroup.selected then
-		if inGroup.state == self.LOAD_IN_GROUP_SOLO and GetNumGroupMembers() > 0 then
-			return false
-		else
-			if inGroup.state == self.LOAD_IN_GROUP_PARTY_OR_RAID and GetNumGroupMembers() == 0 then
-				return false
-			elseif inGroup.state == self.LOAD_IN_GROUP_PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
-				return false
-			elseif inGroup.state == self.LOAD_IN_GROUP_RAID and not IsInRaid() then
-				return false
-			end
-		end
-	end
-
-	local playerInGroup = load.playerInGroup
-
-	if playerInGroup.selected then
-		local found = false
-
-		if playerInGroup.player == UnitName("player") then
-			found = true
-		else
-			local unit = IsInRaid() and "raid" or "party"
-			local numGroupMembers = GetNumGroupMembers()
-
-			if numGroupMembers == 0 then
-				return false
-			end
-
-			for i = 1, numGroupMembers do
-				local name = UnitName(unit .. i)
-
-				if name == playerInGroup.player then
-					found = true
-					break
+				if not contains then
+					return false
 				end
 			end
 		end
 
-		if not found then
-			return false
+		do
+			local function IsTalentIndexSelected(index)
+				local tier = math.ceil(index / 3)
+				local column  = index % 3
+
+				if column == 0 then
+					column = 3
+				end
+
+				local _, _, _, selected, _, _, _, _, _, _, known = GetTalentInfo(tier, column, 1)
+				return selected or known
+			end
+
+			local talent = load.talent
+
+			if talent.selected == 1 then
+				if not IsTalentIndexSelected(talent.single) then
+					return false
+				end
+			elseif talent.selected == 2 then
+				local hasAny = false
+
+				for i = 1, #talent.multiple do
+					if IsTalentIndexSelected(talent.multiple[i]) then
+						hasAny = true
+						break
+					end
+				end
+
+				if not hasAny then
+					return false
+				end
+			end
+		end
+	end
+
+	do
+		-- If the combat limiter has been enabled, see if the player's current combat state
+		-- matches the specified value.
+		--
+		-- Note: This works because the OnEnteringCombat event seems to happen _just_ before
+		-- the InCombatLockdown() status changes.
+
+		local combat = load.combat
+
+		if combat.selected then
+			if combat.state == self.LOAD_IN_COMBAT_TRUE and not self:IsPlayerInCombat() then
+				return false
+			elseif combat.state == self.LOAD_IN_COMBAT_FALSE and self:IsPlayerInCombat() then
+				return false
+			end
+		end
+	end
+
+	do
+		-- If the known spell limiter has been enabled, see if the spell is currrently
+		-- avaialble for the player. This is not limited to just spells as the name
+		-- implies, using the GetSpellInfo function on an item also returns a valid value.
+
+		local spellKnown = load.spellKnown
+
+		if spellKnown.selected then
+			local name = GetSpellInfo(spellKnown.spell)
+
+			if name == nil then
+				return false
+			end
+		end
+	end
+
+	do
+		local inGroup = load.inGroup
+
+		if inGroup.selected then
+			if inGroup.state == self.LOAD_IN_GROUP_SOLO and GetNumGroupMembers() > 0 then
+				return false
+			else
+				if inGroup.state == self.LOAD_IN_GROUP_PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+					return false
+				elseif inGroup.state == self.LOAD_IN_GROUP_PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+					return false
+				elseif inGroup.state == self.LOAD_IN_GROUP_RAID and not IsInRaid() then
+					return false
+				end
+			end
+		end
+	end
+
+	do
+		local playerInGroup = load.playerInGroup
+
+		if playerInGroup.selected then
+			local found = false
+
+			if playerInGroup.player == UnitName("player") then
+				found = true
+			else
+				local unit = IsInRaid() and "raid" or "party"
+				local numGroupMembers = GetNumGroupMembers()
+
+				if numGroupMembers == 0 then
+					return false
+				end
+
+				for i = 1, numGroupMembers do
+					local name = UnitName(unit .. i)
+
+					if name == playerInGroup.player then
+						found = true
+						break
+					end
+				end
+			end
+
+			if not found then
+				return false
+			end
 		end
 	end
 
@@ -640,6 +687,14 @@ function Clicked:GetNewBindingTemplate()
 			single = GetSpecialization(),
 			multiple = {
 				GetSpecialization()
+			}
+		}
+
+		template.load.talent = {
+			selected = 0,
+			single = 1,
+			multiple = {
+				1
 			}
 		}
 	end

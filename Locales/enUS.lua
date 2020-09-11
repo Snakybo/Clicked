@@ -124,7 +124,10 @@ L["CFG_UI_LOAD"] = "Load Options"
 L["CFG_UI_LOAD_NEVER"] = "Never load"
 
 -- Only load for specific specialization(s)
-L["CFG_UI_LOAD_SPECIALIZATION"] = "Specialization"
+L["CFG_UI_LOAD_SPECIALIZATION"] = "Talent specialization"
+
+-- Only load if talents are selected
+L["CFG_UI_LOAD_TALENT"] = "Talent selected"
 
 -- Only load for specific stance(s)
 L["CFG_UI_LOAD_STANCE"] = "Stance"

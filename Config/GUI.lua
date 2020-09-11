@@ -160,9 +160,9 @@ function GUI:Button(label, action)
 	return widget
 end
 
-function GUI:Dropdown(label, items, order, ref, key)
+function GUI:Dropdown(label, items, order, itemType, ref, key)
 	local widget = CreateGUI("Dropdown")
-	widget:SetList(items, order)
+	widget:SetList(items, order, itemType)
 	widget:SetLabel(label)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
@@ -176,22 +176,13 @@ function GUI:Dropdown(label, items, order, ref, key)
 	return widget
 end
 
-function GUI:MultiselectDropdown(label, items, order, ref, key)
+function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
 	local function OnValueChanged(frame, event, value, state)
 		local total = {}
 
-		for _, item in ipairs(ref[key]) do
-			table.insert(total, item)
-		end
-
-		if state then
-			table.insert(total, value)
-		else
-			for index, item in ipairs(total) do
-				if item == value then
-					table.remove(total, index)
-					break
-				end
+		for _, item in frame.pullout:IterateItems() do
+			if item.GetValue and item:GetValue() then
+				table.insert(total, item.userdata.value)
 			end
 		end
 
@@ -199,10 +190,10 @@ function GUI:MultiselectDropdown(label, items, order, ref, key)
 	end
 
 	local widget = CreateGUI("Dropdown")
-	widget:SetList(items, order)
+	widget:SetList(items, order, itemType)
 	widget:SetMultiselect(true)
 	widget:SetLabel(label)
-	widget:SetCallback("OnValueChanged", OnValueChanged)
+	widget:SetCallback("OnClosed", OnValueChanged)
 
 	local function SetValue(value, state)
 		if type(value) == "table" then
