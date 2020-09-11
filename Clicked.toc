@@ -20,6 +20,7 @@ Libs\Libs.xml
 Locales\Locales.xml
 Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
+Widgets\AceGUIWidget-ClickedSimpleGroup.lua
 Templates\Clicked.xml
 Core\Clicked.lua
 Core\Database.lua

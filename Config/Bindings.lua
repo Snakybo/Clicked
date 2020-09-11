@@ -924,7 +924,7 @@ end
 -- Main frame
 
 local function DrawHeader(container)
-	local line = AceGUI:Create("SimpleGroup")
+	local line = AceGUI:Create("ClickedSimpleGroup")
 	line:SetFullWidth(true)
 	line:SetLayout("table")
 	line:SetUserData("table", { columns = { 1, 0, 0} })
