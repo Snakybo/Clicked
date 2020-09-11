@@ -131,7 +131,7 @@ L["CFG_UI_LOAD_TALENT"] = "Talent selected"
 
 -- Only load for specific stance(s)
 L["CFG_UI_LOAD_STANCE"] = "Stance"
-L["CFG_UI_LOAD_STANCE_NONE"] = "None"
+L["CFG_UI_LOAD_STANCE_NONE"] = "No stance"
 
 -- Only load in or out of combat
 L["CFG_UI_LOAD_COMBAT"] = "Combat"

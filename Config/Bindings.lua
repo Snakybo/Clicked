@@ -342,7 +342,7 @@ local function DrawTristateLoadOption(container, title, options, data)
 				local icon = item.icon
 
 				if icon ~= nil then
-					icon:SetTexture(icons[i])
+					icon:SetTexture(icons[i] or "Interface\\ICONS\\INV_Misc_QuestionMark")
 				end
 			end
 		end
@@ -851,7 +851,12 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 end
 
 local function DrawLoadInStance(container, stance)
-	local options = { L["CFG_UI_LOAD_STANCE_NONE"] }
+	local options = { }
+	
+	table.insert(options, {
+		text = L["CFG_UI_LOAD_STANCE_NONE"],
+		icon = nil
+	})
 
 	for i = 1, GetNumShapeshiftForms() do
 		local _, _, _, spellId = GetShapeshiftFormInfo(i)
@@ -1185,6 +1190,16 @@ local function OnBindingsChangedEvent()
 	end
 end
 
+local function OnUnitAura(event, unit)
+	if options.root == nil or not options.root:IsVisible() then
+		return
+	end
+
+	if unit == "player" then
+		OnGUIUpdateEvent()
+	end
+end
+
 function Clicked:OpenBindingConfig()
 	if options.root ~= nil and options.root:IsVisible() then
 		return
@@ -1223,12 +1238,21 @@ function Clicked:OpenBindingConfig()
 	DrawTreeView(options.root)
 end
 
-function Clicked:RegisterBindingConfig()
-	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
-
+function Clicked:InitializeBindingConfig()
 	AceConsole:RegisterChatCommand("clicked", self.OpenBindingConfig)
 	AceConsole:RegisterChatCommand("cc", self.OpenBindingConfig)
 
 	ClearOptionsTable()
+end
+
+function Clicked:EnableBindingConfig()
+	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
+	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
+	self:RegisterEvent("UNIT_AURA", OnUnitAura)
+end
+
+function Clicked:DisableBindingConfig()
+	self:UnregisterMessage(GUI.EVENT_UPDATE)
+	self:UnregisterMessage(self.EVENT_BINDINGS_CHANGED)
+	self:UnregisterEvent("UNIT_AURA")
 end

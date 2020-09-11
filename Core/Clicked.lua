@@ -67,7 +67,7 @@ function Clicked:OnInitialize()
 	self:RegisterBlizzardUnitFrames()
 
 	self:RegisterAddonConfig()
-	self:RegisterBindingConfig()
+	self:InitializeBindingConfig()
 end
 
 function Clicked:OnEnable()
@@ -83,6 +83,8 @@ function Clicked:OnEnable()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "ReloadActiveBindings")
 	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
+
+	self:EnableBindingConfig()
 
 	ReloadDatabase()
 end
@@ -100,6 +102,8 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
 	self:UnregisterEvent("BAG_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
+
+	self:DisableBindingConfig()
 end
 
 function Clicked:IsPlayerInCombat()
