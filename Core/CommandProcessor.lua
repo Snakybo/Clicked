@@ -52,7 +52,6 @@ local function GetFrameHandler(index)
 		frame:SetAttribute("clicked-registered", false)
 		frame:SetAttribute("clicked-can-enable", true)
 		frame:SetAttribute("clicked-keybind", "")
-		frame:SetAttribute("clicked-id", "")
 
 		-- register OnShow and OnHide handlers to ensure bindings are registered
 		frame:SetAttribute("_onshow", [[ self:RunAttribute("clicked-register-binding") ]])
@@ -78,9 +77,7 @@ local function GetFrameHandler(index)
 			end
 
 			local keybind = self:GetAttribute("clicked-keybind")
-			local id = self:GetAttribute("clicked-id")
-
-			self:SetBindingClick(true, keybind, self, id)
+			self:SetBindingClick(true, keybind, self)
 		]===])
 
 		-- unregister a binding
@@ -138,12 +135,11 @@ function Clicked:ProcessCommands(commands)
 
 			frame:Hide()
 
-			self:CreateCommandAttributes(attributes, command, prefix, suffix)
+			self:CreateCommandAttributes(attributes, command)
 			self:SetPendingFrameAttributes(frame, attributes)
 			self:ApplyAttributesToFrame(frame)
 
 			frame:SetAttribute("clicked-keybind", command.keybind)
-			frame:SetAttribute("clicked-id", suffix)
 			frame:Show()
 		end
 	end
@@ -156,7 +152,6 @@ function Clicked:ProcessCommands(commands)
 
 		frame:Hide()
 		frame:SetAttribute("clicked-keybind", "")
-		frame:SetAttribute("clicked-id", "")
 
 		self:ApplyAttributesToFrame(frame)
 	end

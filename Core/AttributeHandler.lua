@@ -12,6 +12,9 @@ local function EnsureCache(frame)
 end
 
 local function CreateAttribute(register, prefix, type, suffix, value)
+	prefix = prefix or ""
+	suffix = suffix or ""
+
 	if #prefix > 0 then
 		prefix = prefix .. "-"
 	end
