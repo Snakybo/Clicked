@@ -75,7 +75,7 @@ L["CFG_UI_ACTION_MACRO_TEXT"] = "Macro Text"
 -- The various targeting modes that are available
 L["CFG_UI_ACTION_TARGETING_MODE"] = "Targeting Mode"
 L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"] = "Dynamic priority"
-L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"] = "Hovercast"
+L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"] = "Unit frame only"
 L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"] = "Global (no target)"
 
 -- Used for target unit filters (dynamic prioritization)
