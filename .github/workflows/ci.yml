@@ -26,8 +26,6 @@ jobs:
       with:
         name: clicked-retail
         path: ".release/*.zip"
-    - name: Clone repository
-      uses: actions/checkout@v1
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
