@@ -469,7 +469,7 @@ local function DrawModeSelection(container, binding)
 
 			tooltip:SetOwner(item.frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
-			tooltip:SetPoint("LEFT", item.frame, "RIGHT")
+			tooltip:SetPoint("LEFT", item.frame, "RIGHT", 15, 0)
 			tooltip:SetText(text, 1, 0.82, 0, 1, true)
 			tooltip:Show()
 		end
