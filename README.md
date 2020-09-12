@@ -6,28 +6,36 @@ Clicked is a World of Warcraft addon aimed to improve keybindings and macros. Th
 
 Additionally it adds support for the binding of the left and right mouse buttons if you prefer clicking on unit frames to cast something.
 
-## Features
+## Feature Overview
 
 * Create keyboard/mouse button bindings for spells, items, and custom macros
-* Target priority order
-  1. Cast on my mouseover target
-  2. Cast on my target
-  3. Cast on myself
+* [Dynamic target priority](#dynamic-target-prioritization)
 * Cast abilities by clicking on unit frames
-* Rebind left and right mouse buttons
 * Run custom macros without taking up a macro slot or 255 character limitations
-* Combine keys to do different things depending on the target
-  * Cast a heal when hovering over a friendly unit frame
-  * Cast Smite when hovering over an enemy unit frame
+* [Combine keys to do different things depending on the target](#dynamic-target-prioritization)
 * Remove the need for action bar keybindings
-* Dynamically load and unload bindings
-  * Talent specialization(s)
-  * Combat status
-  * Group status
-  * Specific player in group
-  * Stances/shapeshift forms
+* [Dynamically load and unload bindings](#dynamically-load-and-unload-bindings)
 * Pick spells from the spellbook
 * Unlock bindings in a vehicle
+
+### Dynamic target prioritization
+
+Dynamic priority bindings provide a customizable configuration interface, you can select valid targets for this binding using dropdown menus, and optionally specify the hostility of the target unit.
+
+You can combine as many bindings using the same keybind with this targeting mode as you like as long as they have a different configuration (two bindings that require a friendly mouseover target won't work).
+
+The system will automatically prioritize the bindings based on the current situation. You can combine bindings with a hostile ability when targeting an enemy with healing abilities if you're hovering over a friendly unit frame.
+
+### Dynamically load and unload bindings
+
+Bindings can be set to only load based on a variety of conditions.
+
+* Talent specialization(s)
+* Talent selection(s)
+* Combat status
+* Group status
+* Specific player in group
+* Stances/shapeshift forms
 
 ## Support
 
