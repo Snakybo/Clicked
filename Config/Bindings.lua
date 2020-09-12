@@ -1196,7 +1196,8 @@ local function OnUnitAura(event, unit)
 	end
 
 	if unit == "player" then
-		OnGUIUpdateEvent()
+		ConstructTreeView()
+		options.tree.container:SetTree(options.tree.items)
 	end
 end
 
