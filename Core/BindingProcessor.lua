@@ -471,13 +471,13 @@ function Clicked:IsBindingActive(binding)
 			if id == 0 then
 				for i = 1, GetNumShapeshiftForms() do
 					local _, active = GetShapeshiftFormInfo(i)
-					
+
 					if active then
 						result = false
 					end
 				end
 			else
-				local _, active, spellId = GetShapeshiftFormInfo(id)
+				local _, active = GetShapeshiftFormInfo(id)
 
 				if not active then
 					result = false
@@ -488,13 +488,13 @@ function Clicked:IsBindingActive(binding)
 
 			for i = 1, #stance.multiple do
 				local id = stance.multiple[i] - 1
-				
+
 				if id == 0 then
 					local isInStance = false
 
-					for i = 1, GetNumShapeshiftForms() do
-						local _, active = GetShapeshiftFormInfo(i)
-						
+					for j = 1, GetNumShapeshiftForms() do
+						local _, active = GetShapeshiftFormInfo(j)
+
 						if active then
 							isInStance = true
 						end
@@ -503,7 +503,7 @@ function Clicked:IsBindingActive(binding)
 					if not isInStance then
 						anyValid = true
 					end
-				else				
+				else
 					local _, _, active = GetShapeshiftFormInfo(id)
 
 					if not active then
@@ -518,7 +518,7 @@ function Clicked:IsBindingActive(binding)
 			end
 		end
 	end
-	
+
 	return result
 end
 

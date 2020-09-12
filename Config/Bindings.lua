@@ -261,6 +261,7 @@ end
 
 -- Common draw functions
 
+-- luacheck: ignore options
 local function DrawTristateLoadOption(container, title, options, data)
 	-- enabled toggle
 	do
@@ -294,6 +295,7 @@ local function DrawTristateLoadOption(container, title, options, data)
 	if data.selected == 1 then -- single option variant
 		widget = GUI:Dropdown(nil, items, nil, itemType, data, "single")
 	elseif data.selected == 2 then -- multiple option variant
+		-- luacheck: ignore widget
 		local function UpdateText(widget)
 			local selected = {}
 			local text
@@ -695,6 +697,7 @@ local function DrawLoadNeverSelection(container, load)
 end
 
 local function DrawLoadSpecialization(container, specialization)
+	-- luacheck: ignore options
 	local options = {}
 
 	for i = 1, GetNumSpecializations() do
@@ -710,6 +713,7 @@ local function DrawLoadSpecialization(container, specialization)
 end
 
 local function DrawLoadTalent(container, talent)
+	-- luacheck: ignore options
 	local options = {}
 
 	for tier = 1, MAX_TALENT_TIERS do
@@ -851,8 +855,9 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 end
 
 local function DrawLoadInStance(container, stance)
+	-- luacheck: ignore options
 	local options = { }
-	
+
 	table.insert(options, {
 		text = L["CFG_UI_LOAD_STANCE_NONE"],
 		icon = nil
