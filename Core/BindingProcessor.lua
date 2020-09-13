@@ -267,6 +267,9 @@ local function GetMacroForBindings(bindings)
 		end
 	end
 
+	-- add a segment to remove the blue casting cursor
+	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
+
 	-- Now sort the actions according to the above schema
 
 	table.sort(actions, SortActions)

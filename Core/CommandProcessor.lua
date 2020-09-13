@@ -2,7 +2,10 @@ Clicked.COMMAND_ACTION_TARGET = "target"
 Clicked.COMMAND_ACTION_MENU = "menu"
 Clicked.COMMAND_ACTION_MACRO = "macro"
 
+Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
+
 local macroFrameHandlers = {}
+local stopCastingButton
 
 local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 	-- separate modifiers from the actual binding
@@ -109,6 +112,11 @@ function Clicked:ProcessCommands(commands)
 	local newClickCastFrameKeybindings = {}
 	local newClickCastFrameAttributes = {}
 	local nextMacroFrameHandler = 1
+
+	if stopCastingButton == nil then
+		stopCastingButton = CreateFrame("Button", self.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
+		stopCastingButton:SetAttribute("type", "stop")
+	end
 
 	for _, command in ipairs(commands) do
 		local isHoverCastBinding = command.mode == self.TARGETING_MODE_HOVERCAST
