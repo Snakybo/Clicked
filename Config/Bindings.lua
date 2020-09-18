@@ -1221,23 +1221,12 @@ function Clicked:OpenBindingConfig()
 			bindingCopyBuffer = nil
 		end
 
-		local function OnKeyDown(widget, key)
-			if key == "ESCAPE" then
-				widget:SetPropagateKeyboardInput(false)
-				widget:Hide()
-			else
-				widget:SetPropagateKeyboardInput(true)
-			end
-		end
-
 		local widget = AceGUI:Create("Frame")
 		options.root = widget
-
+		
 		widget:SetCallback("OnClose", OnClose)
 		widget:SetTitle(L["CFG_UI_TITLE"])
 		widget:SetLayout("Flow")
-
-		widget.frame:SetScript("OnKeyDown", OnKeyDown)
 	end
 
 	DrawHeader(options.root)
