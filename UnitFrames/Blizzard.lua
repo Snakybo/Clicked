@@ -62,6 +62,10 @@ local function HookCompactUnitFrame(frame, ...)
 
 	local name = frame:GetName()
 
+	if name == nil then
+		return
+	end
+
 	for i = 1, 3 do
 		HookCompactUnitFramePart(name, "Buff", i)
 		HookCompactUnitFramePart(name, "Debuff", i)
