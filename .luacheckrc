@@ -80,6 +80,7 @@ read_globals = {
 	"SpellButton_OnLeave",
 	"SpellButton_UpdateButton",
 	"StaticPopup_Show",
+	"SPELLS_PER_PAGE",
 	"UIParent",
 	"UnitName",
 	"WOW_PROJECT_ID",
