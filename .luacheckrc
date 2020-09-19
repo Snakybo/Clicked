@@ -37,9 +37,9 @@ ignore = {
 read_globals = {
 	-- Libraries
 	"LibStub",
+	"ElvUI",
 
 	-- WoW API globals
-	"BOOKTYPE_SPELL",
 	"CreateFrame",
 	"DisableAddOn",
 	"FONT_COLOR_CODE_CLOSE",
@@ -75,10 +75,10 @@ read_globals = {
 	"RegisterStateDriver",
 	"ReloadUI",
 	"ShowUIPanel",
-	"SpellBookFrame_Update",
 	"SpellBook_GetSpellBookSlot",
 	"SpellButton_OnEnter",
 	"SpellButton_OnLeave",
+	"SpellButton_UpdateButton",
 	"StaticPopup_Show",
 	"UIParent",
 	"UnitName",

@@ -199,64 +199,117 @@ end
 
 -- Spell book integration
 
+local function OverrideSpellBookVisuals(button)
+	if not spellbookButtons.enabled then
+		return
+	end
+
+	local name = button:GetName();
+	local autoCastableTexture = _G[name.."AutoCastable"];
+
+	if button.SpellHighlightTexture then
+		button.SpellHighlightTexture:Hide()
+	end
+
+	autoCastableTexture:Hide();
+end
+
 local function EnableSpellbookHandlers()
-	if not SpellBookFrame:IsVisible() then
+	if spellbookButtons.enabled then
 		return
 	end
 
-	if InCombatLockdown() then
-		return
-	end
+	spellbookButtons.enabled = true
 
-	if #spellbookButtons == 0 then
-		for i = 1, 12 do
-			local parent = _G["SpellButton" .. i]
-			local button = CreateFrame("Button", "ClickedSpellbookButton" .. i, parent, "ClickedSpellbookButtonTemplate")
-			button.parent = parent
-			button:RegisterForClicks("LeftButtonUp")
-			button:SetID(parent:GetID())
+	ShowUIPanel(SpellBookFrame)
 
-			spellbookButtons[i] = button
-		end
-	end
+	for i = 1, SPELLS_PER_PAGE do
+		local button = spellbookButtons[i]
+		local parent = _G["SpellButton" .. i]
 
-	for _, button in ipairs(spellbookButtons) do
-		if button.parent:IsEnabled() then
-			button:SetScript("OnClick", function(self)
-				local slot = SpellBook_GetSpellBookSlot(self:GetParent())
-				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+		button:SetParent(parent)
+		button:SetAllPoints(parent)
+		button:Show()
 
-				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
-					local binding = options.item.binding
-
-					if binding.type == Clicked.TYPE_SPELL then
-						binding.action.spell = name
-						HideUIPanel(SpellBookFrame)
-						Clicked:ReloadActiveBindings()
-					end
-				end
-			end)
-			button:SetScript("OnEnter", function(self)
-				SpellButton_OnEnter(self.parent)
-			end)
-			button:SetScript("OnLeave", function(self)
-				SpellButton_OnLeave(self.parent)
-			end)
-
-			button:Show()
-		end
+		OverrideSpellBookVisuals(parent)
 	end
 end
 
 local function DisableSpellbookHandlers()
-	GameTooltip:Hide()
+	if not spellbookButtons.enabled then
+		return
+	end
 
-	for _, button in ipairs(spellbookButtons) do
-		button:SetScript("OnClick", nil)
-		button:SetScript("OnEnter", nil)
-		button:SetScript("OnLeave", nil)
+	spellbookButtons.enabled = false
+
+	for i = 1, SPELLS_PER_PAGE do
+		local button = spellbookButtons[i]
+		local parent = _G["SpellButton" .. i]
+
+		SpellButton_UpdateButton(parent)
+
+		button:SetParent(nil)
+		button:ClearAllPoints()
 		button:Hide()
 	end
+
+	HideUIPanel(SpellBookFrame)
+	GameTooltip:Hide()
+end
+
+local function CreateSpellbookHandlers()
+	if #spellbookButtons > 0 then
+		return
+	end
+
+	for i = 1, SPELLS_PER_PAGE do
+		local button = CreateFrame("Button", "ClickedSpellbookButton" .. i, UIParent, "ClickedSpellbookButtonTemplate")
+		local parent = _G["SpellButton" .. i]
+
+		button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+		button:SetID(parent:GetID())
+		button:SetScript("OnEnter", function(self, motion)
+			SpellButton_OnEnter(parent, motion)
+		end)
+		button:SetScript("OnLeave", function(self)
+			SpellButton_OnLeave(parent)
+		end)
+		button:SetScript("OnClick", function(self)
+			local slot = SpellBook_GetSpellBookSlot(parent)
+			local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+
+			if not InCombatLockdown() and options.item ~= nil and name ~= nil then
+				local binding = options.item.binding
+
+				if binding.type == Clicked.TYPE_SPELL then
+					binding.action.spell = name
+					HideUIPanel(SpellBookFrame)
+					Clicked:ReloadActiveBindings()
+				end
+			end
+		end)
+
+		-- Respect ElvUI skinning
+		if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
+			local E = ElvUI[1]
+
+			if E and E.private and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
+				button:StripTextures()
+
+				if E.private.skins.parchmentRemoverEnable then
+					button:SetHighlightTexture("")
+				else
+					button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.3)
+				end
+			end
+		end
+
+		spellbookButtons[i] = button
+	end
+
+	SpellBookFrame:HookScript("OnHide", DisableSpellbookHandlers)
+
+	hooksecurefunc("SpellButton_UpdateButton", OverrideSpellBookVisuals)
 end
 
 -- Common draw functions
@@ -366,18 +419,7 @@ local function DrawSpellSelection(container, action)
 	do
 		local function OnClick()
 			if not InCombatLockdown() then
-				SpellBookFrame:HookScript("OnHide", function()
-					DisableSpellbookHandlers()
-				end)
-
-				SpellBookFrame.bookType = BOOKTYPE_SPELL
-
-				if not SpellBookFrame:IsVisible() then
-					ShowUIPanel(SpellBookFrame)
-				else
-					SpellBookFrame_Update();
-				end
-
+				CreateSpellbookHandlers()
 				EnableSpellbookHandlers()
 			end
 		end
@@ -1223,7 +1265,7 @@ function Clicked:OpenBindingConfig()
 
 		local widget = AceGUI:Create("Frame")
 		options.root = widget
-		
+
 		widget:SetCallback("OnClose", OnClose)
 		widget:SetTitle(L["CFG_UI_TITLE"])
 		widget:SetLayout("Flow")
