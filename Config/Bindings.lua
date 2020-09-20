@@ -151,10 +151,10 @@ local function ConstructTreeView()
 
 	for index, binding in Clicked:IterateConfiguredBindings() do
 		local valid = true
-		
+
 		if searchTerm ~= nil and searchTerm ~= "" then
 			local strings = {}
-			
+
 			valid = false
 
 			if binding.type == Clicked.TYPE_SPELL then
@@ -185,7 +185,7 @@ local function ConstructTreeView()
 				end
 			end
 		end
-		
+
 		if valid then
 			local item = ConstructTreeViewItem(index, binding)
 			table.insert(items, item)
@@ -454,25 +454,6 @@ local function DrawTristateLoadOption(container, title, options, data)
 	end
 end
 
-local function DrawSeperator(container, title, top, bottom)
-	if top then
-		local seperatorTop = AceGUI:Create("Label")
-		seperatorTop:SetText(" ")
-		container:AddChild(seperatorTop)
-	end
-
-	local widget = AceGUI:Create("Heading")
-	widget:SetFullWidth(true)
-	widget:SetText(title)
-	container:AddChild(widget)
-
-	if bottom then
-		local seperatorBottom = AceGUI:Create("Label")
-		seperatorBottom:SetText(" ")
-		container:AddChild(seperatorBottom)
-	end
-end
-
 -- Binding action page and components
 
 local function DrawSpellSelection(container, action)
@@ -640,7 +621,7 @@ local function DrawMacroSelection(container, keybind, action)
 				"LAST",
 				"APPEND"
 			}
-			
+
 			local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
 			widget:SetFullWidth(true)
 
@@ -742,7 +723,7 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 
 		container:AddChild(widget)
 	end
-	
+
 	local items, order = GetCommonTargetUnits()
 	items["HOVERCAST"] = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"]
 	table.insert(order, 5, "HOVERCAST")
@@ -787,7 +768,7 @@ local function DrawTargetSelectionUnit(container, binding, index, target)
 	local items, order = GetCommonTargetUnits()
 	items["_DELETE_"] = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
 	table.insert(order, "_DELETE_")
-	
+
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetFullWidth(true)
@@ -801,7 +782,7 @@ local function DrawTargetSelectionNewUnit(container, binding)
 			if value == "_NONE_" then
 				return
 			end
-			
+
 			local new = Clicked:GetNewBindingTargetTemplate()
 			new.unit = value
 
@@ -1171,7 +1152,7 @@ local function DrawBinding(container)
 			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, value, binding.type)
 			GUI:Serialize(frame, event, value)
 		end
-		
+
 		local widget = GUI:KeybindingButton(nil, binding, "keybind")
 		widget:SetCallback("OnKeyChanged", OnKeyChanged)
 		widget:SetFullWidth(true)
@@ -1187,7 +1168,7 @@ local function DrawBinding(container)
 			local scrollFrameValue = options.tabScroll.scrollvalue or 0
 			scrollFrame:SetLayout("Flow")
 			scrollFrame:SetStatusTable(options.tabScroll)
-			
+
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -1197,7 +1178,7 @@ local function DrawBinding(container)
 			elseif group == "load" then
 				DrawBindingLoadOptionsPage(scrollFrame, binding)
 			end
-			
+
 			scrollFrame:DoLayout()
 			scrollFrame:SetScroll(scrollFrameValue)
 		end
@@ -1245,7 +1226,7 @@ local function DrawHeader(container)
 	-- search box
 	do
 		local isPlaceholderActive = true
-		
+
 		local function OnFocusGained(frame)
 			if searchTerm == nil or searchTerm == "" then
 				frame:SetText("")
@@ -1422,7 +1403,7 @@ local function DrawHeader(container)
 
 	options.refreshHeaderFunc = function()
 		local hasItemSelected = options.item ~= nil and options.item.binding ~= nil
-		
+
 		deleteBindingButton:SetDisabled(not hasItemSelected)
 		duplicateBindingButton:SetDisabled(not hasItemSelected)
 		copyBindingButton:SetDisabled(not hasItemSelected)
@@ -1594,7 +1575,7 @@ function Clicked:OpenBindingConfig()
 
 	DrawHeader(options.root)
 	DrawTreeView(options.root)
-	
+
 	Clicked:RedrawBindingConfig()
 end
 

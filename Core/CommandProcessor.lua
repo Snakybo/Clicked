@@ -131,7 +131,7 @@ function Clicked:ProcessCommands(commands)
 				key = command.keybind,
 				identifier = suffix
 			}
-			
+
 			local attributes = {}
 
 			self:CreateCommandAttributes(attributes, command, prefix, suffix)

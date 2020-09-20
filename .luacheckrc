@@ -80,6 +80,7 @@ read_globals = {
 	"SpellButton_OnLeave",
 	"SpellButton_UpdateButton",
 	"StaticPopup_Show",
+	"strsplit",
 	"SPELLS_PER_PAGE",
 	"UIParent",
 	"UnitName",

@@ -4,12 +4,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 local bindingProcessorFrame
 local bindingProcessorFrameOutput
 
-local attributes
 local data
 
 local function GetBindingProcessorOutput()
 	local lines = {}
-	
+
 	for i, command in ipairs(data) do
 		table.insert(lines, "----- " .. i .. " -----")
 		table.insert(lines, "keybind: " .. command.keybind)
@@ -27,7 +26,7 @@ local function GetBindingProcessorOutput()
 		if data[command] ~= nil then
 			for attribute, value in pairs(data[command]) do
 				local split = { strsplit("\n", value) }
-				
+
 				for _, line in ipairs(split) do
 					table.insert(lines, "attribute-" .. attribute .. ": " .. line)
 				end
@@ -42,7 +41,7 @@ local function GetBindingProcessorOutput()
 
 		for attribute, value in pairs(data["hovercast"].attributes) do
 			local split = { strsplit("\n", value) }
-			
+
 			for _, line in ipairs(split) do
 				table.insert(lines, "attribute-" .. attribute .. ": " .. line)
 			end
@@ -71,7 +70,7 @@ end
 
 local function OnBindingProcessorComplete(event, commands)
 	data = {}
-	
+
 	for i, command in ipairs(commands) do
 		data[i] = command
 	end

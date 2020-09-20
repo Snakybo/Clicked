@@ -74,7 +74,7 @@ local function GetMacroSegmentFromAction(action)
 			table.insert(flags, "harm")
 		end
 	end
-	
+
 	if Clicked:CanUnitHaveFollowUp(action.unit) then
 		table.insert(flags, "exists")
 	end
@@ -88,7 +88,7 @@ local function GetMacroSegmentFromAction(action)
 	if #action.stance > 0 then
 		table.insert(flags, "stance:" .. action.stance)
 	end
-	
+
 	return table.concat(flags, ",")
 end
 
@@ -137,7 +137,7 @@ local function ConstructAction(binding, target)
 	end
 
 	action.hostility = target.hostility
-	
+
 	return action
 end
 
@@ -153,8 +153,7 @@ local function ConstructActions(binding)
 
 	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
 		for _, target in ipairs(binding.secondaryTargets) do
-			local action = ConstructAction(binding, target)
-			table.insert(actions, action)
+			table.insert(actions, ConstructAction(binding, target))
 		end
 	end
 
@@ -275,7 +274,7 @@ local function GetMacroForBindings(bindings)
 	-- Construct a valid macro from the data
 
 	local segments = {}
-	
+
 	for _, action in ipairs(actions) do
 		local flags = GetMacroSegmentFromAction(action)
 
@@ -319,7 +318,7 @@ local function ProcessActiveBindings()
 		if #bucket == 0 then
 			return nil
 		end
-		
+
 		local reference = bucket[1]
 
 		local valid = false
