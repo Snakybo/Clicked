@@ -15,7 +15,8 @@ local KEYBIND_ORDER_LIST = {
 
 local spellbookButtons = {}
 local options = {}
-local bindingCopyBuffer = nil
+local bindingCopyBuffer
+local searchTerm
 
 -- Utility functions
 
@@ -24,6 +25,7 @@ local function ClearOptionsTable()
 		root = nil,
 		item = nil,
 		tab = {},
+		tabScroll = {},
 		tree = {
 			status = {},
 			items = {},
@@ -130,6 +132,7 @@ local function ConstructTreeViewItem(index, binding)
 	local item = {}
 
 	item.value = index
+	item.index = index
 	item.binding = binding
 	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
@@ -162,16 +165,58 @@ local function ConstructTreeView()
 	local items = {}
 
 	for index, binding in Clicked:IterateConfiguredBindings() do
-		local item = ConstructTreeViewItem(index, binding)
-		table.insert(items, item)
+		local valid = true
+		
+		if searchTerm ~= nil and searchTerm ~= "" then
+			local strings = {}
+			
+			valid = false
+
+			if binding.type == Clicked.TYPE_SPELL then
+				table.insert(strings, L["CFG_UI_TREE_LABEL_CAST"])
+				table.insert(strings, binding.action.spell)
+			elseif binding.type == Clicked.TYPE_ITEM then
+				table.insert(strings, L["CFG_UI_TREE_LABEL_USE"])
+				table.insert(strings, binding.action.item)
+			elseif binding.type == Clicked.TYPE_MACRO then
+				table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
+				table.insert(strings, binding.action.macro)
+			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
+			elseif binding.type == Clicked.TYPE_UNIT_MENU then
+				table.insert(strings, L["CFG_UI_TREE_LABEL_UNIT_MENU"])
+			end
+
+			if binding.keybind ~= nil and binding.keybind ~= "" then
+				table.insert(strings, binding.keybind)
+			end
+
+			for i = 1, #strings do
+				local str = strings[i]
+				valid = str ~= nil and str ~= "" and Clicked:StringContains(str:lower(), searchTerm:lower())
+
+				if valid then
+					break
+				end
+			end
+		end
+		
+		if valid then
+			local item = ConstructTreeViewItem(index, binding)
+			table.insert(items, item)
+		end
 	end
 
 	table.sort(items, TreeSortFunc)
 
+	for i = 1, #items do
+		items[i].index = i
+	end
+
 	options.tree.items = items
 end
 
-local function CanBindingTargetingModeChange(binding)
+local function CanBindingTargetUnitChange(binding)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
 		return false
 	end
@@ -404,13 +449,30 @@ local function DrawTristateLoadOption(container, title, options, data)
 	end
 end
 
+local function DrawSeperator(container, title)
+	local seperatorTop = AceGUI:Create("Label")
+	seperatorTop:SetText(" ")
+	container:AddChild(seperatorTop)
+
+	local widget = AceGUI:Create("Heading")
+	widget:SetFullWidth(true)
+	widget:SetText(title)
+	container:AddChild(widget)
+
+	-- local seperatorBottom = AceGUI:Create("Label")
+	-- seperatorBottom:SetText(" ")
+	-- container:AddChild(seperatorBottom)
+end
+
 -- Binding action page and components
 
 local function DrawSpellSelection(container, action)
+	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_SPELL"])
+
 	-- target spell text
 	do
-		local widget = GUI:EditBox(L["CFG_UI_ACTION_TARGET_SPELL"], "OnEnterPressed", action, "spell")
-		widget:SetRelativeWidth(0.6)
+		local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spell")
+		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
@@ -440,16 +502,19 @@ local function DrawSpellSelection(container, action)
 		end
 
 		local widget = GUI:Button(L["CFG_UI_ACTION_TARGET_SPELL_BOOK"], OnClick)
-		widget:SetRelativeWidth(0.4)
+		widget:SetFullWidth(true)
 		widget:SetCallback("OnEnter", OnEnter)
 		widget:SetCallback("OnLeave", OnLeave)
 
 		container:AddChild(widget)
 	end
 
+	-- additional options
+	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"])
+
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -457,6 +522,8 @@ local function DrawSpellSelection(container, action)
 end
 
 local function DrawItemSelection(container, action)
+	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_ITEM"])
+
 	-- target item text
 	do
 		local function OnEnterPressed(frame, event, value)
@@ -470,16 +537,19 @@ local function DrawItemSelection(container, action)
 			GUI:Serialize(frame, event, value)
 		end
 
-		local widget = GUI:EditBox(L["CFG_UI_ACTION_TARGET_ITEM"], "OnEnterPressed", action, "item")
+		local widget = GUI:EditBox(nil, "OnEnterPressed", action, "item")
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
 
+	-- additional options
+	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"])
+
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -487,200 +557,296 @@ local function DrawItemSelection(container, action)
 end
 
 local function DrawMacroSelection(container, action)
+	DrawSeperator(container, L["CFG_UI_ACTION_MACRO_TEXT"])
+
 	-- macro text field
 	do
-		local widget = GUI:MultilineEditBox(L["CFG_UI_ACTION_MACRO_TEXT"], "OnEnterPressed", action, "macro")
+		local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macro")
 		widget:SetFullWidth(true)
-		widget:SetFullHeight(true)
+		widget:SetNumLines(8)
 
 		container:AddChild(widget)
 	end
 end
 
-local function DrawModeSelection(container, binding)
-	do
-		local help = {
-			DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC_HELP"],
-			HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST_HELP"],
-			GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL_HELP"]
-		}
+local function DrawTargetSelectionPrimaryUnit(container, binding, target)
+	local items = {
+		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
+		GLOBAL = L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"],
+		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
+		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
+		HOVERCAST = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"],
+		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
+		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
+		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
+		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
+		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
+		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
+	}
 
-		local function OnItemEnter(item, event)
-			local tooltip = AceGUI.tooltip
-			local text = help[item.userdata.value]
+	local order = {
+		"PLAYER",
+		"GLOBAL",
+		"TARGET",
+		"MOUSEOVER",
+		"HOVERCAST",
+		"FOCUS",
+		"CURSOR",
+		"PARTY_1",
+		"PARTY_2",
+		"PARTY_3",
+		"PARTY_4",
+		"PARTY_5"
+	}
 
-			tooltip:SetOwner(item.frame, "ANCHOR_NONE")
-			tooltip:ClearAllPoints()
-			tooltip:SetPoint("LEFT", item.frame, "RIGHT", 15, 0)
-			tooltip:SetText(text, 1, 0.82, 0, 1, true)
-			tooltip:Show()
-		end
-
-		local function OnItemLeave(item, event)
-			local tooltip = AceGUI.tooltip
-			tooltip:Hide()
-		end
-
-		local items = {
-			DYNAMIC_PRIORITY = L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"],
-			HOVERCAST = L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"],
-			GLOBAL = L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"]
-		}
-
-		local order = {
-			"DYNAMIC_PRIORITY",
-			"HOVERCAST",
-			"GLOBAL"
-		}
-
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGETING_MODE"], items, order, nil, binding, "targetingMode")
+	if Clicked:IsRestrictedKeybind(binding.keybind) then
+		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"] .. "\n")
 		widget:SetFullWidth(true)
-
-		for _, item in widget.pullout:IterateItems() do
-			item:SetCallback("OnEnter", OnItemEnter)
-			item:SetCallback("OnLeave", OnItemLeave)
-		end
 
 		container:AddChild(widget)
 	end
+	
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
+	widget:SetFullWidth(true)
+	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
+
+	container:AddChild(widget)
+end
+
+local function DrawTargetSelectionUnit(container, binding, index, target)
+	local function OnValueChanged(frame, event, value)
+		if not InCombatLockdown() then
+			if value == "_DELETE_" then
+				table.remove(binding.secondaryTargets, index)
+			else
+				target.unit = value
+
+				local last = nil
+
+				for i, t in ipairs(binding.secondaryTargets) do
+					if not Clicked:CanUnitHaveFollowUp(t.unit) then
+						last = i
+						break
+					end
+				end
+
+				if last ~= nil then
+					for i = 1, #binding.secondaryTargets - last do
+						table.remove(binding.secondaryTargets, #binding.secondaryTargets)
+					end
+				end
+			end
+
+			Clicked:ReloadActiveBindings()
+		else
+			frame:SetValue(target.unit)
+		end
+	end
+
+	local items = {
+		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
+		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
+		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
+		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
+		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
+		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
+		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
+		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
+		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5"),
+		_DELETE_ = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
+	}
+
+	local order = {
+		"PLAYER",
+		"TARGET",
+		"MOUSEOVER",
+		"FOCUS",
+		"CURSOR",
+		"PARTY_1",
+		"PARTY_2",
+		"PARTY_3",
+		"PARTY_4",
+		"PARTY_5",
+		"_DELETE_",
+	}
+
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
+	widget:SetCallback("OnValueChanged", OnValueChanged)
+	widget:SetFullWidth(true)
+
+	container:AddChild(widget)
+end
+
+local function DrawTargetSelectionNewUnit(container, binding)
+	local function OnValueChanged(frame, event, value)
+		if not InCombatLockdown() then
+			if value == "_NONE_" then
+				return
+			end
+			
+			local new = Clicked:GetNewBindingTargetTemplate()
+			new.unit = value
+
+			table.insert(binding.secondaryTargets, new)
+
+			Clicked:ReloadActiveBindings()
+		else
+			frame:SetValue("_NONE_")
+		end
+	end
+
+	local items = {
+		_NONE_ = L["CFG_UI_ACTION_TARGET_UNIT_NONE"],
+		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
+		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
+		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
+		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
+		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
+		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
+		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
+		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
+		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
+	}
+
+	local order = {
+		"_NONE_",
+		"PLAYER",
+		"TARGET",
+		"MOUSEOVER",
+		"FOCUS",
+		"CURSOR",
+		"PARTY_1",
+		"PARTY_2",
+		"PARTY_3",
+		"PARTY_4",
+		"PARTY_5",
+	}
+
+	local widget = GUI:Dropdown(nil, items, order, nil, { unit = "_NONE_" }, "unit")
+	widget:SetCallback("OnValueChanged", OnValueChanged)
+	widget:SetFullWidth(true)
+
+	container:AddChild(widget)
+end
+
+local function DrawTargetSelectionHostility(container, target)
+	local items = {
+		ANY = L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"],
+		HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
+		HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
+	}
+
+	local order = {
+		"ANY",
+		"HELP",
+		"HARM"
+	}
+
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "hostility")
+	widget:SetFullWidth(true)
+
+	container:AddChild(widget)
 end
 
 local function DrawTargetSelection(container, binding)
-	local function DrawTargetUnitDropdown(target, index, count)
-		local function OnValueChanged(frame, event, value)
-			if not InCombatLockdown()then
-				if index == 0 then
-					local new = Clicked:GetNewBindingTargetTemplate()
-					new.unit = value
-					table.insert(binding.targets, new)
-				elseif value == "_DELETE" then
-					table.remove(binding.targets, index)
-				else
-					target.unit = value
+	-- primary target
+	do
+		local function ShouldShowHostility()
+			if Clicked:CanUnitBeHostile(binding.primaryTarget.unit) then
+				return true
+			end
+			
+			if binding.type == Clicked.TYPE_UNIT_SELECT then
+				return false
+			end
 
-					local last = nil
+			if binding.type == Clicked.TYPE_UNIT_MENU then
+				return false
+			end
 
-					for i, t in ipairs(binding.targets) do
-						local unit = t.unit
+			if binding.primaryTarget.unit == Clicked.TARGET_UNIT_HOVERCAST then
+				return true
+			end
 
-						if not Clicked:CanBindingTargetHaveFollowUp(unit) then
-							last = i
-							break
-						end
-					end
+			return false
+		end
 
-					if last ~= nil then
-						for i = 1, #binding.targets - last do
-							table.remove(binding.targets, #binding.targets)
-						end
-					end
-				end
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT"])
+		container:AddChild(group)
 
-				Clicked:ReloadActiveBindings()
-			else
-				if index ~= 0 then
-					frame:SetValue(target.unit)
-				else
-					frame:SetValue("_NONE")
-				end
+		DrawTargetSelectionPrimaryUnit(group, binding, binding.primaryTarget)
+
+		if ShouldShowHostility() then
+			DrawTargetSelectionHostility(group, binding.primaryTarget)
+		end
+	end
+
+	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
+		-- secondary targets
+		for index, target in ipairs(binding.secondaryTargets) do
+			local group = AceGUI:Create("InlineGroup")
+			group:SetFullWidth(true)
+			group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+			container:AddChild(group)
+
+			DrawTargetSelectionUnit(group, binding, index, target)
+
+			if Clicked:CanUnitBeHostile(target.unit) then
+				DrawTargetSelectionHostility(group, target)
+			end
+
+			if not Clicked:CanUnitHaveFollowUp(target.unit) then
+				break
 			end
 		end
 
-		local items = {
-			PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
-			TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
-			MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-			FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
-			CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
-			PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
-			PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
-			PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
-			PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
-			PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
-		}
+		-- new target
+		do
+			local last
 
-		local order = {
-			"PLAYER",
-			"TARGET",
-			"MOUSEOVER",
-			"FOCUS",
-			"CURSOR",
-			"PARTY_1",
-			"PARTY_2",
-			"PARTY_3",
-			"PARTY_4",
-			"PARTY_5"
-		}
+			if #binding.secondaryTargets > 0 then
+				last = binding.secondaryTargets[#binding.secondaryTargets]
+			else
+				last = binding.primaryTarget
+			end
 
-		if index == 0 then
-			items["_NONE"] = L["CFG_UI_ACTION_TARGET_UNIT_NONE"]
-			table.insert(order, 1, "_NONE")
-		elseif count > 1 then
-			items["_DELETE"] = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
-			table.insert(order, "_DELETE")
+			if Clicked:CanUnitHaveFollowUp(last.unit) then
+				local group = AceGUI:Create("InlineGroup")
+				group:SetFullWidth(true)
+				group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+				container:AddChild(group)
+
+				DrawTargetSelectionNewUnit(group, binding)
+			end
 		end
-
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_UNIT"], items, order, nil, target, "unit")
-		widget:SetCallback("OnValueChanged", OnValueChanged)
-
-		if index ~= 1 then
-			widget:SetLabel(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
-		end
-
-		if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
-			widget:SetRelativeWidth(0.5)
-		else
-			widget:SetRelativeWidth(1)
-		end
-
-		container:AddChild(widget)
-	end
-
-	local function DrawTargetTypeDropdown(target)
-		local items = {
-			ANY = L["CFG_UI_ACTION_TARGET_TYPE_ANY"],
-			HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
-			HARM = L["CFG_UI_ACTION_TARGET_TYPE_HARM"]
-		}
-
-		local order = {
-			"ANY",
-			"HELP",
-			"HARM"
-		}
-
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TARGET_TYPE"], items, order, nil, target, "type")
-		widget:SetRelativeWidth(0.5)
-
-		container:AddChild(widget)
-	end
-
-	for i, target in ipairs(binding.targets) do
-		DrawTargetUnitDropdown(target, i, #binding.targets)
-
-		if Clicked:CanBindingTargetUnitBeHostile(target.unit) then
-			DrawTargetTypeDropdown(target)
-		end
-	end
-
-	local last = binding.targets[#binding.targets]
-
-	if last == nil or Clicked:CanBindingTargetHaveFollowUp(last.unit) then
-		DrawTargetUnitDropdown({ unit = "_NONE" }, 0, #binding.targets)
 	end
 end
 
 local function DrawBindingActionPage(container, binding)
-	-- action help label
-	do
-		local widget = GUI:Label(container, L["CFG_UI_ACTION_HELP"])
-		widget:SetFullWidth(true)
-
-		container:AddChild(widget)
-	end
+	local group = AceGUI:Create("InlineGroup")
+	group:SetFullWidth(true)
+	group:SetTitle(L["CFG_UI_ACTION_TYPE"])
+	container:AddChild(group)
 
 	-- action dropdown
 	do
+		local function OnValueChanged(frame, event, value)
+			if value == Clicked.TYPE_UNIT_SELECT then
+				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
+			elseif value == Clicked.TYPE_UNIT_MENU then
+				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
+			elseif value == Clicked.TYPE_MACRO then
+				binding.primaryTarget.unit = Clicked.TARGET_UNIT_GLOBAL
+			end
+
+			GUI:Serialize(frame, event, value)
+		end
+
 		local items = {
 			SPELL = L["CFG_UI_ACTION_TYPE_SPELL"],
 			ITEM = L["CFG_UI_ACTION_TYPE_ITEM"],
@@ -697,33 +863,22 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local widget = GUI:Dropdown(L["CFG_UI_ACTION_TYPE"], items, order, nil, binding, "type")
+		local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
+		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
 
-		container:AddChild(widget)
+		group:AddChild(widget)
 	end
 
 	if binding.type == Clicked.TYPE_SPELL then
-		DrawSpellSelection(container, binding.action)
+		DrawSpellSelection(group, binding.action)
 	elseif binding.type == Clicked.TYPE_ITEM then
-		DrawItemSelection(container, binding.action)
+		DrawItemSelection(group, binding.action)
 	elseif binding.type == Clicked.TYPE_MACRO then
-		DrawMacroSelection(container, binding.action)
+		DrawMacroSelection(group, binding.action)
 	end
 
-	if CanBindingTargetingModeChange(binding) then
-		DrawModeSelection(container, binding)
-
-		if binding.targetingMode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
-			DrawTargetSelection(container, binding)
-		end
-	elseif Clicked:IsRestrictedKeybind(binding.keybind) then
-		-- restricted keybind help label
-		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"])
-		widget:SetFullWidth(true)
-
-		container:AddChild(widget)
-	end
+	DrawTargetSelection(container, binding)
 end
 
 -- Binding load options page and components
@@ -946,52 +1101,17 @@ local function DrawBinding(container)
 
 	-- keybinding button
 	do
-		local widget = GUI:KeybindingButton(nil, binding, "keybind")
-		widget:SetRelativeWidth(0.75)
-
-		container:AddChild(widget)
-	end
-
-	-- delete button
-	do
-		local function OnClick()
-			if InCombatLockdown() then
-				return
+		local function OnKeyChanged(frame, event, value)
+			if Clicked:IsRestrictedKeybind(value) then
+				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
 			end
 
-			local index
-
-			for i, other in ipairs(options.tree.items) do
-				if other == item then
-					index = i
-					break
-				end
-			end
-
-			Clicked:DeleteBinding(item.binding)
-
-			local items = options.tree.items
-			local selected = nil
-
-			if index <= #items then
-				selected = items[index]
-			elseif index - 1 >= 1 then
-				selected = items[index - 1]
-			end
-
-			if selected ~= nil then
-				options.tree.container:SelectByValue(selected.value)
-			else
-				options.item = nil
-			end
-
-			if options.refreshHeaderFunc ~= nil then
-				options.refreshHeaderFunc()
-			end
+			GUI:Serialize(frame, event, value)
 		end
-
-		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
-		widget:SetRelativeWidth(0.25)
+		
+		local widget = GUI:KeybindingButton(nil, binding, "keybind")
+		widget:SetCallback("OnKeyChanged", OnKeyChanged)
+		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
@@ -1001,8 +1121,10 @@ local function DrawBinding(container)
 		-- luacheck: ignore container
 		local function OnGroupSelected(container, event, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
+			local scrollFrameValue = options.tabScroll.scrollvalue or 0
 			scrollFrame:SetLayout("Flow")
-
+			scrollFrame:SetStatusTable(options.tabScroll)
+			
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -1010,6 +1132,9 @@ local function DrawBinding(container)
 			elseif group == "load" then
 				DrawBindingLoadOptionsPage(scrollFrame, binding)
 			end
+			
+			scrollFrame:DoLayout()
+			scrollFrame:SetScroll(scrollFrameValue)
 		end
 
 		local items = {
@@ -1036,12 +1161,77 @@ end
 -- Main frame
 
 local function DrawHeader(container)
+	local deleteBindingButton
+	local copyBindingButton
+	local pasteBindingButton
+
 	local line = AceGUI:Create("ClickedSimpleGroup")
 	line:SetFullWidth(true)
 	line:SetLayout("table")
-	line:SetUserData("table", { columns = { 1, 0, 0} })
+	line:SetUserData("table", { columns = { 0, 0, 1, 0, 0} })
 
 	container:AddChild(line)
+
+	-- search box
+	do
+		local isPlaceholderActive = true
+		
+		local function OnFocusGained(frame)
+			if searchTerm == nil or searchTerm == "" then
+				frame:SetText("")
+			end
+
+			isPlaceholderActive = false
+		end
+
+		local function OnFocusLost(frame)
+			if searchTerm == nil or searchTerm == "" then
+				frame:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+				isPlaceholderActive = true
+			end
+		end
+
+		local function OnTextChanged(frame, event, value)
+			if isPlaceholderActive then
+				return
+			end
+
+			searchTerm = Clicked:Trim(value)
+			Clicked:RedrawBindingConfig()
+		end
+
+		local function OnEnterPressed(frame, event, value)
+			if isPlaceholderActive then
+				return
+			end
+
+			searchTerm = Clicked:Trim(value)
+			frame:SetText(searchTerm)
+			Clicked:RedrawBindingConfig()
+		end
+
+		local function OnEscapePressed(frame)
+			if isPlaceholderActive then
+				return
+			end
+
+			searchTerm = ""
+			frame:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+			Clicked:RedrawBindingConfig()
+		end
+
+		local widget = AceGUI:Create("ClickedEditBox")
+		widget:SetCallback("OnFocusGained", OnFocusGained)
+		widget:SetCallback("OnFocusLost", OnFocusLost)
+		widget:SetCallback("OnTextChanged", OnTextChanged)
+		widget:SetCallback("OnEnterPressed", OnEnterPressed)
+		widget:SetCallback("OnEscapePressed", OnEscapePressed)
+		widget:DisableButton(true)
+		widget:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+		widget:SetWidth(280)
+
+		line:AddChild(widget)
+	end
 
 	-- create binding button
 	do
@@ -1055,13 +1245,52 @@ local function DrawHeader(container)
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_CREATE"], OnClick)
-		widget:SetWidth(210) -- from AceGUIContainer-ClickedTreeGroup
+		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
 	end
 
-	local copyBindingButton
-	local pasteBindingButton
+	-- delete binding button
+	do
+		local function OnClick()
+			if InCombatLockdown() then
+				return
+			end
+
+			local binding = options.item.binding
+			local index = options.item.index
+
+			Clicked:DeleteBinding(binding)
+
+			if options.tree.items ~= nil then
+				local items = options.tree.items
+				local selected = items[index]
+
+				if index <= #items then
+					selected = items[index]
+				elseif index - 1 >= 1 then
+					selected = items[index - 1]
+				end
+
+				if selected ~= nil then
+					options.tree.container:SelectByValue(selected.value)
+				else
+					options.item = nil
+				end
+			else
+				options.item = nil
+			end
+
+			options.refreshHeaderFunc()
+		end
+
+		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
+		widget:SetAutoWidth(true)
+
+		line:AddChild(widget)
+
+		deleteBindingButton = widget
+	end
 
 	-- copy binding button
 	do
@@ -1073,14 +1302,11 @@ local function DrawHeader(container)
 			bindingCopyBuffer = nil
 			bindingCopyBuffer = DeepCopy(original)
 
-			if options.refreshHeaderFunc ~= nil then
-				options.refreshHeaderFunc()
-			end
+			options.refreshHeaderFunc()
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_COPY"], OnClick)
-		widget:SetWidth(100)
-		widget:SetDisabled(options.item == nil or options.item.binding == nil)
+		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
 
@@ -1100,8 +1326,7 @@ local function DrawHeader(container)
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_PASTE"], OnClick)
-		widget:SetWidth(100)
-		widget:SetDisabled(bindingCopyBuffer == nil)
+		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
 
@@ -1109,16 +1334,15 @@ local function DrawHeader(container)
 	end
 
 	options.refreshHeaderFunc = function()
-		copyBindingButton:SetDisabled(options.item == nil or options.item.binding == nil)
-		pasteBindingButton:SetDisabled(options.item == nil or options.item.binding == nil or bindingCopyBuffer == nil)
+		local hasItemSelected = options.item ~= nil and options.item.binding ~= nil
+		
+		deleteBindingButton:SetDisabled(not hasItemSelected)
+		copyBindingButton:SetDisabled(not hasItemSelected)
+		pasteBindingButton:SetDisabled(not hasItemSelected or bindingCopyBuffer == nil)
 	end
 end
 
 local function DrawTreeView(container)
-	ConstructTreeView()
-
-	local selected = GetSelectedItem(options.tree.status.selected, options.tree.items)
-
 	-- tree view
 	do
 		-- luacheck: ignore container
@@ -1191,16 +1415,11 @@ local function DrawTreeView(container)
 		widget:SetLayout("Flow")
 		widget:SetFullWidth(true)
 		widget:SetFullHeight(true)
-		widget:SetTree(options.tree.items)
 		widget:EnableButtonTooltips(false)
 		widget:SetStatusTable(options.tree.status)
 		widget:SetCallback("OnGroupSelected", OnGroupSelected)
 		widget:SetCallback("OnButtonEnter", OnButtonEnter)
 		widget:SetCallback("OnButtonLeave", OnButtonLeave)
-
-		if selected ~= nil then
-			widget:SelectByValue(selected)
-		end
 
 		container:AddChild(widget)
 	end
@@ -1216,27 +1435,6 @@ local function OnGUIUpdateEvent()
 	Clicked:ReloadActiveBindings()
 end
 
-local function OnBindingsChangedEvent()
-	if options.root == nil or not options.root:IsVisible() then
-		return
-	end
-
-	ConstructTreeView()
-	options.tree.container:SetTree(options.tree.items)
-
-	local selected = GetSelectedItem(options.tree.status.selected, options.tree.items)
-
-	if selected ~= nil then
-		options.tree.container:SelectByValue(selected)
-	else
-		options.tree.container:ReleaseChildren()
-	end
-
-	if options.refreshHeaderFunc ~= nil then
-		options.refreshHeaderFunc()
-	end
-end
-
 local function OnUnitAura(event, unit)
 	if options.root == nil or not options.root:IsVisible() then
 		return
@@ -1245,6 +1443,29 @@ local function OnUnitAura(event, unit)
 	if unit == "player" then
 		ConstructTreeView()
 		options.tree.container:SetTree(options.tree.items)
+	end
+end
+
+function Clicked:RedrawBindingConfig()
+	if options.root == nil or not options.root:IsVisible() then
+		return
+	end
+
+	ConstructTreeView()
+	options.tree.container:SetTree(options.tree.items)
+	options.root:SetStatusText(L["CFG_UI_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
+
+	local selected = GetSelectedItem(options.tree.status.selected, options.tree.items)
+
+	if selected ~= nil then
+		options.tree.container:SelectByValue(selected)
+	else
+		options.tree.container:ReleaseChildren()
+		options.item = nil
+	end
+
+	if options.refreshHeaderFunc ~= nil then
+		options.refreshHeaderFunc()
 	end
 end
 
@@ -1269,10 +1490,14 @@ function Clicked:OpenBindingConfig()
 		widget:SetCallback("OnClose", OnClose)
 		widget:SetTitle(L["CFG_UI_TITLE"])
 		widget:SetLayout("Flow")
+		widget:SetWidth(800)
+		widget:SetHeight(600)
 	end
 
 	DrawHeader(options.root)
 	DrawTreeView(options.root)
+	
+	Clicked:RedrawBindingConfig()
 end
 
 function Clicked:InitializeBindingConfig()
@@ -1284,7 +1509,7 @@ end
 
 function Clicked:EnableBindingConfig()
 	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
+	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, "RedrawBindingConfig")
 	self:RegisterEvent("UNIT_AURA", OnUnitAura)
 end
 

@@ -119,10 +119,9 @@ function Clicked:ProcessCommands(commands)
 	end
 
 	for _, command in ipairs(commands) do
-		local isHoverCastBinding = command.mode == self.TARGETING_MODE_HOVERCAST
-		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, isHoverCastBinding)
+		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, command.hovercast)
 
-		if isHoverCastBinding or isMouseButton then
+		if command.hovercast or isMouseButton then
 			local keybind = {
 				key = command.keybind,
 				identifier = suffix
@@ -135,7 +134,7 @@ function Clicked:ProcessCommands(commands)
 			end
 		end
 
-		if not isHoverCastBinding then
+		if not command.hovercast then
 			local frame = GetFrameHandler(nextMacroFrameHandler)
 			local attributes = {}
 

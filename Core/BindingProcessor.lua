@@ -4,11 +4,8 @@ Clicked.TYPE_MACRO = "MACRO"
 Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT"
 Clicked.TYPE_UNIT_MENU = "UNIT_MENU"
 
-Clicked.TARGETING_MODE_DYNAMIC_PRIORITY = "DYNAMIC_PRIORITY"
-Clicked.TARGETING_MODE_HOVERCAST = "HOVERCAST"
-Clicked.TARGETING_MODE_GLOBAL = "GLOBAL"
-
 Clicked.TARGET_UNIT_PLAYER = "PLAYER"
+Clicked.TARGET_UNIT_GLOBAL = "GLOBAL"
 Clicked.TARGET_UNIT_TARGET = "TARGET"
 Clicked.TARGET_UNIT_PARTY_1 = "PARTY_1"
 Clicked.TARGET_UNIT_PARTY_2 = "PARTY_2"
@@ -17,11 +14,12 @@ Clicked.TARGET_UNIT_PARTY_4 = "PARTY_4"
 Clicked.TARGET_UNIT_PARTY_5 = "PARTY_5"
 Clicked.TARGET_UNIT_FOCUS = "FOCUS"
 Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
+Clicked.TARGET_UNIT_HOVERCAST = "HOVERCAST"
 Clicked.TARGET_UNIT_CURSOR = "CURSOR"
 
-Clicked.TARGET_TYPE_ANY = "ANY"
-Clicked.TARGET_TYPE_HELP = "HELP"
-Clicked.TARGET_TYPE_HARM = "HARM"
+Clicked.TARGET_HOSTILITY_ANY = "ANY"
+Clicked.TARGET_HOSTILITY_HELP = "HELP"
+Clicked.TARGET_HOSTILITY_HARM = "HARM"
 
 Clicked.LOAD_IN_COMBAT_TRUE = "IN_COMBAT"
 Clicked.LOAD_IN_COMBAT_FALSE = "NOT_IN_COMBAT"
@@ -39,44 +37,38 @@ local activeBindings = {}
 local function GetMacroSegmentFromAction(action)
 	local flags = {}
 
-	if action.mode == Clicked.TARGETING_MODE_HOVERCAST then
+	if action.unit == Clicked.TARGET_UNIT_PLAYER then
+		table.insert(flags, "@player")
+	elseif action.unit == Clicked.TARGET_UNIT_TARGET then
+		table.insert(flags, "@target")
+	elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER or action.unit == Clicked.TARGET_UNIT_HOVERCAST then
 		table.insert(flags, "@mouseover")
-	elseif action.mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
-		if action.unit ~= nil then
-			if action.unit == Clicked.TARGET_UNIT_PLAYER then
-				table.insert(flags, "@player")
-			elseif action.unit == Clicked.TARGET_UNIT_TARGET then
-				table.insert(flags, "@target")
-			elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER then
-				table.insert(flags, "@mouseover")
-			elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
-				table.insert(flags, "@party1")
-			elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
-				table.insert(flags, "@party2")
-			elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
-				table.insert(flags, "@party3")
-			elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
-				table.insert(flags, "@party4")
-			elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
-				table.insert(flags, "@party5")
-			elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
-				table.insert(flags, "@focus")
-			elseif action.unit == Clicked.TARGET_UNIT_CURSOR then
-				table.insert(flags, "@cursor")
-			end
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
+		table.insert(flags, "@party1")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
+		table.insert(flags, "@party2")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
+		table.insert(flags, "@party3")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
+		table.insert(flags, "@party4")
+	elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
+		table.insert(flags, "@party5")
+	elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
+		table.insert(flags, "@focus")
+	elseif action.unit == Clicked.TARGET_UNIT_CURSOR then
+		table.insert(flags, "@cursor")
+	end
 
-			if Clicked:CanBindingTargetUnitBeHostile(action.unit) then
-				if action.type == Clicked.TARGET_TYPE_HELP then
-					table.insert(flags, "help")
-				elseif action.type == Clicked.TARGET_TYPE_HARM then
-					table.insert(flags, "harm")
-				end
-			end
-
-			if Clicked:CanBindingTargetHaveFollowUp(action.unit) then
-				table.insert(flags, "exists")
-			end
+	if Clicked:CanUnitBeHostile(action.unit) then
+		if action.hostility == Clicked.TARGET_HOSTILITY_HELP then
+			table.insert(flags, "help")
+		elseif action.hostility == Clicked.TARGET_HOSTILITY_HARM then
+			table.insert(flags, "harm")
 		end
+	end
+	
+	if Clicked:CanUnitHaveFollowUp(action.unit) then
+		table.insert(flags, "exists")
 	end
 
 	if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then
@@ -88,7 +80,7 @@ local function GetMacroSegmentFromAction(action)
 	if #action.stance > 0 then
 		table.insert(flags, "stance:" .. action.stance)
 	end
-
+	
 	return table.concat(flags, ",")
 end
 
@@ -130,37 +122,32 @@ local function ConstructAction(binding, target)
 		end
 	end
 
-	action.mode = Clicked:GetBindingTargetingMode(binding)
-	action.unit = target.unit
-	action.type = target.type
+	if Clicked:IsRestrictedKeybind(binding.keybind) then
+		action.unit = Clicked.TARGET_UNIT_HOVERCAST
+	else
+		action.unit = target.unit
+	end
 
+	action.hostility = target.hostility
+	
 	return action
 end
 
 local function ConstructActions(binding)
 	local actions = {}
 
-	local mode = Clicked:GetBindingTargetingMode(binding)
-	local realMode = binding.targetingMode
+	-- The primary target is a bit special, it can contain the GLOBAL or HOVERCAST target
+	-- (as those cannot have predecessors or successors), additionally if the binding is
+	-- using a restricted keybind, we're treating it as HOVERCAST internally.
 
-	if mode == Clicked.TARGETING_MODE_DYNAMIC_PRIORITY then
-		if realMode == Clicked.TARGETING_MODE_GLOBAL then
-			local action = ConstructAction(binding, {})
+	local action = ConstructAction(binding, binding.primaryTarget)
+	table.insert(actions, action)
+
+	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
+		for _, target in ipairs(binding.secondaryTargets) do
+			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
-		else
-			for _, target in ipairs(binding.targets) do
-				local action = ConstructAction(binding, target)
-				table.insert(actions, action)
-			end
 		end
-	elseif mode == Clicked.TARGETING_MODE_HOVERCAST then
-		local action = ConstructAction(binding, {
-			unit = Clicked.TARGET_UNIT_MOUSEOVER,
-			type = Clicked.TARGET_TYPE_ANY
-		})
-		table.insert(actions, action)
-	else
-		error("Unsupported binding mode: " .. mode)
 	end
 
 	return actions
@@ -207,19 +194,19 @@ local function SortActions(left, right)
 		return true
 	end
 
-	if left.type ~= nil and right.type == nil then
+	if left.hostility ~= nil and right.hostility == nil then
 		return true
 	end
 
-	if left.type == nil and right.type ~= nil then
+	if left.hostility == nil and right.hostility ~= nil then
 		return false
 	end
 
-	if left.type ~= Clicked.TARGET_TYPE_ANY and right == Clicked.TARGET_TYPE_ANY then
+	if left.hostility ~= Clicked.TARGET_HOSTILITY_ANY and right.hostility == Clicked.TARGET_HOSTILITY_ANY then
 		return true
 	end
 
-	if left.type == Clicked.TARGET_TYPE_ANY and right ~= Clicked.TARGET_TYPE_ANY then
+	if left.hostility == Clicked.TARGET_HOSTILITY_ANY and right.hostility ~= Clicked.TARGET_HOSTILITY_ANY then
 		return false
 	end
 
@@ -267,6 +254,7 @@ local function GetMacroForBindings(bindings)
 		end
 	end
 
+
 	-- add a segment to remove the blue casting cursor
 	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
 
@@ -277,7 +265,7 @@ local function GetMacroForBindings(bindings)
 	-- Construct a valid macro from the data
 
 	local segments = {}
-
+	
 	for _, action in ipairs(actions) do
 		local flags = GetMacroSegmentFromAction(action)
 
@@ -304,34 +292,41 @@ local function ProcessActiveBindings()
 
 	local commands = {}
 
-	for keybind, group in Clicked:IterateActiveBindings() do
-		for mode, bindings in pairs(group) do
-			local valid = false
-			local command = {
-				keybind = keybind,
-				mode = mode
-			}
-
-			local binding = bindings[1]
-
-			if binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM or binding.type == Clicked.TYPE_MACRO then
-				command.action = Clicked.COMMAND_ACTION_MACRO
-				command.data = GetMacroForBindings(bindings)
-				valid = command.data ~= nil and command.data ~= ""
-			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
-				command.action = Clicked.COMMAND_ACTION_TARGET
-				valid = true
-			elseif binding.type == Clicked.TYPE_UNIT_MENU then
-				command.action = Clicked.COMMAND_ACTION_MENU
-				valid = true
-			else
-				error("Unhandled binding type: " .. binding.type)
-			end
-
-			if valid then
-				table.insert(commands, command)
-			end
+	local function Process(keybind, bucket, hovercast)
+		if #bucket == 0 then
+			return nil
 		end
+		
+		local reference = bucket[1]
+
+		local valid = false
+		local command = {
+			keybind = keybind,
+			hovercast = hovercast
+		}
+
+		if reference.type == Clicked.TYPE_SPELL or reference.type == Clicked.TYPE_ITEM or reference.type == Clicked.TYPE_MACRO then
+			command.action = Clicked.COMMAND_ACTION_MACRO
+			command.data = GetMacroForBindings(bucket)
+			valid = command.data ~= nil and command.data ~= ""
+		elseif reference.type == Clicked.TYPE_UNIT_SELECT then
+			command.action = Clicked.COMMAND_ACTION_TARGET
+			valid = true
+		elseif reference.type == Clicked.TYPE_UNIT_MENU then
+			command.action = Clicked.COMMAND_ACTION_MENU
+			valid = true
+		else
+			error("Unhandled binding type: " .. reference.type)
+		end
+
+		if valid then
+			table.insert(commands, command)
+		end
+	end
+
+	for keybind, bindings in Clicked:IterateActiveBindings() do
+		Process(keybind, bindings.hovercast, true)
+		Process(keybind, bindings.regular, false)
 	end
 
 	Clicked:ProcessCommands(commands)
@@ -353,19 +348,33 @@ local function FilterBindings(activatable)
 	local result = {}
 
 	for keybind, bindings in pairs(activatable) do
-		result[keybind] = {}
+		result[keybind] = {
+			hovercast = {},
+			regular = {}
+		}
 
 		for _, binding in ipairs(bindings) do
-			local mode = Clicked:GetBindingTargetingMode(binding)
+			local bucket
 
-			if result[keybind][mode] == nil then
-				result[keybind][mode] = {}
-				table.insert(result[keybind][mode], binding)
+			if binding.type == Clicked.TYPE_UNIT_SELECT then
+				bucket = result[keybind].hovercast
+			elseif binding.type == Clicked.TYPE_UNIT_MENU then
+				bucket = result[keybind].hovercast
+			elseif Clicked:IsRestrictedKeybind(keybind) then
+				bucket = result[keybind].hovercast
+			elseif binding.primaryTarget.unit == Clicked.TARGET_UNIT_HOVERCAST then
+				bucket = result[keybind].hovercast
 			else
-				local reference = result[keybind][mode][1]
+				bucket = result[keybind].regular
+			end
+
+			if #bucket == 0 then
+				table.insert(bucket, binding)
+			else
+				local reference = bucket[1]
 
 				if ConvertType(binding) == ConvertType(reference) then
-					table.insert(result[keybind][mode], binding)
+					table.insert(bucket, binding)
 				end
 			end
 		end
@@ -444,13 +453,19 @@ function Clicked:IterateActiveBindings()
 end
 
 function Clicked:IsBindingActive(binding)
-	local mode = self:GetBindingTargetingMode(binding)
 	local result = false
 
-	if activeBindings[binding.keybind] ~= nil and activeBindings[binding.keybind][mode] ~= nil then
-		local bindings = activeBindings[binding.keybind][mode]
+	if activeBindings[binding.keybind] ~= nil then
+		local bindings = activeBindings[binding.keybind]
 
-		for _, other in ipairs(bindings) do
+		for _, other in ipairs(bindings.regular) do
+			if other == binding then
+				result = true
+				break
+			end
+		end
+
+		for _, other in ipairs(bindings.hovercast) do
 			if other == binding then
 				result = true
 				break
@@ -706,74 +721,4 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	return true
-end
-
-function Clicked:GetNewBindingTemplate()
-	local template = {
-		type = Clicked.TYPE_SPELL,
-		keybind = "",
-		action = {
-			stopCasting = false,
-			spell = "",
-			item = "",
-			macro = ""
-		},
-		targetingMode = self.TARGETING_MODE_DYNAMIC_PRIORITY,
-		targets = {
-			self:GetNewBindingTargetTemplate()
-		},
-		load = {
-			never = false,
-			combat = {
-				selected = false,
-				state = Clicked.LOAD_IN_COMBAT_TRUE
-			},
-			spellKnown = {
-				selected = false,
-				spell = ""
-			},
-			inGroup = {
-				selected = false,
-				state = Clicked.LOAD_IN_GROUP_PARTY_OR_RAID
-			},
-			playerInGroup = {
-				selected = false,
-				player = ""
-			},
-			stance = {
-				selected = 0,
-				single = 1,
-				multiple = {
-					1
-				}
-			}
-		}
-	}
-
-	if self.WOW_MAINLINE_RELEASE then
-		template.load.specialization = {
-			selected = 0,
-			single = GetSpecialization(),
-			multiple = {
-				GetSpecialization()
-			}
-		}
-
-		template.load.talent = {
-			selected = 0,
-			single = 1,
-			multiple = {
-				1
-			}
-		}
-	end
-
-	return template
-end
-
-function Clicked:GetNewBindingTargetTemplate()
-	return {
-		unit = Clicked.TARGET_UNIT_TARGET,
-		type = Clicked.TARGET_TYPE_ANY
-	}
 end

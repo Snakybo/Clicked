@@ -6,7 +6,7 @@
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.6.2
+## Version: 0.7.0
 ## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
 ## OptionalDeps: Ace3
@@ -22,6 +22,7 @@ Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
 Widgets\AceGUIWidget-ClickedSimpleGroup.lua
 Widgets\AceGUIWidget-ClickedDropDown-Items.lua
+Widgets\AceGUIWidget-ClickedEditBox.lua
 Templates\Clicked.xml
 Core\Clicked.lua
 Core\Database.lua

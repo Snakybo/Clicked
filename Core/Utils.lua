@@ -1,5 +1,9 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
+function Clicked:StringContains(str, pattern)
+	return string.find(str, pattern) ~= nil
+end
+
 function Clicked:Trim(str)
 	return str:gsub("^%s*(.-)%s*$", "%1")
 end
@@ -45,7 +49,7 @@ end
 -- in because party members are by definition always friendly.
 -- (at the time of configuration at least, i.e. don't take
 -- potential mind controls into account)
-function Clicked:CanBindingTargetUnitBeHostile(unit)
+function Clicked:CanUnitBeHostile(unit)
 	if unit == self.TARGET_UNIT_TARGET then
 		return true
 	end
@@ -58,6 +62,10 @@ function Clicked:CanBindingTargetUnitBeHostile(unit)
 		return true
 	end
 
+	if unit == self.TARGET_UNIT_HOVERCAST then
+		return true
+	end
+
 	return false
 end
 
@@ -66,7 +74,7 @@ end
 -- as a stop sign in macro code as they will always be valid.
 -- For example [@player] or [@cursor] will always be 'true' and
 -- thus it doesn't make sense to allow targets beyond.
-function Clicked:CanBindingTargetHaveFollowUp(unit)
+function Clicked:CanUnitHaveFollowUp(unit)
 	if unit == self.TARGET_UNIT_PLAYER then
 		return false
 	end
@@ -75,38 +83,14 @@ function Clicked:CanBindingTargetHaveFollowUp(unit)
 		return false
 	end
 
+	if unit == self.TARGET_UNIT_HOVERCAST then
+		return false
+	end
+
+	if unit == self.TARGET_UNIT_GLOBAL then
+		return false
+	end
+
 	return true
 end
 
--- Gets the virtual targeting mode of a binding. This may differ
--- from what can be visualized in the UI. In the majority
--- of these we simply don't show the UI and thus don't allow the user
--- to change it at the moment, and in order to protect user data,
--- we won't alter the actual data but instead determine which targeting
--- mode should be used based on the other data available.
-function Clicked:GetBindingTargetingMode(binding)
-	-- If the binding type is set to target a unit or open the
-	-- unit context menu, force it to be a hovercast to prevent
-	-- it from working on 3D world units.
-
-	if binding.type == self.TYPE_UNIT_SELECT or binding.type == self.TYPE_UNIT_MENU then
-		return self.TARGETING_MODE_HOVERCAST
-	end
-
-	-- If the binding uses a restricted keybind (left mouse or
-	-- right mouse), force it to be a hovercast binding as
-	-- we would break the game otherwise.
-
-	if self:IsRestrictedKeybind(binding.keybind) then
-		return self.TARGETING_MODE_HOVERCAST
-	end
-
-	-- Pretend the global targeting mode is identical to the
-	-- dynamic priority targeting mode everywhere but in the UI.
-
-	if binding.targetingMode == self.TARGETING_MODE_GLOBAL then
-		return self.TARGETING_MODE_DYNAMIC_PRIORITY
-	end
-
-	return binding.targetingMode
-end

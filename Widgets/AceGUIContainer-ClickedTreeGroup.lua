@@ -40,7 +40,7 @@ do
 	end
 end
 
-local DEFAULT_TREE_WIDTH = 210
+local DEFAULT_TREE_WIDTH = 280
 local DEFAULT_TREE_SIZABLE = false
 
 --[[-----------------------------------------------------------------------------
@@ -190,6 +190,14 @@ local function Button_OnEnter(frame)
 
 		tooltip:Show()
 	end
+end
+
+local function OnScrollValueChanged(frame, value)
+	if frame.obj.noupdate then return end
+	local self = frame.obj
+	local status = self.status or self.localstatus
+	status.scrollvalue = floor(value + 0.5)
+	self:RefreshTree()
 end
 
 --[[-----------------------------------------------------------------------------
@@ -426,6 +434,9 @@ local function Constructor()
 	tree.TreeOnRelease = tree.OnRelease
 	tree.TreeCreateButton = tree.CreateButton
 	tree.TreeSetStatusTable = tree.SetStatusTable
+
+	local scrollbar = tree.scrollbar
+	scrollbar:SetScript("OnValueChanged", OnScrollValueChanged)
 
 	for method, func in pairs(methods) do
 		tree[method] = func

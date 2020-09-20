@@ -30,6 +30,11 @@ L["MSG_PROFILE_UPDATED"] = "Clicked: Upgraded profile from version %s to version
 
 L["CFG_UI_TITLE"] = "Clicked Binding Configuration"
 
+-- Status text in the bottom left of the configuration window,
+-- the contents are "VERSION - CURRENT_PROFILE", e.g. 0.7.0 | Alloxa - Kazzak
+
+L["CFG_UI_STATUS_TEXT"] = "%s | %s"
+
 -- Tree items are used for the main bindings list
 L["CFG_UI_TREE_LABEL_CAST"] = "Cast %s"
 L["CFG_UI_TREE_LABEL_USE"] = "Use %s"
@@ -41,23 +46,23 @@ L["CFG_UI_TREE_LOAD_STATE_UNLOADED"] = "U"
 L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"] = "Loaded"
 L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"] = "Not loaded"
 
-L["CFG_UI_BINDING_CREATE"] = "Create binding"
+L["CFG_UI_BINDING_CREATE"] = "Create"
 L["CFG_UI_BINDING_COPY"] = "Copy"
 L["CFG_UI_BINDING_PASTE"] = "Paste"
 L["CFG_UI_BINDING_DELETE"] = "Delete"
+L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"] = "Search..."
 L["CFG_UI_BINDING_SET_TOOLTIP"] = "Press a key to bind, or ESC to clear the binding."
 
 -- Action items are used on the main binding action page
 
 -- The tab item name
-L["CFG_UI_ACTION"] = "Action"
+L["CFG_UI_ACTION"] = "Actions"
 
 -- Help and other informative labels
-L["CFG_UI_ACTION_HELP"] = "On this page you can configure the action that will be performed when the key has been pressed."
 L["CFG_UI_ACTION_RESTRICTED"] = "Note: Bindings using the left or right mouse button are considered restricted and will always be hovercast bindings."
 
 -- The various actions that a binding can perform
-L["CFG_UI_ACTION_TYPE"] = "When the keybind has been pressed"
+L["CFG_UI_ACTION_TYPE"] = "Action"
 L["CFG_UI_ACTION_TYPE_SPELL"] = "Cast a spell"
 L["CFG_UI_ACTION_TYPE_ITEM"] = "Use an item"
 L["CFG_UI_ACTION_TYPE_MACRO"] = "Run a macro"
@@ -69,41 +74,21 @@ L["CFG_UI_ACTION_TARGET_SPELL"] = "Target Spell"
 L["CFG_UI_ACTION_TARGET_SPELL_BOOK"] = "Pick from spellbook"
 L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"] = "Click on a spell book entry to select it"
 L["CFG_UI_ACTION_TARGET_ITEM"] = "Target Item"
-L["CFG_UI_ACTION_INTERRUPT_CURRENT_CAST"] = "Interrupt current cast?"
 L["CFG_UI_ACTION_MACRO_TEXT"] = "Macro Text"
 
--- The various targeting modes that are available
-L["CFG_UI_ACTION_TARGETING_MODE"] = "Targeting Mode"
-L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC"] = "Dynamic priority"
-L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST"] = "Unit frame only"
-L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL"] = "Global (no target)"
-
--- Help texts for the various targeting modes
-L["CFG_UI_ACTION_TARGETING_MODE_DYNAMIC_HELP"] = [[
-Dynamic priority bindings provide a customizable configuration interface, you can select valid targets for this binding using dropdown menus, and optionally specify the hostility of the target unit.
-
-You can combine as many bindings using the same keybind with this targeting mode as you like as long as they have a different configuration (two bindings that require a friendly mouseover target won't work).
-
-The system will automatically prioritize the bindings based on the current situation. You can combine bindings with a hostile ability when targeting an enemy with healing abilities if you're hovering over a friendly unit frame.
-]]
-
-L["CFG_UI_ACTION_TARGETING_MODE_HOVERCAST_HELP"] = [[
-Bindings using this targeting mode will only activate when hovering over a unit frame.
-]]
-
-L["CFG_UI_ACTION_TARGETING_MODE_GLOBAL_HELP"] = [[
-Bindings using this targeting mode do not need an explicit target defined, this is useful for abilities such as defensives or untargeted AoE effects.
-
-The global targeting mode can also be combined (once per keybind) with the dynamic priority targeting mode. When configured like that the binding using this targeting mode will always be the last fallback option, so make sure other bindings do not include a target that will always be valid, such as player or cursor.
-]]
+-- additional options
+L["CFG_UI_ACTION_OPTIONS"] = "Options"
+L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"] = "Interrupt current cast"
 
 -- Used for target unit filters (dynamic prioritization)
 L["CFG_UI_ACTION_TARGET_UNIT"] = "On this target"
 L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"] = "Or"
 L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"] = "Player (you)"
+L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"] = "Global (no target)"
 L["CFG_UI_ACTION_TARGET_UNIT_TARGET"] = "Target"
 L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"] = "Mouseover target"
-L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"] = "Focus"
+L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"] = "Mouseover unit frame"
+L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"] = "Focus target"
 L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"] = "Cursor position"
 L["CFG_UI_ACTION_TARGET_UNIT_PARTY"] = "Party %s"
 L["CFG_UI_ACTION_TARGET_UNIT_NONE"] = "<No one>"
@@ -111,9 +96,9 @@ L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"] = "<Remove this option>"
 
 -- Used for target hostility filters (dynamic prioritization)
 L["CFG_UI_ACTION_TARGET_TYPE"] = "If it is"
-L["CFG_UI_ACTION_TARGET_TYPE_ANY"] = "Either friendly or hostile"
+L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"] = "Either friendly or hostile"
 L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"] = "Friendly"
-L["CFG_UI_ACTION_TARGET_TYPE_HARM"] = "Hostile"
+L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"] = "Hostile"
 
 -- Load items are used on the binding load options page
 
