@@ -10,7 +10,7 @@ L["NAME"] = "Clicked"
 -- If an error occurred while registering a frame for click and hovercasting,
 -- this error will be shown.
 -- Example: "Clicked: Unable to register unit frame: PlayerFrame"
-L["ERR_FRAME_REGISTRATION"] = "Clicked: Unable to register unit frame: %s"
+L["ERR_FRAME_REGISTRATION"] = "|cffe31919Clicked|r: Unable to register unit frame: %s"
 
 -- If another addon is installed and enabled that Clicked is incompatible with,
 -- this error message will be shown prompting the user to disable one of the two
@@ -23,7 +23,7 @@ L["ERR_ADDON_INCOMPATIBILITY_KEEP"] = "Keep %s"
 -- If Clicked was recently updated and the profile database format has changed,
 -- this message is printed in the user's chat window.
 -- Example: "Clicked: Upgraded profile from version 0.4.0 to version 0.5.0"
-L["MSG_PROFILE_UPDATED"] = "Clicked: Upgraded profile from version %s to version %s"
+L["MSG_PROFILE_UPDATED"] = "|cffe31919Clicked|r: Upgraded profile from version %s to version %s"
 
 -- Everything prefixed with CFG_UI is shown in the main binding configuration
 -- window.
