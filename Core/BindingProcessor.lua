@@ -31,6 +31,10 @@ Clicked.LOAD_IN_GROUP_SOLO = "IN_GROUP_SOLO"
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 
+--@alpha@
+Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
+--@end-alpha@
+
 local configuredBindings = {}
 local activeBindings = {}
 
@@ -328,6 +332,10 @@ local function ProcessActiveBindings()
 		Process(keybind, bindings.hovercast, true)
 		Process(keybind, bindings.regular, false)
 	end
+
+	--@alpha@
+	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
+	--@end-alpha@
 
 	Clicked:ProcessCommands(commands)
 end

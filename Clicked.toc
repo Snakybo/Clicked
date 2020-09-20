@@ -36,3 +36,6 @@ UnitFrames\Blizzard.lua
 Config\GUI.lua
 Config\Addon.lua
 Config\Bindings.lua
+#@alpha@
+Debug\DebugOptions.lua
+#@end-alpha@

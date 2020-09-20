@@ -65,9 +65,10 @@ function Clicked:OnInitialize()
 
 	self:RegisterClickCastHeader()
 	self:RegisterBlizzardUnitFrames()
-
 	self:RegisterAddonConfig()
-	self:InitializeBindingConfig()
+	--@alpha@
+	self:RegisterDebugOptions()
+	--@end-alpha@
 end
 
 function Clicked:OnEnable()

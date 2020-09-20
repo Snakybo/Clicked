@@ -20,21 +20,6 @@ local searchTerm
 
 -- Utility functions
 
-local function ClearOptionsTable()
-	options = {
-		root = nil,
-		item = nil,
-		tab = {},
-		tabScroll = {},
-		tree = {
-			status = {},
-			items = {},
-			container = nil
-		},
-		refreshHeaderFunc = nil
-	}
-end
-
 local function GetSelectedItem(original, items)
 	if #items == 0 then
 		return nil
@@ -755,16 +740,16 @@ local function DrawTargetSelection(container, binding)
 	-- primary target
 	do
 		local function ShouldShowHostility()
-			if Clicked:CanUnitBeHostile(binding.primaryTarget.unit) then
-				return true
-			end
-			
 			if binding.type == Clicked.TYPE_UNIT_SELECT then
 				return false
 			end
 
 			if binding.type == Clicked.TYPE_UNIT_MENU then
 				return false
+			end
+
+			if Clicked:CanUnitBeHostile(binding.primaryTarget.unit) then
+				return true
 			end
 
 			if binding.primaryTarget.unit == Clicked.TARGET_UNIT_HOVERCAST then
@@ -1479,32 +1464,35 @@ function Clicked:OpenBindingConfig()
 		local function OnClose(container)
 			AceGUI:Release(container)
 			DisableSpellbookHandlers()
-			ClearOptionsTable()
 
 			bindingCopyBuffer = nil
 		end
 
 		local widget = AceGUI:Create("Frame")
-		options.root = widget
-
 		widget:SetCallback("OnClose", OnClose)
 		widget:SetTitle(L["CFG_UI_TITLE"])
 		widget:SetLayout("Flow")
 		widget:SetWidth(800)
 		widget:SetHeight(600)
+
+		options = {
+			root = widget,
+			item = nil,
+			tab = {},
+			tabScroll = {},
+			tree = {
+				status = {},
+				items = {},
+				container = nil
+			},
+			refreshHeaderFunc = nil
+		}
 	end
 
 	DrawHeader(options.root)
 	DrawTreeView(options.root)
 	
 	Clicked:RedrawBindingConfig()
-end
-
-function Clicked:InitializeBindingConfig()
-	AceConsole:RegisterChatCommand("clicked", self.OpenBindingConfig)
-	AceConsole:RegisterChatCommand("cc", self.OpenBindingConfig)
-
-	ClearOptionsTable()
 end
 
 function Clicked:EnableBindingConfig()
@@ -1518,3 +1506,6 @@ function Clicked:DisableBindingConfig()
 	self:UnregisterMessage(self.EVENT_BINDINGS_CHANGED)
 	self:UnregisterEvent("UNIT_AURA")
 end
+
+AceConsole:RegisterChatCommand("clicked", Clicked.OpenBindingConfig)
+AceConsole:RegisterChatCommand("cc", Clicked.OpenBindingConfig)
