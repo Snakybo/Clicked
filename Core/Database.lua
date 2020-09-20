@@ -17,7 +17,7 @@ function Clicked:GetNewBindingTemplate()
 		type = Clicked.TYPE_SPELL,
 		keybind = "",
 		action = {
-			stopCasting = false,
+			stopcasting = false,
 			spell = "",
 			item = "",
 			macro = ""
@@ -193,6 +193,9 @@ function Clicked:UpgradeDatabaseProfile(profile)
 					}
 				end
 			end
+
+			binding.action.stopcasting = binding.action.stopCasting
+			binding.action.stopCasting = nil
 
 			binding.targets = nil
 			binding.targetingMode = nil

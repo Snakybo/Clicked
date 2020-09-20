@@ -519,7 +519,7 @@ local function DrawSpellSelection(container, action)
 
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -554,7 +554,7 @@ local function DrawItemSelection(container, action)
 
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -581,13 +581,12 @@ local function DrawMacroSelection(container, keybind, action)
 	end
 end
 
-local function DrawTargetSelectionPrimaryUnit(container, binding, target)
+local function GetCommonTargetUnits()
 	local items = {
 		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
 		GLOBAL = L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"],
 		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
 		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-		HOVERCAST = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"],
 		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
 		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
 		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
@@ -602,7 +601,6 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		"GLOBAL",
 		"TARGET",
 		"MOUSEOVER",
-		"HOVERCAST",
 		"FOCUS",
 		"CURSOR",
 		"PARTY_1",
@@ -612,6 +610,10 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		"PARTY_5"
 	}
 
+	return items, order
+end
+
+local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
 		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"] .. "\n")
 		widget:SetFullWidth(true)
@@ -619,6 +621,10 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		container:AddChild(widget)
 	end
 	
+	local items, order = GetCommonTargetUnits()
+	items["HOVERCAST"] = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"]
+	table.insert(order, 5, "HOVERCAST")
+
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
@@ -656,34 +662,10 @@ local function DrawTargetSelectionUnit(container, binding, index, target)
 		end
 	end
 
-	local items = {
-		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
-		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
-		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
-		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
-		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
-		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
-		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
-		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
-		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5"),
-		_DELETE_ = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
-	}
-
-	local order = {
-		"PLAYER",
-		"TARGET",
-		"MOUSEOVER",
-		"FOCUS",
-		"CURSOR",
-		"PARTY_1",
-		"PARTY_2",
-		"PARTY_3",
-		"PARTY_4",
-		"PARTY_5",
-		"_DELETE_",
-	}
-
+	local items, order = GetCommonTargetUnits()
+	items["_DELETE_"] = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
+	table.insert(order, "_DELETE_")
+	
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetFullWidth(true)
