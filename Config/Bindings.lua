@@ -476,144 +476,232 @@ end
 -- Binding action page and components
 
 local function DrawSpellSelection(container, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_SPELL"], true, false)
-
-	-- target spell text
+	-- target spell
 	do
-		local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spell")
-		widget:SetFullWidth(true)
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_TARGET_SPELL"])
+		container:AddChild(group)
 
-		container:AddChild(widget)
-	end
+		-- edit box
+		do
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spell")
+			widget:SetFullWidth(true)
 
-	-- pick from spellbook button
-	do
-		local function OnClick()
-			if not InCombatLockdown() then
-				CreateSpellbookHandlers()
-				EnableSpellbookHandlers()
+			group:AddChild(widget)
+		end
+
+		-- pick from spellbook button
+		do
+			local function OnClick()
+				if not InCombatLockdown() then
+					CreateSpellbookHandlers()
+					EnableSpellbookHandlers()
+				end
 			end
+
+			local function OnEnter(widget)
+				local tooltip = AceGUI.tooltip
+
+				tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
+				tooltip:ClearAllPoints()
+				tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
+				tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, 1, true)
+				tooltip:Show()
+			end
+
+			local function OnLeave()
+				local tooltip = AceGUI.tooltip
+				tooltip:Hide()
+			end
+
+			local widget = GUI:Button(L["CFG_UI_ACTION_TARGET_SPELL_BOOK"], OnClick)
+			widget:SetFullWidth(true)
+			widget:SetCallback("OnEnter", OnEnter)
+			widget:SetCallback("OnLeave", OnLeave)
+
+			group:AddChild(widget)
 		end
-
-		local function OnEnter(widget)
-			local tooltip = AceGUI.tooltip
-
-			tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
-			tooltip:ClearAllPoints()
-			tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-			tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, 1, true)
-			tooltip:Show()
-		end
-
-		local function OnLeave()
-			local tooltip = AceGUI.tooltip
-			tooltip:Hide()
-		end
-
-		local widget = GUI:Button(L["CFG_UI_ACTION_TARGET_SPELL_BOOK"], OnClick)
-		widget:SetFullWidth(true)
-		widget:SetCallback("OnEnter", OnEnter)
-		widget:SetCallback("OnLeave", OnLeave)
-
-		container:AddChild(widget)
 	end
 
 	-- additional options
-	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], true, false)
-
-	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
-		widget:SetFullWidth(true)
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		container:AddChild(group)
 
-		container:AddChild(widget)
+		-- interrupt cast toggle
+		do
+			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
+		end
 	end
 end
 
 local function DrawItemSelection(container, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_ITEM"], true, false)
-
-	-- target item text
+	-- target item
 	do
-		local function OnEnterPressed(frame, event, value)
-			local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_TARGET_ITEM"])
+		container:AddChild(group)
 
-			if item ~= nil and item ~= "" then
-				value = GetItemInfo(item)
+		-- target item
+		do
+			local function OnEnterPressed(frame, event, value)
+				local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
+
+				if item ~= nil and item ~= "" then
+					value = GetItemInfo(item)
+				end
+
+				value = Clicked:Trim(value)
+				GUI:Serialize(frame, event, value)
 			end
 
-			value = Clicked:Trim(value)
-			GUI:Serialize(frame, event, value)
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "item")
+			widget:SetCallback("OnEnterPressed", OnEnterPressed)
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
 		end
 
-		local widget = GUI:EditBox(nil, "OnEnterPressed", action, "item")
-		widget:SetCallback("OnEnterPressed", OnEnterPressed)
-		widget:SetFullWidth(true)
+		-- help text
+		do
+			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_TARGET_ITEM_HELP"])
+			widget:SetFullWidth(true)
 
-		container:AddChild(widget)
+			group:AddChild(widget)
+		end
 	end
 
 	-- additional options
-	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], true, false)
-
-	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
-		widget:SetFullWidth(true)
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		container:AddChild(group)
 
-		container:AddChild(widget)
+		-- interrupt cast toggle
+		do
+			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
+		end
 	end
 end
 
 local function DrawMacroSelection(container, keybind, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_MACRO_TEXT"], true, false)
-
-	-- help text
-	if Clicked:IsRestrictedKeybind(keybind) then
-		local widget = GUI:Label(L["CFG_UI_ACTION_MACRO_HOVERCAST_HELP"] .. "\n")
-		widget:SetFullWidth(true)
-		container:AddChild(widget)
-	end
-
-	-- macro text field
+	-- macro text
 	do
-		local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macrotext")
-		widget:SetFullWidth(true)
-		widget:SetNumLines(8)
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_MACRO_TEXT"])
+		container:AddChild(group)
 
-		container:AddChild(widget)
+		-- help text
+		if Clicked:IsRestrictedKeybind(keybind) then
+			local widget = GUI:Label(L["CFG_UI_ACTION_MACRO_HOVERCAST_HELP"] .. "\n")
+			widget:SetFullWidth(true)
+			group:AddChild(widget)
+		end
+
+		-- macro text field
+		do
+			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macrotext")
+			widget:SetFullWidth(true)
+			widget:SetNumLines(8)
+
+			group:AddChild(widget)
+		end
 	end
 
 	-- additional options
-	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], false, true)
-
-	-- macro mode toggle
 	do
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		container:AddChild(group)
+
+		-- macro mode toggle
+		do
+			local items = {
+				FIRST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_FIRST"],
+				LAST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_LAST"],
+				APPEND = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND"]
+			}
+
+			local order = {
+				"FIRST",
+				"LAST",
+				"APPEND"
+			}
+			
+			local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
+		end
+
+		if action.macroMode == Clicked.MACRO_MODE_APPEND then
+			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND_HELP"])
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
+		end
+	end
+end
+
+local function DrawBindingActionPage(container, binding)
+	-- action dropdown
+	do
+		local function OnValueChanged(frame, event, value)
+			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
+			GUI:Serialize(frame, event, value)
+		end
+
 		local items = {
-			FIRST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_FIRST"],
-			LAST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_LAST"],
-			APPEND = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND"]
+			SPELL = L["CFG_UI_ACTION_TYPE_SPELL"],
+			ITEM = L["CFG_UI_ACTION_TYPE_ITEM"],
+			MACRO = L["CFG_UI_ACTION_TYPE_MACRO"],
+			UNIT_SELECT = L["CFG_UI_ACTION_TYPE_UNIT_TARGET"],
+			UNIT_MENU = L["CFG_UI_ACTION_TYPE_UNIT_MENU"]
 		}
 
 		local order = {
-			"FIRST",
-			"LAST",
-			"APPEND"
+			"SPELL",
+			"ITEM",
+			"MACRO",
+			"UNIT_SELECT",
+			"UNIT_MENU"
 		}
-		
-		local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
+
+		local group = AceGUI:Create("InlineGroup")
+		group:SetFullWidth(true)
+		group:SetTitle(L["CFG_UI_ACTION_TYPE"])
+		container:AddChild(group)
+
+		local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
+		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
 
-		container:AddChild(widget)
+		group:AddChild(widget)
 	end
 
-	if action.macroMode == Clicked.MACRO_MODE_APPEND then
-		local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND_HELP"])
-		widget:SetFullWidth(true)
-
-		container:AddChild(widget)
+	if binding.type == Clicked.TYPE_SPELL then
+		DrawSpellSelection(container, binding.action)
+	elseif binding.type == Clicked.TYPE_ITEM then
+		DrawItemSelection(container, binding.action)
+	elseif binding.type == Clicked.TYPE_MACRO then
+		DrawMacroSelection(container, binding.keybind, binding.action)
 	end
 end
+
+-- Binding target page and components
 
 local function GetCommonTargetUnits()
 	local items = {
@@ -779,7 +867,7 @@ local function DrawTargetSelectionHostility(container, target)
 	container:AddChild(widget)
 end
 
-local function DrawTargetSelection(container, binding)
+local function DrawBindingTargetPage(container, binding)
 	-- primary target
 	do
 		local function ShouldShowHostility()
@@ -857,53 +945,6 @@ local function DrawTargetSelection(container, binding)
 			end
 		end
 	end
-end
-
-local function DrawBindingActionPage(container, binding)
-	local group = AceGUI:Create("InlineGroup")
-	group:SetFullWidth(true)
-	group:SetTitle(L["CFG_UI_ACTION_TYPE"])
-	container:AddChild(group)
-
-	-- action dropdown
-	do
-		local function OnValueChanged(frame, event, value)
-			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
-			GUI:Serialize(frame, event, value)
-		end
-
-		local items = {
-			SPELL = L["CFG_UI_ACTION_TYPE_SPELL"],
-			ITEM = L["CFG_UI_ACTION_TYPE_ITEM"],
-			MACRO = L["CFG_UI_ACTION_TYPE_MACRO"],
-			UNIT_SELECT = L["CFG_UI_ACTION_TYPE_UNIT_TARGET"],
-			UNIT_MENU = L["CFG_UI_ACTION_TYPE_UNIT_MENU"]
-		}
-
-		local order = {
-			"SPELL",
-			"ITEM",
-			"MACRO",
-			"UNIT_SELECT",
-			"UNIT_MENU"
-		}
-
-		local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
-		widget:SetCallback("OnValueChanged", OnValueChanged)
-		widget:SetFullWidth(true)
-
-		group:AddChild(widget)
-	end
-
-	if binding.type == Clicked.TYPE_SPELL then
-		DrawSpellSelection(group, binding.action)
-	elseif binding.type == Clicked.TYPE_ITEM then
-		DrawItemSelection(group, binding.action)
-	elseif binding.type == Clicked.TYPE_MACRO then
-		DrawMacroSelection(group, binding.keybind, binding.action)
-	end
-
-	DrawTargetSelection(container, binding)
 end
 
 -- Binding load options page and components
@@ -1151,6 +1192,8 @@ local function DrawBinding(container)
 
 			if group == "action" then
 				DrawBindingActionPage(scrollFrame, binding)
+			elseif group == "target" then
+				DrawBindingTargetPage(scrollFrame, binding)
 			elseif group == "load" then
 				DrawBindingLoadOptionsPage(scrollFrame, binding)
 			end
@@ -1163,6 +1206,10 @@ local function DrawBinding(container)
 			{
 				text = L["CFG_UI_ACTION"],
 				value = "action"
+			},
+			{
+				text = L["CFG_UI_TARGET"],
+				value = "target"
 			},
 			{
 				text = L["CFG_UI_LOAD"],
