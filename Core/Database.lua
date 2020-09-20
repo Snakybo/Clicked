@@ -201,7 +201,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.action.macrotext = binding.action.macro
 			binding.action.macro = nil
 
-			binding.action.macroPriority = "FIRST"
+			binding.action.macroMode = "FIRST"
 
 			binding.targets = nil
 			binding.targetingMode = nil
