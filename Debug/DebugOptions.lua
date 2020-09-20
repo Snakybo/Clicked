@@ -2,22 +2,12 @@ local AceConsole = LibStub("AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 local bindingProcessorFrame
+local bindingProcessorFrameOutput
 
 local attributes
 local data
 
-local function OpenBindingProcessorFrame()
-	if bindingProcessorFrame ~= nil and bindingProcessorFrame:IsVisible() then
-		return
-	end
-
-	bindingProcessorFrame = AceGUI:Create("Frame")
-	bindingProcessorFrame:SetTitle("Clicked Binding Processor Output")
-	bindingProcessorFrame:SetCallback("OnClose", function(widget)
-		AceGUI:Release(widget)
-	end)
-	bindingProcessorFrame:SetLayout("Fill")
-
+local function GetBindingProcessorOutput()
 	local lines = {}
 	
 	for i, command in ipairs(data) do
@@ -49,7 +39,7 @@ local function OpenBindingProcessorFrame()
 
 	if data["hovercast"] ~= nil then
 		table.insert(lines, "----- hovercast -----")
-		
+
 		for attribute, value in pairs(data["hovercast"].attributes) do
 			local split = { strsplit("\n", value) }
 			
@@ -59,9 +49,24 @@ local function OpenBindingProcessorFrame()
 		end
 	end
 
-	local output = AceGUI:Create("MultiLineEditBox")
-	output:SetText(table.concat(lines, "\n"))
-	bindingProcessorFrame:AddChild(output)
+	return table.concat(lines, "\n")
+end
+
+local function OpenBindingProcessorFrame()
+	if bindingProcessorFrame ~= nil and bindingProcessorFrame:IsVisible() then
+		return
+	end
+
+	bindingProcessorFrame = AceGUI:Create("Frame")
+	bindingProcessorFrame:SetTitle("Clicked Binding Processor Output")
+	bindingProcessorFrame:SetCallback("OnClose", function(widget)
+		AceGUI:Release(widget)
+	end)
+	bindingProcessorFrame:SetLayout("Fill")
+
+	bindingProcessorFrameOutput = AceGUI:Create("MultiLineEditBox")
+	bindingProcessorFrameOutput:SetText(GetBindingProcessorOutput())
+	bindingProcessorFrame:AddChild(bindingProcessorFrameOutput)
 end
 
 local function OnBindingProcessorComplete(event, commands)
@@ -70,10 +75,18 @@ local function OnBindingProcessorComplete(event, commands)
 	for i, command in ipairs(commands) do
 		data[i] = command
 	end
+
+	if bindingProcessorFrame ~= nil and bindingProcessorFrame:IsVisible() then
+		bindingProcessorFrameOutput:SetText(GetBindingProcessorOutput())
+	end
 end
 
 local function OnMacroAttributesCreated(event, command, attributes)
 	data[command] = attributes
+
+	if bindingProcessorFrame ~= nil and bindingProcessorFrame:IsVisible() then
+		bindingProcessorFrameOutput:SetText(GetBindingProcessorOutput())
+	end
 end
 
 local function OnHovercastAttributesCreated(event, keybindings, attributes)
@@ -81,6 +94,10 @@ local function OnHovercastAttributesCreated(event, keybindings, attributes)
 		keybindings = keybindings,
 		attributes = attributes
 	}
+
+	if bindingProcessorFrame ~= nil and bindingProcessorFrame:IsVisible() then
+		bindingProcessorFrameOutput:SetText(GetBindingProcessorOutput())
+	end
 end
 
 function Clicked:RegisterDebugOptions()

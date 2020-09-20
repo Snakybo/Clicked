@@ -165,7 +165,7 @@ local function ConstructTreeView()
 				table.insert(strings, binding.action.item)
 			elseif binding.type == Clicked.TYPE_MACRO then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
-				table.insert(strings, binding.action.macro)
+				table.insert(strings, binding.action.macrotext)
 			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
 			elseif binding.type == Clicked.TYPE_UNIT_MENU then
@@ -454,25 +454,29 @@ local function DrawTristateLoadOption(container, title, options, data)
 	end
 end
 
-local function DrawSeperator(container, title)
-	local seperatorTop = AceGUI:Create("Label")
-	seperatorTop:SetText(" ")
-	container:AddChild(seperatorTop)
+local function DrawSeperator(container, title, top, bottom)
+	if top then
+		local seperatorTop = AceGUI:Create("Label")
+		seperatorTop:SetText(" ")
+		container:AddChild(seperatorTop)
+	end
 
 	local widget = AceGUI:Create("Heading")
 	widget:SetFullWidth(true)
 	widget:SetText(title)
 	container:AddChild(widget)
 
-	-- local seperatorBottom = AceGUI:Create("Label")
-	-- seperatorBottom:SetText(" ")
-	-- container:AddChild(seperatorBottom)
+	if bottom then
+		local seperatorBottom = AceGUI:Create("Label")
+		seperatorBottom:SetText(" ")
+		container:AddChild(seperatorBottom)
+	end
 end
 
 -- Binding action page and components
 
 local function DrawSpellSelection(container, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_SPELL"])
+	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_SPELL"], true, false)
 
 	-- target spell text
 	do
@@ -515,7 +519,7 @@ local function DrawSpellSelection(container, action)
 	end
 
 	-- additional options
-	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"])
+	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], true, false)
 
 	-- interrupt cast toggle
 	do
@@ -527,7 +531,7 @@ local function DrawSpellSelection(container, action)
 end
 
 local function DrawItemSelection(container, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_ITEM"])
+	DrawSeperator(container, L["CFG_UI_ACTION_TARGET_ITEM"], true, false)
 
 	-- target item text
 	do
@@ -550,7 +554,7 @@ local function DrawItemSelection(container, action)
 	end
 
 	-- additional options
-	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"])
+	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], true, false)
 
 	-- interrupt cast toggle
 	do
@@ -562,7 +566,7 @@ local function DrawItemSelection(container, action)
 end
 
 local function DrawMacroSelection(container, keybind, action)
-	DrawSeperator(container, L["CFG_UI_ACTION_MACRO_TEXT"])
+	DrawSeperator(container, L["CFG_UI_ACTION_MACRO_TEXT"], true, false)
 
 	-- help text
 	if Clicked:IsRestrictedKeybind(keybind) then
@@ -573,9 +577,39 @@ local function DrawMacroSelection(container, keybind, action)
 
 	-- macro text field
 	do
-		local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macro")
+		local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macrotext")
 		widget:SetFullWidth(true)
 		widget:SetNumLines(8)
+
+		container:AddChild(widget)
+	end
+
+	-- additional options
+	DrawSeperator(container, L["CFG_UI_ACTION_OPTIONS"], false, true)
+
+	-- macro mode toggle
+	do
+		local items = {
+			FIRST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_FIRST"],
+			LAST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_LAST"],
+			APPEND = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND"]
+		}
+
+		local order = {
+			"FIRST",
+			"LAST",
+			"APPEND"
+		}
+		
+		local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
+		widget:SetFullWidth(true)
+
+		container:AddChild(widget)
+	end
+
+	if action.macroMode == Clicked.MACRO_MODE_APPEND then
+		local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND_HELP"])
+		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
@@ -1391,7 +1425,7 @@ local function DrawTreeView(container)
 
 			if binding ~= nil then
 				if binding.type == Clicked.TYPE_MACRO then
-					text = binding.action.macro
+					text = binding.action.macrotext
 				end
 
 				text = text .. "\n\n"

@@ -20,7 +20,8 @@ function Clicked:GetNewBindingTemplate()
 			stopcasting = false,
 			spell = "",
 			item = "",
-			macro = ""
+			macrotext = "",
+			macroMode = "FIRST"
 		},
 		primaryTarget = self:GetNewBindingTargetTemplate(),
 		secondaryTargets = {},
@@ -196,6 +197,11 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 			binding.action.stopcasting = binding.action.stopCasting
 			binding.action.stopCasting = nil
+
+			binding.action.macrotext = binding.action.macro
+			binding.action.macro = nil
+
+			binding.action.macroPriority = "FIRST"
 
 			binding.targets = nil
 			binding.targetingMode = nil

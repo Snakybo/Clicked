@@ -17,6 +17,10 @@ Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
 Clicked.TARGET_UNIT_HOVERCAST = "HOVERCAST"
 Clicked.TARGET_UNIT_CURSOR = "CURSOR"
 
+Clicked.MACRO_MODE_FIRST = "FIRST"
+Clicked.MACRO_MODE_APPEND = "APPEND"
+Clicked.MACRO_MODE_LAST = "LAST"
+
 Clicked.TARGET_HOSTILITY_ANY = "ANY"
 Clicked.TARGET_HOSTILITY_HELP = "HELP"
 Clicked.TARGET_HOSTILITY_HARM = "HARM"
@@ -245,7 +249,9 @@ local function GetMacroForBindings(bindings)
 
 	for _, binding in ipairs(bindings) do
 		if binding.type == Clicked.TYPE_MACRO then
-			table.insert(result, binding.action.macro)
+			if binding.action.macroMode == Clicked.MACRO_MODE_FIRST then
+				table.insert(result, binding.action.macrotext)
+			end
 		else
 			if not stopCasting and (binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM) and binding.action.stopCasting then
 				stopCasting = true
@@ -281,8 +287,21 @@ local function GetMacroForBindings(bindings)
 	end
 
 	if #segments > 0 then
-		local prefix = "/use "
-		table.insert(result, prefix .. table.concat(segments, "; "))
+		local command = "/use " .. table.concat(segments, "; ")
+
+		for _, binding in ipairs(bindings) do
+			if binding.type == Clicked.TYPE_MACRO and binding.action.macroMode == Clicked.MACRO_MODE_APPEND then
+				command = command .. "; " .. binding.action.macrotext
+			end
+		end
+
+		table.insert(result, command)
+	end
+
+	for _, binding in ipairs(bindings) do
+		if binding.type == Clicked.TYPE_MACRO and binding.action.macroMode == Clicked.MACRO_MODE_LAST then
+			table.insert(result, binding.action.macrotext)
+		end
 	end
 
 	return table.concat(result, "\n")
@@ -562,7 +581,7 @@ function Clicked:CanBindingLoad(binding)
 		return false
 	end
 
-	if binding.type == self.TYPE_MACRO and action.macro == "" then
+	if binding.type == self.TYPE_MACRO and action.macrotext == "" then
 		return false
 	end
 
