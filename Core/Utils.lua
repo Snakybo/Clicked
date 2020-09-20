@@ -1,7 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 function Clicked:StringContains(str, pattern)
-	return string.find(str, pattern) ~= nil
+	return string.find(str, pattern, 1, true) ~= nil
 end
 
 function Clicked:Trim(str)
