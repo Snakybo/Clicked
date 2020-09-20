@@ -23,9 +23,7 @@ function Clicked:GetNewBindingTemplate()
 			macro = ""
 		},
 		primaryTarget = self:GetNewBindingTargetTemplate(),
-		secondaryTargets = {
-			self:GetNewBindingTargetTemplate()
-		},
+		secondaryTargets = {},
 		load = {
 			never = false,
 			combat = {

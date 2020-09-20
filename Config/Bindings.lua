@@ -1168,13 +1168,14 @@ end
 
 local function DrawHeader(container)
 	local deleteBindingButton
+	local duplicateBindingButton
 	local copyBindingButton
 	local pasteBindingButton
 
 	local line = AceGUI:Create("ClickedSimpleGroup")
 	line:SetFullWidth(true)
 	line:SetLayout("table")
-	line:SetUserData("table", { columns = { 0, 0, 1, 0, 0} })
+	line:SetUserData("table", { columns = { 0, 0, 1, 0, 0, 0} })
 
 	container:AddChild(line)
 
@@ -1298,15 +1299,34 @@ local function DrawHeader(container)
 		deleteBindingButton = widget
 	end
 
+	-- duplicate binding button
+	do
+		local function OnClick()
+			local clone = DeepCopy(options.item.binding)
+			clone.keybind = ""
+
+			local index = Clicked:GetNumConfiguredBindings() + 1
+			Clicked:SetBindingAt(index, clone)
+
+			options.tree.container:SelectByValue(index)
+			options.refreshHeaderFunc()
+		end
+
+		local widget = GUI:Button(L["CFG_UI_BINDING_DUPLICATE"], OnClick)
+		widget:SetAutoWidth(true)
+
+		line:AddChild(widget)
+
+		duplicateBindingButton = widget
+	end
+
 	-- copy binding button
 	do
 		local function OnClick()
-			local original = options.item.binding
-
 			-- create a deep copy of the binding so that any modifications
 			-- after the copy was made aren't reflected in the copy behavior
 			bindingCopyBuffer = nil
-			bindingCopyBuffer = DeepCopy(original)
+			bindingCopyBuffer = DeepCopy(options.item.binding)
 
 			options.refreshHeaderFunc()
 		end
@@ -1322,11 +1342,9 @@ local function DrawHeader(container)
 	-- paste binding button
 	do
 		local function OnClick()
-			local original = options.item.binding
-
 			-- copy the buffer again to prevent dirtying it
 			local clone = DeepCopy(bindingCopyBuffer)
-			clone.keybind = original.keybind
+			clone.keybind = options.item.binding.keybind
 
 			Clicked:SetBindingAt(options.item.value, clone)
 		end
@@ -1343,6 +1361,7 @@ local function DrawHeader(container)
 		local hasItemSelected = options.item ~= nil and options.item.binding ~= nil
 		
 		deleteBindingButton:SetDisabled(not hasItemSelected)
+		duplicateBindingButton:SetDisabled(not hasItemSelected)
 		copyBindingButton:SetDisabled(not hasItemSelected)
 		pasteBindingButton:SetDisabled(not hasItemSelected or bindingCopyBuffer == nil)
 	end
