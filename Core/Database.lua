@@ -195,6 +195,15 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				end
 			end
 
+			-- Run this sanity check last, to force any bindings using the left
+			-- or right mouse buttons to be HOVERCAST.
+			if binding.keybind == "BUTTON1" or binding.keybind == "BUTTON2" then
+				binding.primaryTarget = {
+					unit = "HOVERCAST",
+					hostility = binding.primaryTarget.hostility
+				}
+			end
+
 			binding.action.stopcasting = binding.action.stopCasting
 			binding.action.stopCasting = nil
 
