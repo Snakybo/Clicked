@@ -227,6 +227,26 @@ local function DeepCopy(original)
 	return result
 end
 
+local function GetPrimaryBindingTargetUnit(unit, keybind, type)
+	if Clicked:IsRestrictedKeybind(keybind) then
+		return Clicked.TARGET_UNIT_HOVERCAST
+	end
+
+	if type == Clicked.TYPE_UNIT_SELECT then
+		return Clicked.TARGET_UNIT_HOVERCAST
+	end
+
+	if type == Clicked.TYPE_UNIT_MENU then
+		return Clicked.TARGET_UNIT_HOVERCAST
+	end
+
+	if type == Clicked.TYPE_MACRO then
+		return Clicked.TARGET_UNIT_GLOBAL
+	end
+
+	return unit
+end
+
 -- Spell book integration
 
 local function OverrideSpellBookVisuals(button)
@@ -541,8 +561,15 @@ local function DrawItemSelection(container, action)
 	end
 end
 
-local function DrawMacroSelection(container, action)
+local function DrawMacroSelection(container, keybind, action)
 	DrawSeperator(container, L["CFG_UI_ACTION_MACRO_TEXT"])
+
+	-- help text
+	if Clicked:IsRestrictedKeybind(keybind) then
+		local widget = GUI:Label(L["CFG_UI_ACTION_MACRO_HOVERCAST_HELP"] .. "\n")
+		widget:SetFullWidth(true)
+		container:AddChild(widget)
+	end
 
 	-- macro text field
 	do
@@ -748,6 +775,10 @@ local function DrawTargetSelection(container, binding)
 				return false
 			end
 
+			if binding.type == Clicked.TYPE_MACRO then
+				return false
+			end
+
 			if Clicked:CanUnitBeHostile(binding.primaryTarget.unit) then
 				return true
 			end
@@ -821,14 +852,7 @@ local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
 		local function OnValueChanged(frame, event, value)
-			if value == Clicked.TYPE_UNIT_SELECT then
-				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
-			elseif value == Clicked.TYPE_UNIT_MENU then
-				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
-			elseif value == Clicked.TYPE_MACRO then
-				binding.primaryTarget.unit = Clicked.TARGET_UNIT_GLOBAL
-			end
-
+			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
 			GUI:Serialize(frame, event, value)
 		end
 
@@ -860,7 +884,7 @@ local function DrawBindingActionPage(container, binding)
 	elseif binding.type == Clicked.TYPE_ITEM then
 		DrawItemSelection(group, binding.action)
 	elseif binding.type == Clicked.TYPE_MACRO then
-		DrawMacroSelection(group, binding.action)
+		DrawMacroSelection(group, binding.keybind, binding.action)
 	end
 
 	DrawTargetSelection(container, binding)
@@ -1087,10 +1111,7 @@ local function DrawBinding(container)
 	-- keybinding button
 	do
 		local function OnKeyChanged(frame, event, value)
-			if Clicked:IsRestrictedKeybind(value) then
-				binding.primaryTarget.unit = Clicked.TARGET_UNIT_HOVERCAST
-			end
-
+			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, value, binding.type)
 			GUI:Serialize(frame, event, value)
 		end
 		

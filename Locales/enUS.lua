@@ -65,7 +65,7 @@ L["CFG_UI_ACTION_RESTRICTED"] = "Note: Bindings using the left or right mouse bu
 L["CFG_UI_ACTION_TYPE"] = "Action"
 L["CFG_UI_ACTION_TYPE_SPELL"] = "Cast a spell"
 L["CFG_UI_ACTION_TYPE_ITEM"] = "Use an item"
-L["CFG_UI_ACTION_TYPE_MACRO"] = "Run a macro"
+L["CFG_UI_ACTION_TYPE_MACRO"] = "Run a macro (advanced)"
 L["CFG_UI_ACTION_TYPE_UNIT_TARGET"] = "Target the unit"
 L["CFG_UI_ACTION_TYPE_UNIT_MENU"] = "Open the unit menu"
 
@@ -75,6 +75,7 @@ L["CFG_UI_ACTION_TARGET_SPELL_BOOK"] = "Pick from spellbook"
 L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"] = "Click on a spell book entry to select it"
 L["CFG_UI_ACTION_TARGET_ITEM"] = "Target Item"
 L["CFG_UI_ACTION_MACRO_TEXT"] = "Macro Text"
+L["CFG_UI_ACTION_MACRO_HOVERCAST_HELP"] = "This macro will only execute when targeting unit frames, in order to interact with the selected target use the [@mouseover] conditional."
 
 -- additional options
 L["CFG_UI_ACTION_OPTIONS"] = "Options"
