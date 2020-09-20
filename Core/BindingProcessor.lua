@@ -243,7 +243,7 @@ end
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
 local function GetMacroForBindings(bindings)
 	local result = {}
-	local stopCasting = false
+	local stopcasting = false
 
 	local actions = {}
 
@@ -253,8 +253,8 @@ local function GetMacroForBindings(bindings)
 				table.insert(result, binding.action.macrotext)
 			end
 		else
-			if not stopCasting and (binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM) and binding.action.stopCasting then
-				stopCasting = true
+			if not stopcasting and (binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM) and binding.action.stopcasting then
+				stopcasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
 
