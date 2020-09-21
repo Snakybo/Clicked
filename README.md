@@ -42,7 +42,7 @@ Bindings can be set to only load based on a variety of conditions.
 
 [Issue tracker](https://github.com/Snakybo/Clicked/issues)
 
-Please include which version and unit frame addon you're using (`/dump Clicked.VERSION`). If there are specific bindings that are not working include the configurations for those as well.
+Please include the output from `/cc dump` if you have any issues, if there are any specific binding that are causing issues please include which ones are problematic.
 
 ## Credits
 

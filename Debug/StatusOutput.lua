@@ -6,20 +6,58 @@ local editbox
 
 local data
 
+local function GetBasicinfoString()
+	local lines = {}
+
+	table.insert(lines, "Version: " .. Clicked.VERSION)
+	table.insert(lines, "Race: " .. UnitRace("player"))
+	table.insert(lines, "Level: " .. UnitLevel("player"))
+	table.insert(lines, "Class: " .. UnitClass("player"))
+
+	if Clicked.WOW_MAINLINE_RELEASE then
+		do
+			local _, name = GetSpecializationInfo(GetSpecialization())
+			table.insert(lines, "Specialization: " .. name)
+		end
+		
+		do
+			local talents = {}
+
+			for tier = 1, MAX_TALENT_TIERS do
+				for column = 1, NUM_TALENT_COLUMNS do
+					local _, _, _, selected, _, _, _, _, _, _, known = GetTalentInfo(tier, column, 1)
+
+					if selected or known then
+						table.insert(talents, tier .. "/" .. column)
+					end
+				end
+			end
+
+			table.insert(lines, "Talents: " .. table.concat(talents, " "))
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
 local function GetParsedDataString()
 	local lines = {}
 
 	for i, command in ipairs(data) do
-		table.insert(lines, "----- " .. i .. " -----")
-		table.insert(lines, "keybind: " .. command.keybind)
-		table.insert(lines, "hovercast: " .. tostring(command.hovercast))
-		table.insert(lines, "action: " .. command.action)
+		if i > 1 then
+			table.insert(lines, "")
+		end
+
+		table.insert(lines, "----- Loaded binding " .. i .. " -----")
+		table.insert(lines, "Keybind: " .. command.keybind)
+		table.insert(lines, "Hovercast: " .. tostring(command.hovercast))
+		table.insert(lines, "Action: " .. command.action)
 
 		if command.data ~= nil then
 			local split = { strsplit("\n", command.data) }
 
 			for _, line in ipairs(split) do
-				table.insert(lines, "data: " .. line)
+				table.insert(lines, "Data: " .. line)
 			end
 		end
 
@@ -28,12 +66,10 @@ local function GetParsedDataString()
 				local split = { strsplit("\n", value) }
 
 				for _, line in ipairs(split) do
-					table.insert(lines, "attribute-" .. attribute .. ": " .. line)
+					table.insert(lines, "Attribute-" .. attribute .. ": " .. line)
 				end
 			end
 		end
-
-		table.insert(lines, "")
 	end
 
 	if data["hovercast"] ~= nil then
@@ -41,30 +77,48 @@ local function GetParsedDataString()
 
 		for attribute, value in pairs(data["hovercast"].attributes) do
 			if first then
-				table.insert(lines, "----- hovercast -----")
+				table.insert(lines, "")
+				table.insert(lines, "----- Hovercast attributes -----")
 				first = false
 			end
 
 			local split = { strsplit("\n", value) }
 
 			for _, line in ipairs(split) do
-				table.insert(lines, "attribute-" .. attribute .. ": " .. line)
+				table.insert(lines, "Attribute-" .. attribute .. ": " .. line)
 			end
-		end
-
-		if not first then
-			table.insert(lines, "")
 		end
 	end
 
 	return table.concat(lines, "\n")
 end
 
-local function UpdateStatusOutputText()
-	local versionString = "Clicked version " .. Clicked.VERSION .. "\n\n"
-	local dataString = GetParsedDataString()
+local function GetRegisteredClickCastFrames()
+	local lines = {}
 
-	editbox:SetText(versionString .. dataString)
+	for _, frame in ipairs(Clicked:GetClickCastFrames()) do
+		if frame ~= nil and frame.GetName ~= nil then
+			local name = frame:GetName()
+			local blacklisted = Clicked:IsFrameBlacklisted(frame)
+
+			table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
+		end
+	end
+
+	if #lines > 0 then
+		table.insert(lines, 1, "----- Registered unit frames -----")
+	end
+
+	return table.concat(lines, "\n")
+end
+
+local function UpdateStatusOutputText()
+	local text = {}
+	table.insert(text, GetBasicinfoString())
+	table.insert(text, GetParsedDataString())
+	table.insert(text, GetRegisteredClickCastFrames())
+
+	editbox:SetText(table.concat(text, "\n\n"))
 end
 
 local function OpenStatusOutput()
