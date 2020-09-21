@@ -1,4 +1,5 @@
 local AceGUI = LibStub("AceGUI-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local GUI = Clicked.GUI
@@ -14,9 +15,11 @@ local KEYBIND_ORDER_LIST = {
 
 local spellbookButtons = {}
 local options = {}
+local module
+
+-- reset on close
 local bindingCopyBuffer
 local searchTerm
-local module
 
 -- Utility functions
 
@@ -245,6 +248,35 @@ local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	end
 
 	return unit
+end
+
+local function ShowConfirmationPopup(message, func, ...)
+	local frame = AceConfigDialog.popup
+
+	frame:Show()
+	frame.text:SetText(message)
+
+	local height = 61 + frame.text:GetHeight()
+	frame:SetHeight(height)
+
+	frame.accept:ClearAllPoints()
+	frame.accept:SetPoint("BOTTOMRIGHT", frame, "BOTTOM", -6, 16)
+	frame.cancel:Show()
+
+	local t = {...}
+	local tCount = select("#", ...)
+
+	frame.accept:SetScript("OnClick", function(self)
+		func(unpack(t, 1, tCount))
+		frame:Hide()
+		self:SetScript("OnClick", nil)
+		frame.cancel:SetScript("OnClick", nil)
+	end)
+	frame.cancel:SetScript("OnClick", function(self)
+		frame:Hide()
+		self:SetScript("OnClick", nil)
+		frame.accept:SetScript("OnClick", nil)
+	end)
 end
 
 -- Spell book integration
@@ -1303,36 +1335,48 @@ local function DrawHeader(container)
 
 	-- delete binding button
 	do
-		local function OnClick()
+		local function OnConfirm(item)
 			if InCombatLockdown() then
 				return
 			end
 
-			local binding = options.item.binding
-			local index = options.item.index
+			local binding = item.binding
+			local index = item.index
+			local isCurrent = options.item == item
 
 			Clicked:DeleteBinding(binding)
 
 			if options.tree.items ~= nil then
-				local items = options.tree.items
-				local selected = items[index]
+				if isCurrent then
+					local items = options.tree.items
+					local selected = items[index]
 
-				if index <= #items then
-					selected = items[index]
-				elseif index - 1 >= 1 then
-					selected = items[index - 1]
-				end
+					if index <= #items then
+						selected = items[index]
+					elseif index - 1 >= 1 then
+						selected = items[index - 1]
+					end
 
-				if selected ~= nil then
-					options.tree.container:SelectByValue(selected.value)
-				else
-					options.item = nil
+					if selected ~= nil then
+						options.tree.container:SelectByValue(selected.value)
+					else
+						options.item = nil
+					end
 				end
 			else
 				options.item = nil
 			end
 
 			options.refreshHeaderFunc()
+		end
+
+		local function OnClick()
+			local item = options.item
+
+			local msg = L["CFG_UI_BINDING_DELETE_CONFIRM_LINE1"] .. "\n\n"
+			msg = msg .. L["CFG_UI_BINDING_DELETE_CONFIRM_LINE2"]:format(item.text2, item.text1)
+
+			ShowConfirmationPopup(msg, OnConfirm, item)
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
