@@ -1,4 +1,3 @@
-local AceConsole = LibStub("AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 local frame
@@ -19,7 +18,7 @@ local function GetBasicinfoString()
 			local _, name = GetSpecializationInfo(GetSpecialization())
 			table.insert(lines, "Specialization: " .. name)
 		end
-		
+
 		do
 			local talents = {}
 
@@ -96,10 +95,10 @@ end
 local function GetRegisteredClickCastFrames()
 	local lines = {}
 
-	for _, frame in ipairs(Clicked:GetClickCastFrames()) do
-		if frame ~= nil and frame.GetName ~= nil then
-			local name = frame:GetName()
-			local blacklisted = Clicked:IsFrameBlacklisted(frame)
+	for _, clickCastFrame in ipairs(Clicked:GetClickCastFrames()) do
+		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
+			local name = clickCastFrame:GetName()
+			local blacklisted = Clicked:IsFrameBlacklisted(clickCastFrame)
 
 			table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
 		end

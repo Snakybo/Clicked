@@ -1579,7 +1579,7 @@ local function OpenBindingConfig()
 	RedrawBindingConfig()
 end
 
-local module = {
+module = {
 	--["Initialize"] = nil,
 
 	["Register"] = function(self)

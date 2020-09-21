@@ -115,8 +115,8 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 	self:RegisterClickCastFrameClicks(frame)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
-	table.insert(frames, frame)	
-	
+	table.insert(frames, frame)
+
 	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_REGISTERED, frame)
 end
 
@@ -153,7 +153,6 @@ function Clicked:UnregisterClickCastFrame(frame)
 	self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 	self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
 
-	local frame = frames[index]
 	table.remove(frames, index)
 
 	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_UNREGISTERED, frame)

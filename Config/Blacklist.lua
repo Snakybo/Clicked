@@ -15,7 +15,7 @@ local module = {
 		for _, frame in ipairs(Clicked:GetClickCastFrames()) do
 			self:OnFrameRegistered(frame)
 		end
-	
+
 		AceConfig:RegisterOptionsTable("Clicked/Blacklist", self.config)
 		self.interfaceOptionsTab = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["OPT_BLACKLIST_TITLE"], "Clicked")
 	end,
@@ -48,7 +48,7 @@ local module = {
 	["OnFrameRegistered"] = function(self, frame)
 		local args = self.config.args
 		local name = frame:GetName()
-		
+
 		args[name] = {
 			name = name,
 			type = "toggle",

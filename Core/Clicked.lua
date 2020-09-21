@@ -81,7 +81,7 @@ local function OnChatCommandReceived(input)
 
 		startpos = next
 	end
-	
+
 	for _, module in pairs(modules) do
 		if module.OnChatCommandReceived ~= nil then
 			safecall(module.OnChatCommandReceived, module, args)

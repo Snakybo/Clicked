@@ -16,7 +16,7 @@ local module = {
 					type = "toggle",
 					set = function(info, val)
 						Clicked.db.profile.minimap.hide = not val
-	
+
 						if val then
 							LibDBIcon:Show("Clicked")
 						else
@@ -29,10 +29,10 @@ local module = {
 				}
 			}
 		}
-	
+
 		AceConfig:RegisterOptionsTable("Clicked", config)
 		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["NAME"])
-	
+
 		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
 		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_PROFILES_NAME"], "Clicked")
 	end,
