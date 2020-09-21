@@ -149,9 +149,9 @@ L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"] = "In a party or raid group"
 -- Only load if the provided player is in the group
 L["CFG_UI_LOAD_PLAYER_IN_GROUP"] = "Player in group"
 
--- Everything prefixed with OPT_UI is shown in the interface options UI
+-- Everything prefixed with OPT is shown in the interface options UI
 
-L["OPT_UI_LIST_TITLE"] = "Clicked"
-L["OPT_UI_LIST_TITLE_PROFILES"] = "Profiles"
-L["OPT_UI_MINIMAP_NAME"] = "Enable minimap icon"
-L["OPT_UI_MINIMAP_DESC"] = "Enable or disable the minimap icon"
+L["OPT_GENERAL_MINIMAP_NAME"] = "Enable minimap icon"
+L["OPT_GENERAL_MINIMAP_DESC"] = "Enable or disable the minimap icon"
+L["OPT_PROFILES_NAME"] = "Profiles"
+L["OPT_BLACKLIST_TITLE"] = "Frame Blacklist"

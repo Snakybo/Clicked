@@ -11,8 +11,8 @@ local module = {
 			name = L["NAME"],
 			args = {
 				minimapIcon = {
-					name = L["OPT_UI_MINIMAP_NAME"],
-					desc = L["OPT_UI_MINIMAP_DESC"],
+					name = L["OPT_GENERAL_MINIMAP_NAME"],
+					desc = L["OPT_GENERAL_MINIMAP_DESC"],
 					type = "toggle",
 					set = function(info, val)
 						Clicked.db.profile.minimap.hide = not val
@@ -31,10 +31,10 @@ local module = {
 		}
 	
 		AceConfig:RegisterOptionsTable("Clicked", config)
-		AceConfigDialog:AddToBlizOptions("Clicked", L["OPT_UI_LIST_TITLE"])
+		AceConfigDialog:AddToBlizOptions("Clicked", L["NAME"])
 	
 		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
-		AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_UI_LIST_TITLE_PROFILES"], "Clicked")
+		AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_PROFILES_NAME"], "Clicked")
 	end
 }
 
