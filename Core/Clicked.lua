@@ -84,7 +84,7 @@ local function OnChatCommandReceived(input)
 	
 	for _, module in pairs(modules) do
 		if module.OnChatCommandReceived ~= nil then
-			safecall(module.OnChatCommandReceived, self, args)
+			safecall(module.OnChatCommandReceived, module, args)
 		end
 	end
 end
@@ -106,7 +106,7 @@ function Clicked:OnInitialize()
 
 	for _, module in pairs(modules) do
 		if module.Initialize ~= nil then
-			safecall(module.Initialize, self)
+			safecall(module.Initialize, module)
 		end
 	end
 end
@@ -127,7 +127,7 @@ function Clicked:OnEnable()
 
 	for _, module in pairs(modules) do
 		if module.Register ~= nil then
-			safecall(module.Register, self)
+			safecall(module.Register, module)
 		end
 	end
 
@@ -150,7 +150,7 @@ function Clicked:OnDisable()
 
 	for _, module in pairs(modules) do
 		if module.Unregister ~= nil then
-			safecall(module.Unregister, self)
+			safecall(module.Unregister, module)
 		end
 	end
 end

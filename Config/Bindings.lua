@@ -1583,15 +1583,15 @@ local module = {
 	--["Initialize"] = nil,
 
 	["Register"] = function(self)
-		self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-		self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, RedrawBindingConfig)
-		self:RegisterEvent("UNIT_AURA", OnUnitAura)
+		Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
+		Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, RedrawBindingConfig)
+		Clicked:RegisterEvent("UNIT_AURA", OnUnitAura)
 	end,
 
 	["Unregister"] = function(self)
-		self:UnregisterMessage(GUI.EVENT_UPDATE)
-		self:UnregisterMessage(self.EVENT_BINDINGS_CHANGED)
-		self:UnregisterEvent("UNIT_AURA")
+		Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
+		Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
+		Clicked:UnregisterEvent("UNIT_AURA")
 	end,
 
 	["Redraw"] = function(self)

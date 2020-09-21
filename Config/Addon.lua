@@ -33,7 +33,7 @@ local module = {
 		AceConfig:RegisterOptionsTable("Clicked", config)
 		AceConfigDialog:AddToBlizOptions("Clicked", L["OPT_UI_LIST_TITLE"])
 	
-		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(self.db))
+		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
 		AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_UI_LIST_TITLE_PROFILES"], "Clicked")
 	end
 }

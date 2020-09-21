@@ -135,15 +135,15 @@ local module = {
 	--["Initialize"] = nil,
 
 	["Register"] = function(self)
-		self:RegisterMessage(self.EVENT_BINDING_PROCESSOR_COMPLETE, OnBindingProcessorComplete)
-		self:RegisterMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, OnMacroAttributesCreated)
-		self:RegisterMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, OnHovercastAttributesCreated)
+		Clicked:RegisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, OnBindingProcessorComplete)
+		Clicked:RegisterMessage(Clicked.EVENT_MACRO_ATTRIBUTES_CREATED, OnMacroAttributesCreated)
+		Clicked:RegisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED, OnHovercastAttributesCreated)
 	end,
 
 	["Unregister"] = function(self)
-		self:UnregisterMessage(self.EVENT_BINDING_PROCESSOR_COMPLETE)
-		self:UnregisterMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED)
-		self:UnregisterMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED)
+		Clicked:UnregisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE)
+		Clicked:UnregisterMessage(Clicked.EVENT_MACRO_ATTRIBUTES_CREATED)
+		Clicked:UnregisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED)
 	end,
 
 	["OnChatCommandReceived"] = function(self, args)
