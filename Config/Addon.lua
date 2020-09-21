@@ -31,11 +31,21 @@ local module = {
 		}
 	
 		AceConfig:RegisterOptionsTable("Clicked", config)
-		AceConfigDialog:AddToBlizOptions("Clicked", L["NAME"])
+		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["NAME"])
 	
 		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
-		AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_PROFILES_NAME"], "Clicked")
-	end
+		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_PROFILES_NAME"], "Clicked")
+	end,
+
+	["OnChatCommandReceived"] = function(self, args)
+		for _, arg in ipairs(args) do
+			if arg == "profile" then
+				InterfaceOptionsFrame_OpenToCategory(self.profile)
+				InterfaceOptionsFrame_OpenToCategory(self.profile)
+				break
+			end
+		end
+	end,
 }
 
 Clicked:RegisterModule("AddonConfig", module)
