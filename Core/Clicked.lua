@@ -1,3 +1,4 @@
+local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
@@ -6,7 +7,20 @@ Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 Clicked.WOW_MAINLINE_RELEASE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
+local modules = {}
 local isPlayerInCombat = false
+
+-- safecall implementation
+
+local function errorhandler(err)
+	return geterrorhandler()(err)
+end
+
+local function safecall(func, ...)
+	if func then
+		return xpcall(func, errorhandler, ...)
+	end
+end
 
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
@@ -53,6 +67,28 @@ local function OnAddonLoaded()
 	Clicked:ProcessClickCastFrameQueue()
 end
 
+local function OnChatCommandReceived(input)
+	local args = {}
+	local startpos = 1
+
+	while true do
+		local arg, next = AceConsole:GetArgs(input, 1, startpos)
+		table.insert(args, arg)
+
+		if next == 1e9 then
+			break
+		end
+
+		startpos = next
+	end
+	
+	for _, module in pairs(modules) do
+		if module.OnChatCommandReceived ~= nil then
+			safecall(module.OnChatCommandReceived, self, args)
+		end
+	end
+end
+
 function Clicked:OnInitialize()
 	local defaultProfile = UnitName("player") .. " - " .. GetRealmName()
 
@@ -65,10 +101,14 @@ function Clicked:OnInitialize()
 
 	self:RegisterClickCastHeader()
 	self:RegisterBlizzardUnitFrames()
-	self:RegisterAddonConfig()
-	--@alpha@
-	self:RegisterDebugOptions()
-	--@end-alpha@
+	AceConsole:RegisterChatCommand("clicked", OnChatCommandReceived)
+	AceConsole:RegisterChatCommand("cc", OnChatCommandReceived)
+
+	for _, module in pairs(modules) do
+		if module.Initialize ~= nil then
+			safecall(module.Initialize, self)
+		end
+	end
 end
 
 function Clicked:OnEnable()
@@ -85,7 +125,11 @@ function Clicked:OnEnable()
 	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
 
-	self:EnableBindingConfig()
+	for _, module in pairs(modules) do
+		if module.Register ~= nil then
+			safecall(module.Register, self)
+		end
+	end
 
 	ReloadDatabase()
 end
@@ -104,7 +148,19 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("BAG_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
 
-	self:DisableBindingConfig()
+	for _, module in pairs(modules) do
+		if module.Unregister ~= nil then
+			safecall(module.Unregister, self)
+		end
+	end
+end
+
+function Clicked:RegisterModule(name, module)
+	modules[name] = module
+end
+
+function Clicked:FindModule(name)
+	return modules[name]
 end
 
 function Clicked:IsPlayerInCombat()

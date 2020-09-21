@@ -1,4 +1,3 @@
-local AceConsole = LibStub("AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
@@ -17,6 +16,7 @@ local spellbookButtons = {}
 local options = {}
 local bindingCopyBuffer
 local searchTerm
+local module
 
 -- Utility functions
 
@@ -1248,7 +1248,7 @@ local function DrawHeader(container)
 			end
 
 			searchTerm = Clicked:Trim(value)
-			Clicked:RedrawBindingConfig()
+			module:Redraw()
 		end
 
 		local function OnEnterPressed(frame, event, value)
@@ -1258,7 +1258,7 @@ local function DrawHeader(container)
 
 			searchTerm = Clicked:Trim(value)
 			frame:SetText(searchTerm)
-			Clicked:RedrawBindingConfig()
+			module:Redraw()
 		end
 
 		local function OnEscapePressed(frame)
@@ -1268,7 +1268,7 @@ local function DrawHeader(container)
 
 			searchTerm = ""
 			frame:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
-			Clicked:RedrawBindingConfig()
+			module:Redraw()
 		end
 
 		local widget = AceGUI:Create("ClickedEditBox")
@@ -1515,7 +1515,7 @@ local function OnUnitAura(event, unit)
 	end
 end
 
-function Clicked:RedrawBindingConfig()
+local function RedrawBindingConfig()
 	if options.root == nil or not options.root:IsVisible() then
 		return
 	end
@@ -1538,7 +1538,7 @@ function Clicked:RedrawBindingConfig()
 	end
 end
 
-function Clicked:OpenBindingConfig()
+local function OpenBindingConfig()
 	if options.root ~= nil and options.root:IsVisible() then
 		return
 	end
@@ -1576,20 +1576,33 @@ function Clicked:OpenBindingConfig()
 	DrawHeader(options.root)
 	DrawTreeView(options.root)
 
-	Clicked:RedrawBindingConfig()
+	RedrawBindingConfig()
 end
 
-function Clicked:EnableBindingConfig()
-	self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-	self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, "RedrawBindingConfig")
-	self:RegisterEvent("UNIT_AURA", OnUnitAura)
-end
+local module = {
+	--["Initialize"] = nil,
 
-function Clicked:DisableBindingConfig()
-	self:UnregisterMessage(GUI.EVENT_UPDATE)
-	self:UnregisterMessage(self.EVENT_BINDINGS_CHANGED)
-	self:UnregisterEvent("UNIT_AURA")
-end
+	["Register"] = function(self)
+		self:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
+		self:RegisterMessage(self.EVENT_BINDINGS_CHANGED, RedrawBindingConfig)
+		self:RegisterEvent("UNIT_AURA", OnUnitAura)
+	end,
 
-AceConsole:RegisterChatCommand("clicked", Clicked.OpenBindingConfig)
-AceConsole:RegisterChatCommand("cc", Clicked.OpenBindingConfig)
+	["Unregister"] = function(self)
+		self:UnregisterMessage(GUI.EVENT_UPDATE)
+		self:UnregisterMessage(self.EVENT_BINDINGS_CHANGED)
+		self:UnregisterEvent("UNIT_AURA")
+	end,
+
+	["Redraw"] = function(self)
+		RedrawBindingConfig()
+	end,
+
+	["OnChatCommandReceived"] = function(self, args)
+		if #args == 0 then
+			OpenBindingConfig()
+		end
+	end
+}
+
+Clicked:RegisterModule("BindingConfig", module)

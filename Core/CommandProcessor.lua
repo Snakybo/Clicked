@@ -4,10 +4,8 @@ Clicked.COMMAND_ACTION_MACRO = "macro"
 
 Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
 
---@alpha@
 Clicked.EVENT_MACRO_ATTRIBUTES_CREATED = "CLICKED_MACRO_ATTRIBUTES_CREATED"
 Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED = "CLICKED_HOVERCAST_ATTRIBUTES_CREATED"
---@end-alpha@
 
 local macroFrameHandlers = {}
 local stopCastingButton
@@ -135,10 +133,7 @@ function Clicked:ProcessCommands(commands)
 			local attributes = {}
 
 			self:CreateCommandAttributes(attributes, command, prefix, suffix)
-
-			--@alpha@
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
-			--@end-alpha@
 
 			for attribute, value in pairs(attributes) do
 				newClickCastFrameAttributes[attribute] = value
@@ -158,11 +153,7 @@ function Clicked:ProcessCommands(commands)
 			frame:Hide()
 
 			self:CreateCommandAttributes(attributes, command)
-
-			--@alpha@
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
-			--@end-alpha@
-
 			self:SetPendingFrameAttributes(frame, attributes)
 			self:ApplyAttributesToFrame(frame)
 
@@ -171,9 +162,7 @@ function Clicked:ProcessCommands(commands)
 		end
 	end
 
-	--@alpha@
 	self:SendMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybindings, newClickCastFrameAttributes)
-	--@end-alpha@
 
 	self:UpdateClickCastHeader(newClickCastFrameKeybindings)
 	self:UpdateClickCastFrames(newClickCastFrameAttributes)
