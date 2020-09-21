@@ -1,5 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
+Clicked.EVENT_CLICK_CAST_FRAME_REGISTERED = "CLICKED_CLICK_CAST_FRAME_REGISTERED"
+Clicked.EVENT_CLICK_CAST_FRAME_UNREGISTERED = "CLICKED_CLICK_CAST_FRAME_UNREGISTERED"
+
 local frames = {}
 local registerQueue = {}
 local unregisterQueue = {}
@@ -112,7 +115,9 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 	self:RegisterClickCastFrameClicks(frame)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
-	table.insert(frames, frame)
+	table.insert(frames, frame)	
+	
+	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_REGISTERED, frame)
 end
 
 function Clicked:UnregisterClickCastFrame(frame)
@@ -148,7 +153,10 @@ function Clicked:UnregisterClickCastFrame(frame)
 	self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 	self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
 
+	local frame = frames[index]
 	table.remove(frames, index)
+
+	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_UNREGISTERED, frame)
 end
 
 function Clicked:RegisterClickCastFrameClicks(frame)
@@ -171,4 +179,19 @@ function Clicked:UpdateClickCastFrames(newAtributes)
 	end
 
 	cachedAttributes = newAtributes
+end
+
+function Clicked:IsFrameBlacklisted(frame)
+	if frame == nil then
+		return false
+	end
+
+	local blacklist = Clicked.db.profile.blacklist
+	local name = frame:GetName()
+
+	return blacklist[name]
+end
+
+function Clicked:GetClickCastFrames()
+	return frames
 end

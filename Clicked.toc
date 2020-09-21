@@ -36,4 +36,5 @@ UnitFrames\Blizzard.lua
 Config\GUI.lua
 Config\Addon.lua
 Config\Bindings.lua
+Config\Blacklist.lua
 Debug\StatusOutput.lua

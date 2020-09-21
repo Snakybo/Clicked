@@ -157,6 +157,8 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 	-- version 0.6.x to 0.7.0
 	if self:StartsWith(profile.version, "0.6") then
+		profile.blacklist = {}
+
 		for _, binding in ipairs(profile.bindings) do
 			binding.primaryTarget = {
 				unit = binding.targets[1].unit,

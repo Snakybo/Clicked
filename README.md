@@ -17,6 +17,7 @@ Additionally it adds support for the binding of the left and right mouse buttons
 * [Dynamically load and unload bindings](#dynamically-load-and-unload-bindings)
 * Pick spells from the spellbook
 * Unlock bindings in a vehicle
+* Blacklist unit frames (`/cc blacklist`)
 
 ### Dynamic target prioritization
 

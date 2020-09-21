@@ -61,8 +61,10 @@ function Clicked:ApplyAttributesToFrame(frame)
 		frame:SetAttribute(key, nil)
 	end
 
-	for key, value in pairs(pending) do
-		frame:SetAttribute(key, value)
+	if not Clicked:IsFrameBlacklisted(frame) then
+		for key, value in pairs(pending) do
+			frame:SetAttribute(key, value)
+		end
 	end
 end
 
