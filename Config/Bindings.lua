@@ -1458,6 +1458,46 @@ local function DrawTreeView(container)
 
 				text = text .. "\n\n"
 
+				local function GetTargetLine(target)
+					local units = {
+						PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
+						GLOBAL = L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"],
+						TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
+						MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
+						HOVERCAST = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"],
+						FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
+						CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
+						PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
+						PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
+						PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
+						PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
+						PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
+					}
+
+					local hostility = {
+						ANY = "",
+						HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
+						HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
+					}
+
+					local result = ""
+
+					if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TARGET_HOSTILITY_ANY then
+						result = hostility[target.hostility] .. " "
+					end
+
+					result = result .. units[target.unit]
+					return result
+				end
+
+				text = text .. "1. " .. GetTargetLine(binding.primaryTarget)
+
+				for i, target in ipairs(binding.secondaryTargets) do
+					text = text .. "\n" .. (i + 1) .. ". " .. GetTargetLine(target)
+				end
+
+				text = text .. "\n\n"
+
 				if Clicked:IsBindingActive(binding) then
 					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
 				else
