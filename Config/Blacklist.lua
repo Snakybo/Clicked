@@ -7,7 +7,13 @@ local module = {
 		self.config = {
 			type = "group",
 			name = L["OPT_BLACKLIST_TITLE"],
-			args = {}
+			args = {
+				help = {
+					type = "description",
+					name = L["OPT_BLACKLIST_HELP"],
+					order = 0
+				}
+			}
 		}
 
 		self.blacklist = Clicked.db.profile.blacklist
