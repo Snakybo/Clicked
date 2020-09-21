@@ -127,10 +127,11 @@ local function OpenStatusOutput()
 	end
 
 	frame = AceGUI:Create("Frame")
-	frame:SetTitle("Clicked Binding Processor Output")
+	frame:SetTitle("Clicked Data Dump")
 	frame:SetLayout("Fill")
 
 	editbox = AceGUI:Create("MultiLineEditBox")
+	editbox:SetLabel("")
 	editbox:DisableButton(true)
 	frame:AddChild(editbox)
 
