@@ -1589,6 +1589,7 @@ local function OpenBindingConfig()
 			AceGUI:Release(container)
 			DisableSpellbookHandlers()
 
+			searchTerm = ""
 			bindingCopyBuffer = nil
 		end
 
