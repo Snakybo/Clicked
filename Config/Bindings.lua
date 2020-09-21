@@ -135,7 +135,7 @@ local function ConstructTreeViewItem(index, binding)
 		item.text1 = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
 	end
 
-	item.text2 = binding.keybind
+	item.text2 = #binding.keybind > 0 and binding.keybind or L["CFG_UI_BINDING_UNBOUND"]
 
 	if Clicked:IsBindingActive(binding) then
 		item.text3 = L["CFG_UI_TREE_LOAD_STATE_LOADED"]

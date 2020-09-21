@@ -53,6 +53,7 @@ L["CFG_UI_BINDING_PASTE"] = "Paste"
 L["CFG_UI_BINDING_DELETE"] = "Delete"
 L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"] = "Search..."
 L["CFG_UI_BINDING_SET_TOOLTIP"] = "Press a key to bind, or ESC to clear the binding."
+L["CFG_UI_BINDING_UNBOUND"] = "UNBOUND"
 
 -- Action items are used on the main binding action page
 
