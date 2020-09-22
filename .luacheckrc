@@ -21,7 +21,6 @@ globals = {
 	"ClickCastFrames",
 
 	-- WoW API globals
-	"SpellBookFrame",
 	"StaticPopupDialogs"
 }
 
@@ -76,6 +75,7 @@ read_globals = {
 	"RegisterStateDriver",
 	"ReloadUI",
 	"ShowUIPanel",
+	"SpellBookFrame",
 	"SpellBook_GetSpellBookSlot",
 	"SpellButton_OnEnter",
 	"SpellButton_OnLeave",
