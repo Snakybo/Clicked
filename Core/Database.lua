@@ -5,6 +5,7 @@ function Clicked:GetDatabaseDefaults()
 		profile = {
 			version = nil,
 			bindings = {},
+			blacklist = {},
 			minimap = {
 				hide = false
 			}
