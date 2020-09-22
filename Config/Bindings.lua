@@ -1373,10 +1373,14 @@ local function DrawHeader(container)
 		local function OnClick()
 			local item = options.item
 
-			local msg = L["CFG_UI_BINDING_DELETE_CONFIRM_LINE1"] .. "\n\n"
-			msg = msg .. L["CFG_UI_BINDING_DELETE_CONFIRM_LINE2"]:format(item.text2, item.text1)
+			if IsShiftKeyDown() then
+				OnConfirm(item)
+			else
+				local msg = L["CFG_UI_BINDING_DELETE_CONFIRM_LINE1"] .. "\n\n"
+				msg = msg .. L["CFG_UI_BINDING_DELETE_CONFIRM_LINE2"]:format(item.text2, item.text1)
 
-			ShowConfirmationPopup(msg, OnConfirm, item)
+				ShowConfirmationPopup(msg, OnConfirm, item)
+			end
 		end
 
 		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
