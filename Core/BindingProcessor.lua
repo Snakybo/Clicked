@@ -1,37 +1,55 @@
-Clicked.TYPE_SPELL = "SPELL"
-Clicked.TYPE_ITEM = "ITEM"
-Clicked.TYPE_MACRO = "MACRO"
-Clicked.TYPE_UNIT_SELECT = "UNIT_SELECT"
-Clicked.TYPE_UNIT_MENU = "UNIT_MENU"
+Clicked.BindingTypes = {
+	SPELL = "SPELL",
+	ITEM = "ITEM",
+	MACRO = "MACRO",
+	UNIT_SELECT = "UNIT_SELECT",
+	UNIT_MENU = "UNIT_MENU"
+}
 
-Clicked.TARGET_UNIT_PLAYER = "PLAYER"
-Clicked.TARGET_UNIT_GLOBAL = "GLOBAL"
-Clicked.TARGET_UNIT_TARGET = "TARGET"
-Clicked.TARGET_UNIT_PARTY_1 = "PARTY_1"
-Clicked.TARGET_UNIT_PARTY_2 = "PARTY_2"
-Clicked.TARGET_UNIT_PARTY_3 = "PARTY_3"
-Clicked.TARGET_UNIT_PARTY_4 = "PARTY_4"
-Clicked.TARGET_UNIT_PARTY_5 = "PARTY_5"
-Clicked.TARGET_UNIT_FOCUS = "FOCUS"
-Clicked.TARGET_UNIT_MOUSEOVER = "MOUSEOVER"
-Clicked.TARGET_UNIT_HOVERCAST = "HOVERCAST"
-Clicked.TARGET_UNIT_CURSOR = "CURSOR"
+Clicked.CommandType = {
+	TARGET = "target",
+	MENU = "menu",
+	MACRO = "macro"
+}
 
-Clicked.MACRO_MODE_FIRST = "FIRST"
-Clicked.MACRO_MODE_APPEND = "APPEND"
-Clicked.MACRO_MODE_LAST = "LAST"
+Clicked.TargetUnits = {
+	PLAYER = "PLAYER",
+	GLOBAL = "GLOBAL",
+	TARGET = "TARGET",
+	PARTY_1 = "PARTY_1",
+	PARTY_2 = "PARTY_2",
+	PARTY_3 = "PARTY_3",
+	PARTY_4 = "PARTY_4",
+	PARTY_5 = "PARTY_5",
+	FOCUS = "FOCUS",
+	MOUSEOVER = "MOUSEOVER",
+	HOVERCAST = "HOVERCAST",
+	CURSOR = "CURSOR"
+}
 
-Clicked.TARGET_HOSTILITY_ANY = "ANY"
-Clicked.TARGET_HOSTILITY_HELP = "HELP"
-Clicked.TARGET_HOSTILITY_HARM = "HARM"
+Clicked.TargetHostility = {
+	ANY = "ANY",
+	HELP = "HELP",
+	HARM = "HARM"
+}
 
-Clicked.LOAD_IN_COMBAT_TRUE = "IN_COMBAT"
-Clicked.LOAD_IN_COMBAT_FALSE = "NOT_IN_COMBAT"
+Clicked.MacroMode = {
+	FIRST = "FIRST",
+	APPEND = "APPEND",
+	LAST = "LAST"
+}
 
-Clicked.LOAD_IN_GROUP_PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID"
-Clicked.LOAD_IN_GROUP_PARTY = "IN_GROUP_PARTY"
-Clicked.LOAD_IN_GROUP_RAID = "IN_GROUP_RAID"
-Clicked.LOAD_IN_GROUP_SOLO = "IN_GROUP_SOLO"
+Clicked.CombatState = {
+	IN_COMBAT = "IN_COMBAT",
+	NOT_IN_COMBAT = "NOT_IN_COMBAT"
+}
+
+Clicked.GroupState = {
+	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
+	PARTY = "IN_GROUP_PARTY",
+	RAID = "IN_GROUP_RAID",
+	SOLO = "IN_GROUP_SOLO"
+}
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
@@ -42,32 +60,32 @@ local activeBindings = {}
 local function GetMacroSegmentFromAction(action)
 	local flags = {}
 
-	if action.unit == Clicked.TARGET_UNIT_PLAYER then
+	if action.unit == Clicked.TargetUnits.PLAYER then
 		table.insert(flags, "@player")
-	elseif action.unit == Clicked.TARGET_UNIT_TARGET then
+	elseif action.unit == Clicked.TargetUnits.TARGET then
 		table.insert(flags, "@target")
-	elseif action.unit == Clicked.TARGET_UNIT_MOUSEOVER or action.unit == Clicked.TARGET_UNIT_HOVERCAST then
+	elseif action.unit == Clicked.TargetUnits.MOUSEOVER or action.unit == Clicked.TargetUnits.HOVERCAST then
 		table.insert(flags, "@mouseover")
-	elseif action.unit == Clicked.TARGET_UNIT_PARTY_1 then
+	elseif action.unit == Clicked.TargetUnits.PARTY_1 then
 		table.insert(flags, "@party1")
-	elseif action.unit == Clicked.TARGET_UNIT_PARTY_2 then
+	elseif action.unit == Clicked.TargetUnits.PARTY_2 then
 		table.insert(flags, "@party2")
-	elseif action.unit == Clicked.TARGET_UNIT_PARTY_3 then
+	elseif action.unit == Clicked.TargetUnits.PARTY_3 then
 		table.insert(flags, "@party3")
-	elseif action.unit == Clicked.TARGET_UNIT_PARTY_4 then
+	elseif action.unit == Clicked.TargetUnits.PARTY_4 then
 		table.insert(flags, "@party4")
-	elseif action.unit == Clicked.TARGET_UNIT_PARTY_5 then
+	elseif action.unit == Clicked.TargetUnits.PARTY_5 then
 		table.insert(flags, "@party5")
-	elseif action.unit == Clicked.TARGET_UNIT_FOCUS then
+	elseif action.unit == Clicked.TargetUnits.FOCUS then
 		table.insert(flags, "@focus")
-	elseif action.unit == Clicked.TARGET_UNIT_CURSOR then
+	elseif action.unit == Clicked.TargetUnits.CURSOR then
 		table.insert(flags, "@cursor")
 	end
 
 	if Clicked:CanUnitBeHostile(action.unit) then
-		if action.hostility == Clicked.TARGET_HOSTILITY_HELP then
+		if action.hostility == Clicked.TargetHostility.HELP then
 			table.insert(flags, "help")
-		elseif action.hostility == Clicked.TARGET_HOSTILITY_HARM then
+		elseif action.hostility == Clicked.TargetHostility.HARM then
 			table.insert(flags, "harm")
 		end
 	end
@@ -76,9 +94,9 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "exists")
 	end
 
-	if action.combat == Clicked.LOAD_IN_COMBAT_TRUE then
+	if action.combat == Clicked.CombatState.IN_COMBAT then
 		table.insert(flags, "combat")
-	elseif action.combat == Clicked.LOAD_IN_COMBAT_FALSE then
+	elseif action.combat == Clicked.CombatState.NOT_IN_COMBAT then
 		table.insert(flags, "nocombat")
 	end
 
@@ -92,9 +110,9 @@ end
 local function ConstructAction(binding, target)
 	local action = {}
 
-	if binding.type == Clicked.TYPE_SPELL then
+	if binding.type == Clicked.BindingTypes.SPELL then
 		action.ability = binding.action.spell
-	elseif binding.type == Clicked.TYPE_ITEM then
+	elseif binding.type == Clicked.BindingTypes.ITEM then
 		action.ability = binding.action.item
 	end
 
@@ -128,7 +146,7 @@ local function ConstructAction(binding, target)
 	end
 
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		action.unit = Clicked.TARGET_UNIT_HOVERCAST
+		action.unit = Clicked.TargetUnits.HOVERCAST
 	else
 		action.unit = target.unit
 	end
@@ -182,19 +200,19 @@ local function SortActions(left, right)
 		return false
 	end
 
-	if left.unit == Clicked.TARGET_UNIT_MOUSEOVER and right.unit ~= Clicked.TARGET_UNIT_MOUSEOVER then
+	if left.unit == Clicked.TargetUnits.MOUSEOVER and right.unit ~= Clicked.TargetUnits.MOUSEOVER then
 		return true
 	end
 
-	if left.unit ~= Clicked.TARGET_UNIT_MOUSEOVER and right.unit == Clicked.TARGET_UNIT_MOUSEOVER then
+	if left.unit ~= Clicked.TargetUnits.MOUSEOVER and right.unit == Clicked.TargetUnits.MOUSEOVER then
 		return false
 	end
 
-	if left.unit == Clicked.TARGET_UNIT_PLAYER and right.unit ~= Clicked.TARGET_UNIT_PLAYER then
+	if left.unit == Clicked.TargetUnits.PLAYER and right.unit ~= Clicked.TargetUnits.PLAYER then
 		return false
 	end
 
-	if left.unit ~= Clicked.TARGET_UNIT_PLAYER and right.unit == Clicked.TARGET_UNIT_PLAYER then
+	if left.unit ~= Clicked.TargetUnits.PLAYER and right.unit == Clicked.TargetUnits.PLAYER then
 		return true
 	end
 
@@ -206,11 +224,11 @@ local function SortActions(left, right)
 		return false
 	end
 
-	if left.hostility ~= Clicked.TARGET_HOSTILITY_ANY and right.hostility == Clicked.TARGET_HOSTILITY_ANY then
+	if left.hostility ~= Clicked.TargetHostility.ANY and right.hostility == Clicked.TargetHostility.ANY then
 		return true
 	end
 
-	if left.hostility == Clicked.TARGET_HOSTILITY_ANY and right.hostility ~= Clicked.TARGET_HOSTILITY_ANY then
+	if left.hostility == Clicked.TargetHostility.ANY and right.hostility ~= Clicked.TargetHostility.ANY then
 		return false
 	end
 
@@ -244,12 +262,12 @@ local function GetMacroForBindings(bindings)
 	local actions = {}
 
 	for _, binding in ipairs(bindings) do
-		if binding.type == Clicked.TYPE_MACRO then
-			if binding.action.macroMode == Clicked.MACRO_MODE_FIRST then
+		if binding.type == Clicked.BindingTypes.MACRO then
+			if binding.action.macroMode == Clicked.MacroMode.FIRST then
 				table.insert(result, binding.action.macrotext)
 			end
 		else
-			if not stopcasting and (binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM) and binding.action.stopcasting then
+			if not stopcasting and (binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM) and binding.action.stopcasting then
 				stopcasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
@@ -286,7 +304,7 @@ local function GetMacroForBindings(bindings)
 		local command = "/use " .. table.concat(segments, "; ")
 
 		for _, binding in ipairs(bindings) do
-			if binding.type == Clicked.TYPE_MACRO and binding.action.macroMode == Clicked.MACRO_MODE_APPEND then
+			if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.APPEND then
 				command = command .. "; " .. binding.action.macrotext
 			end
 		end
@@ -295,7 +313,7 @@ local function GetMacroForBindings(bindings)
 	end
 
 	for _, binding in ipairs(bindings) do
-		if binding.type == Clicked.TYPE_MACRO and binding.action.macroMode == Clicked.MACRO_MODE_LAST then
+		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
 			table.insert(result, binding.action.macrotext)
 		end
 	end
@@ -324,15 +342,15 @@ local function ProcessActiveBindings()
 			hovercast = hovercast
 		}
 
-		if reference.type == Clicked.TYPE_SPELL or reference.type == Clicked.TYPE_ITEM or reference.type == Clicked.TYPE_MACRO then
-			command.action = Clicked.COMMAND_ACTION_MACRO
+		if reference.type == Clicked.BindingTypes.SPELL or reference.type == Clicked.BindingTypes.ITEM or reference.type == Clicked.BindingTypes.MACRO then
+			command.action = Clicked.CommandType.MACRO
 			command.data = GetMacroForBindings(bucket)
 			valid = command.data ~= nil and command.data ~= ""
-		elseif reference.type == Clicked.TYPE_UNIT_SELECT then
-			command.action = Clicked.COMMAND_ACTION_TARGET
+		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
+			command.action = Clicked.CommandType.TARGET
 			valid = true
-		elseif reference.type == Clicked.TYPE_UNIT_MENU then
-			command.action = Clicked.COMMAND_ACTION_MENU
+		elseif reference.type == Clicked.BindingTypes.UNIT_MENU then
+			command.action = Clicked.CommandType.MENU
 			valid = true
 		else
 			error("Unhandled binding type: " .. reference.type)
@@ -354,12 +372,12 @@ end
 
 local function FilterBindings(activatable)
 	local function ConvertType(binding)
-		if binding.type == Clicked.TYPE_SPELL then
-			return Clicked.TYPE_MACRO
+		if binding.type == Clicked.BindingTypes.SPELL then
+			return Clicked.BindingTypes.MACRO
 		end
 
-		if binding.type == Clicked.TYPE_ITEM then
-			return Clicked.TYPE_MACRO
+		if binding.type == Clicked.BindingTypes.ITEM then
+			return Clicked.BindingTypes.MACRO
 		end
 
 		return binding.type
@@ -376,13 +394,13 @@ local function FilterBindings(activatable)
 		for _, binding in ipairs(bindings) do
 			local bucket
 
-			if binding.type == Clicked.TYPE_UNIT_SELECT then
+			if binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				bucket = result[keybind].hovercast
-			elseif binding.type == Clicked.TYPE_UNIT_MENU then
+			elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
 				bucket = result[keybind].hovercast
 			elseif Clicked:IsRestrictedKeybind(keybind) then
 				bucket = result[keybind].hovercast
-			elseif binding.primaryTarget.unit == Clicked.TARGET_UNIT_HOVERCAST then
+			elseif binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
 				bucket = result[keybind].hovercast
 			else
 				bucket = result[keybind].regular
@@ -570,15 +588,15 @@ function Clicked:CanBindingLoad(binding)
 
 	local action = binding.action
 
-	if binding.type == self.TYPE_SPELL and action.spell == "" then
+	if binding.type == Clicked.BindingTypes.SPELL and action.spell == "" then
 		return false
 	end
 
-	if binding.type == self.TYPE_MACRO and action.macrotext == "" then
+	if binding.type == Clicked.BindingTypes.MACRO and action.macrotext == "" then
 		return false
 	end
 
-	if binding.type == self.TYPE_ITEM and action.item == "" then
+	if binding.type == Clicked.BindingTypes.ITEM and action.item == "" then
 		return false
 	end
 
@@ -593,7 +611,7 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
-	if self.WOW_MAINLINE_RELEASE then
+	if not self:IsClassic() then
 		do
 			-- If the specialization limiter has been enabled, see if the player's current
 			-- specialization matches one of the specified specializations.
@@ -666,9 +684,9 @@ function Clicked:CanBindingLoad(binding)
 		local combat = load.combat
 
 		if combat.selected then
-			if combat.state == self.LOAD_IN_COMBAT_TRUE and not self:IsPlayerInCombat() then
+			if combat.state == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
 				return false
-			elseif combat.state == self.LOAD_IN_COMBAT_FALSE and self:IsPlayerInCombat() then
+			elseif combat.state == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
 				return false
 			end
 		end
@@ -694,14 +712,14 @@ function Clicked:CanBindingLoad(binding)
 		local inGroup = load.inGroup
 
 		if inGroup.selected then
-			if inGroup.state == self.LOAD_IN_GROUP_SOLO and GetNumGroupMembers() > 0 then
+			if inGroup.state == Clicked.GroupState.SOLO and GetNumGroupMembers() > 0 then
 				return false
 			else
-				if inGroup.state == self.LOAD_IN_GROUP_PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				if inGroup.state == Clicked.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
 					return false
-				elseif inGroup.state == self.LOAD_IN_GROUP_PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				elseif inGroup.state == Clicked.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
 					return false
-				elseif inGroup.state == self.LOAD_IN_GROUP_RAID and not IsInRaid() then
+				elseif inGroup.state == Clicked.GroupState.RAID and not IsInRaid() then
 					return false
 				end
 			end

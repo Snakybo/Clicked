@@ -1,17 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
-function Clicked:StringContains(str, pattern)
-	return string.find(str, pattern, 1, true) ~= nil
-end
-
-function Clicked:Trim(str)
-	return str:gsub("^%s*(.-)%s*$", "%1")
-end
-
-function Clicked:StartsWith(str, start)
-	return str:sub(1, #start) == start
-end
-
 function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedAddonIncompatibilityMessage" .. addon] = {
 		text = L["ERR_ADDON_INCOMPATIBILITY"]:format(addon),
@@ -34,6 +22,10 @@ function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopup_Show("ClickedAddonIncompatibilityMessage" .. addon)
 end
 
+function Clicked:IsClassic()
+	return WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+end
+
 -- Check if the specified keybind is "restricted", a restricted keybind
 -- is not allowed to do various actions as it is required for core game
 -- input (such as left and right mouse buttons).
@@ -50,19 +42,19 @@ end
 -- (at the time of configuration at least, i.e. don't take
 -- potential mind controls into account)
 function Clicked:CanUnitBeHostile(unit)
-	if unit == self.TARGET_UNIT_TARGET then
+	if unit == Clicked.TargetUnits.TARGET then
 		return true
 	end
 
-	if unit == self.TARGET_UNIT_FOCUS then
+	if unit == Clicked.TargetUnits.FOCUS then
 		return true
 	end
 
-	if unit == self.TARGET_UNIT_MOUSEOVER then
+	if unit == Clicked.TargetUnits.MOUSEOVER then
 		return true
 	end
 
-	if unit == self.TARGET_UNIT_HOVERCAST then
+	if unit == Clicked.TargetUnits.HOVERCAST then
 		return true
 	end
 
@@ -75,19 +67,19 @@ end
 -- For example [@player] or [@cursor] will always be 'true' and
 -- thus it doesn't make sense to allow targets beyond.
 function Clicked:CanUnitHaveFollowUp(unit)
-	if unit == self.TARGET_UNIT_PLAYER then
+	if unit == Clicked.TargetUnits.PLAYER then
 		return false
 	end
 
-	if unit == self.TARGET_UNIT_CURSOR then
+	if unit == Clicked.TargetUnits.CURSOR then
 		return false
 	end
 
-	if unit == self.TARGET_UNIT_HOVERCAST then
+	if unit == Clicked.TargetUnits.HOVERCAST then
 		return false
 	end
 
-	if unit == self.TARGET_UNIT_GLOBAL then
+	if unit == Clicked.TargetUnits.GLOBAL then
 		return false
 	end
 

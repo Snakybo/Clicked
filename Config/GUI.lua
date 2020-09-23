@@ -40,6 +40,10 @@ function GUI:Serialize(...)
 	OnSerialize(...)
 end
 
+function GUI:TrimString(str)
+	return string.gsub(str, "^%s*(.-)%s*$", "%1")
+end
+
 function GUI:Label(text, fontSize)
 	local widget = CreateGUI("Label")
 	widget:SetText(text)
@@ -57,7 +61,7 @@ end
 
 function GUI:EditBox(label, callback, ref, key)
 	local function OnCallback(frame, event, value)
-		value = Clicked:Trim(value)
+		value = self:TrimString(value)
 		OnSerialize(frame, event, value)
 	end
 

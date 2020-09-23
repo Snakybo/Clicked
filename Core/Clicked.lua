@@ -5,7 +5,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
-Clicked.WOW_MAINLINE_RELEASE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 local modules = {}
 local isPlayerInCombat = false
@@ -115,7 +114,7 @@ function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", OnEnteringCombat)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", OnLeavingCombat)
 
-	if self.WOW_MAINLINE_RELEASE then
+	if not self:IsClassic() then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
 		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
 	end
@@ -138,7 +137,7 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 
-	if self.WOW_MAINLINE_RELEASE then
+	if not self:IsClassic() then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 		self:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	end

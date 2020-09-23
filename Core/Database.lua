@@ -15,7 +15,7 @@ end
 
 function Clicked:GetNewBindingTemplate()
 	local template = {
-		type = Clicked.TYPE_SPELL,
+		type = Clicked.BindingTypes.SPELL,
 		keybind = "",
 		action = {
 			stopcasting = false,
@@ -30,7 +30,7 @@ function Clicked:GetNewBindingTemplate()
 			never = false,
 			combat = {
 				selected = false,
-				state = Clicked.LOAD_IN_COMBAT_TRUE
+				state = Clicked.CombatState.IN_COMBAT
 			},
 			spellKnown = {
 				selected = false,
@@ -38,7 +38,7 @@ function Clicked:GetNewBindingTemplate()
 			},
 			inGroup = {
 				selected = false,
-				state = Clicked.LOAD_IN_GROUP_PARTY_OR_RAID
+				state = Clicked.GroupState.PARTY_OR_RAID
 			},
 			playerInGroup = {
 				selected = false,
@@ -54,7 +54,7 @@ function Clicked:GetNewBindingTemplate()
 		}
 	}
 
-	if self.WOW_MAINLINE_RELEASE then
+	if not self:IsClassic() then
 		template.load.specialization = {
 			selected = 0,
 			single = GetSpecialization(),
@@ -77,8 +77,8 @@ end
 
 function Clicked:GetNewBindingTargetTemplate()
 	return {
-		unit = Clicked.TARGET_UNIT_TARGET,
-		hostility = Clicked.TARGET_HOSTILITY_ANY
+		unit = Clicked.TargetUnits.TARGET,
+		hostility = Clicked.TargetHostility.ANY
 	}
 end
 
@@ -103,7 +103,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	-- Versions prior to 0.5.0 didn't have a version number serialized,
 	-- so all (and only) old profiles won't have a version field, and
 	-- we can safely assume the profile is from 0.4.0 or older
-	if profile.version == nil or self:StartsWith(profile.version, "0.4") then
+	if profile.version == nil or string.sub(profile.version, 1, 3) == "0.4" then
 		for _, binding in ipairs(profile.bindings) do
 			if #binding.targets > 0 and binding.targets[1].unit == "GLOBAL" then
 				binding.targetingMode = "GLOBAL"
@@ -133,7 +133,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- version 0.5.x to 0.6.0
-	if self:StartsWith(profile.version, "0.5") then
+	if string.sub(profile.version, 1, 3) == "0.5" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.stance = {
 				selected = 0,
@@ -157,7 +157,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- version 0.6.x to 0.7.0
-	if self:StartsWith(profile.version, "0.6") then
+	if string.sub(profile.version, 1, 3) == "0.6" then
 		profile.blacklist = {}
 
 		for _, binding in ipairs(profile.bindings) do

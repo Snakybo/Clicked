@@ -13,7 +13,7 @@ local function GetBasicinfoString()
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. UnitClass("player"))
 
-	if Clicked.WOW_MAINLINE_RELEASE then
+	if not Clicked:IsClassic() then
 		do
 			local _, name = GetSpecializationInfo(GetSpecialization())
 			table.insert(lines, "Specialization: " .. name)

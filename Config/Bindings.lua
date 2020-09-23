@@ -124,17 +124,17 @@ local function ConstructTreeViewItem(index, binding)
 	item.binding = binding
 	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
-	if binding.type == Clicked.TYPE_SPELL then
+	if binding.type == Clicked.BindingTypes.SPELL then
 		item.text1 = L["CFG_UI_TREE_LABEL_CAST"]:format(binding.action.spell or "")
 		item.icon = select(3, GetSpellInfo(binding.action.spell)) or item.icon
-	elseif binding.type == Clicked.TYPE_ITEM then
+	elseif binding.type == Clicked.BindingTypes.ITEM then
 		item.text1 = L["CFG_UI_TREE_LABEL_USE"]:format(binding.action.item or "")
 		item.icon = select(10, GetItemInfo(binding.action.item)) or item.icon
-	elseif binding.type == Clicked.TYPE_MACRO then
+	elseif binding.type == Clicked.BindingTypes.MACRO then
 		item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
-	elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 		item.text1 = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
-	elseif binding.type == Clicked.TYPE_UNIT_MENU then
+	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
 		item.text1 = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
 	end
 
@@ -160,18 +160,18 @@ local function ConstructTreeView()
 
 			valid = false
 
-			if binding.type == Clicked.TYPE_SPELL then
+			if binding.type == Clicked.BindingTypes.SPELL then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_CAST"])
 				table.insert(strings, binding.action.spell)
-			elseif binding.type == Clicked.TYPE_ITEM then
+			elseif binding.type == Clicked.BindingTypes.ITEM then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_USE"])
 				table.insert(strings, binding.action.item)
-			elseif binding.type == Clicked.TYPE_MACRO then
+			elseif binding.type == Clicked.BindingTypes.MACRO then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
 				table.insert(strings, binding.action.macrotext)
-			elseif binding.type == Clicked.TYPE_UNIT_SELECT then
+			elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
-			elseif binding.type == Clicked.TYPE_UNIT_MENU then
+			elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_UNIT_MENU"])
 			end
 
@@ -180,11 +180,14 @@ local function ConstructTreeView()
 			end
 
 			for i = 1, #strings do
-				local str = strings[i]
-				valid = str ~= nil and str ~= "" and Clicked:StringContains(str:lower(), searchTerm:lower())
+				if strings[i] ~= nil and strings[i] ~= "" then
+					local str = string.lower(strings[i])
+					local pattern = string.lower(searchTerm)
 
-				if valid then
-					break
+					if string.find(str, pattern, 1, true) ~= nil then
+						valid = true
+						break
+					end
 				end
 			end
 		end
@@ -209,7 +212,7 @@ local function CanBindingTargetUnitChange(binding)
 		return false
 	end
 
-	return binding.type == Clicked.TYPE_SPELL or binding.type == Clicked.TYPE_ITEM
+	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM
 end
 
 local function DeepCopy(original)
@@ -232,19 +235,19 @@ end
 
 local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	if Clicked:IsRestrictedKeybind(keybind) then
-		return Clicked.TARGET_UNIT_HOVERCAST
+		return Clicked.TargetUnits.HOVERCAST
 	end
 
-	if type == Clicked.TYPE_UNIT_SELECT then
-		return Clicked.TARGET_UNIT_HOVERCAST
+	if type == Clicked.BindingTypes.UNIT_SELECT then
+		return Clicked.TargetUnits.HOVERCAST
 	end
 
-	if type == Clicked.TYPE_UNIT_MENU then
-		return Clicked.TARGET_UNIT_HOVERCAST
+	if type == Clicked.BindingTypes.UNIT_MENU then
+		return Clicked.TargetUnits.HOVERCAST
 	end
 
-	if type == Clicked.TYPE_MACRO then
-		return Clicked.TARGET_UNIT_GLOBAL
+	if type == Clicked.BindingTypes.MACRO then
+		return Clicked.TargetUnits.GLOBAL
 	end
 
 	return unit
@@ -379,7 +382,7 @@ local function CreateSpellbookHandlers()
 				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
 					local binding = options.item.binding
 
-					if binding.type == Clicked.TYPE_SPELL then
+					if binding.type == Clicked.BindingTypes.SPELL then
 						binding.action.spell = name
 						HideUIPanel(SpellBookFrame)
 						Clicked:ReloadActiveBindings()
@@ -588,7 +591,7 @@ local function DrawItemSelection(container, action)
 					value = GetItemInfo(item)
 				end
 
-				value = Clicked:Trim(value)
+				value = GUI:TrimString(value)
 				GUI:Serialize(frame, event, value)
 			end
 
@@ -677,7 +680,7 @@ local function DrawMacroSelection(container, keybind, action)
 			group:AddChild(widget)
 		end
 
-		if action.macroMode == Clicked.MACRO_MODE_APPEND then
+		if action.macroMode == Clicked.MacroMode.APPEND then
 			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND_HELP"])
 			widget:SetFullWidth(true)
 
@@ -722,11 +725,11 @@ local function DrawBindingActionPage(container, binding)
 		group:AddChild(widget)
 	end
 
-	if binding.type == Clicked.TYPE_SPELL then
+	if binding.type == Clicked.BindingTypes.SPELL then
 		DrawSpellSelection(container, binding.action)
-	elseif binding.type == Clicked.TYPE_ITEM then
+	elseif binding.type == Clicked.BindingTypes.ITEM then
 		DrawItemSelection(container, binding.action)
-	elseif binding.type == Clicked.TYPE_MACRO then
+	elseif binding.type == Clicked.BindingTypes.MACRO then
 		DrawMacroSelection(container, binding.keybind, binding.action)
 	end
 end
@@ -901,15 +904,15 @@ local function DrawBindingTargetPage(container, binding)
 	-- primary target
 	do
 		local function ShouldShowHostility()
-			if binding.type == Clicked.TYPE_UNIT_SELECT then
+			if binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				return false
 			end
 
-			if binding.type == Clicked.TYPE_UNIT_MENU then
+			if binding.type == Clicked.BindingTypes.UNIT_MENU then
 				return false
 			end
 
-			if binding.type == Clicked.TYPE_MACRO then
+			if binding.type == Clicked.BindingTypes.MACRO then
 				return false
 			end
 
@@ -917,7 +920,7 @@ local function DrawBindingTargetPage(container, binding)
 				return true
 			end
 
-			if binding.primaryTarget.unit == Clicked.TARGET_UNIT_HOVERCAST then
+			if binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
 				return true
 			end
 
@@ -1174,7 +1177,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 
 	DrawLoadNeverSelection(container, load)
 
-	if Clicked.WOW_MAINLINE_RELEASE then
+	if not Clicked:IsClassic() then
 		DrawLoadSpecialization(container, load.specialization)
 		DrawLoadTalent(container, load.talent)
 	end
@@ -1296,7 +1299,7 @@ local function DrawHeader(container)
 				return
 			end
 
-			searchTerm = Clicked:Trim(value)
+			searchTerm = GUI:TrimString(value)
 			module:Redraw()
 		end
 
@@ -1305,7 +1308,7 @@ local function DrawHeader(container)
 				return
 			end
 
-			searchTerm = Clicked:Trim(value)
+			searchTerm = GUI:TrimString(value)
 			frame:SetText(searchTerm)
 			module:Redraw()
 		end
@@ -1517,7 +1520,7 @@ local function DrawTreeView(container)
 			end
 
 			if binding ~= nil then
-				if binding.type == Clicked.TYPE_MACRO then
+				if binding.type == Clicked.BindingTypes.MACRO then
 					text = binding.action.macrotext
 				end
 
@@ -1547,7 +1550,7 @@ local function DrawTreeView(container)
 
 					local result = ""
 
-					if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TARGET_HOSTILITY_ANY then
+					if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TargetHostility.ANY then
 						result = hostility[target.hostility] .. " "
 					end
 

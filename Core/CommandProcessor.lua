@@ -1,7 +1,3 @@
-Clicked.COMMAND_ACTION_TARGET = "target"
-Clicked.COMMAND_ACTION_MENU = "menu"
-Clicked.COMMAND_ACTION_MACRO = "macro"
-
 Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
 
 Clicked.EVENT_MACRO_ATTRIBUTES_CREATED = "CLICKED_MACRO_ATTRIBUTES_CREATED"
@@ -12,12 +8,12 @@ local stopCastingButton
 
 local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 	-- separate modifiers from the actual binding
-	local prefix, suffix = command.keybind:match("^(.-)([^%-]+)$")
-	local buttonIndex = suffix:match("^BUTTON(%d+)$")
+	local prefix, suffix = string.match(command.keybind, "^(.-)([^%-]+)$")
+	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
 
 	-- remove any trailing dashes (shift- becomes shift, ctrl- becomes ctrl, etc.)
-	if prefix:sub(-1, -1) == "-" then
-		prefix = prefix:sub(1, -2)
+	if string.sub(prefix, -1, -1) == "-" then
+		prefix = string.sub(prefix, 1, -2)
 	end
 
 	-- convert the parts to lowercase so it fits the attribute naming style
@@ -92,7 +88,7 @@ local function GetFrameHandler(index)
 			self:ClearBinding(keybind)
 		]])
 
-		if Clicked.WOW_MAINLINE_RELEASE then
+		if not Clicked:IsClassic() then
 			CreateStateDriverAttribute(frame, "vehicle", "[@vehicle,exists] enabled; disabled")
 			CreateStateDriverAttribute(frame, "vehicleui", "[vehicleui] enabled; disabled")
 			CreateStateDriverAttribute(frame, "petbattle", "[petbattle] enabled; disabled")

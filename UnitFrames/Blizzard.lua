@@ -66,7 +66,7 @@ local function HookCompactUnitFrame(frame, ...)
 		return
 	end
 
-	if Clicked:StartsWith(name, "NamePlate") then
+	if string.match(name, "^NamePlate") then
 		return
 	end
 
@@ -81,7 +81,11 @@ local function HookCompactUnitFrame(frame, ...)
 end
 
 function Clicked:RegisterBlizzardUnitFrames()
-	local frames = self.WOW_MAINLINE_RELEASE and BLIZZARD_UNIT_FRAMES_MAINLINE or BLIZZARD_UNIT_FRAMES_CLASSIC
+	local frames = BLIZZARD_UNIT_FRAMES_MAINLINE
+
+	if self:IsClassic() then
+		frames = BLIZZARD_UNIT_FRAMES_CLASSIC
+	end
 
 	for addon, names in pairs(frames) do
 		for _, name in ipairs(names) do

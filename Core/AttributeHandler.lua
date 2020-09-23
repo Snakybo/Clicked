@@ -73,13 +73,13 @@ function Clicked:CreateCommandAttributes(register, command, prefix, suffix)
 		return
 	end
 
-	if command.action == Clicked.COMMAND_ACTION_TARGET then
+	if command.action == Clicked.CommandType.TARGET then
 		CreateAttribute(register, prefix, "type", suffix, "target")
 		CreateAttribute(register, prefix, "unit", suffix, "mouseover")
-	elseif command.action == Clicked.COMMAND_ACTION_MENU then
+	elseif command.action == Clicked.CommandType.MENU then
 		CreateAttribute(register, prefix, "type", suffix, "menu")
 		CreateAttribute(register, prefix, "unit", suffix, "mouseover")
-	elseif command.action == Clicked.COMMAND_ACTION_MACRO then
+	elseif command.action == Clicked.CommandType.MACRO then
 		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
