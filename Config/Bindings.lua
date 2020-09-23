@@ -1643,7 +1643,7 @@ local function RedrawBindingConfig()
 	end
 end
 
-local function OpenBindingConfig()
+function Clicked:OpenBindingConfig()
 	if options.root ~= nil and options.root:IsVisible() then
 		return
 	end
@@ -1706,7 +1706,7 @@ module = {
 
 	["OnChatCommandReceived"] = function(self, args)
 		if #args == 0 then
-			OpenBindingConfig()
+			Clicked:OpenBindingConfig()
 		end
 	end
 }
