@@ -846,33 +846,9 @@ local function DrawTargetSelectionNewUnit(container, binding)
 		end
 	end
 
-	local items = {
-		_NONE_ = L["CFG_UI_ACTION_TARGET_UNIT_NONE"],
-		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
-		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
-		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
-		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
-		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
-		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
-		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
-		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
-		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
-	}
-
-	local order = {
-		"_NONE_",
-		"PLAYER",
-		"TARGET",
-		"MOUSEOVER",
-		"FOCUS",
-		"CURSOR",
-		"PARTY_1",
-		"PARTY_2",
-		"PARTY_3",
-		"PARTY_4",
-		"PARTY_5",
-	}
+	local items, order = GetCommonTargetUnits()
+	items["_NONE_"] = L["CFG_UI_ACTION_TARGET_UNIT_NONE"]
+	table.insert(order, 1, "_NONE_")
 
 	local widget = GUI:Dropdown(nil, items, order, nil, { unit = "_NONE_" }, "unit")
 	widget:SetCallback("OnValueChanged", OnValueChanged)
