@@ -66,6 +66,10 @@ local function HookCompactUnitFrame(frame, ...)
 		return
 	end
 
+	if Clicked:StartsWith(name, "NamePlate") then
+		return
+	end
+
 	for i = 1, 3 do
 		HookCompactUnitFramePart(name, "Buff", i)
 		HookCompactUnitFramePart(name, "Debuff", i)
