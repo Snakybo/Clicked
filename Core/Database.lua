@@ -22,7 +22,8 @@ function Clicked:GetNewBindingTemplate()
 			spell = "",
 			item = "",
 			macrotext = "",
-			macroMode = "FIRST"
+			macroMode = "FIRST",
+			icon = nil
 		},
 		primaryTarget = self:GetNewBindingTargetTemplate(),
 		secondaryTargets = {},

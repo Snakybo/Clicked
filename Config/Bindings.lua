@@ -125,11 +125,29 @@ local function ConstructTreeViewItem(index, binding)
 	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
 	if binding.type == Clicked.BindingTypes.SPELL then
+		local icon = select(3, GetSpellInfo(binding.action.spell))
+
+		-- cache the icon in case we lose knowledge of this spell
+		if icon ~= nil then
+			binding.action.icon = icon
+		else
+			icon = binding.action.icon
+		end
+
 		item.text1 = L["CFG_UI_TREE_LABEL_CAST"]:format(binding.action.spell or "")
-		item.icon = select(3, GetSpellInfo(binding.action.spell)) or item.icon
+		item.icon = icon or item.icon
 	elseif binding.type == Clicked.BindingTypes.ITEM then
+		local icon = select(10, GetItemInfo(binding.action.item))
+
+		-- cache the icon in case we lose knowledge of the item
+		if icon ~= nil then
+			binding.action.icon = icon
+		else
+			icon = binding.action.icon
+		end
+
 		item.text1 = L["CFG_UI_TREE_LABEL_USE"]:format(binding.action.item or "")
-		item.icon = select(10, GetItemInfo(binding.action.item)) or item.icon
+		item.icon = icon or item.icon
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
 	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
@@ -518,7 +536,18 @@ local function DrawSpellSelection(container, action)
 
 		-- edit box
 		do
+			local function OnEnterPressed(frame, event, value)
+				value = GUI:TrimString(value)
+
+				if value ~= action.spell then
+					action.icon = nil -- invalidate the cached icon
+				end
+
+				GUI:Serialize(frame, event, value)
+			end
+
 			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spell")
+			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -592,6 +621,11 @@ local function DrawItemSelection(container, action)
 				end
 
 				value = GUI:TrimString(value)
+
+				if value ~= action.item then
+					action.icon = nil -- invalidate the cached icon
+				end
+
 				GUI:Serialize(frame, event, value)
 			end
 
@@ -694,6 +728,7 @@ local function DrawBindingActionPage(container, binding)
 	do
 		local function OnValueChanged(frame, event, value)
 			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
+			binding.action.icon = nil -- invalidate the cached icon
 			GUI:Serialize(frame, event, value)
 		end
 
