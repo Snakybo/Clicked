@@ -59,8 +59,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		return
 	end
 
-	-- Already registered, so just update the options in case they have
-	-- changed for whatever reason.
+	-- Already registered
 
 	for _, existing in ipairs(frames) do
 		if existing == frame then
@@ -71,12 +70,23 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 	-- We can't do anything while in combat, so put the items in a queue that
 	-- gets processed when we exit combat.
 
-	if InCombatLockdown() then
+	local function TryEnqueue()
+		for i = 1, #registerQueue do
+			local element = registerQueue[i]
+
+			if element.addon == addon and element.frame == frame then
+				return
+			end
+		end
+
 		table.insert(registerQueue, {
 			addon = addon,
 			frame = frame
 		})
+	end
 
+	if InCombatLockdown() then
+		TryEnqueue()
 		return
 	end
 
@@ -89,11 +99,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 
 	if type(frame) == "string" then
 		if addon ~= "" and not IsAddOnLoaded(addon) then
-			table.insert(registerQueue, {
-				addon = addon,
-				frame = frame
-			})
-
+			TryEnqueue()
 			return
 		else
 			local name = frame
@@ -142,8 +148,20 @@ function Clicked:UnregisterClickCastFrame(frame)
 	-- unregister requests in a queue that gets processed when
 	-- we leave combat.
 
-	if InCombatLockdown() then
+	local function TryEnqueue()
+		for i = 1, #unregisterQueue do
+			local element = unregisterQueue[i]
+
+			if element.frame == frame then
+				return
+			end
+		end
+
 		table.insert(unregisterQueue, frame)
+	end
+
+	if InCombatLockdown() then
+		TryEnqueue()
 		return
 	end
 
