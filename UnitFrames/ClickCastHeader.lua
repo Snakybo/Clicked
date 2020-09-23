@@ -27,7 +27,7 @@ function Clicked:RegisterClickCastHeader()
 	-- Keep most of the same setup structure as Clique to ensure that oUF
 	-- and all "oUF-like" addons will work
 
-	self.ClickCastHeader = CreateFrame("Frame", "ClickedClickCastHeaderFrame", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
+	self.ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
 	ClickCastHeader = self.ClickCastHeader
 
 	Clique = {}
