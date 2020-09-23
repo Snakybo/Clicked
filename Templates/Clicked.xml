@@ -6,7 +6,7 @@
 			<Attribute name="_onleave" type="string" value="local snippet = self:GetAttribute('clickcast_onleave'); if snippet then self:Run(snippet) end"/>
 		</Attributes>
 	</Button>
-	<Button name="ClickedSpellbookButtonTemplate" hidden="true" virtual="true">
+	<Button name="ClickedSpellbookButtonTemplate" setAllPoints="true" hidden="true" virtual="true">
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>

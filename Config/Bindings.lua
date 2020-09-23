@@ -272,6 +272,7 @@ local function ShowConfirmationPopup(message, func, ...)
 		self:SetScript("OnClick", nil)
 		frame.cancel:SetScript("OnClick", nil)
 	end)
+
 	frame.cancel:SetScript("OnClick", function(self)
 		frame:Hide()
 		self:SetScript("OnClick", nil)
@@ -287,16 +288,25 @@ local function OverrideSpellBookVisuals(button)
 	end
 
 	local name = button:GetName();
-	local autoCastableTexture = _G[name.."AutoCastable"];
 
-	if button.SpellHighlightTexture then
+	if name == nil then
+		return
+	end
+
+	if button.SpellHighlightTexture ~= nil then
 		button.SpellHighlightTexture:Hide()
 	end
 
-	autoCastableTexture:Hide();
+	if _G[name.."AutoCastable"] ~= nil then
+		_G[name.."AutoCastable"]:Hide();
+	end
 end
 
 local function EnableSpellbookHandlers()
+	if options.root == nil or not options.root:IsVisible() then
+		return
+	end
+
 	if spellbookButtons.enabled then
 		return
 	end
@@ -307,13 +317,12 @@ local function EnableSpellbookHandlers()
 
 	for i = 1, SPELLS_PER_PAGE do
 		local button = spellbookButtons[i]
-		local parent = _G["SpellButton" .. i]
-
-		button:SetParent(parent)
-		button:SetAllPoints(parent)
-		button:Show()
-
-		OverrideSpellBookVisuals(parent)
+		local parent = button:GetParent()
+	
+		if parent:IsEnabled() then
+			button:Show()
+			OverrideSpellBookVisuals(parent)
+		end
 	end
 end
 
@@ -326,13 +335,12 @@ local function DisableSpellbookHandlers()
 
 	for i = 1, SPELLS_PER_PAGE do
 		local button = spellbookButtons[i]
-		local parent = _G["SpellButton" .. i]
-
-		SpellButton_UpdateButton(parent)
-
-		button:SetParent(nil)
-		button:ClearAllPoints()
-		button:Hide()
+		local parent = button:GetParent()
+		
+		if parent:IsEnabled() then
+			SpellButton_UpdateButton(parent)
+			button:Hide()
+		end
 	end
 
 	HideUIPanel(SpellBookFrame)
@@ -345,28 +353,37 @@ local function CreateSpellbookHandlers()
 	end
 
 	for i = 1, SPELLS_PER_PAGE do
-		local button = CreateFrame("Button", "ClickedSpellbookButton" .. i, UIParent, "ClickedSpellbookButtonTemplate")
 		local parent = _G["SpellButton" .. i]
+		local button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
 
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		button:SetID(parent:GetID())
+		
 		button:SetScript("OnEnter", function(self, motion)
-			SpellButton_OnEnter(parent, motion)
+			if parent:IsEnabled() then
+				SpellButton_OnEnter(parent, motion)
+			end
 		end)
+
 		button:SetScript("OnLeave", function(self)
-			SpellButton_OnLeave(parent)
+			if parent:IsEnabled() then
+				SpellButton_OnLeave(parent)
+			end
 		end)
+
 		button:SetScript("OnClick", function(self)
-			local slot = SpellBook_GetSpellBookSlot(parent)
-			local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+			if parent:IsEnabled() and not parent.isPassive then
+				local slot = SpellBook_GetSpellBookSlot(parent)
+				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-			if not InCombatLockdown() and options.item ~= nil and name ~= nil then
-				local binding = options.item.binding
+				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
+					local binding = options.item.binding
 
-				if binding.type == Clicked.TYPE_SPELL then
-					binding.action.spell = name
-					HideUIPanel(SpellBookFrame)
-					Clicked:ReloadActiveBindings()
+					if binding.type == Clicked.TYPE_SPELL then
+						binding.action.spell = name
+						HideUIPanel(SpellBookFrame)
+						Clicked:ReloadActiveBindings()
+					end
 				end
 			end
 		end)
