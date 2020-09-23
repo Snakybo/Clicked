@@ -318,7 +318,7 @@ local function EnableSpellbookHandlers()
 	for i = 1, SPELLS_PER_PAGE do
 		local button = spellbookButtons[i]
 		local parent = button:GetParent()
-	
+
 		if parent:IsEnabled() then
 			button:Show()
 			OverrideSpellBookVisuals(parent)
@@ -336,7 +336,7 @@ local function DisableSpellbookHandlers()
 	for i = 1, SPELLS_PER_PAGE do
 		local button = spellbookButtons[i]
 		local parent = button:GetParent()
-		
+
 		if parent:IsEnabled() then
 			SpellButton_UpdateButton(parent)
 			button:Hide()
@@ -358,7 +358,7 @@ local function CreateSpellbookHandlers()
 
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		button:SetID(parent:GetID())
-		
+
 		button:SetScript("OnEnter", function(self, motion)
 			if parent:IsEnabled() then
 				SpellButton_OnEnter(parent, motion)
