@@ -46,6 +46,10 @@ function Clicked:CanUnitBeHostile(unit)
 		return true
 	end
 
+	if unit == Clicked.TargetUnits.TARGET_OF_TARGET then
+		return true
+	end
+
 	if unit == Clicked.TargetUnits.FOCUS then
 		return true
 	end
@@ -85,4 +89,3 @@ function Clicked:CanUnitHaveFollowUp(unit)
 
 	return true
 end
-

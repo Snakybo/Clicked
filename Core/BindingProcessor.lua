@@ -16,6 +16,7 @@ Clicked.TargetUnits = {
 	PLAYER = "PLAYER",
 	GLOBAL = "GLOBAL",
 	TARGET = "TARGET",
+	TARGET_OF_TARGET = "TARGET_OF_TARGET",
 	PARTY_1 = "PARTY_1",
 	PARTY_2 = "PARTY_2",
 	PARTY_3 = "PARTY_3",
@@ -64,6 +65,8 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "@player")
 	elseif action.unit == Clicked.TargetUnits.TARGET then
 		table.insert(flags, "@target")
+	elseif action.unit == Clicked.TargetUnits.TARGET_OF_TARGET then
+		table.insert(flags, "@targettarget")
 	elseif action.unit == Clicked.TargetUnits.MOUSEOVER or action.unit == Clicked.TargetUnits.HOVERCAST then
 		table.insert(flags, "@mouseover")
 	elseif action.unit == Clicked.TargetUnits.PARTY_1 then
