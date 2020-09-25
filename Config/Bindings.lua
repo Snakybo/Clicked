@@ -805,6 +805,14 @@ local function GetCommonTargetUnits()
 	return items, order
 end
 
+local function GetPrimaryTargetUnits()
+	local items, order = GetCommonTargetUnits()
+	items["HOVERCAST"] = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"]
+	table.insert(order, 5, "HOVERCAST")
+
+	return items, order
+end
+
 local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
 		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"] .. "\n")
@@ -813,10 +821,7 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		container:AddChild(widget)
 	end
 
-	local items, order = GetCommonTargetUnits()
-	items["HOVERCAST"] = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"]
-	table.insert(order, 5, "HOVERCAST")
-
+	local items, order = GetPrimaryTargetUnits()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
@@ -1540,21 +1545,7 @@ local function DrawTreeView(container)
 				text = text .. "\n\n"
 
 				local function GetTargetLine(target)
-					local units = {
-						PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
-						GLOBAL = L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"],
-						TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
-						TARGET_OF_TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGETTARGET"],
-						MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-						HOVERCAST = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"],
-						FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
-						CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
-						PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
-						PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
-						PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
-						PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
-						PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
-					}
+					local units = GetPrimaryTargetUnits()
 
 					local hostility = {
 						ANY = "",
