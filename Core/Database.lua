@@ -21,6 +21,8 @@ function Clicked:GetNewBindingTemplate()
 			stopcasting = false,
 			spell = "",
 			item = "",
+			macroName = "",
+			macroIcon = "",
 			macrotext = "",
 			macroMode = "FIRST",
 			icon = nil
@@ -233,6 +235,9 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			for _, target in ipairs(binding.secondaryTargets) do
 				target.status = "ANY"
 			end
+
+			binding.action.macroName = ""
+			binding.action.macroIcon = ""
 		end
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))

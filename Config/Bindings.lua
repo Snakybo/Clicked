@@ -149,7 +149,15 @@ local function ConstructTreeViewItem(index, binding)
 		item.text1 = L["CFG_UI_TREE_LABEL_USE"]:format(binding.action.item or "")
 		item.icon = icon or item.icon
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
+		if #binding.action.macroName == 0 then
+			item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
+		else
+			item.text1 = binding.action.macroName
+		end
+
+		if #binding.action.macroIcon > 0 then
+			item.icon = binding.action.macroIcon
+		end
 	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 		item.text1 = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
 	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
@@ -185,7 +193,12 @@ local function ConstructTreeView()
 				table.insert(strings, L["CFG_UI_TREE_LABEL_USE"])
 				table.insert(strings, binding.action.item)
 			elseif binding.type == Clicked.BindingTypes.MACRO then
-				table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
+				if #binding.action.macroName == 0 then
+					table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
+				else
+					table.insert(binding.action.macroName)
+				end
+
 				table.insert(strings, binding.action.macrotext)
 			elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
@@ -655,6 +668,37 @@ local function DrawItemSelection(container, action)
 end
 
 local function DrawMacroSelection(container, keybind, action)
+	-- macro name and icon
+	do
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_MACRO_NAME_ICON"])
+		container:AddChild(group)
+
+		-- name text field
+		do
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "macroName")
+			widget:SetFullWidth(true)
+
+			group:AddChild(widget)
+		end
+
+		-- icon field
+		do
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "macroIcon")
+			widget:SetRelativeWidth(0.7)
+
+			group:AddChild(widget)
+		end
+
+		-- icon button
+		do
+			local widget = GUI:Button(L["CFG_UI_ACTION_MACRO_ICON_SELECT"], function() end)
+			widget:SetRelativeWidth(0.3)
+			widget:SetDisabled(true)
+
+			group:AddChild(widget)
+		end
+	end
+
 	-- macro text
 	do
 		local group = GUI:InlineGroup(L["CFG_UI_ACTION_MACRO_TEXT"])
@@ -1554,7 +1598,13 @@ local function DrawTreeView(container)
 
 			if binding ~= nil then
 				if binding.type == Clicked.BindingTypes.MACRO then
-					text = binding.action.macrotext
+					if #binding.action.macroName > 0 then
+						text = binding.action.macroName .. "\n\n"
+					else
+						text = "";
+					end
+
+					text = text .. binding.action.macrotext
 				end
 
 				text = text .. "\n\n"
