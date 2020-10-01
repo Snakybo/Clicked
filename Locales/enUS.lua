@@ -70,6 +70,7 @@ L["CFG_UI_ACTION_TYPE"] = "Action"
 L["CFG_UI_ACTION_TYPE_SPELL"] = "Cast a spell"
 L["CFG_UI_ACTION_TYPE_ITEM"] = "Use an item"
 L["CFG_UI_ACTION_TYPE_MACRO"] = "Run a macro (advanced)"
+L["CFG_UI_ACTION_TYPE_MACRO_HELP"] = "|cffffff00The \"Cast a spell\" and \"Use an item\" action types support most macro functionality and should be preferred over custom macros. Custom macros are available as a fallback option if you're trying to acomplish something not covered by those. If you feel those actions are missing options and you have to resort to using custom macros please leave a comment on Curse or on GitHub.|r"
 L["CFG_UI_ACTION_TYPE_UNIT_TARGET"] = "Target the unit"
 L["CFG_UI_ACTION_TYPE_UNIT_MENU"] = "Open the unit menu"
 
