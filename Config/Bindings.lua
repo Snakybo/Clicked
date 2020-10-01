@@ -199,7 +199,7 @@ local function ConstructTreeView()
 					table.insert(binding.action.macroName)
 				end
 
-				table.insert(strings, binding.action.macrotext)
+				table.insert(strings, binding.action.macroText)
 			elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
 			elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
@@ -604,7 +604,7 @@ local function DrawSpellSelection(container, action)
 
 		-- interrupt cast toggle
 		do
-			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
+			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -659,7 +659,7 @@ local function DrawItemSelection(container, action)
 
 		-- interrupt cast toggle
 		do
-			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopcasting")
+			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -713,7 +713,7 @@ local function DrawMacroSelection(container, keybind, action)
 
 		-- macro text field
 		do
-			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macrotext")
+			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macroText")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1604,7 +1604,7 @@ local function DrawTreeView(container)
 						text = "";
 					end
 
-					text = text .. binding.action.macrotext
+					text = text .. binding.action.macroText
 				end
 
 				text = text .. "\n\n"

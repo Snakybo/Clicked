@@ -282,10 +282,10 @@ local function GetMacroForBindings(bindings)
 	for _, binding in ipairs(bindings) do
 		if binding.type == Clicked.BindingTypes.MACRO then
 			if binding.action.macroMode == Clicked.MacroMode.FIRST then
-				table.insert(result, binding.action.macrotext)
+				table.insert(result, binding.action.macroText)
 			end
 		else
-			if not stopcasting and (binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM) and binding.action.stopcasting then
+			if not stopcasting and (binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM) and binding.action.stopCasting then
 				stopcasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
@@ -323,7 +323,7 @@ local function GetMacroForBindings(bindings)
 
 		for _, binding in ipairs(bindings) do
 			if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.APPEND then
-				command = command .. "; " .. binding.action.macrotext
+				command = command .. "; " .. binding.action.macroText
 			end
 		end
 
@@ -332,7 +332,7 @@ local function GetMacroForBindings(bindings)
 
 	for _, binding in ipairs(bindings) do
 		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
-			table.insert(result, binding.action.macrotext)
+			table.insert(result, binding.action.macroText)
 		end
 	end
 
@@ -610,7 +610,7 @@ function Clicked:CanBindingLoad(binding)
 		return false
 	end
 
-	if binding.type == Clicked.BindingTypes.MACRO and action.macrotext == "" then
+	if binding.type == Clicked.BindingTypes.MACRO and action.macroText == "" then
 		return false
 	end
 

@@ -18,12 +18,12 @@ function Clicked:GetNewBindingTemplate()
 		type = Clicked.BindingTypes.SPELL,
 		keybind = "",
 		action = {
-			stopcasting = false,
+			stopCasting = false,
 			spell = "",
 			item = "",
 			macroName = "",
 			macroIcon = "",
-			macrotext = "",
+			macroText = "",
 			macroMode = "FIRST",
 			icon = nil
 		},
@@ -238,6 +238,10 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 			binding.action.macroName = ""
 			binding.action.macroIcon = ""
+			binding.action.macroText = binding.action.macrotext
+			binding.action.macrotext = nil
+			binding.action.stopCasting = binding.action.stopcasting
+			binding.action.stopcasting = nil
 		end
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))
