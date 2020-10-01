@@ -254,3 +254,15 @@ function GUI:TabGroup(items, handler)
 
 	return widget
 end
+
+function GUI:InlineGroup(title)
+	local widget = AceGUI:Create("InlineGroup")
+	widget:SetFullWidth(true)
+	widget:SetLayout("Flow")
+
+	if title then
+		widget:SetTitle(title)
+	end
+
+	return widget
+end

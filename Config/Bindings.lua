@@ -529,9 +529,7 @@ end
 local function DrawSpellSelection(container, action)
 	-- target spell
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_TARGET_SPELL"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_SPELL"])
 		container:AddChild(group)
 
 		-- edit box
@@ -588,9 +586,7 @@ local function DrawSpellSelection(container, action)
 
 	-- additional options
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
 		container:AddChild(group)
 
 		-- interrupt cast toggle
@@ -606,9 +602,7 @@ end
 local function DrawItemSelection(container, action)
 	-- target item
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_TARGET_ITEM"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_ITEM"])
 		container:AddChild(group)
 
 		-- target item
@@ -647,9 +641,7 @@ local function DrawItemSelection(container, action)
 
 	-- additional options
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
 		container:AddChild(group)
 
 		-- interrupt cast toggle
@@ -665,9 +657,7 @@ end
 local function DrawMacroSelection(container, keybind, action)
 	-- macro text
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_MACRO_TEXT"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_MACRO_TEXT"])
 		container:AddChild(group)
 
 		-- help text
@@ -689,9 +679,7 @@ local function DrawMacroSelection(container, keybind, action)
 
 	-- additional options
 	do
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
 		container:AddChild(group)
 
 		-- macro mode toggle
@@ -748,16 +736,15 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_TYPE"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TYPE"])
 		container:AddChild(group)
 
-		local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
-		widget:SetCallback("OnValueChanged", OnValueChanged)
-		widget:SetFullWidth(true)
+		do
+			local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
+			widget:SetCallback("OnValueChanged", OnValueChanged)
+			widget:SetFullWidth(true)
 
-		group:AddChild(widget)
+			group:AddChild(widget)
 		end
 
 		if binding.type == Clicked.BindingTypes.MACRO then
@@ -971,9 +958,7 @@ local function DrawBindingTargetPage(container, binding)
 			return false
 		end
 
-		local group = AceGUI:Create("InlineGroup")
-		group:SetFullWidth(true)
-		group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT"])
+		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT"])
 		container:AddChild(group)
 
 		DrawTargetSelectionPrimaryUnit(group, binding, binding.primaryTarget)
@@ -990,9 +975,7 @@ local function DrawBindingTargetPage(container, binding)
 	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
 		-- secondary targets
 		for index, target in ipairs(binding.secondaryTargets) do
-			local group = AceGUI:Create("InlineGroup")
-			group:SetFullWidth(true)
-			group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+			local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, binding, index, target)
@@ -1021,9 +1004,7 @@ local function DrawBindingTargetPage(container, binding)
 			end
 
 			if Clicked:CanUnitHaveFollowUp(last.unit) then
-				local group = AceGUI:Create("InlineGroup")
-				group:SetFullWidth(true)
-				group:SetTitle(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+				local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
 				container:AddChild(group)
 
 				DrawTargetSelectionNewUnit(group, binding)
