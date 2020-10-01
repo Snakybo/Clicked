@@ -23,7 +23,7 @@ function Clicked:ShowAddonIncompatibilityPopup(addon)
 end
 
 function Clicked:IsClassic()
-	return WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 end
 
 -- Check if the specified keybind is "restricted", a restricted keybind
