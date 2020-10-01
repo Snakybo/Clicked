@@ -902,7 +902,7 @@ end
 local function DrawTargetSelectionHostility(container, target)
 	local items = {
 		ANY = L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"],
-		HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
+		HELP = L["CFG_UI_ACTION_TARGET_HOSTILITY_FRIEND"],
 		HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
 	}
 
@@ -913,6 +913,25 @@ local function DrawTargetSelectionHostility(container, target)
 	}
 
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "hostility")
+	widget:SetFullWidth(true)
+
+	container:AddChild(widget)
+end
+
+local function DrawTargetSelectionStatus(container, target)
+	local items = {
+		ANY = L["CFG_UI_ACTION_TARGET_STATUS_ANY"],
+		ALIVE = L["CFG_UI_ACTION_TARGET_STATUS_ALIVE"],
+		DEAD = L["CFG_UI_ACTION_TARGET_STATUS_DEAD"]
+	}
+
+	local order = {
+		"ANY",
+		"ALIVE",
+		"DEAD"
+	}
+
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "status")
 	widget:SetFullWidth(true)
 
 	container:AddChild(widget)
@@ -955,6 +974,10 @@ local function DrawBindingTargetPage(container, binding)
 		if ShouldShowHostility() then
 			DrawTargetSelectionHostility(group, binding.primaryTarget)
 		end
+
+		if Clicked:CanUnitBeDead(binding.primaryTarget.unit) then
+			DrawTargetSelectionStatus(group, binding.primaryTarget)
+		end
 	end
 
 	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
@@ -969,6 +992,10 @@ local function DrawBindingTargetPage(container, binding)
 
 			if Clicked:CanUnitBeHostile(target.unit) then
 				DrawTargetSelectionHostility(group, target)
+			end
+
+			if Clicked:CanUnitBeDead(target.unit) then
+				DrawTargetSelectionStatus(group, target)
 			end
 
 			if not Clicked:CanUnitHaveFollowUp(target.unit) then
@@ -1549,7 +1576,7 @@ local function DrawTreeView(container)
 
 					local hostility = {
 						ANY = "",
-						HELP = L["CFG_UI_ACTION_TARGET_TYPE_FRIEND"],
+						HELP = L["CFG_UI_ACTION_TARGET_HOSTILITY_FRIEND"],
 						HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
 					}
 

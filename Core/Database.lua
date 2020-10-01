@@ -79,7 +79,8 @@ end
 function Clicked:GetNewBindingTargetTemplate()
 	return {
 		unit = Clicked.TargetUnits.TARGET,
-		hostility = Clicked.TargetHostility.ANY
+		hostility = Clicked.TargetHostility.ANY,
+		status = Clicked.TargetStatus.ANY
 	}
 end
 
@@ -222,6 +223,20 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.7.0"))
 		profile.version = "0.7.0"
+	end
+
+	-- version 0.7.x to 0.8.0
+	if string.sub(profile.version, 1, 3) == "0.7" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.primaryTarget.status = "ANY"
+
+			for _, target in ipairs(binding.secondaryTargets) do
+				target.status = "ANY"
+			end
+		end
+
+		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))
+		profile.version = "0.8.0"
 	end
 
 	profile.version = self.VERSION

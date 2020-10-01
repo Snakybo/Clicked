@@ -65,6 +65,54 @@ function Clicked:CanUnitBeHostile(unit)
 	return false
 end
 
+function Clicked:CanUnitBeDead(unit)
+	if unit == Clicked.TargetUnits.PLAYER then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.TARGET then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.TARGET_OF_TARGET then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.FOCUS then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PARTY_1 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PARTY_2 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PARTY_3 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PARTY_4 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PARTY_5 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.MOUSEOVER then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.HOVERCAST then
+		return true
+	end
+
+	return false
+end
+
 -- Check if a binding's target unit can have a follow up target.
 -- This will be the case for most targets, but some targets act
 -- as a stop sign in macro code as they will always be valid.

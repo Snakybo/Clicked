@@ -34,6 +34,12 @@ Clicked.TargetHostility = {
 	HARM = "HARM"
 }
 
+Clicked.TargetStatus = {
+	ANY = "ANY",
+	ALIVE = "ALIVE",
+	DEAD = "DEAD"
+}
+
 Clicked.MacroMode = {
 	FIRST = "FIRST",
 	APPEND = "APPEND",
@@ -90,6 +96,14 @@ local function GetMacroSegmentFromAction(action)
 			table.insert(flags, "help")
 		elseif action.hostility == Clicked.TargetHostility.HARM then
 			table.insert(flags, "harm")
+		end
+	end
+
+	if Clicked:CanUnitBeDead(action.unit) then
+		if action.status == Clicked.TargetStatus.ALIVE then
+			table.insert(flags, "nodead")
+		elseif action.status == Clicked.TargetStatus.DEAD then
+			table.insert(flags, "dead")
 		end
 	end
 
@@ -155,6 +169,7 @@ local function ConstructAction(binding, target)
 	end
 
 	action.hostility = target.hostility
+	action.status = target.status
 
 	return action
 end
