@@ -1600,11 +1600,12 @@ local function DrawTreeView(container)
 				if binding.type == Clicked.BindingTypes.MACRO then
 					if #binding.action.macroName > 0 then
 						text = binding.action.macroName .. "\n\n"
+						text = text .. L["CFG_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
 					else
 						text = "";
 					end
 
-					text = text .. binding.action.macroText
+					text = text .. binding.action.macroText .. "|r"
 				end
 
 				text = text .. "\n\n"
@@ -1628,13 +1629,14 @@ local function DrawTreeView(container)
 					return result
 				end
 
-				text = text .. "1. " .. GetTargetLine(binding.primaryTarget)
+				text = text .. L["CFG_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
+				text = text .. "|cFFFFFFFF1. " .. GetTargetLine(binding.primaryTarget)
 
 				for i, target in ipairs(binding.secondaryTargets) do
 					text = text .. "\n" .. (i + 1) .. ". " .. GetTargetLine(target)
 				end
 
-				text = text .. "\n\n"
+				text = text .. "|r\n\n"
 
 				if Clicked:IsBindingActive(binding) then
 					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
