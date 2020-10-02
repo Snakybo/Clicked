@@ -1,7 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 function Clicked:ShowAddonIncompatibilityPopup(addon)
-	StaticPopupDialogs["ClickedAddonIncompatibilityMessage" .. addon] = {
+	StaticPopupDialogs["ClickedAddonIncompatibilityMessage_" .. addon] = {
 		text = L["ERR_ADDON_INCOMPATIBILITY"]:format(addon),
 		button1 = L["ERR_ADDON_INCOMPATIBILITY_KEEP"]:format(L["NAME"]),
 		button2 = L["ERR_ADDON_INCOMPATIBILITY_KEEP"]:format(addon),
@@ -19,7 +19,20 @@ function Clicked:ShowAddonIncompatibilityPopup(addon)
 		preferredIndex = 3
 	}
 
-	StaticPopup_Show("ClickedAddonIncompatibilityMessage" .. addon)
+	StaticPopup_Show("ClickedAddonIncompatibilityMessage_" .. addon)
+end
+
+function Clicked:ShowInformationPopup(text)
+	StaticPopupDialogs["ClickedInformationMessage_" .. text] = {
+		text = text,
+		button1 = L["MSG_POPUP_OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	StaticPopup_Show("ClickedInformationMessage_" .. text)
 end
 
 function Clicked:IsClassic()

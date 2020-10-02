@@ -1,5 +1,17 @@
 Clicked.ClickCastHeader = nil
 
+-- safecall implementation
+
+local function errorhandler(err)
+	return geterrorhandler()(err)
+end
+
+local function safecall(func, ...)
+	if func then
+		return xpcall(func, errorhandler, ...)
+	end
+end
+
 local function SetupKeybindCommands(keybindings)
 	local register = {}
 	local unregister = {}
@@ -32,7 +44,9 @@ function Clicked:RegisterClickCastHeader()
 
 	Clique = {}
 	Clique.header = self.ClickCastHeader
-	Clique.UpdateRegisteredClicks = Clicked.RegisterClickCastFrameClicks
+	Clique.UpdateRegisteredClicks = function(frame)
+		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
+	end
 
 	self.ClickCastHeader:SetAttribute("setup-keybinds", "")
 	self.ClickCastHeader:SetAttribute("clear-keybinds", "")

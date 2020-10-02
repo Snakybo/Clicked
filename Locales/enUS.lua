@@ -24,6 +24,7 @@ L["ERR_ADDON_INCOMPATIBILITY_KEEP"] = "Keep %s"
 -- this message is printed in the user's chat window.
 -- Example: "Clicked: Upgraded profile from version 0.4.0 to version 0.5.0"
 L["MSG_PROFILE_UPDATED"] = "|cffe31919Clicked|r: Upgraded profile from version %s to version %s"
+L["MSG_POPUP_OK"] = "Continue"
 
 -- Everything prefixed with CFG_UI is shown in the main binding configuration
 -- window.
@@ -160,7 +161,10 @@ L["CFG_UI_LOAD_PLAYER_IN_GROUP"] = "Player in group"
 -- Everything prefixed with OPT is shown in the interface options UI
 
 L["OPT_GENERAL_MINIMAP_NAME"] = "Enable minimap icon"
-L["OPT_GENERAL_MINIMAP_DESC"] = "Enable or disable the minimap icon"
+L["OPT_GENERAL_MINIMAP_DESC"] = "Enable or disable the minimap icon."
+L["OPT_GENERAL_CAST_ON_KEY_DOWN_NAME"] = "Cast on key down rather than key up"
+L["OPT_GENERAL_CAST_ON_KEY_DOWN_DESC"] = "This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."
+L["OPT_GENERAL_CAST_ON_KEY_DOWN_POPUP"] = "If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload.\n\nFor |cff1784d1ElvUI|r, check the box at: \n/ec -> UnitFrames -> Target On Mouse-Down, and reload the UI."
 L["OPT_PROFILES_NAME"] = "Profiles"
 L["OPT_BLACKLIST_TITLE"] = "Frame Blacklist"
 L["OPT_BLACKLIST_HELP"] = "If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."

@@ -7,7 +7,9 @@ Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 local modules = {}
+
 local isPlayerInCombat = false
+local isInitialized = false
 
 -- safecall implementation
 
@@ -58,12 +60,12 @@ end
 local function OnLeavingCombat()
 	isPlayerInCombat = false
 
-	Clicked:ProcessClickCastFrameQueue()
+	Clicked:ProcessFrameQueue()
 	Clicked:ReloadActiveBindings()
 end
 
 local function OnAddonLoaded()
-	Clicked:ProcessClickCastFrameQueue()
+	Clicked:ProcessFrameQueue()
 end
 
 local function OnChatCommandReceived(input)
@@ -130,7 +132,10 @@ function Clicked:OnEnable()
 		end
 	end
 
+	isInitialized = true
+
 	ReloadDatabase()
+	self:ProcessFrameQueue()
 end
 
 function Clicked:OnDisable()
@@ -164,4 +169,8 @@ end
 
 function Clicked:IsPlayerInCombat()
 	return isPlayerInCombat
+end
+
+function Clicked:IsInitialized()
+	return isInitialized
 end

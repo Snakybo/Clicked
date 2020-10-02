@@ -4,6 +4,9 @@ function Clicked:GetDatabaseDefaults()
 	return {
 		profile = {
 			version = nil,
+			options = {
+				onKeyDown = false
+			},
 			bindings = {},
 			blacklist = {},
 			minimap = {
@@ -243,6 +246,10 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.action.stopCasting = binding.action.stopcasting
 			binding.action.stopcasting = nil
 		end
+
+		profile.options = {
+			onKeyDown = false
+		}
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))
 		profile.version = "0.8.0"

@@ -96,6 +96,8 @@ local function GetFrameHandler(index)
 
 		CreateStateDriverAttribute(frame, "possessbar", "[possessbar] enabled; disabled")
 
+		Clicked:RegisterFrameClicks(frame)
+
 		table.insert(macroFrameHandlers, frame)
 	end
 
@@ -171,4 +173,8 @@ function Clicked:ProcessCommands(commands)
 
 		self:ApplyAttributesToFrame(frame)
 	end
+end
+
+function Clicked:IterateMacroHandlerFrames()
+	return ipairs(macroFrameHandlers)
 end

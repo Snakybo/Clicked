@@ -14,6 +14,8 @@ local module = {
 					name = L["OPT_GENERAL_MINIMAP_NAME"],
 					desc = L["OPT_GENERAL_MINIMAP_DESC"],
 					type = "toggle",
+					order = 1,
+					width = "full",
 					set = function(info, val)
 						Clicked.db.profile.minimap.hide = not val
 
@@ -25,6 +27,29 @@ local module = {
 					end,
 					get = function(info)
 						return not Clicked.db.profile.minimap.hide
+					end
+				},
+				onKeyDown = {
+					name = L["OPT_GENERAL_CAST_ON_KEY_DOWN_NAME"],
+					desc = L["OPT_GENERAL_CAST_ON_KEY_DOWN_DESC"],
+					type = "toggle",
+					order = 2,
+					width = "full",
+					set = function(info, val)
+						Clicked.db.profile.options.onKeyDown = val
+
+						for _, frame in Clicked:IterateClickCastFrames() do
+							Clicked:RegisterFrameClicks(frame)
+						end
+
+						for _, frame in Clicked:IterateMacroHandlerFrames() do
+							Clicked:RegisterFrameClicks(frame)
+						end
+
+						Clicked:ShowInformationPopup(L["OPT_GENERAL_CAST_ON_KEY_DOWN_POPUP"])
+					end,
+					get = function(info)
+						return Clicked.db.profile.options.onKeyDown
 					end
 				}
 			}

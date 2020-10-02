@@ -18,7 +18,7 @@ local module = {
 
 		self.blacklist = Clicked.db.profile.blacklist
 
-		for _, frame in ipairs(Clicked:GetClickCastFrames()) do
+		for _, frame in Clicked:IterateClickCastFrames() do
 			self:OnFrameRegistered(frame)
 		end
 

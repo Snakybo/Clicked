@@ -21,7 +21,7 @@ local function UpdateClickCastFrame(frame, attributes)
 	end
 end
 
-function Clicked:ProcessClickCastFrameQueue()
+function Clicked:ProcessFrameQueue()
 	if InCombatLockdown() then
 		return
 	end
@@ -49,7 +49,7 @@ function Clicked:ProcessClickCastFrameQueue()
 		registerClicksQueue = {}
 
 		for _, frame in ipairs(queue) do
-			self:RegisterClickCastFrameClicks(frame)
+			self:RegisterFrameClicks(frame)
 		end
 	end
 end
@@ -85,7 +85,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		})
 	end
 
-	if InCombatLockdown() then
+	if InCombatLockdown() or not self:IsInitialized() then
 		TryEnqueue()
 		return
 	end
@@ -114,11 +114,11 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 
 	-- Skip anything that is not clickable
 
-	if not frame.RegisterForClicks then
+	if frame.RegisterForClicks == nil then
 		return
 	end
 
-	self:RegisterClickCastFrameClicks(frame)
+	self:RegisterFrameClicks(frame)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
 	table.insert(frames, frame)
@@ -160,7 +160,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 		table.insert(unregisterQueue, frame)
 	end
 
-	if InCombatLockdown() then
+	if InCombatLockdown() or not self:IsInitialized() then
 		TryEnqueue()
 		return
 	end
@@ -176,17 +176,17 @@ function Clicked:UnregisterClickCastFrame(frame)
 	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_UNREGISTERED, frame)
 end
 
-function Clicked:RegisterClickCastFrameClicks(frame)
+function Clicked:RegisterFrameClicks(frame)
 	if frame == nil or frame.RegisterForClicks == nil then
 		return
 	end
 
-	if InCombatLockdown() then
+	if InCombatLockdown() or not self:IsInitialized() then
 		table.insert(registerClicksQueue, frame)
 		return
 	end
 
-	frame:RegisterForClicks("AnyUp")
+	frame:RegisterForClicks(self.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
 	frame:EnableMouseWheel(true)
 end
 
@@ -209,6 +209,6 @@ function Clicked:IsFrameBlacklisted(frame)
 	return blacklist[name]
 end
 
-function Clicked:GetClickCastFrames()
-	return frames
+function Clicked:IterateClickCastFrames()
+	return ipairs(frames)
 end

@@ -36,6 +36,8 @@ local function GetBasicinfoString()
 		end
 	end
 
+	table.insert(lines, "Mode: " .. (Clicked.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
+
 	return table.concat(lines, "\n")
 end
 
@@ -95,7 +97,7 @@ end
 local function GetRegisteredClickCastFrames()
 	local lines = {}
 
-	for _, clickCastFrame in ipairs(Clicked:GetClickCastFrames()) do
+	for _, clickCastFrame in Clicked:IterateClickCastFrames() do
 		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
 			local name = clickCastFrame:GetName()
 			local blacklisted = Clicked:IsFrameBlacklisted(clickCastFrame)
