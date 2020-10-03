@@ -121,6 +121,7 @@ function Clicked:OnEnable()
 		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
 	end
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ReloadActiveBindings")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "ReloadActiveBindings")
 	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
@@ -147,6 +148,7 @@ function Clicked:OnDisable()
 		self:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	end
 
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
 	self:UnregisterEvent("BAG_UPDATE")
