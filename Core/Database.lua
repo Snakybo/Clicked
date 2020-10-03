@@ -37,15 +37,33 @@ function Clicked:GetNewBindingTemplate()
 	local template = {
 		type = Clicked.BindingTypes.SPELL,
 		keybind = "",
-		action = {
-			stopCasting = false,
-			spell = "",
-			item = "",
-			macroName = "",
-			macroIcon = "",
-			macroText = "",
-			macroMode = "FIRST",
-			icon = nil
+		actions = {
+			spell = {
+				displayName = "",
+				displayIcon = "",
+				value = "",
+				interruptCurrentCast = false
+			},
+			item = {
+				displayName = "",
+				displayIcon = "",
+				value = "",
+				interruptCurrentCast = false
+			},
+			macro = {
+				displayName = "",
+				displayIcon = "",
+				value = "",
+				mode = Clicked.MacroMode.FIRST
+			},
+			unitSelect = {
+				displayName = "",
+				displayIcon = ""
+			},
+			unitMenu = {
+				displayName = "",
+				displayIcon = ""
+			}
 		},
 		primaryTarget = self:GetNewBindingTargetTemplate(),
 		secondaryTargets = {},
@@ -227,13 +245,6 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				target.status = "ANY"
 			end
 
-			binding.action.macroName = ""
-			binding.action.macroIcon = ""
-			binding.action.macroText = binding.action.macrotext
-			binding.action.macrotext = nil
-			binding.action.stopCasting = binding.action.stopcasting
-			binding.action.stopcasting = nil
-
 			binding.load.combat.value = binding.load.combat.state
 			binding.load.combat.state = nil
 
@@ -260,6 +271,38 @@ function Clicked:UpgradeDatabaseProfile(profile)
 					value = "IN_WAR_MODE"
 				}
 			end
+
+			binding.actions = {
+				spell = {
+					displayName = binding.action.spell,
+					displayIcon = "",
+					value = binding.action.spell,
+					interruptCurrentCast = binding.action.stopcasting
+				},
+				item = {
+					displayName = binding.action.item,
+					displayIcon = "",
+					value = binding.action.item,
+					interruptCurrentCast = binding.action.stopcasting
+				},
+				macro = {
+					displayName = "",
+					displayIcon = "",
+					value = binding.action.macrotext,
+					mode = binding.action.macroMode
+				},
+				unitSelect = {
+					displayName = "",
+					displayIcon = ""
+				},
+				unitMenu = {
+					displayName = "",
+					displayIcon = ""
+				}
+			}
+
+			binding.action = nil
+			binding.icon = nil
 		end
 
 		profile.options = {

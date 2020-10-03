@@ -150,3 +150,27 @@ function Clicked:CanUnitHaveFollowUp(unit)
 
 	return true
 end
+
+function Clicked:GetActiveBindingAction(binding)
+	if binding.type == Clicked.BindingTypes.SPELL then
+		return binding.actions.spell
+	end
+
+	if binding.type == Clicked.BindingTypes.ITEM then
+		return binding.actions.item
+	end
+
+	if binding.type == Clicked.BindingTypes.MACRO then
+		return binding.actions.macro
+	end
+
+	if binding.type == Clicked.BindingTypes.UNIT_SELECT then
+		return binding.actions.unitSelect
+	end
+
+	if binding.type == Clicked.BindingTypes.UNIT_MENU then
+		return binding.actions.unitMenu
+	end
+
+	return nil
+end

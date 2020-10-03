@@ -117,6 +117,7 @@ local function TreeSortFunc(left, right)
 end
 
 local function ConstructTreeViewItem(index, binding)
+	local data = Clicked:GetActiveBindingAction(binding)
 	local item = {}
 
 	item.value = index
@@ -124,44 +125,43 @@ local function ConstructTreeViewItem(index, binding)
 	item.binding = binding
 	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
-	if binding.type == Clicked.BindingTypes.SPELL then
-		local icon = select(3, GetSpellInfo(binding.action.spell))
+	-- update display name and icon
+	do
+		local label = ""
+		local icon = ""
 
-		-- cache the icon in case we lose knowledge of this spell
-		if icon ~= nil then
-			binding.action.icon = icon
+		if binding.type == Clicked.BindingTypes.SPELL then
+			label = L["CFG_UI_TREE_LABEL_CAST"]
+			icon = select(3, GetSpellInfo(data.value))
+		elseif binding.type == Clicked.BindingTypes.ITEM then
+			label = L["CFG_UI_TREE_LABEL_USE"]
+			icon = select(10, GetItemInfo(data.value))
+		elseif binding.type == Clicked.BindingTypes.MACRO then
+			label = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
+
+			if #data.displayName > 0 then
+				label = data.displayName
+			end
+		elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
+			label = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
+		elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
+			label = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
+		end
+
+		if data.value ~= nil then
+			item.text1 = string.format(label, data.value)
 		else
-			icon = binding.action.icon
+			item.text1 = label
 		end
 
-		item.text1 = L["CFG_UI_TREE_LABEL_CAST"]:format(binding.action.spell or "")
-		item.icon = icon or item.icon
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		local icon = select(10, GetItemInfo(binding.action.item))
-
-		-- cache the icon in case we lose knowledge of the item
-		if icon ~= nil then
-			binding.action.icon = icon
-		else
-			icon = binding.action.icon
+		if icon ~= nil and #tostring(icon) > 0 then
+			item.icon = icon
+		elseif data.displayIcon ~= nil and #tostring(data.displayIcon) > 0 then
+			item.icon = data.displayIcon
 		end
 
-		item.text1 = L["CFG_UI_TREE_LABEL_USE"]:format(binding.action.item or "")
-		item.icon = icon or item.icon
-	elseif binding.type == Clicked.BindingTypes.MACRO then
-		if #binding.action.macroName == 0 then
-			item.text1 = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
-		else
-			item.text1 = binding.action.macroName
-		end
-
-		if #binding.action.macroIcon > 0 then
-			item.icon = binding.action.macroIcon
-		end
-	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
-		item.text1 = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
-	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-		item.text1 = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
+		data.displayName = item.text1
+		data.displayIcon = item.icon
 	end
 
 	item.text2 = #binding.keybind > 0 and binding.keybind or L["CFG_UI_BINDING_UNBOUND"]
@@ -182,29 +182,13 @@ local function ConstructTreeView()
 		local valid = true
 
 		if searchTerm ~= nil and searchTerm ~= "" then
+			local data = Clicked:GetActiveBindingAction(binding)
 			local strings = {}
 
 			valid = false
 
-			if binding.type == Clicked.BindingTypes.SPELL then
-				table.insert(strings, L["CFG_UI_TREE_LABEL_CAST"])
-				table.insert(strings, binding.action.spell)
-			elseif binding.type == Clicked.BindingTypes.ITEM then
-				table.insert(strings, L["CFG_UI_TREE_LABEL_USE"])
-				table.insert(strings, binding.action.item)
-			elseif binding.type == Clicked.BindingTypes.MACRO then
-				if #binding.action.macroName == 0 then
-					table.insert(strings, L["CFG_UI_TREE_LABEL_RUN_MACRO"])
-				else
-					table.insert(binding.action.macroName)
-				end
-
-				table.insert(strings, binding.action.macroText)
-			elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
-				table.insert(strings, L["CFG_UI_TREE_LABEL_TARGET_UNIT"])
-			elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-				table.insert(strings, L["CFG_UI_TREE_LABEL_UNIT_MENU"])
-			end
+			table.insert(strings, data.displayName)
+			table.insert(strings, data.value)
 
 			if binding.keybind ~= nil and binding.keybind ~= "" then
 				table.insert(strings, binding.keybind)
@@ -412,9 +396,10 @@ local function CreateSpellbookHandlers()
 
 				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
 					local binding = options.item.binding
+					local data = Clicked:GetActiveBindingAction(binding)
 
 					if binding.type == Clicked.BindingTypes.SPELL then
-						binding.action.spell = name
+						data.value = name
 						HideUIPanel(SpellBookFrame)
 						Clicked:ReloadActiveBindings()
 					end
@@ -600,14 +585,14 @@ local function DrawSpellSelection(container, action)
 			local function OnEnterPressed(frame, event, value)
 				value = GUI:TrimString(value)
 
-				if value ~= action.spell then
-					action.icon = nil -- invalidate the cached icon
+				if value ~= action.value then
+					action.displayIcon = "" -- invalidate the cached icon
 				end
 
 				GUI:Serialize(frame, event, value)
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spell")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetFullWidth(true)
 
@@ -654,7 +639,7 @@ local function DrawSpellSelection(container, action)
 
 		-- interrupt cast toggle
 		do
-			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -679,14 +664,14 @@ local function DrawItemSelection(container, action)
 
 				value = GUI:TrimString(value)
 
-				if value ~= action.item then
-					action.icon = nil -- invalidate the cached icon
+				if value ~= action.value then
+					action.displayIcon = "" -- invalidate the cached icon
 				end
 
 				GUI:Serialize(frame, event, value)
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "item")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetFullWidth(true)
 
@@ -725,7 +710,7 @@ local function DrawMacroSelection(container, keybind, action)
 
 		-- name text field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "macroName")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "displayName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -733,20 +718,21 @@ local function DrawMacroSelection(container, keybind, action)
 
 		-- icon field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "macroIcon")
-			widget:SetRelativeWidth(0.7)
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "displayIcon")
+			--widget:SetRelativeWidth(0.7)
+			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
 		end
 
 		-- icon button
-		do
-			local widget = GUI:Button(L["CFG_UI_ACTION_MACRO_ICON_SELECT"], function() end)
-			widget:SetRelativeWidth(0.3)
-			widget:SetDisabled(true)
+		-- do
+		-- 	local widget = GUI:Button(L["CFG_UI_ACTION_MACRO_ICON_SELECT"], function() end)
+		-- 	widget:SetRelativeWidth(0.3)
+		-- 	widget:SetDisabled(true)
 
-			group:AddChild(widget)
-		end
+		-- 	group:AddChild(widget)
+		-- end
 	end
 
 	-- macro text
@@ -763,7 +749,7 @@ local function DrawMacroSelection(container, keybind, action)
 
 		-- macro text field
 		do
-			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macroText")
+			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "value")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -810,7 +796,6 @@ local function DrawBindingActionPage(container, binding)
 	do
 		local function OnValueChanged(frame, event, value)
 			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
-			binding.action.icon = nil -- invalidate the cached icon
 			GUI:Serialize(frame, event, value)
 		end
 
@@ -848,12 +833,14 @@ local function DrawBindingActionPage(container, binding)
 		end
 	end
 
+	local data = Clicked:GetActiveBindingAction(binding)
+
 	if binding.type == Clicked.BindingTypes.SPELL then
-		DrawSpellSelection(container, binding.action)
+		DrawSpellSelection(container, data)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
-		DrawItemSelection(container, binding.action)
+		DrawItemSelection(container, data)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding.keybind, binding.action)
+		DrawMacroSelection(container, binding.keybind, data)
 	end
 end
 
@@ -1612,15 +1599,19 @@ local function DrawTreeView(container)
 			end
 
 			if binding ~= nil then
+				local data = Clicked:GetActiveBindingAction(binding)
+
+				text = data.displayName
+
 				if binding.type == Clicked.BindingTypes.MACRO then
-					if #binding.action.macroName > 0 then
-						text = binding.action.macroName .. "\n\n"
+					if #data.displayName > 0 then
+						text = data.displayName .. "\n\n"
 						text = text .. L["CFG_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
 					else
 						text = "";
 					end
 
-					text = text .. binding.action.macroText .. "|r"
+					text = text .. data.value .. "|r"
 				end
 
 				text = text .. "\n\n"

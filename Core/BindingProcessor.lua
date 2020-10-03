@@ -131,12 +131,9 @@ end
 
 local function ConstructAction(binding, target)
 	local action = {}
+	local data = Clicked:GetActiveBindingAction(binding)
 
-	if binding.type == Clicked.BindingTypes.SPELL then
-		action.ability = binding.action.spell
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		action.ability = binding.action.item
-	end
+	action.ability = data.value
 
 	do
 		local combat = binding.load.combat
@@ -285,12 +282,14 @@ local function GetMacroForBindings(bindings)
 	local actions = {}
 
 	for _, binding in ipairs(bindings) do
+		local data = Clicked:GetActiveBindingAction(binding)
+
 		if binding.type == Clicked.BindingTypes.MACRO then
-			if binding.action.macroMode == Clicked.MacroMode.FIRST then
-				table.insert(result, binding.action.macroText)
+			if data.mode == Clicked.MacroMode.FIRST then
+				table.insert(result, data.value)
 			end
 		else
-			if not stopcasting and (binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM) and binding.action.stopCasting then
+			if not stopcasting and data.interruptCurrentCast then
 				stopcasting = true
 				table.insert(result, 1, "/stopcasting")
 			end
@@ -327,8 +326,10 @@ local function GetMacroForBindings(bindings)
 		local command = "/use " .. table.concat(segments, "; ")
 
 		for _, binding in ipairs(bindings) do
-			if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.APPEND then
-				command = command .. "; " .. binding.action.macroText
+			local data = Clicked:GetActiveBindingAction(binding)
+
+			if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
+				command = command .. "; " .. data.value
 			end
 		end
 
@@ -336,8 +337,10 @@ local function GetMacroForBindings(bindings)
 	end
 
 	for _, binding in ipairs(bindings) do
-		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
-			table.insert(result, binding.action.macroText)
+		local data = Clicked:GetActiveBindingAction(binding)
+
+		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
+			table.insert(result, data.value)
 		end
 	end
 
@@ -632,18 +635,12 @@ function Clicked:CanBindingLoad(binding)
 		return false
 	end
 
-	local action = binding.action
+	do
+		local data = self:GetActiveBindingAction(binding)
 
-	if binding.type == Clicked.BindingTypes.SPELL and action.spell == "" then
-		return false
-	end
-
-	if binding.type == Clicked.BindingTypes.MACRO and action.macroText == "" then
-		return false
-	end
-
-	if binding.type == Clicked.BindingTypes.ITEM and action.item == "" then
-		return false
+		if data ~= nil and data.value ~= nil and #data.value == 0 then
+			return false
+		end
 	end
 
 	local load = binding.load
