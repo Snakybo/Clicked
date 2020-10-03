@@ -635,6 +635,7 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	if not self:IsClassic() then
+		-- specialization
 		do
 			-- If the specialization limiter has been enabled, see if the player's current
 			-- specialization matches one of the specified specializations.
@@ -661,6 +662,7 @@ function Clicked:CanBindingLoad(binding)
 			end
 		end
 
+		-- talent selected
 		do
 			local function IsTalentIndexSelected(index)
 				local tier = math.ceil(index / 3)
@@ -696,6 +698,52 @@ function Clicked:CanBindingLoad(binding)
 			end
 		end
 
+		-- pvp talent selected
+		do
+			local function AppendTalentIdsFromSlot(items, slot)
+				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slot);
+
+				if slotInfo and slotInfo.availableTalentIDs then
+					for _, id in ipairs(slotInfo.availableTalentIDs) do
+						table.insert(items, id)
+					end
+				end
+			end
+
+			local function IsPvPTalentIndexSelected(talentIndex)
+				local talentIds = {}
+				AppendTalentIdsFromSlot(talentIds, 1)
+				AppendTalentIdsFromSlot(talentIds, 2)
+
+				local talentId = talentIds[talentIndex]
+				local _, _, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(talentId)
+
+				return selected or known or grantedByAura
+			end
+
+			local talent = load.pvpTalent
+
+			if talent.selected == 1 then
+				if not IsPvPTalentIndexSelected(talent.single) then
+					return false
+				end
+			elseif talent.selected == 2 then
+				local hasAny = false
+
+				for i = 1, #talent.multiple do
+					if IsPvPTalentIndexSelected(talent.multiple[i]) then
+						hasAny = true
+						break
+					end
+				end
+
+				if not hasAny then
+					return false
+				end
+			end
+		end
+
+		-- war mode
 		do
 			local warMode = load.warMode
 

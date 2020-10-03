@@ -62,6 +62,7 @@ function Clicked:GetNewBindingTemplate()
 	if not self:IsClassic() then
 		template.load.specialization = GetTriStateLoadOptionTemplate(GetSpecialization())
 		template.load.talent = GetTriStateLoadOptionTemplate(1)
+		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
 		template.load.warMode = GetLoadOptionTemplate(false)
 	end
 
@@ -246,6 +247,14 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.load.playerInGroup.player = nil
 
 			if not self:IsClassic() then
+				binding.load.pvpTalent = {
+					selected = 0,
+					single = 1,
+					multiple = {
+						1
+					}
+				}
+
 				binding.load.warMode = {
 					selected = false,
 					value = "IN_WAR_MODE"

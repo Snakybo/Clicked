@@ -1153,11 +1153,37 @@ local function DrawLoadTalent(container, talent)
 	DrawTristateLoadOption(container, L["CFG_UI_LOAD_TALENT"], options, talent)
 end
 
+local function DrawLoadPvPTalent(container, talent)
+	-- luacheck: ignore options
+	local options = {}
 
+	local function CreateFromPvpTalentId(id)
+		local name, icon = select(2, GetPvpTalentInfoByID(id))
 
+		table.insert(options, {
+			text = name,
+			icon = icon
+		})
 	end
 
-	DrawTristateLoadOption(container, L["CFG_UI_LOAD_PVP_TALENT"], options, talent)
+	local function CreateFromSlotInfo(slot, inverse)
+		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slot)
+
+		if slotInfo then
+			local talents = slotInfo.availableTalentIDs
+
+			for _, id in ipairs(talents) do
+				CreateFromPvpTalentId(id)
+			end
+		end
+	end
+
+	CreateFromSlotInfo(1, true)
+	CreateFromSlotInfo(2, false)
+
+	if next(options) then
+		DrawTristateLoadOption(container, L["CFG_UI_LOAD_PVP_TALENT"], options, talent)
+	end
 end
 
 local function DrawLoadWarMode(container, warMode)
@@ -1244,6 +1270,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	if not Clicked:IsClassic() then
 		DrawLoadSpecialization(container, load.specialization)
 		DrawLoadTalent(container, load.talent)
+		DrawLoadPvPTalent(container, load.pvpTalent)
 		DrawLoadWarMode(container, load.warMode)
 	end
 
