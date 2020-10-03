@@ -122,6 +122,7 @@ function Clicked:OnEnable()
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ReloadActiveBindings")
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "ReloadActiveBindings")
 	self:RegisterEvent("BAG_UPDATE", "ReloadActiveBindings")
@@ -149,6 +150,7 @@ function Clicked:OnDisable()
 	end
 
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
 	self:UnregisterEvent("BAG_UPDATE")
