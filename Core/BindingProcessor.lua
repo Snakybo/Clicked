@@ -605,6 +605,29 @@ end
 -- provided in the binding's Load Options, and whether the binding is actually
 -- valid (it has a keybind and an action to perform)
 function Clicked:CanBindingLoad(binding)
+	local function ValidateTriStateLoadOption(data, validationFunc)
+		if data.selected == 1 then
+			if not validationFunc(data.single) then
+				return false
+			end
+		elseif data.selected == 2 then
+			local hasAny = false
+
+			for i = 1, #data.multiple do
+				if validationFunc(data.multiple[i]) then
+					hasAny = true
+					break
+				end
+			end
+
+			if not hasAny then
+				return false
+			end
+		end
+
+		return true
+	end
+
 	if binding.keybind == "" then
 		return false
 	end
@@ -637,28 +660,12 @@ function Clicked:CanBindingLoad(binding)
 	if not self:IsClassic() then
 		-- specialization
 		do
-			-- If the specialization limiter has been enabled, see if the player's current
-			-- specialization matches one of the specified specializations.
+			local function IsSpecializationIndexSelected(index)
+				return index == GetSpecialization()
+			end
 
-			local specialization = load.specialization
-
-			if specialization.selected == 1 then
-				if specialization.single ~= GetSpecialization() then
-					return false
-				end
-			elseif specialization.selected == 2 then
-				local spec = GetSpecialization()
-				local contains = false
-
-				for i = 1, #specialization.multiple do
-					if specialization.multiple[i] == spec then
-						contains = true
-					end
-				end
-
-				if not contains then
-					return false
-				end
+			if not ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected) then
+				return false
 			end
 		end
 
@@ -676,25 +683,8 @@ function Clicked:CanBindingLoad(binding)
 				return selected or known
 			end
 
-			local talent = load.talent
-
-			if talent.selected == 1 then
-				if not IsTalentIndexSelected(talent.single) then
-					return false
-				end
-			elseif talent.selected == 2 then
-				local hasAny = false
-
-				for i = 1, #talent.multiple do
-					if IsTalentIndexSelected(talent.multiple[i]) then
-						hasAny = true
-						break
-					end
-				end
-
-				if not hasAny then
-					return false
-				end
+			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then
+				return false
 			end
 		end
 
@@ -721,25 +711,8 @@ function Clicked:CanBindingLoad(binding)
 				return selected or known or grantedByAura
 			end
 
-			local talent = load.pvpTalent
-
-			if talent.selected == 1 then
-				if not IsPvPTalentIndexSelected(talent.single) then
-					return false
-				end
-			elseif talent.selected == 2 then
-				local hasAny = false
-
-				for i = 1, #talent.multiple do
-					if IsPvPTalentIndexSelected(talent.multiple[i]) then
-						hasAny = true
-						break
-					end
-				end
-
-				if not hasAny then
-					return false
-				end
+			if not ValidateTriStateLoadOption(load.pvpTalent, IsPvPTalentIndexSelected) then
+				return false
 			end
 		end
 
