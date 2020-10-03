@@ -98,10 +98,7 @@ L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"] = "Interrupt current cast"
 
 -- Target items are used on the binding target options page
 
--- The tab item name
 L["CFG_UI_TARGET"] = "Targets"
-
--- Used for target unit filters (dynamic prioritization)
 L["CFG_UI_ACTION_TARGET_UNIT"] = "On this target"
 L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"] = "Or"
 L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"] = "Player (you)"
@@ -126,38 +123,24 @@ L["CFG_UI_ACTION_TARGET_STATUS_DEAD"] = "Dead"
 
 -- Load items are used on the binding load options page
 
--- The tab item name
 L["CFG_UI_LOAD"] = "Load Options"
-
--- Never load the binding
 L["CFG_UI_LOAD_NEVER"] = "Never load"
-
--- Only load for specific specialization(s)
 L["CFG_UI_LOAD_SPECIALIZATION"] = "Talent specialization"
-
--- Only load if talents are selected
 L["CFG_UI_LOAD_TALENT"] = "Talent selected"
-
--- Only load for specific stance(s)
+L["CFG_UI_LOAD_WAR_MODE"] = "War Mode"
+L["CFG_UI_LOAD_WAR_MODE_TRUE"] = "War Mode enabled"
+L["CFG_UI_LOAD_WAR_MODE_FALSE"] = "War Mode disabled"
 L["CFG_UI_LOAD_STANCE"] = "Stance"
 L["CFG_UI_LOAD_STANCE_NONE"] = "No stance"
-
--- Only load in or out of combat
 L["CFG_UI_LOAD_COMBAT"] = "Combat"
 L["CFG_UI_LOAD_COMBAT_TRUE"] = "In combat"
 L["CFG_UI_LOAD_COMBAT_FALSE"] = "Not in combat"
-
--- Only load if the provided spell or ability is known to the player
 L["CFG_UI_LOAD_SPELL_KNOWN"] = "Spell known"
-
--- Only load in a party, raid, either, or no group
 L["CFG_UI_LOAD_IN_GROUP"] = "In group"
 L["CFG_UI_LOAD_IN_GROUP_SOLO"] = "Not in a group"
 L["CFG_UI_LOAD_IN_GROUP_PARTY"] = "In a party"
 L["CFG_UI_LOAD_IN_GROUP_RAID"] = "In a raid group"
 L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"] = "In a party or raid group"
-
--- Only load if the provided player is in the group
 L["CFG_UI_LOAD_PLAYER_IN_GROUP"] = "Player in group"
 
 -- Everything prefixed with OPT is shown in the interface options UI

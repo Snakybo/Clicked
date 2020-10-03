@@ -41,6 +41,7 @@ read_globals = {
 	-- WoW API globals
 	"CreateFrame",
 	"DisableAddOn",
+	"C_PvP",
 	"FONT_COLOR_CODE_CLOSE",
 	"GameFontHighlight",
 	"GameFontHighlightLarge",

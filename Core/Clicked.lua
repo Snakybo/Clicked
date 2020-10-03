@@ -118,7 +118,9 @@ function Clicked:OnEnable()
 
 	if not self:IsClassic() then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
+		self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE", "ReloadActiveBindings")
 		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "ReloadActiveBindings")
+		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "ReloadActiveBindings")
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ReloadActiveBindings")
@@ -144,7 +146,9 @@ function Clicked:OnDisable()
 
 	if not self:IsClassic() then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
+		self:UnregisterEvent("PLAYER_PVP_TALENT_UPDATE")
 		self:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 	end
 
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")

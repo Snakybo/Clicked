@@ -1,5 +1,22 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
+local function GetLoadOptionTemplate(default)
+	return {
+		selected = false,
+		value = default
+	}
+end
+
+local function GetTriStateLoadOptionTemplate(default)
+	return {
+		selected = 0,
+		single = default,
+		multiple = {
+			default
+		}
+	}
+end
+
 function Clicked:GetDatabaseDefaults()
 	return {
 		profile = {
@@ -34,48 +51,18 @@ function Clicked:GetNewBindingTemplate()
 		secondaryTargets = {},
 		load = {
 			never = false,
-			combat = {
-				selected = false,
-				state = Clicked.CombatState.IN_COMBAT
-			},
-			spellKnown = {
-				selected = false,
-				spell = ""
-			},
-			inGroup = {
-				selected = false,
-				state = Clicked.GroupState.PARTY_OR_RAID
-			},
-			playerInGroup = {
-				selected = false,
-				player = ""
-			},
-			stance = {
-				selected = 0,
-				single = 1,
-				multiple = {
-					1
-				}
-			}
+			combat = GetLoadOptionTemplate(Clicked.CombatState.IN_COMBAT),
+			spellKnown = GetLoadOptionTemplate(""),
+			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
+			playerInGroup = GetLoadOptionTemplate(""),
+			stance = GetTriStateLoadOptionTemplate(1)
 		}
 	}
 
 	if not self:IsClassic() then
-		template.load.specialization = {
-			selected = 0,
-			single = GetSpecialization(),
-			multiple = {
-				GetSpecialization()
-			}
-		}
-
-		template.load.talent = {
-			selected = 0,
-			single = 1,
-			multiple = {
-				1
-			}
-		}
+		template.load.specialization = GetTriStateLoadOptionTemplate(GetSpecialization())
+		template.load.talent = GetTriStateLoadOptionTemplate(1)
+		template.load.warMode = GetLoadOptionTemplate(false)
 	end
 
 	return template
@@ -245,6 +232,25 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.action.macrotext = nil
 			binding.action.stopCasting = binding.action.stopcasting
 			binding.action.stopcasting = nil
+
+			binding.load.combat.value = binding.load.combat.state
+			binding.load.combat.state = nil
+
+			binding.load.spellKnown.value = binding.load.spellKnown.spell
+			binding.load.spellKnown.spell = nil
+
+			binding.load.inGroup.value = binding.load.inGroup.state
+			binding.load.inGroup.state = nil
+
+			binding.load.playerInGroup.value = binding.load.playerInGroup.player
+			binding.load.playerInGroup.player = nil
+
+			if not self:IsClassic() then
+				binding.load.warMode = {
+					selected = false,
+					value = "IN_WAR_MODE"
+				}
+			end
 		end
 
 		profile.options = {

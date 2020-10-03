@@ -51,6 +51,11 @@ Clicked.CombatState = {
 	NOT_IN_COMBAT = "NOT_IN_COMBAT"
 }
 
+Clicked.WarModeState = {
+	IN_WAR_MODE = "IN_WAR_MODE",
+	NOT_IN_WAR_MODE = "NOT_IN_WAR_MODE"
+}
+
 Clicked.GroupState = {
 	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
 	PARTY = "IN_GROUP_PARTY",
@@ -137,7 +142,7 @@ local function ConstructAction(binding, target)
 		local combat = binding.load.combat
 
 		if combat.selected then
-			action.combat = combat.state
+			action.combat = combat.value
 		else
 			action.combat = ""
 		end
@@ -690,6 +695,18 @@ function Clicked:CanBindingLoad(binding)
 				end
 			end
 		end
+
+		do
+			local warMode = load.warMode
+
+			if warMode.selected then
+				if warMode.value == Clicked.WarModeState.IN_WAR_MODE and not C_PvP.IsWarModeDesired() then
+					return false
+				elseif warMode.value == Clicked.WarModeState.NOT_IN_WAR_MODE and C_PvP.IsWarModeDesired() then
+					return false
+				end
+			end
+		end
 	end
 
 	do
@@ -702,9 +719,9 @@ function Clicked:CanBindingLoad(binding)
 		local combat = load.combat
 
 		if combat.selected then
-			if combat.state == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
+			if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
 				return false
-			elseif combat.state == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
+			elseif combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
 				return false
 			end
 		end
@@ -718,7 +735,7 @@ function Clicked:CanBindingLoad(binding)
 		local spellKnown = load.spellKnown
 
 		if spellKnown.selected then
-			local name = GetSpellInfo(spellKnown.spell)
+			local name = GetSpellInfo(spellKnown.value)
 
 			if name == nil then
 				return false
@@ -730,14 +747,14 @@ function Clicked:CanBindingLoad(binding)
 		local inGroup = load.inGroup
 
 		if inGroup.selected then
-			if inGroup.state == Clicked.GroupState.SOLO and GetNumGroupMembers() > 0 then
+			if inGroup.value == Clicked.GroupState.SOLO and GetNumGroupMembers() > 0 then
 				return false
 			else
-				if inGroup.state == Clicked.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				if inGroup.value == Clicked.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
 					return false
-				elseif inGroup.state == Clicked.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				elseif inGroup.value == Clicked.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
 					return false
-				elseif inGroup.state == Clicked.GroupState.RAID and not IsInRaid() then
+				elseif inGroup.value == Clicked.GroupState.RAID and not IsInRaid() then
 					return false
 				end
 			end
@@ -750,7 +767,7 @@ function Clicked:CanBindingLoad(binding)
 		if playerInGroup.selected then
 			local found = false
 
-			if playerInGroup.player == UnitName("player") then
+			if playerInGroup.value == UnitName("player") then
 				found = true
 			else
 				local unit = IsInRaid() and "raid" or "party"
@@ -763,7 +780,7 @@ function Clicked:CanBindingLoad(binding)
 				for i = 1, numGroupMembers do
 					local name = UnitName(unit .. i)
 
-					if name == playerInGroup.player then
+					if name == playerInGroup.value then
 						found = true
 						break
 					end

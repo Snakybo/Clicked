@@ -447,6 +447,56 @@ end
 
 -- Common draw functions
 
+local function DrawDropdownLoadOption(container, title, items, order, data)
+	-- enabled toggle
+	do
+		local widget = GUI:CheckBox(title, data, "selected")
+
+		if not data.selected then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	-- state
+	if data.selected then
+		do
+			local widget = GUI:Dropdown(nil, items, order, nil, data, "value")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
+local function DrawEditFieldLoadOption(container, title, data)
+	-- spell known toggle
+	do
+		local widget = GUI:CheckBox(title, data, "selected")
+
+		if not data.selected then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+	end
+
+	if data.selected then
+		-- spell known
+		do
+			local widget = GUI:EditBox(nil, "OnEnterPressed", data, "value")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
 -- luacheck: ignore options
 local function DrawTristateLoadOption(container, title, options, data)
 	-- enabled toggle
@@ -1103,128 +1153,65 @@ local function DrawLoadTalent(container, talent)
 	DrawTristateLoadOption(container, L["CFG_UI_LOAD_TALENT"], options, talent)
 end
 
+
+
+	end
+
+	DrawTristateLoadOption(container, L["CFG_UI_LOAD_PVP_TALENT"], options, talent)
+end
+
+local function DrawLoadWarMode(container, warMode)
+	local items = {
+		IN_WAR_MODE = L["CFG_UI_LOAD_WAR_MODE_TRUE"],
+		NOT_IN_WAR_MODE = L["CFG_UI_LOAD_WAR_MODE_FALSE"]
+	}
+
+	local order = {
+		"IN_WAR_MODE",
+		"NOT_IN_WAR_MODE"
+	}
+
+	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_WAR_MODE"], items, order, warMode)
+end
+
 local function DrawLoadCombat(container, combat)
-	-- combat toggle
-	do
-		local widget = GUI:CheckBox(L["CFG_UI_LOAD_COMBAT"], combat, "selected")
+	local items = {
+		IN_COMBAT = L["CFG_UI_LOAD_COMBAT_TRUE"],
+		NOT_IN_COMBAT = L["CFG_UI_LOAD_COMBAT_FALSE"]
+	}
 
-		if not combat.selected then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
+	local order = {
+		"IN_COMBAT",
+		"NOT_IN_COMBAT"
+	}
 
-		container:AddChild(widget)
-	end
-
-	-- combat state
-	if combat.selected then
-		do
-			local items = {
-				IN_COMBAT = L["CFG_UI_LOAD_COMBAT_TRUE"],
-				NOT_IN_COMBAT = L["CFG_UI_LOAD_COMBAT_FALSE"]
-			}
-
-			local order = {
-				"IN_COMBAT",
-				"NOT_IN_COMBAT"
-			}
-
-			local widget = GUI:Dropdown(nil, items, order, nil, combat, "state")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	end
+	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_COMBAT"], items, order, combat)
 end
 
 local function DrawLoadSpellKnown(container, spellKnown)
-	-- spell known toggle
-	do
-		local widget = GUI:CheckBox(L["CFG_UI_LOAD_SPELL_KNOWN"], spellKnown, "selected")
-
-		if not spellKnown.selected then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
-
-		container:AddChild(widget)
-	end
-
-	if spellKnown.selected then
-		-- spell known
-		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", spellKnown, "spell")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	end
+	DrawEditFieldLoadOption(container, L["CFG_UI_LOAD_SPELL_KNOWN"], spellKnown)
 end
 
 local function DrawLoadInGroup(container, inGroup)
-	-- in group toggle
-	do
-		local widget = GUI:CheckBox(L["CFG_UI_LOAD_IN_GROUP"], inGroup, "selected")
+	local items = {
+		IN_GROUP_PARTY_OR_RAID = L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"],
+		IN_GROUP_PARTY = L["CFG_UI_LOAD_IN_GROUP_PARTY"],
+		IN_GROUP_RAID = L["CFG_UI_LOAD_IN_GROUP_RAID"],
+		IN_GROUP_SOLO = L["CFG_UI_LOAD_IN_GROUP_SOLO"]
+	}
 
-		if not inGroup.selected then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
+	local order = {
+		"IN_GROUP_PARTY_OR_RAID",
+		"IN_GROUP_PARTY",
+		"IN_GROUP_RAID",
+		"IN_GROUP_SOLO"
+	}
 
-		container:AddChild(widget)
-	end
-
-	-- in group state
-	if inGroup.selected then
-		do
-			local items = {
-				IN_GROUP_PARTY_OR_RAID = L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"],
-				IN_GROUP_PARTY = L["CFG_UI_LOAD_IN_GROUP_PARTY"],
-				IN_GROUP_RAID = L["CFG_UI_LOAD_IN_GROUP_RAID"],
-				IN_GROUP_SOLO = L["CFG_UI_LOAD_IN_GROUP_SOLO"]
-			}
-
-			local order = {
-				"IN_GROUP_PARTY_OR_RAID",
-				"IN_GROUP_PARTY",
-				"IN_GROUP_RAID",
-				"IN_GROUP_SOLO"
-			}
-
-			local widget = GUI:Dropdown(nil, items, order, nil, inGroup, "state")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	end
+	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_IN_GROUP"], items, order, inGroup)
 end
 
 local function DrawLoadPlayerInGroup(container, playerInGroup)
-	-- player in group toggle
-	do
-		local widget = GUI:CheckBox(L["CFG_UI_LOAD_PLAYER_IN_GROUP"], playerInGroup, "selected")
-
-		if not playerInGroup.selected then
-			widget:SetRelativeWidth(1)
-		else
-			widget:SetRelativeWidth(0.5)
-		end
-
-		container:AddChild(widget)
-	end
-
-	if playerInGroup.selected then
-		-- player in group
-		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", playerInGroup, "player")
-			widget:SetRelativeWidth(0.5)
-
-			container:AddChild(widget)
-		end
-	end
+	DrawEditFieldLoadOption(container, L["CFG_UI_LOAD_PLAYER_IN_GROUP"], playerInGroup)
 end
 
 local function DrawLoadInStance(container, stance)
@@ -1257,6 +1244,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	if not Clicked:IsClassic() then
 		DrawLoadSpecialization(container, load.specialization)
 		DrawLoadTalent(container, load.talent)
+		DrawLoadWarMode(container, load.warMode)
 	end
 
 	DrawLoadCombat(container, load.combat)
