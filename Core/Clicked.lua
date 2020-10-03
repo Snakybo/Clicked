@@ -135,8 +135,6 @@ function Clicked:OnEnable()
 	end
 
 	isInitialized = true
-
-	ReloadDatabase()
 	self:ProcessFrameQueue()
 end
 
