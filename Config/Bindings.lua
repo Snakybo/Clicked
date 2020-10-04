@@ -776,7 +776,7 @@ local function DrawMacroSelection(container, keybind, action)
 				"APPEND"
 			}
 
-			local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
+			local widget = GUI:Dropdown(nil, items, order, nil, action, "mode")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
