@@ -6,11 +6,11 @@ local module = {
 	["Initialize"] = function(self)
 		self.config = {
 			type = "group",
-			name = L["OPT_BLACKLIST_TITLE"],
+			name = L["INTERFACE_UI_TITLE_BLACKLIST"],
 			args = {
 				help = {
 					type = "description",
-					name = L["OPT_BLACKLIST_HELP"],
+					name = L["INTERFACE_UI_BLACKLIST_HELP"],
 					order = 0
 				}
 			}
@@ -23,7 +23,7 @@ local module = {
 		end
 
 		AceConfig:RegisterOptionsTable("Clicked/Blacklist", self.config)
-		self.interfaceOptionsTab = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["OPT_BLACKLIST_TITLE"], "Clicked")
+		self.interfaceOptionsTab = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["INTERFACE_UI_TITLE_BLACKLIST"], "Clicked")
 	end,
 
 	["Register"] = function(self)

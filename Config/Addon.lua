@@ -8,11 +8,11 @@ local module = {
 	["Initialize"] = function(self)
 		local config = {
 			type = "group",
-			name = L["NAME"],
+			name = L["ADDON_NAME"],
 			args = {
 				minimapIcon = {
-					name = L["OPT_GENERAL_MINIMAP_NAME"],
-					desc = L["OPT_GENERAL_MINIMAP_DESC"],
+					name = L["INTERFACE_UI_GENERAL_MINIMAP_ICON_NAME"],
+					desc = L["INTERFACE_UI_GENERAL_MINIMAP_ICON_DESCRIPTION"],
 					type = "toggle",
 					order = 1,
 					width = "full",
@@ -30,8 +30,8 @@ local module = {
 					end
 				},
 				onKeyDown = {
-					name = L["OPT_GENERAL_CAST_ON_KEY_DOWN_NAME"],
-					desc = L["OPT_GENERAL_CAST_ON_KEY_DOWN_DESC"],
+					name = L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_NAME"],
+					desc = L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_DESCRIPTION"],
 					type = "toggle",
 					order = 2,
 					width = "full",
@@ -46,7 +46,7 @@ local module = {
 							Clicked:RegisterFrameClicks(frame)
 						end
 
-						Clicked:ShowInformationPopup(L["OPT_GENERAL_CAST_ON_KEY_DOWN_POPUP"])
+						Clicked:ShowInformationPopup(L["INTERFACE_UI_GENERAL_POPUP_CAST_ON_KEY_DOWN"])
 					end,
 					get = function(info)
 						return Clicked.db.profile.options.onKeyDown
@@ -56,10 +56,10 @@ local module = {
 		}
 
 		AceConfig:RegisterOptionsTable("Clicked", config)
-		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["NAME"])
+		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["INTERFACE_UI_TITLE_GENERAL"])
 
 		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
-		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["OPT_PROFILES_NAME"], "Clicked")
+		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["INTERFACE_UI_TITLE_PROFILES"], "Clicked")
 	end,
 
 	["OnChatCommandReceived"] = function(self, args)

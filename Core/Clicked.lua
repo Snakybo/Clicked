@@ -26,13 +26,13 @@ end
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
 		type = "launcher",
-		label = L["NAME"],
+		label = L["ADDON_NAME"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
 			Clicked:OpenBindingConfig()
 		end,
 		OnTooltipShow = function(tooltip)
-			tooltip:AddLine(L["NAME"])
+			tooltip:AddLine(L["ADDON_NAME"])
 		end
 	})
 

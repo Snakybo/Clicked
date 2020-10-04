@@ -131,21 +131,21 @@ local function ConstructTreeViewItem(index, binding)
 		local icon = ""
 
 		if binding.type == Clicked.BindingTypes.SPELL then
-			label = L["CFG_UI_TREE_LABEL_CAST"]
+			label = L["BINDING_UI_TREE_LABEL_CAST"]
 			icon = select(3, GetSpellInfo(data.value))
 		elseif binding.type == Clicked.BindingTypes.ITEM then
-			label = L["CFG_UI_TREE_LABEL_USE"]
+			label = L["BINDING_UI_TREE_LABEL_USE"]
 			icon = select(10, GetItemInfo(data.value))
 		elseif binding.type == Clicked.BindingTypes.MACRO then
-			label = L["CFG_UI_TREE_LABEL_RUN_MACRO"]
+			label = L["BINDING_UI_TREE_LABEL_RUN_MACRO"]
 
 			if #data.displayName > 0 then
 				label = data.displayName
 			end
 		elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
-			label = L["CFG_UI_TREE_LABEL_TARGET_UNIT"]
+			label = L["BINDING_UI_TREE_LABEL_TARGET_UNIT"]
 		elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-			label = L["CFG_UI_TREE_LABEL_UNIT_MENU"]
+			label = L["BINDING_UI_TREE_LABEL_UNIT_MENU"]
 		end
 
 		if data.value ~= nil then
@@ -164,12 +164,12 @@ local function ConstructTreeViewItem(index, binding)
 		data.displayIcon = item.icon
 	end
 
-	item.text2 = #binding.keybind > 0 and binding.keybind or L["CFG_UI_BINDING_UNBOUND"]
+	item.text2 = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
 
 	if Clicked:IsBindingActive(binding) then
-		item.text3 = L["CFG_UI_TREE_LOAD_STATE_LOADED"]
+		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_LOADED"]
 	else
-		item.text3 = L["CFG_UI_TREE_LOAD_STATE_UNLOADED"]
+		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_UNLOADED"]
 	end
 
 	return item
@@ -577,7 +577,7 @@ end
 local function DrawSpellSelection(container, action)
 	-- target spell
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_SPELL"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_SPELL"])
 		container:AddChild(group)
 
 		-- edit box
@@ -614,7 +614,7 @@ local function DrawSpellSelection(container, action)
 				tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
 				tooltip:ClearAllPoints()
 				tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-				tooltip:SetText(L["CFG_UI_ACTION_TARGET_SPELL_BOOK_HELP"], 1, 0.82, 0, 1, true)
+				tooltip:SetText(L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"], 1, 0.82, 0, 1, true)
 				tooltip:Show()
 			end
 
@@ -623,7 +623,7 @@ local function DrawSpellSelection(container, action)
 				tooltip:Hide()
 			end
 
-			local widget = GUI:Button(L["CFG_UI_ACTION_TARGET_SPELL_BOOK"], OnClick)
+			local widget = GUI:Button(L["BINDING_UI_BUTTON_FROM_SPELLBOOK"], OnClick)
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnEnter", OnEnter)
 			widget:SetCallback("OnLeave", OnLeave)
@@ -634,12 +634,12 @@ local function DrawSpellSelection(container, action)
 
 	-- additional options
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
 		container:AddChild(group)
 
 		-- interrupt cast toggle
 		do
-			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
+			local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -650,7 +650,7 @@ end
 local function DrawItemSelection(container, action)
 	-- target item
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_ITEM"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_ITEM"])
 		container:AddChild(group)
 
 		-- target item
@@ -680,7 +680,7 @@ local function DrawItemSelection(container, action)
 
 		-- help text
 		do
-			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_TARGET_ITEM_HELP"])
+			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_ITEM_SHIFT_CLICK"])
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -689,12 +689,12 @@ local function DrawItemSelection(container, action)
 
 	-- additional options
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
 		container:AddChild(group)
 
 		-- interrupt cast toggle
 		do
-			local widget = GUI:CheckBox(L["CFG_UI_ACTION_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
+			local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -705,7 +705,7 @@ end
 local function DrawMacroSelection(container, keybind, action)
 	-- macro name and icon
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_MACRO_NAME_ICON"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_MACRO_NAME_ICON"])
 		container:AddChild(group)
 
 		-- name text field
@@ -727,7 +727,7 @@ local function DrawMacroSelection(container, keybind, action)
 
 		-- icon button
 		-- do
-		-- 	local widget = GUI:Button(L["CFG_UI_ACTION_MACRO_ICON_SELECT"], function() end)
+		-- 	local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], function() end)
 		-- 	widget:SetRelativeWidth(0.3)
 		-- 	widget:SetDisabled(true)
 
@@ -737,12 +737,12 @@ local function DrawMacroSelection(container, keybind, action)
 
 	-- macro text
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_MACRO_TEXT"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_MACRO"])
 		container:AddChild(group)
 
 		-- help text
 		if Clicked:IsRestrictedKeybind(keybind) then
-			local widget = GUI:Label(L["CFG_UI_ACTION_MACRO_HOVERCAST_HELP"] .. "\n")
+			local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
 		end
@@ -759,15 +759,15 @@ local function DrawMacroSelection(container, keybind, action)
 
 	-- additional options
 	do
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_OPTIONS"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
 		container:AddChild(group)
 
 		-- macro mode toggle
 		do
 			local items = {
-				FIRST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_FIRST"],
-				LAST = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_LAST"],
-				APPEND = L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND"]
+				FIRST = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_FIRST"],
+				LAST = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_LAST"],
+				APPEND = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_APPEND"]
 			}
 
 			local order = {
@@ -783,7 +783,7 @@ local function DrawMacroSelection(container, keybind, action)
 		end
 
 		if action.macroMode == Clicked.MacroMode.APPEND then
-			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_OPTIONS_MACRO_MODE_APPEND_HELP"])
+			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_MACRO_MODE_APPEND"])
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -800,11 +800,11 @@ local function DrawBindingActionPage(container, binding)
 		end
 
 		local items = {
-			SPELL = L["CFG_UI_ACTION_TYPE_SPELL"],
-			ITEM = L["CFG_UI_ACTION_TYPE_ITEM"],
-			MACRO = L["CFG_UI_ACTION_TYPE_MACRO"],
-			UNIT_SELECT = L["CFG_UI_ACTION_TYPE_UNIT_TARGET"],
-			UNIT_MENU = L["CFG_UI_ACTION_TYPE_UNIT_MENU"]
+			SPELL = L["BINDING_UI_PAGE_ACTION_TYPE_SPELL"],
+			ITEM = L["BINDING_UI_PAGE_ACTION_TYPE_ITEM"],
+			MACRO = L["BINDING_UI_PAGE_ACTION_TYPE_MACRO"],
+			UNIT_SELECT = L["BINDING_UI_PAGE_ACTION_TYPE_UNIT_TARGET"],
+			UNIT_MENU = L["BINDING_UI_PAGE_ACTION_TYPE_UNIT_MENU"]
 		}
 
 		local order = {
@@ -815,7 +815,7 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TYPE"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TYPE"])
 		container:AddChild(group)
 
 		do
@@ -827,7 +827,7 @@ local function DrawBindingActionPage(container, binding)
 		end
 
 		if binding.type == Clicked.BindingTypes.MACRO then
-			local widget = GUI:Label("\n" .. L["CFG_UI_ACTION_TYPE_MACRO_HELP"])
+			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_MACRO"])
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
 		end
@@ -848,18 +848,18 @@ end
 
 local function GetCommonTargetUnits()
 	local items = {
-		PLAYER = L["CFG_UI_ACTION_TARGET_UNIT_PLAYER"],
-		GLOBAL = L["CFG_UI_ACTION_TARGET_UNIT_GLOBAL"],
-		TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGET"],
-		TARGET_OF_TARGET = L["CFG_UI_ACTION_TARGET_UNIT_TARGETTARGET"],
-		MOUSEOVER = L["CFG_UI_ACTION_TARGET_UNIT_MOUSEOVER"],
-		FOCUS = L["CFG_UI_ACTION_TARGET_UNIT_FOCUS"],
-		CURSOR = L["CFG_UI_ACTION_TARGET_UNIT_CURSOR"],
-		PARTY_1 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("1"),
-		PARTY_2 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("2"),
-		PARTY_3 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("3"),
-		PARTY_4 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("4"),
-		PARTY_5 = L["CFG_UI_ACTION_TARGET_UNIT_PARTY"]:format("5")
+		PLAYER = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
+		GLOBAL = L["BINDING_UI_PAGE_TARGETS_UNIT_GLOBAL"],
+		TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
+		TARGET_OF_TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
+		MOUSEOVER = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
+		FOCUS = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
+		CURSOR = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
+		PARTY_1 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("1"),
+		PARTY_2 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("2"),
+		PARTY_3 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("3"),
+		PARTY_4 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("4"),
+		PARTY_5 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("5")
 	}
 
 	local order = {
@@ -882,7 +882,7 @@ end
 
 local function GetPrimaryTargetUnits()
 	local items, order = GetCommonTargetUnits()
-	items["HOVERCAST"] = L["CFG_UI_ACTION_TARGET_UNIT_HOVERCAST"]
+	items["HOVERCAST"] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
 	table.insert(order, 5, "HOVERCAST")
 
 	return items, order
@@ -890,7 +890,7 @@ end
 
 local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		local widget = GUI:Label(L["CFG_UI_ACTION_RESTRICTED"] .. "\n")
+		local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] .. "\n")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -935,7 +935,7 @@ local function DrawTargetSelectionUnit(container, binding, index, target)
 	end
 
 	local items, order = GetCommonTargetUnits()
-	items["_DELETE_"] = L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"]
+	items["_DELETE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_REMOVE"]
 	table.insert(order, "_DELETE_")
 
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
@@ -964,7 +964,7 @@ local function DrawTargetSelectionNewUnit(container, binding)
 	end
 
 	local items, order = GetCommonTargetUnits()
-	items["_NONE_"] = L["CFG_UI_ACTION_TARGET_UNIT_NONE"]
+	items["_NONE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_NONE"]
 	table.insert(order, 1, "_NONE_")
 
 	local widget = GUI:Dropdown(nil, items, order, nil, { unit = "_NONE_" }, "unit")
@@ -976,9 +976,9 @@ end
 
 local function DrawTargetSelectionHostility(container, target)
 	local items = {
-		ANY = L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"],
-		HELP = L["CFG_UI_ACTION_TARGET_HOSTILITY_FRIEND"],
-		HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
+		ANY = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_ANY"],
+		HELP = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
+		HARM = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
 	}
 
 	local order = {
@@ -995,9 +995,9 @@ end
 
 local function DrawTargetSelectionVitals(container, target)
 	local items = {
-		ANY = L["CFG_UI_ACTION_TARGET_VITALS_ANY"],
-		ALIVE = L["CFG_UI_ACTION_TARGET_VITALS_ALIVE"],
-		DEAD = L["CFG_UI_ACTION_TARGET_VITALS_DEAD"]
+		ANY = L["BINDING_UI_PAGE_TARGETS_VITALS_ANY"],
+		ALIVE = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
+		DEAD = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
 	}
 
 	local order = {
@@ -1039,7 +1039,7 @@ local function DrawBindingTargetPage(container, binding)
 			return false
 		end
 
-		local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT"])
+		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"])
 		container:AddChild(group)
 
 		DrawTargetSelectionPrimaryUnit(group, binding, binding.primaryTarget)
@@ -1056,7 +1056,7 @@ local function DrawBindingTargetPage(container, binding)
 	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
 		-- secondary targets
 		for index, target in ipairs(binding.secondaryTargets) do
-			local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, binding, index, target)
@@ -1085,7 +1085,7 @@ local function DrawBindingTargetPage(container, binding)
 			end
 
 			if Clicked:CanUnitHaveFollowUp(last.unit) then
-				local group = GUI:InlineGroup(L["CFG_UI_ACTION_TARGET_UNIT_EXTRA"])
+				local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
 				container:AddChild(group)
 
 				DrawTargetSelectionNewUnit(group, binding)
@@ -1099,7 +1099,7 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = GUI:CheckBox(L["CFG_UI_LOAD_NEVER"] , load, "never")
+		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_NEVER"] , load, "never")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -1119,7 +1119,7 @@ local function DrawLoadSpecialization(container, specialization)
 		})
 	end
 
-	DrawTristateLoadOption(container, L["CFG_UI_LOAD_SPECIALIZATION"], options, specialization)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], options, specialization)
 end
 
 local function DrawLoadTalent(container, talent)
@@ -1137,7 +1137,7 @@ local function DrawLoadTalent(container, talent)
 		end
 	end
 
-	DrawTristateLoadOption(container, L["CFG_UI_LOAD_TALENT"], options, talent)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_TALENT"], options, talent)
 end
 
 local function DrawLoadPvPTalent(container, talent)
@@ -1169,14 +1169,14 @@ local function DrawLoadPvPTalent(container, talent)
 	CreateFromSlotInfo(2, false)
 
 	if next(options) then
-		DrawTristateLoadOption(container, L["CFG_UI_LOAD_PVP_TALENT"], options, talent)
+		DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PVP_TALENT"], options, talent)
 	end
 end
 
 local function DrawLoadWarMode(container, warMode)
 	local items = {
-		IN_WAR_MODE = L["CFG_UI_LOAD_WAR_MODE_TRUE"],
-		NOT_IN_WAR_MODE = L["CFG_UI_LOAD_WAR_MODE_FALSE"]
+		IN_WAR_MODE = L["BINDING_UI_PAGE_LOAD_OPTIONS_WAR_MODE_TRUE"],
+		NOT_IN_WAR_MODE = L["BINDING_UI_PAGE_LOAD_OPTIONS_WAR_MODE_FALSE"]
 	}
 
 	local order = {
@@ -1184,13 +1184,13 @@ local function DrawLoadWarMode(container, warMode)
 		"NOT_IN_WAR_MODE"
 	}
 
-	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_WAR_MODE"], items, order, warMode)
+	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_WAR_MODE"], items, order, warMode)
 end
 
 local function DrawLoadCombat(container, combat)
 	local items = {
-		IN_COMBAT = L["CFG_UI_LOAD_COMBAT_TRUE"],
-		NOT_IN_COMBAT = L["CFG_UI_LOAD_COMBAT_FALSE"]
+		IN_COMBAT = L["BINDING_UI_PAGE_LOAD_OPTIONS_COMBAT_TRUE"],
+		NOT_IN_COMBAT = L["BINDING_UI_PAGE_LOAD_OPTIONS_COMBAT_FALSE"]
 	}
 
 	local order = {
@@ -1198,19 +1198,19 @@ local function DrawLoadCombat(container, combat)
 		"NOT_IN_COMBAT"
 	}
 
-	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_COMBAT"], items, order, combat)
+	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_COMBAT"], items, order, combat)
 end
 
 local function DrawLoadSpellKnown(container, spellKnown)
-	DrawEditFieldLoadOption(container, L["CFG_UI_LOAD_SPELL_KNOWN"], spellKnown)
+	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPELL_KNOWN"], spellKnown)
 end
 
 local function DrawLoadInGroup(container, inGroup)
 	local items = {
-		IN_GROUP_PARTY_OR_RAID = L["CFG_UI_LOAD_IN_GROUP_PARTY_OR_RAID"],
-		IN_GROUP_PARTY = L["CFG_UI_LOAD_IN_GROUP_PARTY"],
-		IN_GROUP_RAID = L["CFG_UI_LOAD_IN_GROUP_RAID"],
-		IN_GROUP_SOLO = L["CFG_UI_LOAD_IN_GROUP_SOLO"]
+		IN_GROUP_PARTY_OR_RAID = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_PARTY_OR_RAID"],
+		IN_GROUP_PARTY = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_PARTY"],
+		IN_GROUP_RAID = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_RAID"],
+		IN_GROUP_SOLO = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_SOLO"]
 	}
 
 	local order = {
@@ -1220,11 +1220,11 @@ local function DrawLoadInGroup(container, inGroup)
 		"IN_GROUP_SOLO"
 	}
 
-	DrawDropdownLoadOption(container, L["CFG_UI_LOAD_IN_GROUP"], items, order, inGroup)
+	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_IN_GROUP"], items, order, inGroup)
 end
 
 local function DrawLoadPlayerInGroup(container, playerInGroup)
-	DrawEditFieldLoadOption(container, L["CFG_UI_LOAD_PLAYER_IN_GROUP"], playerInGroup)
+	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_IN_GROUP"], playerInGroup)
 end
 
 local function DrawLoadInStance(container, stance)
@@ -1232,7 +1232,7 @@ local function DrawLoadInStance(container, stance)
 	local options = { }
 
 	table.insert(options, {
-		text = L["CFG_UI_LOAD_STANCE_NONE"],
+		text = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_NONE"],
 		icon = nil
 	})
 
@@ -1246,7 +1246,7 @@ local function DrawLoadInStance(container, stance)
 		})
 	end
 
-	DrawTristateLoadOption(container, L["CFG_UI_LOAD_STANCE"], options, stance)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_STANCE"], options, stance)
 end
 
 local function DrawBindingLoadOptionsPage(container, binding)
@@ -1316,15 +1316,15 @@ local function DrawBinding(container)
 
 		local items = {
 			{
-				text = L["CFG_UI_ACTION"],
+				text = L["BINDING_UI_PAGE_TITLE_ACTIONS"],
 				value = "action"
 			},
 			{
-				text = L["CFG_UI_TARGET"],
+				text = L["BINDING_UI_PAGE_TITLE_TARGETS"],
 				value = "target"
 			},
 			{
-				text = L["CFG_UI_LOAD"],
+				text = L["BINDING_UI_PAGE_TITLE_LOAD_OPTIONS"],
 				value = "load"
 			}
 		}
@@ -1368,7 +1368,7 @@ local function DrawHeader(container)
 
 		local function OnFocusLost(frame)
 			if searchTerm == nil or searchTerm == "" then
-				frame:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+				frame:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
 				isPlaceholderActive = true
 			end
 		end
@@ -1398,7 +1398,7 @@ local function DrawHeader(container)
 			end
 
 			searchTerm = ""
-			frame:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+			frame:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
 			module:Redraw()
 		end
 
@@ -1409,7 +1409,7 @@ local function DrawHeader(container)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 		widget:SetCallback("OnEscapePressed", OnEscapePressed)
 		widget:DisableButton(true)
-		widget:SetText(L["CFG_UI_BINDING_SEARCH_PLACEHOLDER"])
+		widget:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
 		widget:SetWidth(280)
 
 		line:AddChild(widget)
@@ -1426,7 +1426,7 @@ local function DrawHeader(container)
 			options.tree.container:SelectByValue(Clicked:GetNumConfiguredBindings())
 		end
 
-		local widget = GUI:Button(L["CFG_UI_BINDING_CREATE"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_CREATE"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1475,14 +1475,14 @@ local function DrawHeader(container)
 			if IsShiftKeyDown() then
 				OnConfirm(item)
 			else
-				local msg = L["CFG_UI_BINDING_DELETE_CONFIRM_LINE1"] .. "\n\n"
-				msg = msg .. L["CFG_UI_BINDING_DELETE_CONFIRM_LINE2"]:format(item.text2, item.text1)
+				local msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
+				msg = msg .. L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"]:format(item.text2, item.text1)
 
 				ShowConfirmationPopup(msg, OnConfirm, item)
 			end
 		end
 
-		local widget = GUI:Button(L["CFG_UI_BINDING_DELETE"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_DELETE"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1503,7 +1503,7 @@ local function DrawHeader(container)
 			options.refreshHeaderFunc()
 		end
 
-		local widget = GUI:Button(L["CFG_UI_BINDING_DUPLICATE"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_DUPLICATE"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1522,7 +1522,7 @@ local function DrawHeader(container)
 			options.refreshHeaderFunc()
 		end
 
-		local widget = GUI:Button(L["CFG_UI_BINDING_COPY"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_COPY"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1540,7 +1540,7 @@ local function DrawHeader(container)
 			Clicked:SetBindingAt(options.item.value, clone)
 		end
 
-		local widget = GUI:Button(L["CFG_UI_BINDING_PASTE"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_PASTE"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1606,7 +1606,7 @@ local function DrawTreeView(container)
 				if binding.type == Clicked.BindingTypes.MACRO then
 					if #data.displayName > 0 then
 						text = data.displayName .. "\n\n"
-						text = text .. L["CFG_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
+						text = text .. L["BINDING_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
 					else
 						text = "";
 					end
@@ -1621,8 +1621,8 @@ local function DrawTreeView(container)
 
 					local hostility = {
 						ANY = "",
-						HELP = L["CFG_UI_ACTION_TARGET_HOSTILITY_FRIEND"],
-						HARM = L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"]
+						HELP = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
+						HARM = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
 					}
 
 					local result = ""
@@ -1635,7 +1635,7 @@ local function DrawTreeView(container)
 					return result
 				end
 
-				text = text .. L["CFG_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
+				text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
 				text = text .. "|cFFFFFFFF1. " .. GetTargetLine(binding.primaryTarget)
 
 				for i, target in ipairs(binding.secondaryTargets) do
@@ -1645,9 +1645,9 @@ local function DrawTreeView(container)
 				text = text .. "|r\n\n"
 
 				if Clicked:IsBindingActive(binding) then
-					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
+					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
 				else
-					text = text .. L["CFG_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"]
+					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"]
 				end
 			end
 
@@ -1708,7 +1708,7 @@ local function RedrawBindingConfig()
 
 	ConstructTreeView()
 	options.tree.container:SetTree(options.tree.items)
-	options.root:SetStatusText(L["CFG_UI_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
+	options.root:SetStatusText(L["BINDING_UI_FRAME_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
 
 	local selected = GetSelectedItem(options.tree.status.selected, options.tree.items)
 
@@ -1741,7 +1741,7 @@ function Clicked:OpenBindingConfig()
 
 		local widget = AceGUI:Create("Frame")
 		widget:SetCallback("OnClose", OnClose)
-		widget:SetTitle(L["CFG_UI_TITLE"])
+		widget:SetTitle(L["BINDING_UI_FRAME_TITLE"])
 		widget:SetLayout("Flow")
 		widget:SetWidth(800)
 		widget:SetHeight(600)

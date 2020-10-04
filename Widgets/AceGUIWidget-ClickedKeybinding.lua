@@ -101,7 +101,7 @@ local function Constructor()
 
 	local msgframe = keybinding.msgframe
 	local msg = msgframe.msg
-	msg:SetText(L["CFG_UI_BINDING_SET_TOOLTIP"])
+	msg:SetText(L["BINDING_UI_TOOLTIP_SET_KEYBIND"])
 
 	return keybinding
 end
