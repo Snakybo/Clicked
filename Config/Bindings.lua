@@ -993,11 +993,11 @@ local function DrawTargetSelectionHostility(container, target)
 	container:AddChild(widget)
 end
 
-local function DrawTargetSelectionStatus(container, target)
+local function DrawTargetSelectionVitals(container, target)
 	local items = {
-		ANY = L["CFG_UI_ACTION_TARGET_STATUS_ANY"],
-		ALIVE = L["CFG_UI_ACTION_TARGET_STATUS_ALIVE"],
-		DEAD = L["CFG_UI_ACTION_TARGET_STATUS_DEAD"]
+		ANY = L["CFG_UI_ACTION_TARGET_VITALS_ANY"],
+		ALIVE = L["CFG_UI_ACTION_TARGET_VITALS_ALIVE"],
+		DEAD = L["CFG_UI_ACTION_TARGET_VITALS_DEAD"]
 	}
 
 	local order = {
@@ -1006,7 +1006,7 @@ local function DrawTargetSelectionStatus(container, target)
 		"DEAD"
 	}
 
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "status")
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "vitals")
 	widget:SetFullWidth(true)
 
 	container:AddChild(widget)
@@ -1049,7 +1049,7 @@ local function DrawBindingTargetPage(container, binding)
 		end
 
 		if Clicked:CanUnitBeDead(binding.primaryTarget.unit) then
-			DrawTargetSelectionStatus(group, binding.primaryTarget)
+			DrawTargetSelectionVitals(group, binding.primaryTarget)
 		end
 	end
 
@@ -1066,7 +1066,7 @@ local function DrawBindingTargetPage(container, binding)
 			end
 
 			if Clicked:CanUnitBeDead(target.unit) then
-				DrawTargetSelectionStatus(group, target)
+				DrawTargetSelectionVitals(group, target)
 			end
 
 			if not Clicked:CanUnitHaveFollowUp(target.unit) then

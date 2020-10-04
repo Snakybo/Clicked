@@ -114,12 +114,12 @@ L["CFG_UI_ACTION_TARGET_UNIT_NONE"] = "<No one>"
 L["CFG_UI_ACTION_TARGET_UNIT_REMOVE"] = "<Remove this option>"
 
 -- Used for target hostility filters (dynamic prioritization)
-L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"] = "Either friendly or hostile"
+L["CFG_UI_ACTION_TARGET_HOSTILITY_ANY"] = "Friendly, Hostile"
 L["CFG_UI_ACTION_TARGET_HOSTILITY_FRIEND"] = "Friendly"
 L["CFG_UI_ACTION_TARGET_HOSTILITY_HARM"] = "Hostile"
-L["CFG_UI_ACTION_TARGET_STATUS_ANY"] = "Either dead or alive"
-L["CFG_UI_ACTION_TARGET_STATUS_ALIVE"] = "Alive"
-L["CFG_UI_ACTION_TARGET_STATUS_DEAD"] = "Dead"
+L["CFG_UI_ACTION_TARGET_VITALS_ANY"] = "Alive, Dead"
+L["CFG_UI_ACTION_TARGET_VITALS_ALIVE"] = "Alive"
+L["CFG_UI_ACTION_TARGET_VITALS_DEAD"] = "Dead"
 
 -- Load items are used on the binding load options page
 

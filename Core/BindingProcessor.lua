@@ -34,7 +34,7 @@ Clicked.TargetHostility = {
 	HARM = "HARM"
 }
 
-Clicked.TargetStatus = {
+Clicked.TargetVitals = {
 	ANY = "ANY",
 	ALIVE = "ALIVE",
 	DEAD = "DEAD"
@@ -105,9 +105,9 @@ local function GetMacroSegmentFromAction(action)
 	end
 
 	if Clicked:CanUnitBeDead(action.unit) then
-		if action.status == Clicked.TargetStatus.ALIVE then
+		if action.vitals == Clicked.TargetVitals.ALIVE then
 			table.insert(flags, "nodead")
-		elseif action.status == Clicked.TargetStatus.DEAD then
+		elseif action.vitals == Clicked.TargetVitals.DEAD then
 			table.insert(flags, "dead")
 		end
 	end
@@ -170,8 +170,17 @@ local function ConstructAction(binding, target)
 		action.unit = target.unit
 	end
 
-	action.hostility = target.hostility
-	action.status = target.status
+	if target.hostility ~= Clicked.TargetHostility.ANY then
+		action.hostility = target.hostility
+	else
+		action.hostility = ""
+	end
+
+	if target.vitals ~= Clicked.TargetVitals.ANY then
+		action.vitals = target.vitals
+	else
+		action.vitals = ""
+	end
 
 	return action
 end
@@ -196,6 +205,8 @@ local function ConstructActions(binding)
 end
 
 local function SortActions(left, right)
+	-- combat modifier
+	-- actions with a combat flag go in front of actions without a combat flag
 	if #left.combat > 0 and #right.combat == 0 then
 		return true
 	end
@@ -204,6 +215,8 @@ local function SortActions(left, right)
 		return false
 	end
 
+	-- stance modifier
+	-- actions with a stance flag go in front of actions without a stance flag
 	if #left.stance > 0 and #right.stance == 0 then
 		return true
 	end
@@ -212,14 +225,8 @@ local function SortActions(left, right)
 		return false
 	end
 
-	if left.unit ~= nil and right.unit == nil then
-		return true
-	end
-
-	if left.unit == nil and right.unit ~= nil then
-		return false
-	end
-
+	-- mouseover unit
+	-- actions that target the @mouseover target go in front of actions that don't
 	if left.unit == Clicked.TargetUnits.MOUSEOVER and right.unit ~= Clicked.TargetUnits.MOUSEOVER then
 		return true
 	end
@@ -228,6 +235,8 @@ local function SortActions(left, right)
 		return false
 	end
 
+	-- player unit
+	-- actions that target the @player go after actions that don't (player goes last)
 	if left.unit == Clicked.TargetUnits.PLAYER and right.unit ~= Clicked.TargetUnits.PLAYER then
 		return false
 	end
@@ -236,19 +245,33 @@ local function SortActions(left, right)
 		return true
 	end
 
-	if left.hostility ~= nil and right.hostility == nil then
-		return true
-	end
-
-	if left.hostility == nil and right.hostility ~= nil then
+	-- global unit
+	-- actions that don't have a target flag go after actions that do (global actions go last)
+	if left.unit == Clicked.TargetUnits.GLOBAL and right.unit ~= Clicked.TargetUnits.GLOBAL then
 		return false
 	end
 
-	if left.hostility ~= Clicked.TargetHostility.ANY and right.hostility == Clicked.TargetHostility.ANY then
+	if left.unit ~= Clicked.TargetUnits.GLOBAL and right.unit == Clicked.TargetUnits.GLOBAL then
 		return true
 	end
 
-	if left.hostility == Clicked.TargetHostility.ANY and right.hostility ~= Clicked.TargetHostility.ANY then
+	-- hostility modifier
+	-- actions that have a hostility modifier flag (help, harm) go in front of actions without
+	if #left.hostility > 0 and #right.hostility == 0 then
+		return true
+	end
+
+	if #left.hostility == 0 and #right.hostility > 0 then
+		return false
+	end
+
+	-- vitals modifier
+	-- actions that have a vitals modifier flag (dead, nodead) go in front of actions without
+	if #left.vitals > 0 and #right.vitals == 0 then
+		return true
+	end
+
+	if #left.vitals == 0 and #right.vitals > 0 then
 		return false
 	end
 
