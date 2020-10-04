@@ -227,7 +227,7 @@ local function CanBindingTargetUnitChange(binding)
 		return false
 	end
 
-	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM
+	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM or binding.type == Clicked.BindingTypes.MACRO
 end
 
 local function DeepCopy(original)
@@ -702,7 +702,7 @@ local function DrawItemSelection(container, action)
 	end
 end
 
-local function DrawMacroSelection(container, keybind, action)
+local function DrawMacroSelection(container, binding, keybind, action)
 	-- macro name and icon
 	do
 		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_MACRO_NAME_ICON"])
@@ -741,7 +741,7 @@ local function DrawMacroSelection(container, keybind, action)
 		container:AddChild(group)
 
 		-- help text
-		if Clicked:IsRestrictedKeybind(keybind) then
+		if binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
 			local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
@@ -840,7 +840,7 @@ local function DrawBindingActionPage(container, binding)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		DrawItemSelection(container, data)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding.keybind, data)
+		DrawMacroSelection(container, binding, binding.keybind, data)
 	end
 end
 
@@ -880,12 +880,26 @@ local function GetCommonTargetUnits()
 	return items, order
 end
 
-local function GetPrimaryTargetUnits()
-	local items, order = GetCommonTargetUnits()
-	items["HOVERCAST"] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
-	table.insert(order, 5, "HOVERCAST")
+local function GetPrimaryTargetUnits(type)
+	if type == Clicked.BindingTypes.MACRO then
+		local items = {
+			GLOBAL = L["BINDING_UI_PAGE_TARGETS_UNIT_GLOBAL"],
+			HOVERCAST = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
+		}
 
-	return items, order
+		local order = {
+			"GLOBAL",
+			"HOVERCAST"
+		}
+
+		return items, order
+	else
+		local items, order = GetCommonTargetUnits()
+		items["HOVERCAST"] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
+		table.insert(order, 5, "HOVERCAST")
+
+		return items, order
+	end
 end
 
 local function DrawTargetSelectionPrimaryUnit(container, binding, target)
@@ -896,7 +910,7 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		container:AddChild(widget)
 	end
 
-	local items, order = GetPrimaryTargetUnits()
+	local items, order = GetPrimaryTargetUnits(binding.type)
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
