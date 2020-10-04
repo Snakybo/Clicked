@@ -79,10 +79,6 @@ function Clicked:CanUnitBeHostile(unit)
 end
 
 function Clicked:CanUnitBeDead(unit)
-	if unit == Clicked.TargetUnits.PLAYER then
-		return true
-	end
-
 	if unit == Clicked.TargetUnits.TARGET then
 		return true
 	end
