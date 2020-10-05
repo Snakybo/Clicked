@@ -855,6 +855,8 @@ local function GetCommonTargetUnits()
 		MOUSEOVER = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
 		FOCUS = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
 		CURSOR = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
+		PET = L["BINDING_UI_PAGE_TARGETS_UNIT_PET"],
+		PET_TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_PET_TARGET"],
 		PARTY_1 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("1"),
 		PARTY_2 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("2"),
 		PARTY_3 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("3"),
@@ -870,6 +872,8 @@ local function GetCommonTargetUnits()
 		"MOUSEOVER",
 		"FOCUS",
 		"CURSOR",
+		"PET",
+		"PET_TARGET",
 		"PARTY_1",
 		"PARTY_2",
 		"PARTY_3",
@@ -1263,6 +1267,20 @@ local function DrawLoadInStance(container, stance)
 	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_STANCE"], options, stance)
 end
 
+local function DrawLoadPet(container, pet)
+	local items = {
+		ACTIVE = L["BINDING_UI_PAGE_LOAD_OPTIONS_PET_ACTIVE"],
+		INACTIVE = L["BINDING_UI_PAGE_LOAD_OPTIONS_PET_INACTIVE"],
+	}
+
+	local order = {
+		"ACTIVE",
+		"INACTIVE"
+	}
+
+	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PET"], items, order, pet)
+end
+
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
@@ -1279,6 +1297,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)
+	DrawLoadPet(container, load.pet)
 
 	if GetNumShapeshiftForms() > 0 then
 		DrawLoadInStance(container, load.stance)

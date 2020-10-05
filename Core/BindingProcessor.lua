@@ -17,6 +17,8 @@ Clicked.TargetUnits = {
 	GLOBAL = "GLOBAL",
 	TARGET = "TARGET",
 	TARGET_OF_TARGET = "TARGET_OF_TARGET",
+	PET = "PET",
+	PET_TARGET = "PET_TARGET",
 	PARTY_1 = "PARTY_1",
 	PARTY_2 = "PARTY_2",
 	PARTY_3 = "PARTY_3",
@@ -63,6 +65,11 @@ Clicked.GroupState = {
 	SOLO = "IN_GROUP_SOLO"
 }
 
+Clicked.PetState = {
+	ACTIVE = "ACTIVE",
+	INACTIVE = "INACTIVE"
+}
+
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
@@ -80,6 +87,10 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "@targettarget")
 	elseif action.unit == Clicked.TargetUnits.MOUSEOVER or action.unit == Clicked.TargetUnits.HOVERCAST then
 		table.insert(flags, "@mouseover")
+	elseif action.unit == Clicked.TargetUnits.PET then
+		table.insert(flags, "@pet")
+	elseif action.unit == Clicked.TargetUnits.PET_TARGET then
+		table.insert(flags, "@pettarget")
 	elseif action.unit == Clicked.TargetUnits.PARTY_1 then
 		table.insert(flags, "@party1")
 	elseif action.unit == Clicked.TargetUnits.PARTY_2 then
@@ -112,6 +123,12 @@ local function GetMacroSegmentFromAction(action)
 		end
 	end
 
+	if action.pet == Clicked.PetState.ACTIVE then
+		table.insert(flags, "pet")
+	elseif action.pet == Clicked.PetState.INACTIVE then
+		table.insert(flags, "nopet")
+	end
+
 	if Clicked:CanUnitHaveFollowUp(action.unit) then
 		table.insert(flags, "exists")
 	end
@@ -142,6 +159,16 @@ local function ConstructAction(binding, target)
 			action.combat = combat.value
 		else
 			action.combat = ""
+		end
+	end
+
+	do
+		local pet = binding.load.pet
+
+		if pet.selected then
+			action.pet = pet.value
+		else
+			action.pet = ""
 		end
 	end
 
@@ -560,7 +587,7 @@ function Clicked:IsBindingActive(binding)
 		end
 	end
 
-	-- Stances are a bit unique as a load option as they don't actually
+	-- Stances and pets are a bit unique as a load option as they don't actually
 	-- unload the binding, which may be confusing listed as "loaded" in the
 	-- configuration UI whilst the player is not in the specified stance.
 	-- This will ensure that the UI dynamically updates based on the current
@@ -568,58 +595,73 @@ function Clicked:IsBindingActive(binding)
 
 	do
 		local load = binding.load
-		local stance = load.stance
 
-		if stance.selected == 1 then
-			local id = stance.single - 1
+		do
+			local stance = load.stance
 
-			if id == 0 then
-				for i = 1, GetNumShapeshiftForms() do
-					local _, active = GetShapeshiftFormInfo(i)
+			if stance.selected == 1 then
+				local id = stance.single - 1
 
-					if active then
+				if id == 0 then
+					for i = 1, GetNumShapeshiftForms() do
+						local _, active = GetShapeshiftFormInfo(i)
+
+						if active then
+							result = false
+						end
+					end
+				else
+					local _, active = GetShapeshiftFormInfo(id)
+
+					if not active then
 						result = false
 					end
 				end
-			else
-				local _, active = GetShapeshiftFormInfo(id)
+			elseif stance.selected == 2 then
+				local anyValid = false
 
-				if not active then
+				for i = 1, #stance.multiple do
+					local id = stance.multiple[i] - 1
+
+					if id == 0 then
+						local isInStance = false
+
+						for j = 1, GetNumShapeshiftForms() do
+							local _, active = GetShapeshiftFormInfo(j)
+
+							if active then
+								isInStance = true
+							end
+						end
+
+						if not isInStance then
+							anyValid = true
+						end
+					else
+						local _, _, active = GetShapeshiftFormInfo(id)
+
+						if not active then
+							anyValid = true
+							break
+						end
+					end
+				end
+
+				if not anyValid then
 					result = false
 				end
 			end
-		elseif stance.selected == 2 then
-			local anyValid = false
+		end
 
-			for i = 1, #stance.multiple do
-				local id = stance.multiple[i] - 1
+		do
+			local pet = load.pet
 
-				if id == 0 then
-					local isInStance = false
-
-					for j = 1, GetNumShapeshiftForms() do
-						local _, active = GetShapeshiftFormInfo(j)
-
-						if active then
-							isInStance = true
-						end
-					end
-
-					if not isInStance then
-						anyValid = true
-					end
-				else
-					local _, _, active = GetShapeshiftFormInfo(id)
-
-					if not active then
-						anyValid = true
-						break
-					end
+			if pet.selected then
+				if pet.value == Clicked.PetState.ACTIVE and not UnitIsVisible("pet") then
+					result = false
+				elseif pet.value == Clicked.PetState.INACTIVE and UnitIsVisible("pet") then
+					result = false
 				end
-			end
-
-			if not anyValid then
-				result = false
 			end
 		end
 	end

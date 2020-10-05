@@ -88,6 +88,7 @@ read_globals = {
 	"SPELLS_PER_PAGE",
 	"UIParent",
 	"UnitClass",
+	"UnitIsVisible",
 	"UnitLevel",
 	"UnitName",
 	"UnitRace",

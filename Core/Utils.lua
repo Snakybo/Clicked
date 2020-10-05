@@ -75,6 +75,10 @@ function Clicked:CanUnitBeHostile(unit)
 		return true
 	end
 
+	if unit == Clicked.TargetUnits.PET_TARGET then
+		return true
+	end
+
 	return false
 end
 
@@ -116,6 +120,14 @@ function Clicked:CanUnitBeDead(unit)
 	end
 
 	if unit == Clicked.TargetUnits.HOVERCAST then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PET then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.PET_TARGET then
 		return true
 	end
 

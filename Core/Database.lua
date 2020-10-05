@@ -73,7 +73,8 @@ function Clicked:GetNewBindingTemplate()
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
 			playerInGroup = GetLoadOptionTemplate(""),
-			stance = GetTriStateLoadOptionTemplate(1)
+			stance = GetTriStateLoadOptionTemplate(1),
+			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE)
 		}
 	}
 
@@ -256,6 +257,11 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 			binding.load.playerInGroup.value = binding.load.playerInGroup.player
 			binding.load.playerInGroup.player = nil
+
+			binding.load.pet = {
+				selected = false,
+				value = "ACTIVE"
+			}
 
 			if not self:IsClassic() then
 				binding.load.pvpTalent = {
