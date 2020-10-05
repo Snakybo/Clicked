@@ -64,6 +64,11 @@ local function OnLeavingCombat()
 	Clicked:ReloadActiveBindings()
 end
 
+local function OnPlayerEnteringWorld()
+	isInitialized = true
+	Clicked:ReloadActiveBindings()
+end
+
 local function OnAddonLoaded()
 	Clicked:ProcessFrameQueue()
 end
@@ -98,6 +103,8 @@ function Clicked:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", ReloadDatabase)
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadDatabase)
 
+	Clicked:UpgradeDatabaseProfile(Clicked.db.profile)
+
 	RegisterMinimapIcon()
 
 	self:RegisterClickCastHeader()
@@ -115,6 +122,7 @@ end
 function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", OnEnteringCombat)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", OnLeavingCombat)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", OnPlayerEnteringWorld)
 
 	if not self:IsClassic() then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
@@ -123,7 +131,6 @@ function Clicked:OnEnable()
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "ReloadActiveBindings")
 	end
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ReloadActiveBindings")
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "ReloadActiveBindings")
@@ -136,13 +143,13 @@ function Clicked:OnEnable()
 		end
 	end
 
-	isInitialized = true
 	self:ProcessFrameQueue()
 end
 
 function Clicked:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	if not self:IsClassic() then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
@@ -151,7 +158,6 @@ function Clicked:OnDisable()
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 	end
 
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
