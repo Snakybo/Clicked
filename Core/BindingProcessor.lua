@@ -13,8 +13,8 @@ Clicked.CommandType = {
 }
 
 Clicked.TargetUnits = {
+	DEFAULT = "DEFAULT",
 	PLAYER = "PLAYER",
-	GLOBAL = "GLOBAL",
 	TARGET = "TARGET",
 	TARGET_OF_TARGET = "TARGET_OF_TARGET",
 	PET = "PET",
@@ -215,7 +215,7 @@ end
 local function ConstructActions(binding)
 	local actions = {}
 
-	-- The primary target is a bit special, it can contain the GLOBAL or HOVERCAST target
+	-- The primary target is a bit special, it can contain the DEFAULT or HOVERCAST target
 	-- (as those cannot have predecessors or successors), additionally if the binding is
 	-- using a restricted keybind, we're treating it as HOVERCAST internally.
 
@@ -272,13 +272,13 @@ local function SortActions(left, right)
 		return true
 	end
 
-	-- global unit
-	-- actions that don't have a target flag go after actions that do (global actions go last)
-	if left.unit == Clicked.TargetUnits.GLOBAL and right.unit ~= Clicked.TargetUnits.GLOBAL then
+	-- default unit
+	-- actions that don't have a target flag go after actions that do (default actions go last)
+	if left.unit == Clicked.TargetUnits.DEFAULT and right.unit ~= Clicked.TargetUnits.DEFAULT then
 		return false
 	end
 
-	if left.unit ~= Clicked.TargetUnits.GLOBAL and right.unit == Clicked.TargetUnits.GLOBAL then
+	if left.unit ~= Clicked.TargetUnits.DEFAULT and right.unit == Clicked.TargetUnits.DEFAULT then
 		return true
 	end
 

@@ -242,7 +242,15 @@ function Clicked:UpgradeDatabaseProfile(profile)
 		for _, binding in ipairs(profile.bindings) do
 			binding.primaryTarget.vitals = "ANY"
 
+			if binding.primaryTarget.unit == "GLOBAL" then
+				binding.primaryTarget.unit = "DEFAULT"
+			end
+
 			for _, target in ipairs(binding.secondaryTargets) do
+				if target.unit == "GLOBAL" then
+					target.unit = "DEFAULT"
+				end
+
 				target.vitals = "ANY"
 			end
 

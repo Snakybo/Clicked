@@ -152,7 +152,7 @@ function Clicked:CanUnitHaveFollowUp(unit)
 		return false
 	end
 
-	if unit == Clicked.TargetUnits.GLOBAL then
+	if unit == Clicked.TargetUnits.DEFAULT then
 		return false
 	end
 

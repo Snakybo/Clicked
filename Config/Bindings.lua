@@ -265,7 +265,7 @@ local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	end
 
 	if type == Clicked.BindingTypes.MACRO then
-		return Clicked.TargetUnits.GLOBAL
+		return Clicked.TargetUnits.DEFAULT
 	end
 
 	return unit
@@ -872,8 +872,8 @@ end
 
 local function GetCommonTargetUnits()
 	local items = {
+		DEFAULT = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
 		PLAYER = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
-		GLOBAL = L["BINDING_UI_PAGE_TARGETS_UNIT_GLOBAL"],
 		TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
 		TARGET_OF_TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
 		MOUSEOVER = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
@@ -889,8 +889,8 @@ local function GetCommonTargetUnits()
 	}
 
 	local order = {
+		"DEFAULT",
 		"PLAYER",
-		"GLOBAL",
 		"TARGET",
 		"TARGET_OF_TARGET",
 		"MOUSEOVER",
@@ -911,12 +911,12 @@ end
 local function GetPrimaryTargetUnits(type)
 	if type == Clicked.BindingTypes.MACRO then
 		local items = {
-			GLOBAL = L["BINDING_UI_PAGE_TARGETS_UNIT_GLOBAL"],
+			DEFAULT = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
 			HOVERCAST = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
 		}
 
 		local order = {
-			"GLOBAL",
+			"DEFAULT",
 			"HOVERCAST"
 		}
 
