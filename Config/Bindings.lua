@@ -14,12 +14,15 @@ local KEYBIND_ORDER_LIST = {
 }
 
 local spellbookButtons = {}
+local spellFlyOutButtons = {}
+
 local options = {}
 local module
 
 -- reset on close
 local bindingCopyBuffer
 local searchTerm
+local didOpenSpellbook
 
 -- Utility functions
 
@@ -300,134 +303,153 @@ end
 
 -- Spell book integration
 
-local function OverrideSpellBookVisuals(button)
-	if not spellbookButtons.enabled then
+local function OnSpellBookButtonClick(name)
+	if options.item == nil or name == nil or InCombatLockdown() then
 		return
 	end
 
-	local name = button:GetName();
+	local binding = options.item.binding
+	local data = Clicked:GetActiveBindingAction(binding)
 
-	if name == nil then
-		return
-	end
-
-	if button.SpellHighlightTexture ~= nil then
-		button.SpellHighlightTexture:Hide()
-	end
-
-	if _G[name.."AutoCastable"] ~= nil then
-		_G[name.."AutoCastable"]:Hide();
+	if binding.type == Clicked.BindingTypes.SPELL then
+		data.value = name
+		HideUIPanel(SpellBookFrame)
+		Clicked:ReloadActiveBindings()
 	end
 end
 
-local function EnableSpellbookHandlers()
-	if options.root == nil or not options.root:IsVisible() then
-		return
-	end
-
-	if spellbookButtons.enabled then
-		return
-	end
-
-	spellbookButtons.enabled = true
-
-	ShowUIPanel(SpellBookFrame)
-
-	for i = 1, SPELLS_PER_PAGE do
-		local button = spellbookButtons[i]
-		local parent = button:GetParent()
-
-		if parent:IsEnabled() then
-			button:Show()
-			OverrideSpellBookVisuals(parent)
-		end
-	end
-end
-
-local function DisableSpellbookHandlers()
-	if not spellbookButtons.enabled then
-		return
-	end
-
-	spellbookButtons.enabled = false
-
-	for i = 1, SPELLS_PER_PAGE do
-		local button = spellbookButtons[i]
-		local parent = button:GetParent()
-
-		if parent:IsEnabled() then
-			SpellButton_UpdateButton(parent)
-			button:Hide()
-		end
-	end
-
-	HideUIPanel(SpellBookFrame)
-	GameTooltip:Hide()
-end
-
-local function CreateSpellbookHandlers()
-	if #spellbookButtons > 0 then
-		return
+local function HijackSpellBookButtons(base)
+	if didOpenSpellbook and not SpellBookFrame:IsShown() then
+		GameTooltip:Hide()
+		didOpenSpellbook = false
 	end
 
 	for i = 1, SPELLS_PER_PAGE do
 		local parent = _G["SpellButton" .. i]
-		local button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
+		local button = spellbookButtons[i]
+		local shouldUpdate = base == nil or base == parent
 
-		button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-		button:SetID(parent:GetID())
+		if button == nil then
+			button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
 
-		button:SetScript("OnEnter", function(self, motion)
-			if parent:IsEnabled() then
+			button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+			button:SetID(parent:GetID())
+
+			button:SetScript("OnEnter", function(self, motion)
 				SpellButton_OnEnter(parent, motion)
-			end
-		end)
+			end)
 
-		button:SetScript("OnLeave", function(self)
-			if parent:IsEnabled() then
+			button:SetScript("OnLeave", function(self)
 				SpellButton_OnLeave(parent)
-			end
-		end)
+			end)
 
-		button:SetScript("OnClick", function(self)
-			if parent:IsEnabled() and not parent.isPassive then
-				local slot = SpellBook_GetSpellBookSlot(parent)
+			button:SetScript("OnClick", function(self, btn)
+				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+				OnSpellBookButtonClick(name)
+			end)
 
-				if not InCombatLockdown() and options.item ~= nil and name ~= nil then
-					local binding = options.item.binding
-					local data = Clicked:GetActiveBindingAction(binding)
+			-- Respect ElvUI skinning
+			if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
+				local E = ElvUI[1]
 
-					if binding.type == Clicked.BindingTypes.SPELL then
-						data.value = name
-						HideUIPanel(SpellBookFrame)
-						Clicked:ReloadActiveBindings()
+				if E and E.private and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
+					button:StripTextures()
+
+					if E.private.skins.parchmentRemoverEnable then
+						button:SetHighlightTexture("")
+					else
+						button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.3)
 					end
 				end
 			end
-		end)
 
-		-- Respect ElvUI skinning
-		if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
-			local E = ElvUI[1]
-
-			if E and E.private and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
-				button:StripTextures()
-
-				if E.private.skins.parchmentRemoverEnable then
-					button:SetHighlightTexture("")
-				else
-					button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.3)
-				end
-			end
+			spellbookButtons[i] = button
 		end
 
-		spellbookButtons[i] = button
+		if shouldUpdate then
+			local slot, slotType = SpellBook_GetSpellBookSlot(parent);
+
+			local canShow = true
+			canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
+			canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
+			canShow = canShow and didOpenSpellbook
+			canShow = canShow and options.root ~= nil and options.root:IsVisible()
+			canShow = canShow and SpellBookFrame:IsShown()
+			canShow = canShow and parent:IsEnabled()
+			canShow = canShow and not parent.isPassive
+
+			if canShow then
+				button:Show()
+
+				local name = parent:GetName();
+
+				if name ~= nil then
+					if parent.SpellHighlightTexture ~= nil then
+						parent.SpellHighlightTexture:Hide()
+					end
+
+					if _G[name.."AutoCastable"] ~= nil then
+						_G[name.."AutoCastable"]:Hide();
+					end
+				end
+			else
+				button:Hide()
+			end
+		end
+	end
+end
+
+local function HijackSpellBookFlyoutButtons()
+	if options.root == nil or not options.root:IsVisible() then
+		return
 	end
 
-	SpellBookFrame:HookScript("OnHide", DisableSpellbookHandlers)
+	if SpellBookFrame:IsShown() and SpellFlyout:IsShown() then
+		local id = 1
+		local flyoutButton = _G["SpellFlyoutButton" .. id]
 
-	hooksecurefunc("SpellButton_UpdateButton", OverrideSpellBookVisuals)
+		while flyoutButton ~= nil do
+			local parent = flyoutButton
+			local button = spellFlyOutButtons[id]
+
+			if button == nil then
+				button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
+
+				button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+				button:SetID(parent:GetID())
+
+				button:SetScript("OnEnter", function(self, motion)
+					SpellFlyoutButton_SetTooltip(parent);
+				end)
+
+				button:SetScript("OnLeave", function(self)
+					GameTooltip:Hide();
+				end)
+
+				button:SetScript("OnClick", function(self)
+					local name = GetSpellInfo(parent.spellID);
+					OnSpellBookButtonClick(name)
+				end)
+
+				spellFlyOutButtons[id] = button
+			end
+
+			if parent:IsEnabled() then
+				button:Show()
+			else
+				button:Hide()
+			end
+
+			id = id + 1
+			flyoutButton = _G["SpellFlyoutButton" .. id]
+		end
+	else
+		for i = 1, #spellFlyOutButtons do
+			local button = spellFlyOutButtons[i]
+			button:Hide()
+		end
+	end
 end
 
 -- Common draw functions
@@ -603,8 +625,8 @@ local function DrawSpellSelection(container, action)
 		do
 			local function OnClick()
 				if not InCombatLockdown() then
-					CreateSpellbookHandlers()
-					EnableSpellbookHandlers()
+					didOpenSpellbook = true
+					ShowUIPanel(SpellBookFrame)
 				end
 			end
 
@@ -1766,7 +1788,10 @@ function Clicked:OpenBindingConfig()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
-			DisableSpellbookHandlers()
+
+			if didOpenSpellbook then
+				HideUIPanel(SpellBookFrame)
+			end
 
 			searchTerm = ""
 			bindingCopyBuffer = nil
@@ -1800,7 +1825,16 @@ function Clicked:OpenBindingConfig()
 end
 
 module = {
-	--["Initialize"] = nil,
+	["Initialize"] = function(self)
+		SpellBookFrame:HookScript("OnHide", function()
+			HijackSpellBookButtons(nil)
+		end)
+
+		hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
+
+		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
+		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
+	end,
 
 	["Register"] = function(self)
 		Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
