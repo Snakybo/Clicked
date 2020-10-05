@@ -855,12 +855,6 @@ local function DrawBindingActionPage(container, binding)
 
 			group:AddChild(widget)
 		end
-
-		if binding.type == Clicked.BindingTypes.MACRO then
-			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_MACRO"])
-			widget:SetFullWidth(true)
-			group:AddChild(widget)
-		end
 	end
 
 	local data = Clicked:GetActiveBindingAction(binding)

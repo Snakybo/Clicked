@@ -47,7 +47,6 @@ L["BINDING_UI_PAGE_TITLE_TARGETS"] = "Targets"
 L["BINDING_UI_PAGE_TITLE_LOAD_OPTIONS"] = "Load Options"
 
 L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] = "Note: Bindings using the left or right mouse button are considered restricted and will always be hovercast bindings."
-L["BINDING_UI_PAGE_ACTION_HELP_MACRO"] = "|cffffff00The \"Cast a spell\" and \"Use an item\" action types support most macro functionality and should be preferred over custom macros. Custom macros are available as a fallback option if you're trying to acomplish something not covered by those. If you feel those actions are missing options and you have to resort to using custom macros please leave a comment on CurseForge or on GitHub.|r"
 L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"] = "Click on a spell book entry to select it."
 L["BINDING_UI_PAGE_ACTION_HELP_ITEM_SHIFT_CLICK"] = "Tip: You can shift-click an item in your bags when the input field is selected to autofill."
 L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] = "This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."
