@@ -90,7 +90,7 @@ end
 
 function Clicked:GetNewBindingTargetTemplate()
 	return {
-		unit = Clicked.TargetUnits.TARGET,
+		unit = Clicked.TargetUnits.DEFAULT,
 		hostility = Clicked.TargetHostility.ANY,
 		vitals = Clicked.TargetVitals.ANY
 	}
