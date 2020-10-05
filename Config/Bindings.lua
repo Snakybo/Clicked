@@ -304,7 +304,12 @@ end
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
-	if options.item == nil or name == nil or InCombatLockdown() then
+	if options.item == nil or name == nil then
+		return
+	end
+
+	if InCombatLockdown() then
+		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 		return
 	end
 
@@ -624,10 +629,13 @@ local function DrawSpellSelection(container, action)
 		-- pick from spellbook button
 		do
 			local function OnClick()
-				if not InCombatLockdown() then
-					didOpenSpellbook = true
-					ShowUIPanel(SpellBookFrame)
+				if InCombatLockdown() then
+					print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+					return
 				end
+
+				didOpenSpellbook = true
+				ShowUIPanel(SpellBookFrame)
 			end
 
 			local function OnEnter(widget)
@@ -971,6 +979,7 @@ local function DrawTargetSelectionUnit(container, binding, index, target)
 			Clicked:ReloadActiveBindings()
 		else
 			frame:SetValue(target.unit)
+			print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 		end
 	end
 
@@ -1000,6 +1009,7 @@ local function DrawTargetSelectionNewUnit(container, binding)
 			Clicked:ReloadActiveBindings()
 		else
 			frame:SetValue("_NONE_")
+			print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 		end
 	end
 
@@ -1474,6 +1484,7 @@ local function DrawHeader(container)
 	do
 		local function OnClick()
 			if InCombatLockdown() then
+				print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 				return
 			end
 
@@ -1491,6 +1502,7 @@ local function DrawHeader(container)
 	do
 		local function OnConfirm(item)
 			if InCombatLockdown() then
+				print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 				return
 			end
 
@@ -1816,6 +1828,10 @@ function Clicked:OpenBindingConfig()
 			},
 			refreshHeaderFunc = nil
 		}
+	end
+
+	if InCombatLockdown() then
+		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 	end
 
 	DrawHeader(options.root)

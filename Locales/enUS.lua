@@ -7,6 +7,7 @@ L["ERR_ADDON_INCOMPAT_MESSAGE"] = "Clicked is not compatible with %s and require
 L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"] = "Keep %s"
 
 L["MSG_PROFILE_UPDATED"] = "|cffe31919Clicked|r: Upgraded profile from version %s to version %s"
+L["MSG_BINDING_UI_READ_ONLY_MODE"] = "|cffe31919Clicked|r: You are in combat, the binding configuration is in read-only mode."
 L["MSG_POPUP_BUTTON_CONTINUE"] = "Continue"
 
 L["BINDING_UI_FRAME_TITLE"] = "Clicked Binding Configuration"
