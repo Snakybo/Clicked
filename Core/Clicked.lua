@@ -66,6 +66,8 @@ end
 
 local function OnPlayerEnteringWorld()
 	isInitialized = true
+
+	Clicked:ProcessFrameQueue()
 	Clicked:ReloadActiveBindings()
 end
 
@@ -142,8 +144,6 @@ function Clicked:OnEnable()
 			safecall(module.Register, module)
 		end
 	end
-
-	self:ProcessFrameQueue()
 end
 
 function Clicked:OnDisable()
