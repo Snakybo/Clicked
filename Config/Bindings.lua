@@ -1842,8 +1842,10 @@ module = {
 
 		hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
 
-		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
-		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
+		if not Clicked:IsClassic() then
+			hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
+			hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
+		end
 	end,
 
 	["Register"] = function(self)
