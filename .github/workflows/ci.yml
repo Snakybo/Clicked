@@ -9,10 +9,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: "Run Luacheck"
-      run: |
-        sudo apt-get install luarocks
-        luarocks install --local luacheck
-        /home/runner/.luarocks/bin/luacheck . --no-color -q
+      uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--no-color -q"
     - name: Package Retail
       uses: BigWigsMods/packager@master
       with:
@@ -26,7 +25,7 @@ jobs:
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
-        args: -d -g 1.13.5
+        args: -d -g classic
     - name: "Archive Classic"
       uses: "actions/upload-artifact@v2"
       if: success()
