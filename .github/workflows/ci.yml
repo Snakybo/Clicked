@@ -10,8 +10,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: "Run Luacheck"
       uses: nebularg/actions-luacheck@v1
-        with:
-          args: "--no-color -q"
+      with:
+        args: "--no-color -q"
     - name: Package Retail
       uses: BigWigsMods/packager@master
       with:
