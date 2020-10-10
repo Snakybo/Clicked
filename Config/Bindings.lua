@@ -635,7 +635,12 @@ local function DrawSpellSelection(container, action)
 				end
 
 				didOpenSpellbook = true
-				ShowUIPanel(SpellBookFrame)
+
+				if SpellBookFrame:IsShown() then
+					HijackSpellBookButtons(nil)
+				else
+					ShowUIPanel(SpellBookFrame)
+				end
 			end
 
 			local function OnEnter(widget)
