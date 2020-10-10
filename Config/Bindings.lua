@@ -327,6 +327,7 @@ local function HijackSpellBookButtons(base)
 	if didOpenSpellbook and not SpellBookFrame:IsShown() then
 		GameTooltip:Hide()
 		didOpenSpellbook = false
+		return
 	end
 
 	for i = 1, SPELLS_PER_PAGE do
