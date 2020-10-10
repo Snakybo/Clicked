@@ -83,8 +83,12 @@ local module = {
 						local result = {}
 						local current = 1
 
+						table.sort(self.values)
+
 						for source, frames in pairs(self.values) do
 							result[current] = source
+
+							table.sort(frames)
 
 							for i, frame in ipairs(frames) do
 								result[current + i] = frame
