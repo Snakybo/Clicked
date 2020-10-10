@@ -1,10 +1,8 @@
 #@retail@
 ## Interface: 90001
-## X-WoWI-ID: 25703
 #@end-retail@
 #@non-retail@
 # ## Interface: 11305
-# ## X-WoWI-ID: 25704
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
@@ -14,6 +12,7 @@
 ## OptionalDeps: Ace3
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
 ## X-Curse-Project-ID: 405267
+## X-WoWI-ID: 25703
 ## X-Embeds: Ace3
 ## X-Localizations: enUS, enGB
 ## X-CompatibleLocales: enUS, enGB
