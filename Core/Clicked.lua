@@ -48,6 +48,7 @@ local function ReloadDatabase()
 		LibDBIcon:Show("Clicked")
 	end
 
+	Clicked:ReloadBlacklist()
 	Clicked:ReloadActiveBindings()
 end
 

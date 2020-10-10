@@ -102,7 +102,7 @@ local module = {
 					itemControl = "Clicked-Blacklist-Dropdown-Item",
 					set = function(info, val)
 						if val ~= "_NIL_" then
-							self.blacklist[val] = true
+							Clicked.db.profile.blacklist[val] = true
 
 							self:SetSelectedItem(val, true)
 							self:SetDropdownItem(val, false)
@@ -121,8 +121,6 @@ local module = {
 				}
 			}
 		}
-
-		self.blacklist = Clicked.db.profile.blacklist
 
 		for _, frame in Clicked:IterateClickCastFrames() do
 			self:OnFrameRegistered(frame)
@@ -188,7 +186,7 @@ local module = {
 				order = 3,
 				set = function(info, value)
 					if not value then
-						self.blacklist[name] = nil
+						Clicked.db.profile.blacklist[name] = nil
 						args[name] = nil
 
 						self:SetDropdownItem(name, true)
@@ -196,7 +194,7 @@ local module = {
 					end
 				end,
 				get = function(info)
-					return self.blacklist[name] or false
+					return Clicked.db.profile.blacklist[name] or false
 				end
 			}
 		else
@@ -207,8 +205,8 @@ local module = {
 	["OnFrameRegistered"] = function(self, frame)
 		local name = frame:GetName()
 
-		self:SetSelectedItem(name, self.blacklist[name])
-		self:SetDropdownItem(name, not self.blacklist[name])
+		self:SetSelectedItem(name, Clicked.db.profile.blacklist[name])
+		self:SetDropdownItem(name, not Clicked.db.profile.blacklist[name])
 	end,
 
 	["OnFrameUnregistered"] = function(self, frame)
@@ -218,5 +216,11 @@ local module = {
 		self:SetDropdownItem(name, false)
 	end
 }
+
+function Clicked:ReloadBlacklist()
+	for _, frame in Clicked:IterateClickCastFrames() do
+		module:OnFrameRegistered(frame)
+	end
+end
 
 Clicked:RegisterModule("BlacklistConfig", module)
