@@ -136,3 +136,14 @@ L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_NAME"] = "Cast on key down rather than 
 L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_DESCRIPTION"] = "This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."
 
 L["INTERFACE_UI_BLACKLIST_HELP"] = "If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."
+L["INTERFACE_UI_BLACKLIST_HEADER_SELECTED"] = "Selected"
+L["INTERFACE_UI_BLACKLIST_ADD"] = "Add a unit frame"
+
+L["INTERFACE_UI_BLACKLIST_SOURCE_UNKNOWN"] = "Other"
+L["INTERFACE_UI_BLACKLIST_SOURCE_BLIZZARD"] = "Blizzard"
+L["INTERFACE_UI_BLACKLIST_SOURCE_ELVUI"] = "|cff1784d1ElvUI|r"
+L["INTERFACE_UI_BLACKLIST_SOURCE_GRID2"] = "Grid2"
+L["INTERFACE_UI_BLACKLIST_SOURCE_VUHDO"] = "|cffffe566VuhDo|r"
+L["INTERFACE_UI_BLACKLIST_SOURCE_GLADIUS"] = "Gladius"
+
+L["INTERFACE_UI_BLACKLIST_FRAME_NAME"] = "%s: %s"
