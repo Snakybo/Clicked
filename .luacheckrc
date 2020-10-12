@@ -39,6 +39,7 @@ read_globals = {
 	"ElvUI",
 
 	-- WoW API globals
+	"BOOKTYPE_PROFESSION",
 	"CreateFrame",
 	"DisableAddOn",
 	"C_PvP",

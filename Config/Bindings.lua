@@ -327,7 +327,6 @@ local function HijackSpellBookButtons(base)
 	if didOpenSpellbook and not SpellBookFrame:IsShown() then
 		GameTooltip:Hide()
 		didOpenSpellbook = false
-		return
 	end
 
 	for i = 1, SPELLS_PER_PAGE do
@@ -374,16 +373,20 @@ local function HijackSpellBookButtons(base)
 		end
 
 		if shouldUpdate then
-			local slot, slotType = SpellBook_GetSpellBookSlot(parent);
-
 			local canShow = true
-			canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
-			canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
-			canShow = canShow and didOpenSpellbook
-			canShow = canShow and options.root ~= nil and options.root:IsVisible()
-			canShow = canShow and SpellBookFrame:IsShown()
-			canShow = canShow and parent:IsEnabled()
-			canShow = canShow and not parent.isPassive
+
+			if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
+				canShow = false
+			else
+				local slot, slotType = SpellBook_GetSpellBookSlot(parent);
+				canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
+				canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
+				canShow = canShow and didOpenSpellbook
+				canShow = canShow and options.root ~= nil and options.root:IsVisible()
+				canShow = canShow and SpellBookFrame:IsShown()
+				canShow = canShow and parent:IsEnabled()
+				canShow = canShow and not parent.isPassive
+			end
 
 			if canShow then
 				button:Show()

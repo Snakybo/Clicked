@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix a Lua error when closing the professions book
+
 ## [0.8.1] - 2020-10-10
 
 ### Changed
