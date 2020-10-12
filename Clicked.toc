@@ -13,9 +13,6 @@
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703
-## X-Embeds: Ace3
-## X-Localizations: enUS, enGB
-## X-CompatibleLocales: enUS, enGB
 
 Libs\Libs.xml
 Locales\Locales.xml
