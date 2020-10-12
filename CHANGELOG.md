@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.8.2] - 2020-10-12
+
 ### Added
 
 - Add target alive/dead status to binding tooltips
@@ -196,7 +198,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.8.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.8.2...master
+[0.8.2]: https://github.com/Snakybo/Clicked/releases/tag/0.8.2
 [0.8.1]: https://github.com/Snakybo/Clicked/releases/tag/0.8.1
 [0.8.0]: https://github.com/Snakybo/Clicked/releases/tag/0.8.0
 [0.7.1]: https://github.com/Snakybo/Clicked/releases/tag/0.7.1
