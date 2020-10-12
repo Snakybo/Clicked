@@ -6,6 +6,10 @@
 
 - Add target alive/dead status to binding tooltips
 
+### Changed
+
+- Don't reload bindings on entering and leaving combat
+
 ### Fixed
 
 - Fix a Lua error when closing the professions book

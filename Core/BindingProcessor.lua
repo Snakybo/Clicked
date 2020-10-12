@@ -664,6 +664,18 @@ function Clicked:IsBindingActive(binding)
 				end
 			end
 		end
+
+		do
+			local combat = load.combat
+
+			if combat.selected then
+				if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
+					return false
+				elseif combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
+					return false
+				end
+			end
+		end
 	end
 
 	return result
@@ -788,24 +800,6 @@ function Clicked:CanBindingLoad(binding)
 				elseif warMode.value == Clicked.WarModeState.NOT_IN_WAR_MODE and C_PvP.IsWarModeDesired() then
 					return false
 				end
-			end
-		end
-	end
-
-	do
-		-- If the combat limiter has been enabled, see if the player's current combat state
-		-- matches the specified value.
-		--
-		-- Note: This works because the OnEnteringCombat event seems to happen _just_ before
-		-- the InCombatLockdown() status changes.
-
-		local combat = load.combat
-
-		if combat.selected then
-			if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
-				return false
-			elseif combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
-				return false
 			end
 		end
 	end

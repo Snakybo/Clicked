@@ -54,15 +54,12 @@ end
 
 local function OnEnteringCombat()
 	isPlayerInCombat = true
-
-	Clicked:ReloadActiveBindings()
 end
 
 local function OnLeavingCombat()
 	isPlayerInCombat = false
 
 	Clicked:ProcessFrameQueue()
-	Clicked:ReloadActiveBindings()
 end
 
 local function OnPlayerEnteringWorld()
