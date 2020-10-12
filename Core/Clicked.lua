@@ -173,10 +173,6 @@ function Clicked:RegisterModule(name, module)
 	modules[name] = module
 end
 
-function Clicked:FindModule(name)
-	return modules[name]
-end
-
 function Clicked:IsPlayerInCombat()
 	return isPlayerInCombat
 end
