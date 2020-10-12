@@ -1,5 +1,9 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "enUS", true)
 
+if not L then
+	return
+end
+
 L["ADDON_NAME"] = "Clicked"
 
 L["ERR_FRAME_REGISTRATION"] = "|cffe31919Clicked|r: Unable to register unit frame: %s"
