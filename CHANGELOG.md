@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add target alive/dead status to binding tooltips
+
 ### Fixed
 
 - Fix a Lua error when closing the professions book

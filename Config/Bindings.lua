@@ -1695,14 +1695,24 @@ local function DrawTreeView(container)
 						HARM = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
 					}
 
-					local result = ""
+					local vitals = {
+						ANY = "",
+						ALIVE = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
+						DEAD = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
+					}
+
+					local result = {}
 
 					if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TargetHostility.ANY then
-						result = hostility[target.hostility] .. " "
+						table.insert(result, hostility[target.hostility])
 					end
 
-					result = result .. units[target.unit]
-					return result
+					if Clicked:CanUnitBeDead(target.unit) and target.vitals ~= Clicked.TargetVitals.ANY then
+						table.insert(result, vitals[target.vitals])
+					end
+
+					table.insert(result, units[target.unit])
+					return table.concat(result, " ")
 				end
 
 				text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
