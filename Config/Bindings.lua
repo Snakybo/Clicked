@@ -356,9 +356,9 @@ local function HijackSpellBookButtons(base)
 
 			-- Respect ElvUI skinning
 			if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
-				local E = ElvUI[1]
+				local E = unpack(ElvUI)
 
-				if E and E.private and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
+				if E and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
 					button:StripTextures()
 
 					if E.private.skins.parchmentRemoverEnable then
