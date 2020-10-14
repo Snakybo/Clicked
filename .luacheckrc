@@ -39,6 +39,7 @@ read_globals = {
 	"ElvUI",
 
 	-- WoW API globals
+	"BackdropTemplateMixin",
 	"BOOKTYPE_PROFESSION",
 	"CreateFrame",
 	"DisableAddOn",

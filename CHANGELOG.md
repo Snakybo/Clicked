@@ -6,6 +6,10 @@
 
 - Update libraries to Shadowlands compatible versions
 
+### Fixed
+
+- Fix a potention Lua error when opening the binding configuration frame
+
 ## [0.8.2] - 2020-10-12
 
 ### Added

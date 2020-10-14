@@ -1658,7 +1658,7 @@ local function DrawTreeView(container)
 		-- luacheck: ignore container
 		local function OnButtonEnter(container, event, group, frame)
 			local tooltip = AceGUI.tooltip
-			local text = frame.text:GetText()
+			local text = frame.text1:GetText()
 			local binding
 
 			for i = 1, #options.tree.items do
