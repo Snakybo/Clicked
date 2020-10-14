@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.8.3] - 2020-10-14
+
 ### Changed
 
 - Update libraries to Shadowlands compatible versions
@@ -206,7 +208,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.8.2...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.8.3...master
+[0.8.3]: https://github.com/Snakybo/Clicked/releases/tag/0.8.3
 [0.8.2]: https://github.com/Snakybo/Clicked/releases/tag/0.8.2
 [0.8.1]: https://github.com/Snakybo/Clicked/releases/tag/0.8.1
 [0.8.0]: https://github.com/Snakybo/Clicked/releases/tag/0.8.0
