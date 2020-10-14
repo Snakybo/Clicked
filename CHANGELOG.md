@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update libraries to Shadowlands compatible versions
+
 ## [0.8.2] - 2020-10-12
 
 ### Added
