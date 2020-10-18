@@ -73,6 +73,7 @@ read_globals = {
 	"IsAltKeyDown",
 	"IsControlKeyDown",
 	"IsInRaid",
+	"IsMetaKeyDown",
 	"IsShiftKeyDown",
 	"MAX_SPELLS",
 	"MAX_TALENT_TIERS",

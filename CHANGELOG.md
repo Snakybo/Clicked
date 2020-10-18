@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Experimental support for new meta key modifier on MacOS (and Windows key in the future)
+
 ## [0.8.3] - 2020-10-14
 
 ### Changed

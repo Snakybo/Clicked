@@ -9,7 +9,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- WoW APIs
-local IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown = IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown
+local IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown, IsMetaKeyDown = IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown, IsMetaKeyDown
 
 --[[-----------------------------------------------------------------------------
 Scripts
@@ -32,8 +32,8 @@ end
 
 local ignoreKeys = {
 	["UNKNOWN"] = true,
-	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true,
-	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true,
+	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true, ["LMETA"] = true,
+	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true, ["RMETA"] = true
 }
 
 local function Keybinding_OnKeyDown(frame, key)
@@ -45,15 +45,24 @@ local function Keybinding_OnKeyDown(frame, key)
 		if keyPressed == "ESCAPE" then
 			keyPressed = ""
 		else
-			if ignoreKeys[keyPressed] then return end
+			if ignoreKeys[keyPressed] then
+				return
+			end
+
 			if IsShiftKeyDown() then
-				keyPressed = "SHIFT-"..keyPressed
+				keyPressed = "SHIFT-" .. keyPressed
 			end
+
 			if IsControlKeyDown() then
-				keyPressed = "CTRL-"..keyPressed
+				keyPressed = "CTRL-" .. keyPressed
 			end
+
 			if IsAltKeyDown() then
-				keyPressed = "ALT-"..keyPressed
+				keyPressed = "ALT-" .. keyPressed
+			end
+
+			if IsMetaKeyDown ~= nil and IsMetaKeyDown() then
+				keyPressed = "META-" .. keyPressed
 			end
 		end
 
