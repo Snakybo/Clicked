@@ -4,7 +4,13 @@
 
 ### Added
 
-- Experimental support for new meta key modifier on MacOS (and Windows key in the future)
+- Add support for new meta key modifier on MacOS (and Windows key in the future)
+- Add support for Druid Incarnation: Tree of Life and other hidden shapeshift forms [#9]
+
+### Changed
+
+- Rename stances to forms
+- Reset form configuration due to a bug in the stances configuration
 
 ## [0.8.3] - 2020-10-14
 
@@ -45,9 +51,9 @@
 
 ### Added
 
-- Add a target modifier for dead and alive status [#4](https://github.com/Snakybo/Clicked/issues/4)
-- Add support for custom macro names and icons [#5](https://github.com/Snakybo/Clicked/issues/5)
-- Add support for casting on key down instead of key up [#7](https://github.com/Snakybo/Clicked/issues/7)
+- Add a target modifier for dead and alive status [#4]
+- Add support for custom macro names and icons [#5]
+- Add support for casting on key down instead of key up [#7]
 - Add support for spellbook flyout buttons (Mage teleport, Hunter pet utilities, etc)
 - Add a load option for War Mode status
 - Add a load option for PvP talents
@@ -75,7 +81,7 @@
 - Add the ability to duplicate bindings
 - Add a confirmation popup when deleting bindings (hold shift to skip)
 - Add the ability to search in the binding UI (search for bindings with spells, items, keybindings, or even macro contents)
-- Add the ability to blacklist frames [#2](https://github.com/Snakybo/Clicked/issues/2)
+- Add the ability to blacklist frames [#2]
 - Add the ability to configure target hostility for unit frame bindings
 - Add the ability to specify global bindings at any part in the target order
 - Add the ability to configure run options for macros, run them first, last, or enter a special mode and append them to the auto-generated command (advanced feature)
@@ -133,7 +139,7 @@
 
 ### Fixed
 
-- Fix ctrl/alt/shift + mouse button not working [#1](https://github.com/Snakybo/Clicked/issues/1)
+- Fix ctrl/alt/shift + mouse button not working [#1]
 
 ## [0.5.1] - 2020-09-07
 
@@ -227,3 +233,10 @@
 [0.4.1]: https://github.com/Snakybo/Clicked/releases/tag/0.4.1
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
+
+[#9]: https://github.com/Snakybo/Clicked/issues/9
+[#7]: https://github.com/Snakybo/Clicked/issues/7
+[#5]: https://github.com/Snakybo/Clicked/issues/5
+[#4]: https://github.com/Snakybo/Clicked/issues/4
+[#2]: https://github.com/Snakybo/Clicked/issues/2
+[#1]: https://github.com/Snakybo/Clicked/issues/1

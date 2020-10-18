@@ -1280,26 +1280,42 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_IN_GROUP"], playerInGroup)
 end
 
-local function DrawLoadInStance(container, stance)
+local function DrawLoadInForm(container, form)
 	-- luacheck: ignore options
 	local options = { }
 
 	table.insert(options, {
-		text = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_NONE"],
+		text = L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_NONE"],
 		icon = nil
 	})
 
-	for i = 1, GetNumShapeshiftForms() do
-		local _, _, _, spellId = GetShapeshiftFormInfo(i)
-		local name, _, icon = GetSpellInfo(spellId)
+	if not Clicked:IsClassic() and UnitClass("player") == "Druid" then
+		local function Add(suffix, icon)
+			table.insert(options, {
+				text = L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_DRUID_" .. suffix],
+				icon = icon,
+			})
+		end
 
-		table.insert(options, {
-			text = name,
-			icon = icon
-		})
+		Add("BEAR", 132276)
+		Add("CAT", 132115)
+		Add("TRAVEL", 132144)
+		Add("MOONKIN", 136036)
+		Add("TREANT", 132145)
+		Add("MOUNT", 1394966)
+	else
+		for i = 1, GetNumShapeshiftForms() do
+			local _, _, _, spellId = GetShapeshiftFormInfo(i)
+			local name, _, icon = GetSpellInfo(spellId)
+
+			table.insert(options, {
+				text = name,
+				icon = icon
+			})
+		end
 	end
 
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_STANCE"], options, stance)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"], options, form)
 end
 
 local function DrawLoadPet(container, pet)
@@ -1335,7 +1351,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadPet(container, load.pet)
 
 	if GetNumShapeshiftForms() > 0 then
-		DrawLoadInStance(container, load.stance)
+		DrawLoadInForm(container, load.form)
 	end
 end
 

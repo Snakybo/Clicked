@@ -139,8 +139,8 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "nocombat")
 	end
 
-	if #action.stance > 0 then
-		table.insert(flags, "stance:" .. action.stance)
+	if #action.forms > 0 then
+		table.insert(flags, "form:" .. action.forms)
 	end
 
 	return table.concat(flags, ",")
@@ -173,22 +173,30 @@ local function ConstructAction(binding, target)
 	end
 
 	do
-		local stance = binding.load.stance
+		local form = binding.load.form
+		local forms = {}
 
-		-- stances need to be 0 indexed
-		if stance.selected == 1 then
-			action.stance = tostring(stance.single - 1)
-		elseif stance.selected == 2 then
-			local stances = {}
-
-			for i = 1, #stance.multiple do
-				stances[i] = stance.multiple[i] - 1
+		-- Forms need to be 0 indexed
+		if form.selected == 1 then
+			forms[1] = form.single - 1
+		elseif form.selected == 2 then
+			for i = 1, #form.multiple do
+				forms[i] = form.multiple[i] - 1
 			end
-
-			action.stance = table.concat(stances, "/")
-		else
-			action.stance = ""
 		end
+
+		-- Incarnation: Tree of Life does not show up as a shapeshift form,
+		-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+		if UnitClass("player") == "Druid" and GetSpellInfo("Incarnation: Tree of Life") ~= nil then
+			for _, i in ipairs(forms) do
+				-- 0 is [form:0] aka humanoid
+				if i == 0 then
+					table.insert(forms, GetNumShapeshiftForms() + 1)
+				end
+			end
+		end
+
+		action.forms = table.concat(forms, "/")
 	end
 
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
@@ -242,13 +250,13 @@ local function SortActions(left, right)
 		return false
 	end
 
-	-- stance modifier
-	-- actions with a stance flag go in front of actions without a stance flag
-	if #left.stance > 0 and #right.stance == 0 then
+	-- form modifier
+	-- actions with a form flag go in front of actions without a form flag
+	if #left.form > 0 and #right.form == 0 then
 		return true
 	end
 
-	if #left.stance == 0 and #right.stance > 0 then
+	if #left.form == 0 and #right.form > 0 then
 		return false
 	end
 
@@ -587,20 +595,20 @@ function Clicked:IsBindingActive(binding)
 		end
 	end
 
-	-- Stances and pets are a bit unique as a load option as they don't actually
+	-- Forms and pets are a bit unique as a load option as they don't actually
 	-- unload the binding, which may be confusing listed as "loaded" in the
-	-- configuration UI whilst the player is not in the specified stance.
+	-- configuration UI whilst the player is not in the specified form.
 	-- This will ensure that the UI dynamically updates based on the current
-	-- stance.
+	-- form.
 
 	do
 		local load = binding.load
 
 		do
-			local stance = load.stance
+			local form = load.form
 
-			if stance.selected == 1 then
-				local id = stance.single - 1
+			if form.selected == 1 then
+				local id = form.single - 1
 
 				if id == 0 then
 					for i = 1, GetNumShapeshiftForms() do
@@ -617,24 +625,24 @@ function Clicked:IsBindingActive(binding)
 						result = false
 					end
 				end
-			elseif stance.selected == 2 then
+			elseif form.selected == 2 then
 				local anyValid = false
 
-				for i = 1, #stance.multiple do
-					local id = stance.multiple[i] - 1
+				for i = 1, #form.multiple do
+					local id = form.multiple[i] - 1
 
 					if id == 0 then
-						local isInStance = false
+						local isInForm = false
 
 						for j = 1, GetNumShapeshiftForms() do
 							local _, active = GetShapeshiftFormInfo(j)
 
 							if active then
-								isInStance = true
+								isInForm = true
 							end
 						end
 
-						if not isInStance then
+						if not isInForm then
 							anyValid = true
 						end
 					else

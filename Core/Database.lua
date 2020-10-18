@@ -73,7 +73,7 @@ function Clicked:GetNewBindingTemplate()
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
 			playerInGroup = GetLoadOptionTemplate(""),
-			stance = GetTriStateLoadOptionTemplate(1),
+			form = GetTriStateLoadOptionTemplate(1),
 			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE)
 		}
 	}
@@ -325,6 +325,25 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))
 		profile.version = "0.8.0"
+	end
+
+	-- 0.8.x to 0.9.0
+	if string.sub(profile.version, 1, 3) == "0.8" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.form = {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
+			}
+			binding.load.stance = nil
+		end
+
+		self:ShowInformationPopup("Clicked: Binding stance/shapeshift form load options have been reset, sorry for the inconvenience.")
+
+		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.9.0"))
+		profile.version = "0.9.0"
 	end
 
 	profile.version = self.VERSION
