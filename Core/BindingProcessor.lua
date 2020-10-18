@@ -252,11 +252,11 @@ local function SortActions(left, right)
 
 	-- form modifier
 	-- actions with a form flag go in front of actions without a form flag
-	if #left.form > 0 and #right.form == 0 then
+	if #left.forms > 0 and #right.forms == 0 then
 		return true
 	end
 
-	if #left.form == 0 and #right.form > 0 then
+	if #left.forms == 0 and #right.forms > 0 then
 		return false
 	end
 
