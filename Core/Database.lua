@@ -42,13 +42,15 @@ function Clicked:GetNewBindingTemplate()
 				displayName = "",
 				displayIcon = "",
 				value = "",
-				interruptCurrentCast = false
+				interruptCurrentCast = false,
+				startAutoAttack = true
 			},
 			item = {
 				displayName = "",
 				displayIcon = "",
 				value = "",
-				interruptCurrentCast = false
+				interruptCurrentCast = false,
+				startAutoAttack = true
 			},
 			macro = {
 				displayName = "",
@@ -338,6 +340,10 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				}
 			}
 			binding.load.stance = nil
+
+			binding.actions.spell.startAutoAttack = true
+			binding.actions.item.startAutoAttack = true
+			binding.actions.item.stopCasting = nil
 		end
 
 		self:ShowInformationPopup("Clicked: Binding stance/shapeshift form load options have been reset, sorry for the inconvenience.")

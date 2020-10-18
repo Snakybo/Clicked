@@ -335,7 +335,8 @@ end
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
 local function GetMacroForBindings(bindings)
 	local result = {}
-	local stopcasting = false
+	local interruptCurrentCast = false
+	local startAutoAttack = false
 
 	local actions = {}
 
@@ -347,9 +348,20 @@ local function GetMacroForBindings(bindings)
 				table.insert(result, data.value)
 			end
 		else
-			if not stopcasting and data.interruptCurrentCast then
-				stopcasting = true
-				table.insert(result, 1, "/stopcasting")
+			local extra = {}
+
+			if not interruptCurrentCast and data.interruptCurrentCast then
+				interruptCurrentCast = true
+				table.insert(extra, "/stopcasting")
+			end
+
+			if not startAutoAttack and data.startAutoAttack then
+				startAutoAttack = true
+				table.insert(extra, "/startattack")
+			end
+
+			for i = #extra, 1, - 1 do
+				table.insert(result, 1, extra[i])
 			end
 
 			for _, action in ipairs(ConstructActions(binding)) do

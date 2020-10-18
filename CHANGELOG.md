@@ -7,6 +7,7 @@
 - Add support for new meta key modifier on MacOS (and Windows key in the future)
 - Add support for Druid Incarnation: Tree of Life and other hidden shapeshift forms [#9]
 - Add support for equipment slots in item bindings
+- Add support for starting auto-attacks
 
 ### Changed
 
@@ -16,6 +17,7 @@
 ### Fixed
 
 - Fix an error when entering a number in the "use an item" text field
+- Fix the "interrupt current cast" toggle not working on item bindings
 
 ## [0.8.3] - 2020-10-14
 

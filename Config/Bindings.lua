@@ -670,20 +670,6 @@ local function DrawSpellSelection(container, action)
 			group:AddChild(widget)
 		end
 	end
-
-	-- additional options
-	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
-		container:AddChild(group)
-
-		-- interrupt cast toggle
-		do
-			local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
-			widget:SetFullWidth(true)
-
-			group:AddChild(widget)
-		end
-	end
 end
 
 local function DrawItemSelection(container, action)
@@ -724,20 +710,6 @@ local function DrawItemSelection(container, action)
 		-- help text
 		do
 			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_ITEM_SHIFT_CLICK"])
-			widget:SetFullWidth(true)
-
-			group:AddChild(widget)
-		end
-	end
-
-	-- additional options
-	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
-		container:AddChild(group)
-
-		-- interrupt cast toggle
-		do
-			local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "stopCasting")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -834,6 +806,27 @@ local function DrawMacroSelection(container, binding, keybind, action)
 	end
 end
 
+local function DrawAdditionalSpellItemOptions(container, action)
+	local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
+	container:AddChild(group)
+
+	-- interrupt cast toggle
+	do
+		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
+		widget:SetFullWidth(true)
+
+		group:AddChild(widget)
+	end
+
+	-- start attack toggle
+	do
+		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_START_AUTO_ATTACK"], action, "startAutoAttack")
+		widget:SetFullWidth(true)
+
+		group:AddChild(widget)
+	end
+end
+
 local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
@@ -874,8 +867,10 @@ local function DrawBindingActionPage(container, binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
 		DrawSpellSelection(container, data)
+		DrawAdditionalSpellItemOptions(container, data)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		DrawItemSelection(container, data)
+		DrawAdditionalSpellItemOptions(container, data)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		DrawMacroSelection(container, binding, binding.keybind, data)
 	end
