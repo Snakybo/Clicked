@@ -6,11 +6,16 @@
 
 - Add support for new meta key modifier on MacOS (and Windows key in the future)
 - Add support for Druid Incarnation: Tree of Life and other hidden shapeshift forms [#9]
+- Add support for equipment slots in item bindings
 
 ### Changed
 
 - Rename stances to forms
 - Reset form configuration due to a bug in the stances configuration
+
+### Fixed
+
+- Fix an error when entering a number in the "use an item" text field
 
 ## [0.8.3] - 2020-10-14
 

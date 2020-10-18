@@ -698,7 +698,11 @@ local function DrawItemSelection(container, action)
 				local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
 
 				if item ~= nil and item ~= "" then
-					value = GetItemInfo(item)
+					local info = GetItemInfo(item)
+
+					if info ~= nil then
+						value = info
+					end
 				end
 
 				value = GUI:TrimString(value)
