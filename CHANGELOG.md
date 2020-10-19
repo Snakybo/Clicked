@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.9.0] - 2020-10-19
 
 ### Added
 
@@ -12,7 +12,7 @@
 ### Changed
 
 - Rename stances to forms
-- Reset form configuration due to a bug in the stances configuration
+- (!) Reset form configuration due to a bug in the stances configuration
 
 ### Fixed
 
@@ -225,7 +225,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.8.3...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.9.0...master
+[0.9.0]: https://github.com/Snakybo/Clicked/releases/tag/0.9.0
 [0.8.3]: https://github.com/Snakybo/Clicked/releases/tag/0.8.3
 [0.8.2]: https://github.com/Snakybo/Clicked/releases/tag/0.8.2
 [0.8.1]: https://github.com/Snakybo/Clicked/releases/tag/0.8.1
