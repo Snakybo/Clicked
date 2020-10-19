@@ -7,7 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout repository
+      uses: actions/checkout@v1
     - name: "Run Luacheck"
       uses: nebularg/actions-luacheck@v1
       with:
@@ -16,19 +17,7 @@ jobs:
       uses: BigWigsMods/packager@master
       with:
         args: -d
-    - name: "Archive Retail"
-      uses: "actions/upload-artifact@v2"
-      if: success()
-      with:
-        name: clicked-retail
-        path: ".release/*.zip"
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
         args: -d -g classic
-    - name: "Archive Classic"
-      uses: "actions/upload-artifact@v2"
-      if: success()
-      with:
-        name: clicked-classic
-        path: ".release/*-classic.zip"

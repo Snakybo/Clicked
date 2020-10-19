@@ -7,23 +7,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout repository
+      uses: actions/checkout@v1
     - name: "Run Luacheck"
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
-    - name: Package Retail
-      uses: BigWigsMods/packager@master
-      env:
-        CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-        WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-    - name: "Archive Retail"
-      uses: "actions/upload-artifact@v2"
-      if: success()
+    - name: "Generate recent changes"
+      uses: kemayo/actions-recent-changelog@v1
       with:
-        name: clicked-retail
-        path: ".release/*.zip"
+        input: CHANGELOG.md
+        output: RECENT_CHANGES.md
     - name: Package Classic
       uses: BigWigsMods/packager@master
       with:
@@ -32,9 +26,9 @@ jobs:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-    - name: "Archive Classic"
-      uses: "actions/upload-artifact@v2"
-      if: success()
-      with:
-        name: clicked-classic
-        path: ".release/*-classic.zip"
+    - name: Package Retail
+      uses: BigWigsMods/packager@master
+      env:
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+        WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
