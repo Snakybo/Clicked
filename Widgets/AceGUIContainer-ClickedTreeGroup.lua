@@ -242,7 +242,6 @@ local function OnScrollValueChanged(frame, value)
 	local status = self.status or self.localstatus
 	status.scrollvalue = floor(value + 0.5)
 	self:RefreshTree()
-	AceGUI:ClearFocus()
 end
 
 local function Tree_OnSizeChanged(frame)

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fix search box text field sometimes losing focus when typing (regression in [0.9.0])
+
 ## [0.9.0] - 2020-10-19
 
 ### Added
