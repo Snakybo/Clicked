@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.9.1] - 2020-10-21
 
 ### Fixed
 
@@ -231,7 +231,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.9.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.9.1...master
+[0.9.1]: https://github.com/Snakybo/Clicked/releases/tag/0.9.1
 [0.9.0]: https://github.com/Snakybo/Clicked/releases/tag/0.9.0
 [0.8.3]: https://github.com/Snakybo/Clicked/releases/tag/0.8.3
 [0.8.2]: https://github.com/Snakybo/Clicked/releases/tag/0.8.2
