@@ -1,6 +1,20 @@
 # Changelog
 
-## [0.9,2] - 2020-10-22
+## [0.9.3] - 2020-10-22
+
+### Changed
+
+- [0.9.2] Only try starting auto attacks on the current target if it's enemy and exists, will prevent "you cannot attack this target" messages and automatic target switching as melee
+
+### Removed
+
+- [0.9.2] Removed manual option to start auto attacks
+
+### Fixed
+
+- [0.9.3] Start auto attacks if any of the configured target units are the current target
+
+## [0.9.2] - 2020-10-22 [YANKED]
 
 ### Changed
 
@@ -241,7 +255,9 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.9.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.9.3...master
+[0.9.3]: https://github.com/Snakybo/Clicked/releases/tag/0.9.3
+[0.9.2]: https://github.com/Snakybo/Clicked/releases/tag/0.9.2
 [0.9.1]: https://github.com/Snakybo/Clicked/releases/tag/0.9.1
 [0.9.0]: https://github.com/Snakybo/Clicked/releases/tag/0.9.0
 [0.8.3]: https://github.com/Snakybo/Clicked/releases/tag/0.8.3
