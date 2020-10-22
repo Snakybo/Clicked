@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9,2] - 2020-10-22
+
+### Changed
+
+- Only try starting auto attacks on the current target if it's enemy and exists, will prevent "you cannot attack this target" messages and automatic target switching as melee
+
+### Removed
+
+- Removed manual option to start auto attacks
+
 ## [0.9.1] - 2020-10-21
 
 ### Fixed

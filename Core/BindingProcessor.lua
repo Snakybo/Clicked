@@ -355,9 +355,9 @@ local function GetMacroForBindings(bindings)
 				table.insert(extra, "/stopcasting")
 			end
 
-			if not startAutoAttack and data.startAutoAttack then
+			if not startAutoAttack then
 				startAutoAttack = true
-				table.insert(extra, "/startattack")
+				table.insert(extra, "/startattack [@target,harm,exists]")
 			end
 
 			for i = #extra, 1, - 1 do

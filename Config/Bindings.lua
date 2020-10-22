@@ -817,14 +817,6 @@ local function DrawAdditionalSpellItemOptions(container, action)
 
 		group:AddChild(widget)
 	end
-
-	-- start attack toggle
-	do
-		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_START_AUTO_ATTACK"], action, "startAutoAttack")
-		widget:SetFullWidth(true)
-
-		group:AddChild(widget)
-	end
 end
 
 local function DrawBindingActionPage(container, binding)
