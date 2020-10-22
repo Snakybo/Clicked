@@ -355,7 +355,7 @@ local function GetMacroForBindings(bindings)
 				table.insert(extra, "/stopcasting")
 			end
 
-			if not startAutoAttack then
+			if not startAutoAttack and binding.primaryTarget.unit == Clicked.TargetUnits.TARGET then
 				startAutoAttack = true
 				table.insert(extra, "/startattack [@target,harm,exists]")
 			end
