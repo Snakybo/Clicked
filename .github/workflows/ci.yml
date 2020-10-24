@@ -13,11 +13,3 @@ jobs:
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
-    - name: Package Retail
-      uses: BigWigsMods/packager@master
-      with:
-        args: -d
-    - name: Package Classic
-      uses: BigWigsMods/packager@master
-      with:
-        args: -d -g classic
