@@ -10,6 +10,7 @@
 ### Fixed
 
 - Fix Druid shapeshift form identifiers not always being consistent with forms selected in the UI [#13]
+- Fix default dropdown value for the war mode condition
 
 ## [0.9.3] - 2020-10-22
 

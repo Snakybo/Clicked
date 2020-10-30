@@ -84,7 +84,7 @@ function Clicked:GetNewBindingTemplate()
 		template.load.specialization = GetTriStateLoadOptionTemplate(GetSpecialization())
 		template.load.talent = GetTriStateLoadOptionTemplate(1)
 		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
-		template.load.warMode = GetLoadOptionTemplate(false)
+		template.load.warMode = GetLoadOptionTemplate(Clicked.WarModeState.IN_WAR_MODE)
 	end
 
 	return template
