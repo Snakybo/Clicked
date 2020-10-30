@@ -48,7 +48,7 @@ L["BINDING_UI_SEARCHBOX_PLACEHOLDER"] = "Search..."
 
 L["BINDING_UI_PAGE_TITLE_ACTIONS"] = "Actions"
 L["BINDING_UI_PAGE_TITLE_TARGETS"] = "Targets"
-L["BINDING_UI_PAGE_TITLE_LOAD_OPTIONS"] = "Load Options"
+L["BINDING_UI_PAGE_TITLE_CONDITIONS"] = "Conditions"
 
 L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] = "The left or right mouse button can only activate when hovering over unit frames."
 L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"] = "Click on a spell book entry to select it."

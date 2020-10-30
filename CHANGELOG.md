@@ -5,6 +5,7 @@
 ### Changed
 
 - Bindings limited to shapeshift forms, stances, pet status, or combat status now always show as "loaded" (if there are no other conditions preventing it from loading) [#13]
+- Rename "Load Options" to "Conditions"
 
 ### Fixed
 

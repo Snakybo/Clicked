@@ -1381,7 +1381,7 @@ local function DrawBinding(container)
 				DrawBindingActionPage(scrollFrame, binding)
 			elseif group == "target" then
 				DrawBindingTargetPage(scrollFrame, binding)
-			elseif group == "load" then
+			elseif group == "conditions" then
 				DrawBindingLoadOptionsPage(scrollFrame, binding)
 			end
 
@@ -1399,8 +1399,8 @@ local function DrawBinding(container)
 				value = "target"
 			},
 			{
-				text = L["BINDING_UI_PAGE_TITLE_LOAD_OPTIONS"],
-				value = "load"
+				text = L["BINDING_UI_PAGE_TITLE_CONDITIONS"],
+				value = "conditions"
 			}
 		}
 
