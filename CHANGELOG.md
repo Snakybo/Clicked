@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fix Druid shapeshift form identifiers not always being consistent with forms selected in the UI [#13]
+
 ## [0.9.3] - 2020-10-22
 
 ### Changed
@@ -275,6 +281,7 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#13]: https://github.com/Snakybo/Clicked/issues/13
 [#9]: https://github.com/Snakybo/Clicked/issues/9
 [#7]: https://github.com/Snakybo/Clicked/issues/7
 [#5]: https://github.com/Snakybo/Clicked/issues/5

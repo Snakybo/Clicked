@@ -176,7 +176,7 @@ local function ConstructAction(binding, target)
 		local form = binding.load.form
 		local forms = {}
 
-		-- Forms need to be 0 indexed
+		-- Forms need to be zero-indexed
 		if form.selected == 1 then
 			forms[1] = form.single - 1
 		elseif form.selected == 2 then
@@ -185,15 +185,54 @@ local function ConstructAction(binding, target)
 			end
 		end
 
-		-- Incarnation: Tree of Life does not show up as a shapeshift form,
-		-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-		if UnitClass("player") == "Druid" and GetSpellInfo("Incarnation: Tree of Life") ~= nil then
-			for _, i in ipairs(forms) do
-				-- 0 is [form:0] aka humanoid
-				if i == 0 then
-					table.insert(forms, GetNumShapeshiftForms() + 1)
+		if UnitClass("player") == "Druid" then
+			local all = {
+				5487,	-- [1] Bear Form
+				768,	-- [2] Cat Form
+				783,	-- [3] Travel Form
+				197625,	-- [4] Moonkin Form
+				114282, -- [5] Treant Form
+				210053 -- [6] Mount Form
+			}
+
+			local available = {}
+
+			for i = 1, #all do
+				local spellId = all[i]
+				local name = GetSpellInfo(spellId)
+
+				if GetSpellInfo(name) ~= nil then
+					table.insert(available, spellId)
 				end
 			end
+
+			local finalForms = {}
+
+			for i = 1, #forms do
+				local formId = forms[i]
+
+				-- 0 is [form:0] aka humanoid
+				if formId == 0 then
+					table.insert(finalForms, formId)
+
+					-- Incarnation: Tree of Life does not show up as a shapeshift form,
+					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+					local name = GetSpellInfo(33891) -- Incarnation: Tree of Life
+
+					if GetSpellInfo(name) ~= nil then
+						table.insert(finalForms, GetNumShapeshiftForms() + 1)
+					end
+				else
+					for j = 1, #available do
+						if available[j] == all[formId] then
+							table.insert(finalForms, j)
+							break
+						end
+					end
+				end
+			end
+
+			forms = finalForms
 		end
 
 		action.forms = table.concat(forms, "/")
