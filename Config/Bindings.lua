@@ -169,7 +169,7 @@ local function ConstructTreeViewItem(index, binding)
 
 	item.text2 = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
 
-	if Clicked:IsBindingActive(binding) then
+	if Clicked:IsBindingLoaded(binding) then
 		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_LOADED"]
 	else
 		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_UNLOADED"]
@@ -1731,7 +1731,7 @@ local function DrawTreeView(container)
 
 				text = text .. "|r\n\n"
 
-				if Clicked:IsBindingActive(binding) then
+				if Clicked:IsBindingLoaded(binding) then
 					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
 				else
 					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"]

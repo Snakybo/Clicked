@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Bindings limited to shapeshift forms, stances, pet status, or combat status now always show as "loaded" (if there are no other conditions preventing it from loading) [#13]
+
 ### Fixed
 
 - Fix Druid shapeshift form identifiers not always being consistent with forms selected in the UI [#13]

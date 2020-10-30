@@ -639,119 +639,26 @@ function Clicked:IterateActiveBindings()
 	return pairs(activeBindings)
 end
 
-function Clicked:IsBindingActive(binding)
-	local result = false
+function Clicked:IsBindingLoaded(binding)
+	if activeBindings[binding.keybind] == nil then
+		return false
+	end
 
-	if activeBindings[binding.keybind] ~= nil then
-		local bindings = activeBindings[binding.keybind]
+	local bindings = activeBindings[binding.keybind]
 
-		for _, other in ipairs(bindings.regular) do
-			if other == binding then
-				result = true
-				break
-			end
-		end
-
-		for _, other in ipairs(bindings.hovercast) do
-			if other == binding then
-				result = true
-				break
-			end
+	for _, other in ipairs(bindings.regular) do
+		if other == binding then
+			return true
 		end
 	end
 
-	-- Forms and pets are a bit unique as a load option as they don't actually
-	-- unload the binding, which may be confusing listed as "loaded" in the
-	-- configuration UI whilst the player is not in the specified form.
-	-- This will ensure that the UI dynamically updates based on the current
-	-- form.
-
-	do
-		local load = binding.load
-
-		do
-			local form = load.form
-
-			if form.selected == 1 then
-				local id = form.single - 1
-
-				if id == 0 then
-					for i = 1, GetNumShapeshiftForms() do
-						local _, active = GetShapeshiftFormInfo(i)
-
-						if active then
-							result = false
-						end
-					end
-				else
-					local _, active = GetShapeshiftFormInfo(id)
-
-					if not active then
-						result = false
-					end
-				end
-			elseif form.selected == 2 then
-				local anyValid = false
-
-				for i = 1, #form.multiple do
-					local id = form.multiple[i] - 1
-
-					if id == 0 then
-						local isInForm = false
-
-						for j = 1, GetNumShapeshiftForms() do
-							local _, active = GetShapeshiftFormInfo(j)
-
-							if active then
-								isInForm = true
-							end
-						end
-
-						if not isInForm then
-							anyValid = true
-						end
-					else
-						local _, _, active = GetShapeshiftFormInfo(id)
-
-						if not active then
-							anyValid = true
-							break
-						end
-					end
-				end
-
-				if not anyValid then
-					result = false
-				end
-			end
-		end
-
-		do
-			local pet = load.pet
-
-			if pet.selected then
-				if pet.value == Clicked.PetState.ACTIVE and not UnitIsVisible("pet") then
-					result = false
-				elseif pet.value == Clicked.PetState.INACTIVE and UnitIsVisible("pet") then
-					result = false
-				end
-			end
-		end
-
-		do
-			local combat = load.combat
-
-			if combat.selected then
-				if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() then
-					return false
-				elseif combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
-					return false
-				end
-			end
+	for _, other in ipairs(bindings.hovercast) do
+		if other == binding then
+			return true
 		end
 	end
 
-	return result
+	return false
 end
 
 -- Check if the specified binding is currently active based on the configuration
