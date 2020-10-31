@@ -45,6 +45,7 @@ read_globals = {
 	"DisableAddOn",
 	"C_PvP",
 	"C_SpecializationInfo",
+	"EasyMenu",
 	"FONT_COLOR_CODE_CLOSE",
 	"GameFontHighlight",
 	"GameFontHighlightLarge",
