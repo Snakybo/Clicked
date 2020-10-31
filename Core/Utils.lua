@@ -1,7 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 function Clicked:ShowAddonIncompatibilityPopup(addon)
-	StaticPopupDialogs["ClickedAddonIncompatibilityMessage_" .. addon] = {
+	StaticPopupDialogs["ClickedAddonIncompatibilityMessage"] = {
 		text = L["ERR_ADDON_INCOMPAT_MESSAGE"]:format(addon),
 		button1 = L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"]:format(L["ADDON_NAME"]),
 		button2 = L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"]:format(addon),
@@ -19,20 +19,53 @@ function Clicked:ShowAddonIncompatibilityPopup(addon)
 		preferredIndex = 3
 	}
 
-	StaticPopup_Show("ClickedAddonIncompatibilityMessage_" .. addon)
+	StaticPopup_Show("ClickedAddonIncompatibilityMessage")
 end
 
 function Clicked:ShowInformationPopup(text)
-	StaticPopupDialogs["ClickedInformationMessage_" .. text] = {
+	StaticPopupDialogs["ClickedInformationMessage"] = {
 		text = text,
-		button1 = L["MSG_POPUP_BUTTON_CONTINUE"],
+		button1 = L["MSG_POPUP_BUTTON_OKAY"],
 		timeout = 0,
 		whileDead = true,
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
 
-	StaticPopup_Show("ClickedInformationMessage_" .. text)
+	StaticPopup_Show("ClickedInformationMessage")
+end
+
+function Clicked:ShowConfirmationPopup(message, func, ...)
+	StaticPopupDialogs["ClickedConfirmationMessage"] = {
+		text = message,
+		button1 = L["MSG_POPUP_BUTTON_YES"],
+		button2 = L["MSG_POPUP_BUTTON_NO"],
+		OnAccept = func,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	StaticPopup_Show("ClickedConfirmationMessage")
+end
+
+function Clicked:DeepCopyTable(original)
+	if original == nil then
+		return nil
+	end
+
+	local result = {}
+
+	for k, v in pairs(original) do
+		if type(v) == "table" then
+			v = self:DeepCopyTable(v)
+		end
+
+		result[k] = v
+	end
+
+	return result
 end
 
 function Clicked:IsClassic()
@@ -181,4 +214,99 @@ function Clicked:GetActiveBindingAction(binding)
 	end
 
 	return nil
+end
+
+function Clicked:GetLocalizedTargetUnits(excludeHovercast)
+	local items = {
+		[Clicked.TargetUnits.DEFAULT] = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
+		[Clicked.TargetUnits.PLAYER] = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
+		[Clicked.TargetUnits.TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
+		[Clicked.TargetUnits.HOVERCAST] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"],
+		[Clicked.TargetUnits.MOUSEOVER] = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
+		[Clicked.TargetUnits.FOCUS] = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
+		[Clicked.TargetUnits.CURSOR] = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
+		[Clicked.TargetUnits.PET] = L["BINDING_UI_PAGE_TARGETS_UNIT_PET"],
+		[Clicked.TargetUnits.PET_TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_PET_TARGET"],
+		[Clicked.TargetUnits.PARTY_1] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("1"),
+		[Clicked.TargetUnits.PARTY_2] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("2"),
+		[Clicked.TargetUnits.PARTY_3] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("3"),
+		[Clicked.TargetUnits.PARTY_4] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("4"),
+		[Clicked.TargetUnits.PARTY_5] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("5")
+	}
+
+	local order = {
+		Clicked.TargetUnits.DEFAULT,
+		Clicked.TargetUnits.PLAYER,
+		Clicked.TargetUnits.TARGET,
+		Clicked.TargetUnits.TARGET_OF_TARGET,
+		Clicked.TargetUnits.HOVERCAST,
+		Clicked.TargetUnits.MOUSEOVER,
+		Clicked.TargetUnits.FOCUS,
+		Clicked.TargetUnits.CURSOR,
+		Clicked.TargetUnits.PET,
+		Clicked.TargetUnits.PET_TARGET,
+		Clicked.TargetUnits.PARTY_1,
+		Clicked.TargetUnits.PARTY_2,
+		Clicked.TargetUnits.PARTY_3,
+		Clicked.TargetUnits.PARTY_4,
+		Clicked.TargetUnits.PARTY_5
+	}
+
+	if excludeHovercast then
+		table.remove(order, 5)
+	end
+
+	return items, order
+end
+
+function Clicked:GetLocalizedTargetHostility()
+	local items = {
+		[Clicked.TargetHostility.ANY] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_ANY"],
+		[Clicked.TargetHostility.HELP] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
+		[Clicked.TargetHostility.HARM] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
+	}
+
+	local order = {
+		Clicked.TargetHostility.ANY,
+		Clicked.TargetHostility.HELP,
+		Clicked.TargetHostility.HARM
+	}
+
+	return items, order
+end
+
+function Clicked:GetLocalizedTargetVitals()
+	local items = {
+		[Clicked.TargetVitals.ANY] = L["BINDING_UI_PAGE_TARGETS_VITALS_ANY"],
+		[Clicked.TargetVitals.ALIVE] = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
+		[Clicked.TargetVitals.DEAD] = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
+	}
+
+	local order = {
+		Clicked.TargetVitals.ANY,
+		Clicked.TargetVitals.ALIVE,
+		Clicked.TargetVitals.DEAD
+	}
+
+	return items, order
+end
+
+function Clicked:GetLocalizedTargetString(target)
+	local result = {}
+
+	if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TargetHostility.ANY then
+		local hostility = self:GetLocalizedTargetHostility()
+		table.insert(result, hostility[target.hostility])
+	end
+
+	if Clicked:CanUnitBeDead(target.unit) and target.vitals ~= Clicked.TargetVitals.ANY then
+		local vitals = self:GetLocalizedTargetVitals()
+		table.insert(result, vitals[target.vitals])
+	end
+
+	local units = self:GetLocalizedTargetUnits()
+	table.insert(result, units[target.unit])
+
+	return table.concat(result, " ")
 end

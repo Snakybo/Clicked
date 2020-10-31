@@ -2,10 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add right click context menu items to bindings in the list view which can be used to copy, paste, duplciate, and remove them
+
 ### Changed
 
-- Bindings limited to shapeshift forms, stances, pet status, or combat status now always show as "loaded" (if there are no other conditions preventing it from loading) [#13]
 - Rename "Load Options" to "Conditions"
+- Rename "Create" to "Add"
+
+### Removed
+
+- Remove "loaded" and "unloaded" labels
+- Remove the Copy, Paste, Duplciate, and Delete buttons from the configuration panel
 
 ### Fixed
 
@@ -35,7 +44,7 @@
 
 ### Removed
 
-- Removed manual option to start auto attacks
+- Remove manual option to start auto attacks
 
 ## [0.9.1] - 2020-10-21
 

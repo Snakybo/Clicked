@@ -2,21 +2,23 @@
 Clicked TreeGroup Container
 Container that uses a tree control to switch between groups.
 -------------------------------------------------------------------------------]]
+
 local Type, Version = "ClickedTreeGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
--- Lua APIs
-local next, pairs, ipairs, assert, type = next, pairs, ipairs, assert, type
-local math_min, math_max, floor = math.min, math.max, floor
-local select, tremove, unpack, tconcat = select, table.remove, unpack, table.concat
+if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+	return
+end
 
--- WoW APIs
-local CreateFrame, UIParent = CreateFrame, UIParent
-
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: FONT_COLOR_CODE_CLOSE
+local KEYBIND_ORDER_LIST = {
+	"BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "MOUSEWHEELUP", "MOUSEWHEELDOWN",
+	"`", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "=",
+	"NUMPAD0", "NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPAD4", "NUMPAD5", "NUMPAD6", "NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS", "NUMPADPLUS", "NUMPADDECIMAL",
+	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13",
+	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
+}
 
 -- Recycling functions
 local new, del
@@ -39,12 +41,120 @@ do
 	end
 end
 
-local DEFAULT_TREE_WIDTH = 280
+local DEFAULT_TREE_WIDTH = 300
 local DEFAULT_TREE_SIZABLE = false
+
+local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "UIDropDownMenuTemplate")
 
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
+local function GetKeybindIndex(keybind)
+	local mods = {}
+	local result = ""
+
+	for match in string.gmatch(keybind, "[^-]+") do
+		table.insert(mods, match)
+		result = match
+	end
+
+	table.remove(mods, #mods)
+
+	local index = #KEYBIND_ORDER_LIST + 1
+	local found = false
+
+	for i = 1, #KEYBIND_ORDER_LIST do
+		if KEYBIND_ORDER_LIST[i] == result then
+			index = i
+			found = true
+			break
+		end
+	end
+
+	-- register this unknown keybind for this session
+	if not found then
+		table.insert(KEYBIND_ORDER_LIST, result)
+	end
+
+	for i = 1, #mods do
+		if mods[i] == "CTRL" then
+			index = index + 1000
+		end
+
+		if mods[i] == "ALT" then
+			index = index + 10000
+		end
+
+		if mods[i] == "SHIFT" then
+			index = index + 100000
+		end
+	end
+
+	return index
+end
+
+local function TreeSortFunc(left, right)
+	if left.binding.keybind == "" and right.binding.keybind ~= "" then
+		return false
+	end
+
+	if left.binding.keybind ~= "" and right.binding.keybind == "" then
+		return true
+	end
+
+	if left.binding.keybind == "" and right.binding.keybind == "" then
+		return left.value < right.value
+	end
+
+	if left.binding.keybind == right.binding.keybind then
+		return left.value < right.value
+	end
+
+	return GetKeybindIndex(left.binding.keybind) < GetKeybindIndex(right.binding.keybind)
+end
+
+local function UpdateItemVisual(item, binding)
+	local data = Clicked:GetActiveBindingAction(binding)
+
+	local label = ""
+	local icon = ""
+
+	if binding.type == Clicked.BindingTypes.SPELL then
+		label = L["BINDING_UI_TREE_LABEL_CAST"]
+		icon = select(3, GetSpellInfo(data.value))
+	elseif binding.type == Clicked.BindingTypes.ITEM then
+		label = L["BINDING_UI_TREE_LABEL_USE"]
+		icon = select(10, GetItemInfo(data.value))
+	elseif binding.type == Clicked.BindingTypes.MACRO then
+		label = L["BINDING_UI_TREE_LABEL_RUN_MACRO"]
+
+		if #data.displayName > 0 then
+			label = data.displayName
+		end
+	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
+		label = L["BINDING_UI_TREE_LABEL_TARGET_UNIT"]
+	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
+		label = L["BINDING_UI_TREE_LABEL_UNIT_MENU"]
+	end
+
+	if data.value ~= nil then
+		item.title = string.format(label, data.value)
+	else
+		item.title = label
+	end
+
+	if icon ~= nil and #tostring(icon) > 0 then
+		item.icon = icon
+	elseif data.displayIcon ~= nil and #tostring(data.displayIcon) > 0 then
+		item.icon = data.displayIcon
+	end
+
+	data.displayName = item.title
+	data.displayIcon = item.icon
+
+	item.keybind = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
+end
+
 local function GetButtonUniqueValue(line)
 	local parent = line.parent
 	if parent and parent.value then
@@ -56,19 +166,21 @@ end
 
 local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local toggle = button.toggle
-	local text1 = treeline.text1 or ""
-	local text2 = treeline.text2 or ""
-	local text3 = treeline.text3 or ""
+	local title = treeline.title or ""
+	local keybind = treeline.keybind or ""
 	local icon = treeline.icon
 	local iconCoords = treeline.iconCoords
 	local level = treeline.level
 	local value = treeline.value
 	local uniquevalue = treeline.uniquevalue
 	local disabled = treeline.disabled
+	local binding = treeline.binding
 
 	button.treeline = treeline
 	button.value = value
 	button.uniquevalue = uniquevalue
+	button.binding = binding
+
 	if selected then
 		button:LockHighlight()
 		button.selected = true
@@ -77,35 +189,30 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button.selected = false
 	end
 	button.level = level
-	if ( level == 1 ) then
-		button:SetNormalFontObject("GameFontNormal")
-		button:SetHighlightFontObject("GameFontHighlight")
-		button.text1:SetPoint("TOPLEFT", (icon and 28 or 0) + 8, -1)
-		button.text2:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8, 1)
-		button.text3:SetPoint("BOTTOMRIGHT", -8, 1)
-	else
-		button:SetNormalFontObject("GameFontHighlightSmall")
-		button:SetHighlightFontObject("GameFontHighlightSmall")
-		button.text1:SetPoint("TOPLEFT", (icon and 28 or 0) + 8 * level, -1)
-		button.text2:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
-		button.text3:SetPoint("BOTTOMRIGHT", -8 * level, 1)
-	end
+
+	button:SetNormalFontObject("GameFontNormal")
+	button:SetHighlightFontObject("GameFontHighlight")
+
+	local format = "%s"
 
 	if disabled then
 		button:EnableMouse(false)
-		button.text1:SetText("|cff808080"..text1..FONT_COLOR_CODE_CLOSE)
-		button.text2:SetText("|cff808080"..text2..FONT_COLOR_CODE_CLOSE)
-		button.text3:SetText("|cff808080"..text3..FONT_COLOR_CODE_CLOSE)
+		format = "|cff808080%s" .. FONT_COLOR_CODE_CLOSE
 	else
-		button.text1:SetText(text1)
-		button.text2:SetText(text2)
-		button.text3:SetText(text3)
 		button:EnableMouse(true)
 	end
 
+	button.title:ClearAllPoints()
+	button.title:SetPoint("TOPLEFT", (icon and 28 or 0) + 8 * level, -1)
+	button.title:SetText(string.format(format, title))
+
+	button.keybind:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
+	button.keybind:SetText(string.format(format, keybind))
+	button.keybind:Show()
+
 	if icon then
 		button.icon:SetTexture(icon)
-		button.icon:SetPoint("LEFT", 8 * level, (level == 1) and 0 or 1)
+		button.icon:SetPoint("TOPLEFT", 8 * level, 1)
 	else
 		button.icon:SetTexture(nil)
 	end
@@ -146,9 +253,9 @@ end
 local function addLine(self, v, tree, level, parent)
 	local line = new()
 	line.value = v.value
-	line.text1 = v.text1
-	line.text2 = v.text2
-	line.text3 = v.text3
+	line.binding = v.binding
+	line.title = v.title
+	line.keybind = v.keybind
 	line.icon = v.icon
 	line.iconCoords = v.iconCoords
 	line.disabled = v.disabled
@@ -193,16 +300,115 @@ local function Expand_OnClick(frame)
 	self:RefreshTree()
 end
 
-local function Button_OnClick(frame)
+local function Button_OnClick(frame, button)
 	local self = frame.obj
-	self:Fire("OnClick", frame.uniquevalue, frame.selected)
-	if not frame.selected then
-		self:SetSelected(frame.uniquevalue)
-		frame.selected = true
-		frame:LockHighlight()
-		self:RefreshTree()
+
+	if button == "LeftButton" then
+		self:Fire("OnClick", frame.uniquevalue, frame.selected)
+		if not frame.selected then
+			self:SetSelected(frame.uniquevalue)
+			frame.selected = true
+			frame:LockHighlight()
+			self:RefreshTree()
+		end
+		AceGUI:ClearFocus()
+	elseif button == "RightButton" then
+		local inCombat = InCombatLockdown()
+
+		local menu = {
+			{
+				text = L["BINDING_UI_BUTTON_COPY"],
+				notCheckable = true,
+				disabled = inCombat,
+				func = function()
+					self.bindingCopyBuffer = Clicked:DeepCopyTable(frame.binding)
+				end
+			},
+			{
+				text = L["BINDING_UI_BUTTON_PASTE"],
+				notCheckable = true,
+				disabled = inCombat or self.bindingCopyBuffer == nil,
+				func = function()
+					local clone = Clicked:DeepCopyTable(self.bindingCopyBuffer)
+					clone.keybind = frame.binding.keybind
+
+					Clicked:SetBindingAt(frame.value, clone)
+				end
+			},
+			{
+				text = L["BINDING_UI_BUTTON_DUPLICATE"],
+				notCheckable = true,
+				disabled = inCombat,
+				func = function()
+					local clone = Clicked:DeepCopyTable(frame.binding)
+					clone.keybind = ""
+
+					local index = Clicked:GetNumConfiguredBindings() + 1
+					Clicked:SetBindingAt(index, clone)
+
+					self:SelectByValue(index)
+				end
+			},
+			{
+				text = L["BINDING_UI_BUTTON_DELETE"],
+				notCheckable = true,
+				disabled = inCombat,
+				func = function()
+					local function OnConfirm()
+						if InCombatLockdown() then
+							print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+							return
+						end
+
+						local next = nil
+
+						if self:GetSelectedBinding() == frame.binding then
+							local index = nil
+
+							for i, e in ipairs(self.tree) do
+								if e.binding == frame.binding then
+									index = i
+									break
+								end
+							end
+
+							if index + 1 <= #self.tree then
+								next = self.tree[index + 1].binding
+							elseif index - 1 >= 1 then
+								next = self.tree[index - 1].binding
+							end
+						end
+
+						Clicked:DeleteBinding(frame.binding)
+
+						if next ~= nil then
+							for _, e in ipairs(self.tree) do
+								if e.binding == next then
+									self:SelectByValue(e.value)
+									break
+								end
+							end
+						end
+					end
+
+					if IsShiftKeyDown() then
+						OnConfirm()
+					else
+						local data = Clicked:GetActiveBindingAction(frame.binding)
+
+						local msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
+						msg = msg .. L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"]:format(frame.binding.keybind, data.displayName)
+
+						Clicked:ShowConfirmationPopup(msg, function()
+							OnConfirm()
+						end)
+					end
+				end
+			}
+		}
+
+		EasyMenu(menu, contextMenuFrame, frame, 0, 0, "MENU")
 	end
-	AceGUI:ClearFocus()
 end
 
 local function Button_OnDoubleClick(button)
@@ -216,13 +422,39 @@ local function Button_OnEnter(frame)
 	local self = frame.obj
 	self:Fire("OnButtonEnter", frame.uniquevalue, frame)
 
-	if self.enabletooltips then
+	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
 		local tooltip = AceGUI.tooltip
+		local binding = frame.binding
+
+		local data = Clicked:GetActiveBindingAction(binding)
+		local text = data.displayName
+
+		if binding.type == Clicked.BindingTypes.MACRO then
+			if #data.displayName > 0 then
+				text = data.displayName .. "\n\n"
+				text = text .. L["BINDING_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
+			else
+				text = "";
+			end
+
+			text = text .. data.value .. "|r"
+		end
+
+		text = text .. "\n\n"
+
+		text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
+		text = text .. "|cFFFFFFFF1. " .. Clicked:GetLocalizedTargetString(binding.primaryTarget)
+
+		for i, target in ipairs(binding.secondaryTargets) do
+			text = text .. "\n" .. (i + 1) .. ". " .. Clicked:GetLocalizedTargetString(target)
+		end
+
+		text = text .. "|r"
+
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
-		tooltip:SetPoint("LEFT",frame,"RIGHT")
-		tooltip:SetText(frame.tooltipText or frame.text1:GetText() or "", 1, .82, 0, true)
-
+		tooltip:SetPoint("RIGHT", frame, "LEFT")
+		tooltip:SetText(text or "", 1, 0.82, 0, 1, true)
 		tooltip:Show()
 	end
 end
@@ -231,8 +463,9 @@ local function Button_OnLeave(frame)
 	local self = frame.obj
 	self:Fire("OnButtonLeave", frame.uniquevalue, frame)
 
-	if self.enabletooltips then
-		AceGUI.tooltip:Hide()
+	if self.enabletooltips and frame.title ~= nil then
+		local tooltip = AceGUI.tooltip
+		tooltip:Hide()
 	end
 end
 
@@ -254,7 +487,7 @@ local function Tree_OnMouseWheel(frame, delta)
 		local scrollbar = self.scrollbar
 		local min, max = scrollbar:GetMinMaxValues()
 		local value = scrollbar:GetValue()
-		local newvalue = math_min(max,math_max(min,value - delta))
+		local newvalue = math.min(max, math.max(min,value - delta))
 		if value ~= newvalue then
 			scrollbar:SetValue(newvalue)
 		end
@@ -310,6 +543,8 @@ local methods = {
 	["OnRelease"] = function(self)
 		self.status = nil
 		self.tree = nil
+		self.bindingCopyBuffer = nil
+
 		self.frame:SetScript("OnUpdate", nil)
 		for k, v in pairs(self.localstatus) do
 			if k == "groups" then
@@ -340,20 +575,15 @@ local methods = {
 		icon:SetPoint("TOPLEFT", 8, 0)
 		button.icon = icon
 
-		local text1 = button.text
-		text1:SetHeight(14) -- Prevents text wrapping
-		button.text1 = text1
+		local title = button.text
+		title:SetHeight(14) -- Prevents text wrapping
+		button.title = title
 		button.text = nil
 
-		local text2 = button:CreateFontString(button, "OVERLAY", "GameTooltipText")
-		text2:SetHeight(14) -- Prevents text wrapping
-		text2:SetFont("Fonts\\FRIZQT__.TTF", 10)
-		button.text2 = text2
-
-		local text3 = button:CreateFontString(button, "OVERLAY", "GameTooltipText")
-		text3:SetHeight(14) -- Prevents text wrapping
-		text3:SetFont("Fonts\\FRIZQT__.TTF", 10)
-		button.text3 = text3
+		local keybind = button:CreateFontString(button, "OVERLAY", "GameTooltipText")
+		keybind:SetHeight(14) -- Prevents text wrapping
+		keybind:SetFont("Fonts\\FRIZQT__.TTF", 10)
+		button.keybind = keybind
 
 		button:SetHeight(28)
 
@@ -387,14 +617,50 @@ local methods = {
 		self:RefreshTree()
 	end,
 
-	--sets the tree to be displayed
-	["SetTree"] = function(self, tree, filter)
-		self.filter = filter
-		if tree then
-			assert(type(tree) == "table")
+	["SetSearchHandler"] = function(self, handler)
+		if handler == self.searchHandler then
+			return
 		end
-		self.tree = tree
+
+		if self.searchHandler ~= nil then
+			self.searchHandler:SetCallback("SearchTermChanged", nil)
+		end
+
+		self.searchHandler = handler
+		self.searchHandler:SetCallback("SearchTermChanged", function()
+			self:RefreshTree()
+		end)
+
 		self:RefreshTree()
+	end,
+
+	["ConstructTree"] = function(self, filter)
+		local status = self.status or self.localstatus
+		self.filter = filter
+		self.tree = {}
+
+		for index, binding in Clicked:IterateConfiguredBindings() do
+			local item = {
+				value = index,
+				binding = binding,
+				icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
+			}
+
+			UpdateItemVisual(item, binding)
+			table.insert(self.tree, item)
+		end
+
+		table.sort(self.tree, TreeSortFunc)
+
+		self:RefreshTree()
+
+		if #self.tree > 0 and status.selected == nil then
+			self:SelectByValue(self.tree[1].value)
+		elseif #self.tree > 0 and status.selected ~= nil then
+			self:SelectByValue(status.selected)
+		elseif #self.tree == 0 then
+			self:SelectByValue("")
+		end
 	end,
 
 	["BuildLevel"] = function(self, tree, level, parent)
@@ -418,11 +684,12 @@ local methods = {
 		local buttons = self.buttons
 		local lines = self.lines
 
-		for i, v in ipairs(buttons) do
+		for _, v in ipairs(buttons) do
 			v:Hide()
 		end
+
 		while lines[1] do
-			local t = tremove(lines)
+			local t = table.remove(lines)
 			for k in pairs(t) do
 				t[k] = nil
 			end
@@ -430,10 +697,39 @@ local methods = {
 		end
 
 		if not self.tree then return end
+
 		--Build the list of visible entries from the tree and status tables
 		local status = self.status or self.localstatus
 		local groupstatus = status.groups
-		local tree = self.tree
+		local tree = {}
+
+		if self.searchHandler ~= nil then
+			for _, item in ipairs(self.tree) do
+				local data = Clicked:GetActiveBindingAction(item.binding)
+				local strings = {}
+
+				table.insert(strings, data.displayName)
+				table.insert(strings, data.value)
+
+				if item.binding.keybind ~= "" then
+					table.insert(strings, item.binding.keybind)
+				end
+
+				for i = 1, #strings do
+					if strings[i] ~= nil and strings[i] ~= "" then
+						local str = string.lower(strings[i])
+						local pattern = string.lower(self.searchHandler.searchTerm)
+
+						if string.find(str, pattern, 1, true) ~= nil then
+							table.insert(tree, item)
+							break
+						end
+					end
+				end
+			end
+		else
+			tree = self.tree
+		end
 
 		local treeframe = self.treeframe
 
@@ -499,18 +795,22 @@ local methods = {
 			end
 		end
 
-		local buttonnum = 1
+		local buttonNum = 1
+		local previous = nil
+
 		for i = first, last do
 			local line = lines[i]
-			local button = buttons[buttonnum]
-			if not button then
-				button = self:CreateButton()
+			local button = buttons[buttonNum]
 
-				buttons[buttonnum] = button
+			if button == nil then
+				button = self:CreateButton()
+				buttons[buttonNum] = button
+
 				button:SetParent(treeframe)
-				button:SetFrameLevel(treeframe:GetFrameLevel()+1)
+				button:SetFrameLevel(treeframe:GetFrameLevel() + 1)
 				button:ClearAllPoints()
-				if buttonnum == 1 then
+
+				if previous == nil then
 					if self.showscroll then
 						button:SetPoint("TOPRIGHT", -22, -10)
 						button:SetPoint("TOPLEFT", 0, -10)
@@ -519,16 +819,17 @@ local methods = {
 						button:SetPoint("TOPLEFT", 0, -10)
 					end
 				else
-					button:SetPoint("TOPRIGHT", buttons[buttonnum-1], "BOTTOMRIGHT",0,0)
-					button:SetPoint("TOPLEFT", buttons[buttonnum-1], "BOTTOMLEFT",0,0)
+					button:SetPoint("TOPRIGHT", previous, "BOTTOMRIGHT", 0, 0)
+					button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, 0)
 				end
 			end
 
-			UpdateButton(button, line, status.selected == line.uniquevalue, line.hasChildren, groupstatus[line.uniquevalue] )
+			UpdateButton(button, line, status.selected == line.uniquevalue, line.hasChildren, groupstatus[line.uniquevalue])
 			button:Show()
-			buttonnum = buttonnum + 1
-		end
 
+			buttonNum = buttonNum + 1
+			previous = button
+		end
 	end,
 
 	["SetSelected"] = function(self, value)
@@ -545,7 +846,7 @@ local methods = {
 		local groups = status.groups
 		local path = {...}
 		for i = 1, #path do
-			groups[tconcat(path, "\001", 1, i)] = true
+			groups[table.concat(path, "\001", 1, i)] = true
 		end
 		status.selected = uniquevalue
 		self:RefreshTree(true)
@@ -558,6 +859,15 @@ local methods = {
 
 	["SelectByValue"] = function(self, uniquevalue)
 		self:Select(uniquevalue, ("\001"):split(uniquevalue))
+	end,
+
+	["SelectByBinding"] = function(self, binding)
+		for _, item in ipairs(self.tree) do
+			if item.binding == binding then
+				self:SelectByValue(item.value)
+				return
+			end
+		end
 	end,
 
 	["ShowScroll"] = function(self, show)
@@ -588,7 +898,7 @@ local methods = {
 		content:SetWidth(contentwidth)
 		content.width = contentwidth
 
-		local maxtreewidth = math_min(400, width - 50)
+		local maxtreewidth = math.min(400, width - 50)
 
 		if maxtreewidth > 100 and status.treewidth > maxtreewidth then
 			self:SetTreeWidth(maxtreewidth, status.treesizable)
@@ -634,6 +944,57 @@ local methods = {
 	["GetTreeWidth"] = function(self)
 		local status = self.status or self.localstatus
 		return status.treewidth or DEFAULT_TREE_WIDTH
+	end,
+
+	["GetSelectedBinding"] = function(self)
+		local status = self.status or self.localstatus
+		local selected = status.selected
+
+		if selected == nil then
+			return nil
+		end
+
+		local path = { ("\001"):split(selected) }
+
+		if #path > 0 then
+			local last = path[#path]
+			local value = tonumber(last)
+
+			for i = 1, #self.tree do
+				local item = self.tree[i]
+
+				if item.value == value then
+					return item.binding
+				end
+			end
+		end
+
+		return nil
+	end,
+
+	["GetNeighbouringBinding"] = function(self, offset)
+		local status = self.status or self.localstatus
+		local selected = status.selected
+
+		if selected == nil then
+			return nil
+		end
+
+		local path = { ("\001"):split(selected) }
+
+		local function IndexOf(array, value)
+			for i = 1, #array do
+				local item = array[i]
+
+				if item.value == value then
+					return i
+				end
+			end
+
+			return 0
+		end
+
+		return self.tree[IndexOf(self.tree, path[#path]) + offset]
 	end,
 
 	["LayoutFinished"] = function(self, width, height)
@@ -729,19 +1090,20 @@ local function Constructor()
 	end
 
 	local widget = {
-		frame        = frame,
-		lines        = {},
-		levels       = {},
-		buttons      = {},
-		hasChildren  = {},
-		localstatus  = { groups = {}, scrollvalue = 0 },
-		filter       = false,
-		treeframe    = treeframe,
-		dragger      = dragger,
-		scrollbar    = scrollbar,
-		border       = border,
-		content      = content,
-		type         = Type
+		frame         = frame,
+		lines         = {},
+		levels        = {},
+		buttons       = {},
+		hasChildren   = {},
+		localstatus   = { groups = { }, scrollvalue = 0 },
+		filter        = false,
+		searchHandler = nil,
+		treeframe     = treeframe,
+		dragger       = dragger,
+		scrollbar     = scrollbar,
+		border        = border,
+		content       = content,
+		type          = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

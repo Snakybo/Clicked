@@ -20,7 +20,7 @@ Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
 Widgets\AceGUIWidget-ClickedSimpleGroup.lua
 Widgets\AceGUIWidget-ClickedDropDown-Items.lua
-Widgets\AceGUIWidget-ClickedEditBox.lua
+Widgets\AceGUIWidget-ClickedSearchBox.lua
 Templates\Clicked.xml
 Core\Clicked.lua
 Core\Database.lua

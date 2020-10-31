@@ -623,6 +623,10 @@ function Clicked:ReloadActiveBindings()
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
 end
 
+function Clicked:GetBindingAt(index)
+	return configuredBindings[index]
+end
+
 function Clicked:GetNumConfiguredBindings()
 	return #configuredBindings
 end
@@ -637,28 +641,6 @@ end
 
 function Clicked:IterateActiveBindings()
 	return pairs(activeBindings)
-end
-
-function Clicked:IsBindingLoaded(binding)
-	if activeBindings[binding.keybind] == nil then
-		return false
-	end
-
-	local bindings = activeBindings[binding.keybind]
-
-	for _, other in ipairs(bindings.regular) do
-		if other == binding then
-			return true
-		end
-	end
-
-	for _, other in ipairs(bindings.hovercast) do
-		if other == binding then
-			return true
-		end
-	end
-
-	return false
 end
 
 -- Check if the specified binding is currently active based on the configuration

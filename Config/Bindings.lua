@@ -1,229 +1,20 @@
 local AceGUI = LibStub("AceGUI-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local GUI = Clicked.GUI
+local Module = {}
 
-local KEYBIND_ORDER_LIST = {
-	"BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "MOUSEWHEELUP", "MOUSEWHEELDOWN",
-	"`", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "=",
-	"NUMPAD0", "NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPAD4", "NUMPAD5", "NUMPAD6", "NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS", "NUMPADPLUS", "NUMPADDECIMAL",
-	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13",
-	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
-}
+local ITEM_TEMPLATE_SIMPLE_BINDING = "SIMPLE_BINDING"
+local ITEM_TEMPLATE_CLICKCAST_BINDING = "CLICKCAST_BINDING"
+local ITEM_TEMPLATE_HEALER_BINDING = "HEALER_BINDING"
 
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
 
-local options = {}
-local module
-
 -- reset on close
-local bindingCopyBuffer
-local searchTerm
 local didOpenSpellbook
 
 -- Utility functions
-
-local function GetSelectedItem(original, items)
-	if #items == 0 then
-		return nil
-	end
-
-	local selected = original
-
-	if selected ~= nil then
-		local exists = false
-
-		for _, item in ipairs(items) do
-			if item.value == selected then
-				exists = true
-				break
-			end
-		end
-
-		if not exists then
-			selected = nil
-		end
-	end
-
-	if selected == nil then
-		selected = items[1].value
-	end
-
-	return selected
-end
-
-local function TreeSortFunc(left, right)
-	if left.binding.keybind == "" and right.binding.keybind ~= "" then
-		return false
-	end
-
-	if left.binding.keybind ~= "" and right.binding.keybind == "" then
-		return true
-	end
-
-	if left.binding.keybind == "" and right.binding.keybind == "" then
-		return left.value < right.value
-	end
-
-	if left.binding.keybind == right.binding.keybind then
-		return left.value < right.value
-	end
-
-	local function GetKeybindKey(bind)
-		local mods = {}
-		local result = ""
-
-		for match in string.gmatch(bind, "[^-]+") do
-			table.insert(mods, match)
-			result = match
-		end
-
-		table.remove(mods, #mods)
-
-		local index = #KEYBIND_ORDER_LIST + 1
-		local found = false
-
-		for i = 1, #KEYBIND_ORDER_LIST do
-			if KEYBIND_ORDER_LIST[i] == result then
-				index = i
-				found = true
-				break
-			end
-		end
-
-		-- register this unknown keybind for this session
-		if not found then
-			table.insert(KEYBIND_ORDER_LIST, result)
-		end
-
-		for i = 1, #mods do
-			if mods[i] == "CTRL" then
-				index = index + 1000
-			end
-
-			if mods[i] == "ALT" then
-				index = index + 10000
-			end
-
-			if mods[i] == "SHIFT" then
-				index = index + 100000
-			end
-		end
-
-		return index
-	end
-
-	return GetKeybindKey(left.binding.keybind) < GetKeybindKey(right.binding.keybind)
-end
-
-local function ConstructTreeViewItem(index, binding)
-	local data = Clicked:GetActiveBindingAction(binding)
-	local item = {}
-
-	item.value = index
-	item.index = index
-	item.binding = binding
-	item.icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
-
-	-- update display name and icon
-	do
-		local label = ""
-		local icon = ""
-
-		if binding.type == Clicked.BindingTypes.SPELL then
-			label = L["BINDING_UI_TREE_LABEL_CAST"]
-			icon = select(3, GetSpellInfo(data.value))
-		elseif binding.type == Clicked.BindingTypes.ITEM then
-			label = L["BINDING_UI_TREE_LABEL_USE"]
-			icon = select(10, GetItemInfo(data.value))
-		elseif binding.type == Clicked.BindingTypes.MACRO then
-			label = L["BINDING_UI_TREE_LABEL_RUN_MACRO"]
-
-			if #data.displayName > 0 then
-				label = data.displayName
-			end
-		elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
-			label = L["BINDING_UI_TREE_LABEL_TARGET_UNIT"]
-		elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-			label = L["BINDING_UI_TREE_LABEL_UNIT_MENU"]
-		end
-
-		if data.value ~= nil then
-			item.text1 = string.format(label, data.value)
-		else
-			item.text1 = label
-		end
-
-		if icon ~= nil and #tostring(icon) > 0 then
-			item.icon = icon
-		elseif data.displayIcon ~= nil and #tostring(data.displayIcon) > 0 then
-			item.icon = data.displayIcon
-		end
-
-		data.displayName = item.text1
-		data.displayIcon = item.icon
-	end
-
-	item.text2 = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
-
-	if Clicked:IsBindingLoaded(binding) then
-		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_LOADED"]
-	else
-		item.text3 = L["BINDING_UI_TREE_LOAD_STATE_UNLOADED"]
-	end
-
-	return item
-end
-
-local function ConstructTreeView()
-	local items = {}
-
-	for index, binding in Clicked:IterateConfiguredBindings() do
-		local valid = true
-
-		if searchTerm ~= nil and searchTerm ~= "" then
-			local data = Clicked:GetActiveBindingAction(binding)
-			local strings = {}
-
-			valid = false
-
-			table.insert(strings, data.displayName)
-			table.insert(strings, data.value)
-
-			if binding.keybind ~= nil and binding.keybind ~= "" then
-				table.insert(strings, binding.keybind)
-			end
-
-			for i = 1, #strings do
-				if strings[i] ~= nil and strings[i] ~= "" then
-					local str = string.lower(strings[i])
-					local pattern = string.lower(searchTerm)
-
-					if string.find(str, pattern, 1, true) ~= nil then
-						valid = true
-						break
-					end
-				end
-			end
-		end
-
-		if valid then
-			local item = ConstructTreeViewItem(index, binding)
-			table.insert(items, item)
-		end
-	end
-
-	table.sort(items, TreeSortFunc)
-
-	for i = 1, #items do
-		items[i].index = i
-	end
-
-	options.tree.items = items
-end
 
 local function CanBindingTargetUnitChange(binding)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
@@ -233,23 +24,6 @@ local function CanBindingTargetUnitChange(binding)
 	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM or binding.type == Clicked.BindingTypes.MACRO
 end
 
-local function DeepCopy(original)
-	if original == nil then
-		return nil
-	end
-
-	local result = {}
-
-	for k, v in pairs(original) do
-		if type(v) == "table" then
-			v = DeepCopy(v)
-		end
-
-		result[k] = v
-	end
-
-	return result
-end
 
 local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	if Clicked:IsRestrictedKeybind(keybind) then
@@ -271,40 +45,10 @@ local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	return unit
 end
 
-local function ShowConfirmationPopup(message, func, ...)
-	local frame = AceConfigDialog.popup
-
-	frame:Show()
-	frame.text:SetText(message)
-
-	local height = 61 + frame.text:GetHeight()
-	frame:SetHeight(height)
-
-	frame.accept:ClearAllPoints()
-	frame.accept:SetPoint("BOTTOMRIGHT", frame, "BOTTOM", -6, 16)
-	frame.cancel:Show()
-
-	local t = {...}
-	local tCount = select("#", ...)
-
-	frame.accept:SetScript("OnClick", function(self)
-		func(unpack(t, 1, tCount))
-		frame:Hide()
-		self:SetScript("OnClick", nil)
-		frame.cancel:SetScript("OnClick", nil)
-	end)
-
-	frame.cancel:SetScript("OnClick", function(self)
-		frame:Hide()
-		self:SetScript("OnClick", nil)
-		frame.accept:SetScript("OnClick", nil)
-	end)
-end
-
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
-	if options.item == nil or name == nil then
+	if Module:GetCurrentBinding() == nil or name == nil then
 		return
 	end
 
@@ -313,7 +57,7 @@ local function OnSpellBookButtonClick(name)
 		return
 	end
 
-	local binding = options.item.binding
+	local binding = Module:GetCurrentBinding()
 	local data = Clicked:GetActiveBindingAction(binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
@@ -382,7 +126,7 @@ local function HijackSpellBookButtons(base)
 				canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
 				canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
 				canShow = canShow and didOpenSpellbook
-				canShow = canShow and options.root ~= nil and options.root:IsVisible()
+				canShow = canShow and Module.root ~= nil and Module.root:IsVisible()
 				canShow = canShow and SpellBookFrame:IsShown()
 				canShow = canShow and parent:IsEnabled()
 				canShow = canShow and not parent.isPassive
@@ -410,7 +154,7 @@ local function HijackSpellBookButtons(base)
 end
 
 local function HijackSpellBookFlyoutButtons()
-	if options.root == nil or not options.root:IsVisible() then
+	if Module.root == nil or not Module.root:IsVisible() then
 		return
 	end
 
@@ -870,66 +614,6 @@ end
 
 -- Binding target page and components
 
-local function GetCommonTargetUnits()
-	local items = {
-		DEFAULT = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
-		PLAYER = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
-		TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
-		TARGET_OF_TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
-		MOUSEOVER = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
-		FOCUS = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
-		CURSOR = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
-		PET = L["BINDING_UI_PAGE_TARGETS_UNIT_PET"],
-		PET_TARGET = L["BINDING_UI_PAGE_TARGETS_UNIT_PET_TARGET"],
-		PARTY_1 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("1"),
-		PARTY_2 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("2"),
-		PARTY_3 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("3"),
-		PARTY_4 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("4"),
-		PARTY_5 = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("5")
-	}
-
-	local order = {
-		"DEFAULT",
-		"PLAYER",
-		"TARGET",
-		"TARGET_OF_TARGET",
-		"MOUSEOVER",
-		"FOCUS",
-		"CURSOR",
-		"PET",
-		"PET_TARGET",
-		"PARTY_1",
-		"PARTY_2",
-		"PARTY_3",
-		"PARTY_4",
-		"PARTY_5"
-	}
-
-	return items, order
-end
-
-local function GetPrimaryTargetUnits(type)
-	if type == Clicked.BindingTypes.MACRO then
-		local items = {
-			DEFAULT = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
-			HOVERCAST = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
-		}
-
-		local order = {
-			"DEFAULT",
-			"HOVERCAST"
-		}
-
-		return items, order
-	else
-		local items, order = GetCommonTargetUnits()
-		items["HOVERCAST"] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
-		table.insert(order, 5, "HOVERCAST")
-
-		return items, order
-	end
-end
-
 local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
 		local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] .. "\n")
@@ -938,7 +622,7 @@ local function DrawTargetSelectionPrimaryUnit(container, binding, target)
 		container:AddChild(widget)
 	end
 
-	local items, order = GetPrimaryTargetUnits(binding.type)
+	local items, order = Clicked:GetLocalizedTargetUnits()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
@@ -977,7 +661,7 @@ local function DrawTargetSelectionUnit(container, binding, index, target)
 		end
 	end
 
-	local items, order = GetCommonTargetUnits()
+	local items, order = Clicked:GetLocalizedTargetUnits()
 	items["_DELETE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_REMOVE"]
 	table.insert(order, "_DELETE_")
 
@@ -1007,9 +691,9 @@ local function DrawTargetSelectionNewUnit(container, binding)
 		end
 	end
 
-	local items, order = GetCommonTargetUnits()
+	local items, order = Clicked:GetLocalizedTargetUnits(true)
 	items["_NONE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_NONE"]
-	table.insert(order, 1, "_NONE_")
+	table.insert(order, "_NONE_")
 
 	local widget = GUI:Dropdown(nil, items, order, nil, { unit = "_NONE_" }, "unit")
 	widget:SetCallback("OnValueChanged", OnValueChanged)
@@ -1019,18 +703,7 @@ local function DrawTargetSelectionNewUnit(container, binding)
 end
 
 local function DrawTargetSelectionHostility(container, target)
-	local items = {
-		ANY = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_ANY"],
-		HELP = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
-		HARM = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
-	}
-
-	local order = {
-		"ANY",
-		"HELP",
-		"HARM"
-	}
-
+	local items, order = Clicked:GetLocalizedTargetHostility()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "hostility")
 	widget:SetFullWidth(true)
 
@@ -1038,18 +711,7 @@ local function DrawTargetSelectionHostility(container, target)
 end
 
 local function DrawTargetSelectionVitals(container, target)
-	local items = {
-		ANY = L["BINDING_UI_PAGE_TARGETS_VITALS_ANY"],
-		ALIVE = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
-		DEAD = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
-	}
-
-	local order = {
-		"ANY",
-		"ALIVE",
-		"DEAD"
-	}
-
+	local items, order = Clicked:GetLocalizedTargetVitals()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "vitals")
 	widget:SetFullWidth(true)
 
@@ -1346,11 +1008,60 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	end
 end
 
+-- Item templates
+
+local function CreateFromItemTemplate(identifier)
+	if identifier == ITEM_TEMPLATE_SIMPLE_BINDING then
+		local binding = Clicked:CreateNewBinding()
+
+		Module.tree:SelectByBinding(binding)
+	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
+		local binding = Clicked:CreateNewBinding()
+		binding.primaryTarget.unit = Clicked.TargetUnits.HOVERCAST
+
+		Module.tree:SelectByBinding(binding)
+	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
+		local binding = Clicked:CreateNewBinding()
+		binding.primaryTarget.unit = Clicked.TargetUnits.MOUSEOVER
+		binding.primaryTarget.hostility = Clicked.TargetHostility.HELP
+
+		binding.secondaryTargets[1] = Clicked:GetNewBindingTargetTemplate()
+		binding.secondaryTargets[1].unit = Clicked.TargetUnits.TARGET
+		binding.secondaryTargets[1].hostility = Clicked.TargetHostility.HELP
+
+		binding.secondaryTargets[2] = Clicked:GetNewBindingTargetTemplate()
+		binding.secondaryTargets[2].unit = Clicked.TargetUnits.PLAYER
+
+		Module.tree:SelectByBinding(binding)
+	end
+end
+
+local function DrawItemTemplate(container, identifier, name, description)
+	local group = GUI:InlineGroup(name)
+
+	container:AddChild(group)
+
+	do
+		local widget = GUI:Label(description, "medium")
+		widget:SetRelativeWidth(0.79)
+		group:AddChild(widget)
+	end
+
+	do
+		local function OnClick()
+			CreateFromItemTemplate(identifier)
+		end
+
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_CREATE"], OnClick)
+		widget:SetRelativeWidth(0.2)
+		group:AddChild(widget)
+	end
+end
+
 -- Main binding frame
 
 local function DrawBinding(container)
-	local item = options.item
-	local binding = item.binding
+	local binding = Module:GetCurrentBinding()
 
 	-- keybinding button
 	do
@@ -1371,9 +1082,7 @@ local function DrawBinding(container)
 		-- luacheck: ignore container
 		local function OnGroupSelected(container, event, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
-			local scrollFrameValue = options.tabScroll.scrollvalue or 0
 			scrollFrame:SetLayout("Flow")
-			scrollFrame:SetStatusTable(options.tabScroll)
 
 			container:AddChild(scrollFrame)
 
@@ -1386,7 +1095,6 @@ local function DrawBinding(container)
 			end
 
 			scrollFrame:DoLayout()
-			scrollFrame:SetScroll(scrollFrameValue)
 		end
 
 		local items = {
@@ -1404,415 +1112,104 @@ local function DrawBinding(container)
 			}
 		}
 
-		local selected = GetSelectedItem(options.tab.selected, items)
+		Module.tab = Module.tab or { selected = "action" }
 
 		local widget = GUI:TabGroup(items, OnGroupSelected)
-		widget:SetStatusTable(options.tab)
-		widget:SelectTab(selected)
+		widget:SetStatusTable(Module.tab)
+		widget:SelectTab(Module.tab.selected)
 
 		container:AddChild(widget)
 	end
 end
 
+local function DrawItemTemplateSelector(container)
+	local scrollFrame = AceGUI:Create("ScrollFrame")
+	scrollFrame:SetLayout("Flow")
+	scrollFrame:SetFullWidth(true)
+	scrollFrame:SetFullHeight(true)
+
+	container:AddChild(scrollFrame)
+
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SIMPLE_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CLICKCAST_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_HEALER_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"])
+
+	scrollFrame:DoLayout()
+end
+
 -- Main frame
 
 local function DrawHeader(container)
-	local deleteBindingButton
-	local duplicateBindingButton
-	local copyBindingButton
-	local pasteBindingButton
-
 	local line = AceGUI:Create("ClickedSimpleGroup")
-	line:SetFullWidth(true)
+	line:SetWidth(300)
 	line:SetLayout("table")
-	line:SetUserData("table", { columns = { 0, 0, 1, 0, 0, 0} })
+	line:SetUserData("table", { columns = { 0, 1} })
 
 	container:AddChild(line)
-
-	-- search box
-	do
-		local isPlaceholderActive = true
-
-		local function OnFocusGained(frame)
-			if searchTerm == nil or searchTerm == "" then
-				frame:SetText("")
-			end
-
-			isPlaceholderActive = false
-		end
-
-		local function OnFocusLost(frame)
-			if searchTerm == nil or searchTerm == "" then
-				frame:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
-				isPlaceholderActive = true
-			end
-		end
-
-		local function OnTextChanged(frame, event, value)
-			if isPlaceholderActive then
-				return
-			end
-
-			searchTerm = GUI:TrimString(value)
-			module:Redraw()
-		end
-
-		local function OnEnterPressed(frame, event, value)
-			if isPlaceholderActive then
-				return
-			end
-
-			searchTerm = GUI:TrimString(value)
-			frame:SetText(searchTerm)
-			module:Redraw()
-		end
-
-		local function OnEscapePressed(frame)
-			if isPlaceholderActive then
-				return
-			end
-
-			searchTerm = ""
-			frame:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
-			module:Redraw()
-		end
-
-		local widget = AceGUI:Create("ClickedEditBox")
-		widget:SetCallback("OnFocusGained", OnFocusGained)
-		widget:SetCallback("OnFocusLost", OnFocusLost)
-		widget:SetCallback("OnTextChanged", OnTextChanged)
-		widget:SetCallback("OnEnterPressed", OnEnterPressed)
-		widget:SetCallback("OnEscapePressed", OnEscapePressed)
-		widget:DisableButton(true)
-		widget:SetText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
-		widget:SetWidth(280)
-
-		line:AddChild(widget)
-	end
 
 	-- create binding button
 	do
 		local function OnClick()
-			if InCombatLockdown() then
-				print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
-				return
-			end
-
-			Clicked:CreateNewBinding()
-			options.tree.container:SelectByValue(Clicked:GetNumConfiguredBindings())
+			Module.tree:SelectByValue("")
 		end
 
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_CREATE"], OnClick)
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_NEW"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
 	end
 
-	-- delete binding button
+	-- search box
 	do
-		local function OnConfirm(item)
-			if InCombatLockdown() then
-				print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
-				return
-			end
+		Module.searchBox = AceGUI:Create("ClickedSearchBox")
+		Module.searchBox:DisableButton(true)
+		Module.searchBox:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
+		Module.searchBox:SetFullWidth(true)
 
-			local binding = item.binding
-			local index = item.index
-			local isCurrent = options.item == item
-
-			Clicked:DeleteBinding(binding)
-
-			if options.tree.items ~= nil then
-				if isCurrent then
-					local items = options.tree.items
-					local selected = items[index]
-
-					if index <= #items then
-						selected = items[index]
-					elseif index - 1 >= 1 then
-						selected = items[index - 1]
-					end
-
-					if selected ~= nil then
-						options.tree.container:SelectByValue(selected.value)
-					else
-						options.item = nil
-					end
-				end
-			else
-				options.item = nil
-			end
-
-			options.refreshHeaderFunc()
-		end
-
-		local function OnClick()
-			local item = options.item
-
-			if IsShiftKeyDown() then
-				OnConfirm(item)
-			else
-				local msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
-				msg = msg .. L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"]:format(item.text2, item.text1)
-
-				ShowConfirmationPopup(msg, OnConfirm, item)
-			end
-		end
-
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_DELETE"], OnClick)
-		widget:SetAutoWidth(true)
-
-		line:AddChild(widget)
-
-		deleteBindingButton = widget
+		line:AddChild(Module.searchBox)
 	end
+end
 
-	-- duplicate binding button
-	do
-		local function OnClick()
-			local clone = DeepCopy(options.item.binding)
-			clone.keybind = ""
+local function DrawTreeContainer(container, event, group)
+	container:ReleaseChildren()
 
-			local index = Clicked:GetNumConfiguredBindings() + 1
-			Clicked:SetBindingAt(index, clone)
-
-			options.tree.container:SelectByValue(index)
-			options.refreshHeaderFunc()
-		end
-
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_DUPLICATE"], OnClick)
-		widget:SetAutoWidth(true)
-
-		line:AddChild(widget)
-
-		duplicateBindingButton = widget
-	end
-
-	-- copy binding button
-	do
-		local function OnClick()
-			-- create a deep copy of the binding so that any modifications
-			-- after the copy was made aren't reflected in the copy behavior
-			bindingCopyBuffer = nil
-			bindingCopyBuffer = DeepCopy(options.item.binding)
-
-			options.refreshHeaderFunc()
-		end
-
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_COPY"], OnClick)
-		widget:SetAutoWidth(true)
-
-		line:AddChild(widget)
-
-		copyBindingButton = widget
-	end
-
-	-- paste binding button
-	do
-		local function OnClick()
-			-- copy the buffer again to prevent dirtying it
-			local clone = DeepCopy(bindingCopyBuffer)
-			clone.keybind = options.item.binding.keybind
-
-			Clicked:SetBindingAt(options.item.value, clone)
-		end
-
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_PASTE"], OnClick)
-		widget:SetAutoWidth(true)
-
-		line:AddChild(widget)
-
-		pasteBindingButton = widget
-	end
-
-	options.refreshHeaderFunc = function()
-		local hasItemSelected = options.item ~= nil and options.item.binding ~= nil
-
-		deleteBindingButton:SetDisabled(not hasItemSelected)
-		duplicateBindingButton:SetDisabled(not hasItemSelected)
-		copyBindingButton:SetDisabled(not hasItemSelected)
-		pasteBindingButton:SetDisabled(not hasItemSelected or bindingCopyBuffer == nil)
+	if Module:GetCurrentBinding() ~= nil then
+		DrawBinding(container)
+	else
+		DrawItemTemplateSelector(container)
 	end
 end
 
 local function DrawTreeView(container)
 	-- tree view
 	do
-		-- luacheck: ignore container
-		local function OnGroupSelected(container, event, group)
-			container:ReleaseChildren()
+		Module.tree = AceGUI:Create("ClickedTreeGroup")
+		Module.tree:SetLayout("Flow")
+		Module.tree:SetFullWidth(true)
+		Module.tree:SetFullHeight(true)
+		Module.tree:SetCallback("OnGroupSelected", DrawTreeContainer)
+		Module.tree:SetSearchHandler(Module.searchBox)
 
-			local previous = options.item
-
-			for _, item in ipairs(options.tree.items) do
-				if item.value == group then
-					options.item = item
-					break
-				end
-			end
-
-			if previous ~= nil and previous.value ~= options.item.value then
-				options.tab = {}
-			end
-
-			if options.refreshHeaderFunc ~= nil then
-				options.refreshHeaderFunc()
-			end
-
-			DrawBinding(container)
-		end
-
-		-- luacheck: ignore container
-		local function OnButtonEnter(container, event, group, frame)
-			local tooltip = AceGUI.tooltip
-			local text = frame.text1:GetText()
-			local binding
-
-			for i = 1, #options.tree.items do
-				if options.tree.items[i].value == group then
-					binding = options.tree.items[i].binding
-					break
-				end
-			end
-
-			if binding ~= nil then
-				local data = Clicked:GetActiveBindingAction(binding)
-
-				text = data.displayName
-
-				if binding.type == Clicked.BindingTypes.MACRO then
-					if #data.displayName > 0 then
-						text = data.displayName .. "\n\n"
-						text = text .. L["BINDING_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
-					else
-						text = "";
-					end
-
-					text = text .. data.value .. "|r"
-				end
-
-				text = text .. "\n\n"
-
-				local function GetTargetLine(target)
-					local units = GetPrimaryTargetUnits()
-
-					local hostility = {
-						ANY = "",
-						HELP = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
-						HARM = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
-					}
-
-					local vitals = {
-						ANY = "",
-						ALIVE = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
-						DEAD = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
-					}
-
-					local result = {}
-
-					if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TargetHostility.ANY then
-						table.insert(result, hostility[target.hostility])
-					end
-
-					if Clicked:CanUnitBeDead(target.unit) and target.vitals ~= Clicked.TargetVitals.ANY then
-						table.insert(result, vitals[target.vitals])
-					end
-
-					table.insert(result, units[target.unit])
-					return table.concat(result, " ")
-				end
-
-				text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
-				text = text .. "|cFFFFFFFF1. " .. GetTargetLine(binding.primaryTarget)
-
-				for i, target in ipairs(binding.secondaryTargets) do
-					text = text .. "\n" .. (i + 1) .. ". " .. GetTargetLine(target)
-				end
-
-				text = text .. "|r\n\n"
-
-				if Clicked:IsBindingLoaded(binding) then
-					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_LOADED"]
-				else
-					text = text .. L["BINDING_UI_TREE_TOOLTIP_LOAD_STATE_UNLOADED"]
-				end
-			end
-
-			tooltip:SetOwner(frame, "ANCHOR_NONE")
-			tooltip:ClearAllPoints()
-			tooltip:SetPoint("RIGHT", frame, "LEFT")
-			tooltip:SetText(text or "", 1, 0.82, 0, 1, true)
-			tooltip:Show()
-		end
-
-		-- luacheck: ignore container
-		local function OnButtonLeave(container, event, group, frame)
-			local tooltip = AceGUI.tooltip
-			tooltip:Hide()
-		end
-
-		local widget = AceGUI:Create("ClickedTreeGroup")
-		options.tree.container = widget
-
-		widget:SetLayout("Flow")
-		widget:SetFullWidth(true)
-		widget:SetFullHeight(true)
-		widget:EnableButtonTooltips(false)
-		widget:SetStatusTable(options.tree.status)
-		widget:SetCallback("OnGroupSelected", OnGroupSelected)
-		widget:SetCallback("OnButtonEnter", OnButtonEnter)
-		widget:SetCallback("OnButtonLeave", OnButtonLeave)
-
-		container:AddChild(widget)
+		container:AddChild(Module.tree)
 	end
 end
 
 -- Event handlers
 
 local function OnGUIUpdateEvent()
-	if options.root == nil or not options.root:IsVisible() then
+	if Module.root == nil or not Module.root:IsVisible() then
 		return
 	end
 
 	Clicked:ReloadActiveBindings()
 end
 
-local function OnUnitAura(event, unit)
-	if options.root == nil or not options.root:IsVisible() then
-		return
-	end
-
-	if unit == "player" then
-		ConstructTreeView()
-		options.tree.container:SetTree(options.tree.items)
-	end
-end
-
-local function RedrawBindingConfig()
-	if options.root == nil or not options.root:IsVisible() then
-		return
-	end
-
-	ConstructTreeView()
-	options.tree.container:SetTree(options.tree.items)
-	options.root:SetStatusText(L["BINDING_UI_FRAME_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
-
-	local selected = GetSelectedItem(options.tree.status.selected, options.tree.items)
-
-	if selected ~= nil then
-		options.tree.container:SelectByValue(selected)
-	else
-		options.tree.container:ReleaseChildren()
-		options.item = nil
-	end
-
-	if options.refreshHeaderFunc ~= nil then
-		options.refreshHeaderFunc()
-	end
+local function OnBindingsChangedEvent()
+	Module:Redraw()
 end
 
 function Clicked:OpenBindingConfig()
-	if options.root ~= nil and options.root:IsVisible() then
+	if Module.root ~= nil and Module.root:IsVisible() then
 		return
 	end
 
@@ -1824,77 +1221,76 @@ function Clicked:OpenBindingConfig()
 			if didOpenSpellbook then
 				HideUIPanel(SpellBookFrame)
 			end
-
-			searchTerm = ""
-			bindingCopyBuffer = nil
 		end
 
-		local widget = AceGUI:Create("Frame")
-		widget:SetCallback("OnClose", OnClose)
-		widget:SetTitle(L["BINDING_UI_FRAME_TITLE"])
-		widget:SetLayout("Flow")
-		widget:SetWidth(800)
-		widget:SetHeight(600)
-
-		options = {
-			root = widget,
-			item = nil,
-			tab = {},
-			tabScroll = {},
-			tree = {
-				status = {},
-				items = {},
-				container = nil
-			},
-			refreshHeaderFunc = nil
-		}
+		Module.root = AceGUI:Create("Frame")
+		Module.root:SetCallback("OnClose", OnClose)
+		Module.root:SetTitle(L["BINDING_UI_FRAME_TITLE"])
+		Module.root:SetLayout("Flow")
+		Module.root:SetWidth(800)
+		Module.root:SetHeight(600)
 	end
 
 	if InCombatLockdown() then
 		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 	end
 
-	DrawHeader(options.root)
-	DrawTreeView(options.root)
+	DrawHeader(Module.root)
+	DrawTreeView(Module.root)
 
-	RedrawBindingConfig()
+	Module:Redraw()
 end
 
-module = {
-	["Initialize"] = function(self)
-		SpellBookFrame:HookScript("OnHide", function()
-			HijackSpellBookButtons(nil)
-		end)
+function Module:Initialize()
+	SpellBookFrame:HookScript("OnHide", function()
+		HijackSpellBookButtons(nil)
+	end)
 
-		hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
+	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
 
-		if not Clicked:IsClassic() then
-			hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
-			hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
-		end
-	end,
-
-	["Register"] = function(self)
-		Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-		Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, RedrawBindingConfig)
-		Clicked:RegisterEvent("UNIT_AURA", OnUnitAura)
-	end,
-
-	["Unregister"] = function(self)
-		Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
-		Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
-		Clicked:UnregisterEvent("UNIT_AURA")
-	end,
-
-	["Redraw"] = function(self)
-		RedrawBindingConfig()
-	end,
-
-	["OnChatCommandReceived"] = function(self, args)
-		if #args == 0 then
-			Clicked:OpenBindingConfig()
-		end
+	if not Clicked:IsClassic() then
+		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
+		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
 	end
-}
+end
 
-Clicked:RegisterModule("BindingConfig", module)
+function Module:Register()
+	Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
+	Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
+end
+
+function Module:Unregister()
+	Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
+	Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
+end
+
+function Module:Redraw()
+	if self.root == nil or not self.root:IsVisible() then
+		return
+	end
+
+	self.root:SetStatusText(L["BINDING_UI_FRAME_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
+	self.tree:ConstructTree()
+end
+
+function Module:GetCurrentBinding()
+	return self.tree:GetSelectedBinding()
+end
+
+function Module:GetNextBinding()
+	local next = self.tree:GetNeighbouringBinding(1)
+
+	if next == nil then
+		next = self.tree:GetNeighbouringBinding(-1)
+	end
+
+	return next
+end
+
+function Module:OnChatCommandReceived(args)
+	if #args == 0 then
+		Clicked:OpenBindingConfig()
+	end
+end
+
+Clicked:RegisterModule("BindingConfig", Module)

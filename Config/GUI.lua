@@ -43,6 +43,7 @@ function GUI:Serialize(...)
 end
 
 function GUI:TrimString(str)
+	str = str or ""
 	return string.gsub(str, "^%s*(.-)%s*$", "%1")
 end
 
