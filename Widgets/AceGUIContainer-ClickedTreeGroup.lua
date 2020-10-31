@@ -718,11 +718,14 @@ local function Constructor()
 	-- Respect ElvUI skinning
 	if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
 		local E = unpack(ElvUI);
-		local S = E:GetModule("Skins")
 
-		content:GetParent():SetTemplate('Transparent')
-		treeframe:SetTemplate('Transparent')
-		S:HandleScrollBar(scrollbar)
+		if E and E.private.skins and E.private.skins.ace3Enable then
+			local S = E:GetModule("Skins")
+
+			content:GetParent():SetTemplate('Transparent')
+			treeframe:SetTemplate('Transparent')
+			S:HandleScrollBar(scrollbar)
+		end
 	end
 
 	local widget = {

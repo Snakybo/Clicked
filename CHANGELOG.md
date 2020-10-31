@@ -11,6 +11,7 @@
 
 - Fix Druid shapeshift form identifiers not always being consistent with forms selected in the UI [#13]
 - Fix default dropdown value for the war mode condition
+- Fix ElvUI skinning if the "Ace3" option is disabled within ElvUI
 
 ## [0.9.3] - 2020-10-22
 
