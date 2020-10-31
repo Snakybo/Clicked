@@ -64,8 +64,8 @@ local function EditBox_OnTextChanged(frame)
 	local value = Clicked.GUI:TrimString(frame:GetText())
 
 	if not self.isPlaceholderActive and tostring(value) ~= tostring(self.searchTerm) then
-		self:Fire("SearchTermChanged", value)
 		self.searchTerm = value
+		self:Fire("SearchTermChanged", value)
 	end
 end
 
