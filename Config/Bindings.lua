@@ -1,5 +1,6 @@
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 local GUI = Clicked.GUI
 local Module = {}
@@ -258,8 +259,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 	end
 end
 
--- luacheck: ignore options
-local function DrawTristateLoadOption(container, title, options, data)
+local function DrawTristateLoadOption(container, title, items, order, data)
 	-- enabled toggle
 	do
 		local widget = GUI:TristateCheckBox(title, data, "selected")
@@ -274,23 +274,11 @@ local function DrawTristateLoadOption(container, title, options, data)
 		container:AddChild(widget)
 	end
 
-	local items = {}
-	local icons = {}
-
-	for i = 1, #options do
-		items[i] = options[i].text
-		icons[i] = options[i].icon
-	end
-
 	local widget
-	local itemType = "Dropdown-Item-Toggle"
-
-	if #icons > 0 then
-		itemType = "Dropdown-Item-Toggle-Icon"
-	end
+	local itemType = "Clicked-Dropdown-Item-Toggle-Icon"
 
 	if data.selected == 1 then -- single option variant
-		widget = GUI:Dropdown(nil, items, nil, itemType, data, "single")
+		widget = GUI:Dropdown(nil, items, order, itemType, data, "single")
 	elseif data.selected == 2 then -- multiple option variant
 		-- luacheck: ignore widget
 		local function UpdateText(widget)
@@ -315,10 +303,10 @@ local function DrawTristateLoadOption(container, title, options, data)
 				text = "Mixed..."
 			end
 
-			widget:SetText(text)
+			widget:SetText(string.format("<text=%s>", text))
 		end
 
-		widget = GUI:MultiselectDropdown(nil, items, nil, itemType, data, "multiple")
+		widget = GUI:MultiselectDropdown(nil, items, order, itemType, data, "multiple")
 		widget.ClickedUpdateText = UpdateText
 		widget:ClickedUpdateText()
 
@@ -333,18 +321,7 @@ local function DrawTristateLoadOption(container, title, options, data)
 
 	if widget ~= nil then
 		widget:SetRelativeWidth(0.5)
-
 		container:AddChild(widget)
-
-		if #icons > 0 then
-			for i, item in widget.pullout:IterateItems() do
-				local icon = item.icon
-
-				if icon ~= nil then
-					icon:SetTexture(icons[i] or "Interface\\ICONS\\INV_Misc_QuestionMark")
-				end
-			end
-		end
 	end
 end
 
@@ -813,71 +790,26 @@ local function DrawLoadNeverSelection(container, load)
 	end
 end
 
-local function DrawLoadSpecialization(container, specialization)
-	-- luacheck: ignore options
-	local options = {}
-
-	for i = 1, GetNumSpecializations() do
-		local _, name, _, icon = GetSpecializationInfo(i)
-
-		table.insert(options, {
-			text = name,
-			icon = icon
-		})
-	end
-
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], options, specialization)
+local function DrawLoadClass(container, class)
+	local items, order = Clicked:GetLocalizedClasses()
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_CLASS"], items, order, class)
 end
 
-local function DrawLoadTalent(container, talent)
-	-- luacheck: ignore options
-	local options = {}
+local function DrawLoadSpecialization(container, load, specialization)
+	local classes = Clicked:GetTriStateLoadOptionValue(load.class)
 
-	for tier = 1, MAX_TALENT_TIERS do
-		for column = 1, NUM_TALENT_COLUMNS do
-			local _, name, texture = GetTalentInfo(tier, column, 1)
-
-			table.insert(options, {
-				text = name,
-				icon = texture
-			})
-		end
-	end
-
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_TALENT"], options, talent)
+	local items, order = Clicked:GetLocalizedSpecializations(classes)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], items, order, specialization)
 end
 
-local function DrawLoadPvPTalent(container, talent)
-	-- luacheck: ignore options
-	local options = {}
+local function DrawLoadTalent(container, talent, specIds)
+	local items, order = Clicked:GetLocalizedTalents(specIds)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_TALENT"], items, order, talent)
+end
 
-	local function CreateFromPvpTalentId(id)
-		local name, icon = select(2, GetPvpTalentInfoByID(id))
-
-		table.insert(options, {
-			text = name,
-			icon = icon
-		})
-	end
-
-	local function CreateFromSlotInfo(slot, inverse)
-		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slot)
-
-		if slotInfo then
-			local talents = slotInfo.availableTalentIDs
-
-			for _, id in ipairs(talents) do
-				CreateFromPvpTalentId(id)
-			end
-		end
-	end
-
-	CreateFromSlotInfo(1, true)
-	CreateFromSlotInfo(2, false)
-
-	if next(options) then
-		DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PVP_TALENT"], options, talent)
-	end
+local function DrawLoadPvPTalent(container, talent, specIds)
+	local items, order = Clicked:GetLocalizedPvPTalents(specIds)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PVP_TALENT"], items, order, talent)
 end
 
 local function DrawLoadWarMode(container, warMode)
@@ -935,20 +867,16 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 end
 
 local function DrawLoadInForm(container, form)
-	-- luacheck: ignore options
-	local options = { }
+	local options = {}
+	local order = {}
 
-	table.insert(options, {
-		text = L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_NONE"],
-		icon = nil
-	})
+	options["NONE"] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_NONE"])
+	table.insert(order, "NONE")
 
 	if not Clicked:IsClassic() and UnitClass("player") == "Druid" then
 		local function Add(suffix, icon)
-			table.insert(options, {
-				text = L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_DRUID_" .. suffix],
-				icon = icon,
-			})
+			options[suffix] = string.format("<icon=%d><text=%s>", icon, L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_DRUID_" .. suffix])
+			table.insert(order, suffix)
 		end
 
 		Add("BEAR", 132276)
@@ -961,15 +889,14 @@ local function DrawLoadInForm(container, form)
 		for i = 1, GetNumShapeshiftForms() do
 			local _, _, _, spellId = GetShapeshiftFormInfo(i)
 			local name, _, icon = GetSpellInfo(spellId)
+			local key = spellId
 
-			table.insert(options, {
-				text = name,
-				icon = icon
-			})
+			options[key] = string.format("<icon=%d><text=%s>", icon, name)
+			table.insert(order, key)
 		end
 	end
 
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"], options, form)
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"], options, order, form)
 end
 
 local function DrawLoadPet(container, pet)
@@ -990,11 +917,41 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
 	DrawLoadNeverSelection(container, load)
+	DrawLoadClass(container, load.class)
 
 	if not Clicked:IsClassic() then
-		DrawLoadSpecialization(container, load.specialization)
-		DrawLoadTalent(container, load.talent)
-		DrawLoadPvPTalent(container, load.pvpTalent)
+		local selectedSpecializationIds = {}
+
+		do
+			local classes = Clicked:GetTriStateLoadOptionValue(load.class)
+			local specializations = Clicked:GetTriStateLoadOptionValue(load.specialization)
+
+			if classes == nil then
+				classes = {}
+				classes[1] = select(2, UnitClass("player"))
+			end
+
+			if specializations == nil then
+				specializations = {}
+				specializations[1] = GetSpecialization()
+			end
+
+			for i = 1, #classes do
+				local class = classes[i]
+				local specIds = LibTalentInfo:GetClassSpecIDs(class)
+
+				for j = 1, #specializations do
+					local specIndex = specializations[j]
+					local specId = specIds[specIndex]
+
+					table.insert(selectedSpecializationIds, specId)
+				end
+			end
+		end
+
+		DrawLoadSpecialization(container, load, load.specialization)
+		DrawLoadTalent(container, load.talent, selectedSpecializationIds)
+		DrawLoadPvPTalent(container, load.pvpTalent, selectedSpecializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	end
 

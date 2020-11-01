@@ -19,6 +19,7 @@ Locales\Locales.xml
 Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
 Widgets\AceGUIWidget-ClickedSimpleGroup.lua
+Widgets\AceGUIWidget-ClickedDropDown.lua
 Widgets\AceGUIWidget-ClickedDropDown-Items.lua
 Widgets\AceGUIWidget-ClickedSearchBox.lua
 Templates\Clicked.xml

@@ -754,6 +754,7 @@ local methods = {
 					if e.value == binding.parent then
 						item.parent = e
 						table.insert(e.children, item)
+						break
 					end
 				end
 			end

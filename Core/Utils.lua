@@ -1,4 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedAddonIncompatibilityMessage"] = {
@@ -68,8 +69,33 @@ function Clicked:DeepCopyTable(original)
 	return result
 end
 
+function Clicked:GetDataFromString(string, keyword)
+	if self:IsStringNilOrEmpty(string) or self:IsStringNilOrEmpty(keyword) then
+		return nil
+	end
+
+	local pattern = string.format("<%s=(.-)>", keyword)
+	local match = string.match(string, pattern)
+
+	return match
+end
+
+function Clicked:IsStringNilOrEmpty(string)
+	return string == nil or #string == 0
+end
+
 function Clicked:IsClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+end
+
+function Clicked:GetTriStateLoadOptionValue(option)
+	if option.selected == 1 then
+		return { option.single }
+	elseif option.selected == 2 then
+		return { unpack(option.multiple) }
+	end
+
+	return nil
 end
 
 -- Check if the specified keybind is "restricted", a restricted keybind
@@ -309,4 +335,214 @@ function Clicked:GetLocalizedTargetString(target)
 	table.insert(result, units[target.unit])
 
 	return table.concat(result, " ")
+end
+
+function Clicked:GetLocalizedClasses()
+	local items = {}
+	local order
+
+	local function AppendClass(class)
+		local _, _, _, color = GetClassColor(class)
+		local name = string.format("|c%s%s|r", color, L["BINDING_UI_PAGE_LOAD_OPTIONS_CLASS_" .. class])
+
+		items[class] = string.format("<text=%s>", name)
+	end
+
+	if not self:IsClassic() then
+		AppendClass(Clicked.Classes.WARRIOR)
+		AppendClass(Clicked.Classes.PALADIN)
+		AppendClass(Clicked.Classes.HUNTER)
+		AppendClass(Clicked.Classes.ROGUE)
+		AppendClass(Clicked.Classes.PRIEST)
+		AppendClass(Clicked.Classes.DEATH_KNIGHT)
+		AppendClass(Clicked.Classes.SHAMAN)
+		AppendClass(Clicked.Classes.MAGE)
+		AppendClass(Clicked.Classes.WARLOCK)
+		AppendClass(Clicked.Classes.MONK)
+		AppendClass(Clicked.Classes.DRUID)
+		AppendClass(Clicked.Classes.DEMON_HUNTER)
+
+		order = {
+			Clicked.Classes.DEATH_KNIGHT,
+			Clicked.Classes.DEMON_HUNTER,
+			Clicked.Classes.DRUID,
+			Clicked.Classes.HUNTER,
+			Clicked.Classes.MAGE,
+			Clicked.Classes.MONK,
+			Clicked.Classes.PALADIN,
+			Clicked.Classes.PRIEST,
+			Clicked.Classes.ROGUE,
+			Clicked.Classes.SHAMAN,
+			Clicked.Classes.WARLOCK,
+			Clicked.Classes.WARRIOR
+		}
+	else
+		AppendClass(Clicked.Classes.WARRIOR)
+		AppendClass(Clicked.Classes.PALADIN)
+		AppendClass(Clicked.Classes.HUNTER)
+		AppendClass(Clicked.Classes.ROGUE)
+		AppendClass(Clicked.Classes.PRIEST)
+		AppendClass(Clicked.Classes.SHAMAN)
+		AppendClass(Clicked.Classes.MAGE)
+		AppendClass(Clicked.Classes.WARLOCK)
+		AppendClass(Clicked.Classes.DRUID)
+
+		order = {
+			Clicked.Classes.DRUID,
+			Clicked.Classes.HUNTER,
+			Clicked.Classes.MAGE,
+			Clicked.Classes.PALADIN,
+			Clicked.Classes.PRIEST,
+			Clicked.Classes.ROGUE,
+			Clicked.Classes.SHAMAN,
+			Clicked.Classes.WARLOCK,
+			Clicked.Classes.WARRIOR
+		}
+	end
+
+	return items, order
+end
+
+function Clicked:GetLocalizedSpecializations(classes)
+	local items = {}
+	local order = {}
+
+	if classes == nil then
+		classes = {}
+		classes[1] = select(2, UnitClass("player"))
+	end
+
+	if #classes == 1 then
+		local class = classes[1]
+		local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
+
+		for i = 1, #specs do
+			local _, name, _, icon = GetSpecializationInfoByID(specs[i])
+			local key = i
+
+			items[key] = string.format("<icon=%d><text=%s>", icon, name)
+			table.insert(order, key)
+		end
+	else
+		local max = 0
+
+		-- Find class with the most specializations out of all available classes
+		if #classes == 0 then
+			for _, specs in LibTalentInfo:AllClasses() do
+				if #specs > max then
+					max = #specs
+				end
+			end
+		-- Find class with the most specializations out of the selected classes
+		else
+			for i = 1, #classes do
+				local class = classes[i]
+				local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
+
+				if #specs > max then
+					max = #specs
+				end
+			end
+		end
+
+		for i = 1, max do
+			local key = i
+
+			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_SPECIALIZATION"]:format(i))
+			table.insert(order, key)
+		end
+	end
+
+	return items, order
+end
+
+function Clicked:GetLocalizedTalents(specializations)
+	local items = {}
+	local order = {}
+
+	if specializations == nil then
+		specializations = {}
+		specializations[1] = GetSpecializationInfo(GetSpecialization())
+	end
+
+	if #specializations == 1 then
+		local spec = specializations[1]
+
+		for tier = 1, MAX_TALENT_TIERS do
+			for column = 1, NUM_TALENT_COLUMNS do
+				local _, name, texture = LibTalentInfo:GetTalentInfo(spec, tier, column)
+				local key = #order + 1
+
+				items[key] = string.format("<icon=%d><text=%s>", texture, name)
+				table.insert(order, key)
+			end
+		end
+	else
+		for tier = 1, MAX_TALENT_TIERS do
+			for column = 1, NUM_TALENT_COLUMNS do
+				local key = #order + 1
+
+				items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_TALENT"]:format(tier, column))
+				table.insert(order, key)
+			end
+		end
+	end
+
+	return items, order
+end
+
+function Clicked:GetLocalizedPvPTalents(specializations)
+	local items = {}
+	local order = {}
+
+	if specializations == nil then
+		specializations = {}
+		specializations[1] = GetSpecializationInfo(GetSpecialization())
+	end
+
+	if #specializations == 1 then
+		local spec = specializations[1]
+		local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+
+		for i = 1, numTalents do
+			local _, name, texture = LibTalentInfo:GetPvPTalentInfo(spec, 1, i)
+			local key = #order + 1
+
+			items[key] = string.format("<icon=%d><text=%s>", texture, name)
+			table.insert(order, key)
+		end
+	else
+		local max = 0
+
+		-- Find specialization with the highest number of PvP talents
+		if #specializations == 0 then
+			for _, specs in LibTalentInfo:AllClasses() do
+				for _, spec in ipairs(specs) do
+					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+
+					if numTalents > max then
+						max = numTalents
+					end
+				end
+			end
+		-- Find specialization with the highest number of PvP talents out of the selected specializations
+		else
+			for _, spec in ipairs(specializations) do
+				local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+
+				if numTalents > max then
+					max = numTalents
+				end
+			end
+		end
+
+		for i = 1, max do
+			local key = i
+
+			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_PVP_TALENT"]:format(i))
+			table.insert(order, key)
+		end
+	end
+
+	return items, order
 end

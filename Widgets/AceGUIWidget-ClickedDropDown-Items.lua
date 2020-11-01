@@ -2,8 +2,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 local IBLib = LibStub("AceGUI-3.0-DropDown-ItemBase")
 
 do
-	local widgetType = "Dropdown-Item-Toggle-Icon"
+	local widgetType = "Clicked-Dropdown-Item-Toggle-Icon"
 	local widgetVersion = 1
+
+	local ICON_SIZE = 12
+	local ICON_MARGIN = 4
 
 	local function UpdateToggle(self)
 		if self.value then
@@ -32,6 +35,25 @@ do
 	end
 
 	-- exported
+	local function SetText(self, text)
+		local i = Clicked:GetDataFromString(text, "icon")
+		local t = Clicked:GetDataFromString(text, "text")
+
+		if text ~= nil and #text > 0 and t == nil then
+			t = text
+		end
+
+		self.icon:SetTexture(i)
+		self.text:SetText(t)
+
+		if i ~= nil then
+			self.text:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 18 + ICON_SIZE + ICON_MARGIN, 0)
+		else
+			self.text:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 18, 0)
+		end
+	end
+
+	-- exported
 	local function SetValue(self, value)
 		self.value = value
 		UpdateToggle(self)
@@ -43,9 +65,6 @@ do
 	end
 
 	local function Constructor()
-		local ICON_SIZE = 12
-		local ICON_MARGIN = 4
-
 		local self = IBLib:GetItemBase().Create(widgetType)
 		local frame = self.frame
 
@@ -60,6 +79,7 @@ do
 
 		self.frame:SetScript("OnClick", Frame_OnClick)
 
+		self.SetText = SetText
 		self.SetValue = SetValue
 		self.GetValue = GetValue
 		self.OnRelease = OnRelease

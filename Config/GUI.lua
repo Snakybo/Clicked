@@ -168,7 +168,7 @@ function GUI:Button(label, action)
 end
 
 function GUI:Dropdown(label, items, order, itemType, ref, key)
-	local widget = CreateGUI("Dropdown")
+	local widget = CreateGUI("ClickedDropDown")
 	widget:SetList(items, order, itemType)
 	widget:SetLabel(label)
 	widget:SetCallback("OnValueChanged", OnSerialize)
@@ -196,7 +196,7 @@ function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
 		OnSerialize(frame, event, total)
 	end
 
-	local widget = CreateGUI("Dropdown")
+	local widget = CreateGUI("ClickedDropDown")
 	widget:SetList(items, order, itemType)
 	widget:SetMultiselect(true)
 	widget:SetLabel(label)

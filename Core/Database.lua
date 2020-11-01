@@ -79,6 +79,7 @@ function Clicked:GetNewBindingTemplate()
 		secondaryTargets = {},
 		load = {
 			never = false,
+			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
 			combat = GetLoadOptionTemplate(Clicked.CombatState.IN_COMBAT),
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
@@ -423,6 +424,14 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 			binding.identifier = profile.bindings.next
 			profile.bindings.next = profile.bindings.next + 1
+
+			binding.load.class = {
+				selected = 0,
+				single = select(2, UnitClass("player")),
+				multiple = {
+					select(2, UnitClass("player"))
+				}
+			}
 		end
 
 		profile.groups = {

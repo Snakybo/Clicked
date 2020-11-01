@@ -70,6 +70,21 @@ Clicked.PetState = {
 	INACTIVE = "INACTIVE"
 }
 
+Clicked.Classes = {
+	WARRIOR = "WARRIOR",
+	PALADIN = "PALADIN",
+	HUNTER = "HUNTER",
+	ROGUE = "ROGUE",
+	PRIEST = "PRIEST",
+	DEATH_KNIGHT = "DEATHKNIGHT",
+	SHAMAN = "SHAMAN",
+	MAGE = "MAGE",
+	WARLOCK = "WARLOCK",
+	MONK = "MONK",
+	DRUID = "DRUID",
+	DEMON_HUNTER = "DEMONHUNTER"
+}
+
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
@@ -699,6 +714,17 @@ function Clicked:CanBindingLoad(binding)
 		-- values.
 
 		if load.never then
+			return false
+		end
+	end
+
+	do
+		local function IsClassIndexSelected(index)
+			local _, identifier = UnitClass("player")
+			return identifier == index
+		end
+
+		if not ValidateTriStateLoadOption(load.class, IsClassIndexSelected) then
 			return false
 		end
 	end
