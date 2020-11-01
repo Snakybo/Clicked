@@ -25,7 +25,7 @@ end
 function Clicked:ShowInformationPopup(text)
 	StaticPopupDialogs["ClickedInformationMessage"] = {
 		text = text,
-		button1 = L["MSG_POPUP_BUTTON_OKAY"],
+		button1 = L["MSG_POPUP_BUTTON_CONTINUE"],
 		timeout = 0,
 		whileDead = true,
 		hideOnEscape = true,
