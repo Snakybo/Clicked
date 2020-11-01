@@ -1,0 +1,12 @@
+commit fbac6bcff353188948fa77b7a74642c43a584252
+Author: Snakybo <krol.kevin@gmail.com>
+Date:   Sun Nov 1 23:42:31 2020 +0100
+
+    Add assertion error messages
+
+commit 43145e1a72416509d6f219e82172fd4981af1260
+Author: Snakybo <krol.kevin@gmail.com>
+Date:   Sun Nov 1 23:19:05 2020 +0100
+
+    Initial commit
+
