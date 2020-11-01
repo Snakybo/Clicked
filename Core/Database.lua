@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
+Clicked.EVENT_GROUPS_CHANGED = "CLICKED_GROUPS_CHANGED"
+
 local function GetLoadOptionTemplate(default)
 	return {
 		selected = false,
@@ -24,7 +26,12 @@ function Clicked:GetDatabaseDefaults()
 			options = {
 				onKeyDown = false
 			},
-			bindings = {},
+			groups = {
+				next = 1
+			},
+			bindings = {
+				next = 1
+			},
 			blacklist = {},
 			minimap = {
 				hide = false
@@ -36,6 +43,7 @@ end
 function Clicked:GetNewBindingTemplate()
 	local template = {
 		type = Clicked.BindingTypes.SPELL,
+		identifier = self:GetNextBindingIdentifier(),
 		keybind = "",
 		actions = {
 			spell = {
@@ -96,6 +104,59 @@ function Clicked:GetNewBindingTargetTemplate()
 		hostility = Clicked.TargetHostility.ANY,
 		vitals = Clicked.TargetVitals.ANY
 	}
+end
+
+function Clicked:GetNextBindingIdentifier()
+	local identifier = self.db.profile.bindings.next
+	self.db.profile.bindings.next = self.db.profile.bindings.next + 1
+
+	return identifier
+end
+
+function Clicked:CreateNewGroup()
+	local identifier = self.db.profile.groups.next
+	self.db.profile.groups.next = self.db.profile.groups.next + 1
+
+	local group = {
+		name = L["BINDING_UI_GROUP_NAME_DEFAULT"],
+		icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
+		identifier = "group-" .. identifier
+	}
+
+	table.insert(self.db.profile.groups, group)
+	self:SendMessage(self.EVENT_GROUPS_CHANGED)
+
+	return group
+end
+
+function Clicked:DeleteGroup(group)
+	local shouldReloadBindings = false
+
+	for i, e in ipairs(self.db.profile.groups) do
+		if e.identifier == group.identifier then
+			table.remove(self.db.profile.groups, i)
+			break
+		end
+	end
+
+	for i = #self.db.profile.bindings, 1, -1 do
+		local binding = self.db.profile.bindings[i]
+
+		if binding.parent == group.identifier then
+			shouldReloadBindings = true
+			table.remove(self.db.profile.bindings, i)
+		end
+	end
+
+	self:SendMessage(self.EVENT_GROUPS_CHANGED)
+
+	if shouldReloadBindings then
+		self:ReloadActiveBindings()
+	end
+end
+
+function Clicked:IterateGroups()
+	return ipairs(self.db.profile.groups)
 end
 
 -- Don't use any constants in this function to prevent breaking the updater
@@ -350,6 +411,26 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.9.0"))
 		profile.version = "0.9.0"
+	end
+
+	-- 0.9.x to 0.10.0
+	if string.sub(profile.version, 1, 3) == "0.9" then
+		profile.bindings.next = 1
+
+		for _, binding in ipairs(profile.bindings) do
+			binding.actions.spell.startAutoAttack = nil
+			binding.actions.item.startAutoAttack = nil
+
+			binding.identifier = profile.bindings.next
+			profile.bindings.next = profile.bindings.next + 1
+		end
+
+		profile.groups = {
+			next = 1
+		}
+
+		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.10.0"))
+		profile.version = "0.10.0"
 	end
 
 	profile.version = self.VERSION

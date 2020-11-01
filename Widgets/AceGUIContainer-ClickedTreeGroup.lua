@@ -94,23 +94,31 @@ local function GetKeybindIndex(keybind)
 end
 
 local function TreeSortFunc(left, right)
-	if left.binding.keybind == "" and right.binding.keybind ~= "" then
-		return false
-	end
-
-	if left.binding.keybind ~= "" and right.binding.keybind == "" then
+	if left.children ~= nil and right.children == nil then
 		return true
 	end
 
-	if left.binding.keybind == "" and right.binding.keybind == "" then
-		return left.value < right.value
+	if left.children == nil and right.children ~= nil then
+		return false
 	end
 
-	if left.binding.keybind == right.binding.keybind then
-		return left.value < right.value
-	end
+	if left.binding ~= nil and right.binding ~= nil then
+		if left.binding.keybind == "" and right.binding.keybind ~= "" then
+			return false
+		end
 
-	return GetKeybindIndex(left.binding.keybind) < GetKeybindIndex(right.binding.keybind)
+		if left.binding.keybind ~= "" and right.binding.keybind == "" then
+			return true
+		end
+
+		if left.binding.keybind == right.binding.keybind then
+			return left.value < right.value
+		end
+
+		return GetKeybindIndex(left.binding.keybind) < GetKeybindIndex(right.binding.keybind)
+	else
+		return left.title < right.title
+	end
 end
 
 local function UpdateItemVisual(item, binding)
@@ -175,11 +183,13 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local uniquevalue = treeline.uniquevalue
 	local disabled = treeline.disabled
 	local binding = treeline.binding
+	local group = treeline.group
 
 	button.treeline = treeline
 	button.value = value
 	button.uniquevalue = uniquevalue
 	button.binding = binding
+	button.group = group
 
 	if selected then
 		button:LockHighlight()
@@ -254,6 +264,7 @@ local function addLine(self, v, tree, level, parent)
 	local line = new()
 	line.value = v.value
 	line.binding = v.binding
+	line.group = v.group
 	line.title = v.title
 	line.keybind = v.keybind
 	line.icon = v.icon
@@ -315,97 +326,99 @@ local function Button_OnClick(frame, button)
 	elseif button == "RightButton" then
 		local inCombat = InCombatLockdown()
 
-		local menu = {
-			{
+		local menu = {}
+
+		if frame.binding ~= nil then
+			table.insert(menu, {
 				text = L["BINDING_UI_BUTTON_COPY"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
 					self.bindingCopyBuffer = Clicked:DeepCopyTable(frame.binding)
 				end
-			},
-			{
+			})
+
+			table.insert(menu, {
 				text = L["BINDING_UI_BUTTON_PASTE"],
 				notCheckable = true,
 				disabled = inCombat or self.bindingCopyBuffer == nil,
 				func = function()
-					local clone = Clicked:DeepCopyTable(self.bindingCopyBuffer)
-					clone.keybind = frame.binding.keybind
+					local index = Clicked:GetBindingIndex(frame.binding)
 
-					Clicked:SetBindingAt(frame.value, clone)
+					if index > 0 then
+						local clone = Clicked:DeepCopyTable(self.bindingCopyBuffer)
+						clone.identifier = frame.binding.identifier
+						clone.keybind = frame.binding.keybind
+
+						Clicked:SetBindingAt(index, clone)
+					end
 				end
-			},
-			{
+			})
+
+			table.insert(menu, {
 				text = L["BINDING_UI_BUTTON_DUPLICATE"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
 					local clone = Clicked:DeepCopyTable(frame.binding)
+					clone.identifier = Clicked:GetNextBindingIdentifier()
 					clone.keybind = ""
 
 					local index = Clicked:GetNumConfiguredBindings() + 1
 					Clicked:SetBindingAt(index, clone)
 
-					self:SelectByValue(index)
+					self:SelectByBindingOrGroup(clone)
 				end
-			},
-			{
-				text = L["BINDING_UI_BUTTON_DELETE"],
-				notCheckable = true,
-				disabled = inCombat,
-				func = function()
-					local function OnConfirm()
-						if InCombatLockdown() then
-							print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
-							return
-						end
+			})
+		end
 
-						local next = nil
-
-						if self:GetSelectedBinding() == frame.binding then
-							local index = nil
-
-							for i, e in ipairs(self.tree) do
-								if e.binding == frame.binding then
-									index = i
-									break
-								end
-							end
-
-							if index + 1 <= #self.tree then
-								next = self.tree[index + 1].binding
-							elseif index - 1 >= 1 then
-								next = self.tree[index - 1].binding
-							end
-						end
-
-						Clicked:DeleteBinding(frame.binding)
-
-						if next ~= nil then
-							for _, e in ipairs(self.tree) do
-								if e.binding == next then
-									self:SelectByValue(e.value)
-									break
-								end
-							end
-						end
+		table.insert(menu, {
+			text = L["BINDING_UI_BUTTON_DELETE"],
+			notCheckable = true,
+			disabled = inCombat,
+			func = function()
+				local function OnConfirm()
+					if InCombatLockdown() then
+						print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+						return
 					end
 
-					if IsShiftKeyDown() then
-						OnConfirm()
-					else
+					if frame.binding ~= nil then
+						Clicked:DeleteBinding(frame.binding)
+					elseif frame.group ~= nil then
+						Clicked:DeleteGroup(frame.group)
+					end
+				end
+
+				if IsShiftKeyDown() then
+					OnConfirm()
+				else
+					local msg = nil
+
+					if frame.binding ~= nil then
 						local data = Clicked:GetActiveBindingAction(frame.binding)
 
-						local msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
+						msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
 						msg = msg .. L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"]:format(frame.binding.keybind, data.displayName)
+					elseif frame.group ~= nil then
+						local count = 0
 
-						Clicked:ShowConfirmationPopup(msg, function()
-							OnConfirm()
-						end)
+						for _, e in Clicked:IterateConfiguredBindings() do
+							if e.parent == frame.group.identifier then
+								count = count + 1
+							end
+						end
+
+						msg = L["BINDING_UI_POPUP_DELETE_GROUP_LINE_1"]:format(count) .. "\n\n"
+						msg = msg .. L["BINDING_UI_POPUP_DELETE_GROUP_LINE_2"]:format(frame.group.name)
 					end
+
+					Clicked:ShowConfirmationPopup(msg, function()
+						OnConfirm()
+					end)
 				end
-			}
-		}
+			end
+		})
 
 		EasyMenu(menu, contextMenuFrame, frame, 0, 0, "MENU")
 	end
@@ -420,6 +433,11 @@ end
 
 local function Button_OnEnter(frame)
 	local self = frame.obj
+
+	if frame.isMoving then
+		return
+	end
+
 	self:Fire("OnButtonEnter", frame.uniquevalue, frame)
 
 	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
@@ -461,11 +479,75 @@ end
 
 local function Button_OnLeave(frame)
 	local self = frame.obj
+
+	if frame.isMoving then
+		return
+	end
+
 	self:Fire("OnButtonLeave", frame.uniquevalue, frame)
 
 	if self.enabletooltips and frame.title ~= nil then
 		local tooltip = AceGUI.tooltip
 		tooltip:Hide()
+	end
+end
+
+local function Button_OnDragStart(frame)
+	local self = frame.obj
+
+	if frame.binding == nil then
+		return
+	end
+
+	frame:StartMoving()
+	frame:SetFrameLevel(frame:GetParent():GetFrameLevel() + 2)
+	frame.isMoving = true
+
+	if self.enabletooltips then
+		local tooltip = AceGUI.tooltip
+		tooltip:Hide()
+	end
+
+	self:RefreshTree()
+end
+
+local function Button_OnDragStop(frame)
+	local self = frame.obj
+
+	if frame.binding == nil then
+		return
+	end
+
+	frame:StopMovingOrSizing()
+	frame:SetUserPlaced(false)
+	frame.isMoving = false
+
+	local newParent = frame.binding.parent
+
+	for _, button in ipairs(self.buttons) do
+		if button ~= frame and button:IsEnabled() and button:IsShown() and button:IsMouseOver(0, 0) then
+			if button.group ~= nil then
+				newParent = button.group.identifier
+				break
+			elseif button.binding ~= nil then
+				newParent = nil
+				break
+			end
+		end
+	end
+
+	if newParent ~= frame.binding.parent then
+		frame.binding.parent = newParent
+		self:ConstructTree()
+	else
+		self:RefreshTree()
+	end
+end
+
+local function Button_OnHide(frame)
+	if frame.isMoving then
+		frame:StopMovingOrSizing()
+		frame.isMoving = false
 	end
 end
 
@@ -567,6 +649,8 @@ local methods = {
 	["CreateButton"] = function(self)
 		local num = AceGUI:GetNextWidgetNum("TreeGroupButton")
 		local button = CreateFrame("Button", ("ClickedTreeButton%d"):format(num), self.treeframe, "OptionsListButtonTemplate")
+		button:RegisterForDrag("LeftButton")
+		button:SetMovable(true)
 		button.obj = self
 
 		local icon = button:CreateTexture(nil, "OVERLAY")
@@ -591,6 +675,9 @@ local methods = {
 		button:SetScript("OnDoubleClick", Button_OnDoubleClick)
 		button:SetScript("OnEnter",Button_OnEnter)
 		button:SetScript("OnLeave",Button_OnLeave)
+		button:SetScript("OnDragStart", Button_OnDragStart)
+		button:SetScript("OnDragStop", Button_OnDragStop)
+		button:SetScript("OnHide", Button_OnHide)
 
 		button.toggle.button = button
 		button.toggle:SetScript("OnClick",Expand_OnClick)
@@ -628,10 +715,10 @@ local methods = {
 
 		self.searchHandler = handler
 		self.searchHandler:SetCallback("SearchTermChanged", function()
-			self:RefreshTree()
+			self:ConstructTree()
 		end)
 
-		self:RefreshTree()
+		self:ConstructTree()
 	end,
 
 	["ConstructTree"] = function(self, filter)
@@ -639,18 +726,46 @@ local methods = {
 		self.filter = filter
 		self.tree = {}
 
-		for index, binding in Clicked:IterateConfiguredBindings() do
+		for _, group in Clicked:IterateGroups() do
 			local item = {
-				value = index,
+				title = group.name,
+				value = group.identifier,
+				group = group,
+				icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
+				children = {}
+			}
+
+			table.insert(self.tree, item)
+		end
+
+		for _, binding in Clicked:IterateConfiguredBindings() do
+			local item = {
+				value = "binding-" .. binding.identifier,
 				binding = binding,
 				icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 			}
 
 			UpdateItemVisual(item, binding)
-			table.insert(self.tree, item)
+
+			if binding.parent == nil then
+				table.insert(self.tree, item)
+			else
+				for _, e in ipairs(self.tree) do
+					if e.value == binding.parent then
+						item.parent = e
+						table.insert(e.children, item)
+					end
+				end
+			end
 		end
 
 		table.sort(self.tree, TreeSortFunc)
+
+		for _, item in ipairs(self.tree) do
+			if item.children ~= nil then
+				table.sort(item.children, TreeSortFunc)
+			end
+		end
 
 		self:RefreshTree()
 
@@ -685,7 +800,9 @@ local methods = {
 		local lines = self.lines
 
 		for _, v in ipairs(buttons) do
-			v:Hide()
+			if not v.isMoving then
+				v:Hide()
+			end
 		end
 
 		while lines[1] do
@@ -703,16 +820,21 @@ local methods = {
 		local groupstatus = status.groups
 		local tree = {}
 
-		if self.searchHandler ~= nil then
-			for _, item in ipairs(self.tree) do
-				local data = Clicked:GetActiveBindingAction(item.binding)
+		if self.searchHandler ~= nil and #self.searchHandler.searchTerm > 0 then
+			local function IsItemValidWithSearchQuery(item)
 				local strings = {}
 
-				table.insert(strings, data.displayName)
-				table.insert(strings, data.value)
+				if item.binding ~= nil then
+					local data = Clicked:GetActiveBindingAction(item.binding)
 
-				if item.binding.keybind ~= "" then
-					table.insert(strings, item.binding.keybind)
+					table.insert(strings, data.displayName)
+					table.insert(strings, data.value)
+
+					if item.binding.keybind ~= "" then
+						table.insert(strings, item.binding.keybind)
+					end
+				elseif item.group ~= nil then
+					table.insert(strings, item.title)
 				end
 
 				for i = 1, #strings do
@@ -721,9 +843,81 @@ local methods = {
 						local pattern = string.lower(self.searchHandler.searchTerm)
 
 						if string.find(str, pattern, 1, true) ~= nil then
-							table.insert(tree, item)
-							break
+							return true
 						end
+					end
+				end
+
+				return false
+			end
+
+			local function TableContains(tbl, item)
+				for _, child in ipairs(tbl) do
+					if child == item then
+						return true
+					end
+				end
+
+				return false
+			end
+
+			local open = { unpack(self.tree) }
+
+			while #open > 0 do
+				local next = open[1]
+				table.remove(open, 1)
+
+				if IsItemValidWithSearchQuery(next) then
+					local current = next
+
+					while current ~= nil do
+						local parent = current.parent
+
+						if parent == nil then
+							if current.children ~= nil then
+								current.children2 = current.children2 or {}
+							end
+
+							if not TableContains(tree, current) then
+								table.insert(tree, current)
+							end
+						else
+							parent.children2 = parent.children2 or {}
+
+							if not TableContains(parent.children2, current) then
+								table.insert(parent.children2, current)
+							end
+						end
+
+						current = parent
+					end
+				end
+
+				if next.children ~= nil then
+					for i = 1, #next.children do
+						table.insert(open, next.children[i])
+					end
+				end
+			end
+
+			table.sort(tree, TreeSortFunc)
+
+			open = { unpack(self.tree) }
+
+			while #open > 0 do
+				local next = open[1]
+				table.remove(open, 1)
+
+				if next.children2 ~= nil then
+					next.children = next.children2
+					next.children2 = nil
+				end
+
+				if next.children ~= nil then
+					table.sort(next.children, TreeSortFunc)
+
+					for i = 1, #next.children do
+						table.insert(open, next.children[i])
 					end
 				end
 			end
@@ -807,6 +1001,9 @@ local methods = {
 				buttons[buttonNum] = button
 
 				button:SetParent(treeframe)
+			end
+
+			if not button.isMoving then
 				button:SetFrameLevel(treeframe:GetFrameLevel() + 1)
 				button:ClearAllPoints()
 
@@ -822,13 +1019,16 @@ local methods = {
 					button:SetPoint("TOPRIGHT", previous, "BOTTOMRIGHT", 0, 0)
 					button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, 0)
 				end
+
+				UpdateButton(button, line, status.selected == line.uniquevalue, line.hasChildren, groupstatus[line.uniquevalue])
+				button:Show()
 			end
 
-			UpdateButton(button, line, status.selected == line.uniquevalue, line.hasChildren, groupstatus[line.uniquevalue])
-			button:Show()
-
 			buttonNum = buttonNum + 1
-			previous = button
+
+			if not button.isMoving then
+				previous = button
+			end
 		end
 	end,
 
@@ -861,26 +1061,49 @@ local methods = {
 		self:Select(uniquevalue, ("\001"):split(uniquevalue))
 	end,
 
-	["SelectByBinding"] = function(self, binding)
-		for _, item in ipairs(self.tree) do
-			if item.binding == binding then
-				self:SelectByValue(item.value)
-				return
+	["SelectByBindingOrGroup"] = function(self, item)
+		local open = { unpack(self.tree) }
+
+		while #open > 0 do
+			local next = open[1]
+			table.remove(open, 1)
+
+			if next.binding == item or next.group == item then
+				self:SelectByValue(next.value)
+				break
+			end
+
+			if next.children ~= nil then
+				for i = 1, #next.children do
+					table.insert(open, next.children[i])
+				end
 			end
 		end
 	end,
 
 	["ShowScroll"] = function(self, show)
 		self.showscroll = show
+
+		local button = nil
+
+		for _, b in ipairs(self.buttons) do
+			if b:IsEnabled() and b:IsShown() and not b.isMoving then
+				button = b
+				break
+			end
+		end
+
 		if show then
 			self.scrollbar:Show()
-			if self.buttons[1] then
-				self.buttons[1]:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",-22,-10)
+
+			if button ~= nil then
+				button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",-22,-10)
 			end
 		else
 			self.scrollbar:Hide()
-			if self.buttons[1] then
-				self.buttons[1]:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",0,-10)
+
+			if button ~= nil then
+				button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",0,-10)
 			end
 		end
 	end,
@@ -946,55 +1169,33 @@ local methods = {
 		return status.treewidth or DEFAULT_TREE_WIDTH
 	end,
 
-	["GetSelectedBinding"] = function(self)
+	["GetSelectedItem"] = function(self)
 		local status = self.status or self.localstatus
-		local selected = status.selected
 
-		if selected == nil then
+		if status.selected == nil then
 			return nil
 		end
 
-		local path = { ("\001"):split(selected) }
+		local path = { ("\001"):split(status.selected) }
+		local current = self.tree
 
-		if #path > 0 then
-			local last = path[#path]
-			local value = tonumber(last)
+		for i = 1, #path do
+			local value = path[i]
 
-			for i = 1, #self.tree do
-				local item = self.tree[i]
-
-				if item.value == value then
-					return item.binding
+			if current ~= nil then
+				for _, e in ipairs(current) do
+					if e.value == value then
+						if i == #path then
+							current = e
+						else
+							current = e.children
+						end
+					end
 				end
 			end
 		end
 
-		return nil
-	end,
-
-	["GetNeighbouringBinding"] = function(self, offset)
-		local status = self.status or self.localstatus
-		local selected = status.selected
-
-		if selected == nil then
-			return nil
-		end
-
-		local path = { ("\001"):split(selected) }
-
-		local function IndexOf(array, value)
-			for i = 1, #array do
-				local item = array[i]
-
-				if item.value == value then
-					return i
-				end
-			end
-
-			return 0
-		end
-
-		return self.tree[IndexOf(self.tree, path[#path]) + offset]
+		return current
 	end,
 
 	["LayoutFinished"] = function(self, width, height)

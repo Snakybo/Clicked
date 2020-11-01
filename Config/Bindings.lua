@@ -7,6 +7,7 @@ local Module = {}
 local ITEM_TEMPLATE_SIMPLE_BINDING = "SIMPLE_BINDING"
 local ITEM_TEMPLATE_CLICKCAST_BINDING = "CLICKCAST_BINDING"
 local ITEM_TEMPLATE_HEALER_BINDING = "HEALER_BINDING"
+local ITEM_TEMPLATE_GROUP = "GROUP"
 
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
@@ -1008,18 +1009,53 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	end
 end
 
+-- Group page
+
+local function DrawGroup(container)
+	local group = Module:GetCurrentGroup()
+
+	local parent = GUI:InlineGroup(L["BINDING_UI_PAGE_GROUP_LABEL_GOUP_NAME_ICON"])
+	container:AddChild(parent)
+
+	-- name text field
+	do
+		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "name")
+		widget:SetFullWidth(true)
+
+		parent:AddChild(widget)
+	end
+
+	-- icon field
+	do
+		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "icon")
+		--widget:SetRelativeWidth(0.7)
+		widget:SetFullWidth(true)
+
+		parent:AddChild(widget)
+	end
+
+	-- icon button
+	-- do
+	-- 	local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], function() end)
+	-- 	widget:SetRelativeWidth(0.3)
+	-- 	widget:SetDisabled(true)
+
+	-- 	group:AddChild(widget)
+	-- end
+end
+
 -- Item templates
 
 local function CreateFromItemTemplate(identifier)
 	if identifier == ITEM_TEMPLATE_SIMPLE_BINDING then
 		local binding = Clicked:CreateNewBinding()
 
-		Module.tree:SelectByBinding(binding)
+		Module.tree:SelectByBindingOrGroup(binding)
 	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
 		local binding = Clicked:CreateNewBinding()
 		binding.primaryTarget.unit = Clicked.TargetUnits.HOVERCAST
 
-		Module.tree:SelectByBinding(binding)
+		Module.tree:SelectByBindingOrGroup(binding)
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
 		local binding = Clicked:CreateNewBinding()
 		binding.primaryTarget.unit = Clicked.TargetUnits.MOUSEOVER
@@ -1032,7 +1068,11 @@ local function CreateFromItemTemplate(identifier)
 		binding.secondaryTargets[2] = Clicked:GetNewBindingTargetTemplate()
 		binding.secondaryTargets[2].unit = Clicked.TargetUnits.PLAYER
 
-		Module.tree:SelectByBinding(binding)
+		Module.tree:SelectByBindingOrGroup(binding)
+	elseif identifier == ITEM_TEMPLATE_GROUP then
+		local group = Clicked:CreateNewGroup()
+
+		Module.tree:SelectByBindingOrGroup(group)
 	end
 end
 
@@ -1130,6 +1170,12 @@ local function DrawItemTemplateSelector(container)
 
 	container:AddChild(scrollFrame)
 
+	do
+		local widget = GUI:Label(L["BINDING_UI_PAGE_TITLE_TEMPLATE"], "large")
+		scrollFrame:AddChild(widget)
+	end
+
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["BINDING_UI_PAGE_TEMPLATE_TITLE_GROUP"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_GROUP"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SIMPLE_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CLICKCAST_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_HEALER_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"])
@@ -1175,6 +1221,8 @@ local function DrawTreeContainer(container, event, group)
 
 	if Module:GetCurrentBinding() ~= nil then
 		DrawBinding(container)
+	elseif Module:GetCurrentGroup() ~= nil then
+		DrawGroup(container)
 	else
 		DrawItemTemplateSelector(container)
 	end
@@ -1257,11 +1305,13 @@ end
 function Module:Register()
 	Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
 	Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
+	Clicked:RegisterMessage(Clicked.EVENT_GROUPS_CHANGED, OnBindingsChangedEvent)
 end
 
 function Module:Unregister()
 	Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
 	Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
+	Clicked:UnregisterMessage(Clicked.EVENT_GROUPS_CHANGED)
 end
 
 function Module:Redraw()
@@ -1274,17 +1324,23 @@ function Module:Redraw()
 end
 
 function Module:GetCurrentBinding()
-	return self.tree:GetSelectedBinding()
-end
+	local item = self.tree:GetSelectedItem()
 
-function Module:GetNextBinding()
-	local next = self.tree:GetNeighbouringBinding(1)
-
-	if next == nil then
-		next = self.tree:GetNeighbouringBinding(-1)
+	if item ~= nil then
+		return item.binding
 	end
 
-	return next
+	return nil
+end
+
+function Module:GetCurrentGroup()
+	local item = self.tree:GetSelectedItem()
+
+	if item ~= nil then
+		return item.group
+	end
+
+	return nil
 end
 
 function Module:OnChatCommandReceived(args)

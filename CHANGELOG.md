@@ -5,6 +5,9 @@
 ### Added
 
 - Add right click context menu items to bindings in the list view which can be used to copy, paste, duplciate, and remove them
+- Add a new item template creation window which lists commonly used binding configurations
+- Add the ability to create groups/folders to organize bindings
+- Remember the selected binding page (action, targets, conditions) when switching between bindings
 
 ### Changed
 
@@ -19,8 +22,9 @@
 ### Fixed
 
 - Fix Druid shapeshift form identifiers not always being consistent with forms selected in the UI [#13]
-- Fix default dropdown value for the war mode condition
+- Fix default dropdown value for the War Mode condition
 - Fix ElvUI skinning if the "Ace3" option is disabled within ElvUI
+- Fix binding list not always remembering the selected binding after deleting one
 
 ## [0.9.3] - 2020-10-22
 

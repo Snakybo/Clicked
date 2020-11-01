@@ -643,6 +643,16 @@ function Clicked:IterateActiveBindings()
 	return pairs(activeBindings)
 end
 
+function Clicked:GetBindingIndex(binding)
+	for i, e in ipairs(configuredBindings) do
+		if e == binding then
+			return i
+		end
+	end
+
+	return 0
+end
+
 -- Check if the specified binding is currently active based on the configuration
 -- provided in the binding's Load Options, and whether the binding is actually
 -- valid (it has a keybind and an action to perform)

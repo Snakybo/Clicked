@@ -43,21 +43,31 @@ L["BINDING_UI_BUTTON_FROM_SPELLBOOK"] = "Pick from spellbook"
 L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] = "Are you sure you want to delete this binding?"
 L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"] = "%s %s"
 
+L["BINDING_UI_POPUP_DELETE_GROUP_LINE_1"] = "Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."
+L["BINDING_UI_POPUP_DELETE_GROUP_LINE_2"] = "%s"
+
 L["BINDING_UI_TOOLTIP_SET_KEYBIND"] = "Press a key to bind, or ESC to clear the binding."
 
 L["BINDING_UI_SEARCHBOX_PLACEHOLDER"] = "Search..."
 
+L["BINDING_UI_GROUP_NAME_DEFAULT"] = "New Group"
+
 L["BINDING_UI_PAGE_TITLE_ACTIONS"] = "Actions"
 L["BINDING_UI_PAGE_TITLE_TARGETS"] = "Targets"
 L["BINDING_UI_PAGE_TITLE_CONDITIONS"] = "Conditions"
+L["BINDING_UI_PAGE_TITLE_TEMPLATE"] = "Create a new binding"
 
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"] = "Simple Binding"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"] = "Clickcast Binding"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"] = "Healer Binding"
+L["BINDING_UI_PAGE_TEMPLATE_TITLE_GROUP"] = "Group"
 
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"] = "A simple binding without any target prioritization, identical to standard action buttons."
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"] = "A binding that only activates when hovering over a unit frame."
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"] = "A binding commonly used by healers, it will prioritize mouseover -> target -> player."
+L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_GROUP"] = "A group to organize multiple bindings."
+
+L["BINDING_UI_PAGE_GROUP_LABEL_GOUP_NAME_ICON"] = "Group Name and Icon"
 
 L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] = "The left or right mouse button can only activate when hovering over unit frames."
 L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"] = "Click on a spell book entry to select it."
