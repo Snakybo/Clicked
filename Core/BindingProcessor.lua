@@ -281,28 +281,7 @@ local function ConstructActions(binding)
 end
 
 local function SortActions(left, right)
-	-- combat modifier
-	-- actions with a combat flag go in front of actions without a combat flag
-	if #left.combat > 0 and #right.combat == 0 then
-		return true
-	end
-
-	if #left.combat == 0 and #right.combat > 0 then
-		return false
-	end
-
-	-- form modifier
-	-- actions with a form flag go in front of actions without a form flag
-	if #left.forms > 0 and #right.forms == 0 then
-		return true
-	end
-
-	if #left.forms == 0 and #right.forms > 0 then
-		return false
-	end
-
-	-- mouseover unit
-	-- actions that target the @mouseover target go in front of actions that don't
+	-- 1. @mouseover
 	if left.unit == Clicked.TargetUnits.MOUSEOVER and right.unit ~= Clicked.TargetUnits.MOUSEOVER then
 		return true
 	end
@@ -311,28 +290,7 @@ local function SortActions(left, right)
 		return false
 	end
 
-	-- player unit
-	-- actions that target the @player go after actions that don't (player goes last)
-	if left.unit == Clicked.TargetUnits.PLAYER and right.unit ~= Clicked.TargetUnits.PLAYER then
-		return false
-	end
-
-	if left.unit ~= Clicked.TargetUnits.PLAYER and right.unit == Clicked.TargetUnits.PLAYER then
-		return true
-	end
-
-	-- default unit
-	-- actions that don't have a target flag go after actions that do (default actions go last)
-	if left.unit == Clicked.TargetUnits.DEFAULT and right.unit ~= Clicked.TargetUnits.DEFAULT then
-		return false
-	end
-
-	if left.unit ~= Clicked.TargetUnits.DEFAULT and right.unit == Clicked.TargetUnits.DEFAULT then
-		return true
-	end
-
-	-- hostility modifier
-	-- actions that have a hostility modifier flag (help, harm) go in front of actions without
+	-- 2. any hostility flags (help, harm)
 	if #left.hostility > 0 and #right.hostility == 0 then
 		return true
 	end
@@ -341,14 +299,49 @@ local function SortActions(left, right)
 		return false
 	end
 
-	-- vitals modifier
-	-- actions that have a vitals modifier flag (dead, nodead) go in front of actions without
+	-- 3. any vitals flags (dead, nodead)
 	if #left.vitals > 0 and #right.vitals == 0 then
 		return true
 	end
 
 	if #left.vitals == 0 and #right.vitals > 0 then
 		return false
+	end
+
+	-- 4. any combat flags (combat, nocombat)
+	if #left.combat > 0 and #right.combat == 0 then
+		return true
+	end
+
+	if #left.combat == 0 and #right.combat > 0 then
+		return false
+	end
+
+	-- 5. any form flags (forms:N)
+	if #left.forms > 0 and #right.forms == 0 then
+		return true
+	end
+
+	if #left.forms == 0 and #right.forms > 0 then
+		return false
+	end
+
+	-- 6. @player
+	if left.unit == Clicked.TargetUnits.PLAYER and right.unit ~= Clicked.TargetUnits.PLAYER then
+		return false
+	end
+
+	if left.unit ~= Clicked.TargetUnits.PLAYER and right.unit == Clicked.TargetUnits.PLAYER then
+		return true
+	end
+
+	-- 7. default
+	if left.unit == Clicked.TargetUnits.DEFAULT and right.unit ~= Clicked.TargetUnits.DEFAULT then
+		return false
+	end
+
+	if left.unit ~= Clicked.TargetUnits.DEFAULT and right.unit == Clicked.TargetUnits.DEFAULT then
+		return true
 	end
 
 	return false

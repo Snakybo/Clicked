@@ -32,6 +32,7 @@
 - Fix ElvUI skinning if the "Ace3" option is disabled within ElvUI
 - Fix binding list not always remembering the selected binding after deleting one
 - Fix PvP talents being listed multiple times
+- Fix load order for forms/stances and combat state, they no longer overwrite all other bindings [#11] [#15]
 
 ## [0.9.3] - 2020-10-22
 
@@ -308,7 +309,9 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#15]: https://github.com/Snakybo/Clicked/issues/15
 [#13]: https://github.com/Snakybo/Clicked/issues/13
+[#11]: https://github.com/Snakybo/Clicked/issues/11
 [#9]: https://github.com/Snakybo/Clicked/issues/9
 [#7]: https://github.com/Snakybo/Clicked/issues/7
 [#5]: https://github.com/Snakybo/Clicked/issues/5
