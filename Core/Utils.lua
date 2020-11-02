@@ -430,66 +430,20 @@ end
 
 function Clicked:GetLocalizedClasses()
 	local items = {}
-	local order
+	local order = {}
 
-	local function AppendClass(class)
-		local _, _, _, color = GetClassColor(class)
-		local name = string.format("|c%s%s|r", color, L["BINDING_UI_PAGE_LOAD_OPTIONS_CLASS_" .. class])
+	local classes = {}
+	FillLocalizedClassList(classes)
 
-		items[class] = string.format("<text=%s>", name)
+	for classId, className in pairs(classes) do
+		local _, _, _, color = GetClassColor(classId)
+		local name = string.format("|c%s%s|r", color, className)
+
+		items[classId] = string.format("<text=%s>", name)
+		table.insert(order, classId)
 	end
 
-	if not self:IsClassic() then
-		AppendClass(Clicked.Classes.WARRIOR)
-		AppendClass(Clicked.Classes.PALADIN)
-		AppendClass(Clicked.Classes.HUNTER)
-		AppendClass(Clicked.Classes.ROGUE)
-		AppendClass(Clicked.Classes.PRIEST)
-		AppendClass(Clicked.Classes.DEATH_KNIGHT)
-		AppendClass(Clicked.Classes.SHAMAN)
-		AppendClass(Clicked.Classes.MAGE)
-		AppendClass(Clicked.Classes.WARLOCK)
-		AppendClass(Clicked.Classes.MONK)
-		AppendClass(Clicked.Classes.DRUID)
-		AppendClass(Clicked.Classes.DEMON_HUNTER)
-
-		order = {
-			Clicked.Classes.DEATH_KNIGHT,
-			Clicked.Classes.DEMON_HUNTER,
-			Clicked.Classes.DRUID,
-			Clicked.Classes.HUNTER,
-			Clicked.Classes.MAGE,
-			Clicked.Classes.MONK,
-			Clicked.Classes.PALADIN,
-			Clicked.Classes.PRIEST,
-			Clicked.Classes.ROGUE,
-			Clicked.Classes.SHAMAN,
-			Clicked.Classes.WARLOCK,
-			Clicked.Classes.WARRIOR
-		}
-	else
-		AppendClass(Clicked.Classes.WARRIOR)
-		AppendClass(Clicked.Classes.PALADIN)
-		AppendClass(Clicked.Classes.HUNTER)
-		AppendClass(Clicked.Classes.ROGUE)
-		AppendClass(Clicked.Classes.PRIEST)
-		AppendClass(Clicked.Classes.SHAMAN)
-		AppendClass(Clicked.Classes.MAGE)
-		AppendClass(Clicked.Classes.WARLOCK)
-		AppendClass(Clicked.Classes.DRUID)
-
-		order = {
-			Clicked.Classes.DRUID,
-			Clicked.Classes.HUNTER,
-			Clicked.Classes.MAGE,
-			Clicked.Classes.PALADIN,
-			Clicked.Classes.PRIEST,
-			Clicked.Classes.ROGUE,
-			Clicked.Classes.SHAMAN,
-			Clicked.Classes.WARLOCK,
-			Clicked.Classes.WARRIOR
-		}
-	end
+	table.sort(order)
 
 	return items, order
 end

@@ -46,6 +46,7 @@ read_globals = {
 	"C_PvP",
 	"C_SpecializationInfo",
 	"EasyMenu",
+	"FillLocalizedClassList",
 	"FONT_COLOR_CODE_CLOSE",
 	"GameFontHighlight",
 	"GameFontHighlightLarge",
