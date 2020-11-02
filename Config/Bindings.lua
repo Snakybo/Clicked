@@ -908,39 +908,50 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadClass(container, load.class)
 
 	if not Clicked:IsClassic() then
-		local selectedSpecializationIds = {}
+		local specializationIds = {}
 
 		do
-			local classes = Clicked:GetTriStateLoadOptionValue(load.class)
-			local specializations = Clicked:GetTriStateLoadOptionValue(load.specialization)
+			local classNames = Clicked:GetTriStateLoadOptionValue(load.class)
+			local specIndices = Clicked:GetTriStateLoadOptionValue(load.specialization)
 
-			if classes == nil then
-				classes = {}
-				classes[1] = select(2, UnitClass("player"))
+			if specIndices == nil then
+				specIndices = {}
+
+				if classNames == nil then
+					specIndices[1] = GetSpecialization()
+				else
+					for _, class in ipairs(classNames) do
+						local numSpecs = #LibTalentInfo:GetClassSpecIDs(class)
+
+						for i = 1, numSpecs do
+							table.insert(specIndices, i)
+						end
+					end
+				end
 			end
 
-			if specializations == nil then
-				specializations = {}
-				specializations[1] = GetSpecialization()
+			if classNames == nil then
+				classNames = {}
+				classNames[1] = select(2, UnitClass("player"))
 			end
 
-			for i = 1, #classes do
-				local class = classes[i]
+			for i = 1, #classNames do
+				local class = classNames[i]
 				local specIds = LibTalentInfo:GetClassSpecIDs(class)
 
-				for j = 1, #specializations do
-					local specIndex = specializations[j]
+				for j = 1, #specIndices do
+					local specIndex = specIndices[j]
 					local specId = specIds[specIndex]
 
-					table.insert(selectedSpecializationIds, specId)
+					table.insert(specializationIds, specId)
 				end
 			end
 		end
 
 		DrawLoadSpecialization(container, load, load.specialization)
-		DrawLoadTalent(container, load.talent, selectedSpecializationIds)
-		DrawLoadPvPTalent(container, load.pvpTalent, selectedSpecializationIds)
-		DrawLoadInStance(container, load.form, selectedSpecializationIds)
+		DrawLoadTalent(container, load.talent, specializationIds)
+		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
+		DrawLoadInStance(container, load.form, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	end
 

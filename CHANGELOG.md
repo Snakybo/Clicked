@@ -8,12 +8,14 @@
 - Add a new item template creation window which lists commonly used binding configurations
 - Add the ability to create groups/folders to organize bindings
 - Add a class load option
+- Automatically update listed specializations, talents, and PvP talents based on the selected class/spec load option
 - Remember the selected binding page (action, targets, conditions) when switching between bindings
 
 ### Changed
 
 - Rename "Load Options" to "Conditions"
 - Rename "Create" to "Add"
+- Rename forms to stances when the selected class is not a Druid
 
 ### Removed
 
