@@ -826,6 +826,10 @@ local function DrawLoadWarMode(container, warMode)
 	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_WAR_MODE"], items, order, warMode)
 end
 
+local function DrawLoadPlayerNameRealm(container, playerNameRealm)
+	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_NAME_REALM"], playerNameRealm)
+end
+
 local function DrawLoadCombat(container, combat)
 	local items = {
 		IN_COMBAT = L["BINDING_UI_PAGE_LOAD_OPTIONS_COMBAT_TRUE"],
@@ -905,6 +909,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
 	DrawLoadNeverSelection(container, load)
+	DrawLoadPlayerNameRealm(container, load.playerNameRealm)
 	DrawLoadClass(container, load.class)
 
 	if not Clicked:IsClassic() then

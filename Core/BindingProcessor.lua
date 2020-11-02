@@ -705,6 +705,23 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- player name
+	do
+		local playerNameRealm = load.playerNameRealm
+
+		if playerNameRealm.selected then
+			local value = playerNameRealm.value
+
+			local name = UnitName("player")
+			local realm = GetRealmName()
+
+			if value ~= name and value ~= name .. "-" .. realm then
+				return false
+			end
+		end
+	end
+
+	-- class
 	do
 		local function IsClassIndexSelected(index)
 			local _, identifier = UnitClass("player")
