@@ -9,14 +9,14 @@ local function GetBasicinfoString()
 	local lines = {}
 
 	table.insert(lines, "Version: " .. Clicked.VERSION)
-	table.insert(lines, "Race: " .. UnitRace("player"))
+	table.insert(lines, "Race: " .. select(2, UnitRace("player")))
 	table.insert(lines, "Level: " .. UnitLevel("player"))
-	table.insert(lines, "Class: " .. UnitClass("player"))
+	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
 	if not Clicked:IsClassic() then
 		do
-			local _, name = GetSpecializationInfo(GetSpecialization())
-			table.insert(lines, "Specialization: " .. name)
+			local id = GetSpecializationInfo(GetSpecialization())
+			table.insert(lines, "Specialization: " .. id)
 		end
 
 		do
