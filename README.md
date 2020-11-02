@@ -2,24 +2,24 @@
 
 ![CI Status](https://github.com/Snakybo/Clicked/workflows/CI/badge.svg)
 
-Clicked is a World of Warcraft addon aimed to improve keybindings and macros. The addon adds a configuration window (`/clicked` or `/cc`) from where all all bindings can be configured to do _something_. You can configure exactly what it does on a per-binding basis, and even merge keys to do different things depending on who the target it.
+Clicked is a World of Warcraft addon aimed to improve keybinds and macros. The addon adds a configuration window (`/clicked` or `/cc`) from where all all bindings can be configured to do _something_. You can configure exactly what it does on a per-binding basis, and even merge keys to do different things depending on who the target it.
 
 Additionally it adds support for the binding of the left and right mouse buttons if you prefer clicking on unit frames to cast something.
 
 ## Feature Overview
 
 * Create keyboard/mouse button bindings for spells, items, and custom macros
-* [Dynamic target priority](#dynamic-target-prioritization)
+* Customizable target priorities
 * Cast abilities by clicking on unit frames
 * Run custom macros without taking up a macro slot or 255 character limitations
-* [Combine keys to do different things depending on the target](#dynamic-target-prioritization)
-* Remove the need for action bar keybindings
-* [Dynamically load and unload bindings](#dynamically-load-and-unload-bindings)
+* Combine keybinds to do different things depending on the target
+* Remove the need for action bar keybinds
+* Dynamically load and unload bindings
 * Pick spells from the spellbook
-* Unlock bindings in a vehicle
+* Unlock keybinds while in a vehicle
 * Blacklist unit frames (`/cc blacklist`)
 
-### Dynamic target prioritization
+### Target Priority
 
 Dynamic priority bindings provide a customizable configuration interface, you can select valid targets for this binding using dropdown menus, and optionally specify the hostility of the target unit.
 
@@ -31,12 +31,16 @@ The system will automatically prioritize the bindings based on the current situa
 
 Bindings can be set to only load based on a variety of conditions.
 
+* Class
 * Talent specialization(s)
 * Talent selection(s)
+* PvP talent selection(s)
 * Combat status
+* War Mode status
 * Group status
 * Specific player in group
 * Stances/shapeshift forms
+* Pet status
 
 ## Support
 
