@@ -103,6 +103,14 @@ local function TreeSortFunc(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
+		if not Clicked:CanBindingLoad(left.binding) and Clicked:CanBindingLoad(right.binding) then
+			return false
+		end
+
+		if Clicked:CanBindingLoad(left.binding) and not Clicked:CanBindingLoad(right.binding) then
+			return true
+		end
+
 		if left.binding.keybind == "" and right.binding.keybind ~= "" then
 			return false
 		end
