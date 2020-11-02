@@ -22,6 +22,7 @@ Widgets\AceGUIWidget-ClickedSimpleGroup.lua
 Widgets\AceGUIWidget-ClickedDropDown.lua
 Widgets\AceGUIWidget-ClickedDropDown-Items.lua
 Widgets\AceGUIWidget-ClickedSearchBox.lua
+Widgets\AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua
 Templates\Clicked.xml
 Core\Clicked.lua
 Core\Database.lua

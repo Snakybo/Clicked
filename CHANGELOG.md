@@ -10,6 +10,7 @@
 - Add a class load option
 - Add a player name-realm load option
 - Add desaturated icons for unloaded bindings
+- Add status page for each binding showing their generated macros and other bindings they share a keybind with
 - Automatically update listed specializations, talents, and PvP talents based on the selected class/spec load option
 - Remember the selected binding page (action, targets, conditions) when switching between bindings
 

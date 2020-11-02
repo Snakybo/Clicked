@@ -374,7 +374,7 @@ end
 -- [@mouseover,help] and [@target] target priority order, and the other one has
 -- Crusader Strike with [@target,harm], it will create a command like this:
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
-local function GetMacroForBindings(bindings)
+function Clicked:GetMacroForBindings(bindings)
 	local result = {}
 	local interruptCurrentCast = false
 	local startAutoAttack = false
@@ -495,7 +495,7 @@ local function ProcessActiveBindings()
 
 		if reference.type == Clicked.BindingTypes.SPELL or reference.type == Clicked.BindingTypes.ITEM or reference.type == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
-			command.data = GetMacroForBindings(bucket)
+			command.data = Clicked:GetMacroForBindings(bucket)
 			valid = command.data ~= nil and command.data ~= ""
 		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
 			command.action = Clicked.CommandType.TARGET
@@ -512,9 +512,9 @@ local function ProcessActiveBindings()
 		end
 	end
 
-	for keybind, bindings in Clicked:IterateActiveBindings() do
-		Process(keybind, bindings.hovercast, true)
-		Process(keybind, bindings.regular, false)
+	for keybind, buckets in Clicked:IterateActiveBindings() do
+		Process(keybind, buckets.hovercast, true)
+		Process(keybind, buckets.regular, false)
 	end
 
 	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)

@@ -131,25 +131,11 @@ local function OpenStatusOutput()
 	frame:SetTitle("Clicked Data Dump")
 	frame:SetLayout("Fill")
 
-	editbox = AceGUI:Create("MultiLineEditBox")
+	editbox = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
 	editbox:SetLabel("")
-	editbox:DisableButton(true)
 	frame:AddChild(editbox)
 
-	local originalOnTextChanged = editbox.editBox:GetScript("OnTextChanged")
-
-	editbox.editBox:SetScript("OnChar", function()
-		UpdateStatusOutputText()
-	end)
-
-	editbox.editBox:SetScript("OnTextChanged", function()
-		UpdateStatusOutputText()
-	end)
-
 	frame:SetCallback("OnClose", function(widget)
-		editbox.editBox:SetScript("OnTextChanged", originalOnTextChanged)
-		editbox.editBox:SetScript("OnChar", nil)
-
 		AceGUI:Release(widget)
 	end)
 

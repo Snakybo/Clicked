@@ -967,6 +967,85 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadPet(container, load.pet)
 end
 
+-- Binding status page and components
+
+local function DrawBindingStatusPage(container, binding)
+	if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM and binding.type ~= Clicked.BindingTypes.MACRO then
+		return
+	end
+
+	if  not Clicked:CanBindingLoad(binding) then
+		local widget = GUI:Label("Not Loaded", "medium")
+		widget:SetFullWidth(true)
+		container:AddChild(widget)
+	else
+		local bindings = {}
+
+		for keybind, buckets in Clicked:IterateActiveBindings() do
+			if keybind == binding.keybind then
+				local bucket = binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST and buckets.hovercast or buckets.regular
+
+				for _, other in ipairs(bucket) do
+					table.insert(bindings, other)
+				end
+			end
+		end
+
+		-- output self text field
+		do
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+			widget:SetLabel("Generated local macro")
+			widget:SetText(Clicked:GetMacroForBindings({ binding }))
+			widget:SetFullWidth(true)
+			widget:SetNumLines(5)
+
+			container:AddChild(widget)
+		end
+
+		-- output of full macro
+		do
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+			widget:SetLabel("Generated full macro")
+			widget:SetText(Clicked:GetMacroForBindings(bindings))
+			widget:SetFullWidth(true)
+			widget:SetNumLines(8)
+
+			container:AddChild(widget)
+		end
+
+		if #bindings > 1 then
+			do
+				local widget = AceGUI:Create("Heading")
+				widget:SetFullWidth(true)
+				widget:SetText("Generated from " .. (#bindings - 1) .. " other binding(s)")
+
+				container:AddChild(widget)
+			end
+
+			for _, other in ipairs(bindings) do
+				if other ~= binding then
+					local action = Clicked:GetActiveBindingAction(other)
+
+					do
+						local function OnClick()
+							Module.tree:SelectByBindingOrGroup(other)
+						end
+
+						local widget = AceGUI:Create("InteractiveLabel")
+						widget:SetFontObject(GameFontHighlight)
+						widget:SetText(action.displayName)
+						widget:SetImage(action.displayIcon)
+						widget:SetFullWidth(true)
+						widget:SetCallback("OnClick", OnClick)
+
+						container:AddChild(widget)
+					end
+				end
+			end
+		end
+	end
+end
+
 -- Group page
 
 local function DrawGroup(container)
@@ -1090,6 +1169,8 @@ local function DrawBinding(container)
 				DrawBindingTargetPage(scrollFrame, binding)
 			elseif group == "conditions" then
 				DrawBindingLoadOptionsPage(scrollFrame, binding)
+			elseif group == "status" then
+				DrawBindingStatusPage(scrollFrame, binding)
 			end
 
 			scrollFrame:DoLayout()
@@ -1107,6 +1188,10 @@ local function DrawBinding(container)
 			{
 				text = L["BINDING_UI_PAGE_TITLE_CONDITIONS"],
 				value = "conditions"
+			},
+			{
+				text = L["BINDING_UI_PAGE_TITLE_STATUS"],
+				value = "status"
 			}
 		}
 
