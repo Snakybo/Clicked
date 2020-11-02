@@ -467,7 +467,8 @@ local function Button_OnEnter(frame)
 			text = text .. "\n" .. (i + 1) .. ". " .. Clicked:GetLocalizedTargetString(target)
 		end
 
-		text = text .. "|r"
+		text = text .. "|r\n\n"
+		text = text .. (Clicked:CanBindingLoad(binding) and L["BINDING_UI_TREE_LOADED"] or L["BINDING_UI_TREE_UNLOADED"])
 
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()

@@ -9,6 +9,7 @@
 - Add the ability to create groups/folders to organize bindings
 - Add a class load option
 - Add a player name-realm load option
+- Add desaturated icons for unloaded bindings
 - Automatically update listed specializations, talents, and PvP talents based on the selected class/spec load option
 - Remember the selected binding page (action, targets, conditions) when switching between bindings
 
@@ -20,7 +21,7 @@
 
 ### Removed
 
-- Remove "loaded" and "unloaded" labels
+- Remove the "L" and "U" labels used to indicate load state
 - Remove the Copy, Paste, Duplciate, and Delete buttons from the configuration panel
 
 ### Fixed
