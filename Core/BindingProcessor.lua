@@ -789,6 +789,28 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- forms
+	do
+		local function IsFormIndexSelected(index)
+			local formIndex = index - 1
+
+			-- 0 is no form/humanoid form and is always known
+			if formIndex == 0 then
+				return true
+			end
+
+			local specId = GetSpecializationInfo(GetSpecialization())
+			local forms = self:GetShapeshiftFormsForSpecId(specId)
+			local spellId = forms[formIndex]
+
+			return IsSpellKnown(spellId)
+		end
+
+		if not ValidateTriStateLoadOption(load.form, IsFormIndexSelected) then
+			return false
+		end
+	end
+
 	do
 		-- If the known spell limiter has been enabled, see if the spell is currrently
 		-- avaialble for the player. This is not limited to just spells as the name
