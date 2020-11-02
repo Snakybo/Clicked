@@ -226,9 +226,15 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 
 	button.keybind:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
 	button.keybind:SetText(string.format(format, keybind))
-	button.keybind:Show()
 
 	if icon then
+		local desaturate = false
+
+		if binding ~= nil and not Clicked:CanBindingLoad(binding) then
+			desaturate = true
+		end
+
+		button.icon:SetDesaturated(desaturate)
 		button.icon:SetTexture(icon)
 		button.icon:SetPoint("TOPLEFT", 8 * level, 1)
 	else
