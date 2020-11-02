@@ -77,6 +77,7 @@ read_globals = {
 	"IsInRaid",
 	"IsMetaKeyDown",
 	"IsShiftKeyDown",
+	"IsSpellKnown",
 	"MAX_SPELLS",
 	"MAX_TALENT_TIERS",
 	"NUM_TALENT_COLUMNS",

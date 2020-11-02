@@ -200,54 +200,41 @@ local function ConstructAction(binding, target)
 			end
 		end
 
-		if UnitClass("player") == "Druid" then
-			local all = {
-				5487,	-- [1] Bear Form
-				768,	-- [2] Cat Form
-				783,	-- [3] Travel Form
-				197625,	-- [4] Moonkin Form
-				114282, -- [5] Treant Form
-				210053 -- [6] Mount Form
-			}
-
+		if select(2, UnitClass("player")) == "DRUID" then
+			local specId = GetSpecializationInfo(GetSpecialization())
+			local all = Clicked:GetShapeshiftFormsForSpecId(specId)
 			local available = {}
+			local result = {}
 
-			for i = 1, #all do
-				local spellId = all[i]
-				local name = GetSpellInfo(spellId)
-
-				if GetSpellInfo(name) ~= nil then
+			for _, spellId in ipairs(all) do
+				if IsSpellKnown(spellId) then
 					table.insert(available, spellId)
 				end
 			end
-
-			local finalForms = {}
 
 			for i = 1, #forms do
 				local formId = forms[i]
 
 				-- 0 is [form:0] aka humanoid
 				if formId == 0 then
-					table.insert(finalForms, formId)
+					table.insert(result, formId)
 
 					-- Incarnation: Tree of Life does not show up as a shapeshift form,
 					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-					local name = GetSpellInfo(33891) -- Incarnation: Tree of Life
-
-					if GetSpellInfo(name) ~= nil then
-						table.insert(finalForms, GetNumShapeshiftForms() + 1)
+					if IsSpellKnown(33891) then
+						table.insert(result, GetNumShapeshiftForms() + 1)
 					end
 				else
 					for j = 1, #available do
 						if available[j] == all[formId] then
-							table.insert(finalForms, j)
+							table.insert(result, j)
 							break
 						end
 					end
 				end
 			end
 
-			forms = finalForms
+			forms = result
 		end
 
 		action.forms = table.concat(forms, "/")

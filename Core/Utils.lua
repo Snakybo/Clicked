@@ -1,6 +1,93 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
+-- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --"..a(b,", "))
+local shapeshiftForms = {
+	-- Arms Warrior
+	-- Fury Warrior
+	-- Protection Warrior
+	[71] = {},
+	[72] = {},
+	[73] = {},
+
+	-- Holy Paladin
+	-- Protection Paladin
+	-- Retribution Paladin
+	[65] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
+	[66] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
+	[70] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
+
+	-- Beast Mastery Hunter
+	-- Marksmanship Hunter
+	-- Survival Hunter
+	[253] = {},
+	[254] = {},
+	[255] = {},
+
+	-- Assassination Rogue
+	-- Outlaw Rogue
+	-- Subtlety Rogue
+	[259] = { 1784 }, -- Stealth
+	[260] = { 1784 }, -- Stealth
+	[261] = { 1784 }, -- Stealth
+
+	-- Discipline Priest
+	-- Holy Priest
+	-- Shadow Priest
+	[256] = {},
+	[257] = {},
+	[258] = { 232698 }, -- Shadowform
+
+	-- Blood Death Knight
+	-- Frost Death Knight
+	-- Unholy Death Knight
+	[250] = {},
+	[251] = {},
+	[252] = {},
+
+	-- Elemental Shaman
+	-- Enhancement Shaman
+	-- Restoration Shaman
+	[262] = {},
+	[263] = {},
+	[264] = {},
+
+	-- Arcane Mage
+	-- Fire Mage
+	-- Frost Mage
+	[62] = {},
+	[63] = {},
+	[64] = {},
+
+	-- Afflication Warlock
+	-- Demonology Warlock
+	-- Destruction Warlock
+	[265] = {},
+	[266] = {},
+	[267] = {},
+
+	-- Brewmaster Monk
+	-- Mistweaver Monk
+	-- Windwalker Monk
+	[268] = {},
+	[270] = {},
+	[269] = {},
+
+	-- Balance Druid
+	-- Feral Druid
+	-- Guardian Druid
+	-- Restoration Druid
+	[102] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+	[103] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+	[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+	[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+
+	-- Havoc Demon Hunter
+	-- Vengeance Demon Hunter
+	[577] = {},
+	[581] = {}
+}
+
 function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedAddonIncompatibilityMessage"] = {
 		text = L["ERR_ADDON_INCOMPAT_MESSAGE"]:format(addon),
@@ -96,6 +183,10 @@ function Clicked:GetTriStateLoadOptionValue(option)
 	end
 
 	return nil
+end
+
+function Clicked:GetShapeshiftFormsForSpecId(specId)
+	return { unpack(shapeshiftForms[specId]) }
 end
 
 -- Check if the specified keybind is "restricted", a restricted keybind
@@ -448,7 +539,7 @@ function Clicked:GetLocalizedSpecializations(classes)
 		for i = 1, max do
 			local key = i
 
-			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_SPECIALIZATION"]:format(i))
+			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_SPECIALIZATION"]:format(i))
 			table.insert(order, key)
 		end
 	end
@@ -482,7 +573,7 @@ function Clicked:GetLocalizedTalents(specializations)
 			for column = 1, NUM_TALENT_COLUMNS do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_TALENT"]:format(tier, column))
+				items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_TALENT"]:format(tier, column))
 				table.insert(order, key)
 			end
 		end
@@ -537,9 +628,72 @@ function Clicked:GetLocalizedPvPTalents(specializations)
 		end
 
 		for i = 1, max do
-			local key = i
+			local key = #order + 1
 
-			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_PVP_TALENT"]:format(i))
+			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_PVP_TALENT"]:format(i))
+			table.insert(order, key)
+		end
+	end
+
+	return items, order
+end
+
+function Clicked:GetLocalizedForms(specializations)
+	local items = {}
+	local order = {}
+
+	if specializations == nil then
+		specializations = {}
+		specializations[1] = GetSpecializationInfo(GetSpecialization())
+	end
+
+	if #specializations == 1 then
+		local spec = specializations[1]
+		local defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_NONE"]
+
+		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid
+		if spec == 102 or spec == 103 or spec == 104 or spec == 105 then
+			defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_HUMANOID"]
+		end
+
+		do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", defaultForm)
+			table.insert(order, key)
+		end
+
+		for i = 1, #shapeshiftForms[spec] do
+			local name, _, icon = GetSpellInfo(shapeshiftForms[spec][i])
+			local key = #order + 1
+
+			items[key] = string.format("<icon=%d><text=%s>", icon, name)
+			table.insert(order, key)
+		end
+	else
+		local max = 0
+
+		-- Find specialization with the highest number of forms
+		if #specializations == 0 then
+			for _, forms in pairs(shapeshiftForms) do
+				if #forms > max then
+					max = #forms
+				end
+			end
+		-- Find specialization with the highest number of forms out of the selected specializations
+		else
+			for _, spec in ipairs(specializations) do
+				if #shapeshiftForms[spec] > max then
+					max = #shapeshiftForms[spec]
+				end
+			end
+		end
+
+		-- start at 0 because [form:0] is no form
+		for i = 0, max do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_STANCE"]:format(i))
 			table.insert(order, key)
 		end
 	end

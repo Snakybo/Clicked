@@ -866,37 +866,25 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_IN_GROUP"], playerInGroup)
 end
 
-local function DrawLoadInForm(container, form)
-	local options = {}
-	local order = {}
+local function DrawLoadInStance(container, form, specIds)
+	local label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_STANCE"]
 
-	options["NONE"] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_NONE"])
-	table.insert(order, "NONE")
+	if specIds == nil then
+		specIds = {}
+		specIds[1] = GetSpecializationInfo(GetSpecialization())
+	end
 
-	if not Clicked:IsClassic() and UnitClass("player") == "Druid" then
-		local function Add(suffix, icon)
-			options[suffix] = string.format("<icon=%d><text=%s>", icon, L["BINDING_UI_PAGE_LOAD_OPTIONS_FORM_DRUID_" .. suffix])
-			table.insert(order, suffix)
-		end
+	if #specIds == 1 then
+		local spec = specIds[1]
 
-		Add("BEAR", 132276)
-		Add("CAT", 132115)
-		Add("TRAVEL", 132144)
-		Add("MOONKIN", 136036)
-		Add("TREANT", 132145)
-		Add("MOUNT", 1394966)
-	else
-		for i = 1, GetNumShapeshiftForms() do
-			local _, _, _, spellId = GetShapeshiftFormInfo(i)
-			local name, _, icon = GetSpellInfo(spellId)
-			local key = spellId
-
-			options[key] = string.format("<icon=%d><text=%s>", icon, name)
-			table.insert(order, key)
+		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid
+		if spec == 102 or spec == 103 or spec == 104 or spec == 105 then
+			label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"]
 		end
 	end
 
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"], options, order, form)
+	local items, order = Clicked:GetLocalizedForms(specIds)
+	DrawTristateLoadOption(container, label, items, order, form)
 end
 
 local function DrawLoadPet(container, pet)
@@ -952,6 +940,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 		DrawLoadSpecialization(container, load, load.specialization)
 		DrawLoadTalent(container, load.talent, selectedSpecializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, selectedSpecializationIds)
+		DrawLoadInStance(container, load.form, selectedSpecializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	end
 
@@ -960,10 +949,6 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)
 	DrawLoadPet(container, load.pet)
-
-	if GetNumShapeshiftForms() > 0 then
-		DrawLoadInForm(container, load.form)
-	end
 end
 
 -- Group page
