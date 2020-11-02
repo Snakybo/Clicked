@@ -6,9 +6,9 @@
 
 - Add right click context menu items to bindings in the list view which can be used to copy, paste, duplciate, and remove them
 - Add a new item template creation window which lists commonly used binding configurations
-- Add the ability to create groups/folders to organize bindings
-- Add a class load option
-- Add a player name-realm load option
+- Add the ability to create groups/folders to organize bindings [#14]
+- Add a class load option [#14]
+- Add a player name-realm load option [#14]
 - Add desaturated icons for unloaded bindings
 - Add status page for each binding showing their generated macros and other bindings they share a keybind with
 - Automatically update listed specializations, talents, and PvP talents based on the selected class/spec load option
@@ -19,6 +19,7 @@
 - Rename "Load Options" to "Conditions"
 - Rename "Create" to "Add"
 - Rename forms to stances when the selected class is not a Druid
+- List unloaded bindings last under all loaded bindings [#12]
 
 ### Removed
 
@@ -310,7 +311,9 @@
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#15]: https://github.com/Snakybo/Clicked/issues/15
+[#14]: https://github.com/Snakybo/Clicked/issues/14
 [#13]: https://github.com/Snakybo/Clicked/issues/13
+[#12]: https://github.com/Snakybo/Clicked/issues/12
 [#11]: https://github.com/Snakybo/Clicked/issues/11
 [#9]: https://github.com/Snakybo/Clicked/issues/9
 [#7]: https://github.com/Snakybo/Clicked/issues/7
