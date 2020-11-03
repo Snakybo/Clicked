@@ -922,7 +922,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 			if specIndices == nil then
 				specIndices = {}
 
-				if classNames == nil then
+				if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
 					specIndices[1] = GetSpecialization()
 				else
 					for _, class in ipairs(classNames) do
