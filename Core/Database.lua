@@ -426,11 +426,12 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.identifier = profile.bindings.next
 			profile.bindings.next = profile.bindings.next + 1
 
+			local class = select(2, UnitClass("player"))
 			binding.load.class = {
 				selected = 0,
-				single = select(2, UnitClass("player")),
+				single = class,
 				multiple = {
-					select(2, UnitClass("player"))
+					class
 				}
 			}
 
