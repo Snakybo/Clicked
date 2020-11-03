@@ -795,10 +795,8 @@ local function DrawLoadClass(container, class)
 	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_CLASS"], items, order, class)
 end
 
-local function DrawLoadSpecialization(container, load, specialization)
-	local classes = Clicked:GetTriStateLoadOptionValue(load.class)
-
-	local items, order = Clicked:GetLocalizedSpecializations(classes)
+local function DrawLoadSpecialization(container, specialization, classNames)
+	local items, order = Clicked:GetLocalizedSpecializations(classNames)
 	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], items, order, specialization)
 end
 
@@ -914,9 +912,9 @@ local function DrawBindingLoadOptionsPage(container, binding)
 
 	if not Clicked:IsClassic() then
 		local specializationIds = {}
+		local classNames = Clicked:GetTriStateLoadOptionValue(load.class)
 
 		do
-			local classNames = Clicked:GetTriStateLoadOptionValue(load.class)
 			local specIndices = Clicked:GetTriStateLoadOptionValue(load.specialization)
 
 			if specIndices == nil then
@@ -953,7 +951,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 			end
 		end
 
-		DrawLoadSpecialization(container, load, load.specialization)
+		DrawLoadSpecialization(container, load.specialization, classNames)
 		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadInStance(container, load.form, specializationIds)

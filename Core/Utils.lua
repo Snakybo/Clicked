@@ -448,17 +448,17 @@ function Clicked:GetLocalizedClasses()
 	return items, order
 end
 
-function Clicked:GetLocalizedSpecializations(classes)
+function Clicked:GetLocalizedSpecializations(classNames)
 	local items = {}
 	local order = {}
 
-	if classes == nil then
-		classes = {}
-		classes[1] = select(2, UnitClass("player"))
+	if classNames == nil then
+		classNames = {}
+		classNames[1] = select(2, UnitClass("player"))
 	end
 
-	if #classes == 1 then
-		local class = classes[1]
+	if #classNames == 1 then
+		local class = classNames[1]
 		local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
 
 		for i = 1, #specs do
@@ -472,7 +472,7 @@ function Clicked:GetLocalizedSpecializations(classes)
 		local max = 0
 
 		-- Find class with the most specializations out of all available classes
-		if #classes == 0 then
+		if #classNames == 0 then
 			for _, specs in LibTalentInfo:AllClasses() do
 				if #specs > max then
 					max = #specs
@@ -480,8 +480,8 @@ function Clicked:GetLocalizedSpecializations(classes)
 			end
 		-- Find class with the most specializations out of the selected classes
 		else
-			for i = 1, #classes do
-				local class = classes[i]
+			for i = 1, #classNames do
+				local class = classNames[i]
 				local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
 
 				if #specs > max then
