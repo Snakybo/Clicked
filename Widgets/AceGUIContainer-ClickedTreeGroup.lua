@@ -537,7 +537,7 @@ local function Button_OnDragStop(frame)
 	frame:SetUserPlaced(false)
 	frame.isMoving = false
 
-	local newParent = frame.binding.parent
+	local newParent = nil
 
 	for _, button in ipairs(self.buttons) do
 		if button ~= frame and button:IsEnabled() and button:IsShown() and button:IsMouseOver(0, 0) then
@@ -545,7 +545,7 @@ local function Button_OnDragStop(frame)
 				newParent = button.group.identifier
 				break
 			elseif button.binding ~= nil then
-				newParent = nil
+				newParent = button.binding.parent
 				break
 			end
 		end
