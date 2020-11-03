@@ -994,7 +994,7 @@ local function DrawBindingStatusPage(container, binding)
 		-- output self text field
 		do
 			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-			widget:SetLabel("Generated local macro")
+			widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_LOCAL"])
 			widget:SetText(Clicked:GetMacroForBindings({ binding }))
 			widget:SetFullWidth(true)
 			widget:SetNumLines(5)
@@ -1005,7 +1005,7 @@ local function DrawBindingStatusPage(container, binding)
 		-- output of full macro
 		do
 			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-			widget:SetLabel("Generated full macro")
+			widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_FULL"])
 			widget:SetText(Clicked:GetMacroForBindings(bindings))
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
@@ -1017,7 +1017,7 @@ local function DrawBindingStatusPage(container, binding)
 			do
 				local widget = AceGUI:Create("Heading")
 				widget:SetFullWidth(true)
-				widget:SetText("Generated from " .. (#bindings - 1) .. " other binding(s)")
+				widget:SetText(L["BINDING_UI_PAGE_STATUS_GENERATED_RELATIVES"]:format(#bindings - 1))
 
 				container:AddChild(widget)
 			end
