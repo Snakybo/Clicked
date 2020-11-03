@@ -1084,8 +1084,14 @@ local methods = {
 			local next = open[1]
 			table.remove(open, 1)
 
-			if next.binding == item or next.group == item then
+			if (next.binding == item and next.binding.parent == nil) or next.group == item then
 				self:SelectByValue(next.value)
+				break
+			elseif next.binding == item then
+				local parent = next.binding.parent
+				local value = parent .. "\001" .. next.value
+
+				self:SelectByValue(value)
 				break
 			end
 
