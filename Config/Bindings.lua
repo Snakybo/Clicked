@@ -260,6 +260,8 @@ local function DrawEditFieldLoadOption(container, title, data)
 end
 
 local function DrawTristateLoadOption(container, title, items, order, data)
+	assert(type(data) == "table", "bad argument #5, expected table but got " .. type(data))
+
 	-- enabled toggle
 	do
 		local widget = GUI:TristateCheckBox(title, data, "selected")

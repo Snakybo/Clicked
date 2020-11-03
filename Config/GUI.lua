@@ -68,6 +68,9 @@ function GUI:EditBox(label, callback, ref, key)
 		OnSerialize(frame, event, value)
 	end
 
+	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
+
 	local widget = CreateGUI("EditBox")
 	widget:SetText(ref[key])
 	widget:SetLabel(label)
@@ -83,6 +86,9 @@ function GUI:EditBox(label, callback, ref, key)
 end
 
 function GUI:MultilineEditBox(label, callback, ref, key)
+	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
+
 	local widget = CreateGUI("MultiLineEditBox")
 	widget:SetLabel(label)
 	widget:SetText(ref[key])
@@ -143,6 +149,9 @@ function GUI:TristateCheckBox(label, ref, key)
 		widget:SetValue(IndexToValue(value))
 	end
 
+	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
+
 	local widget = CreateGUI("CheckBox")
 	widget:SetType("checkbox")
 	widget:SetLabel(label)
@@ -168,6 +177,9 @@ function GUI:Button(label, action)
 end
 
 function GUI:Dropdown(label, items, order, itemType, ref, key)
+	assert(type(ref) == "table", "bad argument #5, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #6, expected string but got " .. type(key))
+
 	local widget = CreateGUI("ClickedDropDown")
 	widget:SetList(items, order, itemType)
 	widget:SetLabel(label)
@@ -195,6 +207,9 @@ function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
 
 		OnSerialize(frame, event, total)
 	end
+
+	assert(type(ref) == "table", "bad argument #5, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #6, expected string but got " .. type(key))
 
 	local widget = CreateGUI("ClickedDropDown")
 	widget:SetList(items, order, itemType)
@@ -228,6 +243,9 @@ function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
 end
 
 function GUI:KeybindingButton(label, ref, key)
+	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
+
 	local widget = CreateGUI("ClickedKeybinding")
 	widget:SetLabel(label)
 	widget:SetKey(ref[key])
