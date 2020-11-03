@@ -43,6 +43,7 @@ read_globals = {
 	"BOOKTYPE_PROFESSION",
 	"CreateFrame",
 	"DisableAddOn",
+	"C_CreatureInfo",
 	"C_PvP",
 	"C_SpecializationInfo",
 	"EasyMenu",
@@ -104,6 +105,7 @@ read_globals = {
 	"UnitRace",
 	"WOW_PROJECT_CLASSIC",
 	"WOW_PROJECT_ID",
+	"WOW_PROJECT_MAINLINE",
 	"hooksecurefunc",
 
 	-- Lua globals

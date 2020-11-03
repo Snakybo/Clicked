@@ -80,6 +80,7 @@ function Clicked:GetNewBindingTemplate()
 		load = {
 			never = false,
 			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
+			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
 			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
 			combat = GetLoadOptionTemplate(Clicked.CombatState.IN_COMBAT),
 			spellKnown = GetLoadOptionTemplate(""),
@@ -432,6 +433,15 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				single = class,
 				multiple = {
 					class
+				}
+			}
+
+			local race = select(2, UnitRace("player"))
+			binding.load.race = {
+				selected = 0,
+				single = race,
+				multiple = {
+					race
 				}
 			}
 

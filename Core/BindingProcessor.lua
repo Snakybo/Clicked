@@ -702,11 +702,23 @@ function Clicked:CanBindingLoad(binding)
 	-- class
 	do
 		local function IsClassIndexSelected(index)
-			local _, identifier = UnitClass("player")
-			return identifier == index
+			local _, className = UnitClass("player")
+			return className == index
 		end
 
 		if not ValidateTriStateLoadOption(load.class, IsClassIndexSelected) then
+			return false
+		end
+	end
+
+	-- race
+	do
+		local function IsRaceIndexSelected(index)
+			local _, raceName = UnitRace("player")
+			return raceName == index
+		end
+
+		if not ValidateTriStateLoadOption(load.race, IsRaceIndexSelected) then
 			return false
 		end
 	end

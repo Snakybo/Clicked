@@ -795,6 +795,11 @@ local function DrawLoadClass(container, class)
 	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_CLASS"], items, order, class)
 end
 
+local function DrawLoadRace(container, race)
+	local items, order = Clicked:GetLocalizedRaces()
+	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_RACE"], items, order, race)
+end
+
 local function DrawLoadSpecialization(container, specialization, classNames)
 	local items, order = Clicked:GetLocalizedSpecializations(classNames)
 	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], items, order, specialization)
@@ -909,6 +914,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadNeverSelection(container, load)
 	DrawLoadPlayerNameRealm(container, load.playerNameRealm)
 	DrawLoadClass(container, load.class)
+	DrawLoadRace(container, load.race)
 
 	if not Clicked:IsClassic() then
 		local specializationIds = {}

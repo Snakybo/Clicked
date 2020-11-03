@@ -9,6 +9,7 @@
 - Add the ability to create groups/folders to organize bindings [#14]
 - Add a class load option [#14]
 - Add a player name-realm load option [#14]
+- Add a player race load option
 - Add desaturated icons for unloaded bindings
 - Add status page for each binding showing their generated macros and other bindings they share a keybind with
 - Automatically update listed specializations, talents, and PvP talents based on the selected class/spec load option

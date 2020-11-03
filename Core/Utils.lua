@@ -88,6 +88,55 @@ local shapeshiftForms = {
 	[581] = {}
 }
 
+local races
+
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	races = {
+		-- Alliance
+		1, -- Human
+		3, -- Dwarf
+		4, -- NightElf
+		7, -- Gnome
+		11, -- Draenei
+		22, -- Worgen
+		29, -- VoidElf
+		30, -- LightforgedDraenei
+		32, -- KulTiran
+		34, -- DarkIronDwarf
+		37, -- Mechagnome
+
+		-- Horde
+		2, -- Orc
+		5, -- Scourge
+		6, -- Tauren
+		8, -- Troll
+		9, -- Goblin
+		10, -- BloodElf
+		27, -- Nightborne
+		28, -- HighmountainTauren
+		31, -- ZandalariTroll
+		35, -- Vulpera
+		36, -- MagharOrc
+
+		-- Neutral
+		24, -- Pandaren
+	}
+elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	races = {
+		-- Alliance
+		1, -- Human
+		3, -- Dwarf
+		4, -- NightElf
+		7, -- Gnome
+
+		-- Horde
+		2, -- Orc
+		5, -- Scourge
+		6, -- Tauren
+		8, -- Troll
+	}
+end
+
 function Clicked:ShowAddonIncompatibilityPopup(addon)
 	StaticPopupDialogs["ClickedAddonIncompatibilityMessage"] = {
 		text = L["ERR_ADDON_INCOMPAT_MESSAGE"]:format(addon),
@@ -441,6 +490,22 @@ function Clicked:GetLocalizedClasses()
 
 		items[classId] = string.format("<text=%s>", name)
 		table.insert(order, classId)
+	end
+
+	table.sort(order)
+
+	return items, order
+end
+
+function Clicked:GetLocalizedRaces()
+	local items = {}
+	local order = {}
+
+	for _, raceId in ipairs(races) do
+		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
+
+		items[raceInfo.clientFileString] = string.format("<text=%s>", raceInfo.raceName)
+		table.insert(order, raceInfo.clientFileString)
 	end
 
 	table.sort(order)
