@@ -1064,9 +1064,15 @@ local methods = {
 		local status = self.status or self.localstatus
 		local groups = status.groups
 		local path = {...}
+
 		for i = 1, #path do
-			groups[table.concat(path, "\001", 1, i)] = true
+			local group = table.concat(path, "\001", 1, i)
+
+			if string.find(group, "\001") then
+				groups[group] = true
+			end
 		end
+
 		status.selected = uniquevalue
 		self:RefreshTree(true)
 		self:Fire("OnGroupSelected", uniquevalue)
