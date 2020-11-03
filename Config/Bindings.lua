@@ -1195,8 +1195,6 @@ local function DrawBinding(container)
 			}
 		}
 
-		Module.tab = Module.tab or { selected = "action" }
-
 		local widget = GUI:TabGroup(items, OnGroupSelected)
 		widget:SetStatusTable(Module.tab)
 		widget:SelectTab(Module.tab.selected)
@@ -1320,6 +1318,10 @@ function Clicked:OpenBindingConfig()
 		Module.root:SetLayout("Flow")
 		Module.root:SetWidth(800)
 		Module.root:SetHeight(600)
+
+		Module.tab = {
+			selected = "action"
+		}
 	end
 
 	if InCombatLockdown() then
