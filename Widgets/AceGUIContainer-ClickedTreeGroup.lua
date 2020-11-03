@@ -552,8 +552,11 @@ local function Button_OnDragStop(frame)
 	end
 
 	if newParent ~= frame.binding.parent then
+		local currentBinding = frame.binding
 		frame.binding.parent = newParent
+
 		self:ConstructTree()
+		self:SelectByBindingOrGroup(currentBinding)
 	else
 		self:RefreshTree()
 	end
