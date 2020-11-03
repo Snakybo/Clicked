@@ -981,7 +981,7 @@ local function DrawBindingStatusPage(container, binding)
 	end
 
 	if  not Clicked:CanBindingLoad(binding) then
-		local widget = GUI:Label("Not Loaded", "medium")
+		local widget = GUI:Label(L["BINDING_UI_PAGE_STATUS_NOT_LOADED"], "medium")
 		widget:SetFullWidth(true)
 		container:AddChild(widget)
 	else
