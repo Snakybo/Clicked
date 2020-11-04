@@ -259,7 +259,8 @@ function Clicked:GetTriStateLoadOptionValue(option)
 end
 
 function Clicked:GetShapeshiftFormsForSpecId(specId)
-	return { unpack(shapeshiftForms[specId]) }
+	local forms = shapeshiftForms[specId] or {}
+	return { unpack(forms) }
 end
 
 -- Check if the specified keybind is "restricted", a restricted keybind
