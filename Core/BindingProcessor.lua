@@ -807,6 +807,12 @@ function Clicked:CanBindingLoad(binding)
 			end
 
 			local specId = GetSpecializationInfo(GetSpecialization())
+
+			-- specId can be nil on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
+			if specId == nil then
+				return false
+			end
+
 			local forms = self:GetShapeshiftFormsForSpecId(specId)
 			local spellId = forms[formIndex]
 

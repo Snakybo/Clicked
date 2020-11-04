@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fix stance/form label for low level Druids
+- Fix Lua error when entering instances if the form load option is enabled [#20]
 
 ## [0.10.2] - 2020-11-05
 
@@ -332,6 +333,7 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#20]: https://github.com/Snakybo/Clicked/issues/20
 [#18]: https://github.com/Snakybo/Clicked/issues/18
 [#16]: https://github.com/Snakybo/Clicked/issues/16
 [#15]: https://github.com/Snakybo/Clicked/issues/15
