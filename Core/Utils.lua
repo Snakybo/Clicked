@@ -3,101 +3,113 @@ local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --"..a(b,", "))
 local shapeshiftForms = {
-    -- Arms Warrior
+	-- Arms Warrior
 	-- Fury Warrior
 	-- Protection Warrior
-    [1446] = {},
+	-- Initial Warrior
 	[71] = {},
 	[72] = {},
 	[73] = {},
+	[1446] = {},
 
 	-- Holy Paladin
 	-- Protection Paladin
 	-- Retribution Paladin
-    [1451] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
+	-- Initial Paladin
 	[65] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 	[66] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 	[70] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
+	[1451] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 
 	-- Beast Mastery Hunter
 	-- Marksmanship Hunter
 	-- Survival Hunter
-    [1448] = {},
+	-- Initial Hunter
 	[253] = {},
 	[254] = {},
 	[255] = {},
+	[1448] = {},
 
 	-- Assassination Rogue
 	-- Outlaw Rogue
 	-- Subtlety Rogue
-    [1453] = { 1784 },  -- Stealth
+	-- Initial Rogue
 	[259] = { 1784 }, -- Stealth
 	[260] = { 1784 }, -- Stealth
 	[261] = { 1784 }, -- Stealth
+	[1453] = { 1784 },  -- Stealth
 
 	-- Discipline Priest
 	-- Holy Priest
 	-- Shadow Priest
-    [1452] = {},
+	-- Initial Priest
 	[256] = {},
 	[257] = {},
 	[258] = { 232698 }, -- Shadowform
+	[1452] = {},
 
 	-- Blood Death Knight
 	-- Frost Death Knight
 	-- Unholy Death Knight
-    [1455] = {},
+	-- Initial Death Knight
 	[250] = {},
 	[251] = {},
 	[252] = {},
+	[1455] = {},
 
 	-- Elemental Shaman
 	-- Enhancement Shaman
 	-- Restoration Shaman
-    [1444] = {},
+	-- Initial Shaman
 	[262] = {},
 	[263] = {},
 	[264] = {},
+	[1444] = {},
 
 	-- Arcane Mage
 	-- Fire Mage
 	-- Frost Mage
-    [1449] = {},
+	-- Initial Mage
 	[62] = {},
 	[63] = {},
 	[64] = {},
+	[1449] = {},
 
 	-- Afflication Warlock
 	-- Demonology Warlock
 	-- Destruction Warlock
-    [1454] = {},
+	-- Initial Warlock
 	[265] = {},
 	[266] = {},
 	[267] = {},
+	[1454] = {},
 
 	-- Brewmaster Monk
 	-- Mistweaver Monk
 	-- Windwalker Monk
-    [1450] = {},
+	-- Initial Monk
 	[268] = {},
 	[270] = {},
 	[269] = {},
+	[1450] = {},
 
 	-- Balance Druid
 	-- Feral Druid
 	-- Guardian Druid
 	-- Restoration Druid
-    [1447] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+	-- Initial Druid
 	[102] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[103] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+	[1447] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 
 	-- Havoc Demon Hunter
 	-- Vengeance Demon Hunter
-    [1456] = {},
+	-- Initial Demon Hunter
 	[577] = {},
-	[581] = {}
+	[581] = {},
+	[1456] = {}
 }
 
 local races
@@ -538,21 +550,35 @@ function Clicked:GetLocalizedSpecializations(classNames)
 		local class = classNames[1]
 		local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
 
-		for i = 1, #specs do
-			local _, name, _, icon = GetSpecializationInfoByID(specs[i])
-			local key = i
+		for specIndex, specId in pairs(specs) do
+			local _, name, _, icon = GetSpecializationInfoByID(specId)
+			local key = specIndex
 
-			items[key] = string.format("<icon=%d><text=%s>", icon, name)
-			table.insert(order, key)
+			if not self:IsStringNilOrEmpty(name) then
+				items[key] = string.format("<icon=%d><text=%s>", icon, name)
+				table.insert(order, key)
+			end
 		end
 	else
+		local function CountSpecs(specs)
+			local count = 0
+
+			for specIndex in pairs(specs) do
+				count = count + 1
+			end
+
+			return count
+		end
+
 		local max = 0
 
 		-- Find class with the most specializations out of all available classes
 		if #classNames == 0 then
 			for _, specs in LibTalentInfo:AllClasses() do
-				if #specs > max then
-					max = #specs
+				local count = CountSpecs(specs)
+
+				if count > max then
+					max = count
 				end
 			end
 		-- Find class with the most specializations out of the selected classes
@@ -560,9 +586,10 @@ function Clicked:GetLocalizedSpecializations(classNames)
 			for i = 1, #classNames do
 				local class = classNames[i]
 				local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
+				local count = CountSpecs(specs)
 
-				if #specs > max then
-					max = #specs
+				if count > max then
+					max = count
 				end
 			end
 		end
@@ -595,8 +622,10 @@ function Clicked:GetLocalizedTalents(specializations)
 				local _, name, texture = LibTalentInfo:GetTalentInfo(spec, tier, column)
 				local key = #order + 1
 
-				items[key] = string.format("<icon=%d><text=%s>", texture, name)
-				table.insert(order, key)
+				if not self:IsStringNilOrEmpty(name) then
+					items[key] = string.format("<icon=%d><text=%s>", texture, name)
+					table.insert(order, key)
+				end
 			end
 		end
 	else
@@ -639,7 +668,7 @@ function Clicked:GetLocalizedPvPTalents(specializations)
 		-- Find specialization with the highest number of PvP talents
 		if #specializations == 0 then
 			for _, specs in LibTalentInfo:AllClasses() do
-				for _, spec in ipairs(specs) do
+				for _, spec in pairs(specs) do
 					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
 
 					if numTalents > max then

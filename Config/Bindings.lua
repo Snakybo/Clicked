@@ -884,10 +884,10 @@ local function DrawLoadInStance(container, form, specIds)
 	end
 
 	if #specIds == 1 then
-		local spec = specIds[1]
+		local specId = specIds[1]
 
 		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid
-		if spec == 102 or spec == 103 or spec == 104 or spec == 105 then
+		if specId == 102 or specId == 103 or specId == 104 or specId == 105 then
 			label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"]
 		end
 	end
@@ -932,10 +932,10 @@ local function DrawBindingLoadOptionsPage(container, binding)
 					specIndices[1] = GetSpecialization()
 				else
 					for _, class in ipairs(classNames) do
-						local numSpecs = #LibTalentInfo:GetClassSpecIDs(class)
+						local specs = LibTalentInfo:GetClassSpecIDs(class)
 
-						for i = 1, numSpecs do
-							table.insert(specIndices, i)
+						for specIndex in pairs(specs) do
+							table.insert(specIndices, specIndex)
 						end
 					end
 				end
@@ -948,11 +948,11 @@ local function DrawBindingLoadOptionsPage(container, binding)
 
 			for i = 1, #classNames do
 				local class = classNames[i]
-				local specIds = LibTalentInfo:GetClassSpecIDs(class)
+				local specs = LibTalentInfo:GetClassSpecIDs(class)
 
 				for j = 1, #specIndices do
 					local specIndex = specIndices[j]
-					local specId = specIds[specIndex]
+					local specId = specs[specIndex]
 
 					table.insert(specializationIds, specId)
 				end

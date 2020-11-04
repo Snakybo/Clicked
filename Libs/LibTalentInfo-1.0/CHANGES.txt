@@ -1,12 +1,10 @@
-commit fbac6bcff353188948fa77b7a74642c43a584252
+tag 405fbbb3f3a5abecffdafc752eef12f78736b6af r4
+Author:	Snakybo <krol.kevin@gmail.com>
+Date:	Wed Nov 4 11:22:35 2020 +0100
+
+commit 0224a35c124d31fc717fe1aed69d49b7ee2d8ba8
 Author: Snakybo <krol.kevin@gmail.com>
-Date:   Sun Nov 1 23:42:31 2020 +0100
+Date:   Wed Nov 4 11:22:26 2020 +0100
 
-    Add assertion error messages
-
-commit 43145e1a72416509d6f219e82172fd4981af1260
-Author: Snakybo <krol.kevin@gmail.com>
-Date:   Sun Nov 1 23:19:05 2020 +0100
-
-    Initial commit
+    Add support for initial specs
 

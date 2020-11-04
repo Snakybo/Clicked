@@ -1,5 +1,5 @@
 local VERSION_MAJOR = "LibTalentInfo-1.0"
-local VERSION_MINOR = 2
+local VERSION_MINOR = 4
 
 if LibStub == nil then
 	error(VERSION_MAJOR .. " requires LibStub")
@@ -49,18 +49,78 @@ end
 
 -- https://wow.gamepedia.com/SpecializationID
 local specializations = {
-	WARRIOR		= { 71, 72, 73 },			-- Arms, Fury, Protection
-	PALADIN		= { 65, 66, 70 },			-- Holy, Protection, Retribution
-	HUNTER		= { 253, 254, 255 },		-- Beast Mastery, Marksmanship, Survival
-	ROGUE		= { 259, 260, 261 },		-- Assassination, Outlaw, Subtlety
-	PRIEST		= { 256, 257, 258 },		-- Discipline, Holy, Shadow
-	DEATHKNIGHT	= { 250, 251, 252 },		-- Blood, Frost, Unholy
-	SHAMAN		= { 262, 263, 264 }, 		-- Elemental, Enhancement, Restoration
-	MAGE		= { 62, 63, 64 },			-- Arcane, Fire, Frost
-	WARLOCK		= { 265, 266, 267 },		-- Afflication, Demonology, Destruction
-	MONK		= { 268, 270, 269 },		-- Brewmaster, Mistweaver, Windwalker
-	DRUID		= { 102, 103, 104, 105 },	-- Balance, Feral, Guardian, Restoration
-	DEMONHUNTER = { 577, 581 }				-- Havoc, Vengeance
+	WARRIOR = {
+		[1] = 71, -- Arms
+		[2] = 72, -- Fury
+		[3] = 73, -- Protection
+		[5] = 1446 -- Initial
+	},
+	PALADIN = {
+		[1] = 65, -- Holy
+		[2] = 66, -- Protection
+		[3] = 70, -- Retribution
+		[5] = 1451 -- Initial
+	},
+	HUNTER = {
+		[1] = 253, -- Beast Mastery
+		[2] = 254, -- Marksmanship
+		[3] = 255, -- Survival
+		[5] = 1448 -- Initial
+	},
+	ROGUE = {
+		[1] = 259, -- Assassination
+		[2] = 260, -- Outlaw
+		[3] = 261, -- Subtlety
+		[5] = 1453 -- Initial
+	},
+	PRIEST = {
+		256, -- Discipline
+		257, -- Holy
+		258, -- Shadow
+		1452 -- Initial
+	},
+	DEATHKNIGHT = {
+		[1] = 250, -- Blood
+		[2] = 251, -- Frost
+		[3] = 252, -- Unholy
+		[5] = 1455 -- Initial
+	},
+	SHAMAN = {
+		[1] = 262, -- Elemental
+		[2] = 263, -- Enhancement
+		[3] = 264, -- Restoration
+		[5] = 1444 -- Initial
+	},
+	MAGE = {
+		[1] = 62, -- Arcane
+		[2] = 63, -- Fire
+		[3] = 64, -- Frost
+		[5] = 1449 -- Initial
+	},
+	WARLOCK = {
+		[1] = 265, -- Afflication
+		[2] = 266, -- Demonology
+		[3] = 267, -- Destruction
+		[5] = 1454 -- Initial
+	},
+	MONK = {
+		[1] = 268, -- Brewmaster
+		[2] = 270, -- Mistweaver
+		[3] = 269, -- Windwalker
+		[5] = 1450 -- Initial
+	},
+	DRUID = {
+		[1] = 102, -- Balance
+		[2] = 103, -- Feral
+		[3] = 104, -- Guardian
+		[4] = 105, -- Restoration
+		[5] = 1447 -- Initial
+	},
+	DEMONHUNTER = {
+		[1] = 577, -- Havoc
+		[2] = 581, -- Vengeance
+		[5] = 1456 -- Initial
+	}
 }
 
 -- Macro to retrieve all talent IDs for the current specialization:
@@ -96,6 +156,9 @@ local talents = {
 		22395, 22544, 22401, -- Into the Fray, Unstoppable Force, Ravager
 		23455, 22406, 23099, -- Anger Management, Heavy Repercussions, Bolster
 	},
+	-- Initial Warrior
+	[1446] = {
+	},
 	-- Holy Paladin
 	[65] = {
 		17565, 17567, 17569, -- Crusader's Might, Bestow Faith, Light's Hammer
@@ -125,6 +188,9 @@ local talents = {
 		17597, 17599, 17601, -- Divine Purpose, Holy Avenger, Seraphim
 		23167, 22483, 23086, -- Selfless Healer, Justicar's Vengeance, Healing Hands
 		23456, 22215, 22634, -- Sanctified Wrath, Crusade, Final Reckoning
+	},
+	-- Initial Paladin
+	[1451] = {
 	},
 	-- Beast Mastery Hunter
 	[253] = {
@@ -156,6 +222,9 @@ local talents = {
 		22300, 22278, 22271, -- Tip of the Spear, Mongoose Bite, Flanking Strike
 		22272, 22301, 23105, -- Birds of Prey, Wildfire Infusion, Chakrams
 	},
+	-- Initial Hunter
+	[1448] = {
+	},
 	-- Assassination Rogue
 	[259] = {
 		22337, 22338, 22339, -- Master Poisoner, Elaborate Planning, Blindside
@@ -185,6 +254,9 @@ local talents = {
 		23078, 23036, 22115, -- Shot in the Dark, Night Terrors, Prey on the Weak
 		22335, 19249, 22336, -- Dark Shadow, Alacrity, Enveloping Shadows
 		22132, 23183, 21188, -- Master of Shadows, Secret Technique, Shuriken Tornado
+	},
+	-- Initial Rogue
+	[1453] = {
 	},
 	-- Discipline Priest
 	[256] = {
@@ -216,6 +288,9 @@ local talents = {
 		21718, 21719, 21720, -- Damnation, Mindbender, Void Torrent
 		21637, 21978, 21979, -- Ancient Madness, Hungering Void, Surrender to Madness
 	},
+	-- Initial Priest
+	[1452] = {
+	},
 	-- Blood Death Knight
 	[250] = {
 		19165, 19166, 23454, -- Heartbreaker, Blooddrinker, Tombstone
@@ -245,6 +320,9 @@ local talents = {
 		22528, 22529, 23373, -- Spell Eater, Wraith Walk, Death Pact
 		22532, 22534, 22536, -- Pestilence, Unholy Pact, Defile
 		22030, 22110, 22538, -- Army of the Damned, Summon Gargoyle, Unholy Assault
+	},
+	-- Initial Death Knight
+	[1455] = {
 	},
 	-- Elemental Shaman
 	[262] = {
@@ -276,6 +354,9 @@ local talents = {
 		19265, 21971, 21968, -- Flash Flood, Downpour, Cloudburst Totem
 		21969, 21199, 22359, -- High Tide, Wellspring, Ascendance
 	},
+	-- Initial Shaman
+	[1444] = {
+	},
 	-- Arcane Mage
 	[62] = {
 		22458, 22461, 22464, -- Amplification, Rule of Threes, Arcane Familiar
@@ -305,6 +386,9 @@ local talents = {
 		22446, 22448, 22471, -- Frigid Winds, Ice Ward, Ring of Frost
 		22454, 23176, 22473, -- Freezing Rain, Splitting Ice, Comet Storm
 		21632, 22309, 21634, -- Thermal Void, Ray of Frost, Glacial Spike
+	},
+	-- Initial Mage
+	[1449] = {
 	},
 	-- Afflication Warlock
 	[265] = {
@@ -336,6 +420,9 @@ local talents = {
 		23155, 23156, 19295, -- Roaring Blaze, Rain of Chaos, Grimoire of Sacrifice
 		19284, 23144, 23092, -- Soul Conduit, Channel Demonfire, Dark Soul: Instability
 	},
+	-- Initial Warlock
+	[1454] = {
+	},
 	-- Brewmaster Monk
 	[268] = {
 		23106, 19820, 20185, -- Eye of the Tiger, Chi Wave, Chi Burst
@@ -365,6 +452,9 @@ local talents = {
 		23258, 20173, 20175, -- Inner Strength, Diffuse Magic, Dampen Harm
 		22093, 23122, 22102, -- Hit Combo, Rushing Jade Wind, Dance of Chi-Ji
 		22107, 22105, 21191, -- Spiritual Focus, Whirling Dragon Punch, Serenity
+	},
+	-- Initial Monk
+	[1450] = {
 	},
 	-- Balance Druid
 	[102] = {
@@ -406,6 +496,9 @@ local talents = {
 		21716, 18585, 22422, -- Inner Peace, Spring Blossoms, Overgrowth
 		22403, 21651, 22404, -- Photosynthesis, Germination, Flourish
 	},
+	-- Initial Druid
+	[1447] = {
+	},
 	-- Havoc Demon Hunter
 	[577] = {
 		21854, 22493, 22416, -- Blind Fury, Demonic Appetite, Felblade
@@ -425,6 +518,9 @@ local talents = {
 		22546, 22510, 22511, -- Concentrated Sigils, Quickened Sigils, Sigil of Chains
 		22512, 22513, 22768, -- Void Reaver, Demonic, Soul Barrier
 		22543, 23464, 21902, -- Last Resort, Ruinous Bulwark, Bulk Extraction
+	},
+	-- Initial Demon Hunter
+	[1456] = {
 	}
 }
 
@@ -449,6 +545,9 @@ local pvpTalents = {
 		[2] = { 167, 168, 173, 175, 178, 171, 831, 833, 5374, 24, 845, 5378 }, -- Sword and Board, Bodyguard, Shield Bash, Thunderstruck, Warpath, Morale Killer, Dragon Charge, Rebound, Demolition, Disarm, Oppressor, Overwatch
 		[3] = { 167, 168, 173, 175, 178, 171, 831, 833, 5374, 24, 845, 5378 }, -- Sword and Board, Bodyguard, Shield Bash, Thunderstruck, Warpath, Morale Killer, Dragon Charge, Rebound, Demolition, Disarm, Oppressor, Overwatch
 	},
+	-- Initial Warrior
+	[1446] = {
+	},
 	-- Holy Paladin
 	[65] = {
 		[1] = { 640, 642, 85, 88, 86, 3618, 82, 689, 87, 859 }, -- Divine Vision, Cleanse the Weak, Ultimate Sacrifice, Blessed Hands, Darkest before the Dawn, Hallowed Ground, Avenging Light, Divine Favor, Spreading the Word, Light's Grace
@@ -466,6 +565,9 @@ local pvpTalents = {
 		[1] = { 3055, 751, 752, 753, 858, 641, 81, 757, 756, 755, 754 }, -- Cleansing Light, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Law and Order, Unbound Freedom, Luminescence, Jurisdiction, Aura of Reckoning, Divine Punisher, Lawbringer
 		[2] = { 3055, 751, 752, 753, 858, 641, 81, 757, 756, 755, 754 }, -- Cleansing Light, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Law and Order, Unbound Freedom, Luminescence, Jurisdiction, Aura of Reckoning, Divine Punisher, Lawbringer
 		[3] = { 3055, 751, 752, 753, 858, 641, 81, 757, 756, 755, 754 }, -- Cleansing Light, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Law and Order, Unbound Freedom, Luminescence, Jurisdiction, Aura of Reckoning, Divine Punisher, Lawbringer
+	},
+	-- Initial Paladin
+	[1451] = {
 	},
 	-- Beast Mastery Hunter
 	[253] = {
@@ -485,6 +587,9 @@ local pvpTalents = {
 		[2] = { 662, 663, 665, 664, 661, 686, 3609, 3608, 3607, 3606, 3610, 3615 }, -- Mending Bandage, Roar of Sacrifice, Tracker's Net, Sticky Tar, Hunting Pack, Diamond Ice, Scorpid Sting, Spider Sting, Survival Tactics, Hi-Explosive Trap, Dragonscale Armor, Viper Sting
 		[3] = { 662, 663, 665, 664, 661, 686, 3609, 3608, 3607, 3606, 3610, 3615 }, -- Mending Bandage, Roar of Sacrifice, Tracker's Net, Sticky Tar, Hunting Pack, Diamond Ice, Scorpid Sting, Spider Sting, Survival Tactics, Hi-Explosive Trap, Dragonscale Armor, Viper Sting
 	},
+	-- Initial Hunter
+	[1448] = {
+	},
 	-- Assassination Rogue
 	[259] = {
 		[1] = { 130, 132, 3480, 3448, 3479, 147, 144, 141, 830, 137 }, -- Intent to Kill, Honor Among Thieves, Smoke Bomb, Maneuverability, Death from Above, System Shock, Flying Daggers, Creeping Venom, Neurotoxin, Mind-Numbing Poison
@@ -502,6 +607,9 @@ local pvpTalents = {
 		[1] = { 136, 1209, 856, 140, 846, 146, 153, 3447, 3452, 3462 }, -- Veil of Midnight, Smoke Bomb, Silhouette, Cold Blood, Dagger in the Dark, Thief's Bargain, Shadowy Duel, Maneuverability, Honor Among Thieves, Death from Above
 		[2] = { 136, 1209, 856, 140, 846, 146, 153, 3447, 3452, 3462 }, -- Veil of Midnight, Smoke Bomb, Silhouette, Cold Blood, Dagger in the Dark, Thief's Bargain, Shadowy Duel, Maneuverability, Honor Among Thieves, Death from Above
 		[3] = { 136, 1209, 856, 140, 846, 146, 153, 3447, 3452, 3462 }, -- Veil of Midnight, Smoke Bomb, Silhouette, Cold Blood, Dagger in the Dark, Thief's Bargain, Shadowy Duel, Maneuverability, Honor Among Thieves, Death from Above
+	},
+	-- Initial Rogue
+	[1453] = {
 	},
 	-- Discipline Priest
 	[256] = {
@@ -521,6 +629,9 @@ local pvpTalents = {
 		[2] = { 128, 739, 102, 106, 3753, 113, 5381, 5380, 763 }, -- Void Shift, Void Origins, Void Shield, Driven to Madness, Greater Fade, Mind Trauma, Thoughtsteal, Lasting Plague, Psyfiend
 		[3] = { 128, 739, 102, 106, 3753, 113, 5381, 5380, 763 }, -- Void Shift, Void Origins, Void Shield, Driven to Madness, Greater Fade, Mind Trauma, Thoughtsteal, Lasting Plague, Psyfiend
 	},
+	-- Initial Priest
+	[1452] = {
+	},
 	-- Blood Death Knight
 	[250] = {
 		[1] = { 5368, 204, 205, 3441, 3511, 609, 608, 607, 206, 3436, 841 }, -- Dome of Ancient Shadow, Rot and Wither, Walking Dead, Decomposing Aura, Dark Simulacrum, Death Chain, Last Dance, Blood for Blood, Strangulate, Necrotic Aura, Murderous Intent
@@ -538,6 +649,9 @@ local pvpTalents = {
 		[1] = { 3747, 3746, 163, 41, 152, 40, 3748, 3437, 3440, 149, 5367 }, -- Raise Abomination, Necromancer's Bargain, Cadaverous Pallor, Dark Simulacrum, Reanimation, Life and Death, Transfusion, Necrotic Aura, Decomposing Aura, Necrotic Strike, Dome of Ancient Shadow
 		[2] = { 3747, 3746, 163, 41, 152, 40, 3748, 3437, 3440, 149, 5367 }, -- Raise Abomination, Necromancer's Bargain, Cadaverous Pallor, Dark Simulacrum, Reanimation, Life and Death, Transfusion, Necrotic Aura, Decomposing Aura, Necrotic Strike, Dome of Ancient Shadow
 		[3] = { 3747, 3746, 163, 41, 152, 40, 3748, 3437, 3440, 149, 5367 }, -- Raise Abomination, Necromancer's Bargain, Cadaverous Pallor, Dark Simulacrum, Reanimation, Life and Death, Transfusion, Necrotic Aura, Decomposing Aura, Necrotic Strike, Dome of Ancient Shadow
+	},
+	-- Initial Death Knight
+	[1455] = {
 	},
 	-- Elemental Shaman
 	[262] = {
@@ -557,6 +671,9 @@ local pvpTalents = {
 		[2] = { 3520, 3755, 3756, 715, 718, 714, 713, 712, 708, 707, 1930 }, -- Spectral Recovery, Cleansing Waters, Ancestral Gift, Grounding Totem, Spirit Link, Electrocute, Voodoo Mastery, Swelling Waves, Counterstrike Totem, Skyfury Totem, Tidebringer
 		[3] = { 3520, 3755, 3756, 715, 718, 714, 713, 712, 708, 707, 1930 }, -- Spectral Recovery, Cleansing Waters, Ancestral Gift, Grounding Totem, Spirit Link, Electrocute, Voodoo Mastery, Swelling Waves, Counterstrike Totem, Skyfury Totem, Tidebringer
 	},
+	-- Initial Shaman
+	[1444] = {
+	},
 	-- Arcane Mage
 	[62] = {
 		[1] = { 3517, 3529, 3442, 62, 61, 637, 635, 3523, 3531 }, -- Temporal Shield, Kleptomania, Netherwind Armor, Torment the Weak, Arcane Empowerment, Mass Invisibility, Master of Escape, Dampened Magic, Prismatic Cloak
@@ -574,6 +691,9 @@ local pvpTalents = {
 		[1] = { 57, 58, 66, 67, 68, 632, 3532, 3443, 634, 633 }, -- Dampened Magic, Kleptomania, Chilled to the Bone, Frostbite, Deep Shatter, Concentrated Coolness, Prismatic Cloak, Netherwind Armor, Ice Form, Burst of Cold
 		[2] = { 57, 58, 66, 67, 68, 632, 3532, 3443, 634, 633 }, -- Dampened Magic, Kleptomania, Chilled to the Bone, Frostbite, Deep Shatter, Concentrated Coolness, Prismatic Cloak, Netherwind Armor, Ice Form, Burst of Cold
 		[3] = { 57, 58, 66, 67, 68, 632, 3532, 3443, 634, 633 }, -- Dampened Magic, Kleptomania, Chilled to the Bone, Frostbite, Deep Shatter, Concentrated Coolness, Prismatic Cloak, Netherwind Armor, Ice Form, Burst of Cold
+	},
+	-- Initial Mage
+	[1449] = {
 	},
 	-- Afflication Warlock
 	[265] = {
@@ -593,6 +713,9 @@ local pvpTalents = {
 		[2] = { 3741, 5382, 3504, 3502, 164, 3508, 3509, 3510, 159, 157, 155 }, -- Demon Armor, Gateway Mastery, Amplify Curse, Bane of Fragility, Bane of Havoc, Nether Ward, Essence Drain, Casting Circle, Cremation, Fel Fissure, Focused Chaos
 		[3] = { 3741, 5382, 3504, 3502, 164, 3508, 3509, 3510, 159, 157, 155 }, -- Demon Armor, Gateway Mastery, Amplify Curse, Bane of Fragility, Bane of Havoc, Nether Ward, Essence Drain, Casting Circle, Cremation, Fel Fissure, Focused Chaos
 	},
+	-- Initial Warlock
+	[1454] = {
+	},
 	-- Brewmaster Monk
 	[268] = {
 		[1] = { 1958, 667, 668, 666, 669, 670, 671, 672, 673, 843, 765 }, -- Niuzao's Essence, Hot Trub, Guided Meditation, Microbrew, Avert Harm, Craft: Nimble Brew, Incendiary Breath, Double Barrel, Mighty Ox Kick, Admonishment, Eerie Fermentation
@@ -610,6 +733,9 @@ local pvpTalents = {
 		[1] = { 3050, 3052, 3734, 3737, 675, 3744, 3745, 852, 77 }, -- Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Tigereye Brew, Pressure Points, Turbo Fists, Reverse Harm, Ride the Wind
 		[2] = { 3050, 3052, 3734, 3737, 675, 3744, 3745, 852, 77 }, -- Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Tigereye Brew, Pressure Points, Turbo Fists, Reverse Harm, Ride the Wind
 		[3] = { 3050, 3052, 3734, 3737, 675, 3744, 3745, 852, 77 }, -- Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Tigereye Brew, Pressure Points, Turbo Fists, Reverse Harm, Ride the Wind
+	},
+	-- Initial Monk
+	[1450] = {
 	},
 	-- Balance Druid
 	[102] = {
@@ -635,6 +761,9 @@ local pvpTalents = {
 		[2] = { 3048, 835, 3752, 700, 697, 692, 1215, 838, 59, 691 }, -- Master Shapeshifter, Focused Growth, Mark of the Wild, Deep Roots, Thorns, Entangling Bark, Early Spring, High Winds, Disentanglement, Reactive Resin
 		[3] = { 3048, 835, 3752, 700, 697, 692, 1215, 838, 59, 691 }, -- Master Shapeshifter, Focused Growth, Mark of the Wild, Deep Roots, Thorns, Entangling Bark, Early Spring, High Winds, Disentanglement, Reactive Resin
 	},
+	-- Initial Druid
+	[1447] = {
+	},
 	-- Havoc Demon Hunter
 	[577] = {
 		[1] = { 807, 809, 806, 1218, 1206, 1204, 813, 811, 812, 805, 810 }, -- Eye of Leotheras, Mana Rift, Reverse Magic, Unending Hatred, Cover of Darkness, Mortal Rush, Mana Break, Rain from Above, Detainment, Cleansed by Flame, Demonic Origins
@@ -646,18 +775,15 @@ local pvpTalents = {
 		[1] = { 814, 815, 819, 3423, 3429, 3727, 1220, 3430, 1948, 816 }, -- Cleansed by Flame, Everlasting Hunt, Illidan's Grasp, Demonic Trample, Reverse Magic, Unending Hatred, Tormentor, Detainment, Sigil Mastery, Jagged Spikes
 		[2] = { 814, 815, 819, 3423, 3429, 3727, 1220, 3430, 1948, 816 }, -- Cleansed by Flame, Everlasting Hunt, Illidan's Grasp, Demonic Trample, Reverse Magic, Unending Hatred, Tormentor, Detainment, Sigil Mastery, Jagged Spikes
 		[3] = { 814, 815, 819, 3423, 3429, 3727, 1220, 3430, 1948, 816 }, -- Cleansed by Flame, Everlasting Hunt, Illidan's Grasp, Demonic Trample, Reverse Magic, Unending Hatred, Tormentor, Detainment, Sigil Mastery, Jagged Spikes
-	}
+	},
+	-- Initial Demon Hunter
+	[1456] = {
+	},
 }
 
 --- Create an iterator which contains all available classes.
 function Library:AllClasses()
-	local iterator = {}
-
-	for i = 1, #classes do
-		iterator[classes[i]] = { unpack(specializations[classes[i]]) }
-	end
-
-	return pairs(iterator)
+	return pairs(specializations)
 end
 
 --- Get all specialization IDs for the specified class.
@@ -671,7 +797,14 @@ function Library:GetClassSpecIDs(classFilename)
 		return nil
 	end
 
-	return { unpack(specializations[classFilename]) }
+	local specializationIds = specializations[classFilename]
+	local result = {}
+
+	for specIndex, specId in pairs(specializationIds) do
+		result[specIndex] = specId
+	end
+
+	return result
 end
 
 --- Get the number of available PvP talents that the specified specialization has in the specified talent slot.
@@ -683,7 +816,7 @@ end
 --- @param slotIndex integer
 --- @return integer
 function Library:GetNumPvPTalentsForSpec(specID, slotIndex)
-	assert(type(slotIndex) == "number", "expected slotIndex to be a number, got " .. (slotIndex or "nil"))
+	assert(type(slotIndex) == "number", "bad argument #2: expected number, got " .. type(slotIndex))
 
 	if specID == nil or pvpTalents[specID] == nil then
 		return nil
@@ -693,7 +826,10 @@ function Library:GetNumPvPTalentsForSpec(specID, slotIndex)
 		error("Slot index is out of range: " .. slotIndex ". Must be an integer between 1 and " .. self.MAX_PVP_TALENT_SLOTS)
 	end
 
-	return #pvpTalents[specID][slotIndex]
+	local slots = pvpTalents[specID]
+	local slotTalents = slots[slotIndex] or {}
+
+	return #slotTalents
 end
 
 --- Get the info for a talent of the specified specialization.
@@ -717,8 +853,8 @@ end
 --- @return boolean known
 --- @return boolean grantedByAura
 function Library:GetTalentInfo(specID, tier, column)
-	assert(type(tier) == "number", "expected tier to be a number, got " .. (tier or "nil"))
-	assert(type(column) == "number", "expected column to be a number, got " .. (column or "nil"))
+	assert(type(tier) == "number", "bad argument #2: expected number, got " .. type(tier))
+	assert(type(column) == "number", "bad argument #3: expected number, got " .. type(column))
 
 	if specID == nil or talents[specID] == nil then
 		return nil
@@ -733,7 +869,13 @@ function Library:GetTalentInfo(specID, tier, column)
 	end
 
 	local talentIndex = (tier - 1) * NUM_TALENT_COLUMNS + (column - 1)
-	local talentID = talents[specID][talentIndex + 1]
+	local specTalents = talents[specID] or {}
+
+	if talentIndex + 1 > #specTalents then
+		return nil
+	end
+
+	local talentID = specTalents[talentIndex + 1]
 
 	return GetTalentInfoByID(talentID, 1)
 end
@@ -760,8 +902,8 @@ end
 --- @return boolean known
 --- @return boolean grantedByAura
 function Library:GetPvPTalentInfo(specID, slotIndex, talentIndex)
-	assert(type(slotIndex) == "number", "expected slotIndex to be a number, got " .. (slotIndex or "nil"))
-	assert(type(talentIndex) == "number", "expected talentIndex to be a number, got " .. (talentIndex or "nil"))
+	assert(type(slotIndex) == "number", "bad argument #2: expected number, got " .. type(slotIndex))
+	assert(type(talentIndex) == "number", "bad argument #3: expected number, got " .. type(talentIndex))
 
 	if specID == nil or pvpTalents[specID] == nil then
 		return nil
@@ -772,7 +914,7 @@ function Library:GetPvPTalentInfo(specID, slotIndex, talentIndex)
 	end
 
 	local slots = pvpTalents[specID]
-	local slotTalents = slots[slotIndex]
+	local slotTalents = slots[slotIndex] or {}
 
 	if talentIndex <= 0 or talentIndex > #slotTalents then
 		error("Talent index is out of range: " .. talentIndex .. ". Must be an integer between 1 and " .. #slotTalents)

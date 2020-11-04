@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.1] - 2020-11-04
+
+### Fixed
+
+- Fix Lua errors on new and low level characters
+
 ## [0.10.0] - 2020-11-03
 
 ### Added
@@ -291,7 +297,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.1...master
+[0.10.1]: https://github.com/Snakybo/Clicked/releases/tag/0.10.1
 [0.10.0]: https://github.com/Snakybo/Clicked/releases/tag/0.10.0
 [0.9.3]: https://github.com/Snakybo/Clicked/releases/tag/0.9.3
 [0.9.2]: https://github.com/Snakybo/Clicked/releases/tag/0.9.2

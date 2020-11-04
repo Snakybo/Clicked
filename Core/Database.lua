@@ -92,7 +92,14 @@ function Clicked:GetNewBindingTemplate()
 	}
 
 	if not self:IsClassic() then
-		template.load.specialization = GetTriStateLoadOptionTemplate(GetSpecialization())
+		local specIndex = GetSpecialization()
+
+		-- Initial spec
+		if specIndex == 5 then
+			specIndex = 1
+		end
+
+		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
 		template.load.talent = GetTriStateLoadOptionTemplate(1)
 		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
 		template.load.warMode = GetLoadOptionTemplate(Clicked.WarModeState.IN_WAR_MODE)
