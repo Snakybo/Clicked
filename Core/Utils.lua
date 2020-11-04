@@ -3,9 +3,10 @@ local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --"..a(b,", "))
 local shapeshiftForms = {
-	-- Arms Warrior
+    -- Arms Warrior
 	-- Fury Warrior
 	-- Protection Warrior
+    [1446] = {},
 	[71] = {},
 	[72] = {},
 	[73] = {},
@@ -13,6 +14,7 @@ local shapeshiftForms = {
 	-- Holy Paladin
 	-- Protection Paladin
 	-- Retribution Paladin
+    [1451] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 	[65] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 	[66] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
 	[70] = { 32223, 465, 183435 }, -- Crusader Aura, Devotion Aura, Retribution Aura
@@ -20,6 +22,7 @@ local shapeshiftForms = {
 	-- Beast Mastery Hunter
 	-- Marksmanship Hunter
 	-- Survival Hunter
+    [1448] = {},
 	[253] = {},
 	[254] = {},
 	[255] = {},
@@ -27,6 +30,7 @@ local shapeshiftForms = {
 	-- Assassination Rogue
 	-- Outlaw Rogue
 	-- Subtlety Rogue
+    [1453] = { 1784 },  -- Stealth
 	[259] = { 1784 }, -- Stealth
 	[260] = { 1784 }, -- Stealth
 	[261] = { 1784 }, -- Stealth
@@ -34,6 +38,7 @@ local shapeshiftForms = {
 	-- Discipline Priest
 	-- Holy Priest
 	-- Shadow Priest
+    [1452] = {},
 	[256] = {},
 	[257] = {},
 	[258] = { 232698 }, -- Shadowform
@@ -41,6 +46,7 @@ local shapeshiftForms = {
 	-- Blood Death Knight
 	-- Frost Death Knight
 	-- Unholy Death Knight
+    [1455] = {},
 	[250] = {},
 	[251] = {},
 	[252] = {},
@@ -48,6 +54,7 @@ local shapeshiftForms = {
 	-- Elemental Shaman
 	-- Enhancement Shaman
 	-- Restoration Shaman
+    [1444] = {},
 	[262] = {},
 	[263] = {},
 	[264] = {},
@@ -55,6 +62,7 @@ local shapeshiftForms = {
 	-- Arcane Mage
 	-- Fire Mage
 	-- Frost Mage
+    [1449] = {},
 	[62] = {},
 	[63] = {},
 	[64] = {},
@@ -62,6 +70,7 @@ local shapeshiftForms = {
 	-- Afflication Warlock
 	-- Demonology Warlock
 	-- Destruction Warlock
+    [1454] = {},
 	[265] = {},
 	[266] = {},
 	[267] = {},
@@ -69,6 +78,7 @@ local shapeshiftForms = {
 	-- Brewmaster Monk
 	-- Mistweaver Monk
 	-- Windwalker Monk
+    [1450] = {},
 	[268] = {},
 	[270] = {},
 	[269] = {},
@@ -77,6 +87,7 @@ local shapeshiftForms = {
 	-- Feral Druid
 	-- Guardian Druid
 	-- Restoration Druid
+    [1447] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[102] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[103] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 	[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
@@ -84,6 +95,7 @@ local shapeshiftForms = {
 
 	-- Havoc Demon Hunter
 	-- Vengeance Demon Hunter
+    [1456] = {},
 	[577] = {},
 	[581] = {}
 }
