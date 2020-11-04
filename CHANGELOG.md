@@ -1,6 +1,14 @@
 # Changelog
 
+## [0.10.3] - 2020-11-05
+
+### Fixed
+
+- Fix stance/form label for low level Druids
+
 ## [0.10.2] - 2020-11-05
+
+### Fixed
 
 - Fix talent specializations for Priest
 

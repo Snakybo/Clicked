@@ -886,8 +886,8 @@ local function DrawLoadInStance(container, form, specIds)
 	if #specIds == 1 then
 		local specId = specIds[1]
 
-		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid
-		if specId == 102 or specId == 103 or specId == 104 or specId == 105 then
+		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
+		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
 			label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"]
 		end
 	end

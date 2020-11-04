@@ -709,11 +709,11 @@ function Clicked:GetLocalizedForms(specializations)
 	end
 
 	if #specializations == 1 then
-		local spec = specializations[1]
+		local specId = specializations[1]
 		local defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_NONE"]
 
-		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid
-		if spec == 102 or spec == 103 or spec == 104 or spec == 105 then
+		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
+		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
 			defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_HUMANOID"]
 		end
 
@@ -724,8 +724,8 @@ function Clicked:GetLocalizedForms(specializations)
 			table.insert(order, key)
 		end
 
-		for i = 1, #shapeshiftForms[spec] do
-			local name, _, icon = GetSpellInfo(shapeshiftForms[spec][i])
+		for i = 1, #shapeshiftForms[specId] do
+			local name, _, icon = GetSpellInfo(shapeshiftForms[specId][i])
 			local key = #order + 1
 
 			items[key] = string.format("<icon=%d><text=%s>", icon, name)
