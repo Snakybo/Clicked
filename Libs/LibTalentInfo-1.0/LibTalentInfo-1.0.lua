@@ -1,5 +1,5 @@
 local VERSION_MAJOR = "LibTalentInfo-1.0"
-local VERSION_MINOR = 4
+local VERSION_MINOR = 5
 
 if LibStub == nil then
 	error(VERSION_MAJOR .. " requires LibStub")
@@ -74,10 +74,10 @@ local specializations = {
 		[5] = 1453 -- Initial
 	},
 	PRIEST = {
-		256, -- Discipline
-		257, -- Holy
-		258, -- Shadow
-		1452 -- Initial
+		[1] = 256, -- Discipline
+		[2] = 257, -- Holy
+		[3] = 258, -- Shadow
+		[5] = 1452 -- Initial
 	},
 	DEATHKNIGHT = {
 		[1] = 250, -- Blood

@@ -2,7 +2,7 @@
 ## Title: Lib: TalentInfo
 ## Author: Snakybo
 ## Notes: Get (PvP) talent data for any class or spec.
-## Version: r4
+## Version: r5
 ## X-Category: Library
 
 LibStub\LibStub.lua

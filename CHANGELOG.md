@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.2] - 2020-11-05
+
+- Fix talent specializations for Priest
+
 ## [0.10.1] - 2020-11-04
 
 ### Fixed

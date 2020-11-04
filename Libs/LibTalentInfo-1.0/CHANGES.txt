@@ -1,10 +1,10 @@
-tag 405fbbb3f3a5abecffdafc752eef12f78736b6af r4
+tag fb18035739f8ba4f49367c0b86fb9a8ae384402d r5
 Author:	Snakybo <krol.kevin@gmail.com>
-Date:	Wed Nov 4 11:22:35 2020 +0100
+Date:	Wed Nov 4 13:18:04 2020 +0100
 
-commit 0224a35c124d31fc717fe1aed69d49b7ee2d8ba8
+commit 3ef1a46c419b3aa072959802310f9cfd53bc046e
 Author: Snakybo <krol.kevin@gmail.com>
-Date:   Wed Nov 4 11:22:26 2020 +0100
+Date:   Wed Nov 4 13:17:11 2020 +0100
 
-    Add support for initial specs
+    Fix talent specialization IDs for priest
 
