@@ -2,6 +2,10 @@
 
 ## [0.10.3] - 2020-11-05
 
+### Changed
+
+- Optimized binding loading for better performance
+
 ### Fixed
 
 - Fix stance/form label for low level Druids
@@ -310,7 +314,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.2...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.3...master
+[0.10.3]: https://github.com/Snakybo/Clicked/releases/tag/0.10.3
 [0.10.2]: https://github.com/Snakybo/Clicked/releases/tag/0.10.2
 [0.10.1]: https://github.com/Snakybo/Clicked/releases/tag/0.10.1
 [0.10.0]: https://github.com/Snakybo/Clicked/releases/tag/0.10.0
