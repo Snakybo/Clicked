@@ -301,7 +301,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.10.2...master
+[0.10.2]: https://github.com/Snakybo/Clicked/releases/tag/0.10.2
 [0.10.1]: https://github.com/Snakybo/Clicked/releases/tag/0.10.1
 [0.10.0]: https://github.com/Snakybo/Clicked/releases/tag/0.10.0
 [0.9.3]: https://github.com/Snakybo/Clicked/releases/tag/0.9.3
