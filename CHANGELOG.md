@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Fix Lua errors on new and low level characters
+- Fix Lua errors on new and low level characters [#16] [#18]
 
 ## [0.10.0] - 2020-11-03
 
@@ -319,6 +319,8 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#18]: https://github.com/Snakybo/Clicked/issues/18
+[#16]: https://github.com/Snakybo/Clicked/issues/16
 [#15]: https://github.com/Snakybo/Clicked/issues/15
 [#14]: https://github.com/Snakybo/Clicked/issues/14
 [#13]: https://github.com/Snakybo/Clicked/issues/13
