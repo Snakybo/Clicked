@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fix the `/startattack` command being included in some bindings that don't include the "Target" target unit
+
 ## [0.10.3] - 2020-11-05
 
 ### Changed

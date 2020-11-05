@@ -380,9 +380,16 @@ function Clicked:GetMacroForBindings(bindings)
 				if binding.primaryTarget.unit == Clicked.TargetUnits.TARGET then
 					valid = true
 				else
-					for _, target in ipairs(binding.secondaryTargets) do
-						if target.unit == Clicked.TargetUnits.TARGET then
-							valid = true
+					if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
+						for _, target in ipairs(binding.secondaryTargets) do
+							if target.unit == Clicked.TargetUnits.TARGET then
+								valid = true
+								break
+							end
+
+							if not Clicked:CanUnitHaveFollowUp(target.unit) then
+								break
+							end
 						end
 					end
 				end
