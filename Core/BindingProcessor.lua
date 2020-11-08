@@ -730,7 +730,7 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
-	if not self:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		-- specialization
 		do
 			local function IsSpecializationIndexSelected(index)

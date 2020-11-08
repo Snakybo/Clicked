@@ -83,7 +83,7 @@ end
 function Clicked:RegisterBlizzardUnitFrames()
 	local frames = BLIZZARD_UNIT_FRAMES_MAINLINE
 
-	if self:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 		frames = BLIZZARD_UNIT_FRAMES_CLASSIC
 	end
 

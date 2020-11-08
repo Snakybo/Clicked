@@ -88,7 +88,7 @@ local function GetFrameHandler(index)
 			self:ClearBinding(keybind)
 		]])
 
-		if not Clicked:IsClassic() then
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 			CreateStateDriverAttribute(frame, "vehicle", "[@vehicle,exists] enabled; disabled")
 			CreateStateDriverAttribute(frame, "vehicleui", "[vehicleui] enabled; disabled")
 			CreateStateDriverAttribute(frame, "petbattle", "[petbattle] enabled; disabled")

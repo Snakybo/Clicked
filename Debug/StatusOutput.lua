@@ -13,7 +13,7 @@ local function GetBasicinfoString()
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if not Clicked:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		do
 			local id = GetSpecializationInfo(GetSpecialization())
 			table.insert(lines, "Specialization: " .. id)

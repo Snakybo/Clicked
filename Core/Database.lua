@@ -91,7 +91,7 @@ function Clicked:GetNewBindingTemplate()
 		}
 	}
 
-	if not self:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		local specIndex = GetSpecialization()
 
 		-- Initial spec
@@ -344,7 +344,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				value = "ACTIVE"
 			}
 
-			if not self:IsClassic() then
+			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 				binding.load.pvpTalent = {
 					selected = 0,
 					single = 1,

@@ -244,10 +244,6 @@ function Clicked:IsStringNilOrEmpty(string)
 	return string == nil or #string == 0
 end
 
-function Clicked:IsClassic()
-	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-end
-
 function Clicked:GetTriStateLoadOptionValue(option)
 	if option.selected == 1 then
 		return { option.single }

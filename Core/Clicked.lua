@@ -124,7 +124,7 @@ function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", OnLeavingCombat)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", OnPlayerEnteringWorld)
 
-	if not self:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "ReloadActiveBindings")
 	end
@@ -145,7 +145,7 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-	if not self:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 	end

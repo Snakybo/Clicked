@@ -918,7 +918,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadClass(container, load.class)
 	DrawLoadRace(container, load.race)
 
-	if not Clicked:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		local specializationIds = {}
 		local classNames = Clicked:GetTriStateLoadOptionValue(load.class)
 
@@ -1347,7 +1347,7 @@ function Module:Initialize()
 
 	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
 
-	if not Clicked:IsClassic() then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
 		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
 	end
