@@ -30,6 +30,7 @@ Core\AttributeHandler.lua
 Core\BindingProcessor.lua
 Core\CommandProcessor.lua
 Core\Utils.lua
+Core\LocaleUtils.lua
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua

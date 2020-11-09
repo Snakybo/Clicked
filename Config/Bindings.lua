@@ -47,6 +47,16 @@ local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	return unit
 end
 
+local function GetTriStateLoadOptionValue(option)
+	if option.selected == 1 then
+		return { option.single }
+	elseif option.selected == 2 then
+		return { unpack(option.multiple) }
+	end
+
+	return nil
+end
+
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
@@ -920,10 +930,10 @@ local function DrawBindingLoadOptionsPage(container, binding)
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		local specializationIds = {}
-		local classNames = Clicked:GetTriStateLoadOptionValue(load.class)
+		local classNames = GetTriStateLoadOptionValue(load.class)
 
 		do
-			local specIndices = Clicked:GetTriStateLoadOptionValue(load.specialization)
+			local specIndices = GetTriStateLoadOptionValue(load.specialization)
 
 			if specIndices == nil then
 				specIndices = {}
