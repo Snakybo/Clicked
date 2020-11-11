@@ -51,8 +51,6 @@ local function GetFrameHandler(index)
 		frame:Hide()
 
 		-- set required data first
-		frame:SetAttribute("clicked-registered", false)
-		frame:SetAttribute("clicked-can-enable", true)
 		frame:SetAttribute("clicked-keybind", "")
 
 		-- register OnShow and OnHide handlers to ensure bindings are registered
