@@ -1080,7 +1080,7 @@ local function DrawGroup(container)
 
 	-- icon field
 	do
-		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "icon")
+		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "displayIcon")
 		--widget:SetRelativeWidth(0.7)
 		widget:SetFullWidth(true)
 

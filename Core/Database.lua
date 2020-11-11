@@ -129,7 +129,7 @@ function Clicked:CreateNewGroup()
 
 	local group = {
 		name = L["BINDING_UI_GROUP_NAME_DEFAULT"],
-		icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
+		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
 		identifier = "group-" .. identifier
 	}
 
@@ -464,6 +464,17 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.10.0"))
 		profile.version = "0.10.0"
+	end
+
+	-- 0.10.x to 0.11.0
+	if string.sub(profile.version, 1, 3) == "0.10" then
+		for _, group in ipairs(profile.groups) do
+			group.displayIcon = group.icon
+			group.icon = nil
+		end
+
+		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.11.0"))
+		profile.version = "0.11.0"
 	end
 
 	profile.version = self.VERSION

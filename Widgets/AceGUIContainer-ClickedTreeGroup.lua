@@ -129,7 +129,7 @@ local function TreeSortFunc(left, right)
 	end
 end
 
-local function UpdateItemVisual(item, binding)
+local function UpdateBindingItemVisual(item, binding)
 	local data = Clicked:GetActiveBindingAction(binding)
 
 	local label = ""
@@ -169,6 +169,25 @@ local function UpdateItemVisual(item, binding)
 	data.displayIcon = item.icon
 
 	item.keybind = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
+end
+
+local function UpdateGroupItemVisual(item, group)
+	local label = L["BINDING_UI_GROUP_NAME_DEFAULT"]
+	local icon = item.icon
+
+	if not Clicked:IsStringNilOrEmpty(group.name) then
+		label = group.name
+	end
+
+	if not Clicked:IsStringNilOrEmpty(group.displayIcon) then
+		icon = group.displayIcon
+	end
+
+	item.title = label
+	item.icon = icon
+
+	group.name = label
+	group.displayIcon = icon
 end
 
 local function GetButtonUniqueValue(line)
@@ -746,12 +765,13 @@ local methods = {
 
 		for _, group in Clicked:IterateGroups() do
 			local item = {
-				title = group.name,
 				value = group.identifier,
 				group = group,
 				icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
 				children = {}
 			}
+
+			UpdateGroupItemVisual(item, group)
 
 			table.insert(self.tree, item)
 		end
@@ -763,7 +783,7 @@ local methods = {
 				icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 			}
 
-			UpdateItemVisual(item, binding)
+			UpdateBindingItemVisual(item, binding)
 
 			if binding.parent == nil then
 				table.insert(self.tree, item)
