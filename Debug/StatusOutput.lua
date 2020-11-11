@@ -1,5 +1,6 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
+local driver
 local frame
 local editbox
 
@@ -37,6 +38,15 @@ local function GetBasicinfoString()
 	end
 
 	table.insert(lines, "Mode: " .. (Clicked.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
+	table.insert(lines, "")
+
+	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
+		table.insert(lines, "Vehicle UI: " .. driver:GetAttribute("state-vehicleui"))
+		table.insert(lines, "Pet Battle: " .. driver:GetAttribute("state-petbattle"))
+	end
 
 	return table.concat(lines, "\n")
 end
@@ -173,8 +183,26 @@ local function OnHovercastAttributesCreated(event, keybindings, attributes)
 	end
 end
 
+local function CreateStateDriver(state, condition)
+	RegisterStateDriver(driver, state, condition)
+	driver:SetAttribute("_onstate-" .. state, [[ self:CallMethod("UpdateStatusOutputText") ]])
+end
+
 local module = {
-	--["Initialize"] = nil,
+	["Initialize"] = function(self)
+		driver = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+		driver:Show()
+
+		CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
+
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
+			CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
+			CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
+		end
+
+		driver.UpdateStatusOutputText = UpdateStatusOutputText
+	end,
 
 	["Register"] = function(self)
 		Clicked:RegisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, OnBindingProcessorComplete)
