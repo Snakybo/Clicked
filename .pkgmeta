@@ -7,6 +7,7 @@ ignore:
   - README.md
   - CHANGELOG.md
   - RECENT_CHANGES.md
+  - Utils
 
 manual-changelog:
   filename: RECENT_CHANGES.md
