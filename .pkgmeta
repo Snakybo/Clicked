@@ -6,7 +6,11 @@ ignore:
   - .editorconfig
   - README.md
   - CHANGELOG.md
+  - RECENT_CHANGES.md
 
 manual-changelog:
   filename: RECENT_CHANGES.md
   markup-type: markdown
+  
+move-folders:
+  Clicked/Clicked: Clicked
