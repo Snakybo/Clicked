@@ -272,7 +272,7 @@ local function DrawIconPicker(container, data)
 			Module.tree:Redraw()
 		end
 
-		local widget = GUI:Button("Cancel", OnClick)
+		local widget = GUI:Button(L["BINDING_UI_PAGE_ICON_PICKER_BUTTON_CANCEL"], OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
