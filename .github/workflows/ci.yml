@@ -13,3 +13,23 @@ jobs:
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
+    - name: Package Classic
+      uses: BigWigsMods/packager@master
+      with:
+        args: -d -g classic
+    - name: "Archive Classic"
+      uses: "actions/upload-artifact@v2"
+      if: success()
+      with:
+        name: clicked-classic
+        path: ".release/*-classic.zip"
+    - name: Package Retail
+      uses: BigWigsMods/packager@master
+      with:
+        args: -d
+    - name: "Archive Retail"
+      uses: "actions/upload-artifact@v2"
+      if: success()
+      with:
+        name: clicked-retail
+        path: ".release/*.zip"
