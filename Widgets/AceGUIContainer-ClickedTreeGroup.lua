@@ -41,7 +41,7 @@ do
 	end
 end
 
-local DEFAULT_TREE_WIDTH = 300
+local DEFAULT_TREE_WIDTH = 325
 local DEFAULT_TREE_SIZABLE = false
 
 local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "UIDropDownMenuTemplate")

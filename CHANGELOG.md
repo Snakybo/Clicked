@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Slightly increased the size of the binding tree
+
 ### Fixed
 
 - Fix the `/startattack` command being included in some bindings that don't include the "Target" target unit

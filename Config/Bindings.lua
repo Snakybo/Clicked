@@ -1244,7 +1244,7 @@ end
 
 local function DrawHeader(container)
 	local line = AceGUI:Create("ClickedSimpleGroup")
-	line:SetWidth(300)
+	line:SetWidth(325)
 	line:SetLayout("table")
 	line:SetUserData("table", { columns = { 0, 1} })
 
