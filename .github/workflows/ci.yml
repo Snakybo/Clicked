@@ -17,19 +17,13 @@ jobs:
       uses: BigWigsMods/packager@master
       with:
         args: -d -g classic
-    - name: "Archive Classic"
-      uses: "actions/upload-artifact@v2"
-      if: success()
-      with:
-        name: clicked-classic
-        path: ".release/*-classic.zip"
     - name: Package Retail
       uses: BigWigsMods/packager@master
       with:
         args: -d
-    - name: "Archive Retail"
+    - name: "Archive"
       uses: "actions/upload-artifact@v2"
       if: success()
       with:
-        name: clicked-retail
+        name: clicked-ci
         path: ".release/*.zip"
