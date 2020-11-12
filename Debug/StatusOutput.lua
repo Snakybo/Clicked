@@ -124,6 +124,10 @@ local function GetRegisteredClickCastFrames()
 end
 
 local function UpdateStatusOutputText()
+	if frame == nil or not frame:IsVisible() or editbox == nil then
+		return
+	end
+
 	local text = {}
 	table.insert(text, GetBasicinfoString())
 	table.insert(text, GetParsedDataString())
