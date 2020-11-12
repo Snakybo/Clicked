@@ -664,6 +664,12 @@ local methods = {
 		self.tree = nil
 		self.bindingCopyBuffer = nil
 
+		if self.searchHandler ~= nil then
+			self.searchHandler:SetCallback("SearchTermChanged", nil)
+		end
+
+		self.searchHandler = nil
+
 		self.frame:SetScript("OnUpdate", nil)
 		for k, v in pairs(self.localstatus) do
 			if k == "groups" then
