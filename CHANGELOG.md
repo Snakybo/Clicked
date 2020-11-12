@@ -5,6 +5,7 @@
 ### Changed
 
 - Slightly increased the size of the binding tree
+- Process shift-clicking items immediately rather than when the enter key is pressed
 
 ### Fixed
 

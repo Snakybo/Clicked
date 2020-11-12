@@ -415,16 +415,6 @@ local function DrawItemSelection(container, action)
 		-- target item
 		do
 			local function OnEnterPressed(frame, event, value)
-				local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
-
-				if item ~= nil and item ~= "" then
-					local info = GetItemInfo(item)
-
-					if info ~= nil then
-						value = info
-					end
-				end
-
 				value = GUI:TrimString(value)
 
 				if value ~= action.value then
@@ -434,8 +424,25 @@ local function DrawItemSelection(container, action)
 				GUI:Serialize(frame, event, value)
 			end
 
+			local function OnTextChanged(frame, event, value)
+				local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
+
+				if item ~= nil and item ~= "" then
+					local info = GetItemInfo(item)
+
+					if info ~= nil then
+						if info ~= action.value then
+							action.displayIcon = "" -- invalidate the cached icon
+						end
+
+						GUI:Serialize(frame, event, info)
+					end
+				end
+			end
+
 			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
+			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
