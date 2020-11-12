@@ -16,6 +16,7 @@ std = "lua51"
 globals = {
 	-- Clicked
 	"Clicked",
+	"ClickedMedia",
 	"Clique",
 	"ClickCastHeader",
 	"ClickCastFrames",
