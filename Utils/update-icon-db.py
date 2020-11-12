@@ -72,7 +72,7 @@ def parse_blacklist():
 def is_valid_icon_file(fd_id, path):
 	p = path.lower()
 
-	if not p.startswith("interface/icons/"):
+	if not p.startswith("interface/icons/") or not p.endswith(".blp"):
 		return False
 
 	if fd_id in blacklist_parsed:
@@ -130,7 +130,7 @@ def write_output():
 			if not is_valid_icon_file(fd_id, full_path):
 				continue
 
-			output_fs.write("\t[" + fd_id + "] = \"" + strip_path(full_path) + "\",\n")
+			output_fs.write("\t\"" + strip_path(full_path) + "\",\n")
 			num_icons += 1
 
 		output_fs.write("}\n")

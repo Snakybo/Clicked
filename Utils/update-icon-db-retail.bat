@@ -3,5 +3,5 @@
 :: and place it inside of this folder. Rename it to "listfile-retail.csv" and run this batch script.
 
 @echo off
-py .\update-icon-db.py --listfile ".\listfile-retail.csv" --output "..\ClickedMedia\MediaRetail.lua" --namespace "ClickedMedia" --function "GetRetailIcons"
+py .\update-icon-db.py --listfile ".\listfile-retail.csv" --output "..\ClickedMedia\MediaRetail.lua" --blacklist ".\icon-blacklist-retail.txt" --namespace "ClickedMedia" --function "GetRetailIcons"
 pause

@@ -1071,6 +1071,11 @@ local methods = {
 		end
 	end,
 
+	["Redraw"] = function(self)
+		local status = self.status or self.localstatus
+		self:Fire("OnGroupSelected", status.selected)
+	end,
+
 	["SetSelected"] = function(self, value)
 		local status = self.status or self.localstatus
 		if status.selected ~= value then

@@ -13,6 +13,9 @@ local ITEM_TEMPLATE_GROUP = "GROUP"
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
 
+local iconCache = nil
+local showIconPicker = false
+
 -- reset on close
 local didOpenSpellbook
 
@@ -25,7 +28,6 @@ local function CanBindingTargetUnitChange(binding)
 
 	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM or binding.type == Clicked.BindingTypes.MACRO
 end
-
 
 local function GetPrimaryBindingTargetUnit(unit, keybind, type)
 	if Clicked:IsRestrictedKeybind(keybind) then
@@ -214,6 +216,84 @@ local function HijackSpellBookFlyoutButtons()
 			local button = spellFlyOutButtons[i]
 			button:Hide()
 		end
+	end
+end
+
+-- Icon picker
+
+local function EnsureIconCache()
+	local addon = "ClickedMedia"
+
+	if iconCache == nil then
+		if not IsAddOnLoaded(addon) then
+			local loaded, reason = LoadAddOn(addon)
+
+			if not loaded then
+				if reason == "DISABLED" then
+					EnableAddOn(addon, true)
+					LoadAddOn(addon)
+				else
+					error("Unable to load " .. addon ": " .. reason)
+				end
+			end
+		end
+
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			iconCache = ClickedMedia:GetRetailIcons()
+		elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+			iconCache = ClickedMedia:GetClassicIcons()
+		end
+	end
+
+	if iconCache == nil then
+		error("Unable to load icons")
+	end
+
+	table.sort(iconCache)
+end
+
+local function DrawIconPicker(container, data)
+	EnsureIconCache()
+
+	local searchBox
+
+	do
+		local widget = AceGUI:Create("ClickedSearchBox")
+		widget:DisableButton(true)
+		widget:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
+		widget:SetRelativeWidth(0.75)
+		searchBox = widget
+
+		container:AddChild(widget)
+	end
+
+	do
+		local function OnClick()
+			Module.tree:Redraw()
+		end
+
+		local widget = GUI:Button("Cancel", OnClick)
+		widget:SetRelativeWidth(0.25)
+
+		container:AddChild(widget)
+	end
+
+	do
+		-- luacheck: ignore container
+		local function OnIconSelected(container, event, value)
+			data.displayIcon = value
+			Clicked:SendMessage(GUI.EVENT_UPDATE)
+		end
+
+		local scrollFrame = AceGUI:Create("ClickedIconSelectorList")
+		scrollFrame:SetLayout("Flow")
+		scrollFrame:SetFullWidth(true)
+		scrollFrame:SetFullHeight(true)
+		scrollFrame:SetIcons(iconCache)
+		scrollFrame:SetSearchHandler(searchBox)
+		scrollFrame:SetCallback("OnIconSelected", OnIconSelected)
+
+		container:AddChild(scrollFrame)
 	end
 end
 
@@ -475,20 +555,23 @@ local function DrawMacroSelection(container, binding, keybind, action)
 		-- icon field
 		do
 			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "displayIcon")
-			--widget:SetRelativeWidth(0.7)
-			widget:SetFullWidth(true)
+			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
 		end
 
 		-- icon button
-		-- do
-		-- 	local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], function() end)
-		-- 	widget:SetRelativeWidth(0.3)
-		-- 	widget:SetDisabled(true)
+		do
+			local function OpenIconPicker()
+				showIconPicker = true
+				Module.tree:Redraw()
+			end
 
-		-- 	group:AddChild(widget)
-		-- end
+			local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], OpenIconPicker)
+			widget:SetRelativeWidth(0.3)
+
+			group:AddChild(widget)
+		end
 	end
 
 	-- macro text
@@ -1088,20 +1171,22 @@ local function DrawGroup(container)
 	-- icon field
 	do
 		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "displayIcon")
-		--widget:SetRelativeWidth(0.7)
-		widget:SetFullWidth(true)
+		widget:SetRelativeWidth(0.7)
 
 		parent:AddChild(widget)
 	end
 
-	-- icon button
-	-- do
-	-- 	local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], function() end)
-	-- 	widget:SetRelativeWidth(0.3)
-	-- 	widget:SetDisabled(true)
+	do
+		local function OpenIconPicker()
+			showIconPicker = true
+			Module.tree:Redraw()
+		end
 
-	-- 	group:AddChild(widget)
-	-- end
+		local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], OpenIconPicker)
+		widget:SetRelativeWidth(0.3)
+
+		parent:AddChild(widget)
+	end
 end
 
 -- Item templates
@@ -1280,15 +1365,29 @@ local function DrawHeader(container)
 	end
 end
 
-local function DrawTreeContainer(container, event, group)
+local function DrawTreeContainer(container, event, value)
 	container:ReleaseChildren()
 
-	if Module:GetCurrentBinding() ~= nil then
-		DrawBinding(container)
-	elseif Module:GetCurrentGroup() ~= nil then
-		DrawGroup(container)
+	local binding = Module:GetCurrentBinding()
+	local group = Module:GetCurrentGroup()
+
+	if showIconPicker then
+		local data = group
+
+		if binding ~= nil then
+			data = Clicked:GetActiveBindingAction(binding)
+		end
+
+		showIconPicker = false
+		DrawIconPicker(container, data)
 	else
-		DrawItemTemplateSelector(container)
+		if binding ~= nil then
+			DrawBinding(container)
+		elseif group ~= nil then
+			DrawGroup(container)
+		else
+			DrawItemTemplateSelector(container)
+		end
 	end
 end
 

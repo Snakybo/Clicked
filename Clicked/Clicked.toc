@@ -16,6 +16,7 @@
 
 Libs\Libs.xml
 Locales\Locales.xml
+Widgets\AceGUIContainer-ClickedIconSelectorList.lua
 Widgets\AceGUIContainer-ClickedTreeGroup.lua
 Widgets\AceGUIWidget-ClickedKeybinding.lua
 Widgets\AceGUIWidget-ClickedSimpleGroup.lua
