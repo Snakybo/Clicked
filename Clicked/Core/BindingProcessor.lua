@@ -427,6 +427,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 
 	-- Construct a valid macro from the data
 
+	local allFlags = {}
 	local segments = {}
 
 	for _, action in ipairs(actions) do
@@ -436,6 +437,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 			flags = "[" .. flags .. "] "
 		end
 
+		table.insert(allFlags, flags)
 		table.insert(segments, flags .. action.ability)
 	end
 
@@ -459,6 +461,10 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.LAST then
 			table.insert(result, data.value)
 		end
+	end
+
+	if interactionType == Clicked.InteractionType.HOVERCAST then
+		table.insert(result, "/stopmacro " .. table.concat(allFlags))
 	end
 
 	return table.concat(result, "\n")

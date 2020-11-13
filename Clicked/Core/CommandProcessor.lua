@@ -76,7 +76,6 @@ local function GetFrameHandler(index)
 				return
 			end
 
-
 			local keybind = self:GetAttribute("clicked-keybind")
 			local identifier = self:GetAttribute("clicked-identifier")
 
@@ -111,8 +110,10 @@ function Clicked:ProcessCommands(commands)
 		return
 	end
 
-	local newClickCastFrameKeybindings = {}
+	local newClickCastFrameKeybinds = {}
 	local newClickCastFrameAttributes = {}
+
+	local frameHandlerRefs = {}
 	local nextMacroFrameHandler = 1
 
 	if stopCastingButton == nil then
@@ -120,34 +121,21 @@ function Clicked:ProcessCommands(commands)
 		stopCastingButton:SetAttribute("type", "stop")
 	end
 
+	-- First, process all non-hovercast commands so we can build a table
+	-- which can map frame handlers to keybinds. This is required in order
+	-- to not "consume" keybinds if a hovercast binding is set to only activate
+	-- on a friendly unit and you press it on an enemy unit. We append a /click <framehandler>
+	-- command as a fallback so it continues to work.
+
 	for _, command in ipairs(commands) do
-		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, command.hovercast)
-
-		if command.hovercast or isMouseButton then
-			local keybind = {
-				key = command.keybind,
-				identifier = suffix
-			}
-
-			local attributes = {}
-
-			self:CreateCommandAttributes(attributes, command, prefix, suffix)
-			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
-
-			for attribute, value in pairs(attributes) do
-				newClickCastFrameAttributes[attribute] = value
-			end
-
-			if not isMouseButton then
-				table.insert(newClickCastFrameKeybindings, keybind)
-			end
-		end
-
 		if not command.hovercast then
+			local prefix, suffix = GetCommandAttributeIdentifier(command, command.hovercast)
+
 			local frame = GetFrameHandler(nextMacroFrameHandler)
 			local attributes = {}
 
 			nextMacroFrameHandler = nextMacroFrameHandler + 1
+			frameHandlerRefs[command.keybind] = frame:GetName()
 
 			frame:Hide()
 
@@ -162,9 +150,38 @@ function Clicked:ProcessCommands(commands)
 		end
 	end
 
-	self:SendMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybindings, newClickCastFrameAttributes)
+	for _, command in ipairs(commands) do
+		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, command.hovercast)
 
-	self:UpdateClickCastHeader(newClickCastFrameKeybindings)
+		if command.hovercast or isMouseButton then
+			local keybind = {
+				key = command.keybind,
+				identifier = suffix
+			}
+
+			local attributes = {}
+
+			if frameHandlerRefs[command.keybind] ~= nil then
+				local click = "/click " .. frameHandlerRefs[command.keybind] .. " " .. suffix .. " " .. tostring(Clicked.db.profile.options.onKeyDown)
+				command.data = command.data .. "\n" .. click
+			end
+
+			self:CreateCommandAttributes(attributes, command, prefix, suffix)
+			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
+
+			for attribute, value in pairs(attributes) do
+				newClickCastFrameAttributes[attribute] = value
+			end
+
+			if not isMouseButton then
+				table.insert(newClickCastFrameKeybinds, keybind)
+			end
+		end
+	end
+
+	self:SendMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
+
+	self:UpdateClickCastHeader(newClickCastFrameKeybinds)
 	self:UpdateClickCastFrames(newClickCastFrameAttributes)
 
 	for i = nextMacroFrameHandler, #macroFrameHandlers do

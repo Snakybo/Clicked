@@ -12,16 +12,21 @@ local function safecall(func, ...)
 	end
 end
 
-local function SetupKeybindCommands(keybindings)
+local function SetupKeybindCommands(keybinds)
 	local register = {}
 	local unregister = {}
 
-	local setTemplate = "self:SetBindingClick(true, %q, self, %q)"
-	local clearTemplate = "self:ClearBinding(%q)"
+	local setTemplate = [[
+		self:SetBindingClick(true, %q, self, %q)
+	]]
 
-	for _, keybind in ipairs(keybindings) do
-		local set = setTemplate:format(keybind.key, keybind.identifier)
-		local clear = clearTemplate:format(keybind.key)
+	local clearTemplate = [[
+		self:ClearBinding(%q)
+	]]
+
+	for _, keybind in ipairs(keybinds) do
+		local set = string.format(setTemplate, keybind.key, keybind.identifier)
+		local clear = string.format(clearTemplate, keybind.key)
 
 		table.insert(register, set)
 		table.insert(unregister, clear)
@@ -102,12 +107,12 @@ function Clicked:RegisterClickCastHeader()
 	end
 end
 
-function Clicked:UpdateClickCastHeader(keybindings)
+function Clicked:UpdateClickCastHeader(keybinds)
 	if self.ClickCastHeader == nil then
 		return
 	end
 
-	local set, clear = SetupKeybindCommands(keybindings)
+	local set, clear = SetupKeybindCommands(keybinds)
 
 	self.ClickCastHeader:SetAttribute("setup-keybinds", set)
 	self.ClickCastHeader:SetAttribute("clear-keybinds", clear)
