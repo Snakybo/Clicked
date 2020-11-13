@@ -467,7 +467,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- 0.10.x to 0.11.0
-	if string.sub(profile.version, 1, 3) == "0.10" then
+	if string.sub(profile.version, 1, 4) == "0.10" then
 		for _, group in ipairs(profile.groups) do
 			group.displayIcon = group.icon
 			group.icon = nil
