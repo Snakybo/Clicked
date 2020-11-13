@@ -169,7 +169,7 @@ local methods = {
 
 		local status = self.status or self.localstatus
 		local viewHeight = self.scrollframe:GetHeight()
-		local viewRows = math.ceil(viewHeight / (ICON_SIZE + 4))
+		local viewRows = math.floor(viewHeight / (ICON_SIZE + 4))
 
 		status.numColumns = math.floor(self.content.width / (ICON_SIZE + 4))
 		status.numRows = math.ceil(#self.icons / status.numColumns) - viewRows
@@ -195,7 +195,6 @@ local methods = {
 		end
 
 		self.loadQueue = {}
-
 
 		for i = 1, numIcons do
 			local button = self.buttons[i]
