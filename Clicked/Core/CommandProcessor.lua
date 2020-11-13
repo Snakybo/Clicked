@@ -151,7 +151,7 @@ function Clicked:ProcessCommands(commands)
 
 			frame:Hide()
 
-			self:CreateCommandAttributes(attributes, command)
+			self:CreateCommandAttributes(attributes, command, prefix, suffix)
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
 			self:SetPendingFrameAttributes(frame, attributes)
 			self:ApplyAttributesToFrame(frame)
