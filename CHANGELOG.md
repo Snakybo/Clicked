@@ -16,6 +16,7 @@
 
 - Fix the `/startattack` command being included in some bindings that don't include the "Target" target unit
 - Fix groups not showing the assigned icon [#24]
+- Potentially fix bindings sometimes not activating [#8]
 
 ## [0.10.3] - 2020-11-05
 
@@ -366,6 +367,7 @@
 [#12]: https://github.com/Snakybo/Clicked/issues/12
 [#11]: https://github.com/Snakybo/Clicked/issues/11
 [#9]: https://github.com/Snakybo/Clicked/issues/9
+[#8]: https://github.com/Snakybo/Clicked/issues/8
 [#7]: https://github.com/Snakybo/Clicked/issues/7
 [#5]: https://github.com/Snakybo/Clicked/issues/5
 [#4]: https://github.com/Snakybo/Clicked/issues/4

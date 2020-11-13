@@ -76,8 +76,11 @@ local function GetFrameHandler(index)
 				return
 			end
 
+
 			local keybind = self:GetAttribute("clicked-keybind")
-			self:SetBindingClick(true, keybind, self)
+			local identifier = self:GetAttribute("clicked-identifier")
+
+			self:SetBindingClick(true, keybind, self, identifier)
 		]])
 
 		-- unregister a binding
@@ -154,6 +157,7 @@ function Clicked:ProcessCommands(commands)
 			self:ApplyAttributesToFrame(frame)
 
 			frame:SetAttribute("clicked-keybind", command.keybind)
+			frame:SetAttribute("clicked-identifier", suffix)
 			frame:Show()
 		end
 	end
