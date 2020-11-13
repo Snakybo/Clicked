@@ -456,7 +456,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	for _, binding in ipairs(bindings) do
 		local data = Clicked:GetActiveBindingAction(binding)
 
-		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
+		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.LAST then
 			table.insert(result, data.value)
 		end
 	end

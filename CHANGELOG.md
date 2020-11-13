@@ -19,6 +19,7 @@
 - Fix the `/startattack` command being included in some bindings that don't include the "Target" target unit
 - Fix the `/startattack` command being included in bindings that never target an enemy
 - Fix groups not showing the assigned icon [#24]
+- Fix custom macros using the `LAST` mode not being registered
 - Potentially fix bindings sometimes not activating [#8]
 
 ## [0.10.3] - 2020-11-05
