@@ -17,6 +17,7 @@
 ### Fixed
 
 - Fix the `/startattack` command being included in some bindings that don't include the "Target" target unit
+- Fix the `/startattack` command being included in bindings that never target an enemy
 - Fix groups not showing the assigned icon [#24]
 - Potentially fix bindings sometimes not activating [#8]
 
