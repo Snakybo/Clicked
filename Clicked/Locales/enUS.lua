@@ -65,11 +65,13 @@ L["BINDING_UI_PAGE_ICON_PICKER_BUTTON_CANCEL"] = "Cancel"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"] = "Simple Binding"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"] = "Clickcast Binding"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"] = "Healer Binding"
+L["BINDING_UI_PAGE_TEMPLATE_TITLE_CUSTOM_MACRO"] = "Custom Macro (advanced)"
 L["BINDING_UI_PAGE_TEMPLATE_TITLE_GROUP"] = "Group"
 
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"] = "A simple binding without any target prioritization, identical to standard action buttons."
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"] = "A binding that only activates when hovering over a unit frame."
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"] = "A binding commonly used by healers, it will prioritize mouseover -> target -> player."
+L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CUSTOM_MACRO"] = "A custom macro that can interact with other bindings and can be configured with load conditions."
 L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_GROUP"] = "A group to organize multiple bindings."
 
 L["BINDING_UI_PAGE_GROUP_LABEL_GOUP_NAME_ICON"] = "Group Name and Icon"

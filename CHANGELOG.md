@@ -5,6 +5,7 @@
 ### Added
 
 - Add icon selector for custom macros and groups [#23]
+- Add a binding template for custom macros
 
 ### Changed
 

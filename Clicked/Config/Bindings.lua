@@ -8,6 +8,7 @@ local Module = {}
 local ITEM_TEMPLATE_SIMPLE_BINDING = "SIMPLE_BINDING"
 local ITEM_TEMPLATE_CLICKCAST_BINDING = "CLICKCAST_BINDING"
 local ITEM_TEMPLATE_HEALER_BINDING = "HEALER_BINDING"
+local ITEM_TEMPLATE_CUSTOM_MACRO = "CUSTOM_MACRO"
 local ITEM_TEMPLATE_GROUP = "GROUP"
 
 local spellbookButtons = {}
@@ -1192,32 +1193,34 @@ end
 -- Item templates
 
 local function CreateFromItemTemplate(identifier)
+	local item = nil
+
 	if identifier == ITEM_TEMPLATE_SIMPLE_BINDING then
-		local binding = Clicked:CreateNewBinding()
-
-		Module.tree:SelectByBindingOrGroup(binding)
+		item = Clicked:CreateNewBinding()
 	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
-		local binding = Clicked:CreateNewBinding()
-		binding.primaryTarget.unit = Clicked.TargetUnits.HOVERCAST
-
-		Module.tree:SelectByBindingOrGroup(binding)
+		item = Clicked:CreateNewBinding()
+		item.primaryTarget.unit = Clicked.TargetUnits.HOVERCAST
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
-		local binding = Clicked:CreateNewBinding()
-		binding.primaryTarget.unit = Clicked.TargetUnits.MOUSEOVER
-		binding.primaryTarget.hostility = Clicked.TargetHostility.HELP
+		item = Clicked:CreateNewBinding()
+		item.primaryTarget.unit = Clicked.TargetUnits.MOUSEOVER
+		item.primaryTarget.hostility = Clicked.TargetHostility.HELP
 
-		binding.secondaryTargets[1] = Clicked:GetNewBindingTargetTemplate()
-		binding.secondaryTargets[1].unit = Clicked.TargetUnits.TARGET
-		binding.secondaryTargets[1].hostility = Clicked.TargetHostility.HELP
+		item.secondaryTargets[1] = Clicked:GetNewBindingTargetTemplate()
+		item.secondaryTargets[1].unit = Clicked.TargetUnits.TARGET
+		item.secondaryTargets[1].hostility = Clicked.TargetHostility.HELP
 
-		binding.secondaryTargets[2] = Clicked:GetNewBindingTargetTemplate()
-		binding.secondaryTargets[2].unit = Clicked.TargetUnits.PLAYER
-
-		Module.tree:SelectByBindingOrGroup(binding)
+		item.secondaryTargets[2] = Clicked:GetNewBindingTargetTemplate()
+		item.secondaryTargets[2].unit = Clicked.TargetUnits.PLAYER
+	elseif identifier == ITEM_TEMPLATE_CUSTOM_MACRO then
+		item = Clicked:CreateNewBinding()
+		item.type = Clicked.BindingTypes.MACRO
 	elseif identifier == ITEM_TEMPLATE_GROUP then
-		local group = Clicked:CreateNewGroup()
+		item = Clicked:CreateNewGroup()
+	end
 
-		Module.tree:SelectByBindingOrGroup(group)
+	if item ~= nil then
+		Clicked:ReloadActiveBindings()
+		Module.tree:SelectByBindingOrGroup(item)
 	end
 end
 
@@ -1328,6 +1331,7 @@ local function DrawItemTemplateSelector(container)
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SIMPLE_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CLICKCAST_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_HEALER_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CUSTOM_MACRO, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CUSTOM_MACRO"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CUSTOM_MACRO"])
 
 	scrollFrame:DoLayout()
 end
