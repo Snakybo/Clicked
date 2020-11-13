@@ -167,17 +167,6 @@ local methods = {
 			return
 		end
 
-		local status = self.status or self.localstatus
-		local viewHeight = self.scrollframe:GetHeight()
-		local viewRows = math.floor(viewHeight / (ICON_SIZE + 4))
-
-		status.numColumns = math.floor(self.content.width / (ICON_SIZE + 4))
-		status.numRows = math.ceil(#self.icons / status.numColumns) - viewRows
-		status.contentHeight = math.floor(status.numRows * (ICON_SIZE + 4))
-
-		local numIcons = viewRows * status.numColumns
-		local offset = (status.scrollvalue * 2) * status.numColumns
-
 		local icons = {}
 
 		if self.searchHandler ~= nil and #self.searchHandler.searchTerm > 0 then
@@ -193,6 +182,17 @@ local methods = {
 		else
 			icons = self.icons
 		end
+
+		local status = self.status or self.localstatus
+		local viewHeight = self.scrollframe:GetHeight()
+		local viewRows = math.floor(viewHeight / (ICON_SIZE + 4))
+
+		status.numColumns = math.floor(self.content.width / (ICON_SIZE + 4))
+		status.numRows = math.max(math.ceil(#icons / status.numColumns) - viewRows, 0)
+		status.contentHeight = math.floor(status.numRows * (ICON_SIZE + 4))
+
+		local numIcons = viewRows * status.numColumns
+		local offset = (status.scrollvalue * 2) * status.numColumns
 
 		self.loadQueue = {}
 
