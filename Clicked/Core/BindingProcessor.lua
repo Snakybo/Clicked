@@ -80,7 +80,7 @@ Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 local configuredBindings = {}
 local activeBindings = {}
 
-local function GetMacroSegmentFromAction(action)
+local function GetMacroSegmentFromAction(action, interactionType)
 	local flags = {}
 
 	if action.unit == Clicked.TargetUnits.PLAYER then
@@ -133,7 +133,7 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "nopet")
 	end
 
-	if Clicked:CanUnitHaveFollowUp(action.unit) then
+	if interactionType == Clicked.InteractionType.REGULAR and Clicked:CanUnitHaveFollowUp(action.unit) then
 		table.insert(flags, "exists")
 	end
 
@@ -394,24 +394,16 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 			end
 
 			if not startAutoAttack and interactionType == Clicked.InteractionType.REGULAR then
-				local valid = false
-
-				if binding.targets.regular.enabled then
-					for _, target in ipairs(binding.targets.regular) do
-						if target == Clicked.TargetUnits.TARGET then
-							valid = true
-							break
-						end
-
-						if not Clicked:CanUnitHaveFollowUp(target.unit) then
-							break
-						end
+				for _, target in ipairs(binding.targets.regular) do
+					if target.unit == Clicked.TargetUnits.TARGET then
+						startAutoAttack = true
+						table.insert(extra, "/startattack [@target,harm,exists]")
+						break
 					end
-				end
 
-				if valid then
-					startAutoAttack = true
-					table.insert(extra, "/startattack [@target,harm,exists]")
+					if not Clicked:CanUnitHaveFollowUp(target.unit) then
+						break
+					end
 				end
 			end
 
@@ -438,7 +430,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	local segments = {}
 
 	for _, action in ipairs(actions) do
-		local flags = GetMacroSegmentFromAction(action)
+		local flags = GetMacroSegmentFromAction(action, interactionType)
 
 		if #flags > 0 then
 			flags = "[" .. flags .. "] "
