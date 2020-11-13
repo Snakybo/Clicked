@@ -305,10 +305,6 @@ function Clicked:CanUnitBeHostile(unit)
 		return true
 	end
 
-	if unit == Clicked.TargetUnits.HOVERCAST then
-		return true
-	end
-
 	if unit == Clicked.TargetUnits.PET_TARGET then
 		return true
 	end
@@ -360,10 +356,6 @@ function Clicked:CanUnitBeDead(unit)
 		return true
 	end
 
-	if unit == Clicked.TargetUnits.HOVERCAST then
-		return true
-	end
-
 	if unit == Clicked.TargetUnits.PET then
 		return true
 	end
@@ -388,10 +380,6 @@ function Clicked:CanUnitHaveFollowUp(unit)
 	end
 
 	if unit == Clicked.TargetUnits.CURSOR then
-		return false
-	end
-
-	if unit == Clicked.TargetUnits.HOVERCAST then
 		return false
 	end
 

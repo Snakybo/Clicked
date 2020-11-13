@@ -6,11 +6,13 @@
 
 - Add icon selector for custom macros and groups [#23]
 - Add a binding template for custom macros
+- Add support for other targets when the unit frame target is selected [#22]
 
 ### Changed
 
 - Slightly increased the size of the binding tree
 - Process shift-clicking items immediately rather than when the enter key is pressed
+- Changed the visualization of the binding targets UI to separate unit frame and regular targets
 
 ### Fixed
 
@@ -358,6 +360,7 @@
 
 [#24]: https://github.com/Snakybo/Clicked/issues/24
 [#23]: https://github.com/Snakybo/Clicked/issues/23
+[#22]: https://github.com/Snakybo/Clicked/issues/22
 [#20]: https://github.com/Snakybo/Clicked/issues/20
 [#18]: https://github.com/Snakybo/Clicked/issues/18
 [#16]: https://github.com/Snakybo/Clicked/issues/16

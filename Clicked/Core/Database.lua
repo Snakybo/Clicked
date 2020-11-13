@@ -75,8 +75,17 @@ function Clicked:GetNewBindingTemplate()
 				displayIcon = ""
 			}
 		},
-		primaryTarget = self:GetNewBindingTargetTemplate(),
-		secondaryTargets = {},
+		targets = {
+			hovercast = {
+				enabled = false,
+				hostility = Clicked.TargetHostility.ANY,
+				vitals = Clicked.TargetVitals.ANY
+			},
+			regular = {
+				enabled = true,
+				self:GetNewBindingTargetTemplate()
+			}
+		},
 		load = {
 			never = false,
 			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
@@ -468,6 +477,45 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 	-- 0.10.x to 0.11.0
 	if string.sub(profile.version, 1, 4) == "0.10" then
+		for _, binding in ipairs(profile.bindings) do
+			local hovercast = {
+				enabled = false,
+				hostility = "ANY",
+				vitals = "ANY"
+			}
+
+			local regular = {
+				enabled = false
+			}
+
+			if binding.primaryTarget.unit == "HOVERCAST" then
+				hovercast.enabled = true
+				hovercast.hostility = binding.primaryTarget.hostility
+				hovercast.vitals = binding.primaryTarget.vitals
+
+				table.insert(regular, {
+					unit = "DEFAULT",
+					hostility = "ANY",
+					vitals = "ANY"
+				})
+			else
+				regular.enabled = true
+				table.insert(regular, binding.primaryTarget)
+
+				for _, target in ipairs(binding.secondaryTargets) do
+					table.insert(regular, target)
+				end
+			end
+
+			binding.targets = {
+				hovercast = hovercast,
+				regular = regular
+			}
+
+			binding.primaryTarget = nil
+			binding.secondaryTargets = nil
+		end
+
 		for _, group in ipairs(profile.groups) do
 			group.displayIcon = group.icon
 			group.icon = nil

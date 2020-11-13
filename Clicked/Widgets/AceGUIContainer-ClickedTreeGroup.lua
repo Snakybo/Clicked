@@ -494,13 +494,26 @@ local function Button_OnEnter(frame)
 		text = text .. "\n\n"
 
 		text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
-		text = text .. "|cFFFFFFFF1. " .. Clicked:GetLocalizedTargetString(binding.primaryTarget)
 
-		for i, target in ipairs(binding.secondaryTargets) do
-			text = text .. "\n" .. (i + 1) .. ". " .. Clicked:GetLocalizedTargetString(target)
+		if binding.targets.hovercast.enabled then
+			local str = Clicked:GetLocalizedTargetString(binding.targets.hovercast)
+
+			if #str > 0 then
+				str = str .. " "
+			end
+
+			str = str .. L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
+			text = text .. "|cFFFFFFFF* " .. str .. "|r\n"
 		end
 
-		text = text .. "|r\n\n"
+		if binding.targets.regular.enabled then
+			for i, target in ipairs(binding.targets.regular) do
+				local str = Clicked:GetLocalizedTargetString(target)
+				text = text .. "|cFFFFFFFF" .. i .. ". " .. str .. "|r\n"
+			end
+		end
+
+		text = text .. "\n"
 		text = text .. (Clicked:CanBindingLoad(binding) and L["BINDING_UI_TREE_LOADED"] or L["BINDING_UI_TREE_UNLOADED"])
 
 		tooltip:SetOwner(frame, "ANCHOR_NONE")

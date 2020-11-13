@@ -89,6 +89,7 @@ read_globals = {
 	"PlaySound",
 	"RegisterStateDriver",
 	"ReloadUI",
+	"SetDesaturation",
 	"ShowUIPanel",
 	"SpellBookFrame",
 	"SpellBook_GetSpellBookSlot",

@@ -78,19 +78,16 @@ function Clicked:GetLocalizedTargetString(target)
 	return table.concat(result, " ")
 end
 
---- Get a localized list of all available target units for a binding,
---- the `HOVERCAST` units can optionally be excluded.
+--- Get a localized list of all available target units for a binding.
 ---
---- @param excludeHovercast boolean
 --- @return table items
 --- @return table order
-function Clicked:GetLocalizedTargetUnits(excludeHovercast)
+function Clicked:GetLocalizedTargetUnits()
 	local items = {
 		[Clicked.TargetUnits.DEFAULT] = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
 		[Clicked.TargetUnits.PLAYER] = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
 		[Clicked.TargetUnits.TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
 		[Clicked.TargetUnits.TARGET_OF_TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
-		[Clicked.TargetUnits.HOVERCAST] = L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"],
 		[Clicked.TargetUnits.MOUSEOVER] = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
 		[Clicked.TargetUnits.FOCUS] = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
 		[Clicked.TargetUnits.CURSOR] = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
@@ -108,7 +105,6 @@ function Clicked:GetLocalizedTargetUnits(excludeHovercast)
 		Clicked.TargetUnits.PLAYER,
 		Clicked.TargetUnits.TARGET,
 		Clicked.TargetUnits.TARGET_OF_TARGET,
-		Clicked.TargetUnits.HOVERCAST,
 		Clicked.TargetUnits.MOUSEOVER,
 		Clicked.TargetUnits.FOCUS,
 		Clicked.TargetUnits.CURSOR,
@@ -120,10 +116,6 @@ function Clicked:GetLocalizedTargetUnits(excludeHovercast)
 		Clicked.TargetUnits.PARTY_4,
 		Clicked.TargetUnits.PARTY_5
 	}
-
-	if excludeHovercast then
-		table.remove(order, 5)
-	end
 
 	return items, order
 end

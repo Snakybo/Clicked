@@ -26,7 +26,6 @@ Clicked.TargetUnits = {
 	PARTY_5 = "PARTY_5",
 	FOCUS = "FOCUS",
 	MOUSEOVER = "MOUSEOVER",
-	HOVERCAST = "HOVERCAST",
 	CURSOR = "CURSOR"
 }
 
@@ -70,6 +69,11 @@ Clicked.PetState = {
 	INACTIVE = "INACTIVE"
 }
 
+Clicked.InteractionType = {
+	REGULAR = 1,
+	HOVERCAST = 2
+}
+
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
@@ -85,7 +89,7 @@ local function GetMacroSegmentFromAction(action)
 		table.insert(flags, "@target")
 	elseif action.unit == Clicked.TargetUnits.TARGET_OF_TARGET then
 		table.insert(flags, "@targettarget")
-	elseif action.unit == Clicked.TargetUnits.MOUSEOVER or action.unit == Clicked.TargetUnits.HOVERCAST then
+	elseif action.unit == Clicked.TargetUnits.MOUSEOVER then
 		table.insert(flags, "@mouseover")
 	elseif action.unit == Clicked.TargetUnits.PET then
 		table.insert(flags, "@pet")
@@ -225,8 +229,8 @@ local function ConstructAction(binding, target)
 		action.forms = table.concat(forms, "/")
 	end
 
-	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		action.unit = Clicked.TargetUnits.HOVERCAST
+	if Clicked:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
+		action.unit = Clicked.TargetUnits.MOUSEOVER
 	else
 		action.unit = target.unit
 	end
@@ -246,19 +250,22 @@ local function ConstructAction(binding, target)
 	return action
 end
 
-local function ConstructActions(binding)
+local function ConstructActions(binding, interactionType)
 	local actions = {}
 
-	-- The primary target is a bit special, it can contain the DEFAULT or HOVERCAST target
-	-- (as those cannot have predecessors or successors), additionally if the binding is
-	-- using a restricted keybind, we're treating it as HOVERCAST internally.
+	if binding.targets.hovercast.enabled and interactionType == Clicked.InteractionType.HOVERCAST then
+		local action = ConstructAction(binding, binding.targets.hovercast)
+		table.insert(actions, action)
+	end
 
-	local action = ConstructAction(binding, binding.primaryTarget)
-	table.insert(actions, action)
+	if binding.targets.regular.enabled and interactionType == Clicked.InteractionType.REGULAR then
+		for _, target in ipairs(binding.targets.regular) do
+			local action = ConstructAction(binding, target)
+			table.insert(actions, action)
 
-	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
-		for _, target in ipairs(binding.secondaryTargets) do
-			table.insert(actions, ConstructAction(binding, target))
+			if not Clicked:CanUnitHaveFollowUp(target.unit) then
+				break
+			end
 		end
 	end
 
@@ -332,6 +339,18 @@ local function SortActions(left, right)
 	return false
 end
 
+local function GetInternalBindingType(binding)
+	if binding.type == Clicked.BindingTypes.SPELL then
+		return Clicked.BindingTypes.MACRO
+	end
+
+	if binding.type == Clicked.BindingTypes.ITEM then
+		return Clicked.BindingTypes.MACRO
+	end
+
+	return binding.type
+end
+
 -- Construct a valid macro that correctly prioritizes all specified bindings.
 -- It will prioritize bindings in the following order:
 --
@@ -352,7 +371,7 @@ end
 -- [@mouseover,help] and [@target] target priority order, and the other one has
 -- Crusader Strike with [@target,harm], it will create a command like this:
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
-function Clicked:GetMacroForBindings(bindings)
+function Clicked:GetMacroForBindings(bindings, interactionType)
 	local result = {}
 	local interruptCurrentCast = false
 	local startAutoAttack = false
@@ -374,22 +393,18 @@ function Clicked:GetMacroForBindings(bindings)
 				table.insert(extra, "/stopcasting")
 			end
 
-			if not startAutoAttack then
+			if not startAutoAttack and interactionType == Clicked.InteractionType.REGULAR then
 				local valid = false
 
-				if binding.primaryTarget.unit == Clicked.TargetUnits.TARGET then
-					valid = true
-				else
-					if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
-						for _, target in ipairs(binding.secondaryTargets) do
-							if target.unit == Clicked.TargetUnits.TARGET then
-								valid = true
-								break
-							end
+				if binding.targets.regular.enabled then
+					for _, target in ipairs(binding.targets.regular) do
+						if target == Clicked.TargetUnits.TARGET then
+							valid = true
+							break
+						end
 
-							if not Clicked:CanUnitHaveFollowUp(target.unit) then
-								break
-							end
+						if not Clicked:CanUnitHaveFollowUp(target.unit) then
+							break
 						end
 					end
 				end
@@ -404,7 +419,7 @@ function Clicked:GetMacroForBindings(bindings)
 				table.insert(result, 1, extra[i])
 			end
 
-			for _, action in ipairs(ConstructActions(binding)) do
+			for _, action in ipairs(ConstructActions(binding, interactionType)) do
 				table.insert(actions, action)
 			end
 		end
@@ -465,7 +480,7 @@ local function ProcessActiveBindings()
 
 	local commands = {}
 
-	local function Process(keybind, bucket, hovercast)
+	local function Process(keybind, bucket, interactionType)
 		if #bucket == 0 then
 			return nil
 		end
@@ -475,12 +490,12 @@ local function ProcessActiveBindings()
 		local valid = false
 		local command = {
 			keybind = keybind,
-			hovercast = hovercast
+			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
 		}
 
-		if reference.type == Clicked.BindingTypes.SPELL or reference.type == Clicked.BindingTypes.ITEM or reference.type == Clicked.BindingTypes.MACRO then
+		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
-			command.data = Clicked:GetMacroForBindings(bucket)
+			command.data = Clicked:GetMacroForBindings(bucket, interactionType)
 			valid = command.data ~= nil and command.data ~= ""
 		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
 			command.action = Clicked.CommandType.TARGET
@@ -498,8 +513,8 @@ local function ProcessActiveBindings()
 	end
 
 	for keybind, buckets in Clicked:IterateActiveBindings() do
-		Process(keybind, buckets.hovercast, true)
-		Process(keybind, buckets.regular, false)
+		Process(keybind, buckets.hovercast, Clicked.InteractionType.HOVERCAST)
+		Process(keybind, buckets.regular, Clicked.InteractionType.REGULAR)
 	end
 
 	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
@@ -507,16 +522,16 @@ local function ProcessActiveBindings()
 end
 
 local function FilterBindings(activatable)
-	local function ConvertType(binding)
-		if binding.type == Clicked.BindingTypes.SPELL then
-			return Clicked.BindingTypes.MACRO
-		end
+	local function Insert(bucket, binding)
+		if #bucket == 0 then
+			table.insert(bucket, binding)
+		else
+			local reference = bucket[1]
 
-		if binding.type == Clicked.BindingTypes.ITEM then
-			return Clicked.BindingTypes.MACRO
+			if GetInternalBindingType(binding) == GetInternalBindingType(reference) then
+				table.insert(bucket, binding)
+			end
 		end
-
-		return binding.type
 	end
 
 	local result = {}
@@ -528,28 +543,12 @@ local function FilterBindings(activatable)
 		}
 
 		for _, binding in ipairs(bindings) do
-			local bucket
-
-			if binding.type == Clicked.BindingTypes.UNIT_SELECT then
-				bucket = result[keybind].hovercast
-			elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-				bucket = result[keybind].hovercast
-			elseif Clicked:IsRestrictedKeybind(keybind) then
-				bucket = result[keybind].hovercast
-			elseif binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
-				bucket = result[keybind].hovercast
-			else
-				bucket = result[keybind].regular
+			if binding.targets.hovercast.enabled then
+				Insert(result[keybind].hovercast, binding)
 			end
 
-			if #bucket == 0 then
-				table.insert(bucket, binding)
-			else
-				local reference = bucket[1]
-
-				if ConvertType(binding) == ConvertType(reference) then
-					table.insert(bucket, binding)
-				end
+			if binding.targets.regular.enabled then
+				Insert(result[keybind].regular, binding)
 			end
 		end
 	end
@@ -675,6 +674,15 @@ function Clicked:CanBindingLoad(binding)
 		local data = self:GetActiveBindingAction(binding)
 
 		if data ~= nil and data.value ~= nil and #data.value == 0 then
+			return false
+		end
+	end
+
+	-- both hovercast and regular targets disabled
+	do
+		local targets = binding.targets
+
+		if not targets.hovercast.enabled and not targets.regular.enabled then
 			return false
 		end
 	end

@@ -22,32 +22,26 @@ local didOpenSpellbook
 
 -- Utility functions
 
-local function CanBindingTargetUnitChange(binding)
-	if Clicked:IsRestrictedKeybind(binding.keybind) then
+local function UpdateRequiredTargetModesForBinding(targets, keybind, type)
+	local hovercast = targets.hovercast
+	local regular = targets.regular
+
+	if Clicked:IsRestrictedKeybind(keybind) or type == Clicked.BindingTypes.UNIT_SELECT or type == Clicked.BindingTypes.UNIT_MENU then
+		hovercast.enabled = true
+		regular.enabled = false
+	end
+end
+
+local function CanEnableHovercastTargetMode(binding)
+	return true
+end
+
+local function CanEnableRegularTargetMode(binding)
+	if Clicked:IsRestrictedKeybind(binding.keybind) or binding.type == Clicked.BindingTypes.UNIT_SELECT or binding.type == Clicked.BindingTypes.UNIT_MENU then
 		return false
 	end
 
-	return binding.type == Clicked.BindingTypes.SPELL or binding.type == Clicked.BindingTypes.ITEM or binding.type == Clicked.BindingTypes.MACRO
-end
-
-local function GetPrimaryBindingTargetUnit(unit, keybind, type)
-	if Clicked:IsRestrictedKeybind(keybind) then
-		return Clicked.TargetUnits.HOVERCAST
-	end
-
-	if type == Clicked.BindingTypes.UNIT_SELECT then
-		return Clicked.TargetUnits.HOVERCAST
-	end
-
-	if type == Clicked.BindingTypes.UNIT_MENU then
-		return Clicked.TargetUnits.HOVERCAST
-	end
-
-	if type == Clicked.BindingTypes.MACRO then
-		return Clicked.TargetUnits.DEFAULT
-	end
-
-	return unit
+	return true
 end
 
 local function GetTriStateLoadOptionValue(option)
@@ -581,7 +575,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 		container:AddChild(group)
 
 		-- help text
-		if binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
+		if binding.targets.hovercast.enabled then
 			local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
@@ -648,7 +642,7 @@ local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
 		local function OnValueChanged(frame, event, value)
-			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, binding.keybind, value)
+			UpdateRequiredTargetModesForBinding(binding.targets, binding.keybind, value)
 			GUI:Serialize(frame, event, value)
 		end
 
@@ -695,114 +689,113 @@ end
 
 -- Binding target page and components
 
-local function DrawTargetSelectionPrimaryUnit(container, binding, target)
-	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] .. "\n")
-		widget:SetFullWidth(true)
+local function DrawTargetSelectionUnit(container, targets, enabled, index)
+	local target
 
-		container:AddChild(widget)
-	end
-
-	local items, order = Clicked:GetLocalizedTargetUnits()
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
-	widget:SetFullWidth(true)
-	widget:SetDisabled(not CanBindingTargetUnitChange(binding))
-
-	container:AddChild(widget)
-end
-
-local function DrawTargetSelectionUnit(container, binding, index, target)
-	local function OnValueChanged(frame, event, value)
-		if not InCombatLockdown() then
-			if value == "_DELETE_" then
-				table.remove(binding.secondaryTargets, index)
-			else
-				target.unit = value
-
-				local last = nil
-
-				for i, t in ipairs(binding.secondaryTargets) do
-					if not Clicked:CanUnitHaveFollowUp(t.unit) then
-						last = i
-						break
-					end
-				end
-
-				if last ~= nil then
-					for i = 1, #binding.secondaryTargets - last do
-						table.remove(binding.secondaryTargets, #binding.secondaryTargets)
-					end
-				end
-			end
-
-			Clicked:ReloadActiveBindings()
-		else
-			frame:SetValue(target.unit)
-			print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
-		end
-	end
-
-	local items, order = Clicked:GetLocalizedTargetUnits()
-	items["_DELETE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_REMOVE"]
-	table.insert(order, "_DELETE_")
-
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
-	widget:SetCallback("OnValueChanged", OnValueChanged)
-	widget:SetFullWidth(true)
-
-	container:AddChild(widget)
-end
-
-local function DrawTargetSelectionNewUnit(container, binding)
 	local function OnValueChanged(frame, event, value)
 		if not InCombatLockdown() then
 			if value == "_NONE_" then
 				return
+			elseif value == "_DELETE_" then
+				table.remove(targets, index)
+			else
+				if index == 0 then
+					local new = Clicked:GetNewBindingTargetTemplate()
+					new.unit = value
+
+					table.insert(targets, new)
+				else
+					target.unit = value
+
+					if not Clicked:CanUnitHaveFollowUp(value) then
+						while #targets > index do
+							table.remove(targets)
+						end
+					end
+				end
 			end
-
-			local new = Clicked:GetNewBindingTargetTemplate()
-			new.unit = value
-
-			table.insert(binding.secondaryTargets, new)
 
 			Clicked:ReloadActiveBindings()
 		else
-			frame:SetValue("_NONE_")
+			if index == 0 then
+				frame:SetValue("_NONE_")
+			else
+				frame:SetValue(target.unit)
+			end
+
 			print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
 		end
 	end
 
-	local items, order = Clicked:GetLocalizedTargetUnits(true)
-	items["_NONE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_NONE"]
-	table.insert(order, "_NONE_")
+	local items, order = Clicked:GetLocalizedTargetUnits()
 
-	local widget = GUI:Dropdown(nil, items, order, nil, { unit = "_NONE_" }, "unit")
-	widget:SetCallback("OnValueChanged", OnValueChanged)
+	if index == 0 then
+		target = {
+			unit = "_NONE_"
+		}
+
+		items["_NONE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_NONE"]
+		table.insert(order, "_NONE_")
+	else
+		target = targets[index]
+
+		if #targets > 1 then
+			items["_DELETE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_REMOVE"]
+			table.insert(order, "_DELETE_")
+		end
+	end
+
+	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
+	widget:SetCallback("OnValueChanged", OnValueChanged)
+	widget:SetDisabled(not enabled)
 
 	container:AddChild(widget)
 end
 
-local function DrawTargetSelectionHostility(container, target)
+local function DrawTargetSelectionHostility(container, enabled, target)
 	local items, order = Clicked:GetLocalizedTargetHostility()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "hostility")
 	widget:SetFullWidth(true)
+	widget:SetDisabled(not enabled)
 
 	container:AddChild(widget)
 end
 
-local function DrawTargetSelectionVitals(container, target)
+local function DrawTargetSelectionVitals(container, enabled, target)
 	local items, order = Clicked:GetLocalizedTargetVitals()
 	local widget = GUI:Dropdown(nil, items, order, nil, target, "vitals")
 	widget:SetFullWidth(true)
+	widget:SetDisabled(not enabled)
 
 	container:AddChild(widget)
 end
 
 local function DrawBindingTargetPage(container, binding)
-	-- primary target
+	if Clicked:IsRestrictedKeybind(binding.keybind) then
+		local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] .. "\n", "medium")
+		widget:SetFullWidth(true)
+
+		container:AddChild(widget)
+	end
+
+	-- hovercast targets
 	do
-		local function ShouldShowHostility()
+		local hovercast = binding.targets.hovercast
+
+		do
+			local widget = GUI:ToggleHeading(L["BINDING_UI_PAGE_TARGETS_HEADER_HOVERCAST"], hovercast, "enabled")
+			widget:SetDisabled(not CanEnableHovercastTargetMode(binding))
+			container:AddChild(widget)
+		end
+
+		DrawTargetSelectionHostility(container, hovercast.enabled, hovercast)
+		DrawTargetSelectionVitals(container, hovercast.enabled, hovercast)
+	end
+
+	-- regular targets
+	do
+		local function ShouldShowHostility(target)
 			if binding.type == Clicked.BindingTypes.UNIT_SELECT then
 				return false
 			end
@@ -815,68 +808,48 @@ local function DrawBindingTargetPage(container, binding)
 				return false
 			end
 
-			if Clicked:CanUnitBeHostile(binding.primaryTarget.unit) then
-				return true
-			end
-
-			if binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST then
+			if Clicked:CanUnitBeHostile(target.unit) then
 				return true
 			end
 
 			return false
 		end
 
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"])
-		container:AddChild(group)
+		local regular = binding.targets.regular
 
-		DrawTargetSelectionPrimaryUnit(group, binding, binding.primaryTarget)
-
-		if ShouldShowHostility() then
-			DrawTargetSelectionHostility(group, binding.primaryTarget)
+		do
+			local widget = GUI:ToggleHeading(L["BINDING_UI_PAGE_TARGETS_HEADER_REGULAR"], regular, "enabled")
+			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
+			container:AddChild(widget)
 		end
 
-		if Clicked:CanUnitBeDead(binding.primaryTarget.unit) then
-			DrawTargetSelectionVitals(group, binding.primaryTarget)
-		end
-	end
-
-	if Clicked:CanUnitHaveFollowUp(binding.primaryTarget.unit) then
-		-- secondary targets
-		for index, target in ipairs(binding.secondaryTargets) do
-			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
+		-- existing targets
+		for i, target in ipairs(regular) do
+			local label = i == 1 and L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"] or L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"]
+			local group = GUI:InlineGroup(label)
 			container:AddChild(group)
 
-			DrawTargetSelectionUnit(group, binding, index, target)
+			DrawTargetSelectionUnit(group, regular, regular.enabled, i)
 
-			if Clicked:CanUnitBeHostile(target.unit) then
-				DrawTargetSelectionHostility(group, target)
+			if ShouldShowHostility(target) then
+				DrawTargetSelectionHostility(group, regular.enabled, target)
 			end
 
 			if Clicked:CanUnitBeDead(target.unit) then
-				DrawTargetSelectionVitals(group, target)
+				DrawTargetSelectionVitals(group, regular.enabled, target)
 			end
 
-			if not Clicked:CanUnitHaveFollowUp(target.unit) then
+			if not Clicked:CanUnitHaveFollowUp(target) then
 				break
 			end
 		end
 
 		-- new target
-		do
-			local last
+		if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
+			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
+			container:AddChild(group)
 
-			if #binding.secondaryTargets > 0 then
-				last = binding.secondaryTargets[#binding.secondaryTargets]
-			else
-				last = binding.primaryTarget
-			end
-
-			if Clicked:CanUnitHaveFollowUp(last.unit) then
-				local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
-				container:AddChild(group)
-
-				DrawTargetSelectionNewUnit(group, binding)
-			end
+			DrawTargetSelectionUnit(group, regular, regular.enabled, 0)
 		end
 	end
 end
@@ -1086,69 +1059,94 @@ local function DrawBindingStatusPage(container, binding)
 		widget:SetFullWidth(true)
 		container:AddChild(widget)
 	else
-		local bindings = {}
-
-		for keybind, buckets in Clicked:IterateActiveBindings() do
-			if keybind == binding.keybind then
-				local bucket = binding.primaryTarget.unit == Clicked.TargetUnits.HOVERCAST and buckets.hovercast or buckets.regular
-
-				for _, other in ipairs(bucket) do
-					table.insert(bindings, other)
-				end
-			end
-		end
-
-		-- output self text field
-		do
-			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-			widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_LOCAL"])
-			widget:SetText(Clicked:GetMacroForBindings({ binding }))
-			widget:SetFullWidth(true)
-			widget:SetNumLines(5)
-
-			container:AddChild(widget)
-		end
-
-		-- output of full macro
-		do
-			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-			widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_FULL"])
-			widget:SetText(Clicked:GetMacroForBindings(bindings))
-			widget:SetFullWidth(true)
-			widget:SetNumLines(8)
-
-			container:AddChild(widget)
-		end
-
-		if #bindings > 1 then
+		local function DrawStatus(group, bindings, interactionType)
+			-- output self text field
 			do
-				local widget = AceGUI:Create("Heading")
+				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+				widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_LOCAL"])
+				widget:SetText(Clicked:GetMacroForBindings({ binding }, interactionType))
 				widget:SetFullWidth(true)
-				widget:SetText(L["BINDING_UI_PAGE_STATUS_GENERATED_RELATIVES"]:format(#bindings - 1))
+				widget:SetNumLines(5)
 
-				container:AddChild(widget)
+				group:AddChild(widget)
 			end
 
-			for _, other in ipairs(bindings) do
-				if other ~= binding then
-					local action = Clicked:GetActiveBindingAction(other)
+			-- output of full macro
+			do
+				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+				widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_FULL"])
+				widget:SetText(Clicked:GetMacroForBindings(bindings, interactionType))
+				widget:SetFullWidth(true)
+				widget:SetNumLines(8)
 
-					do
-						local function OnClick()
-							Module.tree:SelectByBindingOrGroup(other)
+				group:AddChild(widget)
+			end
+
+			if #bindings > 1 then
+				do
+					local widget = AceGUI:Create("Heading")
+					widget:SetFullWidth(true)
+					widget:SetText(L["BINDING_UI_PAGE_STATUS_GENERATED_RELATIVES"]:format(#bindings - 1))
+
+					group:AddChild(widget)
+				end
+
+				for _, other in ipairs(bindings) do
+					if other ~= binding then
+						local action = Clicked:GetActiveBindingAction(other)
+
+						do
+							local function OnClick()
+								Module.tree:SelectByBindingOrGroup(other)
+							end
+
+							local widget = AceGUI:Create("InteractiveLabel")
+							widget:SetFontObject(GameFontHighlight)
+							widget:SetText(action.displayName)
+							widget:SetImage(action.displayIcon)
+							widget:SetFullWidth(true)
+							widget:SetCallback("OnClick", OnClick)
+
+							group:AddChild(widget)
 						end
-
-						local widget = AceGUI:Create("InteractiveLabel")
-						widget:SetFontObject(GameFontHighlight)
-						widget:SetText(action.displayName)
-						widget:SetImage(action.displayIcon)
-						widget:SetFullWidth(true)
-						widget:SetCallback("OnClick", OnClick)
-
-						container:AddChild(widget)
 					end
 				end
 			end
+		end
+
+		local hovercastBindings = {}
+		local regularBindings = {}
+
+		for keybind, buckets in Clicked:IterateActiveBindings() do
+			if keybind == binding.keybind then
+				for _, other in ipairs(buckets.hovercast) do
+					if other == binding then
+						hovercastBindings = buckets.hovercast
+						break
+					end
+				end
+
+				for _, other in ipairs(buckets.regular) do
+					if other == binding then
+						regularBindings = buckets.regular
+						break
+					end
+				end
+			end
+		end
+
+		if binding.targets.hovercast.enabled then
+			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_STATUS_GENERATED_HOVERCAST"])
+			container:AddChild(group)
+
+			DrawStatus(group, hovercastBindings, Clicked.InteractionType.HOVERCAST)
+		end
+
+		if binding.targets.regular.enabled then
+			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_STATUS_GENERATED_REGULAR"])
+			container:AddChild(group)
+
+			DrawStatus(group, regularBindings, Clicked.InteractionType.REGULAR)
 		end
 	end
 end
@@ -1199,18 +1197,20 @@ local function CreateFromItemTemplate(identifier)
 		item = Clicked:CreateNewBinding()
 	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
 		item = Clicked:CreateNewBinding()
-		item.primaryTarget.unit = Clicked.TargetUnits.HOVERCAST
+		item.targets.hovercast.enabled = true
+		item.targets.regular.enabled = false
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
 		item = Clicked:CreateNewBinding()
-		item.primaryTarget.unit = Clicked.TargetUnits.MOUSEOVER
-		item.primaryTarget.hostility = Clicked.TargetHostility.HELP
 
-		item.secondaryTargets[1] = Clicked:GetNewBindingTargetTemplate()
-		item.secondaryTargets[1].unit = Clicked.TargetUnits.TARGET
-		item.secondaryTargets[1].hostility = Clicked.TargetHostility.HELP
+		item.targets.regular[1].unit = Clicked.TargetUnits.MOUSEOVER
+		item.targets.regular[1].hostility = Clicked.TargetHostility.HELP
 
-		item.secondaryTargets[2] = Clicked:GetNewBindingTargetTemplate()
-		item.secondaryTargets[2].unit = Clicked.TargetUnits.PLAYER
+		item.targets.regular[2] = Clicked:GetNewBindingTargetTemplate()
+		item.targets.regular[2].unit = Clicked.TargetUnits.TARGET
+		item.targets.regular[2].hostility = Clicked.TargetHostility.HELP
+
+		item.targets.regular[3] = Clicked:GetNewBindingTargetTemplate()
+		item.targets.regular[3].unit = Clicked.TargetUnits.PLAYER
 	elseif identifier == ITEM_TEMPLATE_CUSTOM_MACRO then
 		item = Clicked:CreateNewBinding()
 		item.type = Clicked.BindingTypes.MACRO
@@ -1254,7 +1254,7 @@ local function DrawBinding(container)
 	-- keybinding button
 	do
 		local function OnKeyChanged(frame, event, value)
-			binding.primaryTarget.unit = GetPrimaryBindingTargetUnit(binding.primaryTarget.unit, value, binding.type)
+			UpdateRequiredTargetModesForBinding(binding.targets, value, binding.type)
 			GUI:Serialize(frame, event, value)
 		end
 

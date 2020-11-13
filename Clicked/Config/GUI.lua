@@ -287,3 +287,25 @@ function GUI:InlineGroup(title)
 
 	return widget
 end
+
+function GUI:ToggleHeading(title, ref, key)
+	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
+
+	local widget = AceGUI:Create("ClickedToggleHeading")
+	widget:SetFullWidth(true)
+	widget:SetCallback("OnValueChanged", OnSerialize)
+	widget:SetValue(ref[key])
+
+	if title then
+		widget:SetText(title)
+	end
+
+	widgets[widget] = {
+		setValueFunc = widget.SetValue,
+		ref = ref,
+		key = key
+	}
+
+	return widget
+end
