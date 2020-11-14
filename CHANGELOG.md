@@ -21,6 +21,7 @@
 - Fix groups not showing the assigned icon [#24]
 - Fix custom macros using the `LAST` mode not being registered
 - Potentially fix bindings sometimes not activating [#8]
+- Fix a few lines of text copy
 
 ## [0.10.3] - 2020-11-05
 

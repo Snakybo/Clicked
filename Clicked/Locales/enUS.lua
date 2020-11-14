@@ -76,7 +76,7 @@ L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_GROUP"] = "A group to organize multiple 
 
 L["BINDING_UI_PAGE_GROUP_LABEL_GOUP_NAME_ICON"] = "Group Name and Icon"
 
-L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] = "The left or right mouse button can only activate when hovering over unit frames."
+L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] = "The left and right mouse button can only activate when hovering over unit frames."
 L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"] = "Click on a spell book entry to select it."
 L["BINDING_UI_PAGE_ACTION_HELP_ITEM_SHIFT_CLICK"] = "Tip: You can shift-click an item in your bags when the input field is selected to autofill."
 L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] = "This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."
