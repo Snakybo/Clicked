@@ -10,5 +10,12 @@
 ## Notes: Icon data for Clicked.
 ## LoadOnDemand: 1
 
+#@retail@
 MediaRetail.lua
+#@end-retail@
+#@non-retail@
+# MediaClassic.lua
+#@end-non-retail@
+#@debug@
 MediaClassic.lua
+#@end-debug
