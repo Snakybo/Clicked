@@ -27,6 +27,7 @@
 - Fix mouse button 3, 4, and 5 not always working
 - Fix mouseover bindings that share a keybind with a unit frame binding not working
 - Fix a few lines of text copy
+- Fix bindings restricted to Moonkin Form while in Balance not working [#26]
 
 ## [0.10.3] - 2020-11-05
 
@@ -366,6 +367,7 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#26]: https://github.com/Snakybo/Clicked/issues/26
 [#24]: https://github.com/Snakybo/Clicked/issues/24
 [#23]: https://github.com/Snakybo/Clicked/issues/23
 [#22]: https://github.com/Snakybo/Clicked/issues/22
