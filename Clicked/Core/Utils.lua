@@ -282,6 +282,18 @@ function Clicked:IsRestrictedKeybind(keybind)
 	return keybind == "BUTTON1" or keybind == "BUTTON2"
 end
 
+--- Check if the specified keybind is a mouse button. This will also
+--- return `true` if the mouse button has been modified with alt/shift/ctrl.
+---
+--- @param keybind string
+--- @return boolean
+function Clicked:IsMouseButton(keybind)
+	local _, suffix = string.match(keybind, "^(.-)([^%-]+)$")
+	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
+
+	return buttonIndex ~= nil
+end
+
 --- Check if a binding's target unit can have a hostility. This will be
 --- `false` when, for example, `PARTY_2` is passed in because party members
 --- are by definition always friendly during the configuration phase.

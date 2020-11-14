@@ -12,7 +12,10 @@
 
 - Slightly increased the size of the binding tree
 - Process shift-clicking items immediately rather than when the enter key is pressed
-- Changed the visualization of the binding targets UI to separate unit frame and regular targets
+- Change the visualization of the binding targets UI to separate unit frame and regular targets
+- Improve the visualization of the `/cc dump` frame
+- Change the order of custom macros using the `FIRST` mode slightly. Clearing the "dangling blue cursor" will now always be cleared first
+- Improve and optimize internal binding generation
 
 ### Fixed
 
@@ -21,6 +24,8 @@
 - Fix groups not showing the assigned icon [#24]
 - Fix custom macros using the `LAST` mode not being registered
 - Potentially fix bindings sometimes not activating [#8]
+- Fix mouse button 3, 4, and 5 not always working
+- Fix mouseover bindings that share a keybind with a unit frame binding not working
 - Fix a few lines of text copy
 
 ## [0.10.3] - 2020-11-05

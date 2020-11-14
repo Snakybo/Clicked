@@ -42,10 +42,7 @@ local module = {
 							Clicked:RegisterFrameClicks(frame)
 						end
 
-						for _, frame in Clicked:IterateMacroHandlerFrames() do
-							Clicked:RegisterFrameClicks(frame)
-						end
-
+						Clicked:RegisterFrameClicks(_G[Clicked.MACRO_FRAME_HANDLER_NAME])
 						Clicked:ShowInformationPopup(L["INTERFACE_UI_GENERAL_POPUP_CAST_ON_KEY_DOWN"])
 					end,
 					get = function(info)

@@ -1,12 +1,13 @@
 Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
+Clicked.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
 Clicked.EVENT_MACRO_ATTRIBUTES_CREATED = "CLICKED_MACRO_ATTRIBUTES_CREATED"
 Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED = "CLICKED_HOVERCAST_ATTRIBUTES_CREATED"
 
-local macroFrameHandlers = {}
+local macroFrameHandler
 local stopCastingButton
 
-local function GetCommandAttributeIdentifier(command, isClickCastCommand)
+local function GetCommandAttributeIdentifier(command, hovercast)
 	-- separate modifiers from the actual binding
 	local prefix, suffix = string.match(command.keybind, "^(.-)([^%-]+)$")
 	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
@@ -20,7 +21,7 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 	prefix = prefix:lower()
 	suffix = suffix:lower()
 
-	if buttonIndex ~= nil and (isClickCastCommand or buttonIndex ~= nil) then
+	if buttonIndex ~= nil and hovercast then
 		suffix = buttonIndex
 	elseif buttonIndex ~= nil then
 		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
@@ -30,78 +31,122 @@ local function GetCommandAttributeIdentifier(command, isClickCastCommand)
 		prefix = ""
 	end
 
-	return prefix, suffix, buttonIndex ~= nil
+	return prefix, suffix
 end
 
 local function CreateStateDriverAttribute(frame, state, condition)
 	frame:SetAttribute("_onstate-" .. state, [[
+		if not self:IsShown() then
+			return
+		end
+
 		if newstate == "enabled" then
-			self:RunAttribute("clicked-clear-binding")
+			self:RunAttribute("clicked-clear-bindings")
 		else
-			self:RunAttribute("clicked-register-binding")
+			self:RunAttribute("clicked-register-bindings")
 		end
 	]])
 
 	RegisterStateDriver(frame, state, condition)
 end
 
-local function GetFrameHandler(index)
-	if index > #macroFrameHandlers then
-		local frame = CreateFrame("Button", "ClickedMacroFrameHandler" .. index, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
-		frame:Hide()
-
-		-- set required data first
-		frame:SetAttribute("clicked-keybind", "")
-
-		-- register OnShow and OnHide handlers to ensure bindings are registered
-		frame:SetAttribute("_onshow", [[ self:RunAttribute("clicked-register-binding") ]])
-		frame:SetAttribute("_onhide", [[ self:RunAttribute("clicked-clear-binding") ]])
-
-		-- attempt to register a binding, this will also check if the binding
-		-- is currently allowed to be active (e.g. not in a vehicle or pet battle)
-		frame:SetAttribute("clicked-register-binding", [[
-			if not self:IsShown() then
-				return
-			end
-
-			if self:GetAttribute("state-petbattle") == "enabled" then
-				return
-			end
-
-			if self:GetAttribute("state-vehicle") == "enabled" or self:GetAttribute("state-vehicleui") == "enabled" then
-				return
-			end
-
-			if self:GetAttribute("state-possessbar") == "enabled" then
-				return
-			end
-
-			local keybind = self:GetAttribute("clicked-keybind")
-			local identifier = self:GetAttribute("clicked-identifier")
-
-			self:SetBindingClick(true, keybind, self, identifier)
-		]])
-
-		-- unregister a binding
-		frame:SetAttribute("clicked-clear-binding", [[
-			local keybind = self:GetAttribute("clicked-keybind")
-			self:ClearBinding(keybind)
-		]])
-
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			CreateStateDriverAttribute(frame, "vehicle", "[@vehicle,exists] enabled; disabled")
-			CreateStateDriverAttribute(frame, "vehicleui", "[vehicleui] enabled; disabled")
-			CreateStateDriverAttribute(frame, "petbattle", "[petbattle] enabled; disabled")
-		end
-
-		CreateStateDriverAttribute(frame, "possessbar", "[possessbar] enabled; disabled")
-
-		Clicked:RegisterFrameClicks(frame)
-
-		table.insert(macroFrameHandlers, frame)
+local function EnsureStopCastingButton()
+	if stopCastingButton ~= nil then
+		return
 	end
 
-	return macroFrameHandlers[index]
+	stopCastingButton = CreateFrame("Button", Clicked.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
+	stopCastingButton:SetAttribute("type", "stop")
+end
+
+local function EnsureMacroFrameHandler()
+	if macroFrameHandler ~= nil then
+		return
+	end
+
+	macroFrameHandler = CreateFrame("Button", Clicked.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
+	macroFrameHandler:Hide()
+
+	-- set required data first
+	macroFrameHandler:SetAttribute("clicked-keybinds", "")
+	macroFrameHandler:SetAttribute("clicked-identifiers", "")
+
+	-- register OnShow and OnHide handlers to ensure bindings are registered
+	macroFrameHandler:SetAttribute("_onshow", [[
+		self:RunAttribute("clicked-register-bindings")
+	]])
+
+	macroFrameHandler:SetAttribute("_onhide", [[
+		self:RunAttribute("clicked-clear-bindings")
+	]])
+
+	-- attempt to register a binding, this will also check if the binding
+	-- is currently allowed to be active (e.g. not in a vehicle or pet battle)
+	macroFrameHandler:SetAttribute("clicked-register-bindings", [[
+		if not self:IsShown() then
+			return
+		end
+
+		if self:GetAttribute("state-petbattle") == "enabled" then
+			return
+		end
+
+		if self:GetAttribute("state-vehicle") == "enabled" or self:GetAttribute("state-vehicleui") == "enabled" then
+			return
+		end
+
+		if self:GetAttribute("state-possessbar") == "enabled" then
+			return
+		end
+
+		local keybinds = self:GetAttribute("clicked-keybinds")
+		local identifiers = self:GetAttribute("clicked-identifiers")
+
+		if strlen(keybinds) > 0 then
+			keybinds = table.new(strsplit("\001", keybinds))
+			identifiers = table.new(strsplit("\001", identifiers))
+
+			for i = 1, table.maxn(keybinds) do
+				local keybind = keybinds[i]
+				local identifier = identifiers[i]
+
+				self:SetBindingClick(true, keybind, self, identifier)
+			end
+		end
+	]])
+
+	-- unregister a binding
+	macroFrameHandler:SetAttribute("clicked-clear-bindings", [[
+		local keybinds = self:GetAttribute("clicked-keybinds")
+
+		if strlen(keybinds) > 0 then
+			keybinds = table.new(strsplit("\001", keybinds))
+
+			for i = 1, table.maxn(keybinds) do
+				local keybind = keybinds[i]
+				self:ClearBinding(keybind)
+			end
+		end
+	]])
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		CreateStateDriverAttribute(macroFrameHandler, "vehicle", "[@vehicle,exists] enabled; disabled")
+		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
+		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
+	end
+
+	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
+	Clicked:RegisterFrameClicks(macroFrameHandler)
+end
+
+local function GetMacroIdentifier(keybind, keybinds, identifiers)
+	for i, key in ipairs(keybinds) do
+		if key == keybind then
+			return identifiers[i]
+		end
+	end
+
+	return nil
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -113,13 +158,15 @@ function Clicked:ProcessCommands(commands)
 	local newClickCastFrameKeybinds = {}
 	local newClickCastFrameAttributes = {}
 
-	local frameHandlerRefs = {}
-	local nextMacroFrameHandler = 1
+	local newMacroFrameHandlerKeybinds = {}
+	local newMacroFrameHandlerIdentifiers = {}
+	local newMacroFrameHandlerAttributes = {}
 
-	if stopCastingButton == nil then
-		stopCastingButton = CreateFrame("Button", self.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
-		stopCastingButton:SetAttribute("type", "stop")
-	end
+	EnsureStopCastingButton()
+	EnsureMacroFrameHandler()
+
+	-- Unregister all current keybinds
+	macroFrameHandler:Hide()
 
 	-- First, process all non-hovercast commands so we can build a table
 	-- which can map frame handlers to keybinds. This is required in order
@@ -128,72 +175,92 @@ function Clicked:ProcessCommands(commands)
 	-- command as a fallback so it continues to work.
 
 	for _, command in ipairs(commands) do
-		if not command.hovercast then
-			local prefix, suffix = GetCommandAttributeIdentifier(command, command.hovercast)
+		if not command.hovercast and not command.virtual then
+			local prefix, suffix = GetCommandAttributeIdentifier(command, false)
 
-			local frame = GetFrameHandler(nextMacroFrameHandler)
 			local attributes = {}
-
-			nextMacroFrameHandler = nextMacroFrameHandler + 1
-			frameHandlerRefs[command.keybind] = frame:GetName()
-
-			frame:Hide()
 
 			self:CreateCommandAttributes(attributes, command, prefix, suffix)
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
-			self:SetPendingFrameAttributes(frame, attributes)
-			self:ApplyAttributesToFrame(frame)
 
-			frame:SetAttribute("clicked-keybind", command.keybind)
-			frame:SetAttribute("clicked-identifier", suffix)
-			frame:Show()
+			for attribute, value in pairs(attributes) do
+				newMacroFrameHandlerAttributes[attribute] = value
+			end
+
+			table.insert(newMacroFrameHandlerKeybinds, command.keybind)
+			table.insert(newMacroFrameHandlerIdentifiers, suffix)
+
+			-- dynamically assign the identifier, for debugging
+			command.identifier = suffix
 		end
 	end
 
-	for _, command in ipairs(commands) do
-		local prefix, suffix, isMouseButton = GetCommandAttributeIdentifier(command, command.hovercast)
+	-- Second, process all hovercast commands with the database built above, this
+	-- allows us to "remap" hovercast bindings to regular bindings if their macro
+	-- conditionals are not met (i.e. a binding that only activates on `[help]` but
+	-- you're hovering over a `[harm]` target). In this case we append a `/stopmacro [help]`
+	-- followed by a `/click` command to virtually click the macro frame handler.
+	--
+	-- Additionally in the case of "virtual hovercast" bindings (generated when a mouse button)
+	-- is set to the `[@mouseover]` target, we don't have any pre-build data for the command,
+	-- so a virtual hovercast binding will only serve the purpose of virtually clicking the
+	-- regular macro frame handler.
 
-		if command.hovercast or isMouseButton then
+	for _, command in ipairs(commands) do
+		if command.hovercast then
+			local prefix, suffix = GetCommandAttributeIdentifier(command, command.hovercast)
+
+			local attributes = {}
+			local macroTarget = GetMacroIdentifier(command.keybind, newMacroFrameHandlerKeybinds, newMacroFrameHandlerIdentifiers)
 			local keybind = {
 				key = command.keybind,
 				identifier = suffix
 			}
 
-			local attributes = {}
+			if macroTarget ~= nil then
+				local onKeyDown = tostring(Clicked.db.profile.options.onKeyDown)
+				local virtualClickCommand = string.format("/click %s %s %s", Clicked.MACRO_FRAME_HANDLER_NAME, macroTarget, onKeyDown)
 
-			if frameHandlerRefs[command.keybind] ~= nil then
-				local click = "/click " .. frameHandlerRefs[command.keybind] .. " " .. suffix .. " " .. tostring(Clicked.db.profile.options.onKeyDown)
-				command.data = command.data .. "\n" .. click
+				if #command.data == 0 then
+					command.data = virtualClickCommand
+				else
+					local data = { command.data }
+
+					if #command.macroFlags > 0 then
+						table.insert(data, "/stopmacro " .. table.concat(command.macroFlags))
+						table.insert(data, virtualClickCommand)
+					end
+
+					command.data = table.concat(data, "\n")
+				end
 			end
 
 			self:CreateCommandAttributes(attributes, command, prefix, suffix)
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
 
 			for attribute, value in pairs(attributes) do
-				newClickCastFrameAttributes[attribute] = value
+				if newClickCastFrameAttributes[attribute] ~= nil then
+					if not command.virtual then
+						newClickCastFrameAttributes[attribute] = value
+					end
+				else
+					newClickCastFrameAttributes[attribute] = value
+				end
 			end
 
-			if not isMouseButton then
-				table.insert(newClickCastFrameKeybinds, keybind)
-			end
+			table.insert(newClickCastFrameKeybinds, keybind)
 		end
 	end
+
+	self:SetPendingFrameAttributes(macroFrameHandler, newMacroFrameHandlerAttributes)
+	self:ApplyAttributesToFrame(macroFrameHandler)
+
+	macroFrameHandler:SetAttribute("clicked-keybinds", table.concat(newMacroFrameHandlerKeybinds, "\001"))
+	macroFrameHandler:SetAttribute("clicked-identifiers", table.concat(newMacroFrameHandlerIdentifiers, "\001"))
+	macroFrameHandler:Show()
 
 	self:SendMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
 
 	self:UpdateClickCastHeader(newClickCastFrameKeybinds)
 	self:UpdateClickCastFrames(newClickCastFrameAttributes)
-
-	for i = nextMacroFrameHandler, #macroFrameHandlers do
-		local frame = macroFrameHandlers[i]
-
-		frame:Hide()
-		frame:SetAttribute("clicked-keybind", "")
-
-		self:ApplyAttributesToFrame(frame)
-	end
-end
-
-function Clicked:IterateMacroHandlerFrames()
-	return ipairs(macroFrameHandlers)
 end

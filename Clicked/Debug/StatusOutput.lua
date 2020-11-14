@@ -62,31 +62,54 @@ local function GetParsedDataString()
 		table.insert(lines, "----- Loaded binding " .. i .. " -----")
 		table.insert(lines, "Keybind: " .. command.keybind)
 		table.insert(lines, "Hovercast: " .. tostring(command.hovercast))
+		table.insert(lines, "Virtual: " .. tostring(command.virtual))
 		table.insert(lines, "Action: " .. command.action)
+
+		if command.identifier ~= nil then
+			table.insert(lines, "Identifier: " .. command.identifier)
+		end
 
 		if command.data ~= nil then
 			local split = { strsplit("\n", command.data) }
 
+			if #split > 0 then
+				table.insert(lines, "")
+			end
+
 			for _, line in ipairs(split) do
-				table.insert(lines, "Data: " .. line)
+				table.insert(lines, line)
 			end
 		end
+	end
 
-		if data[command] ~= nil then
-			for attribute, value in pairs(data[command]) do
-				local split = { strsplit("\n", value) }
+	do
+		local first = true
 
-				for _, line in ipairs(split) do
-					table.insert(lines, "Attribute-" .. attribute .. ": " .. line)
+		for _, command in ipairs(data) do
+			if not command.hovercast then
+				if data[command] ~= nil then
+					if first then
+						table.insert(lines, "")
+						table.insert(lines, "----- Macro Frame Handler attributes -----")
+						first = false
+					end
+
+					for attribute, value in pairs(data[command]) do
+						local split = { strsplit("\n", value) }
+
+						for _, line in ipairs(split) do
+							table.insert(lines, attribute .. ": " .. line)
+						end
+					end
 				end
 			end
 		end
 	end
 
-	if data["hovercast"] ~= nil then
+	if data.hovercast ~= nil then
 		local first = true
 
-		for attribute, value in pairs(data["hovercast"].attributes) do
+		for attribute, value in pairs(data.hovercast.attributes) do
 			if first then
 				table.insert(lines, "")
 				table.insert(lines, "----- Hovercast attributes -----")
@@ -96,7 +119,7 @@ local function GetParsedDataString()
 			local split = { strsplit("\n", value) }
 
 			for _, line in ipairs(split) do
-				table.insert(lines, "Attribute-" .. attribute .. ": " .. line)
+				table.insert(lines, attribute .. ": " .. line)
 			end
 		end
 	end
@@ -177,7 +200,7 @@ local function OnMacroAttributesCreated(event, command, attributes)
 end
 
 local function OnHovercastAttributesCreated(event, keybindings, attributes)
-	data["hovercast"] = {
+	data.hovercast = {
 		keybindings = keybindings,
 		attributes = attributes
 	}

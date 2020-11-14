@@ -71,7 +71,8 @@ Clicked.PetState = {
 
 Clicked.InteractionType = {
 	REGULAR = 1,
-	HOVERCAST = 2
+	HOVERCAST = 2,
+	VIRTUAL_HOVERCAST = 3
 }
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
@@ -372,11 +373,18 @@ end
 -- Crusader Strike with [@target,harm], it will create a command like this:
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
 function Clicked:GetMacroForBindings(bindings, interactionType)
+	if interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST then
+		return ""
+	end
+
 	local result = {}
 	local interruptCurrentCast = false
 	local startAutoAttack = false
 
 	local actions = {}
+
+	-- add a segment to remove the blue casting cursor
+	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
 
 	for _, binding in ipairs(bindings) do
 		local data = Clicked:GetActiveBindingAction(binding)
@@ -416,10 +424,6 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 			end
 		end
 	end
-
-
-	-- add a segment to remove the blue casting cursor
-	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
 
 	-- Now sort the actions according to the above schema
 
@@ -463,11 +467,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 		end
 	end
 
-	if interactionType == Clicked.InteractionType.HOVERCAST then
-		table.insert(result, "/stopmacro " .. table.concat(allFlags))
-	end
-
-	return table.concat(result, "\n")
+	return table.concat(result, "\n"), allFlags
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -484,35 +484,30 @@ local function ProcessActiveBindings()
 		end
 
 		local reference = bucket[1]
-
-		local valid = false
 		local command = {
 			keybind = keybind,
-			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
+			hovercast = interactionType == Clicked.InteractionType.HOVERCAST or interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST,
+			virtual = interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST
 		}
 
 		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
-			command.data = Clicked:GetMacroForBindings(bucket, interactionType)
-			valid = command.data ~= nil and command.data ~= ""
+			command.data, command.macroFlags = Clicked:GetMacroForBindings(bucket, interactionType)
 		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
 			command.action = Clicked.CommandType.TARGET
-			valid = true
 		elseif reference.type == Clicked.BindingTypes.UNIT_MENU then
 			command.action = Clicked.CommandType.MENU
-			valid = true
 		else
 			error("Unhandled binding type: " .. reference.type)
 		end
 
-		if valid then
-			table.insert(commands, command)
-		end
+		table.insert(commands, command)
 	end
 
 	for keybind, buckets in Clicked:IterateActiveBindings() do
 		Process(keybind, buckets.hovercast, Clicked.InteractionType.HOVERCAST)
 		Process(keybind, buckets.regular, Clicked.InteractionType.REGULAR)
+		Process(keybind, buckets.virtualHovercast, Clicked.InteractionType.VIRTUAL_HOVERCAST)
 	end
 
 	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
@@ -537,6 +532,7 @@ local function FilterBindings(activatable)
 	for keybind, bindings in pairs(activatable) do
 		result[keybind] = {
 			hovercast = {},
+			virtualHovercast = {},
 			regular = {}
 		}
 
@@ -547,6 +543,15 @@ local function FilterBindings(activatable)
 
 			if binding.targets.regular.enabled then
 				Insert(result[keybind].regular, binding)
+
+				if not binding.targets.hovercast.enabled and Clicked:IsMouseButton(binding.keybind) then
+					for index, target in ipairs(binding.targets.regular) do
+						if target.unit == Clicked.TargetUnits.MOUSEOVER then
+							Insert(result[keybind].virtualHovercast, binding)
+							break
+						end
+					end
+				end
 			end
 		end
 	end
