@@ -159,6 +159,16 @@ local function UpdateStatusOutputText()
 	editbox:SetText(table.concat(text, "\n\n"))
 end
 
+local function UpdateLastUpdatedTime()
+	if frame == nil or not frame:IsVisible() then
+		return
+	end
+
+	frame:SetStatusText(string.format("Last generated %s seconds ago", math.floor((GetTime() - data.timestamp) + 0.5)))
+
+	C_Timer.After(1, UpdateLastUpdatedTime)
+end
+
 local function OpenStatusOutput()
 	if frame ~= nil and frame:IsVisible() then
 		return
@@ -176,11 +186,13 @@ local function OpenStatusOutput()
 		AceGUI:Release(widget)
 	end)
 
+	UpdateLastUpdatedTime()
 	UpdateStatusOutputText()
 end
 
 local function OnBindingProcessorComplete(event, commands)
 	data = {}
+	data.timestamp = GetTime()
 
 	for i, command in ipairs(commands) do
 		data[i] = command

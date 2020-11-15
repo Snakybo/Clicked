@@ -47,6 +47,7 @@ read_globals = {
 	"C_CreatureInfo",
 	"C_PvP",
 	"C_SpecializationInfo",
+	"C_Timer",
 	"EasyMenu",
 	"EnableAddOn",
 	"FillLocalizedClassList",
