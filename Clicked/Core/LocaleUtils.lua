@@ -72,8 +72,10 @@ function Clicked:GetLocalizedTargetString(target)
 		table.insert(result, vitals[target.vitals])
 	end
 
-	local units = self:GetLocalizedTargetUnits()
-	table.insert(result, units[target.unit])
+	if target.unit ~= nil then
+		local units = self:GetLocalizedTargetUnits()
+		table.insert(result, units[target.unit])
+	end
 
 	return table.concat(result, " ")
 end

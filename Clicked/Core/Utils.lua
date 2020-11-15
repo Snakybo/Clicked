@@ -378,6 +378,11 @@ function Clicked:CanUnitBeHostile(unit)
 		return true
 	end
 
+	-- nil should always refer to hovercast units here
+	if unit == nil then
+		return true
+	end
+
 	return false
 end
 
@@ -433,6 +438,11 @@ function Clicked:CanUnitBeDead(unit)
 		return true
 	end
 
+	-- nil should always refer to hovercast units here
+	if unit == nil then
+		return true
+	end
+
 	return false
 end
 
@@ -453,6 +463,11 @@ function Clicked:CanUnitHaveFollowUp(unit)
 	end
 
 	if unit == Clicked.TargetUnits.DEFAULT then
+		return false
+	end
+
+	-- nil should always refer to hovercast units here
+	if unit == nil then
 		return false
 	end
 
