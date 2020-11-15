@@ -12,6 +12,7 @@
 - Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames
 - Add support for shift-clicking spells and talents in spell bindings
 - Add a button to sort the bindings list alphabetically
+- Add the binding search box to the scroll frame instead of above it
 
 ### Changed
 
