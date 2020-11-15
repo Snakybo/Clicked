@@ -17,6 +17,7 @@
 - Change the order of custom macros using the `FIRST` mode slightly. The "dangling blue cursor" will now always be cleared first
 - Improve and optimize internal binding generation
 - Improve visualization of the binding targets page for custom macros
+- Use the per-class profile by default instead of per-character profiles
 
 ### Fixed
 

@@ -96,7 +96,7 @@ local function OnChatCommandReceived(input)
 end
 
 function Clicked:OnInitialize()
-	local defaultProfile = UnitName("player") .. " - " .. GetRealmName()
+	local defaultProfile = select(2, UnitClass("player"))
 
 	self.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	self.db.RegisterCallback(self, "OnProfileChanged", ReloadDatabase)
