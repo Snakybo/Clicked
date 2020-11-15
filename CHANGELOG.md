@@ -29,6 +29,10 @@
 - Fix a few lines of text copy
 - Fix bindings restricted to Moonkin Form while in Balance not working [#26]
 
+### Issues
+
+- Using modifiers (ctrl, alt, shift) with a mouse button doesn't work when hovering over a unit frame [#27]
+
 ## [0.10.3] - 2020-11-05
 
 ### Changed
@@ -367,6 +371,7 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#27]: https://github.com/Snakybo/Clicked/issues/27
 [#26]: https://github.com/Snakybo/Clicked/issues/26
 [#24]: https://github.com/Snakybo/Clicked/issues/24
 [#23]: https://github.com/Snakybo/Clicked/issues/23
