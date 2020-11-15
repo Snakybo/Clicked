@@ -170,10 +170,10 @@ local methods = {
 		local icons = {}
 
 		if self.searchHandler ~= nil and #self.searchHandler.searchTerm > 0 then
-			local searchTerm = self.searchHandler.searchTerm
+			local searchTerm = string.gsub(string.lower(self.searchHandler.searchTerm), "%s+", "_")
 
 			for i = 1, #self.icons do
-				local icon = self.icons[i]
+				local icon = string.lower(self.icons[i])
 
 				if string.match(icon, searchTerm) then
 					table.insert(icons, icon)
