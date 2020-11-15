@@ -341,6 +341,10 @@ end
 --- @param keybind string
 --- @return boolean
 function Clicked:IsMouseButton(keybind)
+	if Clicked:IsStringNilOrEmpty(keybind) then
+		return false
+	end
+
 	local _, suffix = string.match(keybind, "^(.-)([^%-]+)$")
 	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
 
