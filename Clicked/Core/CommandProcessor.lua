@@ -136,6 +136,8 @@ local function EnsureMacroFrameHandler()
 	end
 
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
+
+	-- Enable unit frame clicks
 	Clicked:RegisterFrameClicks(macroFrameHandler)
 end
 
@@ -201,8 +203,8 @@ function Clicked:ProcessCommands(commands)
 	-- you're hovering over a `[harm]` target). In this case we append a `/stopmacro [help]`
 	-- followed by a `/click` command to virtually click the macro frame handler.
 	--
-	-- Additionally in the case of "virtual hovercast" bindings (generated when a mouse button)
-	-- is set to the `[@mouseover]` target, we don't have any pre-build data for the command,
+	-- Additionally in the case of "virtual hovercast" bindings which are generated when a mouse
+	-- button is set to the `[@mouseover]` target, we don't have any pre-build data for the command,
 	-- so a virtual hovercast binding will only serve the purpose of virtually clicking the
 	-- regular macro frame handler.
 
@@ -221,15 +223,13 @@ function Clicked:ProcessCommands(commands)
 				local onKeyDown = tostring(Clicked.db.profile.options.onKeyDown)
 				local virtualClickCommand = string.format("/click %s %s %s", Clicked.MACRO_FRAME_HANDLER_NAME, macroTarget, onKeyDown)
 
-				if #command.data == 0 then
+				if Clicked:IsStringNilOrEmpty(command.data) then
 					command.data = virtualClickCommand
 				else
 					local data = { command.data }
 
-					if #command.macroFlags > 0 then
-						table.insert(data, "/stopmacro " .. table.concat(command.macroFlags))
-						table.insert(data, virtualClickCommand)
-					end
+					table.insert(data, "/stopmacro " .. table.concat(command.macroFlags))
+					table.insert(data, virtualClickCommand)
 
 					command.data = table.concat(data, "\n")
 				end
