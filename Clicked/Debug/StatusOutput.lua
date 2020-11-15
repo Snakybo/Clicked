@@ -62,7 +62,6 @@ local function GetParsedDataString()
 		table.insert(lines, "----- Loaded binding " .. i .. " -----")
 		table.insert(lines, "Keybind: " .. command.keybind)
 		table.insert(lines, "Hovercast: " .. tostring(command.hovercast))
-		table.insert(lines, "Virtual: " .. tostring(command.virtual))
 		table.insert(lines, "Action: " .. command.action)
 
 		if command.identifier ~= nil then
