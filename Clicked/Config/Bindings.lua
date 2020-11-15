@@ -828,6 +828,13 @@ local function DrawBindingTargetPage(container, binding)
 				local group = GUI:InlineGroup(label)
 				container:AddChild(group)
 
+				if not binding.targets.hovercast.enabled and target.unit == Clicked.TargetUnits.MOUSEOVER and Clicked:IsMouseButton(binding.keybind) then
+					local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_MOUSEOVER_MOUSE_BUTTON_UNIT_FRAME"] .. "\n")
+					widget:SetFullWidth(true)
+
+					group:AddChild(widget)
+				end
+
 				DrawTargetSelectionUnit(group, regular, regular.enabled, i)
 
 				if Clicked:CanUnitBeHostile(target.unit) then
