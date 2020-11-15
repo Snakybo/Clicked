@@ -63,10 +63,7 @@ local function GetParsedDataString()
 		table.insert(lines, "Keybind: " .. command.keybind)
 		table.insert(lines, "Hovercast: " .. tostring(command.hovercast))
 		table.insert(lines, "Action: " .. command.action)
-
-		if command.identifier ~= nil then
-			table.insert(lines, "Identifier: " .. command.identifier)
-		end
+		table.insert(lines, "Identifier: " .. command.suffix)
 
 		if command.data ~= nil then
 			local split = { strsplit("\n", command.data) }
@@ -81,37 +78,17 @@ local function GetParsedDataString()
 		end
 	end
 
-	do
-		local first = true
-
-		for _, command in ipairs(data) do
-			if not command.hovercast then
-				if data[command] ~= nil then
-					if first then
-						table.insert(lines, "")
-						table.insert(lines, "----- Macro Frame Handler attributes -----")
-						first = false
-					end
-
-					for attribute, value in pairs(data[command]) do
-						local split = { strsplit("\n", value) }
-
-						for _, line in ipairs(split) do
-							table.insert(lines, attribute .. ": " .. line)
-						end
-					end
-				end
-			end
+	local function ParseAttributes(heading, attributes)
+		if attributes == nil then
+			return
 		end
-	end
 
-	if data.hovercast ~= nil then
 		local first = true
 
-		for attribute, value in pairs(data.hovercast.attributes) do
+		for attribute, value in pairs(attributes) do
 			if first then
 				table.insert(lines, "")
-				table.insert(lines, "----- Hovercast attributes -----")
+				table.insert(lines, "----- " .. heading .. " -----")
 				first = false
 			end
 
@@ -122,6 +99,9 @@ local function GetParsedDataString()
 			end
 		end
 	end
+
+	ParseAttributes("Macro Handler Attributes", data.macroHandler)
+	ParseAttributes("Hovercast Attributes", data.hovercast)
 
 	return table.concat(lines, "\n")
 end
@@ -202,19 +182,16 @@ local function OnBindingProcessorComplete(event, commands)
 	end
 end
 
-local function OnMacroAttributesCreated(event, command, attributes)
-	data[command] = attributes
+local function OnMacroHandlerAttributesCreated(event, keybinds, attributes)
+	data.macroHandler = attributes
 
 	if frame ~= nil and frame:IsVisible() then
 		UpdateStatusOutputText()
 	end
 end
 
-local function OnHovercastAttributesCreated(event, keybindings, attributes)
-	data.hovercast = {
-		keybindings = keybindings,
-		attributes = attributes
-	}
+local function OnHovercastAttributesCreated(event, keybinds, attributes)
+	data.hovercast = attributes
 
 	if frame ~= nil and frame:IsVisible() then
 		UpdateStatusOutputText()
@@ -244,13 +221,13 @@ local module = {
 
 	["Register"] = function(self)
 		Clicked:RegisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, OnBindingProcessorComplete)
-		Clicked:RegisterMessage(Clicked.EVENT_MACRO_ATTRIBUTES_CREATED, OnMacroAttributesCreated)
+		Clicked:RegisterMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, OnMacroHandlerAttributesCreated)
 		Clicked:RegisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED, OnHovercastAttributesCreated)
 	end,
 
 	["Unregister"] = function(self)
 		Clicked:UnregisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE)
-		Clicked:UnregisterMessage(Clicked.EVENT_MACRO_ATTRIBUTES_CREATED)
+		Clicked:UnregisterMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED)
 		Clicked:UnregisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED)
 	end,
 

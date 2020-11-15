@@ -484,6 +484,8 @@ local function ProcessActiveBindings()
 			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
 		}
 
+		command.prefix, command.suffix = Clicked:CreateAttributeIdentifier(command.keybind, command.hovercast)
+
 		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
 			command.data, command.macroFlags = Clicked:GetMacroForBindings(bucket, interactionType)

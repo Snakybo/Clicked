@@ -1,38 +1,11 @@
 Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
 Clicked.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
-Clicked.EVENT_MACRO_ATTRIBUTES_CREATED = "CLICKED_MACRO_ATTRIBUTES_CREATED"
-Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED = "CLICKED_HOVERCAST_ATTRIBUTES_CREATED"
+Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED = "MACRO_HANDLER_ATTRIBUTES_CREATED"
+Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED = "HOVERCAST_ATTRIBUTES_CREATED"
 
 local macroFrameHandler
 local stopCastingButton
-
-local function GetCommandAttributeIdentifier(command, hovercast)
-	-- separate modifiers from the actual binding
-	local prefix, suffix = string.match(command.keybind, "^(.-)([^%-]+)$")
-	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
-
-	-- remove any trailing dashes (shift- becomes shift, ctrl- becomes ctrl, etc.)
-	if string.sub(prefix, -1, -1) == "-" then
-		prefix = string.sub(prefix, 1, -2)
-	end
-
-	-- convert the parts to lowercase so it fits the attribute naming style
-	prefix = prefix:lower()
-	suffix = suffix:lower()
-
-	if buttonIndex ~= nil and hovercast then
-		suffix = buttonIndex
-	elseif buttonIndex ~= nil then
-		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
-		prefix = ""
-	else
-		suffix = "clicked-button-" .. tostring(prefix) .. tostring(suffix)
-		prefix = ""
-	end
-
-	return prefix, suffix
-end
 
 local function CreateStateDriverAttribute(frame, state, condition)
 	frame:SetAttribute("_onstate-" .. state, [[
@@ -138,14 +111,22 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
 end
 
-local function GetMacroIdentifier(keybind, keybinds, identifiers)
-	for i, key in ipairs(keybinds) do
-		if key == keybind then
-			return identifiers[i]
-		end
+function Clicked:UpdateMacroFrameHandler(keybinds, attributes)
+	local split = {
+		keybinds = {},
+		identifiers = {}
+	}
+
+	for _, keybind in ipairs(keybinds) do
+		table.insert(split.keybinds, keybind.key)
+		table.insert(split.identifiers, keybind.identifier)
 	end
 
-	return nil
+	macroFrameHandler:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
+	macroFrameHandler:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
+
+	self:SetPendingFrameAttributes(macroFrameHandler, attributes)
+	self:ApplyAttributesToFrame(macroFrameHandler)
 end
 
 -- Note: This is a secure function and may not be called during combat
@@ -158,7 +139,6 @@ function Clicked:ProcessCommands(commands)
 	local newClickCastFrameAttributes = {}
 
 	local newMacroFrameHandlerKeybinds = {}
-	local newMacroFrameHandlerIdentifiers = {}
 	local newMacroFrameHandlerAttributes = {}
 
 	EnsureStopCastingButton()
@@ -167,86 +147,42 @@ function Clicked:ProcessCommands(commands)
 	-- Unregister all current keybinds
 	macroFrameHandler:Hide()
 
-	-- First, process all non-hovercast commands so we can build a table
-	-- which can map frame handlers to keybinds. This is required in order
-	-- to not "consume" keybinds if a hovercast binding is set to only activate
-	-- on a friendly unit and you press it on an enemy unit. We append a /click <framehandler>
-	-- command as a fallback so it continues to work.
-
 	for _, command in ipairs(commands) do
-		if not command.hovercast and not command.virtual then
-			local prefix, suffix = GetCommandAttributeIdentifier(command, false)
+		local attributes = {}
 
-			local attributes = {}
+		local targetKeybinds
+		local targetAttributes
 
-			self:CreateCommandAttributes(attributes, command, prefix, suffix)
-			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
+		local keybind = {
+			key = command.keybind,
+			identifier = command.suffix
+		}
 
-			for attribute, value in pairs(attributes) do
-				newMacroFrameHandlerAttributes[attribute] = value
-			end
+		self:CreateCommandAttributes(attributes, command, command.prefix, command.suffix)
+		self:SendMessage(self.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, command, attributes)
 
-			table.insert(newMacroFrameHandlerKeybinds, command.keybind)
-			table.insert(newMacroFrameHandlerIdentifiers, suffix)
-
-			-- dynamically assign the identifier, for debugging
-			command.identifier = suffix
-		end
-	end
-
-	-- Second, process all hovercast commands with the database built above, this
-	-- allows us to "remap" hovercast bindings to regular bindings if their macro
-	-- conditionals are not met (i.e. a binding that only activates on `[help]` but
-	-- you're hovering over a `[harm]` target). In this case we append a `/stopmacro [help]`
-	-- followed by a `/click` command to virtually click the macro frame handler.
-
-	for _, command in ipairs(commands) do
 		if command.hovercast then
-			local prefix, suffix = GetCommandAttributeIdentifier(command, command.hovercast)
+			targetKeybinds = newClickCastFrameKeybinds
+			targetAttributes = newClickCastFrameAttributes
+		else
+			targetKeybinds = newMacroFrameHandlerKeybinds
+			targetAttributes = newMacroFrameHandlerAttributes
+		end
 
-			local attributes = {}
-			local macroTarget = GetMacroIdentifier(command.keybind, newMacroFrameHandlerKeybinds, newMacroFrameHandlerIdentifiers)
-			local keybind = {
-				key = command.keybind,
-				identifier = suffix
-			}
+		table.insert(targetKeybinds, keybind)
 
-			if macroTarget ~= nil then
-				local onKeyDown = tostring(Clicked.db.profile.options.onKeyDown)
-				local virtualClickCommand = string.format("/click %s %s %s", Clicked.MACRO_FRAME_HANDLER_NAME, macroTarget, onKeyDown)
-
-				if Clicked:IsStringNilOrEmpty(command.data) then
-					command.data = virtualClickCommand
-				else
-					local data = { command.data }
-
-					table.insert(data, "/stopmacro " .. table.concat(command.macroFlags))
-					table.insert(data, virtualClickCommand)
-
-					command.data = table.concat(data, "\n")
-				end
-			end
-
-			self:CreateCommandAttributes(attributes, command, prefix, suffix)
-			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
-
-			for attribute, value in pairs(attributes) do
-				newClickCastFrameAttributes[attribute] = value
-			end
-
-			table.insert(newClickCastFrameKeybinds, keybind)
+		for attribute, value in pairs(attributes) do
+			targetAttributes[attribute] = value
 		end
 	end
 
-	self:SetPendingFrameAttributes(macroFrameHandler, newMacroFrameHandlerAttributes)
-	self:ApplyAttributesToFrame(macroFrameHandler)
+	self:SendMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
+	self:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
 
-	macroFrameHandler:SetAttribute("clicked-keybinds", table.concat(newMacroFrameHandlerKeybinds, "\001"))
-	macroFrameHandler:SetAttribute("clicked-identifiers", table.concat(newMacroFrameHandlerIdentifiers, "\001"))
+	-- Register all new keybinds
 	macroFrameHandler:Show()
 
-	self:SendMessage(self.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
-
+	self:SendMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
 	self:UpdateClickCastHeader(newClickCastFrameKeybinds)
 	self:UpdateClickCastFrames(newClickCastFrameAttributes)
 end

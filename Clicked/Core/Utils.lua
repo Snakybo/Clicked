@@ -224,6 +224,59 @@ function Clicked:GetDataFromString(string, keyword)
 	return match
 end
 
+--- Generate an attribute identifier for a key. This will
+--- separate the keybind into two parts: a prefix, and a suffix.
+---
+--- The prefix is always an empty string unless the key is a mouse
+--- button _and_ the `hovercast` parameter has been set to `true`.
+---
+--- That will allow for the generation of proper frame attribute keys:
+---
+--- * `"BUTTON1"` == `"", "1"` == `"type1"`
+--- * `"SHIFT-BUTTON1"` == `"shift", "1"` == `"shift-type1"`
+--- * etc.
+---
+--- For any keys that are _not_ mouse buttons, or the `hovercast`
+--- parameter has been set to `false`, a custom identifier will
+--- be generated, generally prefixed by `clicked-mouse-` or
+--- `clicked-button-` for mouse buttons and all other buttons respectively.
+---
+--- * `"T"` == `"", "clicked-button-t"` == `"type-clicked-button-t"`
+--- * `"SHIFT-T"` == `"", "clicked-button-shiftt"` == `"type-clicked-button-shiftt"`
+--- * `"BUTTON3"` == `"", "clicked-mouse-3"` == `"type-clicked-mouse-3"`
+--- * `"SHIFT-BUTTON3"` == `"", "clicked-mouse-shift3"` == `"type-clicked-mouse-shift3"`
+---
+--- @param key string
+--- @param hovercast boolean
+--- @return string prefix
+--- @return string suffix
+function Clicked:CreateAttributeIdentifier(key, hovercast)
+	-- separate modifiers from the actual binding
+	local prefix, suffix = string.match(key, "^(.-)([^%-]+)$")
+	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
+
+	-- remove any trailing dashes (shift- becomes shift, ctrl- becomes ctrl, etc.)
+	if string.sub(prefix, -1, -1) == "-" then
+		prefix = string.sub(prefix, 1, -2)
+	end
+
+	-- convert the parts to lowercase so it fits the attribute naming style
+	prefix = prefix:lower()
+	suffix = suffix:lower()
+
+	if buttonIndex ~= nil and hovercast then
+		suffix = buttonIndex
+	elseif buttonIndex ~= nil then
+		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
+		prefix = ""
+	else
+		suffix = "clicked-button-" .. tostring(prefix) .. tostring(suffix)
+		prefix = ""
+	end
+
+	return prefix, suffix
+end
+
 --- Check if a string is `nil` or currently empty.
 --- A string is considered empty if its length is 0.
 ---
