@@ -314,6 +314,16 @@ local function Constructor()
 
 	local iconLoader = CreateFrame("Frame", nil, UIParent)
 
+	-- Respect ElvUI skinning
+	if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
+		local E = unpack(ElvUI);
+
+		if E and E.private.skins and E.private.skins.ace3Enable then
+			local S = E:GetModule("Skins")
+			S:HandleScrollBar(scrollbar)
+		end
+	end
+
 	local widget = {
 		localstatus   = { scrollvalue = 0, contentHeight = 0 },
 		scrollframe   = scrollframe,
