@@ -72,6 +72,7 @@ read_globals = {
 	"GetSpellBookItemName",
 	"GetSpellInfo",
 	"GetTalentInfo",
+	"GetTalentInfoByID",
 	"GetTime",
 	"HideUIPanel",
 	"InCombatLockdown",

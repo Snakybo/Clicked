@@ -10,6 +10,7 @@
 - Add a new visualization for the binding targets page, the unit frame target and regular targets are now separated and togglable using a checkbox
 - Add an improved visualization of the `/cc dump` frame with clearer and more data
 - Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames
+- Add support for shift-clicking spells and talents in spell bindings
 
 ### Changed
 

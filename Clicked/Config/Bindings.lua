@@ -65,6 +65,41 @@ local function GetTriStateLoadOptionValue(option)
 	return nil
 end
 
+local function ParseItemLink(link, ...)
+	local allowed = { ... }
+
+	local function IsAllowed(type)
+		if #allowed == 0 then
+			return true
+		end
+
+		for _, arg in ipairs(allowed) do
+			if arg == type then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	local _, _, _, type, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+
+	if type == "talent" and IsAllowed("talent") then
+		local spellId = select(6, GetTalentInfoByID(id, 1))
+		print(spellId)
+
+		if spellId ~= nil then
+			return GetSpellInfo(spellId)
+		end
+	elseif type == "item" and IsAllowed("item") then
+		return GetItemInfo(id)
+	elseif type == "spell" and IsAllowed("spell") then
+		return GetSpellInfo(id)
+	end
+
+	return nil
+end
+
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
@@ -443,8 +478,18 @@ local function DrawSpellSelection(container, action)
 				GUI:Serialize(frame, event, value)
 			end
 
+			local function OnTextChanged(frame, event, value)
+				local spell = ParseItemLink(value, "spell", "talent")
+
+				if spell ~= nil then
+					action.displayIcon = "" -- invalidate the cached icon
+					GUI:Serialize(frame, event, spell)
+				end
+			end
+
 			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
+			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -511,18 +556,11 @@ local function DrawItemSelection(container, action)
 			end
 
 			local function OnTextChanged(frame, event, value)
-				local item = select(5, string.find(value, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"))
+				local item = ParseItemLink(value, "item")
 
-				if item ~= nil and item ~= "" then
-					local info = GetItemInfo(item)
-
-					if info ~= nil then
-						if info ~= action.value then
-							action.displayIcon = "" -- invalidate the cached icon
-						end
-
-						GUI:Serialize(frame, event, info)
-					end
+				if item ~= nil then
+					action.displayIcon = "" -- invalidate the cached icon
+					GUI:Serialize(frame, event, item)
 				end
 			end
 
