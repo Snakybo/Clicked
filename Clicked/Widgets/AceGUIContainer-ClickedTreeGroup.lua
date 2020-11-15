@@ -93,7 +93,7 @@ local function GetKeybindIndex(keybind)
 	return index
 end
 
-local function TreeSortFunc(left, right)
+local function TreeSortKeybind(left, right)
 	if left.children ~= nil and right.children == nil then
 		return true
 	end
@@ -127,6 +127,37 @@ local function TreeSortFunc(left, right)
 	else
 		return left.title < right.title
 	end
+end
+
+local function TreeSortAlphabetical(left, right)
+	if left.children ~= nil and right.children == nil then
+		return true
+	end
+
+	if left.children == nil and right.children ~= nil then
+		return false
+	end
+
+	if left.group ~= nil and right.group ~= nil then
+		return left.title < right.title
+	end
+
+	if left.binding ~= nil and right.binding ~= nil then
+		local lAction = Clicked:GetActiveBindingAction(left.binding)
+		local rAction = Clicked:GetActiveBindingAction(right.binding)
+
+		if lAction ~= nil and rAction == nil then
+			return true
+		end
+
+		if lAction == nil and rAction ~= nil then
+			return false
+		end
+
+		return lAction.displayName < rAction.displayName
+	end
+
+	return left.title < right.title
 end
 
 local function UpdateBindingItemVisual(item, binding)
@@ -662,6 +693,34 @@ local function Dragger_OnMouseUp(frame)
 	treeframe.obj:DoLayout()
 end
 
+local function Searchbar_OnSearchTermChanged(handler)
+	local treeframe = handler.frame:GetParent()
+	local self = treeframe.obj
+
+	self:BuildCache()
+	self:RefreshTree()
+end
+
+local function Sort_OnClick(frame, ...)
+	local self = frame.obj
+
+	AceGUI:ClearFocus()
+	PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
+
+	if self.sortMode == 1 then
+		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_ALPHABETICALLY"])
+		self.sortMode = 2
+	else
+		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_KEYBIND"])
+		self.sortMode = 1
+	end
+
+	self.sortButton:SetWidth(self.sortLabel:GetStringWidth() + 30)
+
+	self:BuildCache()
+	self:RefreshTree()
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -670,18 +729,17 @@ local methods = {
 		self:SetTreeWidth(DEFAULT_TREE_WIDTH, DEFAULT_TREE_SIZABLE)
 		self:EnableButtonTooltips(true)
 		self.frame:SetScript("OnUpdate", FirstFrameUpdate)
+
+		self.searchbar:ClearSearchTerm()
+		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_KEYBIND"])
+		self.sortButton:SetWidth(self.sortLabel:GetStringWidth() + 30)
+		self.sortMode = 1
 	end,
 
 	["OnRelease"] = function(self)
 		self.status = nil
 		self.tree = nil
 		self.bindingCopyBuffer = nil
-
-		if self.searchHandler ~= nil then
-			self.searchHandler:SetCallback("SearchTermChanged", nil)
-		end
-
-		self.searchHandler = nil
 
 		self.frame:SetScript("OnUpdate", nil)
 		for k, v in pairs(self.localstatus) do
@@ -760,27 +818,11 @@ local methods = {
 		self:RefreshTree()
 	end,
 
-	["SetSearchHandler"] = function(self, handler)
-		if handler == self.searchHandler then
-			return
-		end
-
-		if self.searchHandler ~= nil then
-			self.searchHandler:SetCallback("SearchTermChanged", nil)
-		end
-
-		self.searchHandler = handler
-		self.searchHandler:SetCallback("SearchTermChanged", function()
-			self:ConstructTree()
-		end)
-
-		self:ConstructTree()
-	end,
-
 	["ConstructTree"] = function(self, filter)
 		local status = self.status or self.localstatus
 		self.filter = filter
 		self.tree = {}
+		self.treeCache = self.tree
 
 		for _, group in Clicked:IterateGroups() do
 			local item = {
@@ -817,14 +859,7 @@ local methods = {
 			end
 		end
 
-		table.sort(self.tree, TreeSortFunc)
-
-		for _, item in ipairs(self.tree) do
-			if item.children ~= nil then
-				table.sort(item.children, TreeSortFunc)
-			end
-		end
-
+		self:BuildCache()
 		self:RefreshTree()
 
 		if #self.tree > 0 and status.selected == nil then
@@ -853,32 +888,15 @@ local methods = {
 		end
 	end,
 
-	["RefreshTree"] = function(self,scrollToSelection,fromOnUpdate)
-		local buttons = self.buttons
-		local lines = self.lines
-
-		for _, v in ipairs(buttons) do
-			if not v.isMoving then
-				v:Hide()
-			end
+	["BuildCache"] = function(self)
+		if self.tree == nil then
+			self.treeCache = nil
+			return
 		end
 
-		while lines[1] do
-			local t = table.remove(lines)
-			for k in pairs(t) do
-				t[k] = nil
-			end
-			del(t)
-		end
-
-		if not self.tree then return end
-
-		--Build the list of visible entries from the tree and status tables
-		local status = self.status or self.localstatus
-		local groupstatus = status.groups
 		local tree = {}
 
-		if self.searchHandler ~= nil and #self.searchHandler.searchTerm > 0 then
+		if not Clicked:IsStringNilOrEmpty(self.searchbar.searchTerm) then
 			local function IsItemValidWithSearchQuery(item)
 				local strings = {}
 
@@ -898,7 +916,7 @@ local methods = {
 				for i = 1, #strings do
 					if strings[i] ~= nil and strings[i] ~= "" then
 						local str = string.lower(strings[i])
-						local pattern = string.lower(self.searchHandler.searchTerm)
+						local pattern = string.lower(self.searchbar.searchTerm)
 
 						if string.find(str, pattern, 1, true) ~= nil then
 							return true
@@ -958,8 +976,6 @@ local methods = {
 				end
 			end
 
-			table.sort(tree, TreeSortFunc)
-
 			open = { unpack(self.tree) }
 
 			while #open > 0 do
@@ -972,8 +988,6 @@ local methods = {
 				end
 
 				if next.children ~= nil then
-					table.sort(next.children, TreeSortFunc)
-
 					for i = 1, #next.children do
 						table.insert(open, next.children[i])
 					end
@@ -983,15 +997,61 @@ local methods = {
 			tree = self.tree
 		end
 
+		if self.sortMode == 1 then
+			table.sort(tree, TreeSortKeybind)
+
+			for _, item in ipairs(tree) do
+				if item.children ~= nil then
+					table.sort(item.children, TreeSortKeybind)
+				end
+			end
+		else
+			table.sort(tree, TreeSortAlphabetical)
+
+			for _, item in ipairs(tree) do
+				if item.children ~= nil then
+					table.sort(item.children, TreeSortAlphabetical)
+				end
+			end
+		end
+
+		self.treeCache = tree
+	end,
+
+	["RefreshTree"] = function(self,scrollToSelection,fromOnUpdate)
+		local buttons = self.buttons
+		local lines = self.lines
+
+		for _, v in ipairs(buttons) do
+			if not v.isMoving then
+				v:Hide()
+			end
+		end
+
+		while lines[1] do
+			local t = table.remove(lines)
+			for k in pairs(t) do
+				t[k] = nil
+			end
+			del(t)
+		end
+
+		if not self.tree then
+			return
+		end
+
+		--Build the list of visible entries from the tree and status tables
+		local status = self.status or self.localstatus
+		local groupstatus = status.groups
 		local treeframe = self.treeframe
 
 		status.scrollToSelection = status.scrollToSelection or scrollToSelection	-- needs to be cached in case the control hasn't been drawn yet (code bails out below)
 
-		self:BuildLevel(tree, 1)
+		self:BuildLevel(self.treeCache, 1)
 
 		local numlines = #lines
 
-		local maxlines = (floor(((self.treeframe:GetHeight()or 0) - 20 ) / 28))
+		local maxlines = (floor(((self.treeframe:GetHeight()or 0) - 46 ) / 28))
 		if maxlines <= 0 then return end
 
 		if self.frame:GetParent() == UIParent and not fromOnUpdate then
@@ -1067,11 +1127,11 @@ local methods = {
 
 				if previous == nil then
 					if self.showscroll then
-						button:SetPoint("TOPRIGHT", -22, -10)
-						button:SetPoint("TOPLEFT", 0, -10)
+						button:SetPoint("TOPRIGHT", -22, -36)
+						button:SetPoint("TOPLEFT", 0, -36)
 					else
-						button:SetPoint("TOPRIGHT", 0, -10)
-						button:SetPoint("TOPLEFT", 0, -10)
+						button:SetPoint("TOPRIGHT", 0, -36)
+						button:SetPoint("TOPLEFT", 0, -36)
 					end
 				else
 					button:SetPoint("TOPRIGHT", previous, "BOTTOMRIGHT", 0, 0)
@@ -1174,12 +1234,16 @@ local methods = {
 			if button ~= nil then
 				button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",-22,-10)
 			end
+
+			self.sortButton:SetPoint("TOPRIGHT", self.treeframe, -30, -7)
 		else
 			self.scrollbar:Hide()
 
 			if button ~= nil then
 				button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",0,-10)
 			end
+
+			self.sortButton:SetPoint("TOPRIGHT", self.treeframe, -8, -7)
 		end
 	end,
 
@@ -1315,6 +1379,29 @@ local function Constructor()
 	treeframe:SetScript("OnSizeChanged", Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)
 
+	local sortButton = CreateFrame("Button", nil, treeframe, "UIPanelButtonTemplate")
+	sortButton:EnableMouse(true)
+	sortButton:SetScript("OnClick", Sort_OnClick)
+	sortButton:SetPoint("TOPRIGHT", treeframe, -8, -7)
+	sortButton:SetWidth(75)
+
+	local sortLabel = sortButton:GetFontString()
+	sortLabel:ClearAllPoints()
+	sortLabel:SetPoint("TOPLEFT", 15, -1)
+	sortLabel:SetPoint("BOTTOMRIGHT", -15, 1)
+	sortLabel:SetJustifyV("MIDDLE")
+
+	local searchbar = AceGUI:Create("ClickedSearchBox")
+	searchbar:DisableButton(true)
+	searchbar:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
+	searchbar:SetCallback("SearchTermChanged", Searchbar_OnSearchTermChanged)
+
+	searchbar.frame:SetParent(treeframe)
+	searchbar.frame:ClearAllPoints()
+	searchbar.frame:SetPoint("TOPLEFT", treeframe, 8, -4)
+	searchbar.frame:SetPoint("TOPRIGHT", sortButton, "TOPLEFT")
+	searchbar.frame:Show()
+
 	local dragger = CreateFrame("Frame", nil, treeframe, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	dragger:SetWidth(8)
 	dragger:SetPoint("TOP", treeframe, "TOPRIGHT")
@@ -1362,6 +1449,10 @@ local function Constructor()
 			content:GetParent():SetTemplate('Transparent')
 			treeframe:SetTemplate('Transparent')
 			S:HandleScrollBar(scrollbar)
+
+			S:HandleButton(sortButton)
+			sortButton.backdrop:SetInside()
+			sortLabel:SetParent(sortButton.backdrop)
 		end
 	end
 
@@ -1373,10 +1464,13 @@ local function Constructor()
 		hasChildren   = {},
 		localstatus   = { groups = { }, scrollvalue = 0 },
 		filter        = false,
-		searchHandler = nil,
 		treeframe     = treeframe,
 		dragger       = dragger,
 		scrollbar     = scrollbar,
+		searchbar     = searchbar,
+		sortButton    = sortButton,
+		sortLabel     = sortLabel,
+		sortMode      = 1,
 		border        = border,
 		content       = content,
 		type          = Type
@@ -1384,7 +1478,7 @@ local function Constructor()
 	for method, func in pairs(methods) do
 		widget[method] = func
 	end
-	treeframe.obj, dragger.obj, scrollbar.obj = widget, widget, widget
+	treeframe.obj, dragger.obj, scrollbar.obj, sortButton.obj = widget, widget, widget, widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end

@@ -1386,8 +1386,7 @@ end
 local function DrawHeader(container)
 	local line = AceGUI:Create("ClickedSimpleGroup")
 	line:SetWidth(325)
-	line:SetLayout("table")
-	line:SetUserData("table", { columns = { 0, 1} })
+	line:SetLayout("Flow")
 
 	container:AddChild(line)
 
@@ -1401,16 +1400,6 @@ local function DrawHeader(container)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
-	end
-
-	-- search box
-	do
-		Module.searchBox = AceGUI:Create("ClickedSearchBox")
-		Module.searchBox:DisableButton(true)
-		Module.searchBox:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
-		Module.searchBox:SetFullWidth(true)
-
-		line:AddChild(Module.searchBox)
 	end
 end
 
@@ -1448,7 +1437,6 @@ local function DrawTreeView(container)
 		Module.tree:SetFullWidth(true)
 		Module.tree:SetFullHeight(true)
 		Module.tree:SetCallback("OnGroupSelected", DrawTreeContainer)
-		Module.tree:SetSearchHandler(Module.searchBox)
 
 		container:AddChild(Module.tree)
 	end

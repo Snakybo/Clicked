@@ -75,8 +75,7 @@ Methods
 
 local function OnAquire(self)
 	self:OnAquireOriginal()
-
-	self:SetText(self.placeholder)
+	self:ClearSearchTerm()
 end
 
 local function OnRelease(self)
@@ -91,6 +90,17 @@ local function SetPlaceholderText(self, text)
 
 	if self.isPlaceholderActive then
 		self:SetText(text)
+	end
+end
+
+local function ClearSearchTerm(self)
+	self:SetText(self.placeholder)
+
+	self.isPlaceholderActive = true
+
+	if self.searchTerm ~= "" then
+		self.searchTerm = ""
+		self:Fire("SearchTermChanged", self.searchTerm)
 	end
 end
 
@@ -117,6 +127,7 @@ local function Constructor()
 	widget.OnReleaseOriginal = widget.OnRelease
 	widget.OnRelease = OnRelease
 	widget.SetPlaceholderText = SetPlaceholderText
+	widget.ClearSearchTerm = ClearSearchTerm
 
 	return AceGUI:RegisterAsWidget(widget)
 end

@@ -11,6 +11,7 @@
 - Add an improved visualization of the `/cc dump` frame with clearer and more data
 - Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames
 - Add support for shift-clicking spells and talents in spell bindings
+- Add a button to sort the bindings list alphabetically
 
 ### Changed
 
