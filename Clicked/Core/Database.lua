@@ -499,6 +499,12 @@ function Clicked:UpgradeDatabaseProfile(profile)
 					vitals = "ANY"
 				})
 			else
+				if binding.primaryTarget.unit == "MOUSEOVER" and Clicked:IsMouseButton(binding.keybind) then
+					hovercast.enabled = true
+					hovercast.hostility = binding.primaryTarget.hostility
+					hovercast.vitals = binding.primaryTarget.vitals
+				end
+
 				regular.enabled = true
 				table.insert(regular, binding.primaryTarget)
 

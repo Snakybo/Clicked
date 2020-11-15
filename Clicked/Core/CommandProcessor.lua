@@ -136,9 +136,6 @@ local function EnsureMacroFrameHandler()
 	end
 
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
-
-	-- Enable unit frame clicks
-	Clicked:RegisterFrameClicks(macroFrameHandler)
 end
 
 local function GetMacroIdentifier(keybind, keybinds, identifiers)
