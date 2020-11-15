@@ -1209,15 +1209,15 @@ local function CreateFromItemTemplate(identifier)
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
 		item = Clicked:CreateNewBinding()
 
-		item.targets.regular[1].unit = Clicked.TargetUnits.MOUSEOVER
+		item.targets.hovercast.enabled = true
+		item.targets.hovercast.hostility = Clicked.TargetHostility.HELP
+
+		item.targets.regular[1] = Clicked:GetNewBindingTargetTemplate()
+		item.targets.regular[1].unit = Clicked.TargetUnits.TARGET
 		item.targets.regular[1].hostility = Clicked.TargetHostility.HELP
 
 		item.targets.regular[2] = Clicked:GetNewBindingTargetTemplate()
-		item.targets.regular[2].unit = Clicked.TargetUnits.TARGET
-		item.targets.regular[2].hostility = Clicked.TargetHostility.HELP
-
-		item.targets.regular[3] = Clicked:GetNewBindingTargetTemplate()
-		item.targets.regular[3].unit = Clicked.TargetUnits.PLAYER
+		item.targets.regular[2].unit = Clicked.TargetUnits.PLAYER
 	elseif identifier == ITEM_TEMPLATE_CUSTOM_MACRO then
 		item = Clicked:CreateNewBinding()
 		item.type = Clicked.BindingTypes.MACRO

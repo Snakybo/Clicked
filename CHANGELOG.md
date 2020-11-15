@@ -18,6 +18,7 @@
 - Change the order of custom macros using the `FIRST` mode slightly. The "dangling blue cursor" will now always be cleared first
 - Optimize internal binding generation for less memory usage and better performance
 - Use the per-class profile by default instead of per-character profiles
+- Update the healer binding template to target unit frames instead of Mouseover targets
 
 ### Removed
 
