@@ -103,12 +103,17 @@ local function TreeSortKeybind(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		if not Clicked:CanBindingLoad(left.binding) and Clicked:CanBindingLoad(right.binding) then
-			return false
-		end
+		do
+			local lLoad = Clicked:CanBindingLoad(left.binding)
+			local rLoad = Clicked:CanBindingLoad(right.binding)
 
-		if Clicked:CanBindingLoad(left.binding) and not Clicked:CanBindingLoad(right.binding) then
-			return true
+			if lLoad and not rLoad then
+				return true
+			end
+
+			if not lLoad and rLoad then
+				return false
+			end
 		end
 
 		if left.binding.keybind == "" and right.binding.keybind ~= "" then
@@ -143,6 +148,17 @@ local function TreeSortAlphabetical(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
+		local lLoad = Clicked:CanBindingLoad(left.binding)
+		local rLoad = Clicked:CanBindingLoad(right.binding)
+
+		if lLoad and not rLoad then
+			return true
+		end
+
+		if not lLoad and rLoad then
+			return false
+		end
+
 		local lAction = Clicked:GetActiveBindingAction(left.binding)
 		local rAction = Clicked:GetActiveBindingAction(right.binding)
 
