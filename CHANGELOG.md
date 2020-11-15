@@ -14,8 +14,9 @@
 - Process shift-clicking items immediately rather than when the enter key is pressed
 - Change the visualization of the binding targets UI to separate unit frame and regular targets
 - Improve the visualization of the `/cc dump` frame
-- Change the order of custom macros using the `FIRST` mode slightly. Clearing the "dangling blue cursor" will now always be cleared first
+- Change the order of custom macros using the `FIRST` mode slightly. The "dangling blue cursor" will now always be cleared first
 - Improve and optimize internal binding generation
+- Improve visualization of the binding targets page for custom macros
 
 ### Fixed
 

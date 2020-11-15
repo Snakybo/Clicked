@@ -507,6 +507,17 @@ function Clicked:UpgradeDatabaseProfile(profile)
 				end
 			end
 
+			if binding.type == Clicked.BindingTypes.MACRO then
+				while #regular > 0 do
+					table.remove(regular, 1)
+				end
+
+				regular[1] = Clicked:GetNewBindingTargetTemplate()
+
+				hovercast.hostility = Clicked.TargetHostility.ANY
+				hovercast.vitals = Clicked.TargetVitals.ANY
+			end
+
 			binding.targets = {
 				hovercast = hovercast,
 				regular = regular

@@ -30,6 +30,17 @@ local function UpdateRequiredTargetModesForBinding(targets, keybind, type)
 		hovercast.enabled = true
 		regular.enabled = false
 	end
+
+	if type == Clicked.BindingTypes.MACRO then
+		while #regular > 0 do
+			table.remove(regular, 1)
+		end
+
+		regular[1] = Clicked:GetNewBindingTargetTemplate()
+
+		hovercast.hostility = Clicked.TargetHostility.ANY
+		hovercast.vitals = Clicked.TargetVitals.ANY
+	end
 end
 
 local function CanEnableHovercastTargetMode(binding)
@@ -575,7 +586,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 		container:AddChild(group)
 
 		-- help text
-		if binding.targets.hovercast.enabled then
+		if binding.targets.hovercast.enabled and not binding.targets.regular.enabled then
 			local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
@@ -779,6 +790,8 @@ local function DrawBindingTargetPage(container, binding)
 		container:AddChild(widget)
 	end
 
+	local isMacro = binding.type == Clicked.BindingTypes.MACRO
+
 	-- hovercast targets
 	do
 		local hovercast = binding.targets.hovercast
@@ -789,32 +802,12 @@ local function DrawBindingTargetPage(container, binding)
 			container:AddChild(widget)
 		end
 
-		DrawTargetSelectionHostility(container, hovercast.enabled, hovercast)
-		DrawTargetSelectionVitals(container, hovercast.enabled, hovercast)
+		DrawTargetSelectionHostility(container, hovercast.enabled and not isMacro, hovercast)
+		DrawTargetSelectionVitals(container, hovercast.enabled and not isMacro, hovercast)
 	end
 
 	-- regular targets
 	do
-		local function ShouldShowHostility(target)
-			if binding.type == Clicked.BindingTypes.UNIT_SELECT then
-				return false
-			end
-
-			if binding.type == Clicked.BindingTypes.UNIT_MENU then
-				return false
-			end
-
-			if binding.type == Clicked.BindingTypes.MACRO then
-				return false
-			end
-
-			if Clicked:CanUnitBeHostile(target.unit) then
-				return true
-			end
-
-			return false
-		end
-
 		local regular = binding.targets.regular
 
 		do
@@ -823,33 +816,40 @@ local function DrawBindingTargetPage(container, binding)
 			container:AddChild(widget)
 		end
 
-		-- existing targets
-		for i, target in ipairs(regular) do
-			local label = i == 1 and L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"] or L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"]
-			local group = GUI:InlineGroup(label)
+		if isMacro then
+			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"])
 			container:AddChild(group)
 
-			DrawTargetSelectionUnit(group, regular, regular.enabled, i)
+			DrawTargetSelectionUnit(group, regular, false, 1)
+		else
+			-- existing targets
+			for i, target in ipairs(regular) do
+				local label = i == 1 and L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"] or L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"]
+				local group = GUI:InlineGroup(label)
+				container:AddChild(group)
 
-			if ShouldShowHostility(target) then
-				DrawTargetSelectionHostility(group, regular.enabled, target)
+				DrawTargetSelectionUnit(group, regular, regular.enabled, i)
+
+				if Clicked:CanUnitBeHostile(target.unit) then
+					DrawTargetSelectionHostility(group, regular.enabled, target)
+				end
+
+				if Clicked:CanUnitBeDead(target.unit) then
+					DrawTargetSelectionVitals(group, regular.enabled, target)
+				end
+
+				if not Clicked:CanUnitHaveFollowUp(target) then
+					break
+				end
 			end
 
-			if Clicked:CanUnitBeDead(target.unit) then
-				DrawTargetSelectionVitals(group, regular.enabled, target)
+			-- new target
+			if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
+				local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
+				container:AddChild(group)
+
+				DrawTargetSelectionUnit(group, regular, regular.enabled, 0)
 			end
-
-			if not Clicked:CanUnitHaveFollowUp(target) then
-				break
-			end
-		end
-
-		-- new target
-		if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
-			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
-			container:AddChild(group)
-
-			DrawTargetSelectionUnit(group, regular, regular.enabled, 0)
 		end
 	end
 end
