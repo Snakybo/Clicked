@@ -7,17 +7,21 @@
 - Add icon selector for custom macros and groups [#23]
 - Add a binding template for custom macros
 - Add support for other targets when the unit frame target is selected [#22]
+- Add a new visualization for the binding targets page, the unit frame target and regular targets are now separated and togglable using a checkbox
+- Add an improved visualization of the `/cc dump` frame with clearer and more data
+- Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames
 
 ### Changed
 
-- Slightly increased the size of the binding tree
-- Process shift-clicking items immediately rather than when the enter key is pressed
-- Change the visualization of the binding targets UI to separate unit frame and regular targets
-- Improve the visualization of the `/cc dump` frame
+- Increase the width of the binding tree to better suit groups
+- Immediately process shift-clicking items rather than when the enter key is pressed
 - Change the order of custom macros using the `FIRST` mode slightly. The "dangling blue cursor" will now always be cleared first
-- Improve and optimize internal binding generation
-- Improve visualization of the binding targets page for custom macros
+- Optimize internal binding generation for less memory usage and better performance
 - Use the per-class profile by default instead of per-character profiles
+
+### Removed
+
+- Remove the ability for Mouseover targets to activate when hovering over a unit frame, the Unit Frame Target should be enabled to support unit frame clicks
 
 ### Fixed
 
@@ -25,15 +29,10 @@
 - Fix the `/startattack` command being included in bindings that never target an enemy
 - Fix groups not showing the assigned icon [#24]
 - Fix custom macros using the `LAST` mode not being registered
-- Potentially fix bindings sometimes not activating [#8]
-- Fix mouse button 3, 4, and 5 not always working
+- (Potentially) fix bindings sometimes not activating [#8]
 - Fix mouseover bindings that share a keybind with a unit frame binding not working
-- Fix a few lines of text copy
 - Fix bindings restricted to Moonkin Form while in Balance not working [#26]
-
-### Issues
-
-- Using modifiers (ctrl, alt, shift) with a mouse button doesn't work when hovering over a unit frame [#27]
+- Fix that the binding targets page for custom macros showed invalid units in the dropdown
 
 ## [0.10.3] - 2020-11-05
 
