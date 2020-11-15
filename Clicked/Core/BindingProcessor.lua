@@ -400,7 +400,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 				for _, target in ipairs(binding.targets.regular) do
 					if target.unit == Clicked.TargetUnits.TARGET and target.hostility ~= Clicked.TargetHostility.HELP then
 						startAutoAttack = true
-						table.insert(extra, "/startattack [@target,harm,exists]")
+						table.insert(extra, "/startattack [@target,harm]")
 						break
 					end
 
