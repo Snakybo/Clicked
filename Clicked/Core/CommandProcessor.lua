@@ -199,11 +199,6 @@ function Clicked:ProcessCommands(commands)
 	-- conditionals are not met (i.e. a binding that only activates on `[help]` but
 	-- you're hovering over a `[harm]` target). In this case we append a `/stopmacro [help]`
 	-- followed by a `/click` command to virtually click the macro frame handler.
-	--
-	-- Additionally in the case of "virtual hovercast" bindings which are generated when a mouse
-	-- button is set to the `[@mouseover]` target, we don't have any pre-build data for the command,
-	-- so a virtual hovercast binding will only serve the purpose of virtually clicking the
-	-- regular macro frame handler.
 
 	for _, command in ipairs(commands) do
 		if command.hovercast then
@@ -236,13 +231,7 @@ function Clicked:ProcessCommands(commands)
 			self:SendMessage(self.EVENT_MACRO_ATTRIBUTES_CREATED, command, attributes)
 
 			for attribute, value in pairs(attributes) do
-				if newClickCastFrameAttributes[attribute] ~= nil then
-					if not command.virtual then
-						newClickCastFrameAttributes[attribute] = value
-					end
-				else
-					newClickCastFrameAttributes[attribute] = value
-				end
+				newClickCastFrameAttributes[attribute] = value
 			end
 
 			table.insert(newClickCastFrameKeybinds, keybind)

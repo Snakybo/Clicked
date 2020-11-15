@@ -71,8 +71,7 @@ Clicked.PetState = {
 
 Clicked.InteractionType = {
 	REGULAR = 1,
-	HOVERCAST = 2,
-	VIRTUAL_HOVERCAST = 3
+	HOVERCAST = 2
 }
 
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
@@ -373,10 +372,6 @@ end
 -- Crusader Strike with [@target,harm], it will create a command like this:
 -- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
 function Clicked:GetMacroForBindings(bindings, interactionType)
-	if interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST then
-		return ""
-	end
-
 	local result = {}
 	local interruptCurrentCast = false
 	local startAutoAttack = false
@@ -486,8 +481,7 @@ local function ProcessActiveBindings()
 		local reference = bucket[1]
 		local command = {
 			keybind = keybind,
-			hovercast = interactionType == Clicked.InteractionType.HOVERCAST or interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST,
-			virtual = interactionType == Clicked.InteractionType.VIRTUAL_HOVERCAST
+			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
 		}
 
 		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
@@ -507,7 +501,6 @@ local function ProcessActiveBindings()
 	for keybind, buckets in Clicked:IterateActiveBindings() do
 		Process(keybind, buckets.hovercast, Clicked.InteractionType.HOVERCAST)
 		Process(keybind, buckets.regular, Clicked.InteractionType.REGULAR)
-		Process(keybind, buckets.virtualHovercast, Clicked.InteractionType.VIRTUAL_HOVERCAST)
 	end
 
 	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
@@ -532,7 +525,6 @@ local function FilterBindings(activatable)
 	for keybind, bindings in pairs(activatable) do
 		result[keybind] = {
 			hovercast = {},
-			virtualHovercast = {},
 			regular = {}
 		}
 
@@ -543,15 +535,6 @@ local function FilterBindings(activatable)
 
 			if binding.targets.regular.enabled then
 				Insert(result[keybind].regular, binding)
-
-				if not binding.targets.hovercast.enabled and Clicked:IsMouseButton(binding.keybind) then
-					for index, target in ipairs(binding.targets.regular) do
-						if target.unit == Clicked.TargetUnits.MOUSEOVER then
-							Insert(result[keybind].virtualHovercast, binding)
-							break
-						end
-					end
-				end
 			end
 		end
 	end
