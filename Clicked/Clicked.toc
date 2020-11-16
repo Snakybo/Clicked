@@ -14,18 +14,13 @@
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703
 
+# Libraries, etc.
 Libs\Libs.xml
 Locales\Locales.xml
-Widgets\AceGUIContainer-ClickedIconSelectorList.lua
-Widgets\AceGUIContainer-ClickedTreeGroup.lua
-Widgets\AceGUIWidget-ClickedKeybinding.lua
-Widgets\AceGUIWidget-ClickedSimpleGroup.lua
-Widgets\AceGUIWidget-ClickedDropDown.lua
-Widgets\AceGUIWidget-ClickedDropDown-Items.lua
-Widgets\AceGUIWidget-ClickedSearchBox.lua
-Widgets\AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua
-Widgets\AceGUIWidget-ClickedToggleHeading.lua
+Widgets\Widgets.xml
 Templates\Clicked.xml
+
+# Core systems
 Core\Clicked.lua
 Core\Database.lua
 Core\AttributeHandler.lua
@@ -33,9 +28,13 @@ Core\BindingProcessor.lua
 Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
+
+# Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua
+
+# Configuration and UI
 Config\GUI.lua
 Config\Addon.lua
 Config\Bindings.lua

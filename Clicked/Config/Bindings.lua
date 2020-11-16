@@ -1471,7 +1471,7 @@ function Clicked:OpenBindingConfig()
 			end
 		end
 
-		Module.root = AceGUI:Create("Frame")
+		Module.root = AceGUI:Create("ClickedFrame")
 		Module.root:SetCallback("OnClose", OnClose)
 		Module.root:SetTitle(L["BINDING_UI_FRAME_TITLE"])
 		Module.root:SetLayout("Flow")

@@ -1,0 +1,12 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="AceGUIContainer-ClickedFrame.lua"/>
+	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
+	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
+	<Script file="AceGUIWidget-ClickedDropDown-Items.lua"/>
+	<Script file="AceGUIWidget-ClickedDropDown.lua"/>
+	<Script file="AceGUIWidget-ClickedKeybinding.lua"/>
+	<Script file="AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua"/>
+	<Script file="AceGUIWidget-ClickedSearchBox.lua"/>
+	<Script file="AceGUIWidget-ClickedSimpleGroup.lua"/>
+	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>
+</Ui>

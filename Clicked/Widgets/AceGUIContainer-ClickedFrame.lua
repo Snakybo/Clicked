@@ -1,0 +1,39 @@
+--[[-----------------------------------------------------------------------------
+Simple frame widget extension to add support for closing the frame on escape.
+-------------------------------------------------------------------------------]]
+
+local Type, Version = "ClickedFrame", 1
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+	return
+end
+
+--[[-----------------------------------------------------------------------------
+Scripts
+-------------------------------------------------------------------------------]]
+
+local function Frame_OnKeyDown(frame, key)
+	if key == "ESCAPE" then
+		frame:SetPropagateKeyboardInput(false)
+		frame:Hide()
+	else
+		frame:SetPropagateKeyboardInput(true)
+	end
+end
+
+--[[-----------------------------------------------------------------------------
+Constructor
+-------------------------------------------------------------------------------]]
+
+local function Constructor()
+	local widget = AceGUI:Create("Frame")
+	widget.type = Type
+
+	local frame = widget.frame
+	frame:SetScript("OnKeyDown", Frame_OnKeyDown)
+
+	return AceGUI:RegisterAsContainer(widget)
+end
+
+AceGUI:RegisterWidgetType(Type, Constructor, Version)

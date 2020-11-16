@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+## Added
+
+- Added the ability to close the configuration frame using Escape
+
 ## [0.11.0] - 2020-11-16
 
 ### Added
