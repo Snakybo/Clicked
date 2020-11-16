@@ -1,4 +1,5 @@
-<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
 	<Script file="AceGUIContainer-ClickedFrame.lua"/>
 	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
