@@ -6,6 +6,7 @@
 
 - Add the ability to close the configuration frame using Escape
 - Add support for WoW 9.0.2
+- Update libraries to support newly added (PvP) talents
 
 ### Changed
 

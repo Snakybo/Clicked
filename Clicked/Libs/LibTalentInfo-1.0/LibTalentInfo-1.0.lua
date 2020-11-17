@@ -1,5 +1,5 @@
 local VERSION_MAJOR = "LibTalentInfo-1.0"
-local VERSION_MINOR = 5
+local VERSION_MINOR = 6
 
 if LibStub == nil then
 	error(VERSION_MAJOR .. " requires LibStub")
@@ -697,9 +697,9 @@ local pvpTalents = {
 	},
 	-- Afflication Warlock
 	[265] = {
-		[1] = { 13, 5379, 15, 16, 17, 18, 19, 5370, 20, 11, 12, 3740 }, -- Soulshatter, Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Amplify Curse, Casting Circle, Bane of Fragility, Deathbolt, Demon Armor
-		[2] = { 13, 5379, 15, 16, 17, 18, 19, 5370, 20, 11, 12, 3740 }, -- Soulshatter, Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Amplify Curse, Casting Circle, Bane of Fragility, Deathbolt, Demon Armor
-		[3] = { 13, 5379, 15, 16, 17, 18, 19, 5370, 20, 11, 12, 3740 }, -- Soulshatter, Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Amplify Curse, Casting Circle, Bane of Fragility, Deathbolt, Demon Armor
+		[1] = { 5379, 15, 16, 17, 18, 19, 20, 5370, 11, 5386, 12, 13, 3740 }, -- Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Bane of Fragility, Rapid Contagion, Deathbolt, Soulshatter, Demon Armor
+		[2] = { 5379, 15, 16, 17, 18, 19, 20, 5370, 11, 5386, 12, 13, 3740 }, -- Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Bane of Fragility, Rapid Contagion, Deathbolt, Soulshatter, Demon Armor
+		[3] = { 5379, 15, 16, 17, 18, 19, 20, 5370, 11, 5386, 12, 13, 3740 }, -- Rampant Afflictions, Gateway Mastery, Rot and Decay, Bane of Shadows, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Bane of Fragility, Rapid Contagion, Deathbolt, Soulshatter, Demon Armor
 	},
 	-- Demonology Warlock
 	[266] = {
