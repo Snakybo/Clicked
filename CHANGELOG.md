@@ -10,6 +10,7 @@
 ### Changed
 
 - Rename the binding `Actions` tab to `Action`
+- Rename the `Pet Target` target to `Pet target` for consistency
 
 ### Fixed
 
