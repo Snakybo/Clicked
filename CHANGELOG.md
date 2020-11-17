@@ -5,6 +5,7 @@
 ### Added
 
 - Add the ability to close the configuration frame using Escape
+- Add support for WoW 9.0.2
 
 ### Changed
 
