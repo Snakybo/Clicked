@@ -2,11 +2,15 @@
 
 ## [Unreleased]
 
-## Added
+### Added
 
 - Add the ability to close the configuration frame using Escape
 
-## Fixed
+### Changed
+
+- Rename the binding `Actions` tab to `Action`
+
+### Fixed
 
 - Remove redundant macro `exists` modifiers when it's already implied
 
