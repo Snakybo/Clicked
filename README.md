@@ -32,7 +32,7 @@ You can use the binding target interface to configure the exact target priority.
 
 ### Configure binding load conditions
 
-You can configure the exact load conditions on a per-target basis, through this interface you can specify the exact requirements that have to be met for this binding to activate. For example you can confiugre a binding to only load when a talent has been selected, when you're in war mode, or when you're in a specific shapeshift form.
+You can configure the exact load conditions on a per-target basis, through this interface you can specify the exact requirements that have to be met for this binding to activate. For example you can configure a binding to only load when a talent has been selected, when you're in war mode, or when you're in a specific shapeshift form.
 
 A full list of all available load conditions:
 
