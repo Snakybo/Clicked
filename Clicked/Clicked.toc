@@ -13,6 +13,7 @@
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703
+## X-Github: https://github.com/Snakybo/Clicked
 
 # Libraries, etc.
 Libs\Libs.xml
