@@ -82,6 +82,7 @@ local activeBindings = {}
 
 local function GetMacroSegmentFromAction(action, interactionType)
 	local flags = {}
+	local impliedExists = false
 
 	if action.unit == Clicked.TargetUnits.PLAYER then
 		table.insert(flags, "@player")
@@ -114,16 +115,20 @@ local function GetMacroSegmentFromAction(action, interactionType)
 	if Clicked:CanUnitBeHostile(action.unit) then
 		if action.hostility == Clicked.TargetHostility.HELP then
 			table.insert(flags, "help")
+			impliedExists = true
 		elseif action.hostility == Clicked.TargetHostility.HARM then
 			table.insert(flags, "harm")
+			impliedExists = true
 		end
 	end
 
 	if Clicked:CanUnitBeDead(action.unit) then
 		if action.vitals == Clicked.TargetVitals.ALIVE then
 			table.insert(flags, "nodead")
+			impliedExists = true
 		elseif action.vitals == Clicked.TargetVitals.DEAD then
 			table.insert(flags, "dead")
+			impliedExists = true
 		end
 	end
 
@@ -133,7 +138,7 @@ local function GetMacroSegmentFromAction(action, interactionType)
 		table.insert(flags, "nopet")
 	end
 
-	if interactionType == Clicked.InteractionType.REGULAR and Clicked:CanUnitHaveFollowUp(action.unit) then
+	if not impliedExists and interactionType == Clicked.InteractionType.REGULAR and Clicked:CanUnitHaveFollowUp(action.unit) then
 		table.insert(flags, "exists")
 	end
 

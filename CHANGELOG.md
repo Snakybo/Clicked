@@ -6,6 +6,10 @@
 
 - Add the ability to close the configuration frame using Escape
 
+## Fixed
+
+- Remove redundant macro `exists` modifiers when it's already implied
+
 ## [0.11.0] - 2020-11-16
 
 ### Added
