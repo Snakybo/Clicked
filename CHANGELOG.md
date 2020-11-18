@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.11.1] - 2020-11-18
 
 ### Added
 
@@ -371,7 +371,8 @@
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.11.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.11.1...master
+[0.11.1]: https://github.com/Snakybo/Clicked/releases/tag/0.11.1
 [0.11.0]: https://github.com/Snakybo/Clicked/releases/tag/0.11.0
 [0.10.3]: https://github.com/Snakybo/Clicked/releases/tag/0.10.3
 [0.10.2]: https://github.com/Snakybo/Clicked/releases/tag/0.10.2
