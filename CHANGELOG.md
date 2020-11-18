@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Add new icons from patch 9.0.2
+
 ## [0.11.1] - 2020-11-18
 
 ### Added
