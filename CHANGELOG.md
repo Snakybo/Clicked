@@ -16,6 +16,7 @@
 ### Fixed
 
 - Remove redundant macro `exists` modifiers when it's already implied
+- Fix macro attribute data display on `/cc dump`
 
 ## [0.11.0] - 2020-11-16
 

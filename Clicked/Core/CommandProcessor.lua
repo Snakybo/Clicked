@@ -176,7 +176,7 @@ function Clicked:ProcessCommands(commands)
 		end
 	end
 
-	self:SendMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
+	self:SendMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
 	self:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
 
 	-- Register all new keybinds
