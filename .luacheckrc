@@ -89,6 +89,7 @@ read_globals = {
 	"MAX_TALENT_TIERS",
 	"NUM_TALENT_COLUMNS",
 	"PlaySound",
+	"RegisterAttributeDriver",
 	"RegisterStateDriver",
 	"ReloadUI",
 	"SetDesaturation",

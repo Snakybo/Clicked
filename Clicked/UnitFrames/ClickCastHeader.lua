@@ -12,37 +12,14 @@ local function safecall(func, ...)
 	end
 end
 
-local function SetupKeybindCommands(keybinds)
-	local register = {}
-	local unregister = {}
-
-	local setTemplate = [[
-		self:SetBindingClick(true, %q, self, %q)
-	]]
-
-	local clearTemplate = [[
-		self:ClearBinding(%q)
-	]]
-
-	for _, keybind in ipairs(keybinds) do
-		local set = string.format(setTemplate, keybind.key, keybind.identifier)
-		local clear = string.format(clearTemplate, keybind.key)
-
-		table.insert(register, set)
-		table.insert(unregister, clear)
-	end
-
-	return table.concat(register, "\n"), table.concat(unregister, "\n")
-end
-
 function Clicked:RegisterClickCastHeader()
 	if GetAddOnEnableState(UnitName("player"), "Clique") == 2 then
 		self:ShowAddonIncompatibilityPopup("Clique")
 		return
 	end
 
-	-- Keep most of the same setup structure as Clique to ensure that oUF
-	-- and all "oUF-like" addons will work
+	-- This is mostly based on Clique, mainly to ensure it will continue
+	-- working with any addons that integrate with Clique directly, such as oUF.
 
 	self.ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
 	ClickCastHeader = self.ClickCastHeader
@@ -53,8 +30,47 @@ function Clicked:RegisterClickCastHeader()
 		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
 	end
 
-	self.ClickCastHeader:SetAttribute("setup-keybinds", "")
-	self.ClickCastHeader:SetAttribute("clear-keybinds", "")
+	-- set required data first
+	self.ClickCastHeader:SetAttribute("clicked-keybinds", "")
+	self.ClickCastHeader:SetAttribute("clicked-identifiers", "")
+
+	self.ClickCastHeader:SetAttribute("setup-keybinds", [[
+		if currentClickcastButton ~= nil then
+			control:RunFor(currentClickcastButton, control:GetAttribute("clear-keybinds"))
+		end
+
+		currentClickcastButton = self
+
+		local keybinds = control:GetAttribute("clicked-keybinds")
+		local identifiers = control:GetAttribute("clicked-identifiers")
+
+		if strlen(keybinds) > 0 then
+			keybinds = table.new(strsplit("\001", keybinds))
+			identifiers = table.new(strsplit("\001", identifiers))
+
+			for i = 1, table.maxn(keybinds) do
+				local keybind = keybinds[i]
+				local identifier = identifiers[i]
+
+				self:SetBindingClick(true, keybind, self, identifier)
+			end
+		end
+	]])
+
+	self.ClickCastHeader:SetAttribute("clear-keybinds", [[
+		local keybinds = control:GetAttribute("clicked-keybinds")
+
+		if strlen(keybinds) > 0 then
+			keybinds = table.new(strsplit("\001", keybinds))
+
+			for i = 1, table.maxn(keybinds) do
+				local keybind = keybinds[i]
+				self:ClearBinding(keybind)
+			end
+		end
+
+		currentClickcastButton = nil
+	]])
 
 	self.ClickCastHeader:SetAttribute("clickcast_register", [[
 		local frame = self:GetAttribute("clickcast_button")
@@ -76,6 +92,19 @@ function Clicked:RegisterClickCastHeader()
 		frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
 	]])
 
+	self.ClickCastHeader:SetAttribute("_onattributechanged", [[
+		local button = currentClickcastButton
+
+		if name == "unit-exists" and value == "false" and button ~= nil then
+			if not button:IsUnderMouse() or not button:IsVisible() then
+				self:RunFor(button, self:GetAttribute("clear-keybinds"))
+				currentClickcastButton = nil
+			end
+		end
+	]])
+
+	RegisterAttributeDriver(self.ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
+
 	self.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
 		local frameName = value and value.GetName and value:GetName()
 
@@ -89,6 +118,7 @@ function Clicked:RegisterClickCastHeader()
 			Clicked:UnregisterClickCastFrame(frameName)
 		end
 	end)
+
 
 	local originalClickCastFrames = ClickCastFrames or {}
 
@@ -112,8 +142,16 @@ function Clicked:UpdateClickCastHeader(keybinds)
 		return
 	end
 
-	local set, clear = SetupKeybindCommands(keybinds)
+	local split = {
+		keybinds = {},
+		identifiers = {}
+	}
 
-	self.ClickCastHeader:SetAttribute("setup-keybinds", set)
-	self.ClickCastHeader:SetAttribute("clear-keybinds", clear)
+	for _, keybind in ipairs(keybinds) do
+		table.insert(split.keybinds, keybind.key)
+		table.insert(split.identifiers, keybind.identifier)
+	end
+
+	self.ClickCastHeader:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
+	self.ClickCastHeader:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
 end

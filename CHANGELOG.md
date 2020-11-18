@@ -17,6 +17,7 @@
 
 - Remove redundant macro `exists` modifiers when it's already implied
 - Fix macro attribute data display on `/cc dump`
+- Fix mouse buttons sometimes not working after leaving combat or deselecting a target [#29]
 
 ## [0.11.0] - 2020-11-16
 
@@ -395,6 +396,7 @@
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#29]: https://github.com/Snakybo/Clicked/issues/29
 [#27]: https://github.com/Snakybo/Clicked/issues/27
 [#26]: https://github.com/Snakybo/Clicked/issues/26
 [#24]: https://github.com/Snakybo/Clicked/issues/24
