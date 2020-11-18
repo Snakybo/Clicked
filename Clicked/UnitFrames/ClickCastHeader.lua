@@ -119,7 +119,6 @@ function Clicked:RegisterClickCastHeader()
 		end
 	end)
 
-
 	local originalClickCastFrames = ClickCastFrames or {}
 
 	ClickCastFrames = setmetatable({}, {
