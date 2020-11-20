@@ -13,7 +13,8 @@ A clear and concise description of what the bug is.
 ## General information
 * **Clicked Version:** enter the version of Clicked here
 * **WoW Version:** Retail/Classic
-* **Did it work before?** Yes in version x.yz/No
+* **Did it work before?** Yes in version x.y.z/No
+* **Does it occur with all other addons disabled?** Yes/No
 
 ## Expected behavior
 A clear and concise description of what you expected to happen.
