@@ -94,7 +94,7 @@ _This all happens at the time of configuration, so Clicked has no additional per
 
 In addition to the ability to cast spells and use items, Clicked also supports creating bindings for custom macros. These custom macros benefit from all the same customizable load conditions, and aim to provide access to functionality that is more than just casting a spell or using an item.
 
-Do note that while it is also possible to create custom macros to cast spells or use items, it's not recommended to do so as they do _not_ benefit from the smart targeting functionality, custom macros are usable alongside regular bindings, but their functionality is for the most part restricted to executing either before or after the automatically generated macro that is used by "Cast a spell" or "Use an item" bindings, hence it is highly recommended to use those instead.
+Do note that while it is also possible to create custom macros to cast spells or use items, it's not recommended to do so as they do **not** benefit from the smart targeting functionality, custom macros are usable alongside regular bindings, but their functionality is for the most part restricted to executing either before or after the automatically generated macro that is used by "Cast a spell" or "Use an item" bindings, hence it is highly recommended to use those instead.
 
 _In the case where you feel like you need to use custom macros a lot, feel free to create a [feature request](https://github.com/Snakybo/Clicked/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=) explaining what you need them for, so that functionality can be added as a built-in option._
 
