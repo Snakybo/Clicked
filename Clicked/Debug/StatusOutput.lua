@@ -118,6 +118,8 @@ local function GetRegisteredClickCastFrames()
 		end
 	end
 
+	table.sort(lines)
+
 	if #lines > 0 then
 		table.insert(lines, 1, "----- Registered unit frames -----")
 	end
