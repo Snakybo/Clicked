@@ -224,6 +224,34 @@ function Clicked:GetDataFromString(string, keyword)
 	return match
 end
 
+--- Split a keybind string into two parts: a modifier and a key.
+---
+--- @param keybind string
+--- @return string modifiers
+--- @return string key
+function Clicked:GetKeybindModifiersAndKey(keybind)
+	local modifiers = ""
+	local current = ""
+
+	for i = 1, #keybind do
+		local char = string.sub(keybind, i, i)
+
+		if char == "-" and #current > 0 then
+			if not Clicked:IsStringNilOrEmpty(modifiers) then
+				modifiers = modifiers .. "-" .. current
+			else
+				modifiers = current
+			end
+
+			current = ""
+		else
+			current = current .. char
+		end
+	end
+
+	return modifiers, current
+end
+
 --- Generate an attribute identifier for a key. This will
 --- separate the keybind into two parts: a prefix, and a suffix.
 ---
@@ -246,35 +274,29 @@ end
 --- * `"BUTTON3"` == `"", "clicked-mouse-3"` == `"type-clicked-mouse-3"`
 --- * `"SHIFT-BUTTON3"` == `"", "clicked-mouse-shift3"` == `"type-clicked-mouse-shift3"`
 ---
---- @param key string
+--- @param keybind string
 --- @param hovercast boolean
 --- @return string prefix
 --- @return string suffix
-function Clicked:CreateAttributeIdentifier(key, hovercast)
-	-- separate modifiers from the actual binding
-	local prefix, suffix = string.match(key, "^(.-)([^%-]+)$")
-	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
-
-	-- remove any trailing dashes (shift- becomes shift, ctrl- becomes ctrl, etc.)
-	if string.sub(prefix, -1, -1) == "-" then
-		prefix = string.sub(prefix, 1, -2)
-	end
+function Clicked:CreateAttributeIdentifier(keybind, hovercast)
+	local mods, key = self:GetKeybindModifiersAndKey(keybind)
+	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	-- convert the parts to lowercase so it fits the attribute naming style
-	prefix = prefix:lower()
-	suffix = suffix:lower()
+	mods = string.lower(mods)
+	key = string.lower(key)
 
 	if buttonIndex ~= nil and hovercast then
-		suffix = buttonIndex
+		key = buttonIndex
 	elseif buttonIndex ~= nil then
-		suffix = "clicked-mouse-" .. tostring(prefix) .. tostring(buttonIndex)
-		prefix = ""
+		key = "clicked-mouse-" .. tostring(mods) .. tostring(buttonIndex)
+		mods = ""
 	else
-		suffix = "clicked-button-" .. tostring(prefix) .. tostring(suffix)
-		prefix = ""
+		key = "clicked-button-" .. tostring(mods) .. tostring(key)
+		mods = ""
 	end
 
-	return prefix, suffix
+	return mods, key
 end
 
 --- Check if a string is `nil` or currently empty.
@@ -345,8 +367,8 @@ function Clicked:IsMouseButton(keybind)
 		return false
 	end
 
-	local _, suffix = string.match(keybind, "^(.-)([^%-]+)$")
-	local buttonIndex = string.match(suffix, "^BUTTON(%d+)$")
+	local _, key = self:GetKeybindModifiersAndKey(keybind)
+	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	return buttonIndex ~= nil
 end
