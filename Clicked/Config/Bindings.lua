@@ -752,6 +752,13 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 					local new = Clicked:GetNewBindingTargetTemplate()
 					new.unit = value
 
+					if #targets > 0 then
+						local last = targets[#targets]
+
+						new.hostility = last.hostility
+						new.vitals = last.vitals
+					end
+
 					table.insert(targets, new)
 				else
 					target.unit = value

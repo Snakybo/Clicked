@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Automatically apply target hostility and vital settings from the previous target when adding a new target
+
 ## [0.11.2] - 2020-11-23
 
 ### Added
