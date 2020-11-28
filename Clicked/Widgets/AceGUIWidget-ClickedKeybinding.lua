@@ -110,7 +110,7 @@ local function Constructor()
 
 	local msgframe = keybinding.msgframe
 	local msg = msgframe.msg
-	msg:SetText(L["BINDING_UI_TOOLTIP_SET_KEYBIND"])
+	msg:SetText(L["Press a key to bind, or ESC to clear the binding."])
 
 	return keybinding
 end

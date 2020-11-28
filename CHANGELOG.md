@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add localization compatiblity with CurseForge
+
 ### Changed
 
 - Automatically apply target hostility and vital settings from the previous target when adding a new target
+- Update various texts to improve consistency
 
 ## [0.11.2] - 2020-11-23
 

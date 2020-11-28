@@ -8,11 +8,11 @@ local module = {
 	["Initialize"] = function(self)
 		local config = {
 			type = "group",
-			name = L["ADDON_NAME"],
+			name = L["Clicked"],
 			args = {
 				minimapIcon = {
-					name = L["INTERFACE_UI_GENERAL_MINIMAP_ICON_NAME"],
-					desc = L["INTERFACE_UI_GENERAL_MINIMAP_ICON_DESCRIPTION"],
+					name = L["Enable minimap icon"],
+					desc = L["Enable or disable the minimap icon."],
 					type = "toggle",
 					order = 1,
 					width = "full",
@@ -30,8 +30,8 @@ local module = {
 					end
 				},
 				onKeyDown = {
-					name = L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_NAME"],
-					desc = L["INTERFACE_UI_GENERAL_CAST_ON_KEY_DOWN_DESCRIPTION"],
+					name = L["Cast on key down rather than key up"],
+					desc = L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."],
 					type = "toggle",
 					order = 2,
 					width = "full",
@@ -43,7 +43,7 @@ local module = {
 						end
 
 						Clicked:RegisterFrameClicks(_G[Clicked.MACRO_FRAME_HANDLER_NAME])
-						Clicked:ShowInformationPopup(L["INTERFACE_UI_GENERAL_POPUP_CAST_ON_KEY_DOWN"])
+						Clicked:ShowInformationPopup(L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
 					end,
 					get = function(info)
 						return Clicked.db.profile.options.onKeyDown
@@ -53,10 +53,10 @@ local module = {
 		}
 
 		AceConfig:RegisterOptionsTable("Clicked", config)
-		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["INTERFACE_UI_TITLE_GENERAL"])
+		self.options = AceConfigDialog:AddToBlizOptions("Clicked", L["Clicked"])
 
 		AceConfig:RegisterOptionsTable("Clicked/Profile", AceDBOptions:GetOptionsTable(Clicked.db))
-		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["INTERFACE_UI_TITLE_PROFILES"], "Clicked")
+		self.profile = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["Profiles"], "Clicked")
 	end,
 
 	["OnChatCommandReceived"] = function(self, args)

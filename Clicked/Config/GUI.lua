@@ -1,5 +1,4 @@
 local AceGUI = LibStub("AceGUI-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 -- Create a namespace for GUI functions
 local GUI = Clicked.GUI or {}
@@ -14,7 +13,7 @@ local function OnSerialize(frame, event, value)
 
 	if InCombatLockdown() then
 		data.setValueFunc(frame, data.ref[data.key])
-		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+		Clicked:NotifyCombatLockdown()
 		return
 	end
 

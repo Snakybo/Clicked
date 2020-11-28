@@ -115,6 +115,27 @@ read_globals = {
 	"WOW_PROJECT_MAINLINE",
 	"hooksecurefunc",
 
+	-- Global localization
+	"CANCEL",
+	"CLASS",
+	"COMBAT",
+	"CONTINUE",
+	"DEAD",
+	"DEFAULT",
+	"DELETE",
+	"FOCUS",
+	"FRIENDLY",
+	"HOSTILE",
+	"MACRO",
+	"NEW",
+	"NO",
+	"NONE",
+	"OTHER",
+	"TARGET",
+	"PET",
+	"RACE",
+	"YES",
+
 	-- Lua globals
 	"floor",
 	"geterrorhandler",

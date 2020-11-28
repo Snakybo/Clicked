@@ -125,11 +125,11 @@ end
 
 StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	text = "",
-	button1 = string.format(L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"], L["ADDON_NAME"]),
+	button1 = string.format(L["Keep %s"], L["Clicked"]),
 	button2 = "",
 	OnShow = function(self)
-		self.text:SetFormattedText(L["ERR_ADDON_INCOMPAT_MESSAGE"], self.data.addon)
-		self.button2:SetFormattedText(L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"],self.data.addon)
+		self.text:SetFormattedText(L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
+		self.button2:SetFormattedText(L["Keep %s"],self.data.addon)
 	end,
 	OnAccept = function(self)
 		DisableAddOn(self.data.addon)
@@ -147,7 +147,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 
 StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	text = "",
-	button1 = L["MSG_POPUP_BUTTON_CONTINUE"],
+	button1 = CONTINUE,
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,
@@ -159,8 +159,8 @@ StaticPopupDialogs["CLICKED_MESSAGE"] = {
 
 StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	text = "",
-	button1 = L["MSG_POPUP_BUTTON_YES"],
-	button2 = L["MSG_POPUP_BUTTON_NO"],
+	button1 = YES,
+	button2 = NO,
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,
@@ -554,4 +554,39 @@ function Clicked:GetActiveBindingAction(binding)
 	end
 
 	return nil
+end
+
+--- Notify the user that Clicked is currently in combat lockdown mode,
+--- this will print a message to the user's chat frame with a helpful message.
+function Clicked:NotifyCombatLockdown()
+	local message = self:GetPrefixedAndFormattedString(L["You are in combat, the binding configuration is in read-only mode."])
+	print(message)
+end
+
+--- Colorize the specified string. This will enclose the string
+--- in WoW color tags (`|c` and `|r`).
+---
+--- @param string string
+--- @param color string
+--- @return string
+function Clicked:GetColorizedString(string, color)
+	return "|c" .. color .. string .. "|r"
+end
+
+--- Prefix the specified string with `Clicked:`.
+---
+--- @param message string
+--- @return string
+function Clicked:AppendClickedMessagePrefix(message)
+	return self:GetColorizedString(L["Clicked"], "ffe31919") .. ": " .. message
+end
+
+--- Run `string.format` on the specified string, and prefix the resulting string
+--- with `Clicked:`.
+---
+--- @param format string
+--- @return string
+function Clicked:GetPrefixedAndFormattedString(format, ...)
+	local message = string.format(format, ...)
+	return self:AppendClickedMessagePrefix(message)
 end

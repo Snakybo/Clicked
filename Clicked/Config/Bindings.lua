@@ -108,7 +108,7 @@ local function OnSpellBookButtonClick(name)
 	end
 
 	if InCombatLockdown() then
-		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+		Clicked:NotifyCombatLockdown()
 		return
 	end
 
@@ -301,7 +301,7 @@ local function DrawIconPicker(container, data)
 	do
 		local widget = AceGUI:Create("ClickedSearchBox")
 		widget:DisableButton(true)
-		widget:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
+		widget:SetPlaceholderText(L["Search..."])
 		widget:SetRelativeWidth(0.75)
 		searchBox = widget
 
@@ -313,7 +313,7 @@ local function DrawIconPicker(container, data)
 			Module.tree:Redraw()
 		end
 
-		local widget = GUI:Button(L["BINDING_UI_PAGE_ICON_PICKER_BUTTON_CANCEL"], OnClick)
+		local widget = GUI:Button(CANCEL, OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -463,7 +463,7 @@ end
 local function DrawSpellSelection(container, action)
 	-- target spell
 	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_SPELL"])
+		local group = GUI:InlineGroup(L["Target Spell"])
 		container:AddChild(group)
 
 		-- edit box
@@ -499,7 +499,7 @@ local function DrawSpellSelection(container, action)
 		do
 			local function OnClick()
 				if InCombatLockdown() then
-					print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+					Clicked:NotifyCombatLockdown()
 					return
 				end
 
@@ -518,7 +518,7 @@ local function DrawSpellSelection(container, action)
 				tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
 				tooltip:ClearAllPoints()
 				tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-				tooltip:SetText(L["BINDING_UI_PAGE_ACTION_HELP_SPELL_BOOK"], 1, 0.82, 0, 1, true)
+				tooltip:SetText(L["Click on a spell book entry to select it."], 1, 0.82, 0, 1, true)
 				tooltip:Show()
 			end
 
@@ -527,7 +527,7 @@ local function DrawSpellSelection(container, action)
 				tooltip:Hide()
 			end
 
-			local widget = GUI:Button(L["BINDING_UI_BUTTON_FROM_SPELLBOOK"], OnClick)
+			local widget = GUI:Button(L["Pick from spellbook"], OnClick)
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnEnter", OnEnter)
 			widget:SetCallback("OnLeave", OnLeave)
@@ -540,7 +540,7 @@ end
 local function DrawItemSelection(container, action)
 	-- target item
 	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_ITEM"])
+		local group = GUI:InlineGroup(L["Target Item"])
 		container:AddChild(group)
 
 		-- target item
@@ -574,7 +574,7 @@ local function DrawItemSelection(container, action)
 
 		-- help text
 		do
-			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_ITEM_SHIFT_CLICK"])
+			local widget = GUI:Label("\n" .. L["Tip: You can shift-click an item in your bags when the input field is selected to autofill."])
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -585,7 +585,7 @@ end
 local function DrawMacroSelection(container, binding, keybind, action)
 	-- macro name and icon
 	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_MACRO_NAME_ICON"])
+		local group = GUI:InlineGroup(L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
@@ -611,7 +611,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 				Module.tree:Redraw()
 			end
 
-			local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], OpenIconPicker)
+			local widget = GUI:Button(L["Select"], OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -620,12 +620,12 @@ local function DrawMacroSelection(container, binding, keybind, action)
 
 	-- macro text
 	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_SELECTED_MACRO"])
+		local group = GUI:InlineGroup(L["Macro Text"])
 		container:AddChild(group)
 
 		-- help text
 		if binding.targets.hovercast.enabled and not binding.targets.regular.enabled then
-			local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_HOVERCAST"] .. "\n")
+			local widget = GUI:Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
 		end
@@ -642,15 +642,15 @@ local function DrawMacroSelection(container, binding, keybind, action)
 
 	-- additional options
 	do
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
+		local group = GUI:InlineGroup(L["Options"])
 		container:AddChild(group)
 
 		-- macro mode toggle
 		do
 			local items = {
-				FIRST = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_FIRST"],
-				LAST = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_LAST"],
-				APPEND = L["BINDING_UI_PAGE_ACTION_MACRO_MODE_APPEND"]
+				FIRST = L["Run first (default)"],
+				LAST = L["Run last"],
+				APPEND = L["Append after bindings"]
 			}
 
 			local order = {
@@ -666,7 +666,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 		end
 
 		if action.macroMode == Clicked.MacroMode.APPEND then
-			local widget = GUI:Label("\n" .. L["BINDING_UI_PAGE_ACTION_HELP_MACRO_MODE_APPEND"])
+			local widget = GUI:Label("\n" .. L["This mode will directly append the macro text onto an automatically generated command generated by other bindings using the specified keybind. Generally, this means that it will be the last section of an '/use' command.\n\nWith this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/use Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'"])
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -675,12 +675,12 @@ local function DrawMacroSelection(container, binding, keybind, action)
 end
 
 local function DrawAdditionalSpellItemOptions(container, action)
-	local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_ADDITIONAL_OPTIONS"])
+	local group = GUI:InlineGroup(L["Options"])
 	container:AddChild(group)
 
 	-- interrupt cast toggle
 	do
-		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_ACTION_ADDITIONAL_OPTIONS_INTERRUPT_CURRENT_CAST"], action, "interruptCurrentCast")
+		local widget = GUI:CheckBox(L["Interrupt current cast"], action, "interruptCurrentCast")
 		widget:SetFullWidth(true)
 
 		group:AddChild(widget)
@@ -696,11 +696,11 @@ local function DrawBindingActionPage(container, binding)
 		end
 
 		local items = {
-			SPELL = L["BINDING_UI_PAGE_ACTION_TYPE_SPELL"],
-			ITEM = L["BINDING_UI_PAGE_ACTION_TYPE_ITEM"],
-			MACRO = L["BINDING_UI_PAGE_ACTION_TYPE_MACRO"],
-			UNIT_SELECT = L["BINDING_UI_PAGE_ACTION_TYPE_UNIT_TARGET"],
-			UNIT_MENU = L["BINDING_UI_PAGE_ACTION_TYPE_UNIT_MENU"]
+			SPELL = L["Cast a spell"],
+			ITEM = L["Use an item"],
+			MACRO = L["Run a macro (advanced)"],
+			UNIT_SELECT = L["Target the unit"],
+			UNIT_MENU = L["Open the unit menu"]
 		}
 
 		local order = {
@@ -711,7 +711,7 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TYPE"])
+		local group = GUI:InlineGroup(L["Action"])
 		container:AddChild(group)
 
 		do
@@ -779,7 +779,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 				frame:SetValue(target.unit)
 			end
 
-			print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+			Clicked:NotifyCombatLockdown()
 		end
 	end
 
@@ -790,13 +790,13 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 			unit = "_NONE_"
 		}
 
-		items["_NONE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_NONE"]
+		items["_NONE_"] = L["<No one>"]
 		table.insert(order, "_NONE_")
 	else
 		target = targets[index]
 
 		if #targets > 1 then
-			items["_DELETE_"] = L["BINDING_UI_PAGE_TARGETS_UNIT_REMOVE"]
+			items["_DELETE_"] = L["<Remove this target>"]
 			table.insert(order, "_DELETE_")
 		end
 	end
@@ -829,7 +829,7 @@ end
 
 local function DrawBindingTargetPage(container, binding)
 	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_RESTRICTED_KEYBIND"] .. "\n", "medium")
+		local widget = GUI:Label(L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -842,7 +842,7 @@ local function DrawBindingTargetPage(container, binding)
 		local hovercast = binding.targets.hovercast
 
 		do
-			local widget = GUI:ToggleHeading(L["BINDING_UI_PAGE_TARGETS_HEADER_HOVERCAST"], hovercast, "enabled")
+			local widget = GUI:ToggleHeading(L["Unit Frame Target"], hovercast, "enabled")
 			widget:SetDisabled(not CanEnableHovercastTargetMode(binding))
 			container:AddChild(widget)
 		end
@@ -856,25 +856,25 @@ local function DrawBindingTargetPage(container, binding)
 		local regular = binding.targets.regular
 
 		do
-			local widget = GUI:ToggleHeading(L["BINDING_UI_PAGE_TARGETS_HEADER_REGULAR"], regular, "enabled")
+			local widget = GUI:ToggleHeading(L["Binding Targets"], regular, "enabled")
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
 
 		if isMacro then
-			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"])
+			local group = GUI:InlineGroup(L["On this target"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
 		else
 			-- existing targets
 			for i, target in ipairs(regular) do
-				local label = i == 1 and L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT"] or L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"]
+				local label = i == 1 and L["On this target"] or L["Or"]
 				local group = GUI:InlineGroup(label)
 				container:AddChild(group)
 
 				if not binding.targets.hovercast.enabled and target.unit == Clicked.TargetUnits.MOUSEOVER and Clicked:IsMouseButton(binding.keybind) then
-					local widget = GUI:Label(L["BINDING_UI_PAGE_ACTION_HELP_MOUSEOVER_MOUSE_BUTTON_UNIT_FRAME"] .. "\n")
+					local widget = GUI:Label(L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
 					widget:SetFullWidth(true)
 
 					group:AddChild(widget)
@@ -897,7 +897,7 @@ local function DrawBindingTargetPage(container, binding)
 
 			-- new target
 			if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
-				local group = GUI:InlineGroup(L["BINDING_UI_PAGE_ACTION_LABEL_TARGETS_UNIT_EXTRA"])
+				local group = GUI:InlineGroup(L["Or"])
 				container:AddChild(group)
 
 				DrawTargetSelectionUnit(group, regular, regular.enabled, 0)
@@ -911,7 +911,7 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = GUI:CheckBox(L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_NEVER"] , load, "never")
+		local widget = GUI:CheckBox(L["Never load"] , load, "never")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -920,33 +920,33 @@ end
 
 local function DrawLoadClass(container, class)
 	local items, order = Clicked:GetLocalizedClasses()
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_CLASS"], items, order, class)
+	DrawTristateLoadOption(container, CLASS, items, order, class)
 end
 
 local function DrawLoadRace(container, race)
 	local items, order = Clicked:GetLocalizedRaces()
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_RACE"], items, order, race)
+	DrawTristateLoadOption(container, RACE, items, order, race)
 end
 
 local function DrawLoadSpecialization(container, specialization, classNames)
 	local items, order = Clicked:GetLocalizedSpecializations(classNames)
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPECIALIZATION"], items, order, specialization)
+	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
 end
 
 local function DrawLoadTalent(container, talent, specIds)
 	local items, order = Clicked:GetLocalizedTalents(specIds)
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_TALENT"], items, order, talent)
+	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
 end
 
 local function DrawLoadPvPTalent(container, talent, specIds)
 	local items, order = Clicked:GetLocalizedPvPTalents(specIds)
-	DrawTristateLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PVP_TALENT"], items, order, talent)
+	DrawTristateLoadOption(container, L["PvP talent selected"], items, order, talent)
 end
 
 local function DrawLoadWarMode(container, warMode)
 	local items = {
-		IN_WAR_MODE = L["BINDING_UI_PAGE_LOAD_OPTIONS_WAR_MODE_TRUE"],
-		NOT_IN_WAR_MODE = L["BINDING_UI_PAGE_LOAD_OPTIONS_WAR_MODE_FALSE"]
+		IN_WAR_MODE = L["War Mode enabled"],
+		NOT_IN_WAR_MODE = L["War Mode disabled"]
 	}
 
 	local order = {
@@ -954,17 +954,17 @@ local function DrawLoadWarMode(container, warMode)
 		"NOT_IN_WAR_MODE"
 	}
 
-	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_WAR_MODE"], items, order, warMode)
+	DrawDropdownLoadOption(container, L["War Mode"], items, order, warMode)
 end
 
 local function DrawLoadPlayerNameRealm(container, playerNameRealm)
-	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_NAME_REALM"], playerNameRealm)
+	DrawEditFieldLoadOption(container, L["Player Name-Realm"], playerNameRealm)
 end
 
 local function DrawLoadCombat(container, combat)
 	local items = {
-		IN_COMBAT = L["BINDING_UI_PAGE_LOAD_OPTIONS_COMBAT_TRUE"],
-		NOT_IN_COMBAT = L["BINDING_UI_PAGE_LOAD_OPTIONS_COMBAT_FALSE"]
+		IN_COMBAT = L["In combat"],
+		NOT_IN_COMBAT = L["Not in combat"]
 	}
 
 	local order = {
@@ -972,19 +972,19 @@ local function DrawLoadCombat(container, combat)
 		"NOT_IN_COMBAT"
 	}
 
-	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_COMBAT"], items, order, combat)
+	DrawDropdownLoadOption(container, COMBAT, items, order, combat)
 end
 
 local function DrawLoadSpellKnown(container, spellKnown)
-	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_SPELL_KNOWN"], spellKnown)
+	DrawEditFieldLoadOption(container, L["Spell known"], spellKnown)
 end
 
 local function DrawLoadInGroup(container, inGroup)
 	local items = {
-		IN_GROUP_PARTY_OR_RAID = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_PARTY_OR_RAID"],
-		IN_GROUP_PARTY = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_PARTY"],
-		IN_GROUP_RAID = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_RAID"],
-		IN_GROUP_SOLO = L["BINDING_UI_PAGE_LOAD_OPTIONS_IN_GROUP_SOLO"]
+		IN_GROUP_PARTY_OR_RAID = L["In a party or raid group"],
+		IN_GROUP_PARTY = L["In a party"],
+		IN_GROUP_RAID = L["In a raid group"],
+		IN_GROUP_SOLO = L["Not in a group"]
 	}
 
 	local order = {
@@ -994,15 +994,15 @@ local function DrawLoadInGroup(container, inGroup)
 		"IN_GROUP_SOLO"
 	}
 
-	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_IN_GROUP"], items, order, inGroup)
+	DrawDropdownLoadOption(container, L["In group"], items, order, inGroup)
 end
 
 local function DrawLoadPlayerInGroup(container, playerInGroup)
-	DrawEditFieldLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PLAYER_IN_GROUP"], playerInGroup)
+	DrawEditFieldLoadOption(container, L["Player in group"], playerInGroup)
 end
 
 local function DrawLoadInStance(container, form, specIds)
-	local label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_STANCE"]
+	local label = L["Stance"]
 
 	if specIds == nil then
 		specIds = {}
@@ -1014,7 +1014,7 @@ local function DrawLoadInStance(container, form, specIds)
 
 		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
 		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-			label = L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_FORM"]
+			label = L["Form"]
 		end
 	end
 
@@ -1024,8 +1024,8 @@ end
 
 local function DrawLoadPet(container, pet)
 	local items = {
-		ACTIVE = L["BINDING_UI_PAGE_LOAD_OPTIONS_PET_ACTIVE"],
-		INACTIVE = L["BINDING_UI_PAGE_LOAD_OPTIONS_PET_INACTIVE"],
+		ACTIVE = L["Pet exists"],
+		INACTIVE = L["No pet"],
 	}
 
 	local order = {
@@ -1033,7 +1033,7 @@ local function DrawLoadPet(container, pet)
 		"INACTIVE"
 	}
 
-	DrawDropdownLoadOption(container, L["BINDING_UI_PAGE_LOAD_OPTIONS_LABEL_PET"], items, order, pet)
+	DrawDropdownLoadOption(container, PET, items, order, pet)
 end
 
 local function DrawBindingLoadOptionsPage(container, binding)
@@ -1107,7 +1107,7 @@ local function DrawBindingStatusPage(container, binding)
 	end
 
 	if  not Clicked:CanBindingLoad(binding) then
-		local widget = GUI:Label(L["BINDING_UI_PAGE_STATUS_NOT_LOADED"], "medium")
+		local widget = GUI:Label(L["Not loaded"], "medium")
 		widget:SetFullWidth(true)
 		container:AddChild(widget)
 	else
@@ -1115,7 +1115,7 @@ local function DrawBindingStatusPage(container, binding)
 			-- output self text field
 			do
 				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-				widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_LOCAL"])
+				widget:SetLabel(L["Generated local macro"])
 				widget:SetText(Clicked:GetMacroForBindings({ binding }, interactionType))
 				widget:SetFullWidth(true)
 				widget:SetNumLines(5)
@@ -1126,7 +1126,7 @@ local function DrawBindingStatusPage(container, binding)
 			-- output of full macro
 			do
 				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-				widget:SetLabel(L["BINDING_UI_PAGE_STATUS_GENERATED_FULL"])
+				widget:SetLabel(L["Generated full macro"])
 				widget:SetText(Clicked:GetMacroForBindings(bindings, interactionType))
 				widget:SetFullWidth(true)
 				widget:SetNumLines(8)
@@ -1138,7 +1138,7 @@ local function DrawBindingStatusPage(container, binding)
 				do
 					local widget = AceGUI:Create("Heading")
 					widget:SetFullWidth(true)
-					widget:SetText(L["BINDING_UI_PAGE_STATUS_GENERATED_RELATIVES"]:format(#bindings - 1))
+					widget:SetText(L["%d related binding(s)"]:format(#bindings - 1))
 
 					group:AddChild(widget)
 				end
@@ -1188,14 +1188,14 @@ local function DrawBindingStatusPage(container, binding)
 		end
 
 		if binding.targets.hovercast.enabled then
-			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_STATUS_GENERATED_HOVERCAST"])
+			local group = GUI:InlineGroup(L["Unit frame macro"])
 			container:AddChild(group)
 
 			DrawStatus(group, hovercastBindings, Clicked.InteractionType.HOVERCAST)
 		end
 
 		if binding.targets.regular.enabled then
-			local group = GUI:InlineGroup(L["BINDING_UI_PAGE_STATUS_GENERATED_REGULAR"])
+			local group = GUI:InlineGroup(L["Binding macro"])
 			container:AddChild(group)
 
 			DrawStatus(group, regularBindings, Clicked.InteractionType.REGULAR)
@@ -1208,7 +1208,7 @@ end
 local function DrawGroup(container)
 	local group = Module:GetCurrentGroup()
 
-	local parent = GUI:InlineGroup(L["BINDING_UI_PAGE_GROUP_LABEL_GOUP_NAME_ICON"])
+	local parent = GUI:InlineGroup(L["Group Name and Icon"])
 	container:AddChild(parent)
 
 	-- name text field
@@ -1233,7 +1233,7 @@ local function DrawGroup(container)
 			Module.tree:Redraw()
 		end
 
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_SELECT"], OpenIconPicker)
+		local widget = GUI:Button(L["Select"], OpenIconPicker)
 		widget:SetRelativeWidth(0.3)
 
 		parent:AddChild(widget)
@@ -1292,7 +1292,7 @@ local function DrawItemTemplate(container, identifier, name, description)
 			CreateFromItemTemplate(identifier)
 		end
 
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_CREATE"], OnClick)
+		local widget = GUI:Button(L["Create"], OnClick)
 		widget:SetRelativeWidth(0.2)
 		group:AddChild(widget)
 	end
@@ -1341,19 +1341,19 @@ local function DrawBinding(container)
 
 		local items = {
 			{
-				text = L["BINDING_UI_PAGE_TITLE_ACTIONS"],
+				text = L["Action"],
 				value = "action"
 			},
 			{
-				text = L["BINDING_UI_PAGE_TITLE_TARGETS"],
+				text = L["Targets"],
 				value = "target"
 			},
 			{
-				text = L["BINDING_UI_PAGE_TITLE_CONDITIONS"],
+				text = L["Conditions"],
 				value = "conditions"
 			},
 			{
-				text = L["BINDING_UI_PAGE_TITLE_STATUS"],
+				text = L["Status"],
 				value = "status"
 			}
 		}
@@ -1375,15 +1375,15 @@ local function DrawItemTemplateSelector(container)
 	container:AddChild(scrollFrame)
 
 	do
-		local widget = GUI:Label(L["BINDING_UI_PAGE_TITLE_TEMPLATE"], "large")
+		local widget = GUI:Label(L["Create a new binding"], "large")
 		scrollFrame:AddChild(widget)
 	end
 
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["BINDING_UI_PAGE_TEMPLATE_TITLE_GROUP"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_GROUP"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SIMPLE_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_SIMPLE_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_SIMPLE_BINDING"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CLICKCAST_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CLICKCAST_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CLICKCAST_BINDING"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_HEALER_BINDING, L["BINDING_UI_PAGE_TEMPLATE_TITLE_HEALER_BINDING"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_HEALER_BINDING"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CUSTOM_MACRO, L["BINDING_UI_PAGE_TEMPLATE_TITLE_CUSTOM_MACRO"], L["BINDING_UI_PAGE_TEMPLATE_DESCRIPTION_CUSTOM_MACRO"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["Group"], L["A group to organize multiple bindings."])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SIMPLE_BINDING, L["Simple Binding"], L["A simple binding without any target prioritization, identical to standard action buttons."])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CLICKCAST_BINDING, L["Clickcast Binding"], L["A binding that only activates when hovering over a unit frame."])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_HEALER_BINDING, L["Healer Binding"], L["A binding commonly used by healers, it will prioritize mouseover -> target -> player."])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CUSTOM_MACRO, L["Custom Macro (advanced)"], L["A custom macro that can interact with other bindings and can be configured with load conditions."])
 
 	scrollFrame:DoLayout()
 end
@@ -1403,7 +1403,7 @@ local function DrawHeader(container)
 			Module.tree:SelectByValue("")
 		end
 
-		local widget = GUI:Button(L["BINDING_UI_BUTTON_NEW"], OnClick)
+		local widget = GUI:Button(NEW, OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -1480,7 +1480,7 @@ function Clicked:OpenBindingConfig()
 
 		Module.root = AceGUI:Create("ClickedFrame")
 		Module.root:SetCallback("OnClose", OnClose)
-		Module.root:SetTitle(L["BINDING_UI_FRAME_TITLE"])
+		Module.root:SetTitle(L["Clicked Binding Configuration"])
 		Module.root:SetLayout("Flow")
 		Module.root:SetWidth(800)
 		Module.root:SetHeight(600)
@@ -1491,7 +1491,7 @@ function Clicked:OpenBindingConfig()
 	end
 
 	if InCombatLockdown() then
-		print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+		Clicked:NotifyCombatLockdown()
 	end
 
 	DrawHeader(Module.root)
@@ -1530,7 +1530,7 @@ function Module:Redraw()
 		return
 	end
 
-	self.root:SetStatusText(L["BINDING_UI_FRAME_STATUS_TEXT"]:format(Clicked.VERSION, Clicked.db:GetCurrentProfile()))
+	self.root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Clicked.db:GetCurrentProfile()))
 	self.tree:ConstructTree()
 end
 

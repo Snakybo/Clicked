@@ -86,20 +86,20 @@ end
 --- @return table order
 function Clicked:GetLocalizedTargetUnits()
 	local items = {
-		[Clicked.TargetUnits.DEFAULT] = L["BINDING_UI_PAGE_TARGETS_UNIT_DEFAULT"],
-		[Clicked.TargetUnits.PLAYER] = L["BINDING_UI_PAGE_TARGETS_UNIT_PLAYER"],
-		[Clicked.TargetUnits.TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGET"],
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_TARGETTARGET"],
-		[Clicked.TargetUnits.MOUSEOVER] = L["BINDING_UI_PAGE_TARGETS_UNIT_MOUSEOVER"],
-		[Clicked.TargetUnits.FOCUS] = L["BINDING_UI_PAGE_TARGETS_UNIT_FOCUS"],
-		[Clicked.TargetUnits.CURSOR] = L["BINDING_UI_PAGE_TARGETS_UNIT_CURSOR"],
-		[Clicked.TargetUnits.PET] = L["BINDING_UI_PAGE_TARGETS_UNIT_PET"],
-		[Clicked.TargetUnits.PET_TARGET] = L["BINDING_UI_PAGE_TARGETS_UNIT_PET_TARGET"],
-		[Clicked.TargetUnits.PARTY_1] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("1"),
-		[Clicked.TargetUnits.PARTY_2] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("2"),
-		[Clicked.TargetUnits.PARTY_3] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("3"),
-		[Clicked.TargetUnits.PARTY_4] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("4"),
-		[Clicked.TargetUnits.PARTY_5] = L["BINDING_UI_PAGE_TARGETS_UNIT_PARTY"]:format("5")
+		[Clicked.TargetUnits.DEFAULT] = DEFAULT,
+		[Clicked.TargetUnits.PLAYER] = L["Player (you)"],
+		[Clicked.TargetUnits.TARGET] = TARGET,
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = L["Target of target"],
+		[Clicked.TargetUnits.MOUSEOVER] = L["Mouseover"],
+		[Clicked.TargetUnits.FOCUS] = FOCUS,
+		[Clicked.TargetUnits.CURSOR] = L["Cursor"],
+		[Clicked.TargetUnits.PET] = PET,
+		[Clicked.TargetUnits.PET_TARGET] = L["Pet target"],
+		[Clicked.TargetUnits.PARTY_1] = L["Party %s"]:format("1"),
+		[Clicked.TargetUnits.PARTY_2] = L["Party %s"]:format("2"),
+		[Clicked.TargetUnits.PARTY_3] = L["Party %s"]:format("3"),
+		[Clicked.TargetUnits.PARTY_4] = L["Party %s"]:format("4"),
+		[Clicked.TargetUnits.PARTY_5] = L["Party %s"]:format("5")
 	}
 
 	local order = {
@@ -128,9 +128,9 @@ end
 --- @return table order
 function Clicked:GetLocalizedTargetHostility()
 	local items = {
-		[Clicked.TargetHostility.ANY] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_ANY"],
-		[Clicked.TargetHostility.HELP] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_FRIEND"],
-		[Clicked.TargetHostility.HARM] = L["BINDING_UI_PAGE_TARGETS_HOSTILITY_HARM"]
+		[Clicked.TargetHostility.ANY] = L["Friendly, Hostile"],
+		[Clicked.TargetHostility.HELP] = FRIENDLY,
+		[Clicked.TargetHostility.HARM] = HOSTILE
 	}
 
 	local order = {
@@ -148,9 +148,9 @@ end
 --- @return table order
 function Clicked:GetLocalizedTargetVitals()
 	local items = {
-		[Clicked.TargetVitals.ANY] = L["BINDING_UI_PAGE_TARGETS_VITALS_ANY"],
-		[Clicked.TargetVitals.ALIVE] = L["BINDING_UI_PAGE_TARGETS_VITALS_ALIVE"],
-		[Clicked.TargetVitals.DEAD] = L["BINDING_UI_PAGE_TARGETS_VITALS_DEAD"]
+		[Clicked.TargetVitals.ANY] = L["Alive, Dead"],
+		[Clicked.TargetVitals.ALIVE] = L["Alive"],
+		[Clicked.TargetVitals.DEAD] = DEAD
 	}
 
 	local order = {
@@ -274,7 +274,7 @@ function Clicked:GetLocalizedSpecializations(classNames)
 		for i = 1, max do
 			local key = i
 
-			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_SPECIALIZATION"]:format(i))
+			items[key] = string.format("<text=%s>", L["Specialization %s"]:format(i))
 			table.insert(order, key)
 		end
 	end
@@ -316,7 +316,7 @@ function Clicked:GetLocalizedTalents(specializations)
 			for column = 1, NUM_TALENT_COLUMNS do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_TALENT"]:format(tier, column))
+				items[key] = string.format("<text=%s>", L["Talent %s/%s"]:format(tier, column))
 				table.insert(order, key)
 			end
 		end
@@ -379,7 +379,7 @@ function Clicked:GetLocalizedPvPTalents(specializations)
 		for i = 1, max do
 			local key = #order + 1
 
-			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_PVP_TALENT"]:format(i))
+			items[key] = string.format("<text=%s>", L["PvP Talent %s"]:format(i))
 			table.insert(order, key)
 		end
 	end
@@ -404,11 +404,11 @@ function Clicked:GetLocalizedForms(specializations)
 
 	if #specializations == 1 then
 		local specId = specializations[1]
-		local defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_NONE"]
+		local defaultForm = NONE
 
 		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
 		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-			defaultForm = L["BINDING_UI_PAGE_LOAD_OPTIONS_STANCE_HUMANOID"]
+			defaultForm = L["Humanoid Form"]
 		end
 
 		do
@@ -450,7 +450,7 @@ function Clicked:GetLocalizedForms(specializations)
 		for i = 0, max do
 			local key = #order + 1
 
-			items[key] = string.format("<text=%s>", L["BINDING_UI_PAGE_LOAD_OPTIONS_N_STANCE"]:format(i))
+			items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
 			table.insert(order, key)
 		end
 	end

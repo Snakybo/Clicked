@@ -183,21 +183,21 @@ local function UpdateBindingItemVisual(item, binding)
 	local icon = ""
 
 	if binding.type == Clicked.BindingTypes.SPELL then
-		label = L["BINDING_UI_TREE_LABEL_CAST"]
+		label = L["Cast %s"]
 		icon = select(3, GetSpellInfo(data.value))
 	elseif binding.type == Clicked.BindingTypes.ITEM then
-		label = L["BINDING_UI_TREE_LABEL_USE"]
+		label = L["Use %s"]
 		icon = select(10, GetItemInfo(data.value))
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		label = L["BINDING_UI_TREE_LABEL_RUN_MACRO"]
+		label = L["Run custom macro"]
 
 		if #data.displayName > 0 then
 			label = data.displayName
 		end
 	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
-		label = L["BINDING_UI_TREE_LABEL_TARGET_UNIT"]
+		label = L["Target the unit"]
 	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
-		label = L["BINDING_UI_TREE_LABEL_UNIT_MENU"]
+		label = L["Open the unit menu"]
 	end
 
 	if data.value ~= nil then
@@ -215,11 +215,11 @@ local function UpdateBindingItemVisual(item, binding)
 	data.displayName = item.title
 	data.displayIcon = item.icon
 
-	item.keybind = #binding.keybind > 0 and binding.keybind or L["BINDING_UI_TREE_KEYBIND_UNBOUND"]
+	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
 end
 
 local function UpdateGroupItemVisual(item, group)
-	local label = L["BINDING_UI_GROUP_NAME_DEFAULT"]
+	local label = L["New Group"]
 	local icon = item.icon
 
 	if not Clicked:IsStringNilOrEmpty(group.name) then
@@ -410,7 +410,7 @@ local function Button_OnClick(frame, button)
 
 		if frame.binding ~= nil then
 			table.insert(menu, {
-				text = L["BINDING_UI_BUTTON_COPY"],
+				text = L["Copy Data"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
@@ -419,7 +419,7 @@ local function Button_OnClick(frame, button)
 			})
 
 			table.insert(menu, {
-				text = L["BINDING_UI_BUTTON_PASTE"],
+				text = L["Paste Data"],
 				notCheckable = true,
 				disabled = inCombat or self.bindingCopyBuffer == nil,
 				func = function()
@@ -436,7 +436,7 @@ local function Button_OnClick(frame, button)
 			})
 
 			table.insert(menu, {
-				text = L["BINDING_UI_BUTTON_DUPLICATE"],
+				text = L["Duplicate"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
@@ -453,13 +453,13 @@ local function Button_OnClick(frame, button)
 		end
 
 		table.insert(menu, {
-			text = L["BINDING_UI_BUTTON_DELETE"],
+			text = DELETE,
 			notCheckable = true,
 			disabled = inCombat,
 			func = function()
 				local function OnConfirm()
 					if InCombatLockdown() then
-						print(L["MSG_BINDING_UI_READ_ONLY_MODE"])
+						Clicked:NotifyCombatLockdown()
 						return
 					end
 
@@ -478,8 +478,8 @@ local function Button_OnClick(frame, button)
 					if frame.binding ~= nil then
 						local data = Clicked:GetActiveBindingAction(frame.binding)
 
-						msg = L["BINDING_UI_POPUP_DELETE_BINDING_LINE_1"] .. "\n\n"
-						msg = msg .. L["BINDING_UI_POPUP_DELETE_BINDING_LINE_2"]:format(frame.binding.keybind, data.displayName)
+						msg = L["Are you sure you want to delete this binding?"] .. "\n\n"
+						msg = msg .. frame.binding.keybind .. " " .. data.displayName
 					elseif frame.group ~= nil then
 						local count = 0
 
@@ -489,8 +489,8 @@ local function Button_OnClick(frame, button)
 							end
 						end
 
-						msg = L["BINDING_UI_POPUP_DELETE_GROUP_LINE_1"]:format(count) .. "\n\n"
-						msg = msg .. L["BINDING_UI_POPUP_DELETE_GROUP_LINE_2"]:format(frame.group.name)
+						msg = L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(count) .. "\n\n"
+						msg = msg .. frame.group.name
 					end
 
 					Clicked:ShowConfirmationPopup(msg, function()
@@ -530,7 +530,7 @@ local function Button_OnEnter(frame)
 		if binding.type == Clicked.BindingTypes.MACRO then
 			if #data.displayName > 0 then
 				text = data.displayName .. "\n\n"
-				text = text .. L["BINDING_UI_TREE_TOOLTIP_MACRO"] .. "\n|cFFFFFFFF"
+				text = text .. MACRO .. "\n|cFFFFFFFF"
 			else
 				text = "";
 			end
@@ -540,7 +540,7 @@ local function Button_OnEnter(frame)
 
 		text = text .. "\n\n"
 
-		text = text .. L["BINDING_UI_TREE_TOOLTIP_TARGETS"] .. "\n"
+		text = text .. L["Targets"] .. "\n"
 
 		if binding.targets.hovercast.enabled then
 			local str = Clicked:GetLocalizedTargetString(binding.targets.hovercast)
@@ -549,7 +549,7 @@ local function Button_OnEnter(frame)
 				str = str .. " "
 			end
 
-			str = str .. L["BINDING_UI_PAGE_TARGETS_UNIT_HOVERCAST"]
+			str = str .. L["Unit frame"]
 			text = text .. "|cFFFFFFFF* " .. str .. "|r\n"
 		end
 
@@ -561,7 +561,7 @@ local function Button_OnEnter(frame)
 		end
 
 		text = text .. "\n"
-		text = text .. (Clicked:CanBindingLoad(binding) and L["BINDING_UI_TREE_LOADED"] or L["BINDING_UI_TREE_UNLOADED"])
+		text = text .. (Clicked:CanBindingLoad(binding) and L["Loaded"] or L["Unloaded"])
 
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
@@ -724,10 +724,10 @@ local function Sort_OnClick(frame, ...)
 	PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
 
 	if self.sortMode == 1 then
-		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_ALPHABETICALLY"])
+		self.sortLabel:SetText(L["ABC"])
 		self.sortMode = 2
 	else
-		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_KEYBIND"])
+		self.sortLabel:SetText(L["Key"])
 		self.sortMode = 1
 	end
 
@@ -747,7 +747,7 @@ local methods = {
 		self.frame:SetScript("OnUpdate", FirstFrameUpdate)
 
 		self.searchbar:ClearSearchTerm()
-		self.sortLabel:SetText(L["BINDING_UI_TREE_SORT_KEYBIND"])
+		self.sortLabel:SetText(L["Key"])
 		self.sortButton:SetWidth(self.sortLabel:GetStringWidth() + 30)
 		self.sortMode = 1
 	end,
@@ -1409,7 +1409,7 @@ local function Constructor()
 
 	local searchbar = AceGUI:Create("ClickedSearchBox")
 	searchbar:DisableButton(true)
-	searchbar:SetPlaceholderText(L["BINDING_UI_SEARCHBOX_PLACEHOLDER"])
+	searchbar:SetPlaceholderText(L["Search..."])
 	searchbar:SetCallback("SearchTermChanged", Searchbar_OnSearchTermChanged)
 
 	searchbar.frame:SetParent(treeframe)

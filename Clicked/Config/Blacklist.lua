@@ -3,19 +3,24 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local UNIT_FRAME_ADDON_MAPPING = {
-	["INTERFACE_UI_BLACKLIST_SOURCE_ELVUI"] = {
+	["ElvUI"] = {
+		name = Clicked:GetColorizedString(L["ElvUI"], "ff1784d1"),
 		"ElvUF_*"
 	},
-	["INTERFACE_UI_BLACKLIST_SOURCE_GRID2"] = {
+	["Grid2"] = {
+		name = L["Grid2"],
 		"Grid2*"
 	},
-	["INTERFACE_UI_BLACKLIST_SOURCE_VUHDO"] = {
+	["Vuhdo"] = {
+		name = Clicked:GetColorizedString(L["VuhDo"], "ffffe566"),
 		"Vd%dH%d*"
 	},
-	["INTERFACE_UI_BLACKLIST_SOURCE_GLADIUS"] = {
+	["Gladius"] = {
+		name = "Gladius",
 		"GladiusButtonarena%d"
 	},
-	["INTERFACE_UI_BLACKLIST_SOURCE_BLIZZARD"] = {
+	["Blizzard"] = {
+		name = "Blizzard",
 		"Boss%dTargetFrame",
 		"CompactRaidFrame%d",
 		"CompactRaidFrame%dBuff%d",
@@ -38,13 +43,13 @@ local function GetUnitFrameSource(name)
 	for source, frames in pairs(UNIT_FRAME_ADDON_MAPPING) do
 		for _, frame in ipairs(frames) do
 			if string.match(name, frame) then
-				return L[source]
+				return UNIT_FRAME_ADDON_MAPPING[source].name
 			end
 		end
 	end
 
 	if nameSource == nil then
-		return L["INTERFACE_UI_BLACKLIST_SOURCE_UNKNOWN"]
+		return OTHER
 	end
 end
 
@@ -54,16 +59,16 @@ local module = {
 
 		self.config = {
 			type = "group",
-			name = L["INTERFACE_UI_TITLE_BLACKLIST"],
+			name = L["Frame Blacklist"],
 			args = {
 				help = {
 					type = "description",
-					name = L["INTERFACE_UI_BLACKLIST_HELP"],
+					name = L["If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."],
 					order = 0
 				},
 				selector = {
 					type = "select",
-					name = L["INTERFACE_UI_BLACKLIST_ADD"],
+					name = L["Add a unit frame"],
 					width = "full",
 					order = 1,
 					values = function(info)
@@ -116,7 +121,7 @@ local module = {
 				},
 				selected = {
 					type = "header",
-					name = L["INTERFACE_UI_BLACKLIST_HEADER_SELECTED"],
+					name = L["Selected"],
 					order = 2
 				}
 			}
@@ -127,7 +132,7 @@ local module = {
 		end
 
 		AceConfig:RegisterOptionsTable("Clicked/Blacklist", self.config)
-		self.interfaceOptionsTab = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["INTERFACE_UI_TITLE_BLACKLIST"], "Clicked")
+		self.interfaceOptionsTab = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["Frame Blacklist"], "Clicked")
 	end,
 
 	["Register"] = function(self)
@@ -180,7 +185,7 @@ local module = {
 
 		if enabled then
 			args[name] = {
-				name = string.format(L["INTERFACE_UI_BLACKLIST_FRAME_NAME"], GetUnitFrameSource(name), name),
+				name = GetUnitFrameSource(name) .. ":" .. name,
 				type = "toggle",
 				width = "full",
 				order = 3,

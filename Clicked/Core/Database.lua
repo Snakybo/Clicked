@@ -137,7 +137,7 @@ function Clicked:CreateNewGroup()
 	self.db.profile.groups.next = self.db.profile.groups.next + 1
 
 	local group = {
-		name = L["BINDING_UI_GROUP_NAME_DEFAULT"],
+		name = L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
 		identifier = "group-" .. identifier
 	}
@@ -195,6 +195,11 @@ function Clicked:UpgradeDatabaseProfile(profile)
 		return
 	end
 
+	local function FinalizeVersionUpgrade(newVersion)
+		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], profile.version or "UNKNOWN", newVersion))
+		profile.version = newVersion
+	end
+
 	-- version 0.4.x to 0.5.0
 	-- Versions prior to 0.5.0 didn't have a version number serialized,
 	-- so all (and only) old profiles won't have a version field, and
@@ -224,8 +229,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			}
 		end
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version or "UNKNOWN", "0.5.0"))
-		profile.version = "0.5.0"
+		FinalizeVersionUpgrade("0.5.0")
 	end
 
 	-- version 0.5.x to 0.6.0
@@ -248,8 +252,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			}
 		end
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.6.0"))
-		profile.version = "0.6.0"
+		FinalizeVersionUpgrade("0.6.0")
 	end
 
 	-- version 0.6.x to 0.7.0
@@ -315,8 +318,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			binding.targetingMode = nil
 		end
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.7.0"))
-		profile.version = "0.7.0"
+		FinalizeVersionUpgrade("0.7.0")
 	end
 
 	-- version 0.7.x to 0.8.0
@@ -405,8 +407,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			onKeyDown = false
 		}
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.8.0"))
-		profile.version = "0.8.0"
+		FinalizeVersionUpgrade("0.8.0")
 	end
 
 	-- 0.8.x to 0.9.0
@@ -428,8 +429,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 
 		self:ShowInformationPopup("Clicked: Binding stance/shapeshift form load options have been reset, sorry for the inconvenience.")
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.9.0"))
-		profile.version = "0.9.0"
+		FinalizeVersionUpgrade("0.9.0")
 	end
 
 	-- 0.9.x to 0.10.0
@@ -471,8 +471,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			next = 1
 		}
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.10.0"))
-		profile.version = "0.10.0"
+		FinalizeVersionUpgrade("0.10.0")
 	end
 
 	-- 0.10.x to 0.11.0
@@ -538,8 +537,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 			group.icon = nil
 		end
 
-		print(L["MSG_PROFILE_UPDATED"]:format(profile.version, "0.11.0"))
-		profile.version = "0.11.0"
+		FinalizeVersionUpgrade("0.11.0")
 	end
 
 	profile.version = self.VERSION

@@ -106,7 +106,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 			frame = _G[name]
 
 			if frame == nil then
-				print(L["ERR_FRAME_REGISTRATION"]:format(tostring(name)))
+				print(Clicked:GetFormattedString(L["Unable to register unit frame: %s"], tostring(name)))
 				return
 			end
 		end
