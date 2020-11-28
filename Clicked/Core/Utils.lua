@@ -111,31 +111,78 @@ local shapeshiftForms = {
 	[1456] = {}
 }
 
+-- safecall implementation
+
+local function errorhandler(err)
+	return geterrorhandler()(err)
+end
+
+local function safecall(func, ...)
+	if func then
+		return xpcall(func, errorhandler, ...)
+	end
+end
+
+StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
+	text = "",
+	button1 = string.format(L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"], L["ADDON_NAME"]),
+	button2 = "",
+	OnShow = function(self)
+		self.text:SetFormattedText(L["ERR_ADDON_INCOMPAT_MESSAGE"], self.data.addon)
+		self.button2:SetFormattedText(L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"],self.data.addon)
+	end,
+	OnAccept = function(self)
+		DisableAddOn(self.data.addon)
+		ReloadUI()
+	end,
+	OnCancel = function(self)
+		DisableAddOn("Clicked")
+		ReloadUI()
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = false,
+	preferredIndex = 3
+}
+
+StaticPopupDialogs["CLICKED_MESSAGE"] = {
+	text = "",
+	button1 = L["MSG_POPUP_BUTTON_CONTINUE"],
+	OnShow = function(self)
+		self.text:SetText(self.data.text)
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3
+}
+
+StaticPopupDialogs["CLICKED_CONFIRM"] = {
+	text = "",
+	button1 = L["MSG_POPUP_BUTTON_YES"],
+	button2 = L["MSG_POPUP_BUTTON_NO"],
+	OnShow = function(self)
+		self.text:SetText(self.data.text)
+	end,
+	OnAccept = function(self)
+		safecall(self.data.accept)
+	end,
+	OnCancel = function(self)
+		safecall(self.data.OnCancel)
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3
+}
+
 --- Show a popup indicating Clicked is incompatible with the
 --- specified addon. The popup will allow the user to disable
 --- one of the two addons.
 ---
 --- @param addon string
 function Clicked:ShowAddonIncompatibilityPopup(addon)
-	StaticPopupDialogs["ClickedAddonIncompatibilityMessage"] = {
-		text = L["ERR_ADDON_INCOMPAT_MESSAGE"]:format(addon),
-		button1 = L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"]:format(L["ADDON_NAME"]),
-		button2 = L["ERR_ADDON_INCOMPAT_BUTTON_KEEP_X"]:format(addon),
-		OnAccept = function()
-			DisableAddOn(addon)
-			ReloadUI()
-		end,
-		OnCancel = function()
-			DisableAddOn("Clicked")
-			ReloadUI()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = false,
-		preferredIndex = 3
-	}
-
-	StaticPopup_Show("ClickedAddonIncompatibilityMessage")
+	StaticPopup_Show("CLICKED_INCOMPATIBLE_ADDON", "", "", { addon = addon })
 end
 
 --- Show a generic information popup informing the user.
@@ -143,16 +190,7 @@ end
 ---
 --- @param text string
 function Clicked:ShowInformationPopup(text)
-	StaticPopupDialogs["ClickedInformationMessage"] = {
-		text = text,
-		button1 = L["MSG_POPUP_BUTTON_CONTINUE"],
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	StaticPopup_Show("ClickedInformationMessage")
+	StaticPopup_Show("CLICKED_MESSAGE", "", "", { text = text })
 end
 
 --- Show a confirmation popup to the user. This will show
@@ -163,18 +201,10 @@ end
 --- @param message string
 --- @param func function
 function Clicked:ShowConfirmationPopup(message, func, ...)
-	StaticPopupDialogs["ClickedConfirmationMessage"] = {
+	StaticPopup_Show("CLICKED_CONFIRM", "", "", {
 		text = message,
-		button1 = L["MSG_POPUP_BUTTON_YES"],
-		button2 = L["MSG_POPUP_BUTTON_NO"],
-		OnAccept = func,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	StaticPopup_Show("ClickedConfirmationMessage")
+		accept = func
+	})
 end
 
 --- Create a deep copy of the specified table, this will
