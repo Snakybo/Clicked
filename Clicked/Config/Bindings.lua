@@ -86,7 +86,6 @@ local function ParseItemLink(link, ...)
 
 	if type == "talent" and IsAllowed("talent") then
 		local spellId = select(6, GetTalentInfoByID(id, 1))
-		print(spellId)
 
 		if spellId ~= nil then
 			return GetSpellInfo(spellId)

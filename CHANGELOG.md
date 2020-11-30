@@ -11,6 +11,10 @@
 - Automatically apply target hostility and vital settings from the previous target when adding a new target
 - Update various texts to improve consistency
 
+### Fixed
+
+- Remove a debug message that was printed to the chat when shift-clicking a talent
+
 ## [0.11.2] - 2020-11-23
 
 ### Added
