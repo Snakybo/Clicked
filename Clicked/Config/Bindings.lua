@@ -761,12 +761,6 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 					table.insert(targets, new)
 				else
 					target.unit = value
-
-					if not Clicked:CanUnitHaveFollowUp(value) then
-						while #targets > index do
-							table.remove(targets)
-						end
-					end
 				end
 			end
 
@@ -866,10 +860,30 @@ local function DrawBindingTargetPage(container, binding)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
 		else
+			local enabled = regular.enabled
+
 			-- existing targets
 			for i, target in ipairs(regular) do
-				local label = i == 1 and L["On this target"] or L["Or"]
-				local group = GUI:InlineGroup(label)
+				local function OnMove(frame, event)
+					if event == "OnMoveUp" then
+						local temp = regular[i - 1]
+						regular[i - 1] = regular[i]
+						regular[i] = temp
+					elseif event == "OnMoveDown" then
+						local temp = regular[i + 1]
+						regular[i + 1] = regular[i]
+						regular[i] = temp
+					end
+
+					Clicked:SendMessage(GUI.EVENT_UPDATE)
+				end
+
+				local label = i == 1 and L["On this target"] or enabled and L["Or"] or L["Or (inactive)"]
+				local group = GUI:ReorderableInlineGroup(label)
+				group:SetMoveUpButton(i > 1)
+				group:SetMoveDownButton(i < #regular)
+				group:SetCallback("OnMoveDown", OnMove)
+				group:SetCallback("OnMoveUp", OnMove)
 				container:AddChild(group)
 
 				if not binding.targets.hovercast.enabled and target.unit == Clicked.TargetUnits.MOUSEOVER and Clicked:IsMouseButton(binding.keybind) then
@@ -879,27 +893,25 @@ local function DrawBindingTargetPage(container, binding)
 					group:AddChild(widget)
 				end
 
-				DrawTargetSelectionUnit(group, regular, regular.enabled, i)
+				DrawTargetSelectionUnit(group, regular, enabled, i)
 
 				if Clicked:CanUnitBeHostile(target.unit) then
-					DrawTargetSelectionHostility(group, regular.enabled, target)
+					DrawTargetSelectionHostility(group, enabled, target)
 				end
 
 				if Clicked:CanUnitBeDead(target.unit) then
-					DrawTargetSelectionVitals(group, regular.enabled, target)
+					DrawTargetSelectionVitals(group, enabled, target)
 				end
 
-				if not Clicked:CanUnitHaveFollowUp(target) then
-					break
-				end
+				enabled = enabled and Clicked:CanUnitHaveFollowUp(target.unit)
 			end
 
 			-- new target
 			if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
-				local group = GUI:InlineGroup(L["Or"])
+				local group = GUI:InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
 				container:AddChild(group)
 
-				DrawTargetSelectionUnit(group, regular, regular.enabled, 0)
+				DrawTargetSelectionUnit(group, regular, enabled, 0)
 			end
 		end
 	end

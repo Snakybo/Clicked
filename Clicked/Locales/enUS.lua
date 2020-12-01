@@ -59,6 +59,7 @@ L["Macro Name and Icon (optional)"] = true
 L["Options"] = true
 L["On this target"] = true
 L["Or"] = true
+L["Or (inactive)"] = true
 L["Cast a spell"] = true
 L["Use an item"] = true
 L["Run a macro (advanced)"] = true

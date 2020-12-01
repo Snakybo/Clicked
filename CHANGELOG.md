@@ -5,11 +5,13 @@
 ### Added
 
 - Add localization compatiblity with CurseForge
+- Add the ability to re-order binding targets
 
 ### Changed
 
 - Automatically apply target hostility and vital settings from the previous target when adding a new target
 - Update various texts to improve consistency
+- Gray out binding targets that are inactive instead of deleting them
 
 ### Fixed
 

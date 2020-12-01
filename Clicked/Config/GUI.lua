@@ -287,6 +287,18 @@ function GUI:InlineGroup(title)
 	return widget
 end
 
+function GUI:ReorderableInlineGroup(title)
+	local widget = AceGUI:Create("ClickedReorderableInlineGroup")
+	widget:SetFullWidth(true)
+	widget:SetLayout("Flow")
+
+	if title then
+		widget:SetTitle(title)
+	end
+
+	return widget
+end
+
 function GUI:ToggleHeading(title, ref, key)
 	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))

@@ -557,6 +557,10 @@ local function Button_OnEnter(frame)
 			for i, target in ipairs(binding.targets.regular) do
 				local str = Clicked:GetLocalizedTargetString(target)
 				text = text .. "|cFFFFFFFF" .. i .. ". " .. str .. "|r\n"
+
+				if not Clicked:CanUnitHaveFollowUp(target.unit) then
+					break
+				end
 			end
 		end
 

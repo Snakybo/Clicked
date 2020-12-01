@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AceGUIContainer-ClickedFrame.lua"/>
 	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
+	<Script file="AceGUIContainer-ClickedReorderableInlineGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown-Items.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown.lua"/>
