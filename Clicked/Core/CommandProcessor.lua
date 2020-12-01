@@ -64,7 +64,7 @@ local function EnsureMacroFrameHandler()
 			return
 		end
 
-		if self:GetAttribute("state-vehicle") == "enabled" or self:GetAttribute("state-vehicleui") == "enabled" then
+		if self:GetAttribute("state-vehicleui") == "enabled" then
 			return
 		end
 
@@ -103,7 +103,6 @@ local function EnsureMacroFrameHandler()
 	]])
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		CreateStateDriverAttribute(macroFrameHandler, "vehicle", "[@vehicle,exists] enabled; disabled")
 		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
 		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
 	end

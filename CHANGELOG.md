@@ -14,6 +14,7 @@
 ### Fixed
 
 - Remove a debug message that was printed to the chat when shift-clicking a talent
+- No longer unlock bindings when in a vehicle that doesn't override the action bar (will fix a Bastion world quest)
 
 ## [0.11.2] - 2020-11-23
 
