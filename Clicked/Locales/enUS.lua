@@ -57,6 +57,7 @@ L["This mode will directly append the macro text onto an automatically generated
 L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] = true
 L["Macro Name and Icon (optional)"] = true
 L["Options"] = true
+L["Shared Options"] = true
 L["On this target"] = true
 L["Or"] = true
 L["Or (inactive)"] = true

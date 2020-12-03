@@ -526,36 +526,6 @@ function Clicked:CanUnitHaveFollowUp(unit)
 	return true
 end
 
---- Get the active action of a binding configuration. The data for spells, items,
---- and macros is all saved in separate data structures. This function will return
---- the correct data structure for the current `type` of the binding.
----
---- @param binding table
---- @return table
-function Clicked:GetActiveBindingAction(binding)
-	if binding.type == Clicked.BindingTypes.SPELL then
-		return binding.actions.spell
-	end
-
-	if binding.type == Clicked.BindingTypes.ITEM then
-		return binding.actions.item
-	end
-
-	if binding.type == Clicked.BindingTypes.MACRO then
-		return binding.actions.macro
-	end
-
-	if binding.type == Clicked.BindingTypes.UNIT_SELECT then
-		return binding.actions.unitSelect
-	end
-
-	if binding.type == Clicked.BindingTypes.UNIT_MENU then
-		return binding.actions.unitMenu
-	end
-
-	return nil
-end
-
 --- Notify the user that Clicked is currently in combat lockdown mode,
 --- this will print a message to the user's chat frame with a helpful message.
 function Clicked:NotifyCombatLockdown()

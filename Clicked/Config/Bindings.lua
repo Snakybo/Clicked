@@ -112,7 +112,7 @@ local function OnSpellBookButtonClick(name)
 	end
 
 	local binding = Module:GetCurrentBinding()
-	local data = Clicked:GetActiveBindingAction(binding)
+	local data = Clicked:GetActiveBindingData(binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
 		data.value = name
@@ -459,7 +459,7 @@ end
 
 -- Binding action page and components
 
-local function DrawSpellSelection(container, action)
+local function DrawSpellSelection(container, action, cache)
 	-- target spell
 	do
 		local group = GUI:InlineGroup(L["Target Spell"])
@@ -470,10 +470,7 @@ local function DrawSpellSelection(container, action)
 			local function OnEnterPressed(frame, event, value)
 				value = GUI:TrimString(value)
 
-				if value ~= action.value then
-					action.displayIcon = "" -- invalidate the cached icon
-				end
-
+				Clicked:InvalidateCache(cache)
 				GUI:Serialize(frame, event, value)
 			end
 
@@ -481,7 +478,7 @@ local function DrawSpellSelection(container, action)
 				local spell = ParseItemLink(value, "spell", "talent")
 
 				if spell ~= nil then
-					action.displayIcon = "" -- invalidate the cached icon
+					Clicked:InvalidateCache(cache)
 					GUI:Serialize(frame, event, spell)
 				end
 			end
@@ -536,7 +533,7 @@ local function DrawSpellSelection(container, action)
 	end
 end
 
-local function DrawItemSelection(container, action)
+local function DrawItemSelection(container, action, cache)
 	-- target item
 	do
 		local group = GUI:InlineGroup(L["Target Item"])
@@ -547,10 +544,7 @@ local function DrawItemSelection(container, action)
 			local function OnEnterPressed(frame, event, value)
 				value = GUI:TrimString(value)
 
-				if value ~= action.value then
-					action.displayIcon = "" -- invalidate the cached icon
-				end
-
+				Clicked:InvalidateCache(cache)
 				GUI:Serialize(frame, event, value)
 			end
 
@@ -558,7 +552,7 @@ local function DrawItemSelection(container, action)
 				local item = ParseItemLink(value, "item")
 
 				if item ~= nil then
-					action.displayIcon = "" -- invalidate the cached icon
+					Clicked:InvalidateCache(cache)
 					GUI:Serialize(frame, event, item)
 				end
 			end
@@ -581,7 +575,7 @@ local function DrawItemSelection(container, action)
 	end
 end
 
-local function DrawMacroSelection(container, binding, keybind, action)
+local function DrawMacroSelection(container, binding, keybind, action, cache)
 	-- macro name and icon
 	do
 		local group = GUI:InlineGroup(L["Macro Name and Icon (optional)"])
@@ -589,7 +583,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 
 		-- name text field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "displayName")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", cache, "displayName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -597,7 +591,7 @@ local function DrawMacroSelection(container, binding, keybind, action)
 
 		-- icon field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "displayIcon")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", cache, "displayIcon")
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -673,17 +667,57 @@ local function DrawMacroSelection(container, binding, keybind, action)
 	end
 end
 
-local function DrawAdditionalSpellItemOptions(container, action)
-	local group = GUI:InlineGroup(L["Options"])
-	container:AddChild(group)
+local function DrawSharedSpellItemOptions(container, binding, data)
+	local function IsSharedDataSet(key)
+		for _, other in Clicked:IterateActiveBindings() do
+			if other ~= binding and other.keybind == binding.keybind then
+				local shared = Clicked:GetSharedBindingData(other)
 
-	-- interrupt cast toggle
-	do
-		local widget = GUI:CheckBox(L["Interrupt current cast"], action, "interruptCurrentCast")
+				if shared[key] then
+					return true
+				end
+			end
+		end
+
+		return false
+	end
+
+	local function CreateCheckbox(group, label, key)
+		local isUsingShared = false
+
+		local function OnValueChanged(frame, event, value)
+			if value == false and isUsingShared then
+				value = true
+			end
+
+			data.interruptCurrentCast = value
+			Clicked:SendMessage(GUI.EVENT_UPDATE)
+		end
+
+		local widget = AceGUI:Create("CheckBox")
+		widget:SetType("checkbox")
+		widget:SetLabel(label)
+		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
+
+		if data[key] then
+			widget:SetValue(true)
+		else
+			if IsSharedDataSet(key) then
+				widget:SetTriState(true)
+				widget:SetValue(nil)
+				isUsingShared = true
+			end
+		end
 
 		group:AddChild(widget)
 	end
+
+	local group = GUI:InlineGroup(L["Shared Options"])
+	container:AddChild(group)
+
+	-- interrupt cast toggle
+	CreateCheckbox(group, L["Interrupt current cast"], "interruptCurrentCast")
 end
 
 local function DrawBindingActionPage(container, binding)
@@ -722,16 +756,18 @@ local function DrawBindingActionPage(container, binding)
 		end
 	end
 
-	local data = Clicked:GetActiveBindingAction(binding)
+	local data = Clicked:GetActiveBindingData(binding)
+	local shared = Clicked:GetSharedBindingData(binding)
+	local cache = Clicked:GetBindingCache(binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
-		DrawSpellSelection(container, data)
-		DrawAdditionalSpellItemOptions(container, data)
+		DrawSpellSelection(container, data, cache)
+		DrawSharedSpellItemOptions(container, binding, shared)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
-		DrawItemSelection(container, data)
-		DrawAdditionalSpellItemOptions(container, data)
+		DrawItemSelection(container, data, cache)
+		DrawSharedSpellItemOptions(container, binding, shared)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding, binding.keybind, data)
+		DrawMacroSelection(container, binding, binding.keybind, data, cache)
 	end
 end
 
@@ -1156,7 +1192,7 @@ local function DrawBindingStatusPage(container, binding)
 
 				for _, other in ipairs(bindings) do
 					if other ~= binding then
-						local action = Clicked:GetActiveBindingAction(other)
+						local cache = Clicked:GetBindingCache(other)
 
 						do
 							local function OnClick()
@@ -1165,8 +1201,8 @@ local function DrawBindingStatusPage(container, binding)
 
 							local widget = AceGUI:Create("InteractiveLabel")
 							widget:SetFontObject(GameFontHighlight)
-							widget:SetText(action.displayName)
-							widget:SetImage(action.displayIcon)
+							widget:SetText(cache.displayName)
+							widget:SetImage(cache.displayIcon)
 							widget:SetFullWidth(true)
 							widget:SetCallback("OnClick", OnClick)
 
@@ -1177,39 +1213,34 @@ local function DrawBindingStatusPage(container, binding)
 			end
 		end
 
-		local hovercastBindings = {}
-		local regularBindings = {}
-
-		for keybind, buckets in Clicked:IterateActiveBindings() do
-			if keybind == binding.keybind then
-				for _, other in ipairs(buckets.hovercast) do
-					if other == binding then
-						hovercastBindings = buckets.hovercast
-						break
-					end
-				end
-
-				for _, other in ipairs(buckets.regular) do
-					if other == binding then
-						regularBindings = buckets.regular
-						break
-					end
-				end
-			end
-		end
-
 		if binding.targets.hovercast.enabled then
 			local group = GUI:InlineGroup(L["Unit frame macro"])
 			container:AddChild(group)
 
-			DrawStatus(group, hovercastBindings, Clicked.InteractionType.HOVERCAST)
+			local bindings = {}
+
+			for _, other in Clicked:IterateActiveBindings() do
+				if other.keybind == binding.keybind and other.targets.hovercast.enabled then
+					table.insert(bindings, other)
+				end
+			end
+
+			DrawStatus(group, bindings, Clicked.InteractionType.HOVERCAST)
 		end
 
 		if binding.targets.regular.enabled then
 			local group = GUI:InlineGroup(L["Binding macro"])
 			container:AddChild(group)
 
-			DrawStatus(group, regularBindings, Clicked.InteractionType.REGULAR)
+			local bindings = {}
+
+			for _, other in Clicked:IterateActiveBindings() do
+				if other.keybind == binding.keybind and other.targets.regular.enabled then
+					table.insert(bindings, other)
+				end
+			end
+
+			DrawStatus(group, bindings, Clicked.InteractionType.REGULAR)
 		end
 	end
 end
@@ -1428,11 +1459,7 @@ local function DrawTreeContainer(container, event, value)
 	local group = Module:GetCurrentGroup()
 
 	if showIconPicker then
-		local data = group
-
-		if binding ~= nil then
-			data = Clicked:GetActiveBindingAction(binding)
-		end
+		local data = binding ~= nil and Clicked:GetBindingCache(binding) or group
 
 		showIconPicker = false
 		DrawIconPicker(container, data)

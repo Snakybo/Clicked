@@ -77,8 +77,7 @@ Clicked.InteractionType = {
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
-local configuredBindings = {}
-local activeBindings = {}
+local activeBindings
 
 local function GetMacroSegmentFromAction(action, interactionType)
 	local flags = {}
@@ -157,7 +156,7 @@ end
 
 local function ConstructAction(binding, target)
 	local action = {}
-	local data = Clicked:GetActiveBindingAction(binding)
+	local data = Clicked:GetActiveBindingData(binding)
 
 	action.ability = data.value
 
@@ -356,134 +355,13 @@ local function GetInternalBindingType(binding)
 	return binding.type
 end
 
--- Construct a valid macro that correctly prioritizes all specified bindings.
--- It will prioritize bindings in the following order:
---
--- 1. All custom macros
--- 2. All @mouseover bindings with the help or harm tag and a combat/nocombat flag
--- 3. All remaining @mouseover bindings with a combat/nocombat flag
--- 4. Any remaining bindings with the help or harm tag and a combat/nocombat flag
--- 5. Any remaining bindings with the combat/nocombat
--- 6. All @mouseover bindings with the help or harm tag
--- 7. All remaining @mouseover bindings
--- 8. Any remaining bindings with the help or harm tag
--- 9. Any remaining bindings
---
--- In text, this boils down to: combat -> mouseover -> hostility -> default
---
--- It will construct an /use command that is mix-and-matched from all configured
--- bindings, so if there are two bindings, and one of them has Holy Light with the
--- [@mouseover,help] and [@target] target priority order, and the other one has
--- Crusader Strike with [@target,harm], it will create a command like this:
--- /use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light
-function Clicked:GetMacroForBindings(bindings, interactionType)
-	local result = {}
-	local interruptCurrentCast = false
-	local startAutoAttack = false
-
-	local actions = {}
-
-	-- add a segment to remove the blue casting cursor
-	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
-
-	for _, binding in ipairs(bindings) do
-		local data = Clicked:GetActiveBindingAction(binding)
-
-		if binding.type == Clicked.BindingTypes.MACRO then
-			if data.mode == Clicked.MacroMode.FIRST then
-				table.insert(result, data.value)
-			end
-		else
-			local extra = {}
-
-			if not interruptCurrentCast and data.interruptCurrentCast then
-				interruptCurrentCast = true
-				table.insert(extra, "/stopcasting")
-			end
-
-			if not startAutoAttack and interactionType == Clicked.InteractionType.REGULAR then
-				for _, target in ipairs(binding.targets.regular) do
-					if target.unit == Clicked.TargetUnits.TARGET and target.hostility ~= Clicked.TargetHostility.HELP then
-						startAutoAttack = true
-						table.insert(extra, "/startattack [@target,harm]")
-						break
-					end
-
-					if not Clicked:CanUnitHaveFollowUp(target.unit) then
-						break
-					end
-				end
-			end
-
-			for i = #extra, 1, - 1 do
-				table.insert(result, 1, extra[i])
-			end
-
-			for _, action in ipairs(ConstructActions(binding, interactionType)) do
-				table.insert(actions, action)
-			end
-		end
-	end
-
-	-- Now sort the actions according to the above schema
-
-	table.sort(actions, SortActions)
-
-	-- Construct a valid macro from the data
-
-	local allFlags = {}
-	local segments = {}
-
-	for _, action in ipairs(actions) do
-		local flags = GetMacroSegmentFromAction(action, interactionType)
-
-		if #flags > 0 then
-			flags = "[" .. flags .. "] "
-		end
-
-		table.insert(allFlags, flags)
-		table.insert(segments, flags .. action.ability)
-	end
-
-	if #segments > 0 then
-		local command = "/use " .. table.concat(segments, "; ")
-
-		for _, binding in ipairs(bindings) do
-			local data = Clicked:GetActiveBindingAction(binding)
-
-			if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
-				command = command .. "; " .. data.value
-			end
-		end
-
-		table.insert(result, command)
-	end
-
-	for _, binding in ipairs(bindings) do
-		local data = Clicked:GetActiveBindingAction(binding)
-
-		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.LAST then
-			table.insert(result, data.value)
-		end
-	end
-
-	return table.concat(result, "\n"), allFlags
-end
-
--- Note: This is a secure function and may not be called during combat
-local function ProcessActiveBindings()
-	if InCombatLockdown() then
-		return
-	end
-
-	local commands = {}
-
-	local function Process(keybind, bucket, interactionType)
-		if #bucket == 0 then
+local function ProcessBuckets(hovercast, regular)
+	local function Process(keybind, bindings, interactionType)
+		if #bindings == 0 then
 			return nil
 		end
 
-		local reference = bucket[1]
+		local reference = bindings[1]
 		local command = {
 			keybind = keybind,
 			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
@@ -493,7 +371,7 @@ local function ProcessActiveBindings()
 
 		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
-			command.data, command.macroFlags = Clicked:GetMacroForBindings(bucket, interactionType)
+			command.data, command.macroFlags = Clicked:GetMacroForBindings(bindings, interactionType)
 		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
 			command.action = Clicked.CommandType.TARGET
 		elseif reference.type == Clicked.BindingTypes.UNIT_MENU then
@@ -502,19 +380,26 @@ local function ProcessActiveBindings()
 			error("Unhandled binding type: " .. reference.type)
 		end
 
+		return command
+	end
+
+	local commands = {}
+
+	for keybind, bindings in pairs(hovercast) do
+		local command = Process(keybind, bindings, Clicked.InteractionType.HOVERCAST)
 		table.insert(commands, command)
 	end
 
-	for keybind, buckets in Clicked:IterateActiveBindings() do
-		Process(keybind, buckets.hovercast, Clicked.InteractionType.HOVERCAST)
-		Process(keybind, buckets.regular, Clicked.InteractionType.REGULAR)
+	for keybind, bindings in pairs(regular) do
+		local command = Process(keybind, bindings, Clicked.InteractionType.REGULAR)
+		table.insert(commands, command)
 	end
 
 	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
 	Clicked:ProcessCommands(commands)
 end
 
-local function FilterBindings(activatable)
+local function GenerateBuckets(bindings)
 	local function Insert(bucket, binding)
 		if #bucket == 0 then
 			table.insert(bucket, binding)
@@ -527,114 +412,59 @@ local function FilterBindings(activatable)
 		end
 	end
 
-	local result = {}
+	local hovercast = {}
+	local regular = {}
 
-	for keybind, bindings in pairs(activatable) do
-		result[keybind] = {
-			hovercast = {},
-			regular = {}
-		}
+	for _, binding in ipairs(bindings) do
+		local key = binding.keybind
 
-		for _, binding in ipairs(bindings) do
-			if binding.targets.hovercast.enabled then
-				Insert(result[keybind].hovercast, binding)
-			end
+		if binding.targets.hovercast.enabled then
+			hovercast[key] = hovercast[key] or {}
+			Insert(hovercast[key], binding)
+		end
 
-			if binding.targets.regular.enabled then
-				Insert(result[keybind].regular, binding)
-			end
+		if binding.targets.regular.enabled then
+			regular[key] = regular[key] or {}
+			Insert(regular[key], binding)
 		end
 	end
 
-	return result
+	return hovercast, regular
 end
 
-function Clicked:CreateNewBinding()
-	local binding = self:GetNewBindingTemplate()
-
-	table.insert(configuredBindings, binding)
-	self:ReloadActiveBindings()
-
-	return binding
-end
-
-function Clicked:DeleteBinding(binding)
-	for index, other in ipairs(configuredBindings) do
-		if other == binding then
-			table.remove(configuredBindings, index)
-			self:ReloadActiveBindings()
-			break
-		end
-	end
-end
-
-function Clicked:SetBindingAt(index, binding)
-	configuredBindings[index] = binding
-	self:ReloadActiveBindings()
-end
-
--- Reloads the active bindings, this will go through all configured bindings
--- and check their (current) validity using the CanBindingLoad function.
--- If there are multiple bindings that use the same keybind it will use the
--- PrioritizeBindings function to sort them.
---
--- Note: This is a secure function and may not be called during combat
+--- Reloads the active bindings, this will go through all configured bindings
+--- and check their (current) validity using the CanBindingLoad function.
+--- If there are multiple bindings that use the same keybind it will use the
+--- PrioritizeBindings function to sort them.
 function Clicked:ReloadActiveBindings()
 	if InCombatLockdown() then
 		return false
 	end
 
 	activeBindings = {}
-	configuredBindings = self.db.profile.bindings
-
-	local activatable = {}
 
 	for _, binding in self:IterateConfiguredBindings() do
 		if self:CanBindingLoad(binding) then
-			activatable[binding.keybind] = activatable[binding.keybind] or {}
-			table.insert(activatable[binding.keybind], binding)
+			table.insert(activeBindings, binding)
 		end
 	end
 
-	activeBindings = FilterBindings(activatable)
-	ProcessActiveBindings()
+	local hovercast, regular = GenerateBuckets(activeBindings)
+	ProcessBuckets(hovercast, regular)
 
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
 end
 
-function Clicked:GetBindingAt(index)
-	return configuredBindings[index]
-end
-
-function Clicked:GetNumConfiguredBindings()
-	return #configuredBindings
-end
-
-function Clicked:IterateConfiguredBindings()
-	return ipairs(configuredBindings)
-end
-
-function Clicked:GetNumActiveBindings()
-	return #activeBindings
-end
-
 function Clicked:IterateActiveBindings()
-	return pairs(activeBindings)
+	return ipairs(activeBindings)
 end
 
-function Clicked:GetBindingIndex(binding)
-	for i, e in ipairs(configuredBindings) do
-		if e == binding then
-			return i
-		end
-	end
-
-	return 0
-end
-
--- Check if the specified binding is currently active based on the configuration
--- provided in the binding's Load Options, and whether the binding is actually
--- valid (it has a keybind and an action to perform)
+--- Check if the specified binding is currently active based on the configuration
+--- provided in the binding's Load Options, and whether the binding is actually
+--- valid (it has a keybind and an action to perform)
+---
+--- @param binding table
+--- @return boolean
 function Clicked:CanBindingLoad(binding)
 	local function ValidateTriStateLoadOption(data, validationFunc)
 		if data.selected == 1 then
@@ -664,7 +494,7 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	do
-		local data = self:GetActiveBindingAction(binding)
+		local data = self:GetActiveBindingData(binding)
 
 		if data ~= nil and data.value ~= nil and #data.value == 0 then
 			return false
@@ -899,4 +729,124 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	return true
+end
+
+--- Construct a valid macro that correctly prioritizes all specified bindings.
+--- It will prioritize bindings in the following order:
+---
+--- 1. All custom macros
+--- 2. All @mouseover bindings with the help or harm tag and a combat/nocombat flag
+--- 3. All remaining @mouseover bindings with a combat/nocombat flag
+--- 4. Any remaining bindings with the help or harm tag and a combat/nocombat flag
+--- 5. Any remaining bindings with the combat/nocombat
+--- 6. All @mouseover bindings with the help or harm tag
+--- 7. All remaining @mouseover bindings
+--- 8. Any remaining bindings with the help or harm tag
+--- 9. Any remaining bindings
+---
+--- In text, this boils down to: combat -> mouseover -> hostility -> default
+---
+--- It will construct an /use command that is mix-and-matched from all configured
+--- bindings, so if there are two bindings, and one of them has Holy Light with the
+--- `[@mouseover,help]` and `[@target]` target priority order, and the other one has
+--- Crusader Strike with `[@target,harm]`, it will create a command like this:
+--- `/use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light`
+---
+--- @param bindings table
+--- @param interactionType string
+--- @return string
+--- @return table
+function Clicked:GetMacroForBindings(bindings, interactionType)
+	local result = {}
+	local interruptCurrentCast = false
+	local startAutoAttack = false
+
+	local actions = {}
+
+	-- add a segment to remove the blue casting cursor
+	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
+
+	for _, binding in ipairs(bindings) do
+		local data = Clicked:GetActiveBindingData(binding)
+		local shared = Clicked:GetSharedBindingData(binding)
+
+		if binding.type == Clicked.BindingTypes.MACRO then
+			if data.mode == Clicked.MacroMode.FIRST then
+				table.insert(result, data.value)
+			end
+		else
+			local extra = {}
+
+			if not interruptCurrentCast and shared.interruptCurrentCast then
+				interruptCurrentCast = true
+				table.insert(extra, "/stopcasting")
+			end
+
+			if not startAutoAttack and interactionType == Clicked.InteractionType.REGULAR then
+				for _, target in ipairs(binding.targets.regular) do
+					if target.unit == Clicked.TargetUnits.TARGET and target.hostility ~= Clicked.TargetHostility.HELP then
+						startAutoAttack = true
+						table.insert(extra, "/startattack [@target,harm]")
+						break
+					end
+
+					if not Clicked:CanUnitHaveFollowUp(target.unit) then
+						break
+					end
+				end
+			end
+
+			for i = #extra, 1, - 1 do
+				table.insert(result, 1, extra[i])
+			end
+
+			for _, action in ipairs(ConstructActions(binding, interactionType)) do
+				table.insert(actions, action)
+			end
+		end
+	end
+
+	-- Now sort the actions according to the above schema
+
+	table.sort(actions, SortActions)
+
+	-- Construct a valid macro from the data
+
+	local allFlags = {}
+	local segments = {}
+
+	for _, action in ipairs(actions) do
+		local flags = GetMacroSegmentFromAction(action, interactionType)
+
+		if #flags > 0 then
+			flags = "[" .. flags .. "] "
+		end
+
+		table.insert(allFlags, flags)
+		table.insert(segments, flags .. action.ability)
+	end
+
+	if #segments > 0 then
+		local command = "/use " .. table.concat(segments, "; ")
+
+		for _, binding in ipairs(bindings) do
+			local data = Clicked:GetActiveBindingData(binding)
+
+			if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
+				command = command .. "; " .. data.value
+			end
+		end
+
+		table.insert(result, command)
+	end
+
+	for _, binding in ipairs(bindings) do
+		local data = Clicked:GetActiveBindingData(binding)
+
+		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.LAST then
+			table.insert(result, data.value)
+		end
+	end
+
+	return table.concat(result, "\n"), allFlags
 end

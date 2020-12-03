@@ -159,25 +159,18 @@ local function TreeSortAlphabetical(left, right)
 			return false
 		end
 
-		local lAction = Clicked:GetActiveBindingAction(left.binding)
-		local rAction = Clicked:GetActiveBindingAction(right.binding)
+		local lCache = Clicked:GetBindingCache(left)
+		local rCache = Clicked:GetBindingCache(right)
 
-		if lAction ~= nil and rAction == nil then
-			return true
-		end
-
-		if lAction == nil and rAction ~= nil then
-			return false
-		end
-
-		return lAction.displayName < rAction.displayName
+		return lCache.displayName < rCache.displayName
 	end
 
 	return left.title < right.title
 end
 
 local function UpdateBindingItemVisual(item, binding)
-	local data = Clicked:GetActiveBindingAction(binding)
+	local data = Clicked:GetActiveBindingData(binding)
+	local cache = Clicked:GetBindingCache(binding)
 
 	local label = ""
 	local icon = ""
@@ -191,8 +184,8 @@ local function UpdateBindingItemVisual(item, binding)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		label = L["Run custom macro"]
 
-		if #data.displayName > 0 then
-			label = data.displayName
+		if #cache.displayName > 0 then
+			label = cache.displayName
 		end
 	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
 		label = L["Target the unit"]
@@ -200,7 +193,7 @@ local function UpdateBindingItemVisual(item, binding)
 		label = L["Open the unit menu"]
 	end
 
-	if data.value ~= nil then
+	if data ~= nil and data.value ~= nil then
 		item.title = string.format(label, data.value)
 	else
 		item.title = label
@@ -208,12 +201,12 @@ local function UpdateBindingItemVisual(item, binding)
 
 	if icon ~= nil and #tostring(icon) > 0 then
 		item.icon = icon
-	elseif data.displayIcon ~= nil and #tostring(data.displayIcon) > 0 then
-		item.icon = data.displayIcon
+	elseif cache.displayIcon ~= nil and #tostring(cache.displayIcon) > 0 then
+		item.icon = cache.displayIcon
 	end
 
-	data.displayName = item.title
-	data.displayIcon = item.icon
+	cache.displayName = item.title
+	cache.displayIcon = item.icon
 
 	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
 end
@@ -476,10 +469,10 @@ local function Button_OnClick(frame, button)
 					local msg = nil
 
 					if frame.binding ~= nil then
-						local data = Clicked:GetActiveBindingAction(frame.binding)
+						local cache = Clicked:GetBindingCache(frame.binding)
 
 						msg = L["Are you sure you want to delete this binding?"] .. "\n\n"
-						msg = msg .. frame.binding.keybind .. " " .. data.displayName
+						msg = msg .. frame.binding.keybind .. " " .. cache.displayName
 					elseif frame.group ~= nil then
 						local count = 0
 
@@ -524,12 +517,13 @@ local function Button_OnEnter(frame)
 		local tooltip = AceGUI.tooltip
 		local binding = frame.binding
 
-		local data = Clicked:GetActiveBindingAction(binding)
-		local text = data.displayName
+		local data = Clicked:GetActiveBindingData(binding)
+		local cache = Clicked:GetBindingCache(binding)
+		local text = cache.displayName
 
 		if binding.type == Clicked.BindingTypes.MACRO then
-			if #data.displayName > 0 then
-				text = data.displayName .. "\n\n"
+			if #cache.displayName > 0 then
+				text = cache.displayName .. "\n\n"
 				text = text .. MACRO .. "\n|cFFFFFFFF"
 			else
 				text = "";
@@ -921,10 +915,10 @@ local methods = {
 				local strings = {}
 
 				if item.binding ~= nil then
-					local data = Clicked:GetActiveBindingAction(item.binding)
+					local cache = Clicked:GetBindingCache(item.binding)
 
-					table.insert(strings, data.displayName)
-					table.insert(strings, data.value)
+					table.insert(strings, cache.displayName)
+					table.insert(strings, cache.value)
 
 					if item.binding.keybind ~= "" then
 						table.insert(strings, item.binding.keybind)

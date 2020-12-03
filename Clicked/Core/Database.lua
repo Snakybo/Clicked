@@ -47,30 +47,19 @@ function Clicked:GetNewBindingTemplate()
 		keybind = "",
 		actions = {
 			spell = {
-				displayName = "",
-				displayIcon = "",
-				value = "",
-				interruptCurrentCast = false,
-				startAutoAttack = true
+				value = ""
 			},
 			item = {
-				displayName = "",
-				displayIcon = "",
-				value = "",
-				interruptCurrentCast = false,
-				startAutoAttack = true
+				value = ""
 			},
 			macro = {
-				displayName = "",
-				displayIcon = "",
 				value = "",
 				mode = Clicked.MacroMode.FIRST
 			},
-			unitSelect = {
-				displayName = "",
-				displayIcon = ""
+			shared = {
+				interruptCurrentCast = false
 			},
-			unitMenu = {
+			cache = {
 				displayName = "",
 				displayIcon = ""
 			}
@@ -176,6 +165,87 @@ end
 
 function Clicked:IterateGroups()
 	return ipairs(self.db.profile.groups)
+end
+
+function Clicked:CreateNewBinding()
+	local binding = self:GetNewBindingTemplate()
+
+	table.insert(self.db.profile.bindings, binding)
+	self:ReloadActiveBindings()
+
+	return binding
+end
+
+function Clicked:DeleteBinding(binding)
+	for index, other in ipairs(self.db.profile.bindings) do
+		if other == binding then
+			table.remove(self.db.profile.bindings, index)
+			self:ReloadActiveBindings()
+			break
+		end
+	end
+end
+
+function Clicked:SetBindingAt(index, binding)
+	self.db.profile.bindings[index] = binding
+	self:ReloadActiveBindings()
+end
+
+function Clicked:GetBindingAt(index)
+	return self.db.profile.bindings[index]
+end
+
+function Clicked:GetNumConfiguredBindings()
+	return #self.db.profile.bindings
+end
+
+function Clicked:IterateConfiguredBindings()
+	return ipairs(self.db.profile.bindings)
+end
+
+function Clicked:GetBindingIndex(binding)
+	for i, e in ipairs(self.db.profile.bindings) do
+		if e == binding then
+			return i
+		end
+	end
+
+	return 0
+end
+
+--- Get the active action of a binding configuration. The data for spells, items,
+--- and macros is all saved in separate data structures. This function will return
+--- the correct data structure for the current `type` of the binding.
+---
+--- @param binding table
+--- @return table
+function Clicked:GetActiveBindingData(binding)
+	if binding.type == Clicked.BindingTypes.SPELL then
+		return binding.actions.spell
+	end
+
+	if binding.type == Clicked.BindingTypes.ITEM then
+		return binding.actions.item
+	end
+
+	if binding.type == Clicked.BindingTypes.MACRO then
+		return binding.actions.macro
+	end
+
+	return nil
+end
+
+function Clicked:GetSharedBindingData(binding)
+	return binding.actions.shared
+end
+
+function Clicked:GetBindingCache(binding)
+	return binding.actions.cache
+end
+
+function Clicked:InvalidateCache(cache)
+	cache.displayName = ""
+	cache.displayIcon = ""
 end
 
 -- Don't use any constants in this function to prevent breaking the updater
@@ -532,6 +602,33 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("0.11.0")
+	end
+
+	-- 0.11.x to 0.12.0
+	if string.sub(from, 1, 4) == "0.11" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.actions.shared = {
+				interruptCurrentCast = binding.type == Clicked.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false
+			}
+
+			binding.actions.cache = {
+				displayName = "",
+				displayIcon = ""
+			}
+
+			binding.actions.spell.interruptCurrentCast = nil
+			binding.actions.spell.displayName = nil
+			binding.actions.spell.displayIcon = nil
+
+			binding.actions.item.interruptCurrentCast = nil
+			binding.actions.item.displayName = nil
+			binding.actions.item.displayIcon = nil
+
+			binding.actions.unitMenu = nil
+			binding.actions.unitSelect = nil
+		end
+
+		FinalizeVersionUpgrade("0.12.0")
 	end
 
 	profile.version = self.VERSION
