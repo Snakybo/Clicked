@@ -60,6 +60,7 @@ local function OnLeavingCombat()
 	isPlayerInCombat = false
 
 	Clicked:ProcessFrameQueue()
+	Clicked:ReloadActiveBindingsIfPending()
 end
 
 local function OnPlayerEnteringWorld()

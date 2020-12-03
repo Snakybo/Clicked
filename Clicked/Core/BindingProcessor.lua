@@ -78,6 +78,7 @@ Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
 local activeBindings
+local pendingReload
 
 local function GetMacroSegmentFromAction(action, interactionType)
 	local flags = {}
@@ -438,7 +439,8 @@ end
 --- PrioritizeBindings function to sort them.
 function Clicked:ReloadActiveBindings()
 	if InCombatLockdown() then
-		return false
+		pendingReload = true
+		return
 	end
 
 	activeBindings = {}
@@ -453,6 +455,15 @@ function Clicked:ReloadActiveBindings()
 	ProcessBuckets(hovercast, regular)
 
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
+end
+
+function Clicked:ReloadActiveBindingsIfPending()
+	if not pendingReload then
+		return
+	end
+
+	pendingReload = false
+	self:ReloadActiveBindings()
 end
 
 function Clicked:IterateActiveBindings()
