@@ -714,6 +714,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 	container:AddChild(group)
 
 	CreateCheckbox(group, L["Interrupt current cast"], "interrupt")
+	CreateCheckbox(group, L["Allow starting of auto attacks"], "allowStartAttack")
 end
 
 local function DrawBindingActionPage(container, binding)

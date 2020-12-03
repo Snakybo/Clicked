@@ -602,6 +602,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 				macroValue = binding.actions.macro.value,
 				macroMode = binding.actions.macro.mode,
 				interrupt = binding.type == Clicked.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false,
+				allowStartAttack = true
 			}
 
 			binding.cache = {

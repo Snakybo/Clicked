@@ -6,7 +6,8 @@
 
 - Add localization compatiblity with CurseForge
 - Add the ability to re-order binding targets
-- Add shared binding options for `Interrupt current cast`
+- Add shared binding options, checkboxes will turn gray if they're enabled by a binding sharing the keybind
+- Add shared binding option to allow starting of auto-attacks
 
 ### Changed
 

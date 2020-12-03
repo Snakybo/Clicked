@@ -73,6 +73,7 @@ L["Run first (default)"] = true
 L["Run last"] = true
 L["Append after bindings"] = true
 L["Interrupt current cast"] = true
+L["Allow starting of auto attacks"] = true
 L["Unit Frame Target"] = true
 L["Binding Targets"] = true
 L["Player (you)"] = true
