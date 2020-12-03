@@ -156,10 +156,9 @@ local function GetMacroSegmentFromAction(action, interactionType)
 end
 
 local function ConstructAction(binding, target)
-	local action = {}
-	local data = Clicked:GetActiveBindingData(binding)
-
-	action.ability = data.value
+	local action = {
+		ability = Clicked:GetActiveBindingValue(binding)
+	}
 
 	do
 		local combat = binding.load.combat
@@ -505,9 +504,9 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	do
-		local data = self:GetActiveBindingData(binding)
+		local value = self:GetActiveBindingValue(binding)
 
-		if data ~= nil and data.value ~= nil and #data.value == 0 then
+		if value ~= nil and #value == 0 then
 			return false
 		end
 	end
@@ -769,7 +768,7 @@ end
 --- @return table
 function Clicked:GetMacroForBindings(bindings, interactionType)
 	local result = {}
-	local interruptCurrentCast = false
+	local interrupt = false
 	local startAutoAttack = false
 
 	local actions = {}
@@ -778,22 +777,21 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
 
 	for _, binding in ipairs(bindings) do
-		local data = Clicked:GetActiveBindingData(binding)
-		local shared = Clicked:GetSharedBindingData(binding)
+		local value = Clicked:GetActiveBindingValue(binding)
 
 		if binding.type == Clicked.BindingTypes.MACRO then
-			if data.mode == Clicked.MacroMode.FIRST then
-				table.insert(result, data.value)
+			if binding.action.macroMode == Clicked.MacroMode.FIRST then
+				table.insert(result, value)
 			end
 		else
 			local extra = {}
 
-			if not interruptCurrentCast and shared.interruptCurrentCast then
-				interruptCurrentCast = true
+			if not interrupt and binding.action.interrupt then
+				interrupt = true
 				table.insert(extra, "/stopcasting")
 			end
 
-			if not startAutoAttack and interactionType == Clicked.InteractionType.REGULAR then
+			if not startAutoAttack and binding.action.allowStartAttack and interactionType == Clicked.InteractionType.REGULAR then
 				for _, target in ipairs(binding.targets.regular) do
 					if target.unit == Clicked.TargetUnits.TARGET and target.hostility ~= Clicked.TargetHostility.HELP then
 						startAutoAttack = true
@@ -841,10 +839,10 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 		local command = "/use " .. table.concat(segments, "; ")
 
 		for _, binding in ipairs(bindings) do
-			local data = Clicked:GetActiveBindingData(binding)
+			local value = Clicked:GetActiveBindingValue(binding)
 
-			if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.APPEND then
-				command = command .. "; " .. data.value
+			if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.APPEND then
+				command = command .. "; " .. value
 			end
 		end
 
@@ -852,10 +850,10 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	end
 
 	for _, binding in ipairs(bindings) do
-		local data = Clicked:GetActiveBindingData(binding)
+		local value = Clicked:GetActiveBindingValue(binding)
 
-		if binding.type == Clicked.BindingTypes.MACRO and data.mode == Clicked.MacroMode.LAST then
-			table.insert(result, data.value)
+		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
+			table.insert(result, value)
 		end
 	end
 

@@ -169,7 +169,7 @@ local function TreeSortAlphabetical(left, right)
 end
 
 local function UpdateBindingItemVisual(item, binding)
-	local data = Clicked:GetActiveBindingData(binding)
+	local value = Clicked:GetActiveBindingValue(binding)
 	local cache = Clicked:GetBindingCache(binding)
 
 	local label = ""
@@ -177,10 +177,10 @@ local function UpdateBindingItemVisual(item, binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
 		label = L["Cast %s"]
-		icon = select(3, GetSpellInfo(data.value))
+		icon = select(3, GetSpellInfo(value))
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		label = L["Use %s"]
-		icon = select(10, GetItemInfo(data.value))
+		icon = select(10, GetItemInfo(value))
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		label = L["Run custom macro"]
 
@@ -193,8 +193,8 @@ local function UpdateBindingItemVisual(item, binding)
 		label = L["Open the unit menu"]
 	end
 
-	if data ~= nil and data.value ~= nil then
-		item.title = string.format(label, data.value)
+	if value ~= nil then
+		item.title = string.format(label, value)
 	else
 		item.title = label
 	end
@@ -517,7 +517,7 @@ local function Button_OnEnter(frame)
 		local tooltip = AceGUI.tooltip
 		local binding = frame.binding
 
-		local data = Clicked:GetActiveBindingData(binding)
+		local value = Clicked:GetActiveBindingValue(binding)
 		local cache = Clicked:GetBindingCache(binding)
 		local text = cache.displayName
 
@@ -529,7 +529,7 @@ local function Button_OnEnter(frame)
 				text = "";
 			end
 
-			text = text .. data.value .. "|r"
+			text = text .. value .. "|r"
 		end
 
 		text = text .. "\n\n"

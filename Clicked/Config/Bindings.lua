@@ -112,10 +112,9 @@ local function OnSpellBookButtonClick(name)
 	end
 
 	local binding = Module:GetCurrentBinding()
-	local data = Clicked:GetActiveBindingData(binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
-		data.value = name
+		binding.action.spellValue = name
 		HideUIPanel(SpellBookFrame)
 		Clicked:ReloadActiveBindings()
 	end
@@ -483,7 +482,7 @@ local function DrawSpellSelection(container, action, cache)
 				end
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spellValue")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
@@ -557,7 +556,7 @@ local function DrawItemSelection(container, action, cache)
 				end
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "value")
+			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "itemValue")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
@@ -575,7 +574,7 @@ local function DrawItemSelection(container, action, cache)
 	end
 end
 
-local function DrawMacroSelection(container, binding, keybind, action, cache)
+local function DrawMacroSelection(container, targets, action, cache)
 	-- macro name and icon
 	do
 		local group = GUI:InlineGroup(L["Macro Name and Icon (optional)"])
@@ -617,7 +616,7 @@ local function DrawMacroSelection(container, binding, keybind, action, cache)
 		container:AddChild(group)
 
 		-- help text
-		if binding.targets.hovercast.enabled and not binding.targets.regular.enabled then
+		if targets.hovercast.enabled and not targets.regular.enabled then
 			local widget = GUI:Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
@@ -625,7 +624,7 @@ local function DrawMacroSelection(container, binding, keybind, action, cache)
 
 		-- macro text field
 		do
-			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "value")
+			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macroValue")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -652,7 +651,7 @@ local function DrawMacroSelection(container, binding, keybind, action, cache)
 				"APPEND"
 			}
 
-			local widget = GUI:Dropdown(nil, items, order, nil, action, "mode")
+			local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -667,13 +666,11 @@ local function DrawMacroSelection(container, binding, keybind, action, cache)
 	end
 end
 
-local function DrawSharedSpellItemOptions(container, binding, data)
+local function DrawSharedSpellItemOptions(container, binding)
 	local function IsSharedDataSet(key)
 		for _, other in Clicked:IterateActiveBindings() do
 			if other ~= binding and other.keybind == binding.keybind then
-				local shared = Clicked:GetSharedBindingData(other)
-
-				if shared[key] then
+				if other.action[key] then
 					return true
 				end
 			end
@@ -690,7 +687,7 @@ local function DrawSharedSpellItemOptions(container, binding, data)
 				value = true
 			end
 
-			data.interruptCurrentCast = value
+			binding.action[key] = value
 			Clicked:SendMessage(GUI.EVENT_UPDATE)
 		end
 
@@ -700,10 +697,10 @@ local function DrawSharedSpellItemOptions(container, binding, data)
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
 
-		if data[key] then
+		if binding.action[key] then
 			widget:SetValue(true)
 		else
-			if IsSharedDataSet(key) then
+			if Clicked:CanBindingLoad(binding) and IsSharedDataSet(key) then
 				widget:SetTriState(true)
 				widget:SetValue(nil)
 				isUsingShared = true
@@ -716,8 +713,7 @@ local function DrawSharedSpellItemOptions(container, binding, data)
 	local group = GUI:InlineGroup(L["Shared Options"])
 	container:AddChild(group)
 
-	-- interrupt cast toggle
-	CreateCheckbox(group, L["Interrupt current cast"], "interruptCurrentCast")
+	CreateCheckbox(group, L["Interrupt current cast"], "interrupt")
 end
 
 local function DrawBindingActionPage(container, binding)
@@ -756,18 +752,16 @@ local function DrawBindingActionPage(container, binding)
 		end
 	end
 
-	local data = Clicked:GetActiveBindingData(binding)
-	local shared = Clicked:GetSharedBindingData(binding)
 	local cache = Clicked:GetBindingCache(binding)
 
 	if binding.type == Clicked.BindingTypes.SPELL then
-		DrawSpellSelection(container, data, cache)
-		DrawSharedSpellItemOptions(container, binding, shared)
+		DrawSpellSelection(container, binding.action, cache)
+		DrawSharedSpellItemOptions(container, binding)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
-		DrawItemSelection(container, data, cache)
-		DrawSharedSpellItemOptions(container, binding, shared)
+		DrawItemSelection(container, binding.action, cache)
+		DrawSharedSpellItemOptions(container, binding)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding, binding.keybind, data, cache)
+		DrawMacroSelection(container, binding.targets, binding.action, cache)
 	end
 end
 

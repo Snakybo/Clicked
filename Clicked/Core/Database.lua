@@ -45,24 +45,13 @@ function Clicked:GetNewBindingTemplate()
 		type = Clicked.BindingTypes.SPELL,
 		identifier = self:GetNextBindingIdentifier(),
 		keybind = "",
-		actions = {
-			spell = {
-				value = ""
-			},
-			item = {
-				value = ""
-			},
-			macro = {
-				value = "",
-				mode = Clicked.MacroMode.FIRST
-			},
-			shared = {
-				interruptCurrentCast = false
-			},
-			cache = {
-				displayName = "",
-				displayIcon = ""
-			}
+		action = {
+			spellValue = "",
+			itemValue = "",
+			macroValue = "",
+			macroMode = Clicked.MacroMode.FIRST,
+			interrupt = false,
+			allowStartAttack = true
 		},
 		targets = {
 			hovercast = {
@@ -86,6 +75,10 @@ function Clicked:GetNewBindingTemplate()
 			playerInGroup = GetLoadOptionTemplate(""),
 			form = GetTriStateLoadOptionTemplate(1),
 			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE)
+		},
+		cache = {
+			displayName = "",
+			displayIcon = ""
 		}
 	}
 
@@ -219,28 +212,24 @@ end
 ---
 --- @param binding table
 --- @return table
-function Clicked:GetActiveBindingData(binding)
+function Clicked:GetActiveBindingValue(binding)
 	if binding.type == Clicked.BindingTypes.SPELL then
-		return binding.actions.spell
+		return binding.action.spellValue
 	end
 
 	if binding.type == Clicked.BindingTypes.ITEM then
-		return binding.actions.item
+		return binding.action.itemValue
 	end
 
 	if binding.type == Clicked.BindingTypes.MACRO then
-		return binding.actions.macro
+		return binding.action.macroValue
 	end
 
 	return nil
 end
 
-function Clicked:GetSharedBindingData(binding)
-	return binding.actions.shared
-end
-
 function Clicked:GetBindingCache(binding)
-	return binding.actions.cache
+	return binding.cache
 end
 
 function Clicked:InvalidateCache(cache)
@@ -607,25 +596,20 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 	-- 0.11.x to 0.12.0
 	if string.sub(from, 1, 4) == "0.11" then
 		for _, binding in ipairs(profile.bindings) do
-			binding.actions.shared = {
-				interruptCurrentCast = binding.type == Clicked.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false
+			binding.action = {
+				spellValue = binding.actions.spell.value,
+				itemValue = binding.actions.item.value,
+				macroValue = binding.actions.macro.value,
+				macroMode = binding.actions.macro.mode,
+				interrupt = binding.type == Clicked.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false,
 			}
 
-			binding.actions.cache = {
+			binding.cache = {
 				displayName = "",
 				displayIcon = ""
 			}
 
-			binding.actions.spell.interruptCurrentCast = nil
-			binding.actions.spell.displayName = nil
-			binding.actions.spell.displayIcon = nil
-
-			binding.actions.item.interruptCurrentCast = nil
-			binding.actions.item.displayName = nil
-			binding.actions.item.displayIcon = nil
-
-			binding.actions.unitMenu = nil
-			binding.actions.unitSelect = nil
+			binding.actions = nil
 		end
 
 		FinalizeVersionUpgrade("0.12.0")
