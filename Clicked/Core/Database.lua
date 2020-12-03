@@ -182,21 +182,15 @@ end
 -- when the value of a constant changes. Always use direct values that are
 -- read from the database.
 
-function Clicked:UpgradeDatabaseProfile(profile)
-	if profile.version == self.VERSION then
-		return
-	end
+function Clicked:UpgradeDatabaseProfile(profile, from)
+	from = from or profile.version
 
-	-- If there are no bindings configured for the profile
-	-- it's likely new. In any case there's nothing to upgrade
-	-- so don't bother trying.
-	if #profile.bindings == 0 then
-		profile.version = self.VERSION
+	if from == self.VERSION then
 		return
 	end
 
 	local function FinalizeVersionUpgrade(newVersion)
-		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], profile.version or "UNKNOWN", newVersion))
+		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
 	end
 
@@ -204,7 +198,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	-- Versions prior to 0.5.0 didn't have a version number serialized,
 	-- so all (and only) old profiles won't have a version field, and
 	-- we can safely assume the profile is from 0.4.0 or older
-	if profile.version == nil or string.sub(profile.version, 1, 3) == "0.4" then
+	if from == nil or string.sub(from, 1, 3) == "0.4" then
 		for _, binding in ipairs(profile.bindings) do
 			if #binding.targets > 0 and binding.targets[1].unit == "GLOBAL" then
 				binding.targetingMode = "GLOBAL"
@@ -233,7 +227,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- version 0.5.x to 0.6.0
-	if string.sub(profile.version, 1, 3) == "0.5" then
+	if string.sub(from, 1, 3) == "0.5" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.stance = {
 				selected = 0,
@@ -256,7 +250,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- version 0.6.x to 0.7.0
-	if string.sub(profile.version, 1, 3) == "0.6" then
+	if string.sub(from, 1, 3) == "0.6" then
 		profile.blacklist = {}
 
 		for _, binding in ipairs(profile.bindings) do
@@ -322,7 +316,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- version 0.7.x to 0.8.0
-	if string.sub(profile.version, 1, 3) == "0.7" then
+	if string.sub(from, 1, 3) == "0.7" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.primaryTarget.vitals = "ANY"
 
@@ -411,7 +405,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- 0.8.x to 0.9.0
-	if string.sub(profile.version, 1, 3) == "0.8" then
+	if string.sub(from, 1, 3) == "0.8" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.form = {
 				selected = 0,
@@ -433,7 +427,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- 0.9.x to 0.10.0
-	if string.sub(profile.version, 1, 3) == "0.9" then
+	if string.sub(from, 1, 3) == "0.9" then
 		profile.bindings.next = 1
 
 		for _, binding in ipairs(profile.bindings) do
@@ -475,7 +469,7 @@ function Clicked:UpgradeDatabaseProfile(profile)
 	end
 
 	-- 0.10.x to 0.11.0
-	if string.sub(profile.version, 1, 4) == "0.10" then
+	if string.sub(from, 1, 4) == "0.10" then
 		for _, binding in ipairs(profile.bindings) do
 			local hovercast = {
 				enabled = false,
