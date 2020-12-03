@@ -20,6 +20,7 @@
 - Remove a debug message that was printed to the chat when shift-clicking a talent
 - No longer unlock bindings when in a vehicle that doesn't override the action bar (will fix some world quests and the Maw)
 - Fix binding reloads if a player joins or leaves the group during combat
+- Fix an excessive amount of binding reloads when in a group
 
 ## [0.11.2] - 2020-11-23
 

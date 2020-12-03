@@ -74,6 +74,13 @@ local function OnAddonLoaded()
 	Clicked:ProcessFrameQueue()
 end
 
+local function OnPlayerFlagsChanged(event, unit)
+	if unit == "player" then
+		Clicked:ReloadActiveBindings()
+	end
+end
+
+
 local function OnChatCommandReceived(input)
 	local args = {}
 	local startpos = 1
@@ -127,7 +134,7 @@ function Clicked:OnEnable()
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
-		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "ReloadActiveBindings")
+		self:RegisterEvent("PLAYER_FLAGS_CHANGED", OnPlayerFlagsChanged)
 	end
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
