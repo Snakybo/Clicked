@@ -72,6 +72,10 @@ local function EnsureMacroFrameHandler()
 			return
 		end
 
+		if self:GetAttribute("state-overridebar") == "enabled" then
+			return
+		end
+
 		local keybinds = self:GetAttribute("clicked-keybinds")
 		local identifiers = self:GetAttribute("clicked-identifiers")
 
@@ -108,6 +112,7 @@ local function EnsureMacroFrameHandler()
 	end
 
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
+	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 end
 
 function Clicked:UpdateMacroFrameHandler(keybinds, attributes)

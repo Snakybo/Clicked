@@ -41,6 +41,7 @@ local function GetBasicinfoString()
 	table.insert(lines, "")
 
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
+	table.insert(lines, "Override Bar: " .. driver:GetAttribute("state-overridebar"))
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
@@ -211,6 +212,7 @@ local module = {
 		driver:Show()
 
 		CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
+		CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
 
 		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 			CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
