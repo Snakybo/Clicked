@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add the ability to re-order binding targets
 - Add shared binding options, checkboxes will turn gray if they're enabled by a binding sharing the keybind
 - Add shared binding option to allow starting of auto-attacks
+- Add support for WoW Classic 1.13.6
 
 ### Changed
 
