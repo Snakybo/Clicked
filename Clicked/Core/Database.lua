@@ -253,6 +253,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 	local function FinalizeVersionUpgrade(newVersion)
 		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
+		from = newVersion
 	end
 
 	-- version 0.4.x to 0.5.0

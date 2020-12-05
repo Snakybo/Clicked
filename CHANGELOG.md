@@ -8,6 +8,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+
+## [0.12.1] - 2020-12-05
+
+### Fixed
+
+- Fix an error when loading a profile multipe versions old
+
 ## [0.12.0] - 2020-12-05
 
 ### Added
