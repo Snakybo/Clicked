@@ -1283,13 +1283,13 @@ local function CreateFromItemTemplate(identifier)
 	local item = nil
 
 	if identifier == ITEM_TEMPLATE_SIMPLE_BINDING then
-		item = Clicked:CreateNewBinding()
+		item = Clicked:CreateNewBinding(true)
 	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
-		item = Clicked:CreateNewBinding()
+		item = Clicked:CreateNewBinding(true)
 		item.targets.hovercast.enabled = true
 		item.targets.regular.enabled = false
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
-		item = Clicked:CreateNewBinding()
+		item = Clicked:CreateNewBinding(true)
 
 		item.targets.hovercast.enabled = true
 		item.targets.hovercast.hostility = Clicked.TargetHostility.HELP
@@ -1301,7 +1301,7 @@ local function CreateFromItemTemplate(identifier)
 		item.targets.regular[2] = Clicked:GetNewBindingTargetTemplate()
 		item.targets.regular[2].unit = Clicked.TargetUnits.PLAYER
 	elseif identifier == ITEM_TEMPLATE_CUSTOM_MACRO then
-		item = Clicked:CreateNewBinding()
+		item = Clicked:CreateNewBinding(true)
 		item.type = Clicked.BindingTypes.MACRO
 	elseif identifier == ITEM_TEMPLATE_GROUP then
 		item = Clicked:CreateNewGroup()

@@ -160,11 +160,13 @@ function Clicked:IterateGroups()
 	return ipairs(self.db.profile.groups)
 end
 
-function Clicked:CreateNewBinding()
+function Clicked:CreateNewBinding(silent)
 	local binding = self:GetNewBindingTemplate()
-
 	table.insert(self.db.profile.bindings, binding)
-	self:ReloadActiveBindings()
+
+	if not silent then
+		self:ReloadActiveBindings()
+	end
 
 	return binding
 end
