@@ -642,7 +642,7 @@ local function DrawMacroSelection(container, targets, action, cache)
 			local items = {
 				FIRST = L["Run first (default)"],
 				LAST = L["Run last"],
-				APPEND = L["Append after bindings"]
+				APPEND = L["Append after bindings (super advanced)"]
 			}
 
 			local order = {
