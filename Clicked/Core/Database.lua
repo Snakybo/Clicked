@@ -22,7 +22,7 @@ end
 function Clicked:GetDatabaseDefaults()
 	return {
 		profile = {
-			version = nil,
+			version = Clicked.VERSION,
 			options = {
 				onKeyDown = false
 			},
