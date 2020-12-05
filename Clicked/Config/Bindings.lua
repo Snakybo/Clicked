@@ -938,7 +938,7 @@ local function DrawBindingTargetPage(container, binding)
 			end
 
 			-- new target
-			if Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
+			if enabled and Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
 				local group = GUI:InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
 				container:AddChild(group)
 
