@@ -11,6 +11,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [0.12.1] - 2020-12-05
 
+### Removed
+
+- Remove support for loading and upgrading profiles from before version 0.5.0
+
 ### Fixed
 
 - Fix an error when loading a profile multipe versions old

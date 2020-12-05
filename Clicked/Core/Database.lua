@@ -256,38 +256,6 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		from = newVersion
 	end
 
-	-- version 0.4.x to 0.5.0
-	-- Versions prior to 0.5.0 didn't have a version number serialized,
-	-- so all (and only) old profiles won't have a version field, and
-	-- we can safely assume the profile is from 0.4.0 or older
-	if from == nil or string.sub(from, 1, 3) == "0.4" then
-		for _, binding in ipairs(profile.bindings) do
-			if #binding.targets > 0 and binding.targets[1].unit == "GLOBAL" then
-				binding.targetingMode = "GLOBAL"
-				binding.targets = {
-					{
-						unit = "TARGET",
-						type = "ANY"
-					}
-				}
-			else
-				binding.targetingMode = "DYNAMIC_PRIORITY"
-			end
-
-			binding.load.inGroup = {
-				selected = false,
-				state = "IN_GROUP_PARTY_OR_RAID"
-			}
-
-			binding.load.playerInGroup = {
-				selected = false,
-				player = ""
-			}
-		end
-
-		FinalizeVersionUpgrade("0.5.0")
-	end
-
 	-- version 0.5.x to 0.6.0
 	if string.sub(from, 1, 3) == "0.5" then
 		for _, binding in ipairs(profile.bindings) do
