@@ -22,7 +22,7 @@ end
 function Clicked:GetDatabaseDefaults()
 	return {
 		profile = {
-			version = Clicked.VERSION,
+			version = nil,
 			options = {
 				onKeyDown = false
 			},
@@ -246,6 +246,44 @@ end
 function Clicked:UpgradeDatabaseProfile(profile, from)
 	from = from or profile.version
 
+	if from == nil then
+		-- Incredible hack because I accidentially removed the serialized version
+		-- number in 0.12.0. This will check for all the characteristics of a 0.12
+		-- profile to determine if it's an existing profile, or a new profile.
+		local function IsProfileFrom_0_12()
+			if profile.bindings and profile.bindings.next > 1 then
+				return true
+			end
+
+			if profile.groups and profile.groups.next > 1 then
+				return true
+			end
+
+			if profile.blacklist and #profile.blacklist > 0 then
+				return true
+			end
+
+			return false
+		end
+
+		local function IsProfileFrom_0_4()
+			if profile.bindings and #profile.bindings > 0 then
+				return true
+			end
+
+			return false
+		end
+
+		if IsProfileFrom_0_12() then
+			from = "0.12.0"
+		elseif IsProfileFrom_0_4() then
+			from = "0.4.0"
+		else
+			profile.version = self.VERSION
+			return
+		end
+	end
+
 	if from == self.VERSION then
 		return
 	end
@@ -254,6 +292,35 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
 		from = newVersion
+	end
+
+	-- version 0.4.x to 0.5.0
+	if string.sub(from, 1, 3) == "0.4" then
+		for _, binding in ipairs(profile.bindings) do
+			if #binding.targets > 0 and binding.targets[1].unit == "GLOBAL" then
+				binding.targetingMode = "GLOBAL"
+				binding.targets = {
+					{
+						unit = "TARGET",
+						type = "ANY"
+					}
+				}
+			else
+				binding.targetingMode = "DYNAMIC_PRIORITY"
+			end
+
+			binding.load.inGroup = {
+				selected = false,
+				state = "IN_GROUP_PARTY_OR_RAID"
+			}
+
+			binding.load.playerInGroup = {
+				selected = false,
+				player = ""
+			}
+		end
+
+		FinalizeVersionUpgrade("0.5.0")
 	end
 
 	-- version 0.5.x to 0.6.0
