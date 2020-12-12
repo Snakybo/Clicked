@@ -74,6 +74,7 @@ L["Run last"] = true
 L["Append after bindings (super advanced)"] = true
 L["Interrupt current cast"] = true
 L["Allow starting of auto attacks"] = true
+L["Override queued spell"] = true
 L["Unit Frame Target"] = true
 L["Binding Targets"] = true
 L["Player (you)"] = true

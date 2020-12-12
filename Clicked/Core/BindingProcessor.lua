@@ -770,6 +770,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	local result = {}
 	local interrupt = false
 	local startAutoAttack = false
+	local cancelQueuedSpell = false
 
 	local actions = {}
 
@@ -803,6 +804,11 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 						break
 					end
 				end
+			end
+
+			if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
+				cancelQueuedSpell = true
+				table.insert(extra, "/cancelqueuedspell")
 			end
 
 			for i = #extra, 1, - 1 do

@@ -51,7 +51,8 @@ function Clicked:GetNewBindingTemplate()
 			macroValue = "",
 			macroMode = Clicked.MacroMode.FIRST,
 			interrupt = false,
-			allowStartAttack = true
+			allowStartAttack = true,
+			cancelQueuedSpell = false
 		},
 		targets = {
 			hovercast = {
@@ -652,6 +653,15 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("0.12.0")
+	end
+
+	-- 0.12.x to 0.13.0
+	if string.gsub(from, 1, 4) == "0.12" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.cancelQueuedSpell = false
+		end
+
+		FinalizeVersionUpgrade("0.13.0")
 	end
 
 	profile.version = self.VERSION
