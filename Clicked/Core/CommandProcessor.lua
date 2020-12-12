@@ -173,7 +173,14 @@ function Clicked:ProcessCommands(commands)
 			targetAttributes = newMacroFrameHandlerAttributes
 		end
 
-		table.insert(targetKeybinds, keybind)
+		-- If this is a mouse button there is no need to run `SetBindingClick` as it will capture mouse
+		-- input anyway. There is also a bug (?) that causes the mouse to lock up if the user clicks just
+		-- outside of the unit frame, and then drags the cursor into the unit frame before the game hides it.
+		-- If that happens the user is forced to /reload as the cursor is stuck in camera-rotation mode.
+		-- See: #37
+		if not Clicked:IsMouseButton(keybind.key) then
+			table.insert(targetKeybinds, keybind)
+		end
 
 		for attribute, value in pairs(attributes) do
 			targetAttributes[attribute] = value

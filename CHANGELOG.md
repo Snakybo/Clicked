@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add an option to overwrite the currently queued spell
 
+### Fixed
+
+- Fix an issue that could cause the mouse cursor to lock up when clicking on the edge of a unit frame
+
 ## [0.12.1] - 2020-12-05
 
 ### Removed
