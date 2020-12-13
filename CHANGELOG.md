@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add an option to overwrite the currently queued spell
+- Add dynamic icon and name for bindings that target equipment slots
 
 ### Fixed
 

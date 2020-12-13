@@ -1497,6 +1497,12 @@ local function OnBindingsChangedEvent()
 	Module:Redraw()
 end
 
+local function OnPlayerEquipmentChanged()
+	if Clicked:IsInitialized() then
+		Module:Redraw()
+	end
+end
+
 function Clicked:OpenBindingConfig()
 	if Module.root ~= nil and Module.root:IsVisible() then
 		return
@@ -1551,12 +1557,16 @@ function Module:Register()
 	Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
 	Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
 	Clicked:RegisterMessage(Clicked.EVENT_GROUPS_CHANGED, OnBindingsChangedEvent)
+
+	Clicked:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", OnPlayerEquipmentChanged)
 end
 
 function Module:Unregister()
 	Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
 	Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
 	Clicked:UnregisterMessage(Clicked.EVENT_GROUPS_CHANGED)
+
+	Clicked:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", OnPlayerEquipmentChanged)
 end
 
 function Module:Redraw()

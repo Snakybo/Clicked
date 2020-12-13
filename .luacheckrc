@@ -59,6 +59,7 @@ read_globals = {
 	"GetAddOnEnableState",
 	"GetAddOnMetadata",
 	"GetClassColor",
+	"GetInventoryItemID",
 	"GetItemInfo",
 	"GetNumGroupMembers",
 	"GetNumShapeshiftForms",

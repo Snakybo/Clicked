@@ -180,6 +180,19 @@ local function UpdateBindingItemVisual(item, binding)
 		icon = select(3, GetSpellInfo(value))
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		label = L["Use %s"]
+
+		local inventorySlotId = tonumber(value)
+
+		if inventorySlotId ~= nil and inventorySlotId >= 0 and inventorySlotId <= 19 then
+			local itemId = GetInventoryItemID("player", inventorySlotId)
+
+			if itemId ~= nil then
+				value = GetItemInfo(itemId)
+			else
+				cache.displayIcon = nil
+			end
+		end
+
 		icon = select(10, GetItemInfo(value))
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		label = L["Run custom macro"]
@@ -201,7 +214,7 @@ local function UpdateBindingItemVisual(item, binding)
 
 	if icon ~= nil and #tostring(icon) > 0 then
 		item.icon = icon
-	elseif cache.displayIcon ~= nil and #tostring(cache.displayIcon) > 0 then
+	elseif not Clicked:IsStringNilOrEmpty(cache.displayIcon) then
 		item.icon = cache.displayIcon
 	end
 

@@ -335,7 +335,12 @@ end
 --- @param string string
 --- @return boolean
 function Clicked:IsStringNilOrEmpty(string)
-	return string == nil or #string == 0
+	if string == nil then
+		return true
+	end
+
+	string = tostring(string)
+	return #string == 0
 end
 
 --- Get all available shapeshift forms the the specified spec ID.
