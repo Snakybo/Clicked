@@ -619,6 +619,11 @@ function Clicked:CanBindingLoad(binding)
 				AppendTalentIdsFromSlot(talentIds, 1)
 				AppendTalentIdsFromSlot(talentIds, 2)
 
+				-- talentIds can be empty on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
+				if #talentIds == 0 then
+					return false
+				end
+
 				local talentId = talentIds[talentIndex]
 				local _, _, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(talentId)
 
