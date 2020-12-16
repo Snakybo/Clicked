@@ -123,11 +123,13 @@ The main slash command is `/clicked`. Additionally `/cc` works as an alias for a
 * Use `/clicked blacklist` to quickly navigate to the unit frame blacklist options
 * Use `/clicked dump` to generate a debugging log of the current state
 
-## Issues
+## Issues and support
 
 See the GitHub [Issue tracker](https://github.com/Snakybo/Clicked/issues).
 
 Please include the output from `/cc dump` if you have any issues, if there are any specific binding that are causing issues please include information about which ones are problematic.
+
+See the [discussions](https://github.com/Snakybo/Clicked/discussions) page for sugestions or questions.
 
 ## Changelog
 
