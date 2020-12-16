@@ -8,7 +8,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [0.13.0] - 2020-12-16
 
 ### Added
 
@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix an issue that could cause the mouse cursor to lock up when clicking on the edge of a unit frame
+- Fix an error that could sometimes occur after a loading screen
 
 ## [0.12.1] - 2020-12-05
 
