@@ -656,7 +656,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 	end
 
 	-- 0.12.x to 0.13.0
-	if string.gsub(from, 1, 4) == "0.12" then
+	if string.sub(from, 1, 4) == "0.12" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.action.cancelQueuedSpell = false
 		end
