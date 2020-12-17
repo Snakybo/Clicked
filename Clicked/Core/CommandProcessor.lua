@@ -178,7 +178,7 @@ function Clicked:ProcessCommands(commands)
 		-- outside of the unit frame, and then drags the cursor into the unit frame before the game hides it.
 		-- If that happens the user is forced to /reload as the cursor is stuck in camera-rotation mode.
 		-- See: #37
-		if not Clicked:IsMouseButton(keybind.key) then
+		if not command.hovercast or not Clicked:IsMouseButton(keybind.key) then
 			table.insert(targetKeybinds, keybind)
 		end
 
