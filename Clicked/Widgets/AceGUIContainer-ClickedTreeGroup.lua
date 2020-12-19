@@ -1477,7 +1477,12 @@ local function Constructor()
 			treeframe:SetTemplate('Transparent')
 			S:HandleScrollBar(scrollbar)
 
-			S:HandleButton(sortButton)
+			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+				S:HandleButton(sortButton, true)
+			else
+				S:HandleButton(sortButton, true, nil, true)
+			end
+
 			sortButton.backdrop:SetInside()
 			sortLabel:SetParent(sortButton.backdrop)
 		end
