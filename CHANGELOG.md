@@ -12,13 +12,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix blank binding configuration window on Classic with ElvUI installed
+- Fix blank binding configuration window on Classic with ElvUI installed [#39]
 
 ## [0.13.1] - 2020-12-17
 
 ### Fixed
 
-- Fix tertiary mouse buttons not activating
+- Fix tertiary mouse buttons not activating [#40]
 
 ## [0.13.0] - 2020-12-16
 
@@ -29,7 +29,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix an issue that could cause the mouse cursor to lock up when clicking on the edge of a unit frame
+- Fix an issue that could cause the mouse cursor to lock up when clicking on the edge of a unit frame [#37]
 - Fix an error that could sometimes occur after a loading screen
 
 ## [0.12.1] - 2020-12-05
@@ -448,7 +448,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.12.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.13.2...master
+[0.13.2]: https://github.com/Snakybo/Clicked/releases/tag/0.13.2
+[0.13.1]: https://github.com/Snakybo/Clicked/releases/tag/0.13.1
+[0.13.0]: https://github.com/Snakybo/Clicked/releases/tag/0.13.0
 [0.12.1]: https://github.com/Snakybo/Clicked/releases/tag/0.12.1
 [0.12.0]: https://github.com/Snakybo/Clicked/releases/tag/0.12.0
 [0.11.2]: https://github.com/Snakybo/Clicked/releases/tag/0.11.2
@@ -477,6 +480,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#40]: https://github.com/Snakybo/Clicked/issues/40
+[#39]: https://github.com/Snakybo/Clicked/issues/39
+[#37]: https://github.com/Snakybo/Clicked/issues/37
 [#30]: https://github.com/Snakybo/Clicked/issues/30
 [#29]: https://github.com/Snakybo/Clicked/issues/29
 [#27]: https://github.com/Snakybo/Clicked/issues/27
