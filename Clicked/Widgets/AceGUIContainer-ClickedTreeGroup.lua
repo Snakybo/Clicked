@@ -159,8 +159,8 @@ local function TreeSortAlphabetical(left, right)
 			return false
 		end
 
-		local lCache = Clicked:GetBindingCache(left)
-		local rCache = Clicked:GetBindingCache(right)
+		local lCache = Clicked:GetBindingCache(left.binding)
+		local rCache = Clicked:GetBindingCache(right.binding)
 
 		return lCache.displayName < rCache.displayName
 	end
