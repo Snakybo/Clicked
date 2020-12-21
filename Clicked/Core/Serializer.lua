@@ -6,17 +6,21 @@ local function ValidateData(data)
 		return false, "Incompatible version: " .. data.version
 	end
 
+	if data.bindings == nil or data.groups == nil then
+		return false, "Invalid data"
+	end
+
 	return true, nil
 end
 
 --- Serialize a profile into a serialized string.
 --- @see DeserializeProfile
 ---
---- @param profile table
+--- @param data table
 --- @param printable boolean
 --- @return string
-function Clicked:SerializeProfile(profile, printable)
-	local serialized = AceSerializer:Serialize(profile)
+function Clicked:SerializeTable(data, printable)
+	local serialized = AceSerializer:Serialize(data)
 	local compressed = LibDeflate:CompressDeflate(serialized)
 
 	if printable then
@@ -33,7 +37,19 @@ end
 --- @param printable boolean
 --- @return string
 function Clicked:SerializeCurrentProfile(printable)
-	return self:SerializeProfile(Clicked.db.profile, printable)
+	return self:SerializeTable(Clicked.db.profile, printable)
+end
+
+function Clicked:SerializeCurrentProfileBindings(printable)
+	-- Construct a lightweight version of the database, only including the version, bindings, and groups.
+	-- So any user settings are not serialized (minimap, blacklist, options, etc)
+	local data = {
+		version = Clicked.db.profile.version,
+		bindings = Clicked.db.profile.bindings,
+		groups = Clicked.db.profile.groups
+	}
+
+	return self:SerializeTable(data, printable)
 end
 
 --- Deserialize a string into a profile
@@ -42,7 +58,7 @@ end
 --- @param string string
 --- @return string
 --- @return any
-function Clicked:DeserializeProfile(encoded, printable)
+function Clicked:DeserializeString(encoded, printable)
 	local compressed
 
 	if printable then

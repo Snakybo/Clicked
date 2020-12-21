@@ -20,11 +20,16 @@ local shareBytesSent = 0
 local shareBytesTotal = 0
 local shareMessage = ""
 
-local function OverwriteCurrentProfile(data)
-	local profile = table.wipe(Clicked.db.profile)
+local function OverwriteCurrentProfile(data, full)
+	if full then
+		local profile = table.wipe(Clicked.db.profile)
 
-	for key in pairs(data) do
-		profile[key] = data[key]
+		for key in pairs(data) do
+			profile[key] = data[key]
+		end
+	else
+		Clicked.db.profile.bindings = data.bindings
+		Clicked.db.profile.groups = data.groups
 	end
 
 	Clicked:ReloadDatabase()
@@ -43,6 +48,9 @@ local function OpenImportExportFrame(mode)
 	elseif mode == "import" then
 		importExportFrame:SetTitle(L["Import Profile"])
 		importExportFrame:SetStatusText(string.format(L["Importing into profile: %s"], Clicked.db:GetCurrentProfile()))
+	elseif mode == "import_dev" then
+		importExportFrame:SetTitle(L["Import Profile"] .. " (Dev)")
+		importExportFrame:SetStatusText(string.format(L["Importing into profile: %s"], Clicked.db:GetCurrentProfile()))
 	end
 
 	importExportFrame:EnableResize(false)
@@ -59,20 +67,20 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:AddChild(textField)
 
 	if mode == "export" then
-		local text = Clicked:SerializeCurrentProfile(true)
+		local text = Clicked:SerializeCurrentProfileBindings(true)
 
 		textField:SetText(text)
 		textField:SetFocus()
 		textField:HighlightText()
-	elseif mode == "import" then
+	elseif mode == "import" or mode == "import_dev" then
 		textField:DisableButton(true)
 		textField:SetFocus()
 		textField:SetCallback("OnTextChanged", function(widget, event, text)
-			local success, data = Clicked:DeserializeProfile(text, true)
+			local success, data = Clicked:DeserializeString(text, true)
 
 			if success then
 				local function OnConfirm()
-					OverwriteCurrentProfile(data)
+					OverwriteCurrentProfile(data, mode == "import_dev")
 				end
 
 				Clicked:ShowConfirmationPopup(L["Profile import successful, do you want to apply this profile? This will overwrite the current profile?"], OnConfirm)
@@ -163,7 +171,18 @@ Module = {
 			type = "execute",
 			order = 62,
 			func = function()
-				OpenImportExportFrame("import")
+				-- luacheck: ignore
+				local debug = false
+
+				--@debug@
+				debug = true
+				--@end-debug@
+
+				if debug and IsShiftKeyDown() then
+					OpenImportExportFrame("import_dev")
+				else
+					OpenImportExportFrame("import")
+				end
 			end
 		}
 
@@ -226,7 +245,7 @@ Module = {
 
 				-- Just wait for the ACK timeout if we're currently in combat, to prevent stuttering
 				if not InCombatLockdown() then
-					shareMessage = Clicked:SerializeCurrentProfile(false)
+					shareMessage = Clicked:SerializeCurrentProfileBindings(false)
 					shareAckReceived = false
 
 					Module:RegisterComm("Clicked", "OnCommReceived")
@@ -306,7 +325,7 @@ Module = {
 
 			Module:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", Module.OnCommProgress, self)
 		else
-			local success, data = Clicked:DeserializeProfile(message, false)
+			local success, data = Clicked:DeserializeString(message, false)
 
 			if success then
 				local function OnConfirm()
