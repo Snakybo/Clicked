@@ -132,7 +132,7 @@ local function GetSerializedProfileString()
 	local lines = {}
 
 	table.insert(lines, "----- Profile -----")
-	table.insert(lines, Clicked:SerializeCurrentProfile())
+	table.insert(lines, Clicked:SerializeCurrentProfile(true))
 
 	return table.concat(lines, "\n")
 end

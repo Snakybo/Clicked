@@ -59,7 +59,7 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:AddChild(textField)
 
 	if mode == "export" then
-		local text = Clicked:SerializeCurrentProfile()
+		local text = Clicked:SerializeCurrentProfile(true)
 
 		textField:SetText(text)
 		textField:SetFocus()
@@ -68,7 +68,7 @@ local function OpenImportExportFrame(mode)
 		textField:DisableButton(true)
 		textField:SetFocus()
 		textField:SetCallback("OnTextChanged", function(widget, event, text)
-			local success, data = Clicked:DeserializeProfile(text)
+			local success, data = Clicked:DeserializeProfile(text, true)
 
 			if success then
 				local function OnConfirm()
@@ -226,7 +226,7 @@ Module = {
 
 				-- Just wait for the ACK timeout if we're currently in combat, to prevent stuttering
 				if not InCombatLockdown() then
-					shareMessage = Clicked:SerializeCurrentProfile()
+					shareMessage = Clicked:SerializeCurrentProfile(false)
 					shareAckReceived = false
 
 					Module:RegisterComm("Clicked", "OnCommReceived")
@@ -306,7 +306,7 @@ Module = {
 
 			Module:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", Module.OnCommProgress, self)
 		else
-			local success, data = Clicked:DeserializeProfile(message)
+			local success, data = Clicked:DeserializeProfile(message, false)
 
 			if success then
 				local function OnConfirm()

@@ -16,5 +16,5 @@
 	<Include file="LibTalentInfo-1.0\LibTalentInfo-1.0.xml"/>
 	<Script file="LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 	<Script file="LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
-	<Script file="LibCompress\LibCompress.lua"/>
+	<Script file="LibDeflate\LibDeflate.lua"/>
 </Ui>
