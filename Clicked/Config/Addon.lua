@@ -313,7 +313,7 @@ Module = {
 					OverwriteCurrentProfile(data)
 				end
 
-				Clicked:ShowConfirmationPopup(string.format(L["%s has send you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)
+				Clicked:ShowConfirmationPopup(string.format(L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)
 
 				shareEnabled = false
 			end
