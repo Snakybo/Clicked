@@ -42,15 +42,22 @@ local function OpenImportExportFrame(mode)
 
 	importExportFrame = AceGUI:Create("ClickedFrame")
 
+	local textFieldType = "MultiLineEditBox"
+
 	if mode == "export" then
-		importExportFrame:SetTitle(L["Export Profile"])
-		importExportFrame:SetStatusText(string.format(L["Exporting profile: %s"], Clicked.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(L["Export Bindings"])
+		importExportFrame:SetStatusText(string.format(L["Exporting bindings from: %s"], Clicked.db:GetCurrentProfile()))
+		textFieldType = "ClickedReadOnlyMultilineEditBox"
+	elseif mode == "export_full" then
+		importExportFrame:SetTitle(L["Export Full Profile"])
+		importExportFrame:SetStatusText(string.format(L["Exporting full profile: %s"], Clicked.db:GetCurrentProfile()))
+		textFieldType = "ClickedReadOnlyMultilineEditBox"
 	elseif mode == "import" then
-		importExportFrame:SetTitle(L["Import Profile"])
-		importExportFrame:SetStatusText(string.format(L["Importing into profile: %s"], Clicked.db:GetCurrentProfile()))
-	elseif mode == "import_dev" then
-		importExportFrame:SetTitle(L["Import Profile"] .. " (Dev)")
-		importExportFrame:SetStatusText(string.format(L["Importing into profile: %s"], Clicked.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(L["Import Bindings"])
+		importExportFrame:SetStatusText(string.format(L["Importing bindings into: %s"], Clicked.db:GetCurrentProfile()))
+	elseif mode == "import_full" then
+		importExportFrame:SetTitle(L["Import Full Profile"])
+		importExportFrame:SetStatusText(string.format(L["Importing full profile into: %s"], Clicked.db:GetCurrentProfile()))
 	end
 
 	importExportFrame:EnableResize(false)
@@ -59,20 +66,26 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:SetLayout("flow")
 	importExportFrame.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	local textField = AceGUI:Create(mode == "export" and "ClickedReadOnlyMultilineEditBox" or "MultiLineEditBox")
+	local textField = AceGUI:Create(textFieldType)
 	textField:SetNumLines(22)
 	textField:SetFullWidth(true)
 	textField:SetLabel("")
 
 	importExportFrame:AddChild(textField)
 
-	if mode == "export" then
-		local text = Clicked:SerializeCurrentProfileBindings(true)
+	if mode == "export" or mode == "export_full" then
+		local text
+
+		if mode == "export_full" then
+			text = Clicked:SerializeCurrentProfile(true)
+		else
+			text = Clicked:SerializeCurrentProfileBindings(true)
+		end
 
 		textField:SetText(text)
 		textField:SetFocus()
 		textField:HighlightText()
-	elseif mode == "import" or mode == "import_dev" then
+	elseif mode == "import" or mode == "import_full" then
 		textField:DisableButton(true)
 		textField:SetFocus()
 		textField:SetCallback("OnTextChanged", function(widget, event, text)
@@ -80,7 +93,7 @@ local function OpenImportExportFrame(mode)
 
 			if success then
 				local function OnConfirm()
-					OverwriteCurrentProfile(data, mode == "import_dev")
+					OverwriteCurrentProfile(data, mode == "import_full")
 				end
 
 				Clicked:ShowConfirmationPopup(L["Profile import successful, do you want to apply this profile? This will overwrite the current profile?"], OnConfirm)
@@ -171,15 +184,8 @@ Module = {
 			type = "execute",
 			order = 62,
 			func = function()
-				-- luacheck: ignore
-				local debug = false
-
-				--@debug@
-				debug = true
-				--@end-debug@
-
-				if debug and IsShiftKeyDown() then
-					OpenImportExportFrame("import_dev")
+				if IsShiftKeyDown() then
+					OpenImportExportFrame("import_full")
 				else
 					OpenImportExportFrame("import")
 				end
@@ -191,7 +197,11 @@ Module = {
 			type = "execute",
 			order = 63,
 			func = function()
-				OpenImportExportFrame("export")
+				if IsShiftKeyDown() then
+					OpenImportExportFrame("export_full")
+				else
+					OpenImportExportFrame("export")
+				end
 			end
 		}
 
