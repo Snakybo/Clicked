@@ -40,16 +40,7 @@ local function RegisterMinimapIcon()
 end
 
 local function ReloadDatabase()
-	Clicked:UpgradeDatabaseProfile(Clicked.db.profile)
-
-	if Clicked.db.profile.minimap.hide then
-		LibDBIcon:Hide("Clicked")
-	else
-		LibDBIcon:Show("Clicked")
-	end
-
-	Clicked:ReloadBlacklist()
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadDatabase()
 end
 
 local function OnEnteringCombat()

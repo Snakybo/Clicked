@@ -165,10 +165,10 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 		self.text:SetText(self.data.text)
 	end,
 	OnAccept = function(self)
-		safecall(self.data.accept)
+		safecall(self.data.onAccept)
 	end,
 	OnCancel = function(self)
-		safecall(self.data.OnCancel)
+		safecall(self.data.onCancel)
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -200,10 +200,11 @@ end
 ---
 --- @param message string
 --- @param func function
-function Clicked:ShowConfirmationPopup(message, func, ...)
+function Clicked:ShowConfirmationPopup(message, onAccept, onCancel, ...)
 	StaticPopup_Show("CLICKED_CONFIRM", "", "", {
 		text = message,
-		accept = func
+		onAccept = onAccept,
+		onCancel = onCancel
 	})
 end
 

@@ -10,6 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+- Add an option to export and import profiles
+- Add an option to share the current profile to another player
+
 ### Fixed
 
 - Fix an error when selecting alphabetical sort

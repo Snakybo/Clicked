@@ -35,6 +35,10 @@ local methods = {
 		self.editBox:SetText(text)
 		self.text = text
 	end,
+
+	["HighlightText"] = function(self, from, to)
+		self.editBox:HighlightText(from, to)
+	end,
 }
 
 --[[-----------------------------------------------------------------------------

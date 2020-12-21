@@ -1,3 +1,4 @@
+local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 Clicked.EVENT_GROUPS_CHANGED = "CLICKED_GROUPS_CHANGED"
@@ -38,6 +39,19 @@ function Clicked:GetDatabaseDefaults()
 			}
 		}
 	}
+end
+
+function Clicked:ReloadDatabase()
+	self:UpgradeDatabaseProfile(Clicked.db.profile)
+
+	if self.db.profile.minimap.hide then
+		LibDBIcon:Hide("Clicked")
+	else
+		LibDBIcon:Show("Clicked")
+	end
+
+	self:ReloadBlacklist()
+	self:ReloadActiveBindings()
 end
 
 function Clicked:GetNewBindingTemplate()
