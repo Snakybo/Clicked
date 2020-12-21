@@ -3,15 +3,12 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
-local AceSerializer = LibStub("AceSerializer-3.0")
 local AceComm = LibStub("AceComm-3.0")
-local LibCompress = LibStub("LibCompress")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local Module
 
-local base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 local importExportFrame = nil
 
 -- Share to target player
@@ -22,105 +19,6 @@ local shareAckReceived = false
 local shareBytesSent = 0
 local shareBytesTotal = 0
 local shareMessage = ""
-
--- From http://lua-users.org/wiki/BaseSixtyFour
-local function Encode(data)
-	return ((data:gsub(".", function(x)
-        local r, b = "", x:byte()
-
-		for i = 8, 1, -1 do
-			r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and "1" or "0")
-		end
-
-        return r
-    end) .. "0000"):gsub("%d%d%d?%d?%d?%d?", function(x)
-		if #x < 6 then
-			return ""
-		end
-
-		local c=0
-
-		for i = 1, 6 do
-			c = c + (x:sub(i, i) == "1" and 2 ^ (6 - i) or 0)
-		end
-
-        return base64:sub(c+1,c+1)
-    end) .. ({ "", "==", "=" })[#data % 3 + 1])
-end
-
-local function Decode(data)
-	data = string.gsub(data, "[^" .. base64 .. "=]", "")
-
-    return (data:gsub(".", function(x)
-		if x == "=" then
-			return ""
-		end
-
-		local r, f = "", base64:find(x) - 1
-
-		for i = 6, 1, -1 do
-			r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and "1" or "0")
-		end
-
-        return r
-    end):gsub("%d%d%d?%d?%d?%d?%d?%d?", function(x)
-		if #x ~= 8 then
-			return ""
-		end
-
-		local c = 0
-
-		for i = 1, 8 do
-			c = c + (x:sub(i, i) == "1" and 2 ^ (8 - i) or 0)
-		end
-
-        return string.char(c)
-    end))
-end
-
-local function ValidateData(data)
-	if data.version ~= Clicked.VERSION then
-		return false, "Incompatible version: " .. data.version
-	end
-
-	return true, nil
-end
-
-local function SerializeProfile(profile)
-	local serialized = AceSerializer:Serialize(Clicked.db.profile)
-	local compressed = LibCompress:Compress(serialized)
-	local encoded = Encode(compressed)
-
-	return encoded
-end
-
-local function DeserializeProfile(string)
-	local compressed = Decode(string)
-
-	if compressed == nil then
-		return false, "Failed to decode"
-	end
-
-	local serialized, error = LibCompress:Decompress(compressed)
-
-	if serialized == nil then
-		return false, "Failed to decompress: " .. error
-	end
-
-	local success, data = AceSerializer:Deserialize(serialized)
-
-	if success then
-		local validated, message = ValidateData(data)
-
-		if validated then
-			return true, data
-		end
-
-		return false, "Failed to validate data: " .. message
-	end
-
-	return success, data
-end
 
 local function OverwriteCurrentProfile(data)
 	local profile = table.wipe(Clicked.db.profile)
@@ -161,7 +59,7 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:AddChild(textField)
 
 	if mode == "export" then
-		local text = SerializeProfile(Clicked.db.profile)
+		local text = Clicked:SerializeCurrentProfile()
 
 		textField:SetText(text)
 		textField:SetFocus()
@@ -170,7 +68,7 @@ local function OpenImportExportFrame(mode)
 		textField:DisableButton(true)
 		textField:SetFocus()
 		textField:SetCallback("OnTextChanged", function(widget, event, text)
-			local success, data = DeserializeProfile(text)
+			local success, data = Clicked:DeserializeProfile(text)
 
 			if success then
 				local function OnConfirm()
@@ -328,7 +226,7 @@ Module = {
 
 				-- Just wait for the ACK timeout if we're currently in combat, to prevent stuttering
 				if not InCombatLockdown() then
-					shareMessage = SerializeProfile(Clicked.db.profile)
+					shareMessage = Clicked:SerializeCurrentProfile()
 					shareAckReceived = false
 
 					Module:RegisterComm("Clicked", "OnCommReceived")
@@ -408,7 +306,7 @@ Module = {
 
 			Module:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", Module.OnCommProgress, self)
 		else
-			local success, data = DeserializeProfile(message)
+			local success, data = Clicked:DeserializeProfile(message)
 
 			if success then
 				local function OnConfirm()

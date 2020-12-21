@@ -29,6 +29,7 @@ Core\BindingProcessor.lua
 Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
+Core\Serializer.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua

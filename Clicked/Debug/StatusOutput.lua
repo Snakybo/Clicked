@@ -128,6 +128,15 @@ local function GetRegisteredClickCastFrames()
 	return table.concat(lines, "\n")
 end
 
+local function GetSerializedProfileString()
+	local lines = {}
+
+	table.insert(lines, "----- Profile -----")
+	table.insert(lines, Clicked:SerializeCurrentProfile())
+
+	return table.concat(lines, "\n")
+end
+
 local function UpdateStatusOutputText()
 	if frame == nil or not frame:IsVisible() or editbox == nil then
 		return
@@ -137,6 +146,7 @@ local function UpdateStatusOutputText()
 	table.insert(text, GetBasicinfoString())
 	table.insert(text, GetParsedDataString())
 	table.insert(text, GetRegisteredClickCastFrames())
+	table.insert(text, GetSerializedProfileString())
 
 	editbox:SetText(table.concat(text, "\n\n"))
 end
