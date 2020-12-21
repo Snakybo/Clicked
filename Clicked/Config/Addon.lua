@@ -177,7 +177,7 @@ Module = {
 		}
 
 		plugin.sendToDesc = {
-			name = "\n" .. L["Immediately share the current profile with another player. The target player must allow profile sharing first."],
+			name = "\n" .. L["Immediately share the current profile with another player. The target player must be on the same realm as you (or a connected realm), and allow for profile sharing."],
 			type = "description",
 			order = 65
 		}
@@ -218,7 +218,7 @@ Module = {
 						shareBusy = false
 
 						AceConfigRegistry:NotifyChange("Clicked/Profile")
-						Clicked:ShowInformationPopup(string.format(L["Unable to send a message to %s. Make sure that they are online and have allowed profile sharing."], shareTarget))
+						Clicked:ShowInformationPopup(string.format(L["Unable to send a message to %s. Make sure that they are online, have allowed profile sharing, and are on the same realm or a connected realm."], shareTarget))
 					end
 				end
 
