@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix blacklisted unit frames intercepting clicks
+- Classic: Fix a Lua error on Druid characters [#41]
 
 ## [0.13.3] - 2020-12-22
 
@@ -502,6 +503,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#41]: https://github.com/Snakybo/Clicked/issues/41
 [#40]: https://github.com/Snakybo/Clicked/issues/40
 [#39]: https://github.com/Snakybo/Clicked/issues/39
 [#37]: https://github.com/Snakybo/Clicked/issues/37

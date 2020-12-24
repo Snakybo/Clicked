@@ -193,41 +193,43 @@ local function ConstructAction(binding, target)
 			end
 		end
 
-		if select(2, UnitClass("player")) == "DRUID" then
-			local specId = GetSpecializationInfo(GetSpecialization())
-			local all = Clicked:GetShapeshiftFormsForSpecId(specId)
-			local available = {}
-			local result = {}
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			if select(2, UnitClass("player")) == "DRUID" then
+				local specId = GetSpecializationInfo(GetSpecialization())
+				local all = Clicked:GetShapeshiftFormsForSpecId(specId)
+				local available = {}
+				local result = {}
 
-			for _, spellId in ipairs(all) do
-				if IsSpellKnown(spellId) then
-					table.insert(available, spellId)
-				end
-			end
-
-			for i = 1, #forms do
-				local formId = forms[i]
-
-				-- 0 is [form:0] aka humanoid
-				if formId == 0 then
-					table.insert(result, formId)
-
-					-- Incarnation: Tree of Life does not show up as a shapeshift form,
-					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-					if IsSpellKnown(33891) then
-						table.insert(result, GetNumShapeshiftForms() + 1)
+				for _, spellId in ipairs(all) do
+					if IsSpellKnown(spellId) then
+						table.insert(available, spellId)
 					end
-				else
-					for j = 1, #available do
-						if available[j] == all[formId] then
-							table.insert(result, j)
-							break
+				end
+
+				for i = 1, #forms do
+					local formId = forms[i]
+
+					-- 0 is [form:0] aka humanoid
+					if formId == 0 then
+						table.insert(result, formId)
+
+						-- Incarnation: Tree of Life does not show up as a shapeshift form,
+						-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+						if IsSpellKnown(33891) then
+							table.insert(result, GetNumShapeshiftForms() + 1)
+						end
+					else
+						for j = 1, #available do
+							if available[j] == all[formId] then
+								table.insert(result, j)
+								break
+							end
 						end
 					end
 				end
-			end
 
-			forms = result
+				forms = result
+			end
 		end
 
 		action.forms = table.concat(forms, "/")
