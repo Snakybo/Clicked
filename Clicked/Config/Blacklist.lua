@@ -112,6 +112,7 @@ local module = {
 							self:SetSelectedItem(val, true)
 							self:SetDropdownItem(val, false)
 
+							Clicked:UpdateClickCastHeaderBlacklist()
 							Clicked:ReloadActiveBindings()
 						end
 					end,
@@ -195,6 +196,8 @@ local module = {
 						args[name] = nil
 
 						self:SetDropdownItem(name, true)
+
+						Clicked:UpdateClickCastHeaderBlacklist()
 						Clicked:ReloadActiveBindings()
 					end
 				end,

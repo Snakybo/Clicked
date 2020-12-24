@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add Korean translations ([netaras](https://www.curseforge.com/members/netaras))
 
+### Fixed
+
+- Fix blacklisted unit frames intercepting clicks
+
 ## [0.13.3] - 2020-12-22
 
 ### Added

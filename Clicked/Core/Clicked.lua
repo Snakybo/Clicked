@@ -58,6 +58,7 @@ local function OnPlayerEnteringWorld()
 	isInitialized = true
 
 	Clicked:ProcessFrameQueue()
+	Clicked:UpdateClickCastHeaderBlacklist()
 	Clicked:ReloadActiveBindings()
 end
 
@@ -70,7 +71,6 @@ local function OnPlayerFlagsChanged(event, unit)
 		Clicked:ReloadActiveBindings()
 	end
 end
-
 
 local function OnChatCommandReceived(input)
 	local args = {}

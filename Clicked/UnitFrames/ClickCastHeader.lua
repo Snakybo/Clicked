@@ -33,8 +33,15 @@ function Clicked:RegisterClickCastHeader()
 	-- set required data first
 	self.ClickCastHeader:SetAttribute("clicked-keybinds", "")
 	self.ClickCastHeader:SetAttribute("clicked-identifiers", "")
+	self.ClickCastHeader:Execute([[
+		blacklist = table.new()
+	]])
 
 	self.ClickCastHeader:SetAttribute("setup-keybinds", [[
+		if blacklist[self:GetName()] then
+			return
+		end
+
 		if currentClickcastButton ~= nil then
 			control:RunFor(currentClickcastButton, control:GetAttribute("clear-keybinds"))
 		end
@@ -134,6 +141,25 @@ function Clicked:RegisterClickCastHeader()
 	for frame in pairs(originalClickCastFrames) do
 		self:RegisterClickCastFrame("", frame)
 	end
+end
+
+function Clicked:UpdateClickCastHeaderBlacklist()
+	local blacklist = Clicked.db.profile.blacklist
+	local data = {
+		"blacklist = table.wipe(blacklist)"
+	}
+
+	for frame, blacklisted in pairs(blacklist) do
+		if blacklisted then
+			local line = [[
+				blacklist["%s"] = true
+			]]
+
+			table.insert(data, string.format(line, frame))
+		end
+	end
+
+	self.ClickCastHeader:Execute(table.concat(data, "\n"))
 end
 
 function Clicked:UpdateClickCastHeader(keybinds)
