@@ -155,4 +155,4 @@ L["Sending profile to %s, progress %d/%d (%d%%)"] = true
 L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."] = true
 L["Unable to send a message to %s. Make sure that they are online, have allowed profile sharing, and are on the same realm or a connected realm."] = true
 L["Waiting for acknowledgement from %s"] = true
-L["Profile import successful, do you want to apply this profile? This will overwrite the current profile?"] = true
+L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."] = true
