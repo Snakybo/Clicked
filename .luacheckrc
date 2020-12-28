@@ -45,6 +45,7 @@ read_globals = {
 	"CreateFrame",
 	"DisableAddOn",
 	"C_ChatInfo",
+	"C_Covenants",
 	"C_CreatureInfo",
 	"C_PvP",
 	"C_SpecializationInfo",

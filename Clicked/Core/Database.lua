@@ -109,6 +109,15 @@ function Clicked:GetNewBindingTemplate()
 		template.load.talent = GetTriStateLoadOptionTemplate(1)
 		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
 		template.load.warMode = GetLoadOptionTemplate(Clicked.WarModeState.IN_WAR_MODE)
+
+		local covenantId = C_Covenants.GetActiveCovenantID()
+
+		-- No covenant selected
+		if covenantId == 0 then
+			covenantId = 1
+		end
+
+		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
 	end
 
 	return template
@@ -676,6 +685,21 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("0.13.0")
+	end
+
+	-- 0.13.x to 0.14.0
+	if string.sub(from, 1, 4) == "0.13" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.covenant = {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
+			}
+		end
+
+		FinalizeVersionUpgrade("0.14.0")
 	end
 
 	profile.version = self.VERSION

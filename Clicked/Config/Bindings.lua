@@ -1084,6 +1084,22 @@ local function DrawLoadPet(container, pet)
 	DrawDropdownLoadOption(container, PET, items, order, pet)
 end
 
+local function DrawLoadInCovenant(container, covenant)
+	local ids = C_Covenants.GetCovenantIDs()
+	local items = {}
+	local order = {}
+
+	for _, id in ipairs(ids) do
+		local data = C_Covenants.GetCovenantData(id)
+		local name = data.name
+
+		items[id] = name
+		table.insert(order, id)
+	end
+
+	DrawTristateLoadOption(container, L["Covenant Selected"], items, order, covenant)
+end
+
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
@@ -1138,6 +1154,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadInStance(container, load.form, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
+		DrawLoadInCovenant(container, load.covenant)
 	end
 
 	DrawLoadCombat(container, load.combat)

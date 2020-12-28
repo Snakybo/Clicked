@@ -116,6 +116,7 @@ L["In a raid group"] = true
 L["In a party or raid group"] = true
 L["Pet exists"] = true
 L["No pet"] = true
+L["Covenant Selected"] = true
 L["Not loaded"] = true
 L["Generated local macro"] = true
 L["Generated full macro"] = true
