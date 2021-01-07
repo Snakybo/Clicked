@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 - Optimized file size
+- Removed non-icons from the icon selector
 
 ## [0.13.4] - 2020-12-26
 
