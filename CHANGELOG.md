@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add Covenant Selected load condition
 - Add an option to target a unit after casting on them
+- Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
 
 ### Changed
 
