@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add Covenant Selected load condition
+- Add an option to target a unit after casting on them
 
 ### Changed
 

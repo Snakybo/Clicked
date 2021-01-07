@@ -373,7 +373,7 @@ local function ProcessBuckets(hovercast, regular)
 
 		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
 			command.action = Clicked.CommandType.MACRO
-			command.data, command.macroFlags = Clicked:GetMacroForBindings(bindings, interactionType)
+			command.data = Clicked:GetMacroForBindings(bindings, interactionType)
 		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
 			command.action = Clicked.CommandType.TARGET
 		elseif reference.type == Clicked.BindingTypes.UNIT_MENU then
@@ -789,6 +789,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	local interrupt = false
 	local startAutoAttack = false
 	local cancelQueuedSpell = false
+	local targetUnitAfterCast = false
 
 	local actions = {}
 
@@ -876,10 +877,15 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	for _, binding in ipairs(bindings) do
 		local value = Clicked:GetActiveBindingValue(binding)
 
+		if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
+			targetUnitAfterCast = true
+			table.insert(result, "/tar " .. table.concat(allFlags, ""))
+		end
+
 		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
 			table.insert(result, value)
 		end
 	end
 
-	return table.concat(result, "\n"), allFlags
+	return table.concat(result, "\n")
 end

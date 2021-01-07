@@ -66,7 +66,8 @@ function Clicked:GetNewBindingTemplate()
 			macroMode = Clicked.MacroMode.FIRST,
 			interrupt = false,
 			allowStartAttack = true,
-			cancelQueuedSpell = false
+			cancelQueuedSpell = false,
+			targetUnitAfterCast = false
 		},
 		targets = {
 			hovercast = {
@@ -697,6 +698,8 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 					1
 				}
 			}
+
+			binding.action.targetUnitAfterCast = false
 		end
 
 		FinalizeVersionUpgrade("0.14.0")

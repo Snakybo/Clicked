@@ -721,6 +721,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 	CreateCheckbox(group, L["Interrupt current cast"], "interrupt")
 	CreateCheckbox(group, L["Allow starting of auto attacks"], "allowStartAttack")
 	CreateCheckbox(group, L["Override queued spell"], "cancelQueuedSpell")
+	CreateCheckbox(group, L["Target after cast"], "targetUnitAfterCast")
 end
 
 local function DrawBindingActionPage(container, binding)
