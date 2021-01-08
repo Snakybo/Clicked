@@ -85,7 +85,7 @@ You can configure as many bindings on the same keybind as you want, Clicked will
 
 With the above configuration, Clicked will automatically combine the Flash of Light and Crusader Strike bindings and generate a macro:
 
-```text
+```
 /use [@target,help] Flash of Light; [@target,harm] Crusader Strike; [@player] Flash of Light
 ```
 
