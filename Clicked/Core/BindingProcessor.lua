@@ -125,7 +125,6 @@ local function GetMacroSegmentFromAction(action, interactionType)
 	if Clicked:CanUnitBeDead(action.unit) then
 		if action.vitals == Clicked.TargetVitals.ALIVE then
 			table.insert(flags, "nodead")
-			impliedExists = true
 		elseif action.vitals == Clicked.TargetVitals.DEAD then
 			table.insert(flags, "dead")
 			impliedExists = true
