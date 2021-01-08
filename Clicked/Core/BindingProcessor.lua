@@ -133,6 +133,7 @@ local function GetMacroSegmentFromAction(action, interactionType)
 
 	if action.pet == Clicked.PetState.ACTIVE then
 		table.insert(flags, "pet")
+		impliedExists = true
 	elseif action.pet == Clicked.PetState.INACTIVE then
 		table.insert(flags, "nopet")
 	end
