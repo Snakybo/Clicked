@@ -67,7 +67,7 @@ A full list of all available load conditions:
 * **PvP talent selected** checks if you have the selected PvP talent(s) active
 * **Stance** (or **Form**) checks if you are in the selected stance(s) or shapeshift form(s)
 * **War Mode** checks if you are in the selected War Mode state
-* **Covenant Selected** checks if you are in one of the selected convenant(s)
+* **Covenant selected** checks if you are in one of the selected convenant(s)
 * **Combat** checks if you are in the selected combat state
 * **Spell known** checks if you can currently cast the specified spell or ability
 * **In group** checks if you are in the specified group type (solo, party, raid)
