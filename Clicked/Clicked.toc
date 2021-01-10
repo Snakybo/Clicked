@@ -6,7 +6,7 @@
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.14.0
+## Version: 0.14.1
 ## Notes: Keybindings made easy.
 ## SavedVariables: ClickedDB
 ## OptionalDeps: Ace3
