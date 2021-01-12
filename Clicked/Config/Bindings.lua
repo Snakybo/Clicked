@@ -1098,7 +1098,7 @@ local function DrawLoadInCovenant(container, covenant)
 		table.insert(order, id)
 	end
 
-	DrawTristateLoadOption(container, L["Covenant Selected"], items, order, covenant)
+	DrawTristateLoadOption(container, L["Covenant selected"], items, order, covenant)
 end
 
 local function DrawLoadInInstanceType(container, instanceType)
