@@ -90,7 +90,8 @@ function Clicked:GetNewBindingTemplate()
 			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
 			playerInGroup = GetLoadOptionTemplate(""),
 			form = GetTriStateLoadOptionTemplate(1),
-			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE)
+			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE),
+			instanceType = GetTriStateLoadOptionTemplate("NONE")
 		},
 		cache = {
 			displayName = "",
@@ -703,6 +704,21 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("0.14.0")
+	end
+
+	-- 0.14.x to 0.15.0
+	if string.sub(from, 1, 4) == "0.14" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.instanceType = {
+				selected = 0,
+				single = "NONE",
+				multiple = {
+					"NONE"
+				}
+			}
+		end
+
+		FinalizeVersionUpgrade("0.15.0")
 	end
 
 	profile.version = self.VERSION

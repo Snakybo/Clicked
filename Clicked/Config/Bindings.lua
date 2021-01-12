@@ -1101,6 +1101,45 @@ local function DrawLoadInCovenant(container, covenant)
 	DrawTristateLoadOption(container, L["Covenant Selected"], items, order, covenant)
 end
 
+local function DrawLoadInInstanceType(container, instanceType)
+	local items
+	local order
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		items = {
+			NONE = L["No Instance"],
+			SCENARIO = L["Scenario"],
+			PARTY = L["Dungeon"],
+			RAID = L["Raid"],
+			PVP = BATTLEGROUND,
+			ARENA = ARENA
+		}
+
+		order = {
+			"NONE",
+			"SCENARIO",
+			"PARTY",
+			"RAID",
+			"PVP",
+			"ARENA"
+		}
+	else
+		items = {
+			NONE = L["No Instance"],
+			DUNGEON = L["Dungeon"],
+			RAID = L["Raid"]
+		}
+
+		order = {
+			"NONE",
+			"DUNGEON",
+			"RAID"
+		}
+	end
+
+	DrawTristateLoadOption(container, L["Instance type"], items, order, instanceType)
+end
+
 local function DrawBindingLoadOptionsPage(container, binding)
 	local load = binding.load
 
@@ -1155,6 +1194,7 @@ local function DrawBindingLoadOptionsPage(container, binding)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadInStance(container, load.form, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
+		DrawLoadInInstanceType(container, load.instanceType)
 		DrawLoadInCovenant(container, load.covenant)
 	end
 

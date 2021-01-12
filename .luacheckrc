@@ -85,6 +85,7 @@ read_globals = {
 	"IsAddOnLoaded",
 	"IsAltKeyDown",
 	"IsControlKeyDown",
+	"IsInInstance",
 	"IsInRaid",
 	"IsMetaKeyDown",
 	"IsShiftKeyDown",
@@ -121,6 +122,8 @@ read_globals = {
 	"hooksecurefunc",
 
 	-- Global localization
+	"ARENA",
+	"BATTLEGROUND",
 	"CANCEL",
 	"CLASS",
 	"COMBAT",

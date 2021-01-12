@@ -724,6 +724,30 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- instance type
+	do
+		local function IsInInstanceType(type)
+			local inInstance, instanceType = IsInInstance()
+
+			-- Convert to lowercase as that is what `IsInInstance` returns
+			type = string.lower(type)
+
+			if type == "none" then
+				return not inInstance
+			else
+				if inInstance then
+					return type == instanceType
+				end
+
+				return false
+			end
+		end
+
+		if not ValidateTriStateLoadOption(load.instanceType, IsInInstanceType) then
+			return false
+		end
+	end
+
 	do
 		local playerInGroup = load.playerInGroup
 
