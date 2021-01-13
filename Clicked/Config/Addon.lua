@@ -96,7 +96,7 @@ local function OpenImportExportFrame(mode)
 					OverwriteCurrentProfile(data, mode == "import_full")
 				end
 
-				Clicked:ShowConfirmationPopup(L["Profile import successful, do you want to apply this profile? This will overwrite the current profile?"], OnConfirm)
+				Clicked:ShowConfirmationPopup(L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."], OnConfirm)
 				importExportFrame:Hide()
 			else
 				textField:SetText("")
