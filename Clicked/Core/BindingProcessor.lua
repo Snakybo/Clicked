@@ -24,6 +24,9 @@ Clicked.TargetUnits = {
 	PARTY_3 = "PARTY_3",
 	PARTY_4 = "PARTY_4",
 	PARTY_5 = "PARTY_5",
+	ARENA_1 = "ARENA_1",
+	ARENA_2 = "ARENA_2",
+	ARENA_3 = "ARENA_3",
 	FOCUS = "FOCUS",
 	MOUSEOVER = "MOUSEOVER",
 	CURSOR = "CURSOR"
@@ -106,6 +109,12 @@ local function GetMacroSegmentFromAction(action, interactionType)
 		table.insert(flags, "@party4")
 	elseif action.unit == Clicked.TargetUnits.PARTY_5 then
 		table.insert(flags, "@party5")
+	elseif action.unit == Clicked.TargetUnits.ARENA_1 then
+		table.insert(flags, "@arena1")
+	elseif action.unit == Clicked.TargetUnits.ARENA_2 then
+		table.insert(flags, "@arena2")
+	elseif action.unit == Clicked.TargetUnits.ARENA_3 then
+		table.insert(flags, "@arena3")
 	elseif action.unit == Clicked.TargetUnits.FOCUS then
 		table.insert(flags, "@focus")
 	elseif action.unit == Clicked.TargetUnits.CURSOR then

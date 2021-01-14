@@ -436,6 +436,18 @@ function Clicked:CanUnitBeHostile(unit)
 		return true
 	end
 
+	if unit == Clicked.TargetUnits.ARENA_1 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.ARENA_2 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.ARENA_3 then
+		return true
+	end
+
 	-- nil should always refer to hovercast units here
 	if unit == nil then
 		return true
@@ -481,6 +493,18 @@ function Clicked:CanUnitBeDead(unit)
 	end
 
 	if unit == Clicked.TargetUnits.PARTY_5 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.ARENA_1 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.ARENA_2 then
+		return true
+	end
+
+	if unit == Clicked.TargetUnits.ARENA_3 then
 		return true
 	end
 

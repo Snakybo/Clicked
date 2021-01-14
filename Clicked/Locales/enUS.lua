@@ -86,6 +86,7 @@ L["Unit frame"] = true
 L["Cursor"] = true
 L["Pet target"] = true
 L["Party %s"] = true
+L["Arena %s"] = true
 L["<No one>"] = true
 L["<Remove this target>"] = true
 L["Friendly, Hostile"] = true

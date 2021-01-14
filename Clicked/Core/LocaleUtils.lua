@@ -99,7 +99,10 @@ function Clicked:GetLocalizedTargetUnits()
 		[Clicked.TargetUnits.PARTY_2] = L["Party %s"]:format("2"),
 		[Clicked.TargetUnits.PARTY_3] = L["Party %s"]:format("3"),
 		[Clicked.TargetUnits.PARTY_4] = L["Party %s"]:format("4"),
-		[Clicked.TargetUnits.PARTY_5] = L["Party %s"]:format("5")
+		[Clicked.TargetUnits.PARTY_5] = L["Party %s"]:format("5"),
+		[Clicked.TargetUnits.ARENA_1] = L["Arena %s"]:format("1"),
+		[Clicked.TargetUnits.ARENA_2] = L["Arena %s"]:format("2"),
+		[Clicked.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
 	}
 
 	local order = {
@@ -116,7 +119,10 @@ function Clicked:GetLocalizedTargetUnits()
 		Clicked.TargetUnits.PARTY_2,
 		Clicked.TargetUnits.PARTY_3,
 		Clicked.TargetUnits.PARTY_4,
-		Clicked.TargetUnits.PARTY_5
+		Clicked.TargetUnits.PARTY_5,
+		Clicked.TargetUnits.ARENA_1,
+		Clicked.TargetUnits.ARENA_2,
+		Clicked.TargetUnits.ARENA_3
 	}
 
 	return items, order
