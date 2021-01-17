@@ -416,44 +416,18 @@ end
 --- @param unit string
 --- @return boolean
 function Clicked:CanUnitBeHostile(unit)
-	if unit == Clicked.TargetUnits.TARGET then
-		return true
-	end
+	local valid = {
+		[Clicked.TargetUnits.TARGET] = true,
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
+		[Clicked.TargetUnits.PET_TARGET] = true,
+		[Clicked.TargetUnits.ARENA_1] = true,
+		[Clicked.TargetUnits.ARENA_2] = true,
+		[Clicked.TargetUnits.ARENA_3] = true,
+		[Clicked.TargetUnits.FOCUS] = true,
+		[Clicked.TargetUnits.MOUSEOVER] = true
+	}
 
-	if unit == Clicked.TargetUnits.TARGET_OF_TARGET then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.FOCUS then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.MOUSEOVER then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PET_TARGET then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_1 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_2 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_3 then
-		return true
-	end
-
-	-- nil should always refer to hovercast units here
-	if unit == nil then
-		return true
-	end
-
-	return false
+	return valid[unit] == true
 end
 
 --- Check if a binding's target unit supports `dead` and `nodead` modifiers.
@@ -464,68 +438,24 @@ end
 --- @param unit string
 --- @return boolean
 function Clicked:CanUnitBeDead(unit)
-	if unit == Clicked.TargetUnits.TARGET then
-		return true
-	end
+	local valid = {
+		[Clicked.TargetUnits.TARGET] = true,
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
+		[Clicked.TargetUnits.PET] = true,
+		[Clicked.TargetUnits.PET_TARGET] = true,
+		[Clicked.TargetUnits.PARTY_1] = true,
+		[Clicked.TargetUnits.PARTY_2] = true,
+		[Clicked.TargetUnits.PARTY_3] = true,
+		[Clicked.TargetUnits.PARTY_4] = true,
+		[Clicked.TargetUnits.PARTY_5] = true,
+		[Clicked.TargetUnits.ARENA_1] = true,
+		[Clicked.TargetUnits.ARENA_2] = true,
+		[Clicked.TargetUnits.ARENA_3] = true,
+		[Clicked.TargetUnits.FOCUS] = true,
+		[Clicked.TargetUnits.MOUSEOVER] = true
+	}
 
-	if unit == Clicked.TargetUnits.TARGET_OF_TARGET then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.FOCUS then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PARTY_1 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PARTY_2 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PARTY_3 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PARTY_4 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PARTY_5 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_1 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_2 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.ARENA_3 then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.MOUSEOVER then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PET then
-		return true
-	end
-
-	if unit == Clicked.TargetUnits.PET_TARGET then
-		return true
-	end
-
-	-- nil should always refer to hovercast units here
-	if unit == nil then
-		return true
-	end
-
-	return false
+	return valid[unit] == true
 end
 
 --- Check if a binding's target unit can have a follow up target. This will be
@@ -536,24 +466,24 @@ end
 --- @param unit string
 --- @return string
 function Clicked:CanUnitHaveFollowUp(unit)
-	if unit == Clicked.TargetUnits.PLAYER then
-		return false
-	end
+	local valid = {
+		[Clicked.TargetUnits.TARGET] = true,
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
+		[Clicked.TargetUnits.PET] = true,
+		[Clicked.TargetUnits.PET_TARGET] = true,
+		[Clicked.TargetUnits.PARTY_1] = true,
+		[Clicked.TargetUnits.PARTY_2] = true,
+		[Clicked.TargetUnits.PARTY_3] = true,
+		[Clicked.TargetUnits.PARTY_4] = true,
+		[Clicked.TargetUnits.PARTY_5] = true,
+		[Clicked.TargetUnits.ARENA_1] = true,
+		[Clicked.TargetUnits.ARENA_2] = true,
+		[Clicked.TargetUnits.ARENA_3] = true,
+		[Clicked.TargetUnits.FOCUS] = true,
+		[Clicked.TargetUnits.MOUSEOVER] = true,
+	}
 
-	if unit == Clicked.TargetUnits.CURSOR then
-		return false
-	end
-
-	if unit == Clicked.TargetUnits.DEFAULT then
-		return false
-	end
-
-	-- nil should always refer to hovercast units here
-	if unit == nil then
-		return false
-	end
-
-	return true
+	return valid[unit] == true
 end
 
 --- Notify the user that Clicked is currently in combat lockdown mode,
