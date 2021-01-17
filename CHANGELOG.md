@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add arena 1-3 binding targets
+- Add spellbook spell rank support for WoW Classic
 
 ## [0.15.0] - 20201-01-12
 

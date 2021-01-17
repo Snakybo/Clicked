@@ -147,7 +147,12 @@ local function HijackSpellBookButtons(base)
 
 			button:SetScript("OnClick", function(self, btn)
 				local slot = SpellBook_GetSpellBookSlot(parent);
-				local name = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+
+				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not Clicked:IsStringNilOrEmpty(subName) then
+					name = string.format("%s(%s)", name, subName)
+				end
+
 				OnSpellBookButtonClick(name)
 			end)
 
