@@ -80,8 +80,12 @@ Clicked.InteractionType = {
 Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
 Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
 
-local activeBindings
-local pendingReload
+local activeBindings = {}
+
+local hovercastBucket = {}
+local regularBucket = {}
+
+local isPendingReload = false
 
 local function GetMacroSegmentFromAction(action, interactionType)
 	local flags = {}
@@ -366,7 +370,7 @@ local function GetInternalBindingType(binding)
 	return binding.type
 end
 
-local function ProcessBuckets(hovercast, regular)
+local function ProcessBuckets()
 	local function Process(keybind, bindings, interactionType)
 		if #bindings == 0 then
 			return nil
@@ -396,12 +400,12 @@ local function ProcessBuckets(hovercast, regular)
 
 	local commands = {}
 
-	for keybind, bindings in pairs(hovercast) do
+	for keybind, bindings in pairs(hovercastBucket) do
 		local command = Process(keybind, bindings, Clicked.InteractionType.HOVERCAST)
 		table.insert(commands, command)
 	end
 
-	for keybind, bindings in pairs(regular) do
+	for keybind, bindings in pairs(regularBucket) do
 		local command = Process(keybind, bindings, Clicked.InteractionType.REGULAR)
 		table.insert(commands, command)
 	end
@@ -423,24 +427,22 @@ local function GenerateBuckets(bindings)
 		end
 	end
 
-	local hovercast = {}
-	local regular = {}
+	table.wipe(hovercastBucket)
+	table.wipe(regularBucket)
 
 	for _, binding in ipairs(bindings) do
 		local key = binding.keybind
 
 		if binding.targets.hovercast.enabled then
-			hovercast[key] = hovercast[key] or {}
-			Insert(hovercast[key], binding)
+			hovercastBucket[key] = hovercastBucket[key] or {}
+			Insert(hovercastBucket[key], binding)
 		end
 
 		if binding.targets.regular.enabled then
-			regular[key] = regular[key] or {}
-			Insert(regular[key], binding)
+			regularBucket[key] = regularBucket[key] or {}
+			Insert(regularBucket[key], binding)
 		end
 	end
-
-	return hovercast, regular
 end
 
 --- Reloads the active bindings, this will go through all configured bindings
@@ -449,11 +451,11 @@ end
 --- PrioritizeBindings function to sort them.
 function Clicked:ReloadActiveBindings()
 	if InCombatLockdown() then
-		pendingReload = true
+		isPendingReload = true
 		return
 	end
 
-	activeBindings = {}
+	table.wipe(activeBindings)
 
 	for _, binding in self:IterateConfiguredBindings() do
 		if self:CanBindingLoad(binding) then
@@ -461,18 +463,18 @@ function Clicked:ReloadActiveBindings()
 		end
 	end
 
-	local hovercast, regular = GenerateBuckets(activeBindings)
-	ProcessBuckets(hovercast, regular)
+	GenerateBuckets(activeBindings)
+	ProcessBuckets()
 
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
 end
 
 function Clicked:ReloadActiveBindingsIfPending()
-	if not pendingReload then
+	if not isPendingReload then
 		return
 	end
 
-	pendingReload = false
+	isPendingReload = false
 	self:ReloadActiveBindings()
 end
 
