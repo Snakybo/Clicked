@@ -17,7 +17,8 @@ local BLIZZARD_UNIT_FRAMES_MAINLINE = {
 		"Boss1TargetFrame",
 		"Boss2TargetFrame",
 		"Boss3TargetFrame",
-		"Boss4TargetFrame"
+		"Boss4TargetFrame",
+		"Boss5TargetFrame"
 	},
 	["Blizzard_ArenaUI"] = {
 		"ArenaEnemyFrame1",
@@ -43,7 +44,8 @@ local BLIZZARD_UNIT_FRAMES_CLASSIC = {
 		"Boss1TargetFrame",
 		"Boss2TargetFrame",
 		"Boss3TargetFrame",
-		"Boss4TargetFrame"
+		"Boss4TargetFrame",
+		"Boss5TargetFrame"
 	}
 }
 
