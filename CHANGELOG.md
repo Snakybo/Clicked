@@ -8,14 +8,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [0.15.1] - 2021-01-21
 
 ### Added
 
 - Add arena 1-3 binding targets
 - Add spellbook spell rank support for WoW Classic
 
-## [0.15.0] - 20201-01-12
+## [0.15.0] - 2021-01-12
 
 ### Added
 
@@ -500,7 +500,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.14.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.15.1...master
+[0.15.1]: https://github.com/Snakybo/Clicked/releases/tag/0.15.1
+[0.15.0]: https://github.com/Snakybo/Clicked/releases/tag/0.15.0
 [0.14.0]: https://github.com/Snakybo/Clicked/releases/tag/0.14.0
 [0.13.4]: https://github.com/Snakybo/Clicked/releases/tag/0.13.4
 [0.13.3]: https://github.com/Snakybo/Clicked/releases/tag/0.13.3
