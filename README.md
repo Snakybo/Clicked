@@ -42,6 +42,7 @@ A full list of all available targets:
 * **Pet**
 * **Pet target**
 * **Party 1-5**
+* **Arena 1-3**
 
 In addition to the unit to cast on, you can also configure (optional) modifiers for that target:
 
@@ -71,6 +72,7 @@ A full list of all available load conditions:
 * **Combat** checks if you are in the selected combat state
 * **Spell known** checks if you can currently cast the specified spell or ability
 * **In group** checks if you are in the specified group type (solo, party, raid)
+* **Instance type** checks if you are in the specified instance type(s) (none, arena, battleground, dungeon, raid)
 * **Player in group** checks if the specified player is in your group
 * **Pet** checks if your pet is (in)active
 
