@@ -87,7 +87,7 @@ local regularBucket = {}
 
 local isPendingReload = false
 
-local function GetMacroSegmentFromAction(action, interactionType)
+local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local impliedExists = false
 
@@ -151,7 +151,7 @@ local function GetMacroSegmentFromAction(action, interactionType)
 		table.insert(flags, "nopet")
 	end
 
-	if not impliedExists and interactionType == Clicked.InteractionType.REGULAR and Clicked:CanUnitHaveFollowUp(action.unit) then
+	if not impliedExists and interactionType == Clicked.InteractionType.REGULAR and not isLast then
 		table.insert(flags, "exists")
 	end
 
@@ -281,81 +281,70 @@ local function ConstructActions(binding, interactionType)
 		for _, target in ipairs(binding.targets.regular) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
-
-			if not Clicked:CanUnitHaveFollowUp(target.unit) then
-				break
-			end
 		end
 	end
 
 	return actions
 end
 
-local function SortActions(left, right)
-	-- 1. @mouseover
-	if left.unit == Clicked.TargetUnits.MOUSEOVER and right.unit ~= Clicked.TargetUnits.MOUSEOVER then
-		return true
+local function SortActions(actions, indexMap)
+	local function SortFunc(left, right)
+		local priority = {
+			-- 1. Mouseover targets always come first
+			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.MOUSEOVER, comparison = "eq" },
+
+			-- 2. Hostility, vitals, combat, and form flags take presedence over actions
+			--    that don't specify them explicitly
+			{ left = #left.hostility, right = #right.hostility, value = 0, comparison = "gt" },
+			{ left = #left.vitals, right = #right.vitals, value = 0, comparison = "gt" },
+			{ left = #left.combat, right = #right.combat, value = 0, comparison = "gt" },
+			{ left = #left.forms, right = #right.forms, value = 0, comparison = "gt" },
+
+			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
+
+			-- 4. The player, cursor, and default targets will always come last
+			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.PLAYER, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.CURSOR, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.DEFAULT, comparison = "neq" }
+		}
+
+		for _, item in ipairs(priority) do
+			local l = item.left
+			local r = item.right
+			local v = item.value
+			local c = item.comparison
+
+			if c == "neq" then
+				c = "eq"
+
+				local t = l
+				l = r
+				r = t
+			end
+
+			if c == "eq" then
+				if l == v and r ~= v then
+					return true
+				end
+
+				if l ~= v and r == v then
+					return false
+				end
+			elseif c == "gt" then
+				if l > v and r == v then
+					return true
+				end
+
+				if l == v and r > v then
+					return false
+				end
+			end
+		end
+
+		return indexMap[left] < indexMap[right]
 	end
 
-	if left.unit ~= Clicked.TargetUnits.MOUSEOVER and right.unit == Clicked.TargetUnits.MOUSEOVER then
-		return false
-	end
-
-	-- 2. any hostility flags (help, harm)
-	if #left.hostility > 0 and #right.hostility == 0 then
-		return true
-	end
-
-	if #left.hostility == 0 and #right.hostility > 0 then
-		return false
-	end
-
-	-- 3. any vitals flags (dead, nodead)
-	if #left.vitals > 0 and #right.vitals == 0 then
-		return true
-	end
-
-	if #left.vitals == 0 and #right.vitals > 0 then
-		return false
-	end
-
-	-- 4. any combat flags (combat, nocombat)
-	if #left.combat > 0 and #right.combat == 0 then
-		return true
-	end
-
-	if #left.combat == 0 and #right.combat > 0 then
-		return false
-	end
-
-	-- 5. any form flags (forms:N)
-	if #left.forms > 0 and #right.forms == 0 then
-		return true
-	end
-
-	if #left.forms == 0 and #right.forms > 0 then
-		return false
-	end
-
-	-- 6. @player
-	if left.unit == Clicked.TargetUnits.PLAYER and right.unit ~= Clicked.TargetUnits.PLAYER then
-		return false
-	end
-
-	if left.unit ~= Clicked.TargetUnits.PLAYER and right.unit == Clicked.TargetUnits.PLAYER then
-		return true
-	end
-
-	-- 7. default
-	if left.unit == Clicked.TargetUnits.DEFAULT and right.unit ~= Clicked.TargetUnits.DEFAULT then
-		return false
-	end
-
-	if left.unit ~= Clicked.TargetUnits.DEFAULT and right.unit == Clicked.TargetUnits.DEFAULT then
-		return true
-	end
-
-	return false
+	table.sort(actions, SortFunc)
 end
 
 local function GetInternalBindingType(binding)
@@ -827,6 +816,7 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	local targetUnitAfterCast = false
 
 	local actions = {}
+	local actionIndexMap = {}
 
 	-- add a segment to remove the blue casting cursor
 	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
@@ -853,10 +843,6 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 						table.insert(extra, "/startattack [@target,harm]")
 						break
 					end
-
-					if not Clicked:CanUnitHaveFollowUp(target.unit) then
-						break
-					end
 				end
 			end
 
@@ -869,23 +855,28 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 				table.insert(result, 1, extra[i])
 			end
 
+			local next = 1
+
 			for _, action in ipairs(ConstructActions(binding, interactionType)) do
 				table.insert(actions, action)
+
+				actionIndexMap[action] = next
+				next = next + 1
 			end
 		end
 	end
 
 	-- Now sort the actions according to the above schema
 
-	table.sort(actions, SortActions)
+	SortActions(actions, actionIndexMap)
 
 	-- Construct a valid macro from the data
 
 	local allFlags = {}
 	local segments = {}
 
-	for _, action in ipairs(actions) do
-		local flags = GetMacroSegmentFromAction(action, interactionType)
+	for i, action in ipairs(actions) do
+		local flags = GetMacroSegmentFromAction(action, interactionType, i == #actions)
 
 		if #flags > 0 then
 			flags = "[" .. flags .. "] "

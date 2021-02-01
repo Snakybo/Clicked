@@ -945,12 +945,10 @@ local function DrawBindingTargetPage(container, binding)
 				if Clicked:CanUnitBeDead(target.unit) then
 					DrawTargetSelectionVitals(group, enabled, target)
 				end
-
-				enabled = enabled and Clicked:CanUnitHaveFollowUp(target.unit)
 			end
 
 			-- new target
-			if enabled and Clicked:CanUnitHaveFollowUp(regular[#regular].unit) then
+			do
 				local group = GUI:InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
 				container:AddChild(group)
 

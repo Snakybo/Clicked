@@ -458,34 +458,6 @@ function Clicked:CanUnitBeDead(unit)
 	return valid[unit] == true
 end
 
---- Check if a binding's target unit can have a follow up target. This will be
---- the case for most targets, but some targets act as a stop sign in macro code
---- as they will always be valid. For example [@player] or [@cursor] will always
---- be 'true' and thus it doesn't make sense to allow targets beyond.
----
---- @param unit string
---- @return string
-function Clicked:CanUnitHaveFollowUp(unit)
-	local valid = {
-		[Clicked.TargetUnits.TARGET] = true,
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
-		[Clicked.TargetUnits.PET] = true,
-		[Clicked.TargetUnits.PET_TARGET] = true,
-		[Clicked.TargetUnits.PARTY_1] = true,
-		[Clicked.TargetUnits.PARTY_2] = true,
-		[Clicked.TargetUnits.PARTY_3] = true,
-		[Clicked.TargetUnits.PARTY_4] = true,
-		[Clicked.TargetUnits.PARTY_5] = true,
-		[Clicked.TargetUnits.ARENA_1] = true,
-		[Clicked.TargetUnits.ARENA_2] = true,
-		[Clicked.TargetUnits.ARENA_3] = true,
-		[Clicked.TargetUnits.FOCUS] = true,
-		[Clicked.TargetUnits.MOUSEOVER] = true,
-	}
-
-	return valid[unit] == true
-end
-
 --- Notify the user that Clicked is currently in combat lockdown mode,
 --- this will print a message to the user's chat frame with a helpful message.
 function Clicked:NotifyCombatLockdown()
