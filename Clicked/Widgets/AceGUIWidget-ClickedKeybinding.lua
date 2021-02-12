@@ -22,7 +22,6 @@ local function Keybinding_OnClick(frame, button)
 		if not self.waitingForKey and passed > 0.01 then
 			frame:EnableKeyboard(true)
 			frame:EnableMouseWheel(true)
-			self.msgframe:Show()
 			frame:LockHighlight()
 			self.waitingForKey = true
 		end
@@ -68,7 +67,6 @@ local function Keybinding_OnKeyDown(frame, key)
 
 		frame:EnableKeyboard(false)
 		frame:EnableMouseWheel(false)
-		self.msgframe:Hide()
 		frame:UnlockHighlight()
 		self.waitingForKey = nil
 		self.lastClickTime = GetTime()
@@ -107,10 +105,6 @@ local function Constructor()
 	button:SetScript("OnClick", Keybinding_OnClick)
 	button:SetScript("OnKeyDown", Keybinding_OnKeyDown)
 	button:SetScript("OnMouseDown", Keybinding_OnMouseDown)
-
-	local msgframe = keybinding.msgframe
-	local msg = msgframe.msg
-	msg:SetText(L["Press a key to bind, or ESC to clear the binding."])
 
 	return keybinding
 end

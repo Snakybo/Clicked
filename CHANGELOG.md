@@ -12,6 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## Added
 
+- Add user-friendly tooltips explaining the binding action page
 - Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
 
 ## [0.15.3] - 2021-02-01

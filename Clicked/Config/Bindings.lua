@@ -99,6 +99,40 @@ local function ParseItemLink(link, ...)
 	return nil
 end
 
+-- Tooltips
+
+local function ShowTooltip(widget, text, subText)
+	local tooltip = AceGUI.tooltip
+
+	if subText ~= nil then
+		text = text .. "\n|cffffffff" .. subText .. "|r"
+	end
+
+	tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
+	tooltip:ClearAllPoints()
+	tooltip:SetPoint("BOTTOMLEFT", widget.frame, "TOPLEFT")
+	tooltip:SetText(text, true)
+	tooltip:Show()
+end
+
+local function HideTooltip()
+	local tooltip = AceGUI.tooltip
+	tooltip:Hide()
+end
+
+local function RegisterTooltip(widget, text, subText)
+	local function OnEnter()
+		ShowTooltip(widget, text, subText)
+	end
+
+	local function OnLeave()
+		HideTooltip()
+	end
+
+	widget:SetCallback("OnEnter", OnEnter)
+	widget:SetCallback("OnLeave", OnLeave)
+end
+
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
@@ -492,6 +526,8 @@ local function DrawSpellSelection(container, action, cache)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
 
+			RegisterTooltip(widget, L["Target Spell"], L["Enter the spell name or spell ID."])
+
 			group:AddChild(widget)
 		end
 
@@ -512,25 +548,10 @@ local function DrawSpellSelection(container, action, cache)
 				end
 			end
 
-			local function OnEnter(widget)
-				local tooltip = AceGUI.tooltip
-
-				tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
-				tooltip:ClearAllPoints()
-				tooltip:SetPoint("LEFT", widget.frame, "RIGHT")
-				tooltip:SetText(L["Click on a spell book entry to select it."], 1, 0.82, 0, 1, true)
-				tooltip:Show()
-			end
-
-			local function OnLeave()
-				local tooltip = AceGUI.tooltip
-				tooltip:Hide()
-			end
-
 			local widget = GUI:Button(L["Pick from spellbook"], OnClick)
 			widget:SetFullWidth(true)
-			widget:SetCallback("OnEnter", OnEnter)
-			widget:SetCallback("OnLeave", OnLeave)
+
+			RegisterTooltip(widget, L["Click on a spell book entry to select it."])
 
 			group:AddChild(widget)
 		end
@@ -566,13 +587,7 @@ local function DrawItemSelection(container, action, cache)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
 
-			group:AddChild(widget)
-		end
-
-		-- help text
-		do
-			local widget = GUI:Label("\n" .. L["Tip: You can shift-click an item in your bags when the input field is selected to autofill."])
-			widget:SetFullWidth(true)
+			RegisterTooltip(widget, L["Target Item"], L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
 
 			group:AddChild(widget)
 		end
@@ -689,7 +704,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 		return false
 	end
 
-	local function CreateCheckbox(group, label, key)
+	local function CreateCheckbox(group, label, tooltipText, key)
 		local isUsingShared = false
 
 		local function OnValueChanged(frame, event, value)
@@ -707,6 +722,8 @@ local function DrawSharedSpellItemOptions(container, binding)
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
 
+		RegisterTooltip(widget, label, tooltipText)
+
 		if binding.action[key] then
 			widget:SetValue(true)
 		else
@@ -723,10 +740,10 @@ local function DrawSharedSpellItemOptions(container, binding)
 	local group = GUI:InlineGroup(L["Shared Options"])
 	container:AddChild(group)
 
-	CreateCheckbox(group, L["Interrupt current cast"], "interrupt")
-	CreateCheckbox(group, L["Allow starting of auto attacks"], "allowStartAttack")
-	CreateCheckbox(group, L["Override queued spell"], "cancelQueuedSpell")
-	CreateCheckbox(group, L["Target after cast"], "targetUnitAfterCast")
+	CreateCheckbox(group, L["Interrupt current cast"], L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
+	CreateCheckbox(group, L["Allow starting of auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "allowStartAttack")
+	CreateCheckbox(group, L["Override queued spell"], L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
+	CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
 end
 
 local function DrawBindingActionPage(container, binding)
@@ -1417,6 +1434,8 @@ local function DrawBinding(container)
 		local widget = GUI:KeybindingButton(nil, binding, "keybind")
 		widget:SetCallback("OnKeyChanged", OnKeyChanged)
 		widget:SetFullWidth(true)
+
+		RegisterTooltip(widget, L["Click and press a key to bind, or ESC to clear the binding."])
 
 		container:AddChild(widget)
 	end
