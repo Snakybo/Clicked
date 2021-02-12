@@ -6,10 +6,9 @@
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.15.3
+## Version: 0.15.4
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
-## OptionalDeps: Ace3
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703
