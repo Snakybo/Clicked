@@ -23,6 +23,15 @@ local function Frame_OnKeyDown(frame, key)
 end
 
 --[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+local function OnAquire(self)
+	self:BaseOnAcquire()
+
+	self.frame:SetFrameStrata("HIGH")
+end
+
+--[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 
@@ -32,6 +41,9 @@ local function Constructor()
 
 	local frame = widget.frame
 	frame:SetScript("OnKeyDown", Frame_OnKeyDown)
+
+	widget.BaseOnAcquire = widget.OnAcquire
+	widget.OnAcquire = OnAquire
 
 	return AceGUI:RegisterAsContainer(widget)
 end

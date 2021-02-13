@@ -141,8 +141,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	end,
 	timeout = 0,
 	whileDead = true,
-	hideOnEscape = false,
-	preferredIndex = 3
+	hideOnEscape = false
 }
 
 StaticPopupDialogs["CLICKED_MESSAGE"] = {
@@ -153,8 +152,7 @@ StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	end,
 	timeout = 0,
 	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3
+	hideOnEscape = true
 }
 
 StaticPopupDialogs["CLICKED_CONFIRM"] = {
@@ -172,8 +170,7 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	end,
 	timeout = 0,
 	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3
+	hideOnEscape = true
 }
 
 --- Show a popup indicating Clicked is incompatible with the
