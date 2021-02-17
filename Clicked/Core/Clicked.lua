@@ -45,6 +45,8 @@ end
 
 local function OnEnteringCombat()
 	isPlayerInCombat = true
+
+	Clicked:UpdateUnitFrameTooltips()
 end
 
 local function OnLeavingCombat()
@@ -52,6 +54,7 @@ local function OnLeavingCombat()
 
 	Clicked:ProcessFrameQueue()
 	Clicked:ReloadActiveBindingsIfPending()
+	Clicked:UpdateUnitFrameTooltips()
 end
 
 local function OnPlayerEnteringWorld()
