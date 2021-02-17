@@ -2,6 +2,9 @@ local lastTooltipUpdateTime
 
 local function IsKeybindValidForCurrentModifiers(keybind)
 	local mods = {}
+	local current = {
+		count = 0
+	}
 
 	for match in string.gmatch(keybind, "[^-]+") do
 		table.insert(mods, match)
@@ -13,25 +16,32 @@ local function IsKeybindValidForCurrentModifiers(keybind)
 		return false
 	end
 
-	local ctrl = IsControlKeyDown()
-	local alt = IsAltKeyDown()
-	local shift = IsShiftKeyDown()
-	local meta = IsMetaKeyDown()
+	if IsControlKeyDown() then
+		current["CTRL"] = true
+		current.count = current.count + 1
+	end
+
+	if IsAltKeyDown() then
+		current["ALT"] = true
+		current.count = current.count + 1
+	end
+
+	if IsShiftKeyDown() then
+		current["SHIFT"] = true
+		current.count = current.count + 1
+	end
+
+	if IsMetaKeyDown() then
+		current["META"] = true
+		current.count = current.count + 1
+	end
+
+	if #mods ~= current.count then
+		return
+	end
 
 	for _, mod in ipairs(mods) do
-		if mod == "CTRL" and not ctrl then
-			return false
-		end
-
-		if mod == "ALT" and not alt then
-			return false
-		end
-
-		if mod == "SHIFT" and not shift then
-			return false
-		end
-
-		if mod == "META" and not meta then
+		if not current[mod] then
 			return false
 		end
 	end
