@@ -25,7 +25,8 @@ function Clicked:GetDatabaseDefaults()
 		profile = {
 			version = nil,
 			options = {
-				onKeyDown = false
+				onKeyDown = false,
+				tooltips = false
 			},
 			groups = {
 				next = 1
@@ -241,6 +242,8 @@ end
 --- @param binding table
 --- @return table
 function Clicked:GetActiveBindingValue(binding)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
 	if binding.type == Clicked.BindingTypes.SPELL then
 		return binding.action.spellValue
 	end
@@ -719,6 +722,12 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("0.15.0")
+	end
+
+	-- 0.15.x to 0.16.0
+	if string.sub(from, 1, 4) == "0.15" then
+		profile.options.tooltips = false
+		FinalizeVersionUpgrade("0.16.0")
 	end
 
 	profile.version = self.VERSION

@@ -434,6 +434,62 @@ local function GenerateBuckets(bindings)
 	end
 end
 
+local function IsHovercastSpellOrItemValidOnUnit(binding, target, isInCombat, isFriend, isDead)
+	if not binding.targets.hovercast.enabled then
+		return false
+	end
+
+	if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM then
+		return false
+	end
+
+	local spell = Clicked:GetActiveBindingValue(binding)
+
+	if binding.type == Clicked.BindingTypes.SPELL then
+		if not IsUsableSpell(spell) or not IsSpellInRange(spell, target) then
+			return false
+		end
+	elseif binding.type == Clicked.BindingTypes.ITEM then
+		local _, link = GetItemInfo(spell)
+
+		if link ~= nil then
+			local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+			spell = id
+		end
+
+		if not IsItemInRange(spell, target) then
+			return false
+		end
+	end
+
+	do
+		local combat = binding.load.combat
+
+		if combat.selected then
+			if combat.value == Clicked.CombatState.IN_COMBAT and not isInCombat or
+			   combat.value == Clicked.CombatState.NOT_IN_COMBAT and isInCombat then
+				return false
+			end
+		end
+	end
+
+	do
+		local hovercast = binding.targets.hovercast
+
+		if hovercast.hostility == Clicked.TargetHostility.HELP and not isFriend or
+		   hovercast.hostility == Clicked.TargetHostility.HARM and isFriend then
+			return false
+		end
+
+		if hovercast.vitals == Clicked.TargetVitals.DEAD and not isDead or
+		   hovercast.vitals == Clicked.TargetVitals.ALIVE and isDead then
+			return false
+		end
+	end
+
+	return true
+end
+
 --- Reloads the active bindings, this will go through all configured bindings
 --- and check their (current) validity using the CanBindingLoad function.
 --- If there are multiple bindings that use the same keybind it will use the
@@ -458,6 +514,10 @@ function Clicked:ReloadActiveBindings()
 	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
 end
 
+--- Reload the active bindings if required. This will mainly be the case if `ReloadActiveBindings`
+--- was called during combat or some other scenario in which it was not currently allowed to reload.
+---
+--- @see ReloadActiveBindings
 function Clicked:ReloadActiveBindingsIfPending()
 	if not isPendingReload then
 		return
@@ -467,8 +527,32 @@ function Clicked:ReloadActiveBindingsIfPending()
 	self:ReloadActiveBindings()
 end
 
+--- Create an interator for the currently active bindings for use in a `for in` loop.
 function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
+end
+
+--- Get all active hovercast bindings that are currently valid for the specified unit.
+--- A binding is considered valid if the state of the unit meets the target and load conditions
+--- specified in the binding, for example: the `combat`/`nocombat` option, `help`/`harm` option,
+--- or `dead`/`nodead` option.
+---
+---@param unit string
+---@return table
+function Clicked:GetHovercastBindingsForUnit(unit)
+	local result = {}
+
+	local isInCombat = Clicked.IsPlayerInCombat()
+	local isFriend = UnitIsFriend("player", unit)
+	local isDead = UnitIsDeadOrGhost(unit)
+
+	for _, binding in self:IterateActiveBindings() do
+		if IsHovercastSpellOrItemValidOnUnit(binding, unit, isInCombat, isFriend, isDead) then
+			table.insert(result, binding)
+		end
+	end
+
+	return result
 end
 
 --- Check if the specified binding is currently active based on the configuration
@@ -524,13 +608,9 @@ function Clicked:CanBindingLoad(binding)
 
 	local load = binding.load
 
-	do
-		-- If the "never load" toggle has been enabled, there's no point in checking other
-		-- values.
-
-		if load.never then
-			return false
-		end
+	-- If the "never load" toggle has been enabled, there's no point in checking other values.
+	if load.never then
+		return false
 	end
 
 	-- player name
@@ -690,6 +770,7 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- spell known
 	do
 		-- If the known spell limiter has been enabled, see if the spell is currrently
 		-- avaialble for the player. This is not limited to just spells as the name
@@ -706,6 +787,7 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- in group
 	do
 		local inGroup = load.inGroup
 
@@ -748,6 +830,7 @@ function Clicked:CanBindingLoad(binding)
 		end
 	end
 
+	-- player in group
 	do
 		local playerInGroup = load.playerInGroup
 

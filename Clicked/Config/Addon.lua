@@ -124,7 +124,7 @@ Module = {
 					name = L["Enable minimap icon"],
 					desc = L["Enable or disable the minimap icon."],
 					type = "toggle",
-					order = 1,
+					order = 100,
 					width = "full",
 					set = function(info, val)
 						Clicked.db.profile.minimap.hide = not val
@@ -143,7 +143,7 @@ Module = {
 					name = L["Cast on key down rather than key up"],
 					desc = L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."],
 					type = "toggle",
-					order = 2,
+					order = 200,
 					width = "full",
 					set = function(info, val)
 						Clicked.db.profile.options.onKeyDown = val
@@ -157,6 +157,19 @@ Module = {
 					end,
 					get = function(info)
 						return Clicked.db.profile.options.onKeyDown
+					end
+				},
+				tooltips = {
+					name = L["Show abilities in unit tooltips"],
+					desc = L["If enabled unit tooltips will be augmented to show abilities and keybinds that can be used on the target."],
+					type = "toggle",
+					order = 300,
+					width = "full",
+					set = function(info, val)
+						Clicked.db.profile.options.tooltips = val
+					end,
+					get = function(info)
+						return Clicked.db.profile.options.tooltips
 					end
 				}
 			}

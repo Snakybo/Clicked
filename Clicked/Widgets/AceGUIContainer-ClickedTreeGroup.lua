@@ -11,15 +11,6 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
 	return
 end
 
-local KEYBIND_ORDER_LIST = {
-	"BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "MOUSEWHEELUP", "MOUSEWHEELDOWN",
-	"`", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "=",
-	"NUMPAD0", "NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPAD4", "NUMPAD5", "NUMPAD6", "NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS", "NUMPADPLUS", "NUMPADDECIMAL",
-	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13",
-	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
-}
-
 -- Recycling functions
 local new, del
 do
@@ -49,50 +40,6 @@ local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "U
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
-local function GetKeybindIndex(keybind)
-	local mods = {}
-	local result = ""
-
-	for match in string.gmatch(keybind, "[^-]+") do
-		table.insert(mods, match)
-		result = match
-	end
-
-	table.remove(mods, #mods)
-
-	local index = #KEYBIND_ORDER_LIST + 1
-	local found = false
-
-	for i = 1, #KEYBIND_ORDER_LIST do
-		if KEYBIND_ORDER_LIST[i] == result then
-			index = i
-			found = true
-			break
-		end
-	end
-
-	-- register this unknown keybind for this session
-	if not found then
-		table.insert(KEYBIND_ORDER_LIST, result)
-	end
-
-	for i = 1, #mods do
-		if mods[i] == "CTRL" then
-			index = index + 1000
-		end
-
-		if mods[i] == "ALT" then
-			index = index + 10000
-		end
-
-		if mods[i] == "SHIFT" then
-			index = index + 100000
-		end
-	end
-
-	return index
-end
-
 local function TreeSortKeybind(left, right)
 	if left.children ~= nil and right.children == nil then
 		return true
@@ -103,32 +50,7 @@ local function TreeSortKeybind(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		do
-			local lLoad = Clicked:CanBindingLoad(left.binding)
-			local rLoad = Clicked:CanBindingLoad(right.binding)
-
-			if lLoad and not rLoad then
-				return true
-			end
-
-			if not lLoad and rLoad then
-				return false
-			end
-		end
-
-		if left.binding.keybind == "" and right.binding.keybind ~= "" then
-			return false
-		end
-
-		if left.binding.keybind ~= "" and right.binding.keybind == "" then
-			return true
-		end
-
-		if left.binding.keybind == right.binding.keybind then
-			return left.value < right.value
-		end
-
-		return GetKeybindIndex(left.binding.keybind) < GetKeybindIndex(right.binding.keybind)
+		return Clicked:CompareBindings(left.binding, right.binding)
 	else
 		return left.title < right.title
 	end

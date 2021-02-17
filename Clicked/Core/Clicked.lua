@@ -66,6 +66,10 @@ local function OnAddonLoaded()
 	Clicked:ProcessFrameQueue()
 end
 
+local function OnModifierStateChanged()
+	Clicked:UpdateUnitFrameTooltips()
+end
+
 local function OnPlayerFlagsChanged(event, unit)
 	if unit == "player" then
 		Clicked:ReloadActiveBindings()
@@ -108,6 +112,8 @@ function Clicked:OnInitialize()
 
 	self:RegisterClickCastHeader()
 	self:RegisterBlizzardUnitFrames()
+	self:RegisterUnitFrameTooltips()
+
 	AceConsole:RegisterChatCommand("clicked", OnChatCommandReceived)
 	AceConsole:RegisterChatCommand("cc", OnChatCommandReceived)
 
@@ -130,6 +136,7 @@ function Clicked:OnEnable()
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
+	self:RegisterEvent("MODIFIER_STATE_CHANGED", OnModifierStateChanged)
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
 
 	for _, module in pairs(modules) do
@@ -149,8 +156,9 @@ function Clicked:OnDisable()
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 	end
 
-	self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
+	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("ADDON_LOADED")
 
 	for _, module in pairs(modules) do
