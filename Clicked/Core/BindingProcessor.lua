@@ -443,8 +443,6 @@ local function IsHovercastSpellOrItemValidOnUnit(binding, target, isInCombat, is
 		return false
 	end
 
-	local spell = Clicked:GetActiveBindingValue(binding)
-
 	do
 		local combat = binding.load.combat
 
