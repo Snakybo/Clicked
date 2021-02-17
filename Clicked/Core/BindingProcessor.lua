@@ -445,23 +445,6 @@ local function IsHovercastSpellOrItemValidOnUnit(binding, target, isInCombat, is
 
 	local spell = Clicked:GetActiveBindingValue(binding)
 
-	if binding.type == Clicked.BindingTypes.SPELL then
-		if not IsUsableSpell(spell) or not IsSpellInRange(spell, target) then
-			return false
-		end
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		local _, link = GetItemInfo(spell)
-
-		if link ~= nil then
-			local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
-			spell = id
-		end
-
-		if not IsItemInRange(spell, target) then
-			return false
-		end
-	end
-
 	do
 		local combat = binding.load.combat
 
