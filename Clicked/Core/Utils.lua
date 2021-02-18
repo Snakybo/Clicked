@@ -337,6 +337,64 @@ function Clicked:GetKeybindModifiersAndKey(keybind)
 	return modifiers, current
 end
 
+--- Get the active action of a binding configuration. The data for spells, items,
+--- and macros is all saved in separate data structures. This function will return
+--- the correct data structure for the current `type` of the binding.
+---
+--- @param binding table
+--- @return table
+function Clicked:GetActiveBindingValue(binding)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
+	if binding.type == Clicked.BindingTypes.SPELL then
+		return binding.action.spellValue
+	end
+
+	if binding.type == Clicked.BindingTypes.ITEM then
+		return binding.action.itemValue
+	end
+
+	if binding.type == Clicked.BindingTypes.MACRO then
+		return binding.action.macroValue
+	end
+
+	return nil
+end
+
+--- Custom GetItemInfo function that also allows for equipment slot IDs.
+---
+--- @param nameOrEquipmentSlotId string|integer
+--- @return string itemName
+--- @return string itemLink
+--- @return number itemQuality
+--- @return number itemLevel
+--- @return number itemMinLevel
+--- @return string itemType
+--- @return string itemSubType
+--- @return number itemStackCount
+--- @return string itemEquipLoc
+--- @return number itemTexture
+--- @return number sellPrice
+--- @return number classID
+--- @return number subclassID
+--- @return number bindType
+--- @return number expacID
+--- @return number setID
+--- @return boolean isCraftingReagent
+function Clicked:GetItemInfo(nameOrEquipmentSlotId)
+	local inventorySlotId = tonumber(nameOrEquipmentSlotId)
+
+	if inventorySlotId ~= nil and inventorySlotId >= 0 and inventorySlotId <= 19 then
+		local itemId = GetInventoryItemID("player", inventorySlotId)
+
+		if itemId ~= nil then
+			return GetItemInfo(itemId)
+		end
+	end
+
+	return GetItemInfo(nameOrEquipmentSlotId)
+end
+
 --- Generate an attribute identifier for a key. This will
 --- separate the keybind into two parts: a prefix, and a suffix.
 ---

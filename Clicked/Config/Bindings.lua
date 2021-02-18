@@ -91,7 +91,7 @@ local function ParseItemLink(link, ...)
 			return GetSpellInfo(spellId)
 		end
 	elseif type == "item" and IsAllowed("item") then
-		return GetItemInfo(id)
+		return Clicked:GetItemInfo(id)
 	elseif type == "spell" and IsAllowed("spell") then
 		return GetSpellInfo(id)
 	end
@@ -746,6 +746,33 @@ local function DrawSharedSpellItemOptions(container, binding)
 	CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
 end
 
+local function DrawIntegrationsOptions(container, binding)
+	local group = GUI:InlineGroup(L["External Integrations"])
+	local hasAnyChildren = false
+
+	-- weakauras export
+	if Clicked:IsWeakAurasIntegrationEnabled() then
+		local function OnClick()
+			Clicked:CreateWeakAurasIcon(binding)
+		end
+
+		local widget = AceGUI:Create("InteractiveLabel")
+		widget:SetImage([[Interface\AddOns\WeakAuras\Media\Textures\icon]])
+		widget:SetImageSize(16, 16)
+		widget:SetText(string.format("%s (%s)", L["Create WeakAura"], L["Beta"]))
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetFullWidth(true)
+
+		group:AddChild(widget)
+
+		hasAnyChildren = true
+	end
+
+	if hasAnyChildren then
+		container:AddChild(group)
+	end
+end
+
 local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
@@ -787,9 +814,11 @@ local function DrawBindingActionPage(container, binding)
 	if binding.type == Clicked.BindingTypes.SPELL then
 		DrawSpellSelection(container, binding.action, cache)
 		DrawSharedSpellItemOptions(container, binding)
+		DrawIntegrationsOptions(container, binding)
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		DrawItemSelection(container, binding.action, cache)
 		DrawSharedSpellItemOptions(container, binding)
+		DrawIntegrationsOptions(container, binding)
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		DrawMacroSelection(container, binding.targets, binding.action, cache)
 	end

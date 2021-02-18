@@ -37,7 +37,10 @@ end
 --- @param printable boolean
 --- @return string
 function Clicked:SerializeCurrentProfile(printable)
-	return self:SerializeTable(Clicked.db.profile, printable)
+	local clone = self:DeepCopyTable(Clicked.db.profile)
+	clone.integrations = {}
+
+	return self:SerializeTable(clone, printable)
 end
 
 function Clicked:SerializeCurrentProfileBindings(printable)

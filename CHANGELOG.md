@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ## Added
 
 - Add an option to show unit-frame bindings on tooltips ([h2oboi89](https://github.com/h2oboi89))
+- Add an experimental WeakAura export function for spells and items, currently creates an icon that shows the spell/item status
 
 ## [0.15.5] - 2021-02-15
 

@@ -101,21 +101,16 @@ local function UpdateBindingItemVisual(item, binding)
 		label = L["Cast %s"]
 		icon = select(3, GetSpellInfo(value))
 	elseif binding.type == Clicked.BindingTypes.ITEM then
+		local itemName, _, _, _, _, _, _, _, _, itemIcon = Clicked:GetItemInfo(value)
+
 		label = L["Use %s"]
 
-		local inventorySlotId = tonumber(value)
-
-		if inventorySlotId ~= nil and inventorySlotId >= 0 and inventorySlotId <= 19 then
-			local itemId = GetInventoryItemID("player", inventorySlotId)
-
-			if itemId ~= nil then
-				value = GetItemInfo(itemId)
-			else
-				cache.displayIcon = nil
-			end
+		if itemName ~= nil then
+			icon = itemIcon
+			value = itemName
+		else
+			cache.displayIcon = nil
 		end
-
-		icon = select(10, GetItemInfo(value))
 	elseif binding.type == Clicked.BindingTypes.MACRO then
 		label = L["Run custom macro"]
 
@@ -357,6 +352,7 @@ local function Button_OnClick(frame, button)
 						local clone = Clicked:DeepCopyTable(self.bindingCopyBuffer)
 						clone.identifier = frame.binding.identifier
 						clone.keybind = frame.binding.keybind
+						clone.integrations = frame.binding.integrations
 
 						Clicked:SetBindingAt(index, clone)
 					end
@@ -371,6 +367,7 @@ local function Button_OnClick(frame, button)
 					local clone = Clicked:DeepCopyTable(frame.binding)
 					clone.identifier = Clicked:GetNextBindingIdentifier()
 					clone.keybind = ""
+					clone.integrations = {}
 
 					local index = Clicked:GetNumConfiguredBindings() + 1
 					Clicked:SetBindingAt(index, clone)

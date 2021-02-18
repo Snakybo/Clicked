@@ -871,7 +871,7 @@ end
 --- @param bindings table
 --- @param interactionType string
 --- @return string
---- @return table
+--- @return string
 function Clicked:GetMacroForBindings(bindings, interactionType)
 	local result = {}
 	local interrupt = false

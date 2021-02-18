@@ -60,6 +60,9 @@ L["Bindings using a mouse button and the Mouseover target will not activate when
 L["Macro Name and Icon (optional)"] = true
 L["Options"] = true
 L["Shared Options"] = true
+L["External Integrations"] = true
+L["Create WeakAura"] = true
+L["Beta"] = true
 L["On this target"] = true
 L["Or"] = true
 L["Or (inactive)"] = true

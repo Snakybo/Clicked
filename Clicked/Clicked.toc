@@ -42,3 +42,6 @@ Config\Addon.lua
 Config\Bindings.lua
 Config\Blacklist.lua
 Debug\StatusOutput.lua
+
+# Third party integrations
+Integrations\WeakAuras.lua

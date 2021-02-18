@@ -38,6 +38,8 @@ read_globals = {
 	-- Libraries
 	"LibStub",
 	"ElvUI",
+	"WeakAuras",
+	"WeakAurasSaved",
 
 	-- WoW API globals
 	"BackdropTemplateMixin",
