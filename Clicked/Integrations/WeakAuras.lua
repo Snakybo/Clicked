@@ -373,12 +373,20 @@ local function PopulateTemplate(binding)
 		name = GetSpellInfo(Clicked:GetActiveBindingValue(binding))
 		icon = select(3, GetSpellInfo(name))
 
+		if name == nil then
+			return nil
+		end
+
 		template = Clicked:DeepCopyTable(spellActionButtonTemplate)
 		template.triggers[1].trigger.realSpellName = name
 		template.triggers[1].trigger.spellName = select(7, GetSpellInfo(name))
 	elseif binding.type == Clicked.BindingTypes.ITEM then
 		name = Clicked:GetItemInfo(Clicked:GetActiveBindingValue(binding))
 		icon = select(10, Clicked:GetItemInfo(name))
+
+		if name == nil then
+			return nil
+		end
 
 		local _, link = Clicked:GetItemInfo(name)
 		local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
@@ -435,9 +443,14 @@ function Clicked:CreateWeakAurasIcon(binding)
 	end
 
 	local inData = PopulateTemplate(binding)
-	local target = UpdateWeakAuraUniqueID(binding)
 
+	if inData == nil then
+		return false
+	end
+
+	local target = UpdateWeakAuraUniqueID(binding)
 	inData.uid = binding.integrations.weakauras
+
 	local success, message = WeakAuras.Import(inData, target)
 
 	if not success then
