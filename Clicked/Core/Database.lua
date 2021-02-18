@@ -94,6 +94,8 @@ function Clicked:GetNewBindingTemplate()
 			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE),
 			instanceType = GetTriStateLoadOptionTemplate("NONE")
 		},
+		integrations = {
+		},
 		cache = {
 			displayName = "",
 			displayIcon = ""
