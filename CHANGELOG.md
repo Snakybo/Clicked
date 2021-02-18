@@ -8,12 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [0.16.0] - 2021-02-18
 
 ## Added
 
 - Add an option to show unit-frame bindings on tooltips ([h2oboi89](https://github.com/h2oboi89))
-- Add an experimental WeakAura export function for spells and items, currently creates an icon that shows the spell/item status
+- Add an experimental WeakAura export function for spells and items, creates an icon that shows the spell/item status
 
 ## [0.15.5] - 2021-02-15
 
@@ -536,7 +536,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.15.5...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/0.16.0...master
+[0.16.0]: https://github.com/Snakybo/Clicked/releases/tag/0.16.0
 [0.15.5]: https://github.com/Snakybo/Clicked/releases/tag/0.15.5
 [0.15.4]: https://github.com/Snakybo/Clicked/releases/tag/0.15.4
 [0.15.3]: https://github.com/Snakybo/Clicked/releases/tag/0.15.3
