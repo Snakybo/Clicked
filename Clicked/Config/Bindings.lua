@@ -762,6 +762,7 @@ local function DrawIntegrationsOptions(container, binding)
 		widget:SetText(string.format("%s (%s)", L["Create WeakAura"], L["Beta"]))
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetFullWidth(true)
+		widget:SetDisabled(Clicked:IsStringNilOrEmpty(Clicked:GetActiveBindingValue(binding)))
 
 		group:AddChild(widget)
 
