@@ -90,39 +90,10 @@ local isPendingReload = false
 local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local impliedExists = false
+	local unit = Clicked:GetWoWUnitFromUnit(action.unit, true)
 
-	if action.unit == Clicked.TargetUnits.PLAYER then
-		table.insert(flags, "@player")
-	elseif action.unit == Clicked.TargetUnits.TARGET then
-		table.insert(flags, "@target")
-	elseif action.unit == Clicked.TargetUnits.TARGET_OF_TARGET then
-		table.insert(flags, "@targettarget")
-	elseif action.unit == Clicked.TargetUnits.MOUSEOVER then
-		table.insert(flags, "@mouseover")
-	elseif action.unit == Clicked.TargetUnits.PET then
-		table.insert(flags, "@pet")
-	elseif action.unit == Clicked.TargetUnits.PET_TARGET then
-		table.insert(flags, "@pettarget")
-	elseif action.unit == Clicked.TargetUnits.PARTY_1 then
-		table.insert(flags, "@party1")
-	elseif action.unit == Clicked.TargetUnits.PARTY_2 then
-		table.insert(flags, "@party2")
-	elseif action.unit == Clicked.TargetUnits.PARTY_3 then
-		table.insert(flags, "@party3")
-	elseif action.unit == Clicked.TargetUnits.PARTY_4 then
-		table.insert(flags, "@party4")
-	elseif action.unit == Clicked.TargetUnits.PARTY_5 then
-		table.insert(flags, "@party5")
-	elseif action.unit == Clicked.TargetUnits.ARENA_1 then
-		table.insert(flags, "@arena1")
-	elseif action.unit == Clicked.TargetUnits.ARENA_2 then
-		table.insert(flags, "@arena2")
-	elseif action.unit == Clicked.TargetUnits.ARENA_3 then
-		table.insert(flags, "@arena3")
-	elseif action.unit == Clicked.TargetUnits.FOCUS then
-		table.insert(flags, "@focus")
-	elseif action.unit == Clicked.TargetUnits.CURSOR then
-		table.insert(flags, "@cursor")
+	if unit ~= nil then
+		table.insert(flags, unit)
 	end
 
 	if Clicked:CanUnitBeHostile(action.unit) then
@@ -194,57 +165,7 @@ local function ConstructAction(binding, target)
 	end
 
 	do
-		local form = binding.load.form
-		local forms = {}
-
-		-- Forms need to be zero-indexed
-		if form.selected == 1 then
-			forms[1] = form.single - 1
-		elseif form.selected == 2 then
-			for i = 1, #form.multiple do
-				forms[i] = form.multiple[i] - 1
-			end
-		end
-
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			if select(2, UnitClass("player")) == "DRUID" then
-				local specId = GetSpecializationInfo(GetSpecialization())
-				local all = Clicked:GetShapeshiftFormsForSpecId(specId)
-				local available = {}
-				local result = {}
-
-				for _, spellId in ipairs(all) do
-					if IsSpellKnown(spellId) then
-						table.insert(available, spellId)
-					end
-				end
-
-				for i = 1, #forms do
-					local formId = forms[i]
-
-					-- 0 is [form:0] aka humanoid
-					if formId == 0 then
-						table.insert(result, formId)
-
-						-- Incarnation: Tree of Life does not show up as a shapeshift form,
-						-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-						if IsSpellKnown(33891) then
-							table.insert(result, GetNumShapeshiftForms() + 1)
-						end
-					else
-						for j = 1, #available do
-							if available[j] == all[formId] then
-								table.insert(result, j)
-								break
-							end
-						end
-					end
-				end
-
-				forms = result
-			end
-		end
-
+		local forms = Clicked:GetAvailableShapeshiftForms(binding)
 		action.forms = table.concat(forms, "/")
 	end
 
@@ -434,43 +355,6 @@ local function GenerateBuckets(bindings)
 	end
 end
 
-local function IsHovercastSpellOrItemValidOnUnit(binding, target, isInCombat, isFriend, isDead)
-	if not binding.targets.hovercast.enabled then
-		return false
-	end
-
-	if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM then
-		return false
-	end
-
-	do
-		local combat = binding.load.combat
-
-		if combat.selected then
-			if combat.value == Clicked.CombatState.IN_COMBAT and not isInCombat or
-			   combat.value == Clicked.CombatState.NOT_IN_COMBAT and isInCombat then
-				return false
-			end
-		end
-	end
-
-	do
-		local hovercast = binding.targets.hovercast
-
-		if hovercast.hostility == Clicked.TargetHostility.HELP and not isFriend or
-		   hovercast.hostility == Clicked.TargetHostility.HARM and isFriend then
-			return false
-		end
-
-		if hovercast.vitals == Clicked.TargetVitals.DEAD and not isDead or
-		   hovercast.vitals == Clicked.TargetVitals.ALIVE and isDead then
-			return false
-		end
-	end
-
-	return true
-end
-
 --- Reloads the active bindings, this will go through all configured bindings
 --- and check their (current) validity using the CanBindingLoad function.
 --- If there are multiple bindings that use the same keybind it will use the
@@ -508,27 +392,113 @@ function Clicked:ReloadActiveBindingsIfPending()
 	self:ReloadActiveBindings()
 end
 
+--- Parses and evaluates the generated macro for a binding.
+---
+--- @param binding table
+--- @param interactionType string
+--- @return string result
+--- @return string target
+function Clicked:EvaluateBindingMacro(binding, interactionType)
+	local key = binding.keybind
+	local bucket
+
+	if interactionType == Clicked.InteractionType.REGULAR then
+		bucket = regularBucket
+	else
+		bucket = hovercastBucket
+	end
+
+	local bindings = bucket[key]
+	local _, segments = self:GetMacroForBindings(bindings, interactionType)
+
+	return SecureCmdOptionParse(segments)
+end
+
 --- Create an interator for the currently active bindings for use in a `for in` loop.
 function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
 end
 
---- Get all active hovercast bindings that are currently valid for the specified unit.
---- A binding is considered valid if the state of the unit meets the target and load conditions
---- specified in the binding, for example: the `combat`/`nocombat` option, `help`/`harm` option,
---- or `dead`/`nodead` option.
+--- Get all bindings that, when activated at this moment, will affect the specified unit.
+--- This builds a full profile and the resulting table contains all bindings that meet the criteria.
+---
+--- This function additionally checks for _similar_ units, for example, if the input unit is `focus`
+--- but the `focus` unit is also the `target` unit, it will also include any bindings aimed at the
+--- `target` unit.
+---
+--- For each binding it also validates that the specified load and target conditions have been met.
+--- A binding that is only active in certain shapeshift forms will not be included if the player is
+--- not currently in that shapeshift form.
+---
+--- For target `friend`/`harm` and `dead`/`nodead` modifiers, a similar check is performed.
 ---
 ---@param unit string
 ---@return table
-function Clicked:GetHovercastBindingsForUnit(unit)
+function Clicked:GetBindingsForUnit(unit)
 	local result = {}
+	local units = {
+		[unit] = true
+	}
 
-	local isInCombat = Clicked.IsPlayerInCombat()
-	local isFriend = UnitIsFriend("player", unit)
-	local isDead = UnitIsDeadOrGhost(unit)
+	-- find other unit types that is valid for this target
+	for k in pairs(Clicked.TargetUnits) do
+		local u = Clicked:GetWoWUnitFromUnit(k)
+
+		if u ~= nil and u ~= unit and UnitGUID(u) == UnitGUID(unit) then
+			units[u] = true
+		end
+	end
+
+	local function IsTargetValid(target)
+		if target.hostility == Clicked.TargetHostility.HELP and not UnitIsFriend("player", unit) or
+		   target.hostility == Clicked.TargetHostility.HARM and UnitIsFriend("player", unit) then
+			return false
+		end
+
+		if target.vitals == Clicked.TargetVitals.DEAD and not UnitIsDeadOrGhost(unit) or
+		   target.vitals == Clicked.TargetVitals.ALIVE and UnitIsDeadOrGhost(unit) then
+			return false
+		end
+
+		return true
+	end
+
+	local function IsBindingValidForUnit(binding)
+		if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM then
+			return false
+		end
+
+		if not Clicked:IsBindingValidForCurrentState(binding) then
+			return false
+		end
+
+		-- hovercast
+		do
+			local hovercast = binding.targets.hovercast
+
+			if hovercast.enabled and GetMouseFocus() ~= WorldFrame and IsTargetValid(hovercast) then
+				return true
+			end
+		end
+
+		-- regular
+		do
+			local regular = binding.targets.regular
+
+			if regular.enabled then
+				local res, target = Clicked:EvaluateBindingMacro(binding, Clicked.InteractionType.REGULAR)
+
+				if res ~= nil and units[target] then
+					return true
+				end
+			end
+		end
+
+		return false
+	end
 
 	for _, binding in self:IterateActiveBindings() do
-		if IsHovercastSpellOrItemValidOnUnit(binding, unit, isInCombat, isFriend, isDead) then
+		if IsBindingValidForUnit(binding) then
 			table.insert(result, binding)
 		end
 	end
@@ -847,6 +817,60 @@ function Clicked:CanBindingLoad(binding)
 	return true
 end
 
+--- Check if a binding is valid for the current state of the player, this will
+--- check load conditions that aren't validated in `CanBindingLoad` as the state
+--- of these attributes can change during combat.
+---
+--- @param binding table
+--- @return boolean
+function Clicked:IsBindingValidForCurrentState(binding)
+	local load = binding.load
+
+	-- cobmat
+	do
+		local combat = load.combat
+
+		if combat.selected then
+			if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() or
+			   combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
+				return false
+			end
+		end
+	end
+
+	-- form
+	do
+		local forms = Clicked:GetAvailableShapeshiftForms(binding)
+		local active = GetShapeshiftForm()
+		local valid = false
+
+		for _, formId in ipairs(forms) do
+			if formId == active then
+				valid = true
+				break
+			end
+		end
+
+		if not valid then
+			return false
+		end
+	end
+
+	-- pet
+	do
+		local pet = load.pet
+
+		if pet.selected then
+			if pet.value == Clicked.PetState.ACTIVE and not UnitIsVisible("pet") or
+			   pet.value == Clicked.PetState.INACTIVE and UnitIsVisible("pet") then
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
 --- Construct a valid macro that correctly prioritizes all specified bindings.
 --- It will prioritize bindings in the following order:
 ---
@@ -977,5 +1001,5 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 		end
 	end
 
-	return table.concat(result, "\n")
+	return table.concat(result, "\n"), table.concat(segments, "; ")
 end

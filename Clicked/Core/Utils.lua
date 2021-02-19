@@ -337,6 +337,41 @@ function Clicked:GetKeybindModifiersAndKey(keybind)
 	return modifiers, current
 end
 
+--- Converts the value from `Clicked.TargetUnits` to a valid target
+--- that WoW can deal with.
+---
+--- @param unit string
+--- @param addPrefix boolean
+--- @return string
+function Clicked:GetWoWUnitFromUnit(unit, addPrefix)
+	local units = {
+		[Clicked.TargetUnits.PLAYER] = "player",
+		[Clicked.TargetUnits.TARGET] = "target",
+		[Clicked.TargetUnits.TARGET_OF_TARGET] = "targettarget",
+		[Clicked.TargetUnits.MOUSEOVER] = "mouseover",
+		[Clicked.TargetUnits.PET] = "pet",
+		[Clicked.TargetUnits.PET_TARGET] = "pettarget",
+		[Clicked.TargetUnits.PARTY_1] = "party1",
+		[Clicked.TargetUnits.PARTY_2] = "party2",
+		[Clicked.TargetUnits.PARTY_3] = "party3",
+		[Clicked.TargetUnits.PARTY_4] = "party4",
+		[Clicked.TargetUnits.PARTY_5] = "party5",
+		[Clicked.TargetUnits.ARENA_1] = "arena1",
+		[Clicked.TargetUnits.ARENA_2] = "arena2",
+		[Clicked.TargetUnits.ARENA_3] = "arena3",
+		[Clicked.TargetUnits.FOCUS] = "focus",
+		[Clicked.TargetUnits.CURSOR] = "cursor"
+	}
+
+	local result = units[unit]
+
+	if result ~= nil and addPrefix then
+		result = "@" .. result
+	end
+
+	return result
+end
+
 --- Get the active action of a binding configuration. The data for spells, items,
 --- and macros is all saved in separate data structures. This function will return
 --- the correct data structure for the current `type` of the binding.
@@ -525,6 +560,61 @@ end
 function Clicked:GetShapeshiftFormsForSpecId(specId)
 	local forms = shapeshiftForms[specId] or {}
 	return { unpack(forms) }
+end
+
+function Clicked:GetAvailableShapeshiftForms(binding)
+	local form = binding.load.form
+	local forms = {}
+
+	-- Forms need to be zero-indexed
+	if form.selected == 1 then
+		forms[1] = form.single - 1
+	elseif form.selected == 2 then
+		for i = 1, #form.multiple do
+			forms[i] = form.multiple[i] - 1
+		end
+	end
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		if select(2, UnitClass("player")) == "DRUID" then
+			local specId = GetSpecializationInfo(GetSpecialization())
+			local all = Clicked:GetShapeshiftFormsForSpecId(specId)
+			local available = {}
+			local result = {}
+
+			for _, spellId in ipairs(all) do
+				if IsSpellKnown(spellId) then
+					table.insert(available, spellId)
+				end
+			end
+
+			for i = 1, #forms do
+				local formId = forms[i]
+
+				-- 0 is [form:0] aka humanoid
+				if formId == 0 then
+					table.insert(result, formId)
+
+					-- Incarnation: Tree of Life does not show up as a shapeshift form,
+					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+					if IsSpellKnown(33891) then
+						table.insert(result, GetNumShapeshiftForms() + 1)
+					end
+				else
+					for j = 1, #available do
+						if available[j] == all[formId] then
+							table.insert(result, j)
+							break
+						end
+					end
+				end
+			end
+
+			forms = result
+		end
+	end
+
+	return forms
 end
 
 --- Iterate through all available shapeshift forms, this function behaves

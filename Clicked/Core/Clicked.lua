@@ -46,7 +46,7 @@ end
 local function OnEnteringCombat()
 	isPlayerInCombat = true
 
-	Clicked:UpdateUnitFrameTooltips()
+	Clicked:RefreshTooltips()
 end
 
 local function OnLeavingCombat()
@@ -54,7 +54,7 @@ local function OnLeavingCombat()
 
 	Clicked:ProcessFrameQueue()
 	Clicked:ReloadActiveBindingsIfPending()
-	Clicked:UpdateUnitFrameTooltips()
+	Clicked:RefreshTooltips()
 end
 
 local function OnPlayerEnteringWorld()
@@ -67,10 +67,6 @@ end
 
 local function OnAddonLoaded()
 	Clicked:ProcessFrameQueue()
-end
-
-local function OnModifierStateChanged()
-	Clicked:UpdateUnitFrameTooltips()
 end
 
 local function OnPlayerFlagsChanged(event, unit)
@@ -115,7 +111,7 @@ function Clicked:OnInitialize()
 
 	self:RegisterClickCastHeader()
 	self:RegisterBlizzardUnitFrames()
-	self:RegisterUnitFrameTooltips()
+	self:RegisterTooltips()
 
 	AceConsole:RegisterChatCommand("clicked", OnChatCommandReceived)
 	AceConsole:RegisterChatCommand("cc", OnChatCommandReceived)
@@ -139,8 +135,11 @@ function Clicked:OnEnable()
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
-	self:RegisterEvent("MODIFIER_STATE_CHANGED", OnModifierStateChanged)
 	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
+
+	self:RegisterEvent("MODIFIER_STATE_CHANGED", "RefreshTooltips")
+	self:RegisterEvent("UNIT_TARGET", "RefreshTooltips")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "RefreshTooltips")
 
 	for _, module in pairs(modules) do
 		if module.Register ~= nil then
@@ -161,8 +160,11 @@ function Clicked:OnDisable()
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("ADDON_LOADED")
+
+	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+	self:UnregisterEvent("UNIT_TARGET")
+	self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
 
 	for _, module in pairs(modules) do
 		if module.Unregister ~= nil then

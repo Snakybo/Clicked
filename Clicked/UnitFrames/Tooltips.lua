@@ -65,19 +65,25 @@ local function OnTooltipSetUnit(self)
 	lastTooltipUpdateTime = GetTime()
 	local _, unit = self:GetUnit()
 
-	if Clicked:IsStringNilOrEmpty(unit) or GetMouseFocus() == WorldFrame then
+	if Clicked:IsStringNilOrEmpty(unit) then
 		return
 	end
 
-	local bindings = Clicked:GetHovercastBindingsForUnit(unit)
+	local bindings = Clicked:GetBindingsForUnit(unit)
 	local first = true
 
 	table.sort(bindings, SortBindings)
 
 	for _, binding in ipairs(bindings) do
 		if IsKeybindValidForCurrentModifiers(binding.keybind) then
-			local left = Clicked:GetActiveBindingValue(binding)
+			local left
 			local right = binding.keybind
+
+			if binding.type == Clicked.BindingTypes.SPELL then
+				left = GetSpellInfo(Clicked:GetActiveBindingValue(binding))
+			elseif binding.type == Clicked.BindingTypes.ITEM then
+				left = Clicked:GetItemInfo(Clicked:GetActiveBindingValue(binding))
+			end
 
 			if first then
 				self:AddLine(" ")
@@ -90,14 +96,14 @@ local function OnTooltipSetUnit(self)
 	end
 end
 
-function Clicked:RegisterUnitFrameTooltips()
+function Clicked:RegisterTooltips()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
 		GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 	end)
 end
 
-function Clicked:UpdateUnitFrameTooltips()
+function Clicked:RefreshTooltips()
 	if not IsTooltipModuleEnabled() then
 		return
 	end
@@ -105,7 +111,7 @@ function Clicked:UpdateUnitFrameTooltips()
 	if not GameTooltip:IsForbidden() and GameTooltip:IsShown() and GetTime() ~= lastTooltipUpdateTime then
 		local _, unit = GameTooltip:GetUnit()
 
-		if not Clicked:IsStringNilOrEmpty(unit) and unit ~= "mouseover" then
+		if not Clicked:IsStringNilOrEmpty(unit) then
 			GameTooltip:SetUnit(unit)
 		end
 	end
