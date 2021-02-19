@@ -844,15 +844,17 @@ function Clicked:IsBindingValidForCurrentState(binding)
 		local active = GetShapeshiftForm()
 		local valid = false
 
-		for _, formId in ipairs(forms) do
-			if formId == active then
-				valid = true
-				break
+		if #forms > 0 then
+			for _, formId in ipairs(forms) do
+				if formId == active then
+					valid = true
+					break
+				end
 			end
-		end
 
-		if not valid then
-			return false
+			if not valid then
+				return false
+			end
 		end
 	end
 
