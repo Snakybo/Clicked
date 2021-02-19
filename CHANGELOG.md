@@ -15,6 +15,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Extend tooltips to support any bindings that are currently valid for the target
 
+### Fixed
+
+- Add missing Concentration Aura to the stance load options for Paladin
+
 ## [0.16.0] - 2021-02-18
 
 ### Added
