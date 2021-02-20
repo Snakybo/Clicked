@@ -31,7 +31,7 @@ local function IsKeybindValidForCurrentModifiers(keybind)
 		current.count = current.count + 1
 	end
 
-	if IsMetaKeyDown() then
+	if IsMetaKeyDown ~= nil and IsMetaKeyDown() then
 		current["META"] = true
 		current.count = current.count + 1
 	end

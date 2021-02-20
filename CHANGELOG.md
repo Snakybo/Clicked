@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix an error when logging in on Classic
+- Fix an error when enabling tooltips on Classic
 
 ## [0.16.1] - 2021-02-20
 
