@@ -12,11 +12,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Extend tooltips to support any bindings that are currently valid for the target
+- Expand tooltip system to support any bindings that are currently valid for the target
 
 ### Fixed
 
 - Add missing Concentration Aura to the stance load options for Paladin
+- Only show tooltips for the current shapeshift form or stance
 
 ## [0.16.0] - 2021-02-18
 
