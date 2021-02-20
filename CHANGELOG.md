@@ -17,7 +17,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Add missing Concentration Aura to the stance load options for Paladin
-- Only show tooltips for the current shapeshift form or stance
+- Hide tooltip entries if the form/stance load condtion has not been met
+- Hide tooltip etnries if the pet laod condtion has not been met
 
 ## [0.16.0] - 2021-02-18
 
