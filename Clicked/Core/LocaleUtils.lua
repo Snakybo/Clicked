@@ -1,6 +1,12 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
+--- @type integer[]
 local races
 
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
@@ -50,6 +56,8 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	}
 end
 
+-- Private addon API
+
 --- Construct a localized string with a summary of the target setting.
 ---
 --- For example:
@@ -57,23 +65,23 @@ end
 --- - Friendly Dead Target
 --- - Hostile Alive Target
 ---
---- @param target table
+--- @param target Binding.Target
 --- @return string
-function Clicked:GetLocalizedTargetString(target)
+function Addon:GetLocalizedTargetString(target)
 	local result = {}
 
-	if Clicked:CanUnitBeHostile(target.unit) and target.hostility ~= Clicked.TargetHostility.ANY then
-		local hostility = self:GetLocalizedTargetHostility()
+	if Addon:CanUnitBeHostile(target.unit) and target.hostility ~= Addon.TargetHostility.ANY then
+		local hostility = Addon:GetLocalizedTargetHostility()
 		table.insert(result, hostility[target.hostility])
 	end
 
-	if Clicked:CanUnitBeDead(target.unit) and target.vitals ~= Clicked.TargetVitals.ANY then
-		local vitals = self:GetLocalizedTargetVitals()
+	if Addon:CanUnitBeDead(target.unit) and target.vitals ~= Addon.TargetVitals.ANY then
+		local vitals = Addon:GetLocalizedTargetVitals()
 		table.insert(result, vitals[target.vitals])
 	end
 
 	if target.unit ~= nil then
-		local units = self:GetLocalizedTargetUnits()
+		local units = Addon:GetLocalizedTargetUnits()
 		table.insert(result, units[target.unit])
 	end
 
@@ -82,47 +90,47 @@ end
 
 --- Get a localized list of all available target units for a binding.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedTargetUnits()
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedTargetUnits()
 	local items = {
-		[Clicked.TargetUnits.DEFAULT] = DEFAULT,
-		[Clicked.TargetUnits.PLAYER] = L["Player (you)"],
-		[Clicked.TargetUnits.TARGET] = TARGET,
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = L["Target of target"],
-		[Clicked.TargetUnits.MOUSEOVER] = L["Mouseover"],
-		[Clicked.TargetUnits.FOCUS] = FOCUS,
-		[Clicked.TargetUnits.CURSOR] = L["Cursor"],
-		[Clicked.TargetUnits.PET] = PET,
-		[Clicked.TargetUnits.PET_TARGET] = L["Pet target"],
-		[Clicked.TargetUnits.PARTY_1] = L["Party %s"]:format("1"),
-		[Clicked.TargetUnits.PARTY_2] = L["Party %s"]:format("2"),
-		[Clicked.TargetUnits.PARTY_3] = L["Party %s"]:format("3"),
-		[Clicked.TargetUnits.PARTY_4] = L["Party %s"]:format("4"),
-		[Clicked.TargetUnits.PARTY_5] = L["Party %s"]:format("5"),
-		[Clicked.TargetUnits.ARENA_1] = L["Arena %s"]:format("1"),
-		[Clicked.TargetUnits.ARENA_2] = L["Arena %s"]:format("2"),
-		[Clicked.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
+		[Addon.TargetUnits.DEFAULT] = DEFAULT,
+		[Addon.TargetUnits.PLAYER] = L["Player (you)"],
+		[Addon.TargetUnits.TARGET] = TARGET,
+		[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"],
+		[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"],
+		[Addon.TargetUnits.FOCUS] = FOCUS,
+		[Addon.TargetUnits.CURSOR] = L["Cursor"],
+		[Addon.TargetUnits.PET] = PET,
+		[Addon.TargetUnits.PET_TARGET] = L["Pet target"],
+		[Addon.TargetUnits.PARTY_1] = L["Party %s"]:format("1"),
+		[Addon.TargetUnits.PARTY_2] = L["Party %s"]:format("2"),
+		[Addon.TargetUnits.PARTY_3] = L["Party %s"]:format("3"),
+		[Addon.TargetUnits.PARTY_4] = L["Party %s"]:format("4"),
+		[Addon.TargetUnits.PARTY_5] = L["Party %s"]:format("5"),
+		[Addon.TargetUnits.ARENA_1] = L["Arena %s"]:format("1"),
+		[Addon.TargetUnits.ARENA_2] = L["Arena %s"]:format("2"),
+		[Addon.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
 	}
 
 	local order = {
-		Clicked.TargetUnits.DEFAULT,
-		Clicked.TargetUnits.PLAYER,
-		Clicked.TargetUnits.TARGET,
-		Clicked.TargetUnits.TARGET_OF_TARGET,
-		Clicked.TargetUnits.MOUSEOVER,
-		Clicked.TargetUnits.FOCUS,
-		Clicked.TargetUnits.CURSOR,
-		Clicked.TargetUnits.PET,
-		Clicked.TargetUnits.PET_TARGET,
-		Clicked.TargetUnits.PARTY_1,
-		Clicked.TargetUnits.PARTY_2,
-		Clicked.TargetUnits.PARTY_3,
-		Clicked.TargetUnits.PARTY_4,
-		Clicked.TargetUnits.PARTY_5,
-		Clicked.TargetUnits.ARENA_1,
-		Clicked.TargetUnits.ARENA_2,
-		Clicked.TargetUnits.ARENA_3
+		Addon.TargetUnits.DEFAULT,
+		Addon.TargetUnits.PLAYER,
+		Addon.TargetUnits.TARGET,
+		Addon.TargetUnits.TARGET_OF_TARGET,
+		Addon.TargetUnits.MOUSEOVER,
+		Addon.TargetUnits.FOCUS,
+		Addon.TargetUnits.CURSOR,
+		Addon.TargetUnits.PET,
+		Addon.TargetUnits.PET_TARGET,
+		Addon.TargetUnits.PARTY_1,
+		Addon.TargetUnits.PARTY_2,
+		Addon.TargetUnits.PARTY_3,
+		Addon.TargetUnits.PARTY_4,
+		Addon.TargetUnits.PARTY_5,
+		Addon.TargetUnits.ARENA_1,
+		Addon.TargetUnits.ARENA_2,
+		Addon.TargetUnits.ARENA_3
 	}
 
 	return items, order
@@ -130,19 +138,19 @@ end
 
 --- Get a localized list of all available target hostility settings.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedTargetHostility()
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedTargetHostility()
 	local items = {
-		[Clicked.TargetHostility.ANY] = L["Friendly, Hostile"],
-		[Clicked.TargetHostility.HELP] = FRIENDLY,
-		[Clicked.TargetHostility.HARM] = HOSTILE
+		[Addon.TargetHostility.ANY] = L["Friendly, Hostile"],
+		[Addon.TargetHostility.HELP] = FRIENDLY,
+		[Addon.TargetHostility.HARM] = HOSTILE
 	}
 
 	local order = {
-		Clicked.TargetHostility.ANY,
-		Clicked.TargetHostility.HELP,
-		Clicked.TargetHostility.HARM
+		Addon.TargetHostility.ANY,
+		Addon.TargetHostility.HELP,
+		Addon.TargetHostility.HARM
 	}
 
 	return items, order
@@ -150,19 +158,19 @@ end
 
 --- Get a localized list of all available target vitals settings.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedTargetVitals()
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedTargetVitals()
 	local items = {
-		[Clicked.TargetVitals.ANY] = L["Alive, Dead"],
-		[Clicked.TargetVitals.ALIVE] = L["Alive"],
-		[Clicked.TargetVitals.DEAD] = DEAD
+		[Addon.TargetVitals.ANY] = L["Alive, Dead"],
+		[Addon.TargetVitals.ALIVE] = L["Alive"],
+		[Addon.TargetVitals.DEAD] = DEAD
 	}
 
 	local order = {
-		Clicked.TargetVitals.ANY,
-		Clicked.TargetVitals.ALIVE,
-		Clicked.TargetVitals.DEAD
+		Addon.TargetVitals.ANY,
+		Addon.TargetVitals.ALIVE,
+		Addon.TargetVitals.DEAD
 	}
 
 	return items, order
@@ -171,9 +179,9 @@ end
 --- Get a localized list of all available classes, this will
 --- return the correct value for both Retail and Classic.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedClasses()
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedClasses()
 	local items = {}
 	local order = {}
 
@@ -196,9 +204,9 @@ end
 --- Get a localized list of all available races, this will
 --- return the correct value for both Retail and Classic.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedRaces()
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedRaces()
 	local items = {}
 	local order = {}
 
@@ -218,9 +226,10 @@ end
 --- given class names. If the `classNames` parameter is `nil` it
 --- will return results for the player's current class.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedSpecializations(classNames)
+--- @param classNames string[]
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedSpecializations(classNames)
 	local items = {}
 	local order = {}
 
@@ -237,7 +246,7 @@ function Clicked:GetLocalizedSpecializations(classNames)
 			local _, name, _, icon = GetSpecializationInfoByID(specId)
 			local key = specIndex
 
-			if not self:IsStringNilOrEmpty(name) then
+			if not Addon:IsStringNilOrEmpty(name) then
 				items[key] = string.format("<icon=%d><text=%s>", icon, name)
 				table.insert(order, key)
 			end
@@ -292,9 +301,10 @@ end
 --- given specialization IDs. If the `specializations` parameter
 --- is `nil` it will return results for the player's current specialization.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedTalents(specializations)
+--- @param specializations integer[]
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedTalents(specializations)
 	local items = {}
 	local order = {}
 
@@ -311,7 +321,7 @@ function Clicked:GetLocalizedTalents(specializations)
 				local _, name, texture = LibTalentInfo:GetTalentInfo(spec, tier, column)
 				local key = #order + 1
 
-				if not self:IsStringNilOrEmpty(name) then
+				if not Addon:IsStringNilOrEmpty(name) then
 					items[key] = string.format("<icon=%d><text=%s>", texture, name)
 					table.insert(order, key)
 				end
@@ -335,9 +345,10 @@ end
 --- given specialization IDs. If the `specializations` parameter
 --- is `nil` it will return results for the player's current specialization.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedPvPTalents(specializations)
+--- @param specializations integer[]
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedPvPTalents(specializations)
 	local items = {}
 	local order = {}
 
@@ -397,9 +408,10 @@ end
 --- given specialization IDs. If the `specializations` parameter
 --- is `nil` it will return results for the player's current specialization.
 ---
---- @return table items
---- @return table order
-function Clicked:GetLocalizedForms(specializations)
+--- @param specializations integer[]
+--- @return table<any,string> items
+--- @return any[] order
+function Addon:GetLocalizedForms(specializations)
 	local items = {}
 	local order = {}
 
@@ -424,7 +436,7 @@ function Clicked:GetLocalizedForms(specializations)
 			table.insert(order, key)
 		end
 
-		for _, spellId in Clicked:IterateShapeshiftForms(specId) do
+		for _, spellId in Addon:IterateShapeshiftForms(specId) do
 			local name, _, icon = GetSpellInfo(spellId)
 			local key = #order + 1
 
@@ -436,7 +448,7 @@ function Clicked:GetLocalizedForms(specializations)
 
 		-- Find specialization with the highest number of forms
 		if #specializations == 0 then
-			for _, forms in Clicked:IterateShapeshiftForms() do
+			for _, forms in Addon:IterateShapeshiftForms() do
 				if #forms > max then
 					max = #forms
 				end
@@ -444,7 +456,7 @@ function Clicked:GetLocalizedForms(specializations)
 		-- Find specialization with the highest number of forms out of the selected specializations
 		else
 			for _, spec in ipairs(specializations) do
-				local forms = Clicked:GetShapeshiftFormsForSpecId(spec)
+				local forms = Addon:GetShapeshiftFormsForSpecId(spec)
 
 				if #forms > max then
 					max = #forms

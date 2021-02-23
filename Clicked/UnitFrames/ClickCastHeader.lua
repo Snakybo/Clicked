@@ -1,6 +1,7 @@
-Clicked.ClickCastHeader = nil
+--- @type ClickedInternal
+local _, Addon = ...
 
--- safecall implementation
+-- Local support functions
 
 local function errorhandler(err)
 	return geterrorhandler()(err)
@@ -12,32 +13,28 @@ local function safecall(func, ...)
 	end
 end
 
-function Clicked:RegisterClickCastHeader()
+-- Private addon API
+
+function Addon:RegisterClickCastHeader()
 	if GetAddOnEnableState(UnitName("player"), "Clique") == 2 then
-		self:ShowAddonIncompatibilityPopup("Clique")
+		Addon:ShowAddonIncompatibilityPopup("Clique")
 		return
 	end
 
 	-- This is mostly based on Clique, mainly to ensure it will continue
 	-- working with any addons that integrate with Clique directly, such as oUF.
 
-	self.ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
-	ClickCastHeader = self.ClickCastHeader
+	--- @type table
+	ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
+	Addon.ClickCastHeader = ClickCastHeader
 
-	Clique = {}
-	Clique.header = self.ClickCastHeader
-	Clique.UpdateRegisteredClicks = function(frame)
-		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
-	end
-
-	-- set required data first
-	self.ClickCastHeader:SetAttribute("clicked-keybinds", "")
-	self.ClickCastHeader:SetAttribute("clicked-identifiers", "")
-	self.ClickCastHeader:Execute([[
+	ClickCastHeader:SetAttribute("clicked-keybinds", "")
+	ClickCastHeader:SetAttribute("clicked-identifiers", "")
+	ClickCastHeader:Execute([[
 		blacklist = table.new()
 	]])
 
-	self.ClickCastHeader:SetAttribute("setup-keybinds", [[
+	ClickCastHeader:SetAttribute("setup-keybinds", [[
 		if blacklist[self:GetName()] then
 			return
 		end
@@ -64,7 +61,7 @@ function Clicked:RegisterClickCastHeader()
 		end
 	]])
 
-	self.ClickCastHeader:SetAttribute("clear-keybinds", [[
+	ClickCastHeader:SetAttribute("clear-keybinds", [[
 		local keybinds = control:GetAttribute("clicked-keybinds")
 
 		if strlen(keybinds) > 0 then
@@ -79,27 +76,27 @@ function Clicked:RegisterClickCastHeader()
 		currentClickcastButton = nil
 	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_register", [[
+	ClickCastHeader:SetAttribute("clickcast_register", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_register", frame)
 	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_unregister", [[
+	ClickCastHeader:SetAttribute("clickcast_unregister", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_unregister", frame)
 	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_onenter", [[
+	ClickCastHeader:SetAttribute("clickcast_onenter", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("setup-keybinds"))
 	]])
 
-	self.ClickCastHeader:SetAttribute("clickcast_onleave", [[
+	ClickCastHeader:SetAttribute("clickcast_onleave", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
 	]])
 
-	self.ClickCastHeader:SetAttribute("_onattributechanged", [[
+	ClickCastHeader:SetAttribute("_onattributechanged", [[
 		local button = currentClickcastButton
 
 		if name == "unit-exists" and value == "false" and button ~= nil then
@@ -110,9 +107,7 @@ function Clicked:RegisterClickCastHeader()
 		end
 	]])
 
-	RegisterAttributeDriver(self.ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
-
-	self.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
+	ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
 		local frameName = value and value.GetName and value:GetName()
 
 		if frameName == nil then
@@ -126,25 +121,35 @@ function Clicked:RegisterClickCastHeader()
 		end
 	end)
 
+	RegisterAttributeDriver(ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
+
+	-- Hook into the global ClickCastFrames table
 	local originalClickCastFrames = ClickCastFrames or {}
 
 	ClickCastFrames = setmetatable({}, {
 		__newindex = function(_, frame, options)
 			if options ~= nil and options ~= false then
-				self:RegisterClickCastFrame("", frame)
+				Clicked:RegisterClickCastFrame("", frame)
 			else
-				self:UnregisterClickCastFrame(frame)
+				Clicked:UnregisterClickCastFrame(frame)
 			end
 		end
 	})
 
 	for frame in pairs(originalClickCastFrames) do
-		self:RegisterClickCastFrame("", frame)
+		Clicked:RegisterClickCastFrame("", frame)
+	end
+
+	-- Hook into Clique because a lot of (older) addons are hardcoded to add Clique-support
+	Clique = {}
+	Clique.header = ClickCastHeader
+	Clique.UpdateRegisteredClicks = function(frame)
+		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
 	end
 end
 
-function Clicked:UpdateClickCastHeaderBlacklist()
-	local blacklist = Clicked.db.profile.blacklist
+function Addon:UpdateClickCastHeaderBlacklist()
+	local blacklist = Addon.db.profile.blacklist
 	local data = {
 		"blacklist = table.wipe(blacklist)"
 	}
@@ -159,11 +164,12 @@ function Clicked:UpdateClickCastHeaderBlacklist()
 		end
 	end
 
-	self.ClickCastHeader:Execute(table.concat(data, "\n"))
+	Addon.ClickCastHeader:Execute(table.concat(data, "\n"))
 end
 
-function Clicked:UpdateClickCastHeader(keybinds)
-	if self.ClickCastHeader == nil then
+--- @param keybinds Keybind[]
+function Addon:UpdateClickCastHeader(keybinds)
+	if Addon.ClickCastHeader == nil then
 		return
 	end
 
@@ -177,6 +183,6 @@ function Clicked:UpdateClickCastHeader(keybinds)
 		table.insert(split.identifiers, keybind.identifier)
 	end
 
-	self.ClickCastHeader:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
-	self.ClickCastHeader:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
+	Addon.ClickCastHeader:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
+	Addon.ClickCastHeader:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
 end

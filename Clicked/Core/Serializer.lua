@@ -1,6 +1,14 @@
 local AceSerializer = LibStub("AceSerializer-3.0")
 local LibDeflate = LibStub("LibDeflate")
 
+--- @type ClickedInternal
+local _, Addon = ...
+
+-- Local support functions
+
+--- @param data Profile
+--- @return boolean status
+--- @return string message
 local function ValidateData(data)
 	if data.version ~= Clicked.VERSION then
 		return false, "Incompatible version: " .. data.version
@@ -13,13 +21,10 @@ local function ValidateData(data)
 	return true, nil
 end
 
---- Serialize a profile into a serialized string.
---- @see DeserializeProfile
----
 --- @param data table
 --- @param printable boolean
 --- @return string
-function Clicked:SerializeTable(data, printable)
+local function SerializeTable(data, printable)
 	local serialized = AceSerializer:Serialize(data)
 	local compressed = LibDeflate:CompressDeflate(serialized)
 
@@ -30,38 +35,55 @@ function Clicked:SerializeTable(data, printable)
 	return LibDeflate:EncodeForWoWAddonChannel(compressed)
 end
 
---- Serialize the current profile into a serialized string.
---- @see SerializeProfile
---- @see DeserializeProfile
----
---- @param printable boolean
---- @return string
-function Clicked:SerializeCurrentProfile(printable)
-	local clone = self:DeepCopyTable(Clicked.db.profile)
-	clone.integrations = {}
+-- Public addon API
 
-	return self:SerializeTable(clone, printable)
+--- Serialize the specified profile and generate a string that can be shared via addon communication channels, or in plaintext format. By default this function
+--- will only serialize the `bindings` and `groups` of a profile, however the `full` parameter can be specified to serialize the entire profile, including all
+--- user settings.
+---
+--- @param profile Profile The profile to serialize.
+--- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
+--- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
+--- @return string
+--- @see Clicked#DeserializeProfile
+function Clicked:SerializeProfile(profile, printable, full)
+	assert(type(profile == "table"), "bad argument #1, expected table but got " .. type(profile))
+	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
+	assert(type(full == "boolean"), "bad argument #3, expected boolean but got " .. type(full))
+
+	local data
+
+	if full then
+		--- @type any
+		data = Addon:DeepCopyTable(profile)
+	else
+		-- Construct a lightweight version of the database, only including the version, bindings, and groups.
+		-- So any user settings are not serialized (minimap, blacklist, options, etc)
+		data = {
+			version = profile.version,
+			bindings = Addon:DeepCopyTable(profile.bindings),
+			groups = Addon:DeepCopyTable(profile.groups),
+			lightweight = true
+		}
+	end
+
+	-- Clear user-specific data
+	for _, binding in ipairs(data.bindings) do
+		wipe(binding.integrations)
+	end
+
+	return SerializeTable(data, printable)
 end
 
-function Clicked:SerializeCurrentProfileBindings(printable)
-	-- Construct a lightweight version of the database, only including the version, bindings, and groups.
-	-- So any user settings are not serialized (minimap, blacklist, options, etc)
-	local data = {
-		version = Clicked.db.profile.version,
-		bindings = Clicked.db.profile.bindings,
-		groups = Clicked.db.profile.groups
-	}
-
-	return self:SerializeTable(data, printable)
-end
-
---- Deserialize a string into a profile
---- @see SerializeProfile
+--- Deserialize a string into a profile, this is the ingest counterpart of `SerializeProfile`.
 ---
---- @param string string
---- @return string
---- @return any
-function Clicked:DeserializeString(encoded, printable)
+--- @param encoded string The encoded profile string
+--- @param printable boolean Whether the input was serialized in a printable format, `false` if the profile was shared via addon communication channels.
+--- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
+--- @return table|string result A `table` containing the resulting profile data, or a `string` with an error message if `status` is `false`.
+--- @return boolean lightweight Whether the imported profile data is lightweight, to prevent lightweight profiles from being imported as a full profile.
+--- @see Clicked#SerializeProfile
+function Clicked:DeserializeProfile(encoded, printable)
 	local compressed
 
 	if printable then
@@ -92,5 +114,8 @@ function Clicked:DeserializeString(encoded, printable)
 		return false, "Failed to validate data: " .. message
 	end
 
-	return success, data
+	local lightweight = data.lightweight or false
+	data.lightweight = nil
+
+	return success, data, lightweight
 end

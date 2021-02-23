@@ -1,3 +1,7 @@
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local spellActionButtonTemplate = {
@@ -364,34 +368,24 @@ local itemActionButtonTemplate = {
     ["cooldownTextDisabled"] = false,
 }
 
+-- Local support functions
+
+--- @param binding Binding
+--- @return any
 local function PopulateTemplate(binding)
 	local template
-	local name
-	local icon
+	local name, icon, id = Addon:GetSimpleSpellOrItemInfo(binding)
 
-	if binding.type == Clicked.BindingTypes.SPELL then
-		name = GetSpellInfo(Clicked:GetActiveBindingValue(binding))
-		icon = select(3, GetSpellInfo(name))
+	if name == nil then
+		return nil
+	end
 
-		if name == nil then
-			return nil
-		end
-
-		template = Clicked:DeepCopyTable(spellActionButtonTemplate)
+	if binding.type == Addon.BindingTypes.SPELL then
+		template = Addon:DeepCopyTable(spellActionButtonTemplate)
 		template.triggers[1].trigger.realSpellName = name
-		template.triggers[1].trigger.spellName = select(7, GetSpellInfo(name))
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		name = Clicked:GetItemInfo(Clicked:GetActiveBindingValue(binding))
-		icon = select(10, Clicked:GetItemInfo(name))
-
-		if name == nil then
-			return nil
-		end
-
-		local _, link = Clicked:GetItemInfo(name)
-		local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
-
-		template = Clicked:DeepCopyTable(itemActionButtonTemplate)
+		template.triggers[1].trigger.spellName = id
+	elseif binding.type == Addon.BindingTypes.ITEM then
+		template = Addon:DeepCopyTable(itemActionButtonTemplate)
 		template.triggers[1].trigger.itemName = id
 	end
 
@@ -403,6 +397,8 @@ local function PopulateTemplate(binding)
 	}
 end
 
+--- @param binding Binding
+--- @return string
 local function UpdateWeakAuraUniqueID(binding)
 	local integrations = binding.integrations
 	local target = nil
@@ -430,15 +426,19 @@ local function UpdateWeakAuraUniqueID(binding)
 	return target
 end
 
-function Clicked:CreateWeakAurasIcon(binding)
+-- Private addon API
+
+--- @param binding Binding
+--- @return boolean
+function Addon:CreateWeakAurasIcon(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if not self:IsWeakAurasIntegrationEnabled() then
+	if not Addon:IsWeakAurasIntegrationEnabled() then
 		error("WeakAuras is not installed or enabled, unable to create an aura")
 		return false
 	end
 
-	if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM then
+	if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM then
 		return false
 	end
 
@@ -455,12 +455,13 @@ function Clicked:CreateWeakAurasIcon(binding)
 
 	if not success then
 		binding.integrations.weakauras = nil
-		print(self:GetPrefixedAndFormattedString("%s: %s", "Unable to create aura", message))
+		print(Addon:GetPrefixedAndFormattedString("%s: %s", "Unable to create aura", message))
 	end
 
 	return success
 end
 
-function Clicked:IsWeakAurasIntegrationEnabled()
+--- @return boolean
+function Addon:IsWeakAurasIntegrationEnabled()
 	return GetAddOnEnableState(UnitName("player"), "WeakAuras") == 2 and WeakAuras ~= nil and WeakAurasSaved ~= nil
 end

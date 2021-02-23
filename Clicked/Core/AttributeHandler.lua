@@ -1,5 +1,11 @@
+--- @type ClickedInternal
+local _, Addon = ...
+
 local frameCache = {}
 
+-- Local support functions
+
+--- @param frame table
 local function EnsureCache(frame)
 	if frameCache[frame] ~= nil then
 		return
@@ -11,6 +17,11 @@ local function EnsureCache(frame)
 	}
 end
 
+--- @param register table<string,string>
+--- @param prefix string
+--- @param type string
+--- @param suffix string
+--- @param value string
 local function CreateAttribute(register, prefix, type, suffix, value)
 	prefix = prefix or ""
 	suffix = suffix or ""
@@ -27,7 +38,11 @@ local function CreateAttribute(register, prefix, type, suffix, value)
 	register[key] = value
 end
 
-function Clicked:SetPendingFrameAttributes(frame, attributes)
+-- Private addon API
+
+--- @param frame table
+--- @param attributes table<string,string>
+function Addon:SetPendingFrameAttributes(frame, attributes)
 	if frame == nil then
 		return
 	end
@@ -46,7 +61,8 @@ function Clicked:SetPendingFrameAttributes(frame, attributes)
 	end
 end
 
-function Clicked:ApplyAttributesToFrame(frame)
+--- @param frame table
+function Addon:ApplyAttributesToFrame(frame)
 	if frame == nil or frameCache[frame] == nil then
 		return
 	end
@@ -61,23 +77,27 @@ function Clicked:ApplyAttributesToFrame(frame)
 		frame:SetAttribute(key, nil)
 	end
 
-	if not Clicked:IsFrameBlacklisted(frame) then
+	if not Addon:IsFrameBlacklisted(frame) then
 		for key, value in pairs(pending) do
 			frame:SetAttribute(key, value)
 		end
 	end
 end
 
-function Clicked:CreateCommandAttributes(register, command, prefix, suffix)
+--- @param register table<string,string>
+--- @param command Command
+--- @param prefix string
+--- @param suffix string
+function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	if command.keybind == "" then
 		return
 	end
 
-	if command.action == Clicked.CommandType.TARGET then
+	if command.action == Addon.CommandType.TARGET then
 		CreateAttribute(register, prefix, "type", suffix, "target")
-	elseif command.action == Clicked.CommandType.MENU then
+	elseif command.action == Addon.CommandType.MENU then
 		CreateAttribute(register, prefix, "type", suffix, "menu")
-	elseif command.action == Clicked.CommandType.MACRO then
+	elseif command.action == Addon.CommandType.MACRO then
 		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else

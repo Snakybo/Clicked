@@ -1,32 +1,53 @@
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
-Clicked.EVENT_GROUPS_CHANGED = "CLICKED_GROUPS_CHANGED"
+-- Local support functions
 
+--- @param default string
+--- @return Binding.LoadOption
 local function GetLoadOptionTemplate(default)
-	return {
+	local template = {
 		selected = false,
 		value = default
 	}
+
+	return template
 end
 
+--- @param default number|string
+--- @return Binding.TriStateLoadOption
 local function GetTriStateLoadOptionTemplate(default)
-	return {
+	local template = {
 		selected = 0,
 		single = default,
 		multiple = {
 			default
 		}
 	}
+
+	return template
 end
 
+-- Public addon API
+
+--- Get the default values for a Clicked profile.
+---
+--- @return Database
 function Clicked:GetDatabaseDefaults()
-	return {
+	local database = {
 		profile = {
 			version = nil,
 			options = {
 				onKeyDown = false,
-				tooltips = false
+				tooltips = false,
+				minimap = {
+					hide = false
+				}
 			},
 			groups = {
 				next = 1
@@ -34,118 +55,32 @@ function Clicked:GetDatabaseDefaults()
 			bindings = {
 				next = 1
 			},
-			blacklist = {},
-			minimap = {
-				hide = false
-			}
+			blacklist = {}
 		}
 	}
+
+	return database
 end
 
+--- Reload the database, this should be called after high-level profile changes have been made, such as switching the active profile, or importing a proifle.
 function Clicked:ReloadDatabase()
-	self:UpgradeDatabaseProfile(Clicked.db.profile)
+	Clicked:UpgradeDatabaseProfile(Addon.db.profile)
 
-	if self.db.profile.minimap.hide then
+	if Addon.db.profile.options.minimap.hide then
 		LibDBIcon:Hide("Clicked")
 	else
 		LibDBIcon:Show("Clicked")
 	end
 
-	self:ReloadBlacklist()
-	self:ReloadActiveBindings()
+	Addon:BlacklistOptions_Refresh()
+	Clicked:ReloadActiveBindings()
 end
 
-function Clicked:GetNewBindingTemplate()
-	local template = {
-		type = Clicked.BindingTypes.SPELL,
-		identifier = self:GetNextBindingIdentifier(),
-		keybind = "",
-		action = {
-			spellValue = "",
-			itemValue = "",
-			macroValue = "",
-			macroMode = Clicked.MacroMode.FIRST,
-			interrupt = false,
-			allowStartAttack = true,
-			cancelQueuedSpell = false,
-			targetUnitAfterCast = false
-		},
-		targets = {
-			hovercast = {
-				enabled = false,
-				hostility = Clicked.TargetHostility.ANY,
-				vitals = Clicked.TargetVitals.ANY
-			},
-			regular = {
-				enabled = true,
-				self:GetNewBindingTargetTemplate()
-			}
-		},
-		load = {
-			never = false,
-			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
-			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
-			combat = GetLoadOptionTemplate(Clicked.CombatState.IN_COMBAT),
-			spellKnown = GetLoadOptionTemplate(""),
-			inGroup = GetLoadOptionTemplate(Clicked.GroupState.PARTY_OR_RAID),
-			playerInGroup = GetLoadOptionTemplate(""),
-			form = GetTriStateLoadOptionTemplate(1),
-			pet = GetLoadOptionTemplate(Clicked.PetState.ACTIVE),
-			instanceType = GetTriStateLoadOptionTemplate("NONE")
-		},
-		integrations = {
-		},
-		cache = {
-			displayName = "",
-			displayIcon = ""
-		}
-	}
-
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		local specIndex = GetSpecialization()
-
-		-- Initial spec
-		if specIndex == 5 then
-			specIndex = 1
-		end
-
-		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-		template.load.talent = GetTriStateLoadOptionTemplate(1)
-		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
-		template.load.warMode = GetLoadOptionTemplate(Clicked.WarModeState.IN_WAR_MODE)
-
-		local covenantId = C_Covenants.GetActiveCovenantID()
-
-		-- No covenant selected
-		if covenantId == 0 then
-			covenantId = 1
-		end
-
-		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
-	end
-
-	return template
-end
-
-function Clicked:GetNewBindingTargetTemplate()
-	return {
-		unit = Clicked.TargetUnits.DEFAULT,
-		hostility = Clicked.TargetHostility.ANY,
-		vitals = Clicked.TargetVitals.ANY
-	}
-end
-
-function Clicked:GetNextBindingIdentifier()
-	local identifier = self.db.profile.bindings.next
-	self.db.profile.bindings.next = self.db.profile.bindings.next + 1
-
-	return identifier
-end
-
-function Clicked:CreateNewGroup()
-	local identifier = self.db.profile.groups.next
-	self.db.profile.groups.next = self.db.profile.groups.next + 1
+--- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
+--- @return Group
+function Clicked:CreateGroup()
+	local identifier = Addon.db.profile.groups.next
+	Addon.db.profile.groups.next = Addon.db.profile.groups.next + 1
 
 	local group = {
 		name = L["New Group"],
@@ -153,105 +88,106 @@ function Clicked:CreateNewGroup()
 		identifier = "group-" .. identifier
 	}
 
-	table.insert(self.db.profile.groups, group)
-	self:SendMessage(self.EVENT_GROUPS_CHANGED)
+	table.insert(Addon.db.profile.groups, group)
+
+	Addon:BindingConfig_Redraw()
 
 	return group
 end
 
+--- Delete a binding group. If the group is not empty, it will also delete all child-bindings.
+--- @param group Group
 function Clicked:DeleteGroup(group)
+	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
+
 	local shouldReloadBindings = false
 
-	for i, e in ipairs(self.db.profile.groups) do
+	for i, e in ipairs(Addon.db.profile.groups) do
 		if e.identifier == group.identifier then
-			table.remove(self.db.profile.groups, i)
+			table.remove(Addon.db.profile.groups, i)
 			break
 		end
 	end
 
-	for i = #self.db.profile.bindings, 1, -1 do
-		local binding = self.db.profile.bindings[i]
+	for i = #Addon.db.profile.bindings, 1, -1 do
+		local binding = Addon.db.profile.bindings[i]
 
 		if binding.parent == group.identifier then
 			shouldReloadBindings = true
-			table.remove(self.db.profile.bindings, i)
+			table.remove(Addon.db.profile.bindings, i)
 		end
 	end
 
-	self:SendMessage(self.EVENT_GROUPS_CHANGED)
+	Addon:BindingConfig_Redraw()
 
 	if shouldReloadBindings then
-		self:ReloadActiveBindings()
+		Clicked:ReloadActiveBindings()
 	end
 end
 
+--- Iterate trough all configured groups. This function can be used in a `for in` loop.
+---
+--- @return function iterator
+--- @return table t
+--- @return number i
 function Clicked:IterateGroups()
-	return ipairs(self.db.profile.groups)
+	return ipairs(Addon.db.profile.groups)
 end
 
-function Clicked:CreateNewBinding(silent)
-	local binding = self:GetNewBindingTemplate()
-	table.insert(self.db.profile.bindings, binding)
-
-	if not silent then
-		self:ReloadActiveBindings()
-	end
+--- Create a new binding. This will create and return a new binding, however it will not automatically reload the active bindings, after configuring the
+--- returned binding (to make it loadable), manually reload the active bindings using `ReloadActiveBindings`.
+---
+--- @return Binding
+--- @see Clicked#ReloadActiveBindings
+function Clicked:CreateBinding()
+	local binding = Addon:GetNewBindingTemplate()
+	table.insert(Addon.db.profile.bindings, binding)
 
 	return binding
 end
 
+--- Delete a binding. If the binding exists it will delete it from the database, if the binding is currently loaded, it will automatically reload the active
+--- bindings.
+--- @param binding Binding The binding to delete
 function Clicked:DeleteBinding(binding)
-	for index, other in ipairs(self.db.profile.bindings) do
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
+	for index, other in ipairs(Addon.db.profile.bindings) do
 		if other == binding then
-			table.remove(self.db.profile.bindings, index)
-			self:ReloadActiveBindings()
+			table.remove(Addon.db.profile.bindings, index)
+
+			if Addon:CanBindingLoad(binding) then
+				Clicked:ReloadActiveBindings()
+			end
+
 			break
 		end
 	end
 end
 
-function Clicked:SetBindingAt(index, binding)
-	self.db.profile.bindings[index] = binding
-	self:ReloadActiveBindings()
-end
-
-function Clicked:GetBindingAt(index)
-	return self.db.profile.bindings[index]
-end
-
-function Clicked:GetNumConfiguredBindings()
-	return #self.db.profile.bindings
-end
-
+--- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
+--- can be used in a `for in` loop.
+--- @return function iterator
+--- @return table t
+--- @return number i
 function Clicked:IterateConfiguredBindings()
-	return ipairs(self.db.profile.bindings)
+	return ipairs(Addon.db.profile.bindings)
 end
 
-function Clicked:GetBindingIndex(binding)
-	for i, e in ipairs(self.db.profile.bindings) do
-		if e == binding then
-			return i
-		end
-	end
-
-	return 0
-end
-
-function Clicked:GetBindingCache(binding)
-	return binding.cache
-end
-
-function Clicked:InvalidateCache(cache)
-	cache.displayName = ""
-	cache.displayIcon = ""
-end
-
--- Don't use any constants in this function to prevent breaking the updater
--- when the value of a constant changes. Always use direct values that are
--- read from the database.
-
+--- Upgrade the version of the specified profile to the latest version, this process is incremental and will upgrade a profile with intermediate steps of all
+--- versions in between the input version and the current version.
+---
+--- For example, if the current version is `0.17` and the input profile is `0.14`, it will incrementally upgrade by going `0.14`->`0.15`->`0.16`->`0.17`.
+--- This will ensure support for even very old profiles.
+---
+--- @param profile table
+--- @param from string|nil
 function Clicked:UpgradeDatabaseProfile(profile, from)
 	from = from or profile.version
+
+	-- Don't use any constants in this function to prevent breaking the updater
+	-- when the value of a constant changes. Always use direct values that are
+	-- read from the database.
 
 	if from == nil then
 		-- Incredible hack because I accidentially removed the serialized version
@@ -286,17 +222,17 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		elseif IsProfileFrom_0_4() then
 			from = "0.4.0"
 		else
-			profile.version = self.VERSION
+			profile.version = Clicked.VERSION
 			return
 		end
 	end
 
-	if from == self.VERSION then
+	if from == Clicked.VERSION then
 		return
 	end
 
 	local function FinalizeVersionUpgrade(newVersion)
-		print(self:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
+		print(Addon:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
 		from = newVersion
 	end
@@ -525,7 +461,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 			binding.actions.item.stopCasting = nil
 		end
 
-		self:ShowInformationPopup("Clicked: Binding stance/shapeshift form load options have been reset, sorry for the inconvenience.")
+		Addon:ShowInformationPopup("Clicked: Binding stance/shapeshift form load options have been reset, sorry for the inconvenience.")
 
 		FinalizeVersionUpgrade("0.9.0")
 	end
@@ -596,7 +532,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 					vitals = "ANY"
 				})
 			else
-				if binding.primaryTarget.unit == "MOUSEOVER" and Clicked:IsMouseButton(binding.keybind) then
+				if binding.primaryTarget.unit == "MOUSEOVER" and Addon:IsMouseButton(binding.keybind) then
 					hovercast.enabled = true
 					hovercast.hostility = binding.primaryTarget.hostility
 					hovercast.vitals = binding.primaryTarget.vitals
@@ -610,15 +546,15 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 				end
 			end
 
-			if binding.type == Clicked.BindingTypes.MACRO then
+			if binding.type == Addon.BindingTypes.MACRO then
 				while #regular > 0 do
 					table.remove(regular, 1)
 				end
 
-				regular[1] = Clicked:GetNewBindingTargetTemplate()
+				regular[1] = Addon:GetNewBindingTargetTemplate()
 
-				hovercast.hostility = Clicked.TargetHostility.ANY
-				hovercast.vitals = Clicked.TargetVitals.ANY
+				hovercast.hostility = Addon.TargetHostility.ANY
+				hovercast.vitals = Addon.TargetVitals.ANY
 			end
 
 			binding.targets = {
@@ -646,7 +582,7 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 				itemValue = binding.actions.item.value,
 				macroValue = binding.actions.macro.value,
 				macroMode = binding.actions.macro.mode,
-				interrupt = binding.type == Clicked.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false,
+				interrupt = binding.type == Addon.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Addon.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false,
 				allowStartAttack = true
 			}
 
@@ -713,5 +649,141 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		FinalizeVersionUpgrade("0.16.0")
 	end
 
-	profile.version = self.VERSION
+	-- 0.16.x to 0.17.0
+	if string.sub(from, 1, 4) == "0.16" then
+		profile.options.minimap = profile.minimap
+		profile.minimap = nil
+
+		FinalizeVersionUpgrade("0.17.0")
+	end
+
+	profile.version = Clicked.VERSION
+end
+
+-- Private addon API
+
+---
+--- @return Binding
+function Addon:GetNewBindingTemplate()
+	local template = {
+		type = Addon.BindingTypes.SPELL,
+		identifier = Addon:GetNextBindingIdentifier(),
+		keybind = "",
+		parent = nil,
+		action = {
+			spellValue = "",
+			itemValue = "",
+			macroValue = "",
+			macroMode = Addon.MacroMode.FIRST,
+			interrupt = false,
+			allowStartAttack = true,
+			cancelQueuedSpell = false,
+			targetUnitAfterCast = false
+		},
+		targets = {
+			hovercast = {
+				enabled = false,
+				hostility = Addon.TargetHostility.ANY,
+				vitals = Addon.TargetVitals.ANY
+			},
+			regular = {
+				enabled = true,
+				Addon:GetNewBindingTargetTemplate()
+			}
+		},
+		load = {
+			never = false,
+			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
+			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
+			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
+			combat = GetLoadOptionTemplate(Addon.CombatState.IN_COMBAT),
+			spellKnown = GetLoadOptionTemplate(""),
+			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
+			playerInGroup = GetLoadOptionTemplate(""),
+			form = GetTriStateLoadOptionTemplate(1),
+			pet = GetLoadOptionTemplate(Addon.PetState.ACTIVE),
+			instanceType = GetTriStateLoadOptionTemplate("NONE")
+		},
+		integrations = {
+		},
+		cache = {
+		}
+	}
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		--- @type number
+		local specIndex = GetSpecialization()
+
+		-- Initial spec
+		if specIndex == 5 then
+			specIndex = 1
+		end
+
+		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
+		template.load.talent = GetTriStateLoadOptionTemplate(1)
+		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
+		template.load.warMode = GetLoadOptionTemplate(Addon.WarModeState.IN_WAR_MODE)
+
+		--- @type number
+		local covenantId = C_Covenants.GetActiveCovenantID()
+
+		-- No covenant selected
+		if covenantId == 0 then
+			covenantId = 1
+		end
+
+		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
+	end
+
+	return template
+end
+
+--- @return Binding.Target
+function Addon:GetNewBindingTargetTemplate()
+	local template = {
+		unit = Addon.TargetUnits.DEFAULT,
+		hostility = Addon.TargetHostility.ANY,
+		vitals = Addon.TargetVitals.ANY
+	}
+
+	return template
+end
+
+--- @return integer
+function Addon:GetNextBindingIdentifier()
+	local identifier = Addon.db.profile.bindings.next
+	Addon.db.profile.bindings.next = Addon.db.profile.bindings.next + 1
+
+	return identifier
+end
+
+--- @param original Binding
+--- @param replacement Binding
+function Addon:ReplaceBinding(original, replacement)
+	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
+	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
+
+	for index, binding in ipairs(Addon.db.profile.bindings) do
+		if binding == original then
+			Addon.db.profile.bindings[index] = replacement
+			Clicked:ReloadActiveBindings()
+			break
+		end
+	end
+end
+
+---@param original Binding
+---@return Binding
+function Addon:CloneBinding(original)
+	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
+
+	local clone = Addon:DeepCopyTable(original)
+	clone.identifier = Addon:GetNextBindingIdentifier()
+	clone.keybind = ""
+	clone.integrations = {}
+
+	table.insert(Addon.db.profile.bindings, clone)
+	Clicked:ReloadActiveBindings()
+
+	return clone
 end

@@ -1,54 +1,66 @@
-local BLIZZARD_UNIT_FRAMES_MAINLINE = {
-	[""] = {
-		"PlayerFrame",
-		"PetFrame",
-		"TargetFrame",
-		"TargetFrameToT",
-		"FocusFrame",
-		"FocusFrameToT",
-		"PartyMemberFrame1",
-		"PartyMemberFrame1PetFrame",
-		"PartyMemberFrame2",
-		"PartyMemberFrame2PetFrame",
-		"PartyMemberFrame3",
-		"PartyMemberFrame3PetFrame",
-		"PartyMemberFrame4",
-		"PartyMemberFrame4PetFrame",
-		"Boss1TargetFrame",
-		"Boss2TargetFrame",
-		"Boss3TargetFrame",
-		"Boss4TargetFrame",
-		"Boss5TargetFrame"
-	},
-	["Blizzard_ArenaUI"] = {
-		"ArenaEnemyFrame1",
-		"ArenaEnemyFrame2",
-		"ArenaEnemyFrame3"
-	}
-}
+--- @type ClickedInternal
+local _, Addon = ...
 
-local BLIZZARD_UNIT_FRAMES_CLASSIC = {
-	[""] = {
-		"PlayerFrame",
-		"PetFrame",
-		"TargetFrame",
-		"TargetFrameToT",
-		"PartyMemberFrame1",
-		"PartyMemberFrame1PetFrame",
-		"PartyMemberFrame2",
-		"PartyMemberFrame2PetFrame",
-		"PartyMemberFrame3",
-		"PartyMemberFrame3PetFrame",
-		"PartyMemberFrame4",
-		"PartyMemberFrame4PetFrame",
-		"Boss1TargetFrame",
-		"Boss2TargetFrame",
-		"Boss3TargetFrame",
-		"Boss4TargetFrame",
-		"Boss5TargetFrame"
-	}
-}
+local unitFrames
 
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	unitFrames = {
+		[""] = {
+			"PlayerFrame",
+			"PetFrame",
+			"TargetFrame",
+			"TargetFrameToT",
+			"FocusFrame",
+			"FocusFrameToT",
+			"PartyMemberFrame1",
+			"PartyMemberFrame1PetFrame",
+			"PartyMemberFrame2",
+			"PartyMemberFrame2PetFrame",
+			"PartyMemberFrame3",
+			"PartyMemberFrame3PetFrame",
+			"PartyMemberFrame4",
+			"PartyMemberFrame4PetFrame",
+			"Boss1TargetFrame",
+			"Boss2TargetFrame",
+			"Boss3TargetFrame",
+			"Boss4TargetFrame",
+			"Boss5TargetFrame"
+		},
+		["Blizzard_ArenaUI"] = {
+			"ArenaEnemyFrame1",
+			"ArenaEnemyFrame2",
+			"ArenaEnemyFrame3"
+		}
+	}
+else
+	unitFrames = {
+		[""] = {
+			"PlayerFrame",
+			"PetFrame",
+			"TargetFrame",
+			"TargetFrameToT",
+			"PartyMemberFrame1",
+			"PartyMemberFrame1PetFrame",
+			"PartyMemberFrame2",
+			"PartyMemberFrame2PetFrame",
+			"PartyMemberFrame3",
+			"PartyMemberFrame3PetFrame",
+			"PartyMemberFrame4",
+			"PartyMemberFrame4PetFrame",
+			"Boss1TargetFrame",
+			"Boss2TargetFrame",
+			"Boss3TargetFrame",
+			"Boss4TargetFrame",
+			"Boss5TargetFrame"
+		}
+	}
+end
+
+-- Local support functions
+
+--- @param name string
+--- @param part string
+--- @param index string
 local function HookCompactUnitFramePart(name, part, index)
 	local frame = _G[name .. part .. index]
 
@@ -57,7 +69,8 @@ local function HookCompactUnitFramePart(name, part, index)
 	end
 end
 
-local function HookCompactUnitFrame(frame, ...)
+--- @param frame table
+local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
 		return
 	end
@@ -82,16 +95,12 @@ local function HookCompactUnitFrame(frame, ...)
 	Clicked:RegisterClickCastFrame("", frame)
 end
 
-function Clicked:RegisterBlizzardUnitFrames()
-	local frames = BLIZZARD_UNIT_FRAMES_MAINLINE
+-- Private addon API
 
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		frames = BLIZZARD_UNIT_FRAMES_CLASSIC
-	end
-
-	for addon, names in pairs(frames) do
+function Addon:RegisterBlizzardUnitFrames()
+	for addon, names in pairs(unitFrames) do
 		for _, name in ipairs(names) do
-			self:RegisterClickCastFrame(addon, name)
+			Clicked:RegisterClickCastFrame(addon, name)
 		end
 	end
 

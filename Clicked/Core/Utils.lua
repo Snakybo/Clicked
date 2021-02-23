@@ -1,3 +1,7 @@
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local KEYBIND_ORDER_LIST = {
@@ -120,7 +124,7 @@ local shapeshiftForms = {
 	[1456] = {}
 }
 
--- safecall implementation
+-- Local support functions
 
 local function errorhandler(err)
 	return geterrorhandler()(err)
@@ -132,6 +136,8 @@ local function safecall(func, ...)
 	end
 end
 
+---@param keybind string
+---@return integer
 local function GetKeybindIndex(keybind)
 	local mods = {}
 	local result = ""
@@ -178,6 +184,32 @@ local function GetKeybindIndex(keybind)
 	end
 
 	return index
+end
+
+---@param keybind string
+---@return string modifiers
+---@return string key
+local function GetKeybindModifiersAndKey(keybind)
+	local modifiers = ""
+	local current = ""
+
+	for i = 1, #keybind do
+		local char = string.sub(keybind, i, i)
+
+		if char == "-" and #current > 0 then
+			if not Addon:IsStringNilOrEmpty(modifiers) then
+				modifiers = modifiers .. "-" .. current
+			else
+				modifiers = current
+			end
+
+			current = ""
+		else
+			current = current .. char
+		end
+	end
+
+	return modifiers, current
 end
 
 StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
@@ -230,31 +262,22 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	hideOnEscape = true
 }
 
---- Show a popup indicating Clicked is incompatible with the
---- specified addon. The popup will allow the user to disable
---- one of the two addons.
----
+-- Private addon API
+
 --- @param addon string
-function Clicked:ShowAddonIncompatibilityPopup(addon)
+function Addon:ShowAddonIncompatibilityPopup(addon)
 	StaticPopup_Show("CLICKED_INCOMPATIBLE_ADDON", "", "", { addon = addon })
 end
 
---- Show a generic information popup informing the user.
---- This allows the user acknowledge the message.
----
 --- @param text string
-function Clicked:ShowInformationPopup(text)
+function Addon:ShowInformationPopup(text)
 	StaticPopup_Show("CLICKED_MESSAGE", "", "", { text = text })
 end
 
---- Show a confirmation popup to the user. This will show
---- a two button dialog box allowing the user to either accept
---- or decline. If the user accepts, the specified `func` is invoked
---- with all additional arguments passed to this function.
----
 --- @param message string
---- @param func function
-function Clicked:ShowConfirmationPopup(message, onAccept, onCancel, ...)
+--- @param onAccept function
+--- @param onCancel function
+function Addon:ShowConfirmationPopup(message, onAccept, onCancel)
 	StaticPopup_Show("CLICKED_CONFIRM", "", "", {
 		text = message,
 		onAccept = onAccept,
@@ -262,13 +285,10 @@ function Clicked:ShowConfirmationPopup(message, onAccept, onCancel, ...)
 	})
 end
 
---- Create a deep copy of the specified table, this will
---- recursively copy the table ensuring all memory locations
---- are no longer pointing to the original.
----
---- @param original table
---- @return table
-function Clicked:DeepCopyTable(original)
+--- @generic T : table
+--- @param original T
+--- @return T
+function Addon:DeepCopyTable(original)
 	if original == nil then
 		return nil
 	end
@@ -277,7 +297,7 @@ function Clicked:DeepCopyTable(original)
 
 	for k, v in pairs(original) do
 		if type(v) == "table" then
-			v = self:DeepCopyTable(v)
+			v = Addon:DeepCopyTable(v)
 		end
 
 		result[k] = v
@@ -286,20 +306,11 @@ function Clicked:DeepCopyTable(original)
 	return result
 end
 
---- Retrieve a chunk of data from a formatted string.
---- Clicked uses custom string formats for many UI operations
---- which condense multiple datasets into a single string.
----
---- Those strings are formatted in the following structure:
---- `<keyword=value>`, for example `<text=Open Spellbook>`.
----
---- A string can contain multiple data chunks.
----
 --- @param string string
 --- @param keyword string
 --- @return string
-function Clicked:GetDataFromString(string, keyword)
-	if self:IsStringNilOrEmpty(string) or self:IsStringNilOrEmpty(keyword) then
+function Addon:GetDataFromString(string, keyword)
+	if Addon:IsStringNilOrEmpty(string) or Addon:IsStringNilOrEmpty(keyword) then
 		return nil
 	end
 
@@ -309,58 +320,27 @@ function Clicked:GetDataFromString(string, keyword)
 	return match
 end
 
---- Split a keybind string into two parts: a modifier and a key.
----
---- @param keybind string
---- @return string modifiers
---- @return string key
-function Clicked:GetKeybindModifiersAndKey(keybind)
-	local modifiers = ""
-	local current = ""
-
-	for i = 1, #keybind do
-		local char = string.sub(keybind, i, i)
-
-		if char == "-" and #current > 0 then
-			if not Clicked:IsStringNilOrEmpty(modifiers) then
-				modifiers = modifiers .. "-" .. current
-			else
-				modifiers = current
-			end
-
-			current = ""
-		else
-			current = current .. char
-		end
-	end
-
-	return modifiers, current
-end
-
---- Converts the value from `Clicked.TargetUnits` to a valid target
---- that WoW can deal with.
----
 --- @param unit string
 --- @param addPrefix boolean
 --- @return string
-function Clicked:GetWoWUnitFromUnit(unit, addPrefix)
+function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 	local units = {
-		[Clicked.TargetUnits.PLAYER] = "player",
-		[Clicked.TargetUnits.TARGET] = "target",
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = "targettarget",
-		[Clicked.TargetUnits.MOUSEOVER] = "mouseover",
-		[Clicked.TargetUnits.PET] = "pet",
-		[Clicked.TargetUnits.PET_TARGET] = "pettarget",
-		[Clicked.TargetUnits.PARTY_1] = "party1",
-		[Clicked.TargetUnits.PARTY_2] = "party2",
-		[Clicked.TargetUnits.PARTY_3] = "party3",
-		[Clicked.TargetUnits.PARTY_4] = "party4",
-		[Clicked.TargetUnits.PARTY_5] = "party5",
-		[Clicked.TargetUnits.ARENA_1] = "arena1",
-		[Clicked.TargetUnits.ARENA_2] = "arena2",
-		[Clicked.TargetUnits.ARENA_3] = "arena3",
-		[Clicked.TargetUnits.FOCUS] = "focus",
-		[Clicked.TargetUnits.CURSOR] = "cursor"
+		[Addon.TargetUnits.PLAYER] = "player",
+		[Addon.TargetUnits.TARGET] = "target",
+		[Addon.TargetUnits.TARGET_OF_TARGET] = "targettarget",
+		[Addon.TargetUnits.MOUSEOVER] = "mouseover",
+		[Addon.TargetUnits.PET] = "pet",
+		[Addon.TargetUnits.PET_TARGET] = "pettarget",
+		[Addon.TargetUnits.PARTY_1] = "party1",
+		[Addon.TargetUnits.PARTY_2] = "party2",
+		[Addon.TargetUnits.PARTY_3] = "party3",
+		[Addon.TargetUnits.PARTY_4] = "party4",
+		[Addon.TargetUnits.PARTY_5] = "party5",
+		[Addon.TargetUnits.ARENA_1] = "arena1",
+		[Addon.TargetUnits.ARENA_2] = "arena2",
+		[Addon.TargetUnits.ARENA_3] = "arena3",
+		[Addon.TargetUnits.FOCUS] = "focus",
+		[Addon.TargetUnits.CURSOR] = "cursor"
 	}
 
 	local result = units[unit]
@@ -372,32 +352,61 @@ function Clicked:GetWoWUnitFromUnit(unit, addPrefix)
 	return result
 end
 
---- Get the active action of a binding configuration. The data for spells, items,
---- and macros is all saved in separate data structures. This function will return
---- the correct data structure for the current `type` of the binding.
----
---- @param binding table
---- @return table
-function Clicked:GetActiveBindingValue(binding)
+---@param binding Binding
+---@return boolean
+function Addon:HasBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.type == Clicked.BindingTypes.SPELL then
+	local value = Addon:GetBindingValue(binding)
+	return not Addon:IsStringNilOrEmpty(value)
+end
+
+--- @param binding Binding
+--- @return string|integer
+function Addon:GetBindingValue(binding)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
+	if binding.type == Addon.BindingTypes.SPELL then
 		return binding.action.spellValue
 	end
 
-	if binding.type == Clicked.BindingTypes.ITEM then
+	if binding.type == Addon.BindingTypes.ITEM then
 		return binding.action.itemValue
 	end
 
-	if binding.type == Clicked.BindingTypes.MACRO then
+	if binding.type == Addon.BindingTypes.MACRO then
 		return binding.action.macroValue
 	end
 
 	return nil
 end
 
---- Custom GetItemInfo function that also allows for equipment slot IDs.
----
+---@param binding Binding
+---@return string name
+---@return string icon
+---@return number id
+function Addon:GetSimpleSpellOrItemInfo(binding)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
+	if binding.type == Addon.BindingTypes.SPELL then
+		local name, _, icon, _, _, _, id = GetSpellInfo(binding.action.spellValue)
+		return name, icon, id
+	end
+
+	if binding.type == Addon.BindingTypes.ITEM then
+		local name, link, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
+
+		if name == nil then
+			return nil, nil, nil
+		end
+
+		local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+		return name, icon, tonumber(id)
+	end
+
+	return nil, nil, nil
+end
+
 --- @param nameOrEquipmentSlotId string|integer
 --- @return string itemName
 --- @return string itemLink
@@ -416,7 +425,7 @@ end
 --- @return number expacID
 --- @return number setID
 --- @return boolean isCraftingReagent
-function Clicked:GetItemInfo(nameOrEquipmentSlotId)
+function Addon:GetItemInfo(nameOrEquipmentSlotId)
 	local inventorySlotId = tonumber(nameOrEquipmentSlotId)
 
 	if inventorySlotId ~= nil and inventorySlotId >= 0 and inventorySlotId <= 19 then
@@ -456,8 +465,8 @@ end
 --- @param hovercast boolean
 --- @return string prefix
 --- @return string suffix
-function Clicked:CreateAttributeIdentifier(keybind, hovercast)
-	local mods, key = self:GetKeybindModifiersAndKey(keybind)
+function Addon:CreateAttributeIdentifier(keybind, hovercast)
+	local mods, key = GetKeybindModifiersAndKey(keybind)
 	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	-- convert the parts to lowercase so it fits the attribute naming style
@@ -477,33 +486,39 @@ function Clicked:CreateAttributeIdentifier(keybind, hovercast)
 	return mods, key
 end
 
---- Check if a string is `nil` or currently empty.
---- A string is considered empty if its length is 0.
+--- Check if a string is `nil` or has a length of `0`.
 ---
 --- @param string string
 --- @return boolean
-function Clicked:IsStringNilOrEmpty(string)
+function Addon:IsStringNilOrEmpty(string)
 	if string == nil then
 		return true
 	end
 
-	string = tostring(string)
+	assert(type(string) == "string", "bad argument #1, expected string but got " .. type(string))
 	return #string == 0
+end
+
+---@param string string
+---@return string
+function Addon:TrimString(string)
+	string = string or ""
+	return string.gsub(string, "^%s*(.-)%s*$", "%1")
 end
 
 --- Compare two bindings, for use in a comparison function such as `table.sort`
 --- This function is stable and will return the opposite result if called with inverted parameters
 ---
---- @param left table
---- @param right table
+--- @param left Binding
+--- @param right Binding
 --- @return boolean
-function Clicked:CompareBindings(left, right)
+function Addon:CompareBindings(left, right)
 	assert(type(left) == "table", "bad argument #1, expected table but got " .. type(left))
 	assert(type(right) == "table", "bad argument #2, expected table but got " .. type(right))
 
 	do
-		local leftLoad = Clicked:CanBindingLoad(left)
-		local rightLoad = Clicked:CanBindingLoad(right)
+		local leftLoad = Addon:CanBindingLoad(left)
+		local rightLoad = Addon:CanBindingLoad(right)
 
 		if leftLoad and not rightLoad then
 			return true
@@ -523,8 +538,8 @@ function Clicked:CompareBindings(left, right)
 	end
 
 	if left.keybind == right.keybind then
-		local leftValue = self:GetActiveBindingValue(left)
-		local rightValue = self:GetActiveBindingValue(right)
+		local leftValue = Addon:GetBindingValue(left)
+		local rightValue = Addon:GetBindingValue(right)
 
 		if leftValue ~= nil and rightValue == nil then
 			return true
@@ -556,13 +571,15 @@ end
 --- talents, we store all available shapeshift forms manually.
 ---
 --- @param specId integer
---- @return table
-function Clicked:GetShapeshiftFormsForSpecId(specId)
+--- @return integer[]
+function Addon:GetShapeshiftFormsForSpecId(specId)
 	local forms = shapeshiftForms[specId] or {}
 	return { unpack(forms) }
 end
 
-function Clicked:GetAvailableShapeshiftForms(binding)
+---@param binding Binding
+---@return integer[]
+function Addon:GetAvailableShapeshiftForms(binding)
 	local form = binding.load.form
 	local forms = {}
 
@@ -578,7 +595,7 @@ function Clicked:GetAvailableShapeshiftForms(binding)
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		if select(2, UnitClass("player")) == "DRUID" then
 			local specId = GetSpecializationInfo(GetSpecialization())
-			local all = Clicked:GetShapeshiftFormsForSpecId(specId)
+			local all = Addon:GetShapeshiftFormsForSpecId(specId)
 			local available = {}
 			local result = {}
 
@@ -627,7 +644,10 @@ end
 --- shapeshift forms for the specified spec ID.
 ---
 --- @param specId integer
-function Clicked:IterateShapeshiftForms(specId)
+--- @return function
+--- @return table
+--- @return number
+function Addon:IterateShapeshiftForms(specId)
 	if specId == nil then
 		return pairs(shapeshiftForms)
 	else
@@ -644,7 +664,7 @@ end
 ---
 --- @param keybind string
 --- @return boolean
-function Clicked:IsRestrictedKeybind(keybind)
+function Addon:IsRestrictedKeybind(keybind)
 	return keybind == "BUTTON1" or keybind == "BUTTON2"
 end
 
@@ -653,12 +673,12 @@ end
 ---
 --- @param keybind string
 --- @return boolean
-function Clicked:IsMouseButton(keybind)
-	if Clicked:IsStringNilOrEmpty(keybind) then
+function Addon:IsMouseButton(keybind)
+	if Addon:IsStringNilOrEmpty(keybind) then
 		return false
 	end
 
-	local _, key = self:GetKeybindModifiersAndKey(keybind)
+	local _, key = GetKeybindModifiersAndKey(keybind)
 	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	return buttonIndex ~= nil
@@ -670,16 +690,16 @@ end
 ---
 --- @param unit string
 --- @return boolean
-function Clicked:CanUnitBeHostile(unit)
+function Addon:CanUnitBeHostile(unit)
 	local valid = {
-		[Clicked.TargetUnits.TARGET] = true,
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
-		[Clicked.TargetUnits.PET_TARGET] = true,
-		[Clicked.TargetUnits.ARENA_1] = true,
-		[Clicked.TargetUnits.ARENA_2] = true,
-		[Clicked.TargetUnits.ARENA_3] = true,
-		[Clicked.TargetUnits.FOCUS] = true,
-		[Clicked.TargetUnits.MOUSEOVER] = true
+		[Addon.TargetUnits.TARGET] = true,
+		[Addon.TargetUnits.TARGET_OF_TARGET] = true,
+		[Addon.TargetUnits.PET_TARGET] = true,
+		[Addon.TargetUnits.ARENA_1] = true,
+		[Addon.TargetUnits.ARENA_2] = true,
+		[Addon.TargetUnits.ARENA_3] = true,
+		[Addon.TargetUnits.FOCUS] = true,
+		[Addon.TargetUnits.MOUSEOVER] = true
 	}
 
 	return valid[unit] == true
@@ -692,22 +712,22 @@ end
 ---
 --- @param unit string
 --- @return boolean
-function Clicked:CanUnitBeDead(unit)
+function Addon:CanUnitBeDead(unit)
 	local valid = {
-		[Clicked.TargetUnits.TARGET] = true,
-		[Clicked.TargetUnits.TARGET_OF_TARGET] = true,
-		[Clicked.TargetUnits.PET] = true,
-		[Clicked.TargetUnits.PET_TARGET] = true,
-		[Clicked.TargetUnits.PARTY_1] = true,
-		[Clicked.TargetUnits.PARTY_2] = true,
-		[Clicked.TargetUnits.PARTY_3] = true,
-		[Clicked.TargetUnits.PARTY_4] = true,
-		[Clicked.TargetUnits.PARTY_5] = true,
-		[Clicked.TargetUnits.ARENA_1] = true,
-		[Clicked.TargetUnits.ARENA_2] = true,
-		[Clicked.TargetUnits.ARENA_3] = true,
-		[Clicked.TargetUnits.FOCUS] = true,
-		[Clicked.TargetUnits.MOUSEOVER] = true
+		[Addon.TargetUnits.TARGET] = true,
+		[Addon.TargetUnits.TARGET_OF_TARGET] = true,
+		[Addon.TargetUnits.PET] = true,
+		[Addon.TargetUnits.PET_TARGET] = true,
+		[Addon.TargetUnits.PARTY_1] = true,
+		[Addon.TargetUnits.PARTY_2] = true,
+		[Addon.TargetUnits.PARTY_3] = true,
+		[Addon.TargetUnits.PARTY_4] = true,
+		[Addon.TargetUnits.PARTY_5] = true,
+		[Addon.TargetUnits.ARENA_1] = true,
+		[Addon.TargetUnits.ARENA_2] = true,
+		[Addon.TargetUnits.ARENA_3] = true,
+		[Addon.TargetUnits.FOCUS] = true,
+		[Addon.TargetUnits.MOUSEOVER] = true
 	}
 
 	return valid[unit] == true
@@ -715,8 +735,8 @@ end
 
 --- Notify the user that Clicked is currently in combat lockdown mode,
 --- this will print a message to the user's chat frame with a helpful message.
-function Clicked:NotifyCombatLockdown()
-	local message = self:GetPrefixedAndFormattedString(L["You are in combat, the binding configuration is in read-only mode."])
+function Addon:NotifyCombatLockdown()
+	local message = Addon:GetPrefixedAndFormattedString(L["You are in combat, the binding configuration is in read-only mode."])
 	print(message)
 end
 
@@ -726,7 +746,7 @@ end
 --- @param string string
 --- @param color string
 --- @return string
-function Clicked:GetColorizedString(string, color)
+function Addon:GetColorizedString(string, color)
 	return "|c" .. color .. string .. "|r"
 end
 
@@ -734,16 +754,16 @@ end
 ---
 --- @param message string
 --- @return string
-function Clicked:AppendClickedMessagePrefix(message)
-	return self:GetColorizedString(L["Clicked"], "ffe31919") .. ": " .. message
+function Addon:AppendClickedMessagePrefix(message)
+	return Addon:GetColorizedString(L["Clicked"], "ffe31919") .. ": " .. message
 end
 
---- Run `string.format` on the specified string, and prefix the resulting string
---- with `Clicked:`.
+--- Run `string.format` on the specified string, and prefix the resulting string with `Clicked:`.
 ---
 --- @param format string
+--- @vararg string
 --- @return string
-function Clicked:GetPrefixedAndFormattedString(format, ...)
+function Addon:GetPrefixedAndFormattedString(format, ...)
 	local message = string.format(format, ...)
-	return self:AppendClickedMessagePrefix(message)
+	return Addon:AppendClickedMessagePrefix(message)
 end

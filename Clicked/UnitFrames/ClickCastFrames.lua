@@ -1,7 +1,8 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+--- @type ClickedInternal
+local _, Addon = ...
 
-Clicked.EVENT_CLICK_CAST_FRAME_REGISTERED = "CLICKED_CLICK_CAST_FRAME_REGISTERED"
-Clicked.EVENT_CLICK_CAST_FRAME_UNREGISTERED = "CLICKED_CLICK_CAST_FRAME_UNREGISTERED"
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local frames = {}
 local registerQueue = {}
@@ -9,19 +10,25 @@ local unregisterQueue = {}
 local registerClicksQueue = {}
 local cachedAttributes = {}
 
-local function UpdateClickCastFrame(frame, attributes)
-	Clicked:SetPendingFrameAttributes(frame, attributes)
-	Clicked:ApplyAttributesToFrame(frame)
+-- Local support functions
 
-	if Clicked.ClickCastHeader ~= nil then
-		Clicked.ClickCastHeader:UnwrapScript(frame, "OnEnter")
-		Clicked.ClickCastHeader:UnwrapScript(frame, "OnLeave")
-		Clicked.ClickCastHeader:WrapScript(frame, "OnEnter", Clicked.ClickCastHeader:GetAttribute("setup-keybinds"))
-		Clicked.ClickCastHeader:WrapScript(frame, "OnLeave", Clicked.ClickCastHeader:GetAttribute("clear-keybinds"))
+--- @param frame table
+--- @param attributes table<string,string>
+local function UpdateClickCastFrame(frame, attributes)
+	Addon:SetPendingFrameAttributes(frame, attributes)
+	Addon:ApplyAttributesToFrame(frame)
+
+	if Addon.ClickCastHeader ~= nil then
+		Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
+		Addon.ClickCastHeader:UnwrapScript(frame, "OnLeave")
+		Addon.ClickCastHeader:WrapScript(frame, "OnEnter", Addon.ClickCastHeader:GetAttribute("setup-keybinds"))
+		Addon.ClickCastHeader:WrapScript(frame, "OnLeave", Addon.ClickCastHeader:GetAttribute("clear-keybinds"))
 	end
 end
 
-function Clicked:ProcessFrameQueue()
+-- Private addon API
+
+function Addon:ProcessFrameQueue()
 	if InCombatLockdown() then
 		return
 	end
@@ -31,7 +38,7 @@ function Clicked:ProcessFrameQueue()
 		unregisterQueue = {}
 
 		for _, frame in ipairs(queue) do
-			self:UnregisterClickCastFrame(frame)
+			Clicked:UnregisterClickCastFrame(frame)
 		end
 	end
 
@@ -40,7 +47,7 @@ function Clicked:ProcessFrameQueue()
 		registerQueue = {}
 
 		for _, frame in ipairs(queue) do
-			self:RegisterClickCastFrame(frame.addon, frame.frame)
+			Clicked:RegisterClickCastFrame(frame.addon, frame.frame)
 		end
 	end
 
@@ -49,11 +56,60 @@ function Clicked:ProcessFrameQueue()
 		registerClicksQueue = {}
 
 		for _, frame in ipairs(queue) do
-			self:RegisterFrameClicks(frame)
+			Clicked:RegisterFrameClicks(frame)
 		end
 	end
 end
 
+--- @param newAtributes table<string,string>
+function Addon:UpdateClickCastFrames(newAtributes)
+	for _, frame in ipairs(frames) do
+		UpdateClickCastFrame(frame, newAtributes)
+	end
+
+	cachedAttributes = newAtributes
+end
+
+--- @param frame table
+--- @return boolean
+function Addon:IsFrameBlacklisted(frame)
+	if frame == nil then
+		return false
+	end
+
+	local blacklist = Addon.db.profile.blacklist
+	local name = frame:GetName()
+
+	return blacklist[name]
+end
+
+-- Public addon API
+
+--- Manually register a click-cast enabled frame. This is not the preferred method of registering frames as it offers no cross-addon compatibility. Instead use
+--- the global `ClickCastFrames` table to register and unregister your frames.
+---
+--- Registration:
+--- `ClickCastFrames[myFrame] = true`
+---
+--- Unregistration:
+--- `ClickCastFrames[myFrame] = false`
+---
+--- Additionally, it is possible to register and unregister frames using the global `ClickCastHeader` frame. This header has two attributes that can be
+--- executed: `clickcast_register` to register a frame, and `clickcast_unregister` to unregister a frame. Both of these attributes require a
+--- `clickcast_button` attribute to be set prior to execution:
+--- ```
+--- local header = self:GetFrameRef("clickcast_header")
+--- header:SetAttribute("clickcast_button", self)
+--- header:RunAttribute("clickcast_register")
+--- ```
+---
+--- The `ClickCastHeader` also has attributes that can be used for `OnEnter` and `OnLeave` events, which can be used if your frame does not support the
+--- frame `OnEnter` and `OnLeave` scripts, these can be invoked using the `clickcast_onenter` and `clickcast_onleave` attributes. These will also be used if
+--- your frame inherits from the `ClickCastUnitTemplate`.
+---
+--- @param addon string The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be an empty string.
+--- @param frame table The frame to register.
+--- @see Clicked:UnregisterClickCastFrame
 function Clicked:RegisterClickCastFrame(addon, frame)
 	if frame == nil then
 		return
@@ -85,7 +141,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		})
 	end
 
-	if InCombatLockdown() or not self:IsInitialized() then
+	if InCombatLockdown() or not Addon:IsInitialized() then
 		TryEnqueue()
 		return
 	end
@@ -106,7 +162,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 			frame = _G[name]
 
 			if frame == nil then
-				print(Clicked:GetPrefixedAndFormattedString(L["Unable to register unit frame: %s"], tostring(name)))
+				print(Addon:GetPrefixedAndFormattedString(L["Unable to register unit frame: %s"], tostring(name)))
 				return
 			end
 		end
@@ -118,14 +174,18 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		return
 	end
 
-	self:RegisterFrameClicks(frame)
+	Clicked:RegisterFrameClicks(frame)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
 	table.insert(frames, frame)
 
-	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_REGISTERED, frame)
+	Addon:BlacklistOptions_RegisterFrame(frame)
 end
 
+--- Unregister a registered click-cast enabled frame. See the documentation of `RegisterClickCastFrame` for more information.
+---
+--- @param frame table The frame to unregister
+--- @see Clicked#RegisterClickCastFrame
 function Clicked:UnregisterClickCastFrame(frame)
 	if frame == nil then
 		return
@@ -160,55 +220,46 @@ function Clicked:UnregisterClickCastFrame(frame)
 		table.insert(unregisterQueue, frame)
 	end
 
-	if InCombatLockdown() or not self:IsInitialized() then
+	if InCombatLockdown() or not Addon:IsInitialized() then
 		TryEnqueue()
 		return
 	end
 
-	self:SetPendingFrameAttributes(frame, {})
-	self:ApplyAttributesToFrame(frame)
+	Addon:SetPendingFrameAttributes(frame, {})
+	Addon:ApplyAttributesToFrame(frame)
 
-	self.ClickCastHeader:UnwrapScript(frame, "OnEnter")
-	self.ClickCastHeader:UnwrapScript(frame, "OnLeave")
+	Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
+	Addon.ClickCastHeader:UnwrapScript(frame, "OnLeave")
 
 	table.remove(frames, index)
 
-	self:SendMessage(self.EVENT_CLICK_CAST_FRAME_UNREGISTERED, frame)
+	Addon:BlacklistOptions_UnregisterFrame(frame)
 end
 
+--- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on
+--- the frame. Because Clicked supports both on-down and on-up casting, if your addon provides built-in click behaviour, you may have to add in support for
+--- this too.
+---
+--- @param frame table The frame to register for clicks and scrollwheel events
 function Clicked:RegisterFrameClicks(frame)
 	if frame == nil or frame.RegisterForClicks == nil then
 		return
 	end
 
-	if InCombatLockdown() or not self:IsInitialized() then
+	if InCombatLockdown() or not Addon:IsInitialized() then
 		table.insert(registerClicksQueue, frame)
 		return
 	end
 
-	frame:RegisterForClicks(self.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+	frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
 	frame:EnableMouseWheel(true)
 end
 
-function Clicked:UpdateClickCastFrames(newAtributes)
-	for _, frame in ipairs(frames) do
-		UpdateClickCastFrame(frame, newAtributes)
-	end
-
-	cachedAttributes = newAtributes
-end
-
-function Clicked:IsFrameBlacklisted(frame)
-	if frame == nil then
-		return false
-	end
-
-	local blacklist = Clicked.db.profile.blacklist
-	local name = frame:GetName()
-
-	return blacklist[name]
-end
-
+--- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
+---
+--- @return function iterator
+--- @return table t
+--- @return number i
 function Clicked:IterateClickCastFrames()
 	return ipairs(frames)
 end

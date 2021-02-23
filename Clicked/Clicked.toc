@@ -6,7 +6,7 @@
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.16.2
+## Version: 0.17.0
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
@@ -29,16 +29,17 @@ Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
 Core\Serializer.lua
+Core\AbilityTooltips.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua
-UnitFrames\Tooltips.lua
 
 # Configuration and UI
 Config\GUI.lua
 Config\Addon.lua
+Config\Profile.lua
 Config\Bindings.lua
 Config\Blacklist.lua
 Debug\StatusOutput.lua

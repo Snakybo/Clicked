@@ -3,6 +3,9 @@ SearchBox Widget
 
 Adds OnFocusGained and OnFocusLost callbacks.
 -------------------------------------------------------------------------------]]
+--- @type ClickedInternal
+local _, Addon = ...
+
 local Type, Version = "ClickedSearchBox", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
@@ -61,7 +64,7 @@ end
 
 local function EditBox_OnTextChanged(frame)
 	local self = frame.obj
-	local value = Clicked.GUI:TrimString(frame:GetText())
+	local value = Addon:TrimString(frame:GetText())
 
 	if not self.isPlaceholderActive and tostring(value) ~= tostring(self.searchTerm) then
 		self.searchTerm = value

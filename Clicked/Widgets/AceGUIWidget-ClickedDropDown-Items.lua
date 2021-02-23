@@ -1,3 +1,6 @@
+--- @type ClickedInternal
+local _, Addon = ...
+
 local AceGUI = LibStub("AceGUI-3.0")
 local IBLib = LibStub("AceGUI-3.0-DropDown-ItemBase")
 
@@ -36,8 +39,8 @@ do
 
 	-- exported
 	local function SetText(self, text)
-		local i = Clicked:GetDataFromString(text, "icon")
-		local t = Clicked:GetDataFromString(text, "text")
+		local i = Addon:GetDataFromString(text, "icon")
+		local t = Addon:GetDataFromString(text, "text")
 
 		if text ~= nil and #text > 0 and t == nil then
 			t = text

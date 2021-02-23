@@ -1,10 +1,7 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
--- Create a namespace for GUI functions
-local GUI = Clicked.GUI or {}
-Clicked.GUI = GUI
-
-GUI.EVENT_UPDATE = "CLICKED_GUI_UPDATE"
+--- @type ClickedInternal
+local _, Addon = ...
 
 local widgets = {}
 
@@ -13,20 +10,20 @@ local function OnSerialize(frame, event, value)
 
 	if InCombatLockdown() then
 		data.setValueFunc(frame, data.ref[data.key])
-		Clicked:NotifyCombatLockdown()
+		Addon:NotifyCombatLockdown()
 		return
 	end
 
 	data.ref[data.key] = value
 
-	Clicked:SendMessage(GUI.EVENT_UPDATE)
+	Clicked:ReloadActiveBindings()
 end
 
 local function CreateGUI(type)
 	local widget = AceGUI:Create(type)
 	local orgininalOnRelease = widget.OnRelease
 
-	widget.OnRelease = function()
+	widget.OnRelease = function(_)
 		widgets[widget] = nil
 
 		if orgininalOnRelease ~= nil then
@@ -37,16 +34,11 @@ local function CreateGUI(type)
 	return widget
 end
 
-function GUI:Serialize(...)
-	OnSerialize(...)
+function Addon:GUI_Serialize(frame, event, value)
+	OnSerialize(frame, event, value)
 end
 
-function GUI:TrimString(str)
-	str = str or ""
-	return string.gsub(str, "^%s*(.-)%s*$", "%1")
-end
-
-function GUI:Label(text, fontSize)
+function Addon:GUI_Label(text, fontSize)
 	local widget = CreateGUI("Label")
 	widget:SetText(text)
 
@@ -61,9 +53,9 @@ function GUI:Label(text, fontSize)
 	return widget
 end
 
-function GUI:EditBox(label, callback, ref, key)
+function Addon:GUI_EditBox(label, callback, ref, key)
 	local function OnCallback(frame, event, value)
-		value = self:TrimString(value)
+		value = Addon:TrimString(value)
 		OnSerialize(frame, event, value)
 	end
 
@@ -84,7 +76,7 @@ function GUI:EditBox(label, callback, ref, key)
 	return widget
 end
 
-function GUI:MultilineEditBox(label, callback, ref, key)
+function Addon:GUI_MultilineEditBox(label, callback, ref, key)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
@@ -102,7 +94,7 @@ function GUI:MultilineEditBox(label, callback, ref, key)
 	return widget
 end
 
-function GUI:CheckBox(label, ref, key)
+function Addon:GUI_CheckBox(label, ref, key)
 	local widget = CreateGUI("CheckBox")
 	widget:SetType("checkbox")
 	widget:SetLabel(label)
@@ -118,7 +110,7 @@ function GUI:CheckBox(label, ref, key)
 	return widget
 end
 
-function GUI:TristateCheckBox(label, ref, key)
+function Addon:GUI_TristateCheckBox(label, ref, key)
 	local function IndexToValue(state)
 		if state == 1 then
 			return true
@@ -167,7 +159,7 @@ function GUI:TristateCheckBox(label, ref, key)
 	return widget
 end
 
-function GUI:Button(label, action)
+function Addon:GUI_Button(label, action)
 	local widget = CreateGUI("Button")
 	widget:SetText(label)
 	widget:SetCallback("OnClick", action)
@@ -175,7 +167,7 @@ function GUI:Button(label, action)
 	return widget
 end
 
-function GUI:Dropdown(label, items, order, itemType, ref, key)
+function Addon:GUI_Dropdown(label, items, order, itemType, ref, key)
 	assert(type(ref) == "table", "bad argument #5, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #6, expected string but got " .. type(key))
 
@@ -194,7 +186,7 @@ function GUI:Dropdown(label, items, order, itemType, ref, key)
 	return widget
 end
 
-function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
+function Addon:GUI_MultiselectDropdown(label, items, order, itemType, ref, key)
 	local function OnValueChanged(frame, event, value, state)
 		local total = {}
 
@@ -241,7 +233,7 @@ function GUI:MultiselectDropdown(label, items, order, itemType, ref, key)
 	return widget
 end
 
-function GUI:KeybindingButton(label, ref, key)
+function Addon:GUI_KeybindingButton(label, ref, key)
 	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
 
@@ -259,7 +251,7 @@ function GUI:KeybindingButton(label, ref, key)
 	return widget
 end
 
-function GUI:TabGroup(items, handler)
+function Addon:GUI_TabGroup(items, handler)
 	local function OnGroupSelected(container, event, group)
 		container:ReleaseChildren()
 		handler(container, event, group)
@@ -275,7 +267,7 @@ function GUI:TabGroup(items, handler)
 	return widget
 end
 
-function GUI:InlineGroup(title)
+function Addon:GUI_InlineGroup(title)
 	local widget = AceGUI:Create("InlineGroup")
 	widget:SetFullWidth(true)
 	widget:SetLayout("Flow")
@@ -287,7 +279,7 @@ function GUI:InlineGroup(title)
 	return widget
 end
 
-function GUI:ReorderableInlineGroup(title)
+function Addon:GUI_ReorderableInlineGroup(title)
 	local widget = AceGUI:Create("ClickedReorderableInlineGroup")
 	widget:SetFullWidth(true)
 	widget:SetLayout("Flow")
@@ -299,7 +291,7 @@ function GUI:ReorderableInlineGroup(title)
 	return widget
 end
 
-function GUI:ToggleHeading(title, ref, key)
+function Addon:GUI_ToggleHeading(title, ref, key)
 	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
 

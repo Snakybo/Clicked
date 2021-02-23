@@ -84,6 +84,7 @@ read_globals = {
 	"GetTalentInfoByID",
 	"GetTime",
 	"HideUIPanel",
+	"hooksecurefunc",
 	"InCombatLockdown",
 	"InterfaceOptionsFrame",
 	"InterfaceOptionsFrame_OpenToCategory",
@@ -127,10 +128,10 @@ read_globals = {
 	"UnitName",
 	"UnitRace",
 	"WorldFrame",
+	"wipe",
 	"WOW_PROJECT_CLASSIC",
 	"WOW_PROJECT_ID",
 	"WOW_PROJECT_MAINLINE",
-	"hooksecurefunc",
 
 	-- Global localization
 	"ABILITIES",

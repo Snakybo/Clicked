@@ -2,10 +2,14 @@
 Clicked TreeGroup Container
 Container that uses a tree control to switch between groups.
 -------------------------------------------------------------------------------]]
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local Type, Version = "ClickedTreeGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
 	return
@@ -50,7 +54,7 @@ local function TreeSortKeybind(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		return Clicked:CompareBindings(left.binding, right.binding)
+		return Addon:CompareBindings(left.binding, right.binding)
 	else
 		return left.title < right.title
 	end
@@ -70,8 +74,8 @@ local function TreeSortAlphabetical(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		local lLoad = Clicked:CanBindingLoad(left.binding)
-		local rLoad = Clicked:CanBindingLoad(right.binding)
+		local lLoad = Addon:CanBindingLoad(left.binding)
+		local rLoad = Addon:CanBindingLoad(right.binding)
 
 		if lLoad and not rLoad then
 			return true
@@ -81,62 +85,66 @@ local function TreeSortAlphabetical(left, right)
 			return false
 		end
 
-		local lCache = Clicked:GetBindingCache(left.binding)
-		local rCache = Clicked:GetBindingCache(right.binding)
-
-		return lCache.displayName < rCache.displayName
+		return (left.binding.cache.displayName or "") < (right.binding.cache.displayName or "")
 	end
 
 	return left.title < right.title
 end
 
+local function IsValidIcon(icon)
+	if icon == nil then
+		return false
+	end
+
+	if type(icon) == "string" and #icon == 0 then
+		return false
+	end
+
+	if type(icon) == "number" and icon <= 0 then
+		return false
+	end
+
+	return true
+end
+
 local function UpdateBindingItemVisual(item, binding)
-	local value = Clicked:GetActiveBindingValue(binding)
-	local cache = Clicked:GetBindingCache(binding)
+	local value = Addon:GetBindingValue(binding)
+	local label
+	local name
+	local icon
 
-	local label = ""
-	local icon = ""
-
-	if binding.type == Clicked.BindingTypes.SPELL then
+	if binding.type == Addon.BindingTypes.SPELL then
 		label = L["Cast %s"]
-		icon = select(3, GetSpellInfo(value))
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		local itemName, _, _, _, _, _, _, _, _, itemIcon = Clicked:GetItemInfo(value)
-
+		name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
+	elseif binding.type == Addon.BindingTypes.ITEM then
 		label = L["Use %s"]
-
-		if itemName ~= nil then
-			icon = itemIcon
-			value = itemName
-		else
-			cache.displayIcon = nil
-		end
-	elseif binding.type == Clicked.BindingTypes.MACRO then
+		name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
+	elseif binding.type == Addon.BindingTypes.MACRO then
 		label = L["Run custom macro"]
 
-		if #cache.displayName > 0 then
-			label = cache.displayName
+		if binding.cache.displayName ~= nil and #binding.cache.displayName > 0 then
+			label = binding.cache.displayName
 		end
-	elseif binding.type == Clicked.BindingTypes.UNIT_SELECT then
+	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
 		label = L["Target the unit"]
-	elseif binding.type == Clicked.BindingTypes.UNIT_MENU then
+	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
 		label = L["Open the unit menu"]
 	end
 
-	if value ~= nil then
-		item.title = string.format(label, value)
+	if name ~= nil or value ~= nil then
+		item.title = string.format(label, name or value)
 	else
-		item.title = label
+		item.title = binding.cache.displayName or label
 	end
 
-	if icon ~= nil and #tostring(icon) > 0 then
+	if IsValidIcon(icon) then
 		item.icon = icon
-	elseif not Clicked:IsStringNilOrEmpty(cache.displayIcon) then
-		item.icon = cache.displayIcon
+	elseif IsValidIcon(binding.cache.displayIcon) then
+		item.icon = binding.cache.displayIcon
 	end
 
-	cache.displayName = item.title
-	cache.displayIcon = item.icon
+	binding.cache.displayName = item.title
+	binding.cache.displayIcon = item.icon
 
 	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
 end
@@ -145,11 +153,11 @@ local function UpdateGroupItemVisual(item, group)
 	local label = L["New Group"]
 	local icon = item.icon
 
-	if not Clicked:IsStringNilOrEmpty(group.name) then
+	if not Addon:IsStringNilOrEmpty(group.name) then
 		label = group.name
 	end
 
-	if not Clicked:IsStringNilOrEmpty(group.displayIcon) then
+	if not Addon:IsStringNilOrEmpty(group.displayIcon) then
 		icon = group.displayIcon
 	end
 
@@ -219,7 +227,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	if icon then
 		local desaturate = false
 
-		if binding ~= nil and not Clicked:CanBindingLoad(binding) then
+		if binding ~= nil and not Addon:CanBindingLoad(binding) then
 			desaturate = true
 		end
 
@@ -337,7 +345,7 @@ local function Button_OnClick(frame, button)
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
-					self.bindingCopyBuffer = Clicked:DeepCopyTable(frame.binding)
+					self.bindingCopyBuffer = Addon:DeepCopyTable(frame.binding)
 				end
 			})
 
@@ -346,15 +354,13 @@ local function Button_OnClick(frame, button)
 				notCheckable = true,
 				disabled = inCombat or self.bindingCopyBuffer == nil,
 				func = function()
-					local index = Clicked:GetBindingIndex(frame.binding)
-
-					if index > 0 then
-						local clone = Clicked:DeepCopyTable(self.bindingCopyBuffer)
+					if frame.binding ~= nil then
+						local clone = Addon:DeepCopyTable(self.bindingCopyBuffer)
 						clone.identifier = frame.binding.identifier
 						clone.keybind = frame.binding.keybind
 						clone.integrations = frame.binding.integrations
 
-						Clicked:SetBindingAt(index, clone)
+						Addon:ReplaceBinding(frame.binding, clone)
 					end
 				end
 			})
@@ -364,14 +370,7 @@ local function Button_OnClick(frame, button)
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
-					local clone = Clicked:DeepCopyTable(frame.binding)
-					clone.identifier = Clicked:GetNextBindingIdentifier()
-					clone.keybind = ""
-					clone.integrations = {}
-
-					local index = Clicked:GetNumConfiguredBindings() + 1
-					Clicked:SetBindingAt(index, clone)
-
+					local clone = Addon:CloneBinding(frame.binding)
 					self:SelectByBindingOrGroup(clone)
 				end
 			})
@@ -384,7 +383,7 @@ local function Button_OnClick(frame, button)
 			func = function()
 				local function OnConfirm()
 					if InCombatLockdown() then
-						Clicked:NotifyCombatLockdown()
+						Addon:NotifyCombatLockdown()
 						return
 					end
 
@@ -401,10 +400,8 @@ local function Button_OnClick(frame, button)
 					local msg = nil
 
 					if frame.binding ~= nil then
-						local cache = Clicked:GetBindingCache(frame.binding)
-
 						msg = L["Are you sure you want to delete this binding?"] .. "\n\n"
-						msg = msg .. frame.binding.keybind .. " " .. cache.displayName
+						msg = msg .. frame.binding.keybind .. " " .. (frame.binding.cache.displayName or "")
 					elseif frame.group ~= nil then
 						local count = 0
 
@@ -418,7 +415,7 @@ local function Button_OnClick(frame, button)
 						msg = msg .. frame.group.name
 					end
 
-					Clicked:ShowConfirmationPopup(msg, function()
+					Addon:ShowConfirmationPopup(msg, function()
 						OnConfirm()
 					end)
 				end
@@ -449,13 +446,12 @@ local function Button_OnEnter(frame)
 		local tooltip = AceGUI.tooltip
 		local binding = frame.binding
 
-		local value = Clicked:GetActiveBindingValue(binding)
-		local cache = Clicked:GetBindingCache(binding)
-		local text = cache.displayName
+		local value = Addon:GetBindingValue(binding)
+		local text = binding.cache.displayName or ""
 
-		if binding.type == Clicked.BindingTypes.MACRO then
-			if #cache.displayName > 0 then
-				text = cache.displayName .. "\n\n"
+		if binding.type == Addon.BindingTypes.MACRO then
+			if #text > 0 then
+				text = text .. "\n\n"
 				text = text .. MACRO .. "\n|cFFFFFFFF"
 			else
 				text = "";
@@ -469,7 +465,7 @@ local function Button_OnEnter(frame)
 		text = text .. L["Targets"] .. "\n"
 
 		if binding.targets.hovercast.enabled then
-			local str = Clicked:GetLocalizedTargetString(binding.targets.hovercast)
+			local str = Addon:GetLocalizedTargetString(binding.targets.hovercast)
 
 			if #str > 0 then
 				str = str .. " "
@@ -481,13 +477,13 @@ local function Button_OnEnter(frame)
 
 		if binding.targets.regular.enabled then
 			for i, target in ipairs(binding.targets.regular) do
-				local str = Clicked:GetLocalizedTargetString(target)
+				local str = Addon:GetLocalizedTargetString(target)
 				text = text .. "|cFFFFFFFF" .. i .. ". " .. str .. "|r\n"
 			end
 		end
 
 		text = text .. "\n"
-		text = text .. (Clicked:CanBindingLoad(binding) and L["Loaded"] or L["Unloaded"])
+		text = text .. (Addon:CanBindingLoad(binding) and L["Loaded"] or L["Unloaded"])
 
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
@@ -838,15 +834,14 @@ local methods = {
 
 		local tree = {}
 
-		if not Clicked:IsStringNilOrEmpty(self.searchbar.searchTerm) then
+		if not Addon:IsStringNilOrEmpty(self.searchbar.searchTerm) then
 			local function IsItemValidWithSearchQuery(item)
 				local strings = {}
 
 				if item.binding ~= nil then
-					local cache = Clicked:GetBindingCache(item.binding)
-
-					table.insert(strings, cache.displayName)
-					table.insert(strings, cache.value)
+					if item.binding.cache.displayName ~= nil and #item.binding.cache.displayName > 0 then
+						table.insert(strings, item.binding.cache.displayName)
+					end
 
 					if item.binding.keybind ~= "" then
 						table.insert(strings, item.binding.keybind)

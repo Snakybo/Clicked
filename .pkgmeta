@@ -8,6 +8,7 @@ ignore:
   - CHANGELOG.md
   - RECENT_CHANGES.md
   - Utils
+  - Definitions.lua
 
 manual-changelog:
   filename: RECENT_CHANGES.md

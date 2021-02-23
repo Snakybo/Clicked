@@ -1,9 +1,11 @@
 local AceGUI = LibStub("AceGUI-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
-local GUI = Clicked.GUI
-local Module = {}
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local ITEM_TEMPLATE_SIMPLE_BINDING = "SIMPLE_BINDING"
 local ITEM_TEMPLATE_CLICKCAST_BINDING = "CLICKCAST_BINDING"
@@ -17,29 +19,53 @@ local spellFlyOutButtons = {}
 local iconCache = nil
 local showIconPicker = false
 
+local root
+local tree
+local tab
+
 -- reset on close
 local didOpenSpellbook
 
 -- Utility functions
 
+local function GetCurrentBinding()
+	local item = tree:GetSelectedItem()
+
+	if item ~= nil then
+		return item.binding
+	end
+
+	return nil
+end
+
+local function GetCurrentGroup()
+	local item = tree:GetSelectedItem()
+
+	if item ~= nil then
+		return item.group
+	end
+
+	return nil
+end
+
 local function UpdateRequiredTargetModesForBinding(targets, keybind, type)
 	local hovercast = targets.hovercast
 	local regular = targets.regular
 
-	if Clicked:IsRestrictedKeybind(keybind) or type == Clicked.BindingTypes.UNIT_SELECT or type == Clicked.BindingTypes.UNIT_MENU then
+	if Addon:IsRestrictedKeybind(keybind) or type == Addon.BindingTypes.UNIT_SELECT or type == Addon.BindingTypes.UNIT_MENU then
 		hovercast.enabled = true
 		regular.enabled = false
 	end
 
-	if type == Clicked.BindingTypes.MACRO then
+	if type == Addon.BindingTypes.MACRO then
 		while #regular > 0 do
 			table.remove(regular, 1)
 		end
 
-		regular[1] = Clicked:GetNewBindingTargetTemplate()
+		regular[1] = Addon:GetNewBindingTargetTemplate()
 
-		hovercast.hostility = Clicked.TargetHostility.ANY
-		hovercast.vitals = Clicked.TargetVitals.ANY
+		hovercast.hostility = Addon.TargetHostility.ANY
+		hovercast.vitals = Addon.TargetVitals.ANY
 	end
 end
 
@@ -48,7 +74,7 @@ local function CanEnableHovercastTargetMode(binding)
 end
 
 local function CanEnableRegularTargetMode(binding)
-	if Clicked:IsRestrictedKeybind(binding.keybind) or binding.type == Clicked.BindingTypes.UNIT_SELECT or binding.type == Clicked.BindingTypes.UNIT_MENU then
+	if Addon:IsRestrictedKeybind(binding.keybind) or binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
 		return false
 	end
 
@@ -83,20 +109,21 @@ local function ParseItemLink(link, ...)
 	end
 
 	local _, _, _, type, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+	local result = nil
 
 	if type == "talent" and IsAllowed("talent") then
 		local spellId = select(6, GetTalentInfoByID(id, 1))
 
 		if spellId ~= nil then
-			return GetSpellInfo(spellId)
+			result = GetSpellInfo(spellId)
 		end
 	elseif type == "item" and IsAllowed("item") then
-		return Clicked:GetItemInfo(id)
+		result = Addon:GetItemInfo(id)
 	elseif type == "spell" and IsAllowed("spell") then
-		return GetSpellInfo(id)
+		result = GetSpellInfo(id)
 	end
 
-	return nil
+	return result
 end
 
 -- Tooltips
@@ -136,18 +163,18 @@ end
 -- Spell book integration
 
 local function OnSpellBookButtonClick(name)
-	if Module:GetCurrentBinding() == nil or name == nil then
+	if GetCurrentBinding() == nil or name == nil then
 		return
 	end
 
 	if InCombatLockdown() then
-		Clicked:NotifyCombatLockdown()
+		Addon:NotifyCombatLockdown()
 		return
 	end
 
-	local binding = Module:GetCurrentBinding()
+	local binding = GetCurrentBinding()
 
-	if binding.type == Clicked.BindingTypes.SPELL then
+	if binding.type == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = name
 		HideUIPanel(SpellBookFrame)
 		Clicked:ReloadActiveBindings()
@@ -183,7 +210,7 @@ local function HijackSpellBookButtons(base)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not Clicked:IsStringNilOrEmpty(subName) then
+				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not Addon:IsStringNilOrEmpty(subName) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
@@ -218,7 +245,7 @@ local function HijackSpellBookButtons(base)
 				canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
 				canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
 				canShow = canShow and didOpenSpellbook
-				canShow = canShow and Module.root ~= nil and Module.root:IsVisible()
+				canShow = canShow and root ~= nil and root:IsVisible()
 				canShow = canShow and SpellBookFrame:IsShown()
 				canShow = canShow and parent:IsEnabled()
 				canShow = canShow and not parent.isPassive
@@ -246,7 +273,7 @@ local function HijackSpellBookButtons(base)
 end
 
 local function HijackSpellBookFlyoutButtons()
-	if Module.root == nil or not Module.root:IsVisible() then
+	if root == nil or not root:IsVisible() then
 		return
 	end
 
@@ -347,10 +374,10 @@ local function DrawIconPicker(container, data)
 
 	do
 		local function OnClick()
-			Module.tree:Redraw()
+			tree:Redraw()
 		end
 
-		local widget = GUI:Button(CANCEL, OnClick)
+		local widget = Addon:GUI_Button(CANCEL, OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -360,7 +387,7 @@ local function DrawIconPicker(container, data)
 		-- luacheck: ignore container
 		local function OnIconSelected(container, event, value)
 			data.displayIcon = value
-			Clicked:SendMessage(GUI.EVENT_UPDATE)
+			Addon:BindingConfig_Redraw()
 		end
 
 		local scrollFrame = AceGUI:Create("ClickedIconSelectorList")
@@ -380,7 +407,7 @@ end
 local function DrawDropdownLoadOption(container, title, items, order, data)
 	-- enabled toggle
 	do
-		local widget = GUI:CheckBox(title, data, "selected")
+		local widget = Addon:GUI_CheckBox(title, data, "selected")
 
 		if not data.selected then
 			widget:SetRelativeWidth(1)
@@ -394,7 +421,7 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	-- state
 	if data.selected then
 		do
-			local widget = GUI:Dropdown(nil, items, order, nil, data, "value")
+			local widget = Addon:GUI_Dropdown(nil, items, order, nil, data, "value")
 			widget:SetRelativeWidth(0.5)
 
 			container:AddChild(widget)
@@ -405,7 +432,7 @@ end
 local function DrawEditFieldLoadOption(container, title, data)
 	-- spell known toggle
 	do
-		local widget = GUI:CheckBox(title, data, "selected")
+		local widget = Addon:GUI_CheckBox(title, data, "selected")
 
 		if not data.selected then
 			widget:SetRelativeWidth(1)
@@ -419,7 +446,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 	if data.selected then
 		-- spell known
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", data, "value")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
 			widget:SetRelativeWidth(0.5)
 
 			container:AddChild(widget)
@@ -432,7 +459,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 
 	-- enabled toggle
 	do
-		local widget = GUI:TristateCheckBox(title, data, "selected")
+		local widget = Addon:GUI_TristateCheckBox(title, data, "selected")
 		widget:SetTriState(true)
 
 		if data.selected == 0 then
@@ -448,7 +475,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 	local itemType = "Clicked-Dropdown-Item-Toggle-Icon"
 
 	if data.selected == 1 then -- single option variant
-		widget = GUI:Dropdown(nil, items, order, itemType, data, "single")
+		widget = Addon:GUI_Dropdown(nil, items, order, itemType, data, "single")
 	elseif data.selected == 2 then -- multiple option variant
 		-- luacheck: ignore widget
 		local function UpdateText(widget)
@@ -476,7 +503,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			widget:SetText(string.format("<text=%s>", text))
 		end
 
-		widget = GUI:MultiselectDropdown(nil, items, order, itemType, data, "multiple")
+		widget = Addon:GUI_MultiselectDropdown(nil, items, order, itemType, data, "multiple")
 		widget.ClickedUpdateText = UpdateText
 		widget:ClickedUpdateText()
 
@@ -500,28 +527,28 @@ end
 local function DrawSpellSelection(container, action, cache)
 	-- target spell
 	do
-		local group = GUI:InlineGroup(L["Target Spell"])
+		local group = Addon:GUI_InlineGroup(L["Target Spell"])
 		container:AddChild(group)
 
 		-- edit box
 		do
 			local function OnEnterPressed(frame, event, value)
-				value = GUI:TrimString(value)
+				value = Addon:TrimString(value)
 
-				Clicked:InvalidateCache(cache)
-				GUI:Serialize(frame, event, value)
+				wipe(cache)
+				Addon:GUI_Serialize(frame, event, value)
 			end
 
 			local function OnTextChanged(frame, event, value)
 				local spell = ParseItemLink(value, "spell", "talent")
 
 				if spell ~= nil then
-					Clicked:InvalidateCache(cache)
-					GUI:Serialize(frame, event, spell)
+					wipe(cache)
+					Addon:GUI_Serialize(frame, event, spell)
 				end
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "spellValue")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "spellValue")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
@@ -535,7 +562,7 @@ local function DrawSpellSelection(container, action, cache)
 		do
 			local function OnClick()
 				if InCombatLockdown() then
-					Clicked:NotifyCombatLockdown()
+					Addon:NotifyCombatLockdown()
 					return
 				end
 
@@ -548,7 +575,7 @@ local function DrawSpellSelection(container, action, cache)
 				end
 			end
 
-			local widget = GUI:Button(L["Pick from spellbook"], OnClick)
+			local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
 			widget:SetFullWidth(true)
 
 			RegisterTooltip(widget, L["Click on a spell book entry to select it."])
@@ -561,28 +588,28 @@ end
 local function DrawItemSelection(container, action, cache)
 	-- target item
 	do
-		local group = GUI:InlineGroup(L["Target Item"])
+		local group = Addon:GUI_InlineGroup(L["Target Item"])
 		container:AddChild(group)
 
 		-- target item
 		do
 			local function OnEnterPressed(frame, event, value)
-				value = GUI:TrimString(value)
+				value = Addon:TrimString(value)
 
-				Clicked:InvalidateCache(cache)
-				GUI:Serialize(frame, event, value)
+				wipe(cache)
+				Addon:GUI_Serialize(frame, event, value)
 			end
 
 			local function OnTextChanged(frame, event, value)
 				local item = ParseItemLink(value, "item")
 
 				if item ~= nil then
-					Clicked:InvalidateCache(cache)
-					GUI:Serialize(frame, event, item)
+					wipe(cache)
+					Addon:GUI_Serialize(frame, event, item)
 				end
 			end
 
-			local widget = GUI:EditBox(nil, "OnEnterPressed", action, "itemValue")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "itemValue")
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 			widget:SetFullWidth(true)
@@ -597,12 +624,12 @@ end
 local function DrawMacroSelection(container, targets, action, cache)
 	-- macro name and icon
 	do
-		local group = GUI:InlineGroup(L["Macro Name and Icon (optional)"])
+		local group = Addon:GUI_InlineGroup(L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", cache, "displayName")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", cache, "displayName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -610,7 +637,7 @@ local function DrawMacroSelection(container, targets, action, cache)
 
 		-- icon field
 		do
-			local widget = GUI:EditBox(nil, "OnEnterPressed", cache, "displayIcon")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", cache, "displayIcon")
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -620,10 +647,10 @@ local function DrawMacroSelection(container, targets, action, cache)
 		do
 			local function OpenIconPicker()
 				showIconPicker = true
-				Module.tree:Redraw()
+				tree:Redraw()
 			end
 
-			local widget = GUI:Button(L["Select"], OpenIconPicker)
+			local widget = Addon:GUI_Button(L["Select"], OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -632,19 +659,19 @@ local function DrawMacroSelection(container, targets, action, cache)
 
 	-- macro text
 	do
-		local group = GUI:InlineGroup(L["Macro Text"])
+		local group = Addon:GUI_InlineGroup(L["Macro Text"])
 		container:AddChild(group)
 
 		-- help text
 		if targets.hovercast.enabled and not targets.regular.enabled then
-			local widget = GUI:Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
+			local widget = Addon:GUI_Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
 		end
 
 		-- macro text field
 		do
-			local widget = GUI:MultilineEditBox(nil, "OnEnterPressed", action, "macroValue")
+			local widget = Addon:GUI_MultilineEditBox(nil, "OnEnterPressed", action, "macroValue")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -654,7 +681,7 @@ local function DrawMacroSelection(container, targets, action, cache)
 
 	-- additional options
 	do
-		local group = GUI:InlineGroup(L["Options"])
+		local group = Addon:GUI_InlineGroup(L["Options"])
 		container:AddChild(group)
 
 		-- macro mode toggle
@@ -671,19 +698,19 @@ local function DrawMacroSelection(container, targets, action, cache)
 				"APPEND"
 			}
 
-			local widget = GUI:Dropdown(nil, items, order, nil, action, "macroMode")
+			local widget = Addon:GUI_Dropdown(nil, items, order, nil, action, "macroMode")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
 		end
 
-		if action.macroMode == Clicked.MacroMode.APPEND then
+		if action.macroMode == Addon.MacroMode.APPEND then
 			local msg = {
 				L["This mode will directly append the macro text onto an automatically generated command generated by other bindings using the specified keybind. Generally, this means that it will be the last section of an '/use' command."],
 				L["With this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/use Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'."]
 			}
 
-			local widget = GUI:Label("\n" .. table.concat(msg, "\n\n"))
+			local widget = Addon:GUI_Label("\n" .. table.concat(msg, "\n\n"))
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -713,7 +740,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 			end
 
 			binding.action[key] = value
-			Clicked:SendMessage(GUI.EVENT_UPDATE)
+			Clicked:ReloadActiveBindings()
 		end
 
 		local widget = AceGUI:Create("CheckBox")
@@ -727,7 +754,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 		if binding.action[key] then
 			widget:SetValue(true)
 		else
-			if Clicked:CanBindingLoad(binding) and IsSharedDataSet(key) then
+			if Addon:CanBindingLoad(binding) and IsSharedDataSet(key) then
 				widget:SetTriState(true)
 				widget:SetValue(nil)
 				isUsingShared = true
@@ -737,7 +764,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 		group:AddChild(widget)
 	end
 
-	local group = GUI:InlineGroup(L["Shared Options"])
+	local group = Addon:GUI_InlineGroup(L["Shared Options"])
 	container:AddChild(group)
 
 	CreateCheckbox(group, L["Interrupt current cast"], L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
@@ -747,13 +774,13 @@ local function DrawSharedSpellItemOptions(container, binding)
 end
 
 local function DrawIntegrationsOptions(container, binding)
-	local group = GUI:InlineGroup(L["External Integrations"])
+	local group = Addon:GUI_InlineGroup(L["External Integrations"])
 	local hasAnyChildren = false
 
 	-- weakauras export
-	if Clicked:IsWeakAurasIntegrationEnabled() then
+	if Addon:IsWeakAurasIntegrationEnabled() then
 		local function OnClick()
-			Clicked:CreateWeakAurasIcon(binding)
+			Addon:CreateWeakAurasIcon(binding)
 		end
 
 		local widget = AceGUI:Create("InteractiveLabel")
@@ -762,7 +789,7 @@ local function DrawIntegrationsOptions(container, binding)
 		widget:SetText(string.format("%s (%s)", L["Create WeakAura"], L["Beta"]))
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetFullWidth(true)
-		widget:SetDisabled(Clicked:IsStringNilOrEmpty(Clicked:GetActiveBindingValue(binding)))
+		widget:SetDisabled(not Addon:HasBindingValue(binding))
 
 		group:AddChild(widget)
 
@@ -779,7 +806,7 @@ local function DrawBindingActionPage(container, binding)
 	do
 		local function OnValueChanged(frame, event, value)
 			UpdateRequiredTargetModesForBinding(binding.targets, binding.keybind, value)
-			GUI:Serialize(frame, event, value)
+			Addon:GUI_Serialize(frame, event, value)
 		end
 
 		local items = {
@@ -798,11 +825,11 @@ local function DrawBindingActionPage(container, binding)
 			"UNIT_MENU"
 		}
 
-		local group = GUI:InlineGroup(L["Action"])
+		local group = Addon:GUI_InlineGroup(L["Action"])
 		container:AddChild(group)
 
 		do
-			local widget = GUI:Dropdown(nil, items, order, nil, binding, "type")
+			local widget = Addon:GUI_Dropdown(nil, items, order, nil, binding, "type")
 			widget:SetCallback("OnValueChanged", OnValueChanged)
 			widget:SetFullWidth(true)
 
@@ -810,18 +837,16 @@ local function DrawBindingActionPage(container, binding)
 		end
 	end
 
-	local cache = Clicked:GetBindingCache(binding)
-
-	if binding.type == Clicked.BindingTypes.SPELL then
-		DrawSpellSelection(container, binding.action, cache)
+	if binding.type == Addon.BindingTypes.SPELL then
+		DrawSpellSelection(container, binding.action, binding.cache)
 		DrawSharedSpellItemOptions(container, binding)
 		DrawIntegrationsOptions(container, binding)
-	elseif binding.type == Clicked.BindingTypes.ITEM then
-		DrawItemSelection(container, binding.action, cache)
+	elseif binding.type == Addon.BindingTypes.ITEM then
+		DrawItemSelection(container, binding.action, binding.cache)
 		DrawSharedSpellItemOptions(container, binding)
 		DrawIntegrationsOptions(container, binding)
-	elseif binding.type == Clicked.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding.targets, binding.action, cache)
+	elseif binding.type == Addon.BindingTypes.MACRO then
+		DrawMacroSelection(container, binding.targets, binding.action, binding.cache)
 	end
 end
 
@@ -838,7 +863,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 				table.remove(targets, index)
 			else
 				if index == 0 then
-					local new = Clicked:GetNewBindingTargetTemplate()
+					local new = Addon:GetNewBindingTargetTemplate()
 					new.unit = value
 
 					if #targets > 0 then
@@ -862,11 +887,11 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 				frame:SetValue(target.unit)
 			end
 
-			Clicked:NotifyCombatLockdown()
+			Addon:NotifyCombatLockdown()
 		end
 	end
 
-	local items, order = Clicked:GetLocalizedTargetUnits()
+	local items, order = Addon:GetLocalizedTargetUnits()
 
 	if index == 0 then
 		target = {
@@ -884,7 +909,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 		end
 	end
 
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "unit")
+	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetDisabled(not enabled)
@@ -893,8 +918,8 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 end
 
 local function DrawTargetSelectionHostility(container, enabled, target)
-	local items, order = Clicked:GetLocalizedTargetHostility()
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "hostility")
+	local items, order = Addon:GetLocalizedTargetHostility()
+	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "hostility")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -902,8 +927,8 @@ local function DrawTargetSelectionHostility(container, enabled, target)
 end
 
 local function DrawTargetSelectionVitals(container, enabled, target)
-	local items, order = Clicked:GetLocalizedTargetVitals()
-	local widget = GUI:Dropdown(nil, items, order, nil, target, "vitals")
+	local items, order = Addon:GetLocalizedTargetVitals()
+	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "vitals")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -911,21 +936,21 @@ local function DrawTargetSelectionVitals(container, enabled, target)
 end
 
 local function DrawBindingTargetPage(container, binding)
-	if Clicked:IsRestrictedKeybind(binding.keybind) then
-		local widget = GUI:Label(L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
+	if Addon:IsRestrictedKeybind(binding.keybind) then
+		local widget = Addon:GUI_Label(L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 	end
 
-	local isMacro = binding.type == Clicked.BindingTypes.MACRO
+	local isMacro = binding.type == Addon.BindingTypes.MACRO
 
 	-- hovercast targets
 	do
 		local hovercast = binding.targets.hovercast
 
 		do
-			local widget = GUI:ToggleHeading(L["Unit Frame Target"], hovercast, "enabled")
+			local widget = Addon:GUI_ToggleHeading(L["Unit Frame Target"], hovercast, "enabled")
 			widget:SetDisabled(not CanEnableHovercastTargetMode(binding))
 			container:AddChild(widget)
 		end
@@ -939,13 +964,13 @@ local function DrawBindingTargetPage(container, binding)
 		local regular = binding.targets.regular
 
 		do
-			local widget = GUI:ToggleHeading(L["Binding Targets"], regular, "enabled")
+			local widget = Addon:GUI_ToggleHeading(L["Binding Targets"], regular, "enabled")
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
 
 		if isMacro then
-			local group = GUI:InlineGroup(L["On this target"])
+			local group = Addon:GUI_InlineGroup(L["On this target"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
@@ -965,19 +990,19 @@ local function DrawBindingTargetPage(container, binding)
 						regular[i] = temp
 					end
 
-					Clicked:SendMessage(GUI.EVENT_UPDATE)
+					Clicked:ReloadActiveBindings()
 				end
 
 				local label = i == 1 and L["On this target"] or enabled and L["Or"] or L["Or (inactive)"]
-				local group = GUI:ReorderableInlineGroup(label)
+				local group = Addon:GUI_ReorderableInlineGroup(label)
 				group:SetMoveUpButton(i > 1)
 				group:SetMoveDownButton(i < #regular)
 				group:SetCallback("OnMoveDown", OnMove)
 				group:SetCallback("OnMoveUp", OnMove)
 				container:AddChild(group)
 
-				if not binding.targets.hovercast.enabled and target.unit == Clicked.TargetUnits.MOUSEOVER and Clicked:IsMouseButton(binding.keybind) then
-					local widget = GUI:Label(L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
+				if not binding.targets.hovercast.enabled and target.unit == Addon.TargetUnits.MOUSEOVER and Addon:IsMouseButton(binding.keybind) then
+					local widget = Addon:GUI_Label(L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
 					widget:SetFullWidth(true)
 
 					group:AddChild(widget)
@@ -985,18 +1010,18 @@ local function DrawBindingTargetPage(container, binding)
 
 				DrawTargetSelectionUnit(group, regular, enabled, i)
 
-				if Clicked:CanUnitBeHostile(target.unit) then
+				if Addon:CanUnitBeHostile(target.unit) then
 					DrawTargetSelectionHostility(group, enabled, target)
 				end
 
-				if Clicked:CanUnitBeDead(target.unit) then
+				if Addon:CanUnitBeDead(target.unit) then
 					DrawTargetSelectionVitals(group, enabled, target)
 				end
 			end
 
 			-- new target
 			do
-				local group = GUI:InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
+				local group = Addon:GUI_InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
 				container:AddChild(group)
 
 				DrawTargetSelectionUnit(group, regular, enabled, 0)
@@ -1010,7 +1035,7 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = GUI:CheckBox(L["Never load"] , load, "never")
+		local widget = Addon:GUI_CheckBox(L["Never load"] , load, "never")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -1018,27 +1043,27 @@ local function DrawLoadNeverSelection(container, load)
 end
 
 local function DrawLoadClass(container, class)
-	local items, order = Clicked:GetLocalizedClasses()
+	local items, order = Addon:GetLocalizedClasses()
 	DrawTristateLoadOption(container, CLASS, items, order, class)
 end
 
 local function DrawLoadRace(container, race)
-	local items, order = Clicked:GetLocalizedRaces()
+	local items, order = Addon:GetLocalizedRaces()
 	DrawTristateLoadOption(container, RACE, items, order, race)
 end
 
 local function DrawLoadSpecialization(container, specialization, classNames)
-	local items, order = Clicked:GetLocalizedSpecializations(classNames)
+	local items, order = Addon:GetLocalizedSpecializations(classNames)
 	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
 end
 
 local function DrawLoadTalent(container, talent, specIds)
-	local items, order = Clicked:GetLocalizedTalents(specIds)
+	local items, order = Addon:GetLocalizedTalents(specIds)
 	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
 end
 
 local function DrawLoadPvPTalent(container, talent, specIds)
-	local items, order = Clicked:GetLocalizedPvPTalents(specIds)
+	local items, order = Addon:GetLocalizedPvPTalents(specIds)
 	DrawTristateLoadOption(container, L["PvP talent selected"], items, order, talent)
 end
 
@@ -1117,7 +1142,7 @@ local function DrawLoadInStance(container, form, specIds)
 		end
 	end
 
-	local items, order = Clicked:GetLocalizedForms(specIds)
+	local items, order = Addon:GetLocalizedForms(specIds)
 	DrawTristateLoadOption(container, label, items, order, form)
 end
 
@@ -1258,12 +1283,12 @@ end
 -- Binding status page and components
 
 local function DrawBindingStatusPage(container, binding)
-	if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM and binding.type ~= Clicked.BindingTypes.MACRO then
+	if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM and binding.type ~= Addon.BindingTypes.MACRO then
 		return
 	end
 
-	if  not Clicked:CanBindingLoad(binding) then
-		local widget = GUI:Label(L["Not loaded"], "medium")
+	if  not Addon:CanBindingLoad(binding) then
+		local widget = Addon:GUI_Label(L["Not loaded"], "medium")
 		widget:SetFullWidth(true)
 		container:AddChild(widget)
 	else
@@ -1272,7 +1297,7 @@ local function DrawBindingStatusPage(container, binding)
 			do
 				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
 				widget:SetLabel(L["Generated local macro"])
-				widget:SetText(Clicked:GetMacroForBindings({ binding }, interactionType))
+				widget:SetText(Addon:GetMacroForBindings({ binding }, interactionType))
 				widget:SetFullWidth(true)
 				widget:SetNumLines(5)
 
@@ -1283,7 +1308,7 @@ local function DrawBindingStatusPage(container, binding)
 			do
 				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
 				widget:SetLabel(L["Generated full macro"])
-				widget:SetText(Clicked:GetMacroForBindings(bindings, interactionType))
+				widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
 				widget:SetFullWidth(true)
 				widget:SetNumLines(8)
 
@@ -1301,17 +1326,15 @@ local function DrawBindingStatusPage(container, binding)
 
 				for _, other in ipairs(bindings) do
 					if other ~= binding then
-						local cache = Clicked:GetBindingCache(other)
-
 						do
 							local function OnClick()
-								Module.tree:SelectByBindingOrGroup(other)
+								tree:SelectByBindingOrGroup(other)
 							end
 
 							local widget = AceGUI:Create("InteractiveLabel")
 							widget:SetFontObject(GameFontHighlight)
-							widget:SetText(cache.displayName)
-							widget:SetImage(cache.displayIcon)
+							widget:SetText(other.cache.displayName or "")
+							widget:SetImage(other.cache.displayIcon or "Interface\\ICONS\\INV_Misc_QuestionMark")
 							widget:SetFullWidth(true)
 							widget:SetCallback("OnClick", OnClick)
 
@@ -1323,7 +1346,7 @@ local function DrawBindingStatusPage(container, binding)
 		end
 
 		if binding.targets.hovercast.enabled then
-			local group = GUI:InlineGroup(L["Unit frame macro"])
+			local group = Addon:GUI_InlineGroup(L["Unit frame macro"])
 			container:AddChild(group)
 
 			local bindings = {}
@@ -1334,11 +1357,11 @@ local function DrawBindingStatusPage(container, binding)
 				end
 			end
 
-			DrawStatus(group, bindings, Clicked.InteractionType.HOVERCAST)
+			DrawStatus(group, bindings, Addon.InteractionType.HOVERCAST)
 		end
 
 		if binding.targets.regular.enabled then
-			local group = GUI:InlineGroup(L["Binding macro"])
+			local group = Addon:GUI_InlineGroup(L["Binding macro"])
 			container:AddChild(group)
 
 			local bindings = {}
@@ -1349,7 +1372,7 @@ local function DrawBindingStatusPage(container, binding)
 				end
 			end
 
-			DrawStatus(group, bindings, Clicked.InteractionType.REGULAR)
+			DrawStatus(group, bindings, Addon.InteractionType.REGULAR)
 		end
 	end
 end
@@ -1357,14 +1380,14 @@ end
 -- Group page
 
 local function DrawGroup(container)
-	local group = Module:GetCurrentGroup()
+	local group = GetCurrentGroup()
 
-	local parent = GUI:InlineGroup(L["Group Name and Icon"])
+	local parent = Addon:GUI_InlineGroup(L["Group Name and Icon"])
 	container:AddChild(parent)
 
 	-- name text field
 	do
-		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "name")
+		local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", group, "name")
 		widget:SetFullWidth(true)
 
 		parent:AddChild(widget)
@@ -1372,7 +1395,7 @@ local function DrawGroup(container)
 
 	-- icon field
 	do
-		local widget = GUI:EditBox(nil, "OnEnterPressed", group, "displayIcon")
+		local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", group, "displayIcon")
 		widget:SetRelativeWidth(0.7)
 
 		parent:AddChild(widget)
@@ -1381,10 +1404,10 @@ local function DrawGroup(container)
 	do
 		local function OpenIconPicker()
 			showIconPicker = true
-			Module.tree:Redraw()
+			tree:Redraw()
 		end
 
-		local widget = GUI:Button(L["Select"], OpenIconPicker)
+		local widget = Addon:GUI_Button(L["Select"], OpenIconPicker)
 		widget:SetRelativeWidth(0.3)
 
 		parent:AddChild(widget)
@@ -1397,43 +1420,43 @@ local function CreateFromItemTemplate(identifier)
 	local item = nil
 
 	if identifier == ITEM_TEMPLATE_SIMPLE_BINDING then
-		item = Clicked:CreateNewBinding(true)
+		item = Clicked:CreateBinding()
 	elseif identifier == ITEM_TEMPLATE_CLICKCAST_BINDING then
-		item = Clicked:CreateNewBinding(true)
+		item = Clicked:CreateBinding()
 		item.targets.hovercast.enabled = true
 		item.targets.regular.enabled = false
 	elseif identifier == ITEM_TEMPLATE_HEALER_BINDING then
-		item = Clicked:CreateNewBinding(true)
+		item = Clicked:CreateBinding()
 
 		item.targets.hovercast.enabled = true
-		item.targets.hovercast.hostility = Clicked.TargetHostility.HELP
+		item.targets.hovercast.hostility = Addon.TargetHostility.HELP
 
-		item.targets.regular[1] = Clicked:GetNewBindingTargetTemplate()
-		item.targets.regular[1].unit = Clicked.TargetUnits.TARGET
-		item.targets.regular[1].hostility = Clicked.TargetHostility.HELP
+		item.targets.regular[1] = Addon:GetNewBindingTargetTemplate()
+		item.targets.regular[1].unit = Addon.TargetUnits.TARGET
+		item.targets.regular[1].hostility = Addon.TargetHostility.HELP
 
-		item.targets.regular[2] = Clicked:GetNewBindingTargetTemplate()
-		item.targets.regular[2].unit = Clicked.TargetUnits.PLAYER
+		item.targets.regular[2] = Addon:GetNewBindingTargetTemplate()
+		item.targets.regular[2].unit = Addon.TargetUnits.PLAYER
 	elseif identifier == ITEM_TEMPLATE_CUSTOM_MACRO then
-		item = Clicked:CreateNewBinding(true)
-		item.type = Clicked.BindingTypes.MACRO
+		item = Clicked:CreateBinding()
+		item.type = Addon.BindingTypes.MACRO
 	elseif identifier == ITEM_TEMPLATE_GROUP then
-		item = Clicked:CreateNewGroup()
+		item = Clicked:CreateGroup()
 	end
 
 	if item ~= nil then
 		Clicked:ReloadActiveBindings()
-		Module.tree:SelectByBindingOrGroup(item)
+		tree:SelectByBindingOrGroup(item)
 	end
 end
 
 local function DrawItemTemplate(container, identifier, name, description)
-	local group = GUI:InlineGroup(name)
+	local group = Addon:GUI_InlineGroup(name)
 
 	container:AddChild(group)
 
 	do
-		local widget = GUI:Label(description, "medium")
+		local widget = Addon:GUI_Label(description, "medium")
 		widget:SetRelativeWidth(0.79)
 		group:AddChild(widget)
 	end
@@ -1443,7 +1466,7 @@ local function DrawItemTemplate(container, identifier, name, description)
 			CreateFromItemTemplate(identifier)
 		end
 
-		local widget = GUI:Button(L["Create"], OnClick)
+		local widget = Addon:GUI_Button(L["Create"], OnClick)
 		widget:SetRelativeWidth(0.2)
 		group:AddChild(widget)
 	end
@@ -1452,16 +1475,16 @@ end
 -- Main binding frame
 
 local function DrawBinding(container)
-	local binding = Module:GetCurrentBinding()
+	local binding = GetCurrentBinding()
 
 	-- keybinding button
 	do
 		local function OnKeyChanged(frame, event, value)
 			UpdateRequiredTargetModesForBinding(binding.targets, value, binding.type)
-			GUI:Serialize(frame, event, value)
+			Addon:GUI_Serialize(frame, event, value)
 		end
 
-		local widget = GUI:KeybindingButton(nil, binding, "keybind")
+		local widget = Addon:GUI_KeybindingButton(nil, binding, "keybind")
 		widget:SetCallback("OnKeyChanged", OnKeyChanged)
 		widget:SetFullWidth(true)
 
@@ -1511,9 +1534,9 @@ local function DrawBinding(container)
 			}
 		}
 
-		local widget = GUI:TabGroup(items, OnGroupSelected)
-		widget:SetStatusTable(Module.tab)
-		widget:SelectTab(Module.tab.selected)
+		local widget = Addon:GUI_TabGroup(items, OnGroupSelected)
+		widget:SetStatusTable(tab)
+		widget:SelectTab(tab.selected)
 
 		container:AddChild(widget)
 	end
@@ -1528,7 +1551,7 @@ local function DrawItemTemplateSelector(container)
 	container:AddChild(scrollFrame)
 
 	do
-		local widget = GUI:Label(L["Create a new binding"], "large")
+		local widget = Addon:GUI_Label(L["Create a new binding"], "large")
 		scrollFrame:AddChild(widget)
 	end
 
@@ -1553,24 +1576,24 @@ local function DrawHeader(container)
 	-- create binding button
 	do
 		local function OnClick()
-			Module.tree:SelectByValue("")
+			tree:SelectByValue("")
 		end
 
-		local widget = GUI:Button(NEW, OnClick)
+		local widget = Addon:GUI_Button(NEW, OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
 	end
 end
 
-local function DrawTreeContainer(container, event, value)
+local function DrawTreeContainer(container)
 	container:ReleaseChildren()
 
-	local binding = Module:GetCurrentBinding()
-	local group = Module:GetCurrentGroup()
+	local binding = GetCurrentBinding()
+	local group = GetCurrentGroup()
 
 	if showIconPicker then
-		local data = binding ~= nil and Clicked:GetBindingCache(binding) or group
+		local data = binding ~= nil and binding.cache or group
 
 		showIconPicker = false
 		DrawIconPicker(container, data)
@@ -1588,38 +1611,33 @@ end
 local function DrawTreeView(container)
 	-- tree view
 	do
-		Module.tree = AceGUI:Create("ClickedTreeGroup")
-		Module.tree:SetLayout("Flow")
-		Module.tree:SetFullWidth(true)
-		Module.tree:SetFullHeight(true)
-		Module.tree:SetCallback("OnGroupSelected", DrawTreeContainer)
+		tree = AceGUI:Create("ClickedTreeGroup")
+		tree:SetLayout("Flow")
+		tree:SetFullWidth(true)
+		tree:SetFullHeight(true)
+		tree:SetCallback("OnGroupSelected", DrawTreeContainer)
 
-		container:AddChild(Module.tree)
+		container:AddChild(tree)
 	end
 end
 
--- Event handlers
+-- Private addon API
 
-local function OnGUIUpdateEvent()
-	if Module.root == nil or not Module.root:IsVisible() then
-		return
-	end
+function Addon:BindingConfig_Initialize()
+	SpellBookFrame:HookScript("OnHide", function()
+		HijackSpellBookButtons(nil)
+	end)
 
-	Clicked:ReloadActiveBindings()
-end
+	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
 
-local function OnBindingsChangedEvent()
-	Module:Redraw()
-end
-
-local function OnPlayerEquipmentChanged()
-	if Clicked:IsInitialized() then
-		Module:Redraw()
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
+		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
 	end
 end
 
-function Clicked:OpenBindingConfig()
-	if Module.root ~= nil and Module.root:IsVisible() then
+function Addon:BindingConfig_Open()
+	if root ~= nil and root:IsVisible() then
 		return
 	end
 
@@ -1633,90 +1651,33 @@ function Clicked:OpenBindingConfig()
 			end
 		end
 
-		Module.root = AceGUI:Create("ClickedFrame")
-		Module.root:SetCallback("OnClose", OnClose)
-		Module.root:SetTitle(L["Clicked Binding Configuration"])
-		Module.root:SetLayout("Flow")
-		Module.root:SetWidth(800)
-		Module.root:SetHeight(600)
+		root = AceGUI:Create("ClickedFrame")
+		root:SetCallback("OnClose", OnClose)
+		root:SetTitle(L["Clicked Binding Configuration"])
+		root:SetLayout("Flow")
+		root:SetWidth(800)
+		root:SetHeight(600)
 
-		Module.tab = {
+		tab = {
 			selected = "action"
 		}
 	end
 
 	if InCombatLockdown() then
-		Clicked:NotifyCombatLockdown()
+		Addon:NotifyCombatLockdown()
 	end
 
-	DrawHeader(Module.root)
-	DrawTreeView(Module.root)
+	DrawHeader(root)
+	DrawTreeView(root)
 
-	Module:Redraw()
+	Addon:BindingConfig_Redraw()
 end
 
-function Module:Initialize()
-	SpellBookFrame:HookScript("OnHide", function()
-		HijackSpellBookButtons(nil)
-	end)
-
-	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
-
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
-		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
-	end
-end
-
-function Module:Register()
-	Clicked:RegisterMessage(GUI.EVENT_UPDATE, OnGUIUpdateEvent)
-	Clicked:RegisterMessage(Clicked.EVENT_BINDINGS_CHANGED, OnBindingsChangedEvent)
-	Clicked:RegisterMessage(Clicked.EVENT_GROUPS_CHANGED, OnBindingsChangedEvent)
-
-	Clicked:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", OnPlayerEquipmentChanged)
-end
-
-function Module:Unregister()
-	Clicked:UnregisterMessage(GUI.EVENT_UPDATE)
-	Clicked:UnregisterMessage(Clicked.EVENT_BINDINGS_CHANGED)
-	Clicked:UnregisterMessage(Clicked.EVENT_GROUPS_CHANGED)
-
-	Clicked:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", OnPlayerEquipmentChanged)
-end
-
-function Module:Redraw()
-	if self.root == nil or not self.root:IsVisible() then
+function Addon:BindingConfig_Redraw()
+	if root == nil or not root:IsVisible() then
 		return
 	end
 
-	self.root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Clicked.db:GetCurrentProfile()))
-	self.tree:ConstructTree()
+	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))
+	tree:ConstructTree()
 end
-
-function Module:GetCurrentBinding()
-	local item = self.tree:GetSelectedItem()
-
-	if item ~= nil then
-		return item.binding
-	end
-
-	return nil
-end
-
-function Module:GetCurrentGroup()
-	local item = self.tree:GetSelectedItem()
-
-	if item ~= nil then
-		return item.group
-	end
-
-	return nil
-end
-
-function Module:OnChatCommandReceived(args)
-	if #args == 0 then
-		Clicked:OpenBindingConfig()
-	end
-end
-
-Clicked:RegisterModule("BindingConfig", Module)

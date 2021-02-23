@@ -1,27 +1,24 @@
 local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+
+--- @type ClickedInternal
+local _, Addon = ...
+
+--- @type Localization
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
+--- @type Clicked
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
-Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
-local modules = {}
+--- The current version of Clicked.
+--- @type string
+Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 local isPlayerInCombat = false
 local isInitialized = false
 
--- safecall implementation
-
-local function errorhandler(err)
-	return geterrorhandler()(err)
-end
-
-local function safecall(func, ...)
-	if func then
-		return xpcall(func, errorhandler, ...)
-	end
-end
+-- Local support functions
 
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
@@ -29,53 +26,20 @@ local function RegisterMinimapIcon()
 		label = L["Clicked"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
-			Clicked:OpenBindingConfig()
+			Addon:BindingConfig_Open()
 		end,
 		OnTooltipShow = function(tooltip)
 			tooltip:AddLine(L["Clicked"])
 		end
 	})
 
-	LibDBIcon:Register("Clicked", iconData, Clicked.db.profile.minimap)
+	LibDBIcon:Register("Clicked", iconData, Addon.db.profile.options.minimap)
 end
 
-local function ReloadDatabase()
-	Clicked:ReloadDatabase()
-end
-
-local function OnEnteringCombat()
-	isPlayerInCombat = true
-
-	Clicked:RefreshTooltips()
-end
-
-local function OnLeavingCombat()
-	isPlayerInCombat = false
-
-	Clicked:ProcessFrameQueue()
-	Clicked:ReloadActiveBindingsIfPending()
-	Clicked:RefreshTooltips()
-end
-
-local function OnPlayerEnteringWorld()
-	isInitialized = true
-
-	Clicked:ProcessFrameQueue()
-	Clicked:UpdateClickCastHeaderBlacklist()
-	Clicked:ReloadActiveBindings()
-end
-
-local function OnAddonLoaded()
-	Clicked:ProcessFrameQueue()
-end
-
-local function OnPlayerFlagsChanged(event, unit)
-	if unit == "player" then
-		Clicked:ReloadActiveBindings()
-	end
-end
-
-local function OnChatCommandReceived(input)
+--- Parse a chat command input and handle it appropriately.
+---
+--- @param input string The data of the chat command, excluding the first word
+local function HandleChatCommand(input)
 	local args = {}
 	local startpos = 1
 
@@ -90,62 +54,128 @@ local function OnChatCommandReceived(input)
 		startpos = next
 	end
 
-	for _, module in pairs(modules) do
-		if module.OnChatCommandReceived ~= nil then
-			safecall(module.OnChatCommandReceived, module, args)
+	if #args == 0 then
+		Addon:BindingConfig_Open()
+	elseif #args == 1 then
+		if args[1] == "profile" then
+			Addon:ProfileOptions_Open()
+		elseif args[1] == "blacklist" then
+			Addon:BlacklistOptions_Open()
+		elseif args[1] == "dump" then
+			Addon:StatusOutput_Open()
 		end
 	end
 end
+
+-- Event handlers
+
+local function PLAYER_REGEN_DISABLED()
+	isPlayerInCombat = true
+
+	Addon:AbilityTooltips_Refresh()
+end
+
+local function PLAYER_REGEN_ENABLED()
+	isPlayerInCombat = false
+
+	Addon:ProcessFrameQueue()
+	Addon:ReloadActiveBindingsIfPending()
+	Addon:AbilityTooltips_Refresh()
+end
+
+local function PLAYER_ENTERING_WORLD()
+	isInitialized = true
+
+	Addon:ProcessFrameQueue()
+	Addon:UpdateClickCastHeaderBlacklist()
+	Clicked:ReloadActiveBindings()
+end
+
+local function ADDON_LOADED()
+	Addon:ProcessFrameQueue()
+end
+
+local function PLAYER_TALENT_UPDATE()
+	Clicked:ReloadActiveBindings()
+end
+
+local function PLAYER_FLAGS_CHANGED(_, unit)
+	if unit == "player" then
+		Clicked:ReloadActiveBindings()
+	end
+end
+
+local function PLAYER_FOCUS_CHANGED()
+	Addon:AbilityTooltips_Refresh()
+end
+
+local function PLAYER_LEVEL_CHANGED()
+	Clicked:ReloadActiveBindings()
+end
+
+local function PLAYER_EQUIPMENT_CHANGED()
+	Addon:BindingConfig_Redraw()
+end
+
+local function GROUP_ROSTER_UPDATE()
+	Clicked:ReloadActiveBindings()
+end
+
+local function MODIFIER_STATE_CHANGED()
+	Addon:AbilityTooltips_Refresh()
+end
+
+local function UNIT_TARGET()
+	Addon:AbilityTooltips_Refresh()
+end
+
+-- Public addon API
 
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	self.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
-	self.db.RegisterCallback(self, "OnProfileChanged", ReloadDatabase)
-	self.db.RegisterCallback(self, "OnProfileCopied", ReloadDatabase)
-	self.db.RegisterCallback(self, "OnProfileReset", ReloadDatabase)
+	--- @type Database
+	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
+	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
+	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
+	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
 
-	Clicked:UpgradeDatabaseProfile(Clicked.db.profile)
+	Clicked:UpgradeDatabaseProfile(Addon.db.profile)
 
 	RegisterMinimapIcon()
 
-	self:RegisterClickCastHeader()
-	self:RegisterBlizzardUnitFrames()
-	self:RegisterTooltips()
+	Addon:RegisterClickCastHeader()
+	Addon:RegisterBlizzardUnitFrames()
 
-	AceConsole:RegisterChatCommand("clicked", OnChatCommandReceived)
-	AceConsole:RegisterChatCommand("cc", OnChatCommandReceived)
+	Addon:GeneralOptions_Initialize()
+	Addon:ProfileOptions_Initialize()
+	Addon:BlacklistOptions_Initialize()
+	Addon:BindingConfig_Initialize()
+	Addon:StatusOutput_Initialize()
+	Addon:AbilityTooltips_Initialize()
 
-	for _, module in pairs(modules) do
-		if module.Initialize ~= nil then
-			safecall(module.Initialize, module)
-		end
-	end
+	AceConsole:RegisterChatCommand("clicked", HandleChatCommand)
+	AceConsole:RegisterChatCommand("cc", HandleChatCommand)
 end
 
 function Clicked:OnEnable()
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", OnEnteringCombat)
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", OnLeavingCombat)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", OnPlayerEnteringWorld)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", PLAYER_REGEN_DISABLED)
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", "ReloadActiveBindings")
-		self:RegisterEvent("PLAYER_FLAGS_CHANGED", OnPlayerFlagsChanged)
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", "RefreshTooltips")
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
+		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 	end
 
-	self:RegisterEvent("PLAYER_LEVEL_CHANGED", "ReloadActiveBindings");
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ReloadActiveBindings")
-	self:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED);
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
+	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
 
-	self:RegisterEvent("MODIFIER_STATE_CHANGED", "RefreshTooltips")
-	self:RegisterEvent("UNIT_TARGET", "RefreshTooltips")
-
-	for _, module in pairs(modules) do
-		if module.Register ~= nil then
-			safecall(module.Register, module)
-		end
-	end
+	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
+	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
 end
 
 function Clicked:OnDisable()
@@ -160,27 +190,26 @@ function Clicked:OnDisable()
 	end
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
+	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
 
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("UNIT_TARGET")
-
-	for _, module in pairs(modules) do
-		if module.Unregister ~= nil then
-			safecall(module.Unregister, module)
-		end
-	end
 end
 
-function Clicked:RegisterModule(name, module)
-	modules[name] = module
-end
+-- Private addon API
 
-function Clicked:IsPlayerInCombat()
-	return isPlayerInCombat
-end
-
-function Clicked:IsInitialized()
+--- Check if the addon is fully initialized.
+---
+--- @return boolean @`true` if the addon is done initializing, `false` otherwise
+function Addon:IsInitialized()
 	return isInitialized
+end
+
+--- Check if the player is currently in combat.
+
+--- @return boolean @`true` if the player is currently considered to be in combat, `false` otherwise.
+function Addon:IsPlayerInCombat()
+	return isPlayerInCombat
 end

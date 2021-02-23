@@ -1,5 +1,14 @@
+--- @type ClickedInternal
+local _, Addon = ...
+
 local lastTooltipUpdateTime
 
+-- Local support functions
+
+--- Check if the specified `keybind` is valid for the modifier keys that are currently pressed.
+---
+--- @param keybind string
+--- @return boolean
 local function IsKeybindValidForCurrentModifiers(keybind)
 	local mods = {}
 	local current = {
@@ -49,14 +58,21 @@ local function IsKeybindValidForCurrentModifiers(keybind)
 	return true
 end
 
+--- Check if the tooltips module is enabled in the user settings.
+---
+--- @return boolean
 local function IsTooltipModuleEnabled()
-	return Clicked.db.profile.options.tooltips
+	return Addon.db.profile.options.tooltips
 end
 
+--- @param left Binding
+--- @param right Binding
+--- @return boolean
 local function SortBindings(left, right)
-	return Clicked:CompareBindings(left, right)
+	return Addon:CompareBindings(left, right)
 end
 
+--- @param self table
 local function OnTooltipSetUnit(self)
 	if not IsTooltipModuleEnabled() then
 		return
@@ -65,7 +81,7 @@ local function OnTooltipSetUnit(self)
 	lastTooltipUpdateTime = GetTime()
 	local _, unit = self:GetUnit()
 
-	if Clicked:IsStringNilOrEmpty(unit) then
+	if Addon:IsStringNilOrEmpty(unit) then
 		return
 	end
 
@@ -76,14 +92,8 @@ local function OnTooltipSetUnit(self)
 
 	for _, binding in ipairs(bindings) do
 		if IsKeybindValidForCurrentModifiers(binding.keybind) then
-			local left
+			local left = Addon:GetSimpleSpellOrItemInfo(binding)
 			local right = binding.keybind
-
-			if binding.type == Clicked.BindingTypes.SPELL then
-				left = GetSpellInfo(Clicked:GetActiveBindingValue(binding))
-			elseif binding.type == Clicked.BindingTypes.ITEM then
-				left = Clicked:GetItemInfo(Clicked:GetActiveBindingValue(binding))
-			end
 
 			if first then
 				self:AddLine(" ")
@@ -96,14 +106,16 @@ local function OnTooltipSetUnit(self)
 	end
 end
 
-function Clicked:RegisterTooltips()
+-- Private addon API
+
+function Addon:AbilityTooltips_Initialize()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
 		GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 	end)
 end
 
-function Clicked:RefreshTooltips()
+function Addon:AbilityTooltips_Refresh()
 	if not IsTooltipModuleEnabled() then
 		return
 	end
@@ -111,7 +123,7 @@ function Clicked:RefreshTooltips()
 	if not GameTooltip:IsForbidden() and GameTooltip:IsShown() and GetTime() ~= lastTooltipUpdateTime then
 		local _, unit = GameTooltip:GetUnit()
 
-		if not Clicked:IsStringNilOrEmpty(unit) then
+		if not Addon:IsStringNilOrEmpty(unit) then
 			GameTooltip:SetUnit(unit)
 		end
 	end

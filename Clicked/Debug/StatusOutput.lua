@@ -1,11 +1,17 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
+--- @type ClickedInternal
+local _, Addon = ...
+
 local driver
 local frame
 local editbox
 
 local data
 
+-- Local support functions
+
+--- @return string
 local function GetBasicinfoString()
 	local lines = {}
 
@@ -37,7 +43,7 @@ local function GetBasicinfoString()
 		end
 	end
 
-	table.insert(lines, "Mode: " .. (Clicked.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
+	table.insert(lines, "Mode: " .. (Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
 	table.insert(lines, "")
 
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
@@ -52,6 +58,7 @@ local function GetBasicinfoString()
 	return table.concat(lines, "\n")
 end
 
+--- @return string
 local function GetParsedDataString()
 	local lines = {}
 
@@ -107,13 +114,14 @@ local function GetParsedDataString()
 	return table.concat(lines, "\n")
 end
 
+--- @return string
 local function GetRegisteredClickCastFrames()
 	local lines = {}
 
 	for _, clickCastFrame in Clicked:IterateClickCastFrames() do
 		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
 			local name = clickCastFrame:GetName()
-			local blacklisted = Clicked:IsFrameBlacklisted(clickCastFrame)
+			local blacklisted = Addon:IsFrameBlacklisted(clickCastFrame)
 
 			table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
 		end
@@ -128,11 +136,12 @@ local function GetRegisteredClickCastFrames()
 	return table.concat(lines, "\n")
 end
 
+--- @return string
 local function GetSerializedProfileString()
 	local lines = {}
 
 	table.insert(lines, "----- Profile -----")
-	table.insert(lines, Clicked:SerializeCurrentProfile(true))
+	table.insert(lines, Clicked:SerializeProfile(Addon.db.profile, true, true))
 
 	return table.concat(lines, "\n")
 end
@@ -161,7 +170,30 @@ local function UpdateLastUpdatedTime()
 	C_Timer.After(1, UpdateLastUpdatedTime)
 end
 
-local function OpenStatusOutput()
+local function CreateStateDriver(state, condition)
+	RegisterStateDriver(driver, state, condition)
+	driver:SetAttribute("_onstate-" .. state, [[ self:CallMethod("UpdateStatusOutputText") ]])
+end
+
+-- Private addon API
+
+function Addon:StatusOutput_Initialize()
+	driver = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	driver:Show()
+
+	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
+	CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
+		CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
+		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
+	end
+
+	driver.UpdateStatusOutputText = UpdateStatusOutputText
+end
+
+function Addon:StatusOutput_Open()
 	if frame ~= nil and frame:IsVisible() then
 		return
 	end
@@ -182,7 +214,8 @@ local function OpenStatusOutput()
 	UpdateStatusOutputText()
 end
 
-local function OnBindingProcessorComplete(event, commands)
+--- @param commands Command[]
+function Addon:StatusOutput_HandleCommandsGenerated(commands)
 	data = {}
 	data.timestamp = GetTime()
 
@@ -195,7 +228,8 @@ local function OnBindingProcessorComplete(event, commands)
 	end
 end
 
-local function OnMacroHandlerAttributesCreated(event, keybinds, attributes)
+--- @param attributes table<string,string>
+function Addon:StatusOutput_UpdateMacroHandlerAttributes(attributes)
 	data.macroHandler = attributes
 
 	if frame ~= nil and frame:IsVisible() then
@@ -203,56 +237,11 @@ local function OnMacroHandlerAttributesCreated(event, keybinds, attributes)
 	end
 end
 
-local function OnHovercastAttributesCreated(event, keybinds, attributes)
+--- @param attributes table<string,string>
+function Addon:StatusOutput_UpdateHovercastAttributes(attributes)
 	data.hovercast = attributes
 
 	if frame ~= nil and frame:IsVisible() then
 		UpdateStatusOutputText()
 	end
 end
-
-local function CreateStateDriver(state, condition)
-	RegisterStateDriver(driver, state, condition)
-	driver:SetAttribute("_onstate-" .. state, [[ self:CallMethod("UpdateStatusOutputText") ]])
-end
-
-local module = {
-	["Initialize"] = function(self)
-		driver = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-		driver:Show()
-
-		CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
-		CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
-
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
-			CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
-			CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
-		end
-
-		driver.UpdateStatusOutputText = UpdateStatusOutputText
-	end,
-
-	["Register"] = function(self)
-		Clicked:RegisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, OnBindingProcessorComplete)
-		Clicked:RegisterMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, OnMacroHandlerAttributesCreated)
-		Clicked:RegisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED, OnHovercastAttributesCreated)
-	end,
-
-	["Unregister"] = function(self)
-		Clicked:UnregisterMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE)
-		Clicked:UnregisterMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED)
-		Clicked:UnregisterMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED)
-	end,
-
-	["OnChatCommandReceived"] = function(self, args)
-		for _, arg in ipairs(args) do
-			if arg == "dump" then
-				OpenStatusOutput()
-				break
-			end
-		end
-	end
-}
-
-Clicked:RegisterModule("StatusOutput", module)

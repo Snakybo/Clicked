@@ -1,12 +1,20 @@
-Clicked.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
-Clicked.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
+--- @type ClickedInternal
+local _, Addon = ...
 
-Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED = "MACRO_HANDLER_ATTRIBUTES_CREATED"
-Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED = "HOVERCAST_ATTRIBUTES_CREATED"
+Addon.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
+Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
+--- @type table
 local macroFrameHandler
+
+--- @type table
 local stopCastingButton
 
+-- Local support functions
+
+---@param frame table
+---@param state string
+---@param condition string
 local function CreateStateDriverAttribute(frame, state, condition)
 	frame:SetAttribute("_onstate-" .. state, [[
 		if not self:IsShown() then
@@ -28,7 +36,7 @@ local function EnsureStopCastingButton()
 		return
 	end
 
-	stopCastingButton = CreateFrame("Button", Clicked.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
+	stopCastingButton = CreateFrame("Button", Addon.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
 	stopCastingButton:SetAttribute("type", "stop")
 end
 
@@ -37,7 +45,7 @@ local function EnsureMacroFrameHandler()
 		return
 	end
 
-	macroFrameHandler = CreateFrame("Button", Clicked.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
+	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
 	macroFrameHandler:Hide()
 
 	-- set required data first
@@ -115,7 +123,11 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 end
 
-function Clicked:UpdateMacroFrameHandler(keybinds, attributes)
+-- Private addon API
+
+---@param keybinds string[]
+---@param attributes string[]
+function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 	local split = {
 		keybinds = {},
 		identifiers = {}
@@ -129,20 +141,24 @@ function Clicked:UpdateMacroFrameHandler(keybinds, attributes)
 	macroFrameHandler:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
 	macroFrameHandler:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
 
-	self:SetPendingFrameAttributes(macroFrameHandler, attributes)
-	self:ApplyAttributesToFrame(macroFrameHandler)
+	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)
+	Addon:ApplyAttributesToFrame(macroFrameHandler)
 end
 
--- Note: This is a secure function and may not be called during combat
-function Clicked:ProcessCommands(commands)
+---@param commands Command[]
+function Addon:ProcessCommands(commands)
 	if InCombatLockdown() then
 		return
 	end
 
+	--- @type Keybind[]
 	local newClickCastFrameKeybinds = {}
+	--- @type table<string,string>
 	local newClickCastFrameAttributes = {}
 
+	--- @type Keybind[]
 	local newMacroFrameHandlerKeybinds = {}
+	--- @type table<string,string>
 	local newMacroFrameHandlerAttributes = {}
 
 	EnsureStopCastingButton()
@@ -162,8 +178,7 @@ function Clicked:ProcessCommands(commands)
 			identifier = command.suffix
 		}
 
-		self:CreateCommandAttributes(attributes, command, command.prefix, command.suffix)
-		self:SendMessage(self.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, command, attributes)
+		Addon:CreateCommandAttributes(attributes, command, command.prefix, command.suffix)
 
 		if command.hovercast then
 			targetKeybinds = newClickCastFrameKeybinds
@@ -178,7 +193,7 @@ function Clicked:ProcessCommands(commands)
 		-- outside of the unit frame, and then drags the cursor into the unit frame before the game hides it.
 		-- If that happens the user is forced to /reload as the cursor is stuck in camera-rotation mode.
 		-- See: #37
-		if not command.hovercast or not Clicked:IsMouseButton(keybind.key) then
+		if not command.hovercast or not Addon:IsMouseButton(keybind.key) then
 			table.insert(targetKeybinds, keybind)
 		end
 
@@ -187,13 +202,13 @@ function Clicked:ProcessCommands(commands)
 		end
 	end
 
-	self:SendMessage(Clicked.EVENT_MACRO_HANDLER_ATTRIBUTES_CREATED, newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
-	self:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
+	Addon:StatusOutput_UpdateMacroHandlerAttributes(newMacroFrameHandlerAttributes)
+	Addon:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
 
 	-- Register all new keybinds
 	macroFrameHandler:Show()
 
-	self:SendMessage(Clicked.EVENT_HOVERCAST_ATTRIBUTES_CREATED, newClickCastFrameKeybinds, newClickCastFrameAttributes)
-	self:UpdateClickCastHeader(newClickCastFrameKeybinds)
-	self:UpdateClickCastFrames(newClickCastFrameAttributes)
+	Addon:StatusOutput_UpdateHovercastAttributes(newClickCastFrameAttributes)
+	Addon:UpdateClickCastHeader(newClickCastFrameKeybinds)
+	Addon:UpdateClickCastFrames(newClickCastFrameAttributes)
 end

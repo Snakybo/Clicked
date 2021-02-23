@@ -1,4 +1,7 @@
-Clicked.BindingTypes = {
+--- @type ClickedInternal
+local _, Addon = ...
+
+Addon.BindingTypes = {
 	SPELL = "SPELL",
 	ITEM = "ITEM",
 	MACRO = "MACRO",
@@ -6,13 +9,13 @@ Clicked.BindingTypes = {
 	UNIT_MENU = "UNIT_MENU"
 }
 
-Clicked.CommandType = {
+Addon.CommandType = {
 	TARGET = "target",
 	MENU = "menu",
 	MACRO = "macro"
 }
 
-Clicked.TargetUnits = {
+Addon.TargetUnits = {
 	DEFAULT = "DEFAULT",
 	PLAYER = "PLAYER",
 	TARGET = "TARGET",
@@ -32,103 +35,110 @@ Clicked.TargetUnits = {
 	CURSOR = "CURSOR"
 }
 
-Clicked.TargetHostility = {
+Addon.TargetHostility = {
 	ANY = "ANY",
 	HELP = "HELP",
 	HARM = "HARM"
 }
 
-Clicked.TargetVitals = {
+Addon.TargetVitals = {
 	ANY = "ANY",
 	ALIVE = "ALIVE",
 	DEAD = "DEAD"
 }
 
-Clicked.MacroMode = {
+Addon.MacroMode = {
 	FIRST = "FIRST",
 	APPEND = "APPEND",
 	LAST = "LAST"
 }
 
-Clicked.CombatState = {
+Addon.CombatState = {
 	IN_COMBAT = "IN_COMBAT",
 	NOT_IN_COMBAT = "NOT_IN_COMBAT"
 }
 
-Clicked.WarModeState = {
+Addon.WarModeState = {
 	IN_WAR_MODE = "IN_WAR_MODE",
 	NOT_IN_WAR_MODE = "NOT_IN_WAR_MODE"
 }
 
-Clicked.GroupState = {
+Addon.GroupState = {
 	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
 	PARTY = "IN_GROUP_PARTY",
 	RAID = "IN_GROUP_RAID",
 	SOLO = "IN_GROUP_SOLO"
 }
 
-Clicked.PetState = {
+Addon.PetState = {
 	ACTIVE = "ACTIVE",
 	INACTIVE = "INACTIVE"
 }
 
-Clicked.InteractionType = {
+Addon.InteractionType = {
 	REGULAR = 1,
 	HOVERCAST = 2
 }
 
-Clicked.EVENT_BINDINGS_CHANGED = "CLICKED_BINDINGS_CHANGED"
-Clicked.EVENT_BINDING_PROCESSOR_COMPLETE = "CLICKED_BINDING_PROCESSOR_COMPLETE"
-
+--- @type Binding[]
 local activeBindings = {}
 
+--- @type table<string,Binding[]>
 local hovercastBucket = {}
+
+--- @type table<string,Binding[]>
 local regularBucket = {}
 
 local isPendingReload = false
 
+-- Local support functions
+
+--- @param action Action
+--- @param interactionType number
+--- @param isLast boolean
+--- @return string
 local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local impliedExists = false
-	local unit = Clicked:GetWoWUnitFromUnit(action.unit, true)
+	local unit = Addon:GetWoWUnitFromUnit(action.unit, true)
 
 	if unit ~= nil then
 		table.insert(flags, unit)
 	end
 
-	if Clicked:CanUnitBeHostile(action.unit) then
-		if action.hostility == Clicked.TargetHostility.HELP then
+	if Addon:CanUnitBeHostile(action.unit) then
+		if action.hostility == Addon.TargetHostility.HELP then
 			table.insert(flags, "help")
 			impliedExists = true
-		elseif action.hostility == Clicked.TargetHostility.HARM then
+		elseif action.hostility == Addon.TargetHostility.HARM then
 			table.insert(flags, "harm")
 			impliedExists = true
 		end
 	end
 
-	if Clicked:CanUnitBeDead(action.unit) then
-		if action.vitals == Clicked.TargetVitals.ALIVE then
+	if Addon:CanUnitBeDead(action.unit) then
+		if action.vitals == Addon.TargetVitals.ALIVE then
 			table.insert(flags, "nodead")
-		elseif action.vitals == Clicked.TargetVitals.DEAD then
+		elseif action.vitals == Addon.TargetVitals.DEAD then
 			table.insert(flags, "dead")
 			impliedExists = true
 		end
 	end
 
-	if action.pet == Clicked.PetState.ACTIVE then
+	if action.pet == Addon.PetState.ACTIVE then
 		table.insert(flags, "pet")
 		impliedExists = true
-	elseif action.pet == Clicked.PetState.INACTIVE then
+	elseif action.pet == Addon.PetState.INACTIVE then
 		table.insert(flags, "nopet")
 	end
 
-	if not impliedExists and interactionType == Clicked.InteractionType.REGULAR and not isLast then
+	if not impliedExists and interactionType == Addon.InteractionType.REGULAR and not isLast then
 		table.insert(flags, "exists")
 	end
 
-	if action.combat == Clicked.CombatState.IN_COMBAT then
+	if action.combat == Addon.CombatState.IN_COMBAT then
 		table.insert(flags, "combat")
-	elseif action.combat == Clicked.CombatState.NOT_IN_COMBAT then
+	elseif action.combat == Addon.CombatState.NOT_IN_COMBAT then
 		table.insert(flags, "nocombat")
 	end
 
@@ -139,9 +149,12 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	return table.concat(flags, ",")
 end
 
+--- @param binding Binding
+--- @param target Binding.Target
+--- @return Action
 local function ConstructAction(binding, target)
 	local action = {
-		ability = Clicked:GetActiveBindingValue(binding)
+		ability = Addon:GetBindingValue(binding)
 	}
 
 	do
@@ -165,23 +178,23 @@ local function ConstructAction(binding, target)
 	end
 
 	do
-		local forms = Clicked:GetAvailableShapeshiftForms(binding)
+		local forms = Addon:GetAvailableShapeshiftForms(binding)
 		action.forms = table.concat(forms, "/")
 	end
 
-	if Clicked:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
-		action.unit = Clicked.TargetUnits.MOUSEOVER
+	if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
+		action.unit = Addon.TargetUnits.MOUSEOVER
 	else
 		action.unit = target.unit
 	end
 
-	if target.hostility ~= Clicked.TargetHostility.ANY then
+	if target.hostility ~= Addon.TargetHostility.ANY then
 		action.hostility = target.hostility
 	else
 		action.hostility = ""
 	end
 
-	if target.vitals ~= Clicked.TargetVitals.ANY then
+	if target.vitals ~= Addon.TargetVitals.ANY then
 		action.vitals = target.vitals
 	else
 		action.vitals = ""
@@ -190,15 +203,18 @@ local function ConstructAction(binding, target)
 	return action
 end
 
+--- @param binding Binding
+--- @param interactionType number
+--- @return Action[]
 local function ConstructActions(binding, interactionType)
 	local actions = {}
 
-	if binding.targets.hovercast.enabled and interactionType == Clicked.InteractionType.HOVERCAST then
+	if binding.targets.hovercast.enabled and interactionType == Addon.InteractionType.HOVERCAST then
 		local action = ConstructAction(binding, binding.targets.hovercast)
 		table.insert(actions, action)
 	end
 
-	if binding.targets.regular.enabled and interactionType == Clicked.InteractionType.REGULAR then
+	if binding.targets.regular.enabled and interactionType == Addon.InteractionType.REGULAR then
 		for _, target in ipairs(binding.targets.regular) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
@@ -208,11 +224,16 @@ local function ConstructActions(binding, interactionType)
 	return actions
 end
 
+--- @param actions Action[]
+--- @param indexMap table<Action,integer>
 local function SortActions(actions, indexMap)
+	---@param left Action
+	---@param right Action
+	---@return boolean
 	local function SortFunc(left, right)
 		local priority = {
 			-- 1. Mouseover targets always come first
-			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.MOUSEOVER, comparison = "eq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.MOUSEOVER, comparison = "eq" },
 
 			-- 2. Hostility, vitals, combat, and form flags take presedence over actions
 			--    that don't specify them explicitly
@@ -224,9 +245,9 @@ local function SortActions(actions, indexMap)
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
 			-- 4. The player, cursor, and default targets will always come last
-			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.PLAYER, comparison = "neq" },
-			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.CURSOR, comparison = "neq" },
-			{ left = left.unit, right = right.unit, value = Clicked.TargetUnits.DEFAULT, comparison = "neq" }
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.PLAYER, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.CURSOR, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.DEFAULT, comparison = "neq" }
 		}
 
 		for _, item in ipairs(priority) do
@@ -268,19 +289,25 @@ local function SortActions(actions, indexMap)
 	table.sort(actions, SortFunc)
 end
 
+--- @param binding Binding
+--- @return string
 local function GetInternalBindingType(binding)
-	if binding.type == Clicked.BindingTypes.SPELL then
-		return Clicked.BindingTypes.MACRO
+	if binding.type == Addon.BindingTypes.SPELL then
+		return Addon.BindingTypes.MACRO
 	end
 
-	if binding.type == Clicked.BindingTypes.ITEM then
-		return Clicked.BindingTypes.MACRO
+	if binding.type == Addon.BindingTypes.ITEM then
+		return Addon.BindingTypes.MACRO
 	end
 
 	return binding.type
 end
 
 local function ProcessBuckets()
+	--- @param keybind string
+	--- @param bindings Binding[]
+	--- @param interactionType number
+	--- @return Command
 	local function Process(keybind, bindings, interactionType)
 		if #bindings == 0 then
 			return nil
@@ -289,18 +316,18 @@ local function ProcessBuckets()
 		local reference = bindings[1]
 		local command = {
 			keybind = keybind,
-			hovercast = interactionType == Clicked.InteractionType.HOVERCAST
+			hovercast = interactionType == Addon.InteractionType.HOVERCAST
 		}
 
-		command.prefix, command.suffix = Clicked:CreateAttributeIdentifier(command.keybind, command.hovercast)
+		command.prefix, command.suffix = Addon:CreateAttributeIdentifier(command.keybind, command.hovercast)
 
-		if GetInternalBindingType(reference) == Clicked.BindingTypes.MACRO then
-			command.action = Clicked.CommandType.MACRO
-			command.data = Clicked:GetMacroForBindings(bindings, interactionType)
-		elseif reference.type == Clicked.BindingTypes.UNIT_SELECT then
-			command.action = Clicked.CommandType.TARGET
-		elseif reference.type == Clicked.BindingTypes.UNIT_MENU then
-			command.action = Clicked.CommandType.MENU
+		if GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
+			command.action = Addon.CommandType.MACRO
+			command.data = Addon:GetMacroForBindings(bindings, interactionType)
+		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
+			command.action = Addon.CommandType.TARGET
+		elseif reference.type == Addon.BindingTypes.UNIT_MENU then
+			command.action = Addon.CommandType.MENU
 		else
 			error("Unhandled binding type: " .. reference.type)
 		end
@@ -308,23 +335,27 @@ local function ProcessBuckets()
 		return command
 	end
 
+	--- @type Command[]
 	local commands = {}
 
 	for keybind, bindings in pairs(hovercastBucket) do
-		local command = Process(keybind, bindings, Clicked.InteractionType.HOVERCAST)
+		local command = Process(keybind, bindings, Addon.InteractionType.HOVERCAST)
 		table.insert(commands, command)
 	end
 
 	for keybind, bindings in pairs(regularBucket) do
-		local command = Process(keybind, bindings, Clicked.InteractionType.REGULAR)
+		local command = Process(keybind, bindings, Addon.InteractionType.REGULAR)
 		table.insert(commands, command)
 	end
 
-	Clicked:SendMessage(Clicked.EVENT_BINDING_PROCESSOR_COMPLETE, commands)
-	Clicked:ProcessCommands(commands)
+	Addon:StatusOutput_HandleCommandsGenerated(commands)
+	Addon:ProcessCommands(commands)
 end
 
+--- @param bindings Binding[]
 local function GenerateBuckets(bindings)
+	---@param bucket table<string,Binding>
+	---@param binding Binding
 	local function Insert(bucket, binding)
 		if #bucket == 0 then
 			table.insert(bucket, binding)
@@ -337,9 +368,10 @@ local function GenerateBuckets(bindings)
 		end
 	end
 
-	table.wipe(hovercastBucket)
-	table.wipe(regularBucket)
+	wipe(hovercastBucket)
+	wipe(regularBucket)
 
+	--- @type Binding
 	for _, binding in ipairs(bindings) do
 		local key = binding.keybind
 
@@ -355,20 +387,20 @@ local function GenerateBuckets(bindings)
 	end
 end
 
---- Reloads the active bindings, this will go through all configured bindings
---- and check their (current) validity using the CanBindingLoad function.
---- If there are multiple bindings that use the same keybind it will use the
---- PrioritizeBindings function to sort them.
+-- Public addon API
+
+--- Reload the active bindings, this should be called any time changes have been made to data of a binding, or potential load conditions change.
+--- If this is called during combat, it will instead be deferred until the combat finishes.
 function Clicked:ReloadActiveBindings()
 	if InCombatLockdown() then
 		isPendingReload = true
 		return
 	end
 
-	table.wipe(activeBindings)
+	wipe(activeBindings)
 
-	for _, binding in self:IterateConfiguredBindings() do
-		if self:CanBindingLoad(binding) then
+	for _, binding in Clicked:IterateConfiguredBindings() do
+		if Addon:CanBindingLoad(binding) then
 			table.insert(activeBindings, binding)
 		end
 	end
@@ -376,99 +408,98 @@ function Clicked:ReloadActiveBindings()
 	GenerateBuckets(activeBindings)
 	ProcessBuckets()
 
-	self:SendMessage(self.EVENT_BINDINGS_CHANGED)
+	Addon:BindingConfig_Redraw()
 end
 
---- Reload the active bindings if required. This will mainly be the case if `ReloadActiveBindings`
---- was called during combat or some other scenario in which it was not currently allowed to reload.
+--- Evaluate the generated macro for a binding and return the target unit if there is any.
 ---
---- @see ReloadActiveBindings
-function Clicked:ReloadActiveBindingsIfPending()
-	if not isPendingReload then
-		return
+--- @param binding Binding The input binding, cannot be `nil` and must be a valid binding table
+--- @return string hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
+--- @return string regularTarget The first satisfied regular unit if any, `nil` otherwise.
+function Clicked:EvaluateBindingMacro(binding)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+
+	local bindings = { binding }
+
+	local hovercastTarget = nil
+	local regularTarget = nil
+
+	if binding.targets.hovercast.enabled then
+		local _, hovercast = Addon:GetMacroForBindings(bindings, Addon.InteractionType.HOVERCAST)
+		_, hovercastTarget = SecureCmdOptionParse(hovercast)
 	end
 
-	isPendingReload = false
-	self:ReloadActiveBindings()
-end
-
---- Parses and evaluates the generated macro for a binding.
----
---- @param binding table
---- @param interactionType string
---- @return string result
---- @return string target
-function Clicked:EvaluateBindingMacro(binding, interactionType)
-	local key = binding.keybind
-	local bucket
-
-	if interactionType == Clicked.InteractionType.REGULAR then
-		bucket = regularBucket
-	else
-		bucket = hovercastBucket
+	if binding.targets.regular.enabled then
+		local _, regular = Addon:GetMacroForBindings(bindings, Addon.InteractionType.REGULAR)
+		_, regularTarget = SecureCmdOptionParse(regular)
 	end
 
-	local bindings = bucket[key]
-	local _, segments = self:GetMacroForBindings(bindings, interactionType)
-
-	return SecureCmdOptionParse(segments)
+	return hovercastTarget, regularTarget
 end
 
---- Create an interator for the currently active bindings for use in a `for in` loop.
+--- Iterate through all currently active bindings, this function can be used in a `for in` loop.
+---
+--- @return function iterator
+--- @return table t
+--- @return number i
 function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
 end
 
---- Get all bindings that, when activated at this moment, will affect the specified unit.
---- This builds a full profile and the resulting table contains all bindings that meet the criteria.
+--- Get all bindings that, when activated at this moment, will affect the specified unit. This builds a full profile and the resulting table contains all
+--- bindings that meet the criteria.
 ---
---- This function additionally checks for _similar_ units, for example, if the input unit is `focus`
---- but the `focus` unit is also the `target` unit, it will also include any bindings aimed at the
---- `target` unit.
+--- This function additionally checks for _similar_ units, for example, if the input unit is `focus` but the `focus` unit is also the `target` unit, it will
+--- also include any bindings aimed at the `target` unit.
 ---
---- For each binding it also validates that the specified load and target conditions have been met.
---- A binding that is only active in certain shapeshift forms will not be included if the player is
---- not currently in that shapeshift form.
+--- For each binding it also validates that the specified load and target conditions have been met. A binding that is only active in certain shapeshift forms
+--- will not be included if the player is not currently in that shapeshift form.
 ---
 --- For target `friend`/`harm` and `dead`/`nodead` modifiers, a similar check is performed.
 ---
----@param unit string
----@return table
+--- @param unit string
+--- @return Binding[]
 function Clicked:GetBindingsForUnit(unit)
+	assert(type(unit) == "string", "bad argument #1, expected table but got " .. type(unit))
+
 	local result = {}
 	local units = {
 		[unit] = true
 	}
 
 	-- find other unit types that is valid for this target
-	for k in pairs(Clicked.TargetUnits) do
-		local u = Clicked:GetWoWUnitFromUnit(k)
+	for k in pairs(Addon.TargetUnits) do
+		local u = Addon:GetWoWUnitFromUnit(k)
 
 		if u ~= nil and u ~= unit and UnitGUID(u) == UnitGUID(unit) then
 			units[u] = true
 		end
 	end
 
+	--- @param target Binding.Target
+	--- @return boolean
 	local function IsTargetValid(target)
-		if target.hostility == Clicked.TargetHostility.HELP and not UnitIsFriend("player", unit) or
-		   target.hostility == Clicked.TargetHostility.HARM and UnitIsFriend("player", unit) then
+		if target.hostility == Addon.TargetHostility.HELP and not UnitIsFriend("player", unit) or
+		   target.hostility == Addon.TargetHostility.HARM and UnitIsFriend("player", unit) then
 			return false
 		end
 
-		if target.vitals == Clicked.TargetVitals.DEAD and not UnitIsDeadOrGhost(unit) or
-		   target.vitals == Clicked.TargetVitals.ALIVE and UnitIsDeadOrGhost(unit) then
+		if target.vitals == Addon.TargetVitals.DEAD and not UnitIsDeadOrGhost(unit) or
+		   target.vitals == Addon.TargetVitals.ALIVE and UnitIsDeadOrGhost(unit) then
 			return false
 		end
 
 		return true
 	end
 
+	--- @param binding Binding
+	--- @return boolean
 	local function IsBindingValidForUnit(binding)
-		if binding.type ~= Clicked.BindingTypes.SPELL and binding.type ~= Clicked.BindingTypes.ITEM then
+		if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM then
 			return false
 		end
 
-		if not Clicked:IsBindingValidForCurrentState(binding) then
+		if not Addon:IsBindingValidForCurrentState(binding) then
 			return false
 		end
 
@@ -486,9 +517,9 @@ function Clicked:GetBindingsForUnit(unit)
 			local regular = binding.targets.regular
 
 			if regular.enabled then
-				local res, target = Clicked:EvaluateBindingMacro(binding, Clicked.InteractionType.REGULAR)
+				local _, target = Clicked:EvaluateBindingMacro(binding)
 
-				if res ~= nil and units[target] then
+				if target ~= nil and units[target] then
 					return true
 				end
 			end
@@ -497,7 +528,7 @@ function Clicked:GetBindingsForUnit(unit)
 		return false
 	end
 
-	for _, binding in self:IterateActiveBindings() do
+	for _, binding in Clicked:IterateActiveBindings() do
 		if IsBindingValidForUnit(binding) then
 			table.insert(result, binding)
 		end
@@ -506,13 +537,28 @@ function Clicked:GetBindingsForUnit(unit)
 	return result
 end
 
+-- Private addon API
+
+function Addon:ReloadActiveBindingsIfPending()
+	if not isPendingReload then
+		return
+	end
+
+	isPendingReload = false
+	Clicked:ReloadActiveBindings()
+end
+
 --- Check if the specified binding is currently active based on the configuration
 --- provided in the binding's Load Options, and whether the binding is actually
 --- valid (it has a keybind and an action to perform)
 ---
---- @param binding table
+--- @param binding Binding
 --- @return boolean
-function Clicked:CanBindingLoad(binding)
+function Addon:CanBindingLoad(binding)
+	---comment
+	---@param data Binding.TriStateLoadOption
+	---@param validationFunc "fun(input):boolean"
+	---@return boolean
 	local function ValidateTriStateLoadOption(data, validationFunc)
 		if data.selected == 1 then
 			if not validationFunc(data.single) then
@@ -541,9 +587,9 @@ function Clicked:CanBindingLoad(binding)
 	end
 
 	do
-		local value = self:GetActiveBindingValue(binding)
+		local value = Addon:GetBindingValue(binding)
 
-		if value ~= nil and #value == 0 then
+		if value ~= nil and #tostring(value) == 0 then
 			return false
 		end
 	end
@@ -673,9 +719,9 @@ function Clicked:CanBindingLoad(binding)
 			local warMode = load.warMode
 
 			if warMode.selected then
-				if warMode.value == Clicked.WarModeState.IN_WAR_MODE and not C_PvP.IsWarModeDesired() then
+				if warMode.value == Addon.WarModeState.IN_WAR_MODE and not C_PvP.IsWarModeDesired() then
 					return false
-				elseif warMode.value == Clicked.WarModeState.NOT_IN_WAR_MODE and C_PvP.IsWarModeDesired() then
+				elseif warMode.value == Addon.WarModeState.NOT_IN_WAR_MODE and C_PvP.IsWarModeDesired() then
 					return false
 				end
 			end
@@ -710,7 +756,7 @@ function Clicked:CanBindingLoad(binding)
 				return false
 			end
 
-			local forms = self:GetShapeshiftFormsForSpecId(specId)
+			local forms = Addon:GetShapeshiftFormsForSpecId(specId)
 			local spellId = forms[formIndex]
 
 			return IsSpellKnown(spellId)
@@ -743,14 +789,14 @@ function Clicked:CanBindingLoad(binding)
 		local inGroup = load.inGroup
 
 		if inGroup.selected then
-			if inGroup.value == Clicked.GroupState.SOLO and GetNumGroupMembers() > 0 then
+			if inGroup.value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
 				return false
 			else
-				if inGroup.value == Clicked.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				if inGroup.value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
 					return false
-				elseif inGroup.value == Clicked.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				elseif inGroup.value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
 					return false
-				elseif inGroup.value == Clicked.GroupState.RAID and not IsInRaid() then
+				elseif inGroup.value == Addon.GroupState.RAID and not IsInRaid() then
 					return false
 				end
 			end
@@ -821,9 +867,9 @@ end
 --- check load conditions that aren't validated in `CanBindingLoad` as the state
 --- of these attributes can change during combat.
 ---
---- @param binding table
+--- @param binding Binding
 --- @return boolean
-function Clicked:IsBindingValidForCurrentState(binding)
+function Addon:IsBindingValidForCurrentState(binding)
 	local load = binding.load
 
 	-- cobmat
@@ -831,8 +877,8 @@ function Clicked:IsBindingValidForCurrentState(binding)
 		local combat = load.combat
 
 		if combat.selected then
-			if combat.value == Clicked.CombatState.IN_COMBAT and not self:IsPlayerInCombat() or
-			   combat.value == Clicked.CombatState.NOT_IN_COMBAT and self:IsPlayerInCombat() then
+			if combat.value == Addon.CombatState.IN_COMBAT and not Addon:IsPlayerInCombat() or
+			   combat.value == Addon.CombatState.NOT_IN_COMBAT and Addon:IsPlayerInCombat() then
 				return false
 			end
 		end
@@ -840,7 +886,7 @@ function Clicked:IsBindingValidForCurrentState(binding)
 
 	-- form
 	do
-		local forms = Clicked:GetAvailableShapeshiftForms(binding)
+		local forms = Addon:GetAvailableShapeshiftForms(binding)
 		local active = GetShapeshiftForm()
 		local valid = false
 
@@ -863,8 +909,8 @@ function Clicked:IsBindingValidForCurrentState(binding)
 		local pet = load.pet
 
 		if pet.selected then
-			if pet.value == Clicked.PetState.ACTIVE and not UnitIsVisible("pet") or
-			   pet.value == Clicked.PetState.INACTIVE and UnitIsVisible("pet") then
+			if pet.value == Addon.PetState.ACTIVE and not UnitIsVisible("pet") or
+			   pet.value == Addon.PetState.INACTIVE and UnitIsVisible("pet") then
 				return false
 			end
 		end
@@ -894,11 +940,14 @@ end
 --- Crusader Strike with `[@target,harm]`, it will create a command like this:
 --- `/use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light`
 ---
---- @param bindings table
---- @param interactionType string
---- @return string
---- @return string
-function Clicked:GetMacroForBindings(bindings, interactionType)
+--- @param bindings Binding
+--- @param interactionType number
+--- @return string macro
+--- @return string segments
+function Addon:GetMacroForBindings(bindings, interactionType)
+	assert(type(bindings) == "table", "bad argument #1, expected table but got " .. type(bindings))
+	assert(type(interactionType) == "number", "bad argument #1, expected number but got " .. type(interactionType))
+
 	local result = {}
 	local interrupt = false
 	local startAutoAttack = false
@@ -909,13 +958,13 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	local actionIndexMap = {}
 
 	-- add a segment to remove the blue casting cursor
-	table.insert(result, "/click " .. Clicked.STOP_CASTING_BUTTON_NAME)
+	table.insert(result, "/click " .. Addon.STOP_CASTING_BUTTON_NAME)
 
 	for _, binding in ipairs(bindings) do
-		local value = Clicked:GetActiveBindingValue(binding)
+		local value = Addon:GetBindingValue(binding)
 
-		if binding.type == Clicked.BindingTypes.MACRO then
-			if binding.action.macroMode == Clicked.MacroMode.FIRST then
+		if binding.type == Addon.BindingTypes.MACRO then
+			if binding.action.macroMode == Addon.MacroMode.FIRST then
 				table.insert(result, value)
 			end
 		else
@@ -926,9 +975,9 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 				table.insert(extra, "/stopcasting")
 			end
 
-			if not startAutoAttack and binding.action.allowStartAttack and interactionType == Clicked.InteractionType.REGULAR then
+			if not startAutoAttack and binding.action.allowStartAttack and interactionType == Addon.InteractionType.REGULAR then
 				for _, target in ipairs(binding.targets.regular) do
-					if target.unit == Clicked.TargetUnits.TARGET and target.hostility ~= Clicked.TargetHostility.HELP then
+					if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
 						startAutoAttack = true
 						table.insert(extra, "/startattack [@target,harm]")
 						break
@@ -980,9 +1029,9 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 		local command = "/use " .. table.concat(segments, "; ")
 
 		for _, binding in ipairs(bindings) do
-			local value = Clicked:GetActiveBindingValue(binding)
+			local value = Addon:GetBindingValue(binding)
 
-			if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.APPEND then
+			if binding.type == Addon.BindingTypes.MACRO and binding.action.macroMode == Addon.MacroMode.APPEND then
 				command = command .. "; " .. value
 			end
 		end
@@ -991,14 +1040,14 @@ function Clicked:GetMacroForBindings(bindings, interactionType)
 	end
 
 	for _, binding in ipairs(bindings) do
-		local value = Clicked:GetActiveBindingValue(binding)
+		local value = Addon:GetBindingValue(binding)
 
 		if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
 			targetUnitAfterCast = true
 			table.insert(result, "/tar " .. table.concat(allFlags, ""))
 		end
 
-		if binding.type == Clicked.BindingTypes.MACRO and binding.action.macroMode == Clicked.MacroMode.LAST then
+		if binding.type == Addon.BindingTypes.MACRO and binding.action.macroMode == Addon.MacroMode.LAST then
 			table.insert(result, value)
 		end
 	end
