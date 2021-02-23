@@ -6,6 +6,7 @@ ignore:
   - .editorconfig
   - README.md
   - CHANGELOG.md
+  - CONTRIBUTING.md
   - RECENT_CHANGES.md
   - Utils
   - Clicked/Definitions.lua
