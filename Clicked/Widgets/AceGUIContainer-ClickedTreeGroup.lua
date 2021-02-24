@@ -392,6 +392,8 @@ local function Button_OnClick(frame, button)
 					elseif frame.group ~= nil then
 						Clicked:DeleteGroup(frame.group)
 					end
+
+					Addon:BindingConfig_Redraw()
 				end
 
 				if IsShiftKeyDown() then
