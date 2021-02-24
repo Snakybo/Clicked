@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+- Add support for mouse button 6+ [#52]
+
 ### Changed
 
 - Major internal refactor and cleanup
@@ -609,6 +613,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#52]: https://github.com/Snakybo/Clicked/issues/52
 [#50]: https://github.com/Snakybo/Clicked/issues/50
 [#45]: https://github.com/Snakybo/Clicked/issues/45
 [#41]: https://github.com/Snakybo/Clicked/issues/41

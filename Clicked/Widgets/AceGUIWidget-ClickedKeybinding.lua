@@ -84,11 +84,10 @@ local function Keybinding_OnMouseDown(frame, button)
         button = "BUTTON2"
     elseif button == "MiddleButton" then
 		button = "BUTTON3"
-	elseif button == "Button4" then
-		button = "BUTTON4"
-	elseif button == "Button5" then
-		button = "BUTTON5"
+	elseif string.match(button, "Button%d") then
+		button = string.upper(button)
 	end
+
 	Keybinding_OnKeyDown(frame, button)
 end
 
