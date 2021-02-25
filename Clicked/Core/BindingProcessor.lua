@@ -872,6 +872,19 @@ end
 function Addon:IsBindingValidForCurrentState(binding)
 	local load = binding.load
 
+	-- known
+	do
+		local name, _, id = Addon:GetSimpleSpellOrItemInfo(binding)
+
+		if name == nil then
+			return false
+		end
+
+		if binding.type == Addon.BindingTypes.SPELL and not IsSpellKnown(id) then
+			return false
+		end
+	end
+
 	-- cobmat
 	do
 		local combat = load.combat

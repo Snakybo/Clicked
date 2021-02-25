@@ -21,6 +21,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix an issue where some abilities appear twice in tooltips
+- Fix an issue where uncastable spells or items would appear in the tooltip [#51]
 
 ## [0.16.2] - 2021-02-20
 
@@ -614,6 +615,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#52]: https://github.com/Snakybo/Clicked/issues/52
+[#51]: https://github.com/Snakybo/Clicked/issues/51
 [#50]: https://github.com/Snakybo/Clicked/issues/50
 [#45]: https://github.com/Snakybo/Clicked/issues/45
 [#41]: https://github.com/Snakybo/Clicked/issues/41
