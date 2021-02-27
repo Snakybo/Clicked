@@ -417,7 +417,7 @@ end
 --- @return string hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
 --- @return string regularTarget The first satisfied regular unit if any, `nil` otherwise.
 function Clicked:EvaluateBindingMacro(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	local bindings = { binding }
 
@@ -953,7 +953,7 @@ end
 --- Crusader Strike with `[@target,harm]`, it will create a command like this:
 --- `/use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light`
 ---
---- @param bindings Binding
+--- @param bindings Binding[]
 --- @param interactionType number
 --- @return string macro
 --- @return string segments

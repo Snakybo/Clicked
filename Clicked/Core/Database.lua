@@ -150,7 +150,7 @@ end
 --- bindings.
 --- @param binding Binding The binding to delete
 function Clicked:DeleteBinding(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	for index, other in ipairs(Addon.db.profile.bindings) do
 		if other == binding then
@@ -760,8 +760,8 @@ end
 --- @param original Binding
 --- @param replacement Binding
 function Addon:ReplaceBinding(original, replacement)
-	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
-	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
+	assert(Addon:IsBindingType(original) "bad argument #1, expected Binding but got " .. type(original))
+	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
 
 	for index, binding in ipairs(Addon.db.profile.bindings) do
 		if binding == original then
@@ -775,7 +775,7 @@ end
 ---@param original Binding
 ---@return Binding
 function Addon:CloneBinding(original)
-	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
+	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
 
 	local clone = Addon:DeepCopyTable(original)
 	clone.identifier = Addon:GetNextBindingIdentifier()

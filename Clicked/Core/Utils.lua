@@ -355,7 +355,7 @@ end
 ---@param binding Binding
 ---@return boolean
 function Addon:HasBindingValue(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	local value = Addon:GetBindingValue(binding)
 	return not Addon:IsStringNilOrEmpty(value)
@@ -364,7 +364,7 @@ end
 --- @param binding Binding
 --- @return string|integer
 function Addon:GetBindingValue(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		return binding.action.spellValue
@@ -386,7 +386,7 @@ end
 ---@return string icon
 ---@return number id
 function Addon:GetSimpleSpellOrItemInfo(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		local name, _, icon, _, _, _, id = GetSpellInfo(binding.action.spellValue)
@@ -513,8 +513,8 @@ end
 --- @param right Binding
 --- @return boolean
 function Addon:CompareBindings(left, right)
-	assert(type(left) == "table", "bad argument #1, expected table but got " .. type(left))
-	assert(type(right) == "table", "bad argument #2, expected table but got " .. type(right))
+	assert(Addon:IsBindingType(left), "bad argument #1, expected Binding but got " .. type(left))
+	assert(Addon:IsBindingType(right), "bad argument #2, expected Binding but got " .. type(right))
 
 	do
 		local leftLoad = Addon:CanBindingLoad(left)
@@ -766,4 +766,12 @@ end
 function Addon:GetPrefixedAndFormattedString(format, ...)
 	local message = string.format(format, ...)
 	return Addon:AppendClickedMessagePrefix(message)
+end
+
+--- Check if a table can be considered a valid representation of a binding type.
+---
+--- @param binding Binding
+--- @return boolean
+function Addon:IsBindingType(binding)
+	return type(binding) == "table" and binding.identifier ~= nil and binding.type ~= nil
 end
