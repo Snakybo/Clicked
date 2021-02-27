@@ -99,8 +99,7 @@ local isPendingReload = false
 --- @return string
 local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
-	local impliedExists = false
-	local unit = Addon:GetWoWUnitFromUnit(action.unit, true)
+	local unit, needsExistsCheck = Addon:GetWoWUnitFromUnit(action.unit, true)
 
 	if unit ~= nil then
 		table.insert(flags, unit)
@@ -109,30 +108,33 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	if Addon:CanUnitBeHostile(action.unit) then
 		if action.hostility == Addon.TargetHostility.HELP then
 			table.insert(flags, "help")
-			impliedExists = true
+			needsExistsCheck = false
 		elseif action.hostility == Addon.TargetHostility.HARM then
 			table.insert(flags, "harm")
-			impliedExists = true
+			needsExistsCheck = false
 		end
 	end
+
+	-- The overriding of the `needsExistsCheck` boolean only happens on the non-negated version of macro flags: `dead`, `pet`, etc. and NOT on the `nodead`,
+	-- `nopet` version. Apperantly the `exists` check is implied for the standard variants but not for the negated variants.
 
 	if Addon:CanUnitBeDead(action.unit) then
 		if action.vitals == Addon.TargetVitals.ALIVE then
 			table.insert(flags, "nodead")
 		elseif action.vitals == Addon.TargetVitals.DEAD then
 			table.insert(flags, "dead")
-			impliedExists = true
+			needsExistsCheck = false
 		end
 	end
 
 	if action.pet == Addon.PetState.ACTIVE then
 		table.insert(flags, "pet")
-		impliedExists = true
+		needsExistsCheck = false
 	elseif action.pet == Addon.PetState.INACTIVE then
 		table.insert(flags, "nopet")
 	end
 
-	if not impliedExists and interactionType == Addon.InteractionType.REGULAR and not isLast then
+	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
 	end
 

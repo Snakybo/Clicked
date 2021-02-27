@@ -322,7 +322,8 @@ end
 
 --- @param unit string
 --- @param addPrefix boolean
---- @return string
+--- @return string unit
+--- @return boolean needsExistsCheck
 function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 	local units = {
 		[Addon.TargetUnits.PLAYER] = "player",
@@ -343,13 +344,29 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 		[Addon.TargetUnits.CURSOR] = "cursor"
 	}
 
-	local result = units[unit]
+	local needsExistsCheck = {
+		[Addon.TargetUnits.TARGET] = true,
+		[Addon.TargetUnits.TARGET_OF_TARGET] = true,
+		[Addon.TargetUnits.MOUSEOVER] = true,
+		[Addon.TargetUnits.PET] = true,
+		[Addon.TargetUnits.PET_TARGET] = true,
+		[Addon.TargetUnits.PARTY_1] = true,
+		[Addon.TargetUnits.PARTY_2] = true,
+		[Addon.TargetUnits.PARTY_3] = true,
+		[Addon.TargetUnits.PARTY_4] = true,
+		[Addon.TargetUnits.PARTY_5] = true,
+		[Addon.TargetUnits.ARENA_1] = true,
+		[Addon.TargetUnits.ARENA_2] = true,
+		[Addon.TargetUnits.ARENA_3] = true,
+		[Addon.TargetUnits.FOCUS] = true
+	}
 
-	if result ~= nil and addPrefix then
-		result = "@" .. result
+	local target = units[unit]
+	if target ~= nil and addPrefix then
+		target = "@" .. target
 	end
 
-	return result
+	return target, needsExistsCheck[unit] or false
 end
 
 ---@param binding Binding
