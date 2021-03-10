@@ -1,12 +1,12 @@
 #@retail@
-## Interface: 90002
+## Interface: 90005
 #@end-retail@
 #@non-retail@
 # ## Interface: 11306
 #@end-non-retail@
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 0.17.1
+## Version: 0.17.2
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
