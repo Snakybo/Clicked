@@ -108,39 +108,32 @@ local function IsValidIcon(icon)
 end
 
 local function UpdateBindingItemVisual(item, binding)
-	local value = Addon:GetBindingValue(binding)
-	local label
-	local name
-	local icon
+	item.title = binding.cache.displayName
+	item.icon = binding.cache.displayIcon or item.icon
 
-	if binding.type == Addon.BindingTypes.SPELL then
-		label = L["Cast %s"]
-		name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
-	elseif binding.type == Addon.BindingTypes.ITEM then
-		label = L["Use %s"]
-		name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
+	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+		local label = binding.type == Addon.BindingTypes.SPELL and L["Cast %s"] or L["Use %s"]
+
+		local name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local value = Addon:GetBindingValue(binding)
+
+		if name ~= nil or value ~= nil then
+			item.title = string.format(label, name or value)
+		elseif Addon:IsStringNilOrEmpty(item.title) then
+			item.title = label
+		end
+
+		if IsValidIcon(icon) then
+			item.icon = icon
+		end
 	elseif binding.type == Addon.BindingTypes.MACRO then
-		label = L["Run custom macro"]
-
-		if binding.cache.displayName ~= nil and #binding.cache.displayName > 0 then
-			label = binding.cache.displayName
+		if Addon:IsStringNilOrEmpty(item.title) then
+			item.title = L["Run custom macro"]
 		end
 	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
-		label = L["Target the unit"]
+		item.title = L["Target the unit"]
 	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
-		label = L["Open the unit menu"]
-	end
-
-	if name ~= nil or value ~= nil then
-		item.title = string.format(label, name or value)
-	else
-		item.title = binding.cache.displayName or label
-	end
-
-	if IsValidIcon(icon) then
-		item.icon = icon
-	elseif IsValidIcon(binding.cache.displayIcon) then
-		item.icon = binding.cache.displayIcon
+		item.title = L["Open the unit menu"]
 	end
 
 	binding.cache.displayName = item.title

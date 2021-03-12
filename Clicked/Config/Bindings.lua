@@ -801,10 +801,12 @@ local function DrawIntegrationsOptions(container, binding)
 	end
 end
 
-local function DrawBindingActionPage(container, binding)
+local function DrawBindingActionPage(container, binding, cache)
 	-- action dropdown
 	do
 		local function OnValueChanged(frame, event, value)
+			wipe(cache)
+
 			UpdateRequiredTargetModesForBinding(binding.targets, binding.keybind, value)
 			Addon:GUI_Serialize(frame, event, value)
 		end
@@ -1503,7 +1505,7 @@ local function DrawBinding(container)
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
-				DrawBindingActionPage(scrollFrame, binding)
+				DrawBindingActionPage(scrollFrame, binding, binding.cache)
 			elseif group == "target" then
 				DrawBindingTargetPage(scrollFrame, binding)
 			elseif group == "conditions" then
