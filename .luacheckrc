@@ -101,6 +101,7 @@ read_globals = {
 	"MAX_SPELLS",
 	"MAX_TALENT_TIERS",
 	"NUM_TALENT_COLUMNS",
+	"PanelTemplates_TabResize",
 	"PlaySound",
 	"RegisterAttributeDriver",
 	"RegisterStateDriver",

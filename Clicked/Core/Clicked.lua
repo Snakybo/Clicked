@@ -144,7 +144,7 @@ function Clicked:OnInitialize()
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
 
-	Clicked:UpgradeDatabaseProfile(Addon.db.profile)
+	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 
 	RegisterMinimapIcon()
 

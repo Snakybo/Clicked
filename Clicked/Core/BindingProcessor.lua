@@ -53,26 +53,11 @@ Addon.MacroMode = {
 	LAST = "LAST"
 }
 
-Addon.CombatState = {
-	IN_COMBAT = "IN_COMBAT",
-	NOT_IN_COMBAT = "NOT_IN_COMBAT"
-}
-
-Addon.WarModeState = {
-	IN_WAR_MODE = "IN_WAR_MODE",
-	NOT_IN_WAR_MODE = "NOT_IN_WAR_MODE"
-}
-
 Addon.GroupState = {
 	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
 	PARTY = "IN_GROUP_PARTY",
 	RAID = "IN_GROUP_RAID",
 	SOLO = "IN_GROUP_SOLO"
-}
-
-Addon.PetState = {
-	ACTIVE = "ACTIVE",
-	INACTIVE = "INACTIVE"
 }
 
 Addon.InteractionType = {
@@ -101,6 +86,19 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local unit, needsExistsCheck = Addon:GetWoWUnitFromUnit(action.unit, true)
 
+	local function ParseNegatableCondition(condition, value, negated, isUnit)
+		if condition == true then
+			table.insert(flags, value)
+
+			if isUnit then
+				needsExistsCheck = false
+			end
+		elseif condition == false then
+			negated = negated or ("no" .. value)
+			table.insert(flags, negated)
+		end
+	end
+
 	if unit ~= nil then
 		table.insert(flags, unit)
 	end
@@ -127,21 +125,17 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		end
 	end
 
-	if action.pet == Addon.PetState.ACTIVE then
-		table.insert(flags, "pet")
-		needsExistsCheck = false
-	elseif action.pet == Addon.PetState.INACTIVE then
-		table.insert(flags, "nopet")
-	end
+	ParseNegatableCondition(action.pet, "pet", "nopet", true)
+	ParseNegatableCondition(action.combat, "combat")
+	ParseNegatableCondition(action.stealth, "stealth")
+	ParseNegatableCondition(action.mounted, "mounted")
+	ParseNegatableCondition(action.outdoors, "outdoors", "indoors")
+	ParseNegatableCondition(action.swimming, "swimming")
+	ParseNegatableCondition(action.flying, "flying")
+	ParseNegatableCondition(action.flyable, "flyable")
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
-	end
-
-	if action.combat == Addon.CombatState.IN_COMBAT then
-		table.insert(flags, "combat")
-	elseif action.combat == Addon.CombatState.NOT_IN_COMBAT then
-		table.insert(flags, "nocombat")
 	end
 
 	if #action.forms > 0 then
@@ -159,25 +153,20 @@ local function ConstructAction(binding, target)
 		ability = Addon:GetBindingValue(binding)
 	}
 
-	do
-		local combat = binding.load.combat
-
-		if combat.selected then
-			action.combat = combat.value
-		else
-			action.combat = ""
+	local function AppendCondition(condition, key)
+		if condition.selected then
+			action[key] = condition.value
 		end
 	end
 
-	do
-		local pet = binding.load.pet
-
-		if pet.selected then
-			action.pet = pet.value
-		else
-			action.pet = ""
-		end
-	end
+	AppendCondition(binding.load.combat, "combat")
+	AppendCondition(binding.load.pet, "pet")
+	AppendCondition(binding.load.stealth, "stealth")
+	AppendCondition(binding.load.mounted, "mounted")
+	AppendCondition(binding.load.outdoors, "outdoors")
+	AppendCondition(binding.load.swimming, "swimming")
+	AppendCondition(binding.load.flying, "flying")
+	AppendCondition(binding.load.flyable, "flyable")
 
 	do
 		local forms = Addon:GetAvailableShapeshiftForms(binding)
@@ -237,12 +226,18 @@ local function SortActions(actions, indexMap)
 			-- 1. Mouseover targets always come first
 			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.MOUSEOVER, comparison = "eq" },
 
-			-- 2. Hostility, vitals, combat, and form flags take presedence over actions
-			--    that don't specify them explicitly
-			{ left = #left.hostility, right = #right.hostility, value = 0, comparison = "gt" },
-			{ left = #left.vitals, right = #right.vitals, value = 0, comparison = "gt" },
-			{ left = #left.combat, right = #right.combat, value = 0, comparison = "gt" },
-			{ left = #left.forms, right = #right.forms, value = 0, comparison = "gt" },
+			-- 2. Macro conditions take presedence over actions that don't specify them explicitly
+			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },
+			{ left = left.vitals, right = right.vitals, value = 0, comparison = "gt" },
+			{ left = left.combat, right = right.combat, value = 0, comparison = "gt" },
+			{ left = left.forms, right = right.forms, value = 0, comparison = "gt" },
+			{ left = left.pet, right = right.pet, value = 0, comparison = "gt" },
+			{ left = left.stealth, right = right.stealth, value = 0, comparison = "gt" },
+			{ left = left.mounted, right = right.mounted, value = 0, comparison = "gt" },
+			{ left = left.outdoors, right = right.outdoors, value = 0, comparison = "gt" },
+			{ left = left.swimming, right = right.swimming, value = 0, comparison = "gt" },
+			{ left = left.flying, right = right.flying, value = 0, comparison = "gt" },
+			{ left = left.flyable, right = right.flyable, value = 0, comparison = "gt" },
 
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
@@ -275,6 +270,9 @@ local function SortActions(actions, indexMap)
 					return false
 				end
 			elseif c == "gt" then
+				l = l and #l or 0
+				r = r and #r or 0
+
 				if l > v and r == v then
 					return true
 				end
@@ -721,9 +719,9 @@ function Addon:CanBindingLoad(binding)
 			local warMode = load.warMode
 
 			if warMode.selected then
-				if warMode.value == Addon.WarModeState.IN_WAR_MODE and not C_PvP.IsWarModeDesired() then
+				if warMode.value == true and not C_PvP.IsWarModeDesired() then
 					return false
-				elseif warMode.value == Addon.WarModeState.NOT_IN_WAR_MODE and C_PvP.IsWarModeDesired() then
+				elseif warMode.value == false and C_PvP.IsWarModeDesired() then
 					return false
 				end
 			end
@@ -892,8 +890,8 @@ function Addon:IsBindingValidForCurrentState(binding)
 		local combat = load.combat
 
 		if combat.selected then
-			if combat.value == Addon.CombatState.IN_COMBAT and not Addon:IsPlayerInCombat() or
-			   combat.value == Addon.CombatState.NOT_IN_COMBAT and Addon:IsPlayerInCombat() then
+			if combat.value == true and not Addon:IsPlayerInCombat() or
+			   combat.value == false and Addon:IsPlayerInCombat() then
 				return false
 			end
 		end
@@ -924,8 +922,8 @@ function Addon:IsBindingValidForCurrentState(binding)
 		local pet = load.pet
 
 		if pet.selected then
-			if pet.value == Addon.PetState.ACTIVE and not UnitIsVisible("pet") or
-			   pet.value == Addon.PetState.INACTIVE and UnitIsVisible("pet") then
+			if pet.value == true and not UnitIsVisible("pet") or
+			   pet.value == false and UnitIsVisible("pet") then
 				return false
 			end
 		end

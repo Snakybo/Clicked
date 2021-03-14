@@ -13,6 +13,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Show spell and item ID next to text field
+- Add `stealth`/`nostealth` condition
+- Add `mounted`/`nomounted` condition
+- Add `outdoors`/`indoors` condition
+- Add `flying`/`noflying` condition
+- Add `flyable`/`noflyable` condition
+- Add `swimming`/`noswimming` condition
 
 ### Fixed
 
@@ -22,6 +28,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 - Save spells and items as ID instead of name
+- Separate macro conditions from load conditions
+- Hide binding status page if the binding is not loaded
+- Hide binding status page from target/menu bindings
+- Slightly increase width of the binding configuration window
 
 ## [0.17.2] - 2021-03-10
 

@@ -92,6 +92,45 @@ local function GetTriStateLoadOptionValue(option)
 	return nil
 end
 
+local function GetRelevantSpecializationIds(classNames, specIndices)
+	local specializationIds = {}
+
+	if specIndices == nil then
+		specIndices = {}
+
+		if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
+			specIndices[1] = GetSpecialization()
+		else
+			for _, class in ipairs(classNames) do
+				local specs = LibTalentInfo:GetClassSpecIDs(class)
+
+				for specIndex in pairs(specs) do
+					table.insert(specIndices, specIndex)
+				end
+			end
+		end
+	end
+
+	if classNames == nil then
+		classNames = {}
+		classNames[1] = select(2, UnitClass("player"))
+	end
+
+	for i = 1, #classNames do
+		local class = classNames[i]
+		local specs = LibTalentInfo:GetClassSpecIDs(class)
+
+		for j = 1, #specIndices do
+			local specIndex = specIndices[j]
+			local specId = specs[specIndex]
+
+			table.insert(specializationIds, specId)
+		end
+	end
+
+	return specializationIds
+end
+
 -- Tooltips
 
 local function ShowTooltip(widget, text, subText)
@@ -1061,7 +1100,166 @@ local function DrawBindingTargetPage(container, binding)
 	end
 end
 
--- Binding load options page and components
+-- Binding macro conditions page and components
+
+local function DrawLoadInStance(container, form, specIds)
+	local label = L["Stance"]
+
+	if specIds == nil then
+		specIds = {}
+		specIds[1] = GetSpecializationInfo(GetSpecialization())
+	end
+
+	if #specIds == 1 then
+		local specId = specIds[1]
+
+		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
+		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
+			label = L["Form"]
+		end
+	end
+
+	local items, order = Addon:GetLocalizedForms(specIds)
+	DrawTristateLoadOption(container, label, items, order, form)
+end
+
+local function DrawLoadCombat(container, combat)
+	local items = {
+		[true] = L["In combat"],
+		[false] = L["Not in combat"]
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, COMBAT, items, order, combat)
+end
+
+local function DrawLoadPet(container, pet)
+	local items = {
+		[true] = L["Pet exists"],
+		[false] = L["No pet"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, PET, items, order, pet)
+end
+
+local function DrawLoadStealth(container, stealth)
+	local items = {
+		[true] = L["In Stealth"],
+		[false] = L["Not in Stealth"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Stealth"], items, order, stealth)
+end
+
+local function DrawLoadMounted(container, mounted)
+	local items = {
+		[true] = L["Mounted"],
+		[false] = L["Not mounted"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Mounted"], items, order, mounted)
+end
+
+local function DrawLoadFlying(container, flying)
+	local items = {
+		[true] = L["Flying"],
+		[false] = L["Not flying"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Flying"], items, order, flying)
+end
+
+local function DrawLoadFlyable(container, flyable)
+	local items = {
+		[true] = L["Flyable"],
+		[false] = L["Not flyable"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Flyable"], items, order, flyable)
+end
+
+local function DrawLoadOutdoors(container, outdoors)
+	local items = {
+		[true] = L["Outdoors"],
+		[false] = L["Indoors"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Outdoors"], items, order, outdoors)
+end
+
+local function DrawLoadSwimming(container, swimming)
+	local items = {
+		[true] = L["Swimming"],
+		[false] = L["Not swimming"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, L["Swimming"], items, order, swimming)
+end
+
+local function DrawBindingMacroConditionsPage(container, binding)
+	local load = binding.load
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		local classNames = GetTriStateLoadOptionValue(load.class)
+		local specIndices = GetTriStateLoadOptionValue(load.specialization)
+		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
+
+		DrawLoadInStance(container, load.form, specializationIds)
+	end
+
+	DrawLoadCombat(container, load.combat)
+	DrawLoadPet(container, load.pet)
+	DrawLoadStealth(container, load.stealth)
+	DrawLoadMounted(container, load.mounted)
+	DrawLoadOutdoors(container, load.outdoors)
+	DrawLoadSwimming(container, load.swimming)
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		DrawLoadFlying(container, load.flying)
+		DrawLoadFlyable(container, load.flyable)
+	end
+end
+
+-- Binding load conditions page and components
 
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
@@ -1100,13 +1298,13 @@ end
 
 local function DrawLoadWarMode(container, warMode)
 	local items = {
-		IN_WAR_MODE = L["War Mode enabled"],
-		NOT_IN_WAR_MODE = L["War Mode disabled"]
+		[true] = L["War Mode enabled"],
+		[false] = L["War Mode disabled"]
 	}
 
 	local order = {
-		"IN_WAR_MODE",
-		"NOT_IN_WAR_MODE"
+		true,
+		false
 	}
 
 	DrawDropdownLoadOption(container, L["War Mode"], items, order, warMode)
@@ -1114,20 +1312,6 @@ end
 
 local function DrawLoadPlayerNameRealm(container, playerNameRealm)
 	DrawEditFieldLoadOption(container, L["Player Name-Realm"], playerNameRealm)
-end
-
-local function DrawLoadCombat(container, combat)
-	local items = {
-		IN_COMBAT = L["In combat"],
-		NOT_IN_COMBAT = L["Not in combat"]
-	}
-
-	local order = {
-		"IN_COMBAT",
-		"NOT_IN_COMBAT"
-	}
-
-	DrawDropdownLoadOption(container, COMBAT, items, order, combat)
 end
 
 local function DrawLoadSpellKnown(container, spellKnown)
@@ -1154,41 +1338,6 @@ end
 
 local function DrawLoadPlayerInGroup(container, playerInGroup)
 	DrawEditFieldLoadOption(container, L["Player in group"], playerInGroup)
-end
-
-local function DrawLoadInStance(container, form, specIds)
-	local label = L["Stance"]
-
-	if specIds == nil then
-		specIds = {}
-		specIds[1] = GetSpecializationInfo(GetSpecialization())
-	end
-
-	if #specIds == 1 then
-		local specId = specIds[1]
-
-		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
-		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-			label = L["Form"]
-		end
-	end
-
-	local items, order = Addon:GetLocalizedForms(specIds)
-	DrawTristateLoadOption(container, label, items, order, form)
-end
-
-local function DrawLoadPet(container, pet)
-	local items = {
-		ACTIVE = L["Pet exists"],
-		INACTIVE = L["No pet"],
-	}
-
-	local order = {
-		"ACTIVE",
-		"INACTIVE"
-	}
-
-	DrawDropdownLoadOption(container, PET, items, order, pet)
 end
 
 local function DrawLoadInCovenant(container, covenant)
@@ -1246,7 +1395,7 @@ local function DrawLoadInInstanceType(container, instanceType)
 	DrawTristateLoadOption(container, L["Instance type"], items, order, instanceType)
 end
 
-local function DrawBindingLoadOptionsPage(container, binding)
+local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
 
 	DrawLoadNeverSelection(container, load)
@@ -1255,158 +1404,109 @@ local function DrawBindingLoadOptionsPage(container, binding)
 	DrawLoadRace(container, load.race)
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		local specializationIds = {}
 		local classNames = GetTriStateLoadOptionValue(load.class)
-
-		do
-			local specIndices = GetTriStateLoadOptionValue(load.specialization)
-
-			if specIndices == nil then
-				specIndices = {}
-
-				if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-					specIndices[1] = GetSpecialization()
-				else
-					for _, class in ipairs(classNames) do
-						local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-						for specIndex in pairs(specs) do
-							table.insert(specIndices, specIndex)
-						end
-					end
-				end
-			end
-
-			if classNames == nil then
-				classNames = {}
-				classNames[1] = select(2, UnitClass("player"))
-			end
-
-			for i = 1, #classNames do
-				local class = classNames[i]
-				local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-				for j = 1, #specIndices do
-					local specIndex = specIndices[j]
-					local specId = specs[specIndex]
-
-					table.insert(specializationIds, specId)
-				end
-			end
-		end
+		local specIndices = GetTriStateLoadOptionValue(load.specialization)
+		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 		DrawLoadSpecialization(container, load.specialization, classNames)
 		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
-		DrawLoadInStance(container, load.form, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 		DrawLoadInInstanceType(container, load.instanceType)
 		DrawLoadInCovenant(container, load.covenant)
 	end
 
-	DrawLoadCombat(container, load.combat)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)
-	DrawLoadPet(container, load.pet)
 end
 
 -- Binding status page and components
 
 local function DrawBindingStatusPage(container, binding)
-	if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM and binding.type ~= Addon.BindingTypes.MACRO then
-		return
-	end
+	local function DrawStatus(group, bindings, interactionType)
+		-- output self text field
+		do
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+			widget:SetLabel(L["Generated local macro"])
+			widget:SetText(Addon:GetMacroForBindings({ binding }, interactionType))
+			widget:SetFullWidth(true)
+			widget:SetNumLines(5)
 
-	if  not Addon:CanBindingLoad(binding) then
-		local widget = Addon:GUI_Label(L["Not loaded"], "medium")
-		widget:SetFullWidth(true)
-		container:AddChild(widget)
-	else
-		local function DrawStatus(group, bindings, interactionType)
-			-- output self text field
+			group:AddChild(widget)
+		end
+
+		-- output of full macro
+		do
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+			widget:SetLabel(L["Generated full macro"])
+			widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
+			widget:SetFullWidth(true)
+			widget:SetNumLines(8)
+
+			group:AddChild(widget)
+		end
+
+		if #bindings > 1 then
 			do
-				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-				widget:SetLabel(L["Generated local macro"])
-				widget:SetText(Addon:GetMacroForBindings({ binding }, interactionType))
+				local widget = AceGUI:Create("Heading")
 				widget:SetFullWidth(true)
-				widget:SetNumLines(5)
+				widget:SetText(L["%d related binding(s)"]:format(#bindings - 1))
 
 				group:AddChild(widget)
 			end
 
-			-- output of full macro
-			do
-				local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-				widget:SetLabel(L["Generated full macro"])
-				widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
-				widget:SetFullWidth(true)
-				widget:SetNumLines(8)
-
-				group:AddChild(widget)
-			end
-
-			if #bindings > 1 then
-				do
-					local widget = AceGUI:Create("Heading")
-					widget:SetFullWidth(true)
-					widget:SetText(L["%d related binding(s)"]:format(#bindings - 1))
-
-					group:AddChild(widget)
-				end
-
-				for _, other in ipairs(bindings) do
-					if other ~= binding then
-						do
-							local function OnClick()
-								tree:SelectByBindingOrGroup(other)
-							end
-
-							local name, icon = Addon:GetSimpleSpellOrItemInfo(other)
-
-							local widget = AceGUI:Create("InteractiveLabel")
-							widget:SetFontObject(GameFontHighlight)
-							widget:SetText(name or "")
-							widget:SetImage(icon or [[Interface\ICONS\INV_Misc_QuestionMark]])
-							widget:SetFullWidth(true)
-							widget:SetCallback("OnClick", OnClick)
-
-							group:AddChild(widget)
+			for _, other in ipairs(bindings) do
+				if other ~= binding then
+					do
+						local function OnClick()
+							tree:SelectByBindingOrGroup(other)
 						end
+
+						local name, icon = Addon:GetSimpleSpellOrItemInfo(other)
+
+						local widget = AceGUI:Create("InteractiveLabel")
+						widget:SetFontObject(GameFontHighlight)
+						widget:SetText(name or "")
+						widget:SetImage(icon or [[Interface\ICONS\INV_Misc_QuestionMark]])
+						widget:SetFullWidth(true)
+						widget:SetCallback("OnClick", OnClick)
+
+						group:AddChild(widget)
 					end
 				end
 			end
 		end
+	end
 
-		if binding.targets.hovercast.enabled then
-			local group = Addon:GUI_InlineGroup(L["Unit frame macro"])
-			container:AddChild(group)
+	if binding.targets.hovercast.enabled then
+		local group = Addon:GUI_InlineGroup(L["Unit frame macro"])
+		container:AddChild(group)
 
-			local bindings = {}
+		local bindings = {}
 
-			for _, other in Clicked:IterateActiveBindings() do
-				if other.keybind == binding.keybind and other.targets.hovercast.enabled then
-					table.insert(bindings, other)
-				end
+		for _, other in Clicked:IterateActiveBindings() do
+			if other.keybind == binding.keybind and other.targets.hovercast.enabled then
+				table.insert(bindings, other)
 			end
-
-			DrawStatus(group, bindings, Addon.InteractionType.HOVERCAST)
 		end
 
-		if binding.targets.regular.enabled then
-			local group = Addon:GUI_InlineGroup(L["Binding macro"])
-			container:AddChild(group)
+		DrawStatus(group, bindings, Addon.InteractionType.HOVERCAST)
+	end
 
-			local bindings = {}
+	if binding.targets.regular.enabled then
+		local group = Addon:GUI_InlineGroup(L["Binding macro"])
+		container:AddChild(group)
 
-			for _, other in Clicked:IterateActiveBindings() do
-				if other.keybind == binding.keybind and other.targets.regular.enabled then
-					table.insert(bindings, other)
-				end
+		local bindings = {}
+
+		for _, other in Clicked:IterateActiveBindings() do
+			if other.keybind == binding.keybind and other.targets.regular.enabled then
+				table.insert(bindings, other)
 			end
-
-			DrawStatus(group, bindings, Addon.InteractionType.REGULAR)
 		end
+
+		DrawStatus(group, bindings, Addon.InteractionType.REGULAR)
 	end
 end
 
@@ -1539,8 +1639,10 @@ local function DrawBinding(container)
 				DrawBindingActionPage(scrollFrame, binding)
 			elseif group == "target" then
 				DrawBindingTargetPage(scrollFrame, binding)
-			elseif group == "conditions" then
-				DrawBindingLoadOptionsPage(scrollFrame, binding)
+			elseif group == "macro_conditions" then
+				DrawBindingMacroConditionsPage(scrollFrame, binding)
+			elseif group == "load_conditions" then
+				DrawBindingLoadConditionsPage(scrollFrame, binding)
 			elseif group == "status" then
 				DrawBindingStatusPage(scrollFrame, binding)
 			end
@@ -1558,14 +1660,24 @@ local function DrawBinding(container)
 				value = "target"
 			},
 			{
-				text = L["Conditions"],
-				value = "conditions"
-			},
-			{
-				text = L["Status"],
-				value = "status"
+				text = L["Load conditions"],
+				value = "load_conditions"
 			}
 		}
+
+		if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM or binding.type == Addon.BindingTypes.MACRO then
+			table.insert(items, {
+				text = L["Macro conditions"],
+				value = "macro_conditions"
+			})
+
+			if Addon:CanBindingLoad(binding) then
+				table.insert(items, {
+					text = L["Status"],
+					value = "status"
+				})
+			end
+		end
 
 		local widget = Addon:GUI_TabGroup(items, OnGroupSelected)
 		widget:SetStatusTable(tab)
@@ -1689,7 +1801,7 @@ function Addon:BindingConfig_Open()
 		root:SetCallback("OnClose", OnClose)
 		root:SetTitle(L["Clicked Binding Configuration"])
 		root:SetLayout("Flow")
-		root:SetWidth(800)
+		root:SetWidth(900)
 		root:SetHeight(600)
 
 		tab = {

@@ -260,7 +260,7 @@ function Addon:GUI_TabGroup(items, handler)
 		handler(container, event, group)
 	end
 
-	local widget = CreateGUI("TabGroup")
+	local widget = CreateGUI("ClickedTabGroup")
 	widget:SetFullWidth(true)
 	widget:SetFullHeight(true)
 	widget:SetLayout("Fill")

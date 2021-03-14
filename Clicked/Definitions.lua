@@ -68,6 +68,12 @@
 --- @field public playerInGroup Binding.LoadOption
 --- @field public form Binding.TriStateLoadOption
 --- @field public pet Binding.LoadOption
+--- @field public stealth Binding.LoadOption
+--- @field public mounted Binding.LoadOption
+--- @field public outdoors Binding.LoadOption
+--- @field public swimming Binding.LoadOption
+--- @field public flying Binding.LoadOption
+--- @field public flyable Binding.LoadOption
 --- @field public instanceType Binding.TriStateLoadOption
 --- @field public specialization Binding.TriStateLoadOption
 --- @field public talent Binding.TriStateLoadOption
@@ -77,7 +83,7 @@
 
 --- @class Binding.LoadOption
 --- @field public selected boolean
---- @field public value string
+--- @field public value string|boolean
 
 --- @class Binding.TriStateLoadOption
 --- @field public selected "0"|"1"|"2"
@@ -93,6 +99,12 @@
 --- @field public ability integer|string
 --- @field public combat string
 --- @field public pet string
+--- @field public stealth string
+--- @field public mounted string
+--- @field public outdoors string
+--- @field public flying string
+--- @field public flyable string
+--- @field public swimming string
 --- @field public forms string
 --- @field public unit string
 --- @field public hostility string

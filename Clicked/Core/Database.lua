@@ -8,7 +8,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 -- Local support functions
 
---- @param default string
+--- @param default string|boolean
 --- @return Binding.LoadOption
 local function GetLoadOptionTemplate(default)
 	local template = {
@@ -17,6 +17,11 @@ local function GetLoadOptionTemplate(default)
 	}
 
 	return template
+end
+
+--- @return Binding.LoadOption
+local function GetNegatableLoadOptionTemplate()
+	return GetLoadOptionTemplate(true)
 end
 
 --- @param default number|string
@@ -64,7 +69,7 @@ end
 
 --- Reload the database, this should be called after high-level profile changes have been made, such as switching the active profile, or importing a proifle.
 function Clicked:ReloadDatabase()
-	Clicked:UpgradeDatabaseProfile(Addon.db.profile)
+	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 
 	if Addon.db.profile.options.minimap.hide then
 		LibDBIcon:Hide("Clicked")
@@ -174,6 +179,149 @@ function Clicked:IterateConfiguredBindings()
 	return ipairs(Addon.db.profile.bindings)
 end
 
+--@debug@
+
+--- @param from string
+function Clicked:UpgradeDatabase(from)
+	Addon:UpgradeDatabaseProfile(Addon.db.profile, from)
+end
+
+--@end-debug@
+
+-- Private addon API
+
+---
+--- @return Binding
+function Addon:GetNewBindingTemplate()
+	local template = {
+		type = Addon.BindingTypes.SPELL,
+		identifier = Addon:GetNextBindingIdentifier(),
+		keybind = "",
+		parent = nil,
+		action = {
+			spellValue = "",
+			itemValue = "",
+			macroValue = "",
+			macroName = L["Run custom macro"],
+			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
+			macroMode = Addon.MacroMode.FIRST,
+			interrupt = false,
+			allowStartAttack = true,
+			cancelQueuedSpell = false,
+			targetUnitAfterCast = false
+		},
+		targets = {
+			hovercast = {
+				enabled = false,
+				hostility = Addon.TargetHostility.ANY,
+				vitals = Addon.TargetVitals.ANY
+			},
+			regular = {
+				enabled = true,
+				Addon:GetNewBindingTargetTemplate()
+			}
+		},
+		load = {
+			never = false,
+			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
+			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
+			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
+			combat = GetNegatableLoadOptionTemplate(),
+			spellKnown = GetLoadOptionTemplate(""),
+			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
+			playerInGroup = GetLoadOptionTemplate(""),
+			form = GetTriStateLoadOptionTemplate(1),
+			pet = GetNegatableLoadOptionTemplate(),
+			stealth = GetNegatableLoadOptionTemplate(),
+			mounted = GetNegatableLoadOptionTemplate(),
+			outdoors = GetNegatableLoadOptionTemplate(),
+			swimming = GetNegatableLoadOptionTemplate(),
+			instanceType = GetTriStateLoadOptionTemplate("NONE")
+		},
+		integrations = {
+		}
+	}
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		--- @type number
+		local specIndex = GetSpecialization()
+
+		-- Initial spec
+		if specIndex == 5 then
+			specIndex = 1
+		end
+
+		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
+		template.load.talent = GetTriStateLoadOptionTemplate(1)
+		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
+		template.load.warMode = GetNegatableLoadOptionTemplate()
+		template.load.flying = GetNegatableLoadOptionTemplate()
+		template.load.flyable = GetNegatableLoadOptionTemplate()
+
+		--- @type number
+		local covenantId = C_Covenants.GetActiveCovenantID()
+
+		-- No covenant selected
+		if covenantId == 0 then
+			covenantId = 1
+		end
+
+		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
+	end
+
+	return template
+end
+
+--- @return Binding.Target
+function Addon:GetNewBindingTargetTemplate()
+	local template = {
+		unit = Addon.TargetUnits.DEFAULT,
+		hostility = Addon.TargetHostility.ANY,
+		vitals = Addon.TargetVitals.ANY
+	}
+
+	return template
+end
+
+--- @return integer
+function Addon:GetNextBindingIdentifier()
+	local identifier = Addon.db.profile.bindings.next
+	Addon.db.profile.bindings.next = Addon.db.profile.bindings.next + 1
+
+	return identifier
+end
+
+--- @param original Binding
+--- @param replacement Binding
+function Addon:ReplaceBinding(original, replacement)
+	assert(Addon:IsBindingType(original) "bad argument #1, expected Binding but got " .. type(original))
+	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
+
+	for index, binding in ipairs(Addon.db.profile.bindings) do
+		if binding == original then
+			Addon.db.profile.bindings[index] = replacement
+			Clicked:ReloadActiveBindings()
+			break
+		end
+	end
+end
+
+---@param original Binding
+---@return Binding
+function Addon:CloneBinding(original)
+	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
+
+	local clone = Addon:DeepCopyTable(original)
+	clone.identifier = Addon:GetNextBindingIdentifier()
+	clone.keybind = ""
+	clone.integrations = {}
+
+	table.insert(Addon.db.profile.bindings, clone)
+	Clicked:ReloadActiveBindings()
+
+	return clone
+end
+
 --- Upgrade the version of the specified profile to the latest version, this process is incremental and will upgrade a profile with intermediate steps of all
 --- versions in between the input version and the current version.
 ---
@@ -182,7 +330,7 @@ end
 ---
 --- @param profile table
 --- @param from string|nil
-function Clicked:UpgradeDatabaseProfile(profile, from)
+function Addon:UpgradeDatabaseProfile(profile, from)
 	from = from or profile.version
 
 	-- Don't use any constants in this function to prevent breaking the updater
@@ -663,10 +811,47 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 			binding.action.macroName = ""
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
-			if binding.type == Addon.BindingTypes.MACRO then
+			if binding.cache and binding.type == Addon.BindingTypes.MACRO then
 				binding.action.macroName = binding.cache.displayName
 				binding.action.macroIcon = binding.cache.displayIcon
 			end
+
+			binding.load.combat.value = binding.load.combat.value == "IN_COMBAT"
+			binding.load.pet.value = binding.load.pet.value == "ACTIVE"
+
+			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+				binding.load.warMode.value = binding.load.warMode.value == "IN_WAR_MODE"
+
+				binding.load.flying = {
+					selected = false,
+					value = true
+				}
+
+				binding.load.flyable = {
+					selected = false,
+					value = true
+				}
+			end
+
+			binding.load.stealth = {
+				selected = false,
+				value = true
+			}
+
+			binding.load.mounted = {
+				selected = false,
+				value = true
+			}
+
+			binding.load.outdoors = {
+				selected = false,
+				value = true
+			}
+
+			binding.load.swimming = {
+				selected = false,
+				value = true
+			}
 
 			binding.cache = nil
 		end
@@ -675,132 +860,4 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 	end
 
 	profile.version = Clicked.VERSION
-end
-
--- Private addon API
-
----
---- @return Binding
-function Addon:GetNewBindingTemplate()
-	local template = {
-		type = Addon.BindingTypes.SPELL,
-		identifier = Addon:GetNextBindingIdentifier(),
-		keybind = "",
-		parent = nil,
-		action = {
-			spellValue = "",
-			itemValue = "",
-			macroValue = "",
-			macroName = L["Run custom macro"],
-			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
-			macroMode = Addon.MacroMode.FIRST,
-			interrupt = false,
-			allowStartAttack = true,
-			cancelQueuedSpell = false,
-			targetUnitAfterCast = false
-		},
-		targets = {
-			hovercast = {
-				enabled = false,
-				hostility = Addon.TargetHostility.ANY,
-				vitals = Addon.TargetVitals.ANY
-			},
-			regular = {
-				enabled = true,
-				Addon:GetNewBindingTargetTemplate()
-			}
-		},
-		load = {
-			never = false,
-			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
-			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
-			combat = GetLoadOptionTemplate(Addon.CombatState.IN_COMBAT),
-			spellKnown = GetLoadOptionTemplate(""),
-			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
-			playerInGroup = GetLoadOptionTemplate(""),
-			form = GetTriStateLoadOptionTemplate(1),
-			pet = GetLoadOptionTemplate(Addon.PetState.ACTIVE),
-			instanceType = GetTriStateLoadOptionTemplate("NONE")
-		},
-		integrations = {
-		}
-	}
-
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		--- @type number
-		local specIndex = GetSpecialization()
-
-		-- Initial spec
-		if specIndex == 5 then
-			specIndex = 1
-		end
-
-		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-		template.load.talent = GetTriStateLoadOptionTemplate(1)
-		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
-		template.load.warMode = GetLoadOptionTemplate(Addon.WarModeState.IN_WAR_MODE)
-
-		--- @type number
-		local covenantId = C_Covenants.GetActiveCovenantID()
-
-		-- No covenant selected
-		if covenantId == 0 then
-			covenantId = 1
-		end
-
-		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
-	end
-
-	return template
-end
-
---- @return Binding.Target
-function Addon:GetNewBindingTargetTemplate()
-	local template = {
-		unit = Addon.TargetUnits.DEFAULT,
-		hostility = Addon.TargetHostility.ANY,
-		vitals = Addon.TargetVitals.ANY
-	}
-
-	return template
-end
-
---- @return integer
-function Addon:GetNextBindingIdentifier()
-	local identifier = Addon.db.profile.bindings.next
-	Addon.db.profile.bindings.next = Addon.db.profile.bindings.next + 1
-
-	return identifier
-end
-
---- @param original Binding
---- @param replacement Binding
-function Addon:ReplaceBinding(original, replacement)
-	assert(Addon:IsBindingType(original) "bad argument #1, expected Binding but got " .. type(original))
-	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
-
-	for index, binding in ipairs(Addon.db.profile.bindings) do
-		if binding == original then
-			Addon.db.profile.bindings[index] = replacement
-			Clicked:ReloadActiveBindings()
-			break
-		end
-	end
-end
-
----@param original Binding
----@return Binding
-function Addon:CloneBinding(original)
-	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
-
-	local clone = Addon:DeepCopyTable(original)
-	clone.identifier = Addon:GetNextBindingIdentifier()
-	clone.keybind = ""
-	clone.integrations = {}
-
-	table.insert(Addon.db.profile.bindings, clone)
-	Clicked:ReloadActiveBindings()
-
-	return clone
 end

@@ -4,6 +4,7 @@
 	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
 	<Script file="AceGUIContainer-ClickedReorderableInlineGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
+	<Script file="AceGUIContainer-ClickedTabGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown-Items.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown.lua"/>
 	<Script file="AceGUIWidget-ClickedKeybinding.lua"/>
