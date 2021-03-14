@@ -657,6 +657,23 @@ function Clicked:UpgradeDatabaseProfile(profile, from)
 		FinalizeVersionUpgrade("0.17.0")
 	end
 
+	-- 0.17.x to 0.18.0
+	if string.sub(from, 1, 4) == "0.17" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.macroName = ""
+			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
+
+			if binding.type == Addon.BindingTypes.MACRO then
+				binding.action.macroName = binding.cache.displayName
+				binding.action.macroIcon = binding.cache.displayIcon
+			end
+
+			binding.cache = nil
+		end
+
+		FinalizeVersionUpgrade("0.18.0")
+	end
+
 	profile.version = Clicked.VERSION
 end
 
@@ -674,6 +691,8 @@ function Addon:GetNewBindingTemplate()
 			spellValue = "",
 			itemValue = "",
 			macroValue = "",
+			macroName = L["Run custom macro"],
+			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			macroMode = Addon.MacroMode.FIRST,
 			interrupt = false,
 			allowStartAttack = true,
@@ -705,8 +724,6 @@ function Addon:GetNewBindingTemplate()
 			instanceType = GetTriStateLoadOptionTemplate("NONE")
 		},
 		integrations = {
-		},
-		cache = {
 		}
 	}
 

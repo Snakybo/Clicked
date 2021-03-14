@@ -384,11 +384,11 @@ function Addon:GetBindingValue(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		return binding.action.spellValue
+		return GetSpellInfo(binding.action.spellValue) or binding.action.spellValue
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
-		return binding.action.itemValue
+		return GetItemInfo(binding.action.itemValue) or binding.action.itemValue
 	end
 
 	if binding.type == Addon.BindingTypes.MACRO then
@@ -411,14 +411,13 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
-		local name, link, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
+		local name, _, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
 
 		if name == nil then
 			return nil, nil, nil
 		end
 
-		local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
-		return name, icon, tonumber(id)
+		return name, icon, self:GetItemId(name)
 	end
 
 	return nil, nil, nil
@@ -454,6 +453,20 @@ function Addon:GetItemInfo(nameOrEquipmentSlotId)
 	end
 
 	return GetItemInfo(nameOrEquipmentSlotId)
+end
+
+--- Get the ID for the specified item.
+--- @param name string
+--- @return number
+function Addon:GetItemId(name)
+	local itemName, link = Addon:GetItemInfo(name)
+
+	if itemName == nil then
+		return nil
+	end
+
+	local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+	return tonumber(id)
 end
 
 --- Generate an attribute identifier for a key. This will
@@ -570,7 +583,7 @@ function Addon:CompareBindings(left, right)
 			return left.identifier < right.identifier
 		end
 
-		return leftValue < rightValue
+		return tostring(leftValue) < tostring(rightValue)
 	end
 
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)

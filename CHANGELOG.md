@@ -10,9 +10,18 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+- Show spell and item ID next to text field
+
 ### Fixed
 
 - Fix various issues with binding display names
+- Improve behavior of target spell and item text field shift-clicks
+
+### Changed
+
+- Save spells and items as ID instead of name
 
 ## [0.17.2] - 2021-03-10
 

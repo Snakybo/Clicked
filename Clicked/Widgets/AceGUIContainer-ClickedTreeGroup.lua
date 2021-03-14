@@ -85,7 +85,10 @@ local function TreeSortAlphabetical(left, right)
 			return false
 		end
 
-		return (left.binding.cache.displayName or "") < (right.binding.cache.displayName or "")
+		local lName = Addon:GetSimpleSpellOrItemInfo(left.binding) or Addon:GetBindingValue(left.binding)
+		local rName = Addon:GetSimpleSpellOrItemInfo(right.binding) or Addon:GetBindingValue(right.binding)
+
+		return (lName or "") < (rName or "")
 	end
 
 	return left.title < right.title
@@ -107,10 +110,9 @@ local function IsValidIcon(icon)
 	return true
 end
 
+--- @param item table
+--- @param binding Binding
 local function UpdateBindingItemVisual(item, binding)
-	item.title = binding.cache.displayName
-	item.icon = binding.cache.displayIcon or item.icon
-
 	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
 		local label = binding.type == Addon.BindingTypes.SPELL and L["Cast %s"] or L["Use %s"]
 
@@ -127,6 +129,14 @@ local function UpdateBindingItemVisual(item, binding)
 			item.icon = icon
 		end
 	elseif binding.type == Addon.BindingTypes.MACRO then
+		item.title = binding.action.macroName
+
+		if not Addon:IsStringNilOrEmpty(binding.action.macroIcon) then
+			item.icon = binding.action.macroIcon
+		else
+			binding.action.macroIcon = item.icon
+		end
+
 		if Addon:IsStringNilOrEmpty(item.title) then
 			item.title = L["Run custom macro"]
 		end
@@ -135,9 +145,6 @@ local function UpdateBindingItemVisual(item, binding)
 	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
 		item.title = L["Open the unit menu"]
 	end
-
-	binding.cache.displayName = item.title
-	binding.cache.displayIcon = item.icon
 
 	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
 end
@@ -395,8 +402,10 @@ local function Button_OnClick(frame, button)
 					local msg = nil
 
 					if frame.binding ~= nil then
+						local name = Addon:GetSimpleSpellOrItemInfo(frame.binding) or Addon:GetBindingValue(frame.binding)
+
 						msg = L["Are you sure you want to delete this binding?"] .. "\n\n"
-						msg = msg .. frame.binding.keybind .. " " .. (frame.binding.cache.displayName or "")
+						msg = msg .. frame.binding.keybind .. " " .. (name or "")
 					elseif frame.group ~= nil then
 						local count = 0
 
@@ -440,11 +449,21 @@ local function Button_OnEnter(frame)
 	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
 		local tooltip = AceGUI.tooltip
 		local binding = frame.binding
+		local text
 
-		local value = Addon:GetBindingValue(binding)
-		local text = binding.cache.displayName or ""
+		if binding.type == Addon.BindingTypes.SPELL then
+			local value = Addon:GetBindingValue(binding)
+			local name = Addon:GetSimpleSpellOrItemInfo(binding) or value
 
-		if binding.type == Addon.BindingTypes.MACRO then
+			text = string.format(L["Cast %s"], name or "")
+		elseif binding.type == Addon.BindingTypes.ITEM then
+			local value = Addon:GetBindingValue(binding)
+			local name = Addon:GetSimpleSpellOrItemInfo(binding) or value
+
+			text = string.format(L["Use %s"], name or "")
+		elseif binding.type == Addon.BindingTypes.MACRO then
+			text = binding.action.macroName or ""
+
 			if #text > 0 then
 				text = text .. "\n\n"
 				text = text .. MACRO .. "\n|cFFFFFFFF"
@@ -452,11 +471,14 @@ local function Button_OnEnter(frame)
 				text = "";
 			end
 
-			text = text .. value .. "|r"
+			text = text .. Addon:GetBindingValue(binding) .. "|r"
+		elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
+			text = L["Target the unit"]
+		elseif binding.type == Addon.BindingTypes.UNIT_MENU then
+			text = L["Open the unit menu"]
 		end
 
 		text = text .. "\n\n"
-
 		text = text .. L["Targets"] .. "\n"
 
 		if binding.targets.hovercast.enabled then
@@ -834,8 +856,10 @@ local methods = {
 				local strings = {}
 
 				if item.binding ~= nil then
-					if item.binding.cache.displayName ~= nil and #item.binding.cache.displayName > 0 then
-						table.insert(strings, item.binding.cache.displayName)
+					local name = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
+
+					if not Addon:IsStringNilOrEmpty(name) then
+						table.insert(strings, name)
 					end
 
 					if item.binding.keybind ~= "" then

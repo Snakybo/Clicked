@@ -51,7 +51,6 @@
 --- @field public targets.regular.enabled boolean
 --- @field public load Binding.Load
 --- @field public integrations table<string,any>
---- @field public cache table<string,any>
 
 --- @class Binding.Target
 --- @field public unit string

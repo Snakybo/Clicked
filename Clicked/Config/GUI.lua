@@ -38,6 +38,9 @@ function Addon:GUI_Serialize(frame, event, value)
 	OnSerialize(frame, event, value)
 end
 
+--- @param text string
+--- @param fontSize nil|'"small"'|'"medium"'|'"large"'
+--- @return table
 function Addon:GUI_Label(text, fontSize)
 	local widget = CreateGUI("Label")
 	widget:SetText(text)

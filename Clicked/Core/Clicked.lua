@@ -95,6 +95,10 @@ local function ADDON_LOADED()
 	Addon:ProcessFrameQueue()
 end
 
+local function GET_ITEM_INFO_RECEIVED()
+	Addon:BindingConfig_Redraw(true)
+end
+
 local function PLAYER_TALENT_UPDATE()
 	Clicked:ReloadActiveBindings()
 end
@@ -173,6 +177,7 @@ function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
 
 	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
@@ -193,6 +198,7 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
+	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
 
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("UNIT_TARGET")

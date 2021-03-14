@@ -125,7 +125,7 @@ end
 
 -- Private addon API
 
----@param keybinds string[]
+---@param keybinds table
 ---@param attributes string[]
 function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 	local split = {

@@ -18,6 +18,7 @@ local spellFlyOutButtons = {}
 
 local iconCache = nil
 local showIconPicker = false
+local waitingForItemInfo = false
 
 local root
 local tree
@@ -89,41 +90,6 @@ local function GetTriStateLoadOptionValue(option)
 	end
 
 	return nil
-end
-
-local function ParseItemLink(link, ...)
-	local allowed = { ... }
-
-	local function IsAllowed(type)
-		if #allowed == 0 then
-			return true
-		end
-
-		for _, arg in ipairs(allowed) do
-			if arg == type then
-				return true
-			end
-		end
-
-		return false
-	end
-
-	local _, _, _, type, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
-	local result = nil
-
-	if type == "talent" and IsAllowed("talent") then
-		local spellId = select(6, GetTalentInfoByID(id, 1))
-
-		if spellId ~= nil then
-			result = GetSpellInfo(spellId)
-		end
-	elseif type == "item" and IsAllowed("item") then
-		result = Addon:GetItemInfo(id)
-	elseif type == "spell" and IsAllowed("spell") then
-		result = GetSpellInfo(id)
-	end
-
-	return result
 end
 
 -- Tooltips
@@ -357,7 +323,7 @@ local function EnsureIconCache()
 	table.sort(iconCache)
 end
 
-local function DrawIconPicker(container, data)
+local function DrawIconPicker(container, data, key)
 	EnsureIconCache()
 
 	local searchBox
@@ -386,7 +352,7 @@ local function DrawIconPicker(container, data)
 	do
 		-- luacheck: ignore container
 		local function OnIconSelected(container, event, value)
-			data.displayIcon = value
+			data[key] = value
 			Addon:BindingConfig_Redraw()
 		end
 
@@ -524,42 +490,147 @@ end
 
 -- Binding action page and components
 
-local function DrawSpellSelection(container, action, cache)
-	-- target spell
+local function DrawSpellItemSelection(container, action, mode)
+	local valueKey = mode == Addon.BindingTypes.SPELL and "spellValue" or "itemValue"
+
+	-- target spell or item
 	do
-		local group = Addon:GUI_InlineGroup(L["Target Spell"])
+		local group = Addon:GUI_InlineGroup(mode == Addon.BindingTypes.SPELL and L["Target Spell"] or L["Target Item"])
 		container:AddChild(group)
+
+		local hasId = false
 
 		-- edit box
 		do
-			local function OnEnterPressed(frame, event, value)
-				value = Addon:TrimString(value)
+			local widget = nil
+			local text = action[valueKey]
 
-				wipe(cache)
-				Addon:GUI_Serialize(frame, event, value)
-			end
+			if type(text) == "number" and tonumber(text) >= 20 then
+				if mode == Addon.BindingTypes.SPELL then
+					text = GetSpellInfo(text)
+				else
+					text = GetItemInfo(text)
 
-			local function OnTextChanged(frame, event, value)
-				local spell = ParseItemLink(value, "spell", "talent")
+					if text == nil then
+						waitingForItemInfo = true
+					end
+				end
 
-				if spell ~= nil then
-					wipe(cache)
-					Addon:GUI_Serialize(frame, event, spell)
+				hasId = true
+			elseif type(text) == "string" then
+				if mode == Addon.BindingTypes.SPELL then
+					local id = select(7, GetSpellInfo(text))
+
+					if id ~= nil then
+						action[valueKey] = id
+						hasId = true
+					end
+				else
+					local id = Addon:GetItemId(text)
+
+					if id == nil then
+						waitingForItemInfo = true
+					else
+						action[valueKey] = id
+						hasId = true
+					end
 				end
 			end
 
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "spellValue")
+			local function OnEnterPressed(frame, event, value)
+				if InCombatLockdown() then
+					widget:SetText(text)
+					widget:ClearFocus()
+					return
+				end
+
+				if value == text then
+					widget:ClearFocus()
+					return
+				end
+
+				action[valueKey] = Addon:TrimString(value)
+
+				if not Addon:IsStringNilOrEmpty(action[valueKey]) then
+					local id
+
+					if mode == Addon.BindingTypes.SPELL then
+						id = select(7, GetSpellInfo(value))
+					else
+						if tonumber(value) ~= nil then
+							id = tonumber(value)
+						else
+							id = Addon:GetItemId(value)
+						end
+					end
+
+					if id ~= nil and id > 0 then
+						action[valueKey] = id
+					end
+				end
+
+				Clicked:ReloadActiveBindings()
+			end
+
+			local function OnTextChanged(frame, event, value)
+				local itemLink = string.match(value, "item[%-?%d:]+")
+				local spellLink = string.match(value, "spell[%-?%d:]+")
+				local talentLink = string.match(value, "talent[%-?%d:]+")
+				local id = nil
+
+				if not Addon:IsStringNilOrEmpty(itemLink) then
+					local match = string.match(itemLink, "(%d+)")
+					id = tonumber(match)
+				elseif not Addon:IsStringNilOrEmpty(spellLink) then
+					local match = string.match(spellLink, "(%d+)")
+					id = tonumber(match)
+				elseif not Addon:IsStringNilOrEmpty(talentLink) then
+					local match = string.match(talentLink, "(%d+)")
+					id = tonumber(select(6, GetTalentInfoByID(match)))
+				end
+
+				if id ~= nil and id > 0 then
+					action[valueKey] = id
+					value = mode == Addon.BindingTypes.SPELL and GetSpellInfo(id) or GetItemInfo(id)
+
+					widget:SetText(value)
+					widget:ClearFocus()
+
+					Clicked:ReloadActiveBindings()
+				end
+			end
+
+			widget = AceGUI:Create("EditBox")
+			widget:SetText(text)
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
-			widget:SetFullWidth(true)
 
-			RegisterTooltip(widget, L["Target Spell"], L["Enter the spell name or spell ID."])
+			if hasId then
+				widget:SetRelativeWidth(0.85)
+			else
+				widget:SetFullWidth(true)
+			end
+
+			if mode == Addon.BindingTypes.SPELL then
+				RegisterTooltip(widget, L["Target Spell"], L["Enter the spell name or spell ID."])
+			else
+				RegisterTooltip(widget, L["Target Item"], L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
+			end
+
+			group:AddChild(widget)
+		end
+
+		-- spell id
+		if hasId then
+			local widget = Addon:GUI_Label(tostring(action[valueKey]))
+			widget:SetJustifyH("RIGHT")
+			widget:SetRelativeWidth(0.15)
 
 			group:AddChild(widget)
 		end
 
 		-- pick from spellbook button
-		do
+		if mode == Addon.BindingTypes.SPELL then
 			local function OnClick()
 				if InCombatLockdown() then
 					Addon:NotifyCombatLockdown()
@@ -585,43 +656,7 @@ local function DrawSpellSelection(container, action, cache)
 	end
 end
 
-local function DrawItemSelection(container, action, cache)
-	-- target item
-	do
-		local group = Addon:GUI_InlineGroup(L["Target Item"])
-		container:AddChild(group)
-
-		-- target item
-		do
-			local function OnEnterPressed(frame, event, value)
-				value = Addon:TrimString(value)
-
-				wipe(cache)
-				Addon:GUI_Serialize(frame, event, value)
-			end
-
-			local function OnTextChanged(frame, event, value)
-				local item = ParseItemLink(value, "item")
-
-				if item ~= nil then
-					wipe(cache)
-					Addon:GUI_Serialize(frame, event, item)
-				end
-			end
-
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "itemValue")
-			widget:SetCallback("OnEnterPressed", OnEnterPressed)
-			widget:SetCallback("OnTextChanged", OnTextChanged)
-			widget:SetFullWidth(true)
-
-			RegisterTooltip(widget, L["Target Item"], L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
-
-			group:AddChild(widget)
-		end
-	end
-end
-
-local function DrawMacroSelection(container, targets, action, cache)
+local function DrawMacroSelection(container, targets, action)
 	-- macro name and icon
 	do
 		local group = Addon:GUI_InlineGroup(L["Macro Name and Icon (optional)"])
@@ -629,7 +664,7 @@ local function DrawMacroSelection(container, targets, action, cache)
 
 		-- name text field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", cache, "displayName")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -637,7 +672,7 @@ local function DrawMacroSelection(container, targets, action, cache)
 
 		-- icon field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", cache, "displayIcon")
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroIcon")
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -801,12 +836,10 @@ local function DrawIntegrationsOptions(container, binding)
 	end
 end
 
-local function DrawBindingActionPage(container, binding, cache)
+local function DrawBindingActionPage(container, binding)
 	-- action dropdown
 	do
 		local function OnValueChanged(frame, event, value)
-			wipe(cache)
-
 			UpdateRequiredTargetModesForBinding(binding.targets, binding.keybind, value)
 			Addon:GUI_Serialize(frame, event, value)
 		end
@@ -839,16 +872,12 @@ local function DrawBindingActionPage(container, binding, cache)
 		end
 	end
 
-	if binding.type == Addon.BindingTypes.SPELL then
-		DrawSpellSelection(container, binding.action, binding.cache)
-		DrawSharedSpellItemOptions(container, binding)
-		DrawIntegrationsOptions(container, binding)
-	elseif binding.type == Addon.BindingTypes.ITEM then
-		DrawItemSelection(container, binding.action, binding.cache)
+	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+		DrawSpellItemSelection(container, binding.action, binding.type)
 		DrawSharedSpellItemOptions(container, binding)
 		DrawIntegrationsOptions(container, binding)
 	elseif binding.type == Addon.BindingTypes.MACRO then
-		DrawMacroSelection(container, binding.targets, binding.action, binding.cache)
+		DrawMacroSelection(container, binding.targets, binding.action)
 	end
 end
 
@@ -1333,10 +1362,12 @@ local function DrawBindingStatusPage(container, binding)
 								tree:SelectByBindingOrGroup(other)
 							end
 
+							local name, icon = Addon:GetSimpleSpellOrItemInfo(other)
+
 							local widget = AceGUI:Create("InteractiveLabel")
 							widget:SetFontObject(GameFontHighlight)
-							widget:SetText(other.cache.displayName or "")
-							widget:SetImage(other.cache.displayIcon or "Interface\\ICONS\\INV_Misc_QuestionMark")
+							widget:SetText(name or "")
+							widget:SetImage(icon or [[Interface\ICONS\INV_Misc_QuestionMark]])
 							widget:SetFullWidth(true)
 							widget:SetCallback("OnClick", OnClick)
 
@@ -1505,7 +1536,7 @@ local function DrawBinding(container)
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
-				DrawBindingActionPage(scrollFrame, binding, binding.cache)
+				DrawBindingActionPage(scrollFrame, binding)
 			elseif group == "target" then
 				DrawBindingTargetPage(scrollFrame, binding)
 			elseif group == "conditions" then
@@ -1595,10 +1626,11 @@ local function DrawTreeContainer(container)
 	local group = GetCurrentGroup()
 
 	if showIconPicker then
-		local data = binding ~= nil and binding.cache or group
+		local data = binding ~= nil and binding.action or group
+		local key = binding ~= nil and "macroIcon" or "displayIcon"
 
 		showIconPicker = false
-		DrawIconPicker(container, data)
+		DrawIconPicker(container, data, key)
 	else
 		if binding ~= nil then
 			DrawBinding(container)
@@ -1675,9 +1707,18 @@ function Addon:BindingConfig_Open()
 	Addon:BindingConfig_Redraw()
 end
 
-function Addon:BindingConfig_Redraw()
+--- @param itemInfoReceived nil|boolean
+function Addon:BindingConfig_Redraw(itemInfoReceived)
 	if root == nil or not root:IsVisible() then
 		return
+	end
+
+	if itemInfoReceived and not waitingForItemInfo then
+		return
+	end
+
+	if itemInfoReceived then
+		waitingForItemInfo = false
 	end
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))
