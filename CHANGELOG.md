@@ -13,12 +13,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Show spell and item ID next to text field
-- Add `stealth`/`nostealth` condition
-- Add `mounted`/`nomounted` condition
-- Add `outdoors`/`indoors` condition
-- Add `flying`/`noflying` condition
-- Add `flyable`/`noflyable` condition
-- Add `swimming`/`noswimming` condition
+- Add `stealth`/`nostealth` macro condition
+- Add `mounted`/`nomounted` macro condition
+- Add `outdoors`/`indoors` macro condition
+- Add `flying`/`noflying` macro condition
+- Add `flyable`/`noflyable` macro condition
+- Add `swimming`/`noswimming` macro condition
+- Add Zone Name(s) load condition, specify multiple using comma as a seperator, or use `!` to negate a condition
 
 ### Fixed
 

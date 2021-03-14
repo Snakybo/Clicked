@@ -236,7 +236,8 @@ function Addon:GetNewBindingTemplate()
 			mounted = GetNegatableLoadOptionTemplate(),
 			outdoors = GetNegatableLoadOptionTemplate(),
 			swimming = GetNegatableLoadOptionTemplate(),
-			instanceType = GetTriStateLoadOptionTemplate("NONE")
+			instanceType = GetTriStateLoadOptionTemplate("NONE"),
+			zoneName = GetLoadOptionTemplate("")
 		},
 		integrations = {
 		}
@@ -811,7 +812,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 			binding.action.macroName = ""
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
-			if binding.cache and binding.type == Addon.BindingTypes.MACRO then
+			if binding.type == Addon.BindingTypes.MACRO then
 				binding.action.macroName = binding.cache.displayName
 				binding.action.macroIcon = binding.cache.displayIcon
 			end
@@ -851,6 +852,11 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 			binding.load.swimming = {
 				selected = false,
 				value = true
+			}
+
+			binding.load.zoneName = {
+				selected = false,
+				value = ""
 			}
 
 			binding.cache = nil

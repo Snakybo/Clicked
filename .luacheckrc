@@ -73,6 +73,7 @@ read_globals = {
 	"GetNumSubgroupMembers",
 	"GetPvpTalentInfoByID",
 	"GetRealmName",
+	"GetRealZoneText",
 	"GetShapeshiftForm",
 	"GetShapeshiftFormInfo",
 	"GetSpecialization",

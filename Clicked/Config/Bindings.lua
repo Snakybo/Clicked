@@ -435,28 +435,33 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 end
 
 local function DrawEditFieldLoadOption(container, title, data)
+	local toggle
+	local input
+
 	-- spell known toggle
 	do
-		local widget = Addon:GUI_CheckBox(title, data, "selected")
+		toggle = Addon:GUI_CheckBox(title, data, "selected")
 
 		if not data.selected then
-			widget:SetRelativeWidth(1)
+			toggle:SetRelativeWidth(1)
 		else
-			widget:SetRelativeWidth(0.5)
+			toggle:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(widget)
+		container:AddChild(toggle)
 	end
 
 	if data.selected then
 		-- spell known
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
-			widget:SetRelativeWidth(0.5)
+			input = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
+			input:SetRelativeWidth(0.5)
 
-			container:AddChild(widget)
+			container:AddChild(input)
 		end
 	end
+
+	return toggle, input
 end
 
 local function DrawTristateLoadOption(container, title, items, order, data)
@@ -1395,6 +1400,21 @@ local function DrawLoadInInstanceType(container, instanceType)
 	DrawTristateLoadOption(container, L["Instance type"], items, order, instanceType)
 end
 
+local function DrawLoadZoneName(container, zoneName)
+	local _, inputField = DrawEditFieldLoadOption(container, L["Zone name(s)"], zoneName)
+
+	if inputField ~= nil then
+		local tips = {
+			string.format(L["Comma separated, use an exclamation mark (%s) to inverse a zone condition, for example:"], "|r!|cffffffff"),
+			"\n",
+			string.format(L["%s will be active if you're not in Oribos"], "|r!" .. L["Oribos"] .. "|cffffffff"),
+			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. "," .. L["Orgrimmar"] .. "|cffffffff")
+		}
+
+		RegisterTooltip(inputField, L["Zone name(s)"],  table.concat(tips, "\n"))
+	end
+end
+
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
 
@@ -1416,6 +1436,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadInCovenant(container, load.covenant)
 	end
 
+	DrawLoadZoneName(container, load.zoneName)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)

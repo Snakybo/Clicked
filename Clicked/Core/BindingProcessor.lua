@@ -827,6 +827,34 @@ function Addon:CanBindingLoad(binding)
 		end
 	end
 
+	-- zone name
+	do
+		local zoneName = load.zoneName
+
+		if zoneName.selected then
+			local realZone = GetRealZoneText()
+			local anyTrue = false
+
+			for zone in string.gmatch(zoneName.value, "([^,]+)") do
+				local negate = false
+
+				if string.sub(zone, 0, 1) == "!" then
+					negate = true
+					zone = string.sub(zone, 2)
+				end
+
+				if (negate and zone ~= realZone) or (not negate and zone == realZone) then
+					anyTrue = true
+					break
+				end
+			end
+
+			if not anyTrue then
+				return false
+			end
+		end
+	end
+
 	-- player in group
 	do
 		local playerInGroup = load.playerInGroup

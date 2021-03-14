@@ -99,6 +99,10 @@ local function GET_ITEM_INFO_RECEIVED()
 	Addon:BindingConfig_Redraw(true)
 end
 
+local function ZONE_CHANGED_NEW_AREA()
+	Clicked:ReloadActiveBindings()
+end
+
 local function PLAYER_TALENT_UPDATE()
 	Clicked:ReloadActiveBindings()
 end
@@ -178,7 +182,7 @@ function Clicked:OnEnable()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
-
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
 end
@@ -199,7 +203,7 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
-
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("UNIT_TARGET")
 end
