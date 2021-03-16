@@ -812,8 +812,25 @@ local function DrawSharedSpellItemOptions(container, binding)
 
 	local function CreateCheckbox(group, label, tooltipText, key)
 		local isUsingShared = false
+		local widget
 
 		local function OnValueChanged(frame, event, value)
+			if InCombatLockdown() then
+				Addon:NotifyCombatLockdown()
+
+				if binding.action[key] then
+					widget:SetValue(true)
+				else
+					if Addon:CanBindingLoad(binding) and IsSharedDataSet(key) then
+						widget:SetValue(nil)
+					else
+						widget:SetValue(false)
+					end
+				end
+
+				return
+			end
+
 			if value == false and isUsingShared then
 				value = true
 			end
@@ -822,7 +839,7 @@ local function DrawSharedSpellItemOptions(container, binding)
 			Clicked:ReloadActiveBindings()
 		end
 
-		local widget = AceGUI:Create("CheckBox")
+		widget = AceGUI:Create("CheckBox")
 		widget:SetType("checkbox")
 		widget:SetLabel(label)
 		widget:SetCallback("OnValueChanged", OnValueChanged)

@@ -25,6 +25,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Fix various issues with binding display names
 - Improve behavior of target spell and item text field shift-clicks
+- Fix shared binding options being changable during combat
 
 ### Changed
 
