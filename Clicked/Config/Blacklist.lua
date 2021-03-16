@@ -24,6 +24,11 @@ local UNIT_FRAME_ADDON_MAPPING = {
 		name = "Gladius",
 		"GladiusButtonarena%d"
 	},
+	["GladiusEx"] = {
+		name = "GladiusEx",
+		"GladiusExSecureButtonarena%d",
+		"GladiusExSecureButtonparty%d"
+	},
 	["Blizzard"] = {
 		name = "Blizzard",
 		"Boss%dTargetFrame",
