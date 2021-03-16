@@ -856,10 +856,14 @@ local methods = {
 				local strings = {}
 
 				if item.binding ~= nil then
-					local name = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
+					local value = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
 
-					if not Addon:IsStringNilOrEmpty(name) then
-						table.insert(strings, name)
+					if not Addon:IsStringNilOrEmpty(value) then
+						table.insert(strings, value)
+					end
+
+					if item.binding.type == Addon.BindingTypes.MACRO then
+						table.insert(strings, item.binding.action.macroName)
 					end
 
 					if item.binding.keybind ~= "" then
