@@ -131,7 +131,7 @@ local function UpdateBindingItemVisual(item, binding)
 	elseif binding.type == Addon.BindingTypes.MACRO then
 		item.title = binding.action.macroName
 
-		if not Addon:IsStringNilOrEmpty(binding.action.macroIcon) then
+		if binding.action.macroIcon ~= nil then
 			item.icon = binding.action.macroIcon
 		else
 			binding.action.macroIcon = item.icon
