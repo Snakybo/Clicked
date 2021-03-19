@@ -225,15 +225,15 @@ local function SortActions(actions, indexMap)
 			-- 2. Macro conditions take presedence over actions that don't specify them explicitly
 			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },
 			{ left = left.vitals, right = right.vitals, value = 0, comparison = "gt" },
-			{ left = left.combat, right = right.combat, value = 0, comparison = "gt" },
+			{ left = left.combat, right = right.combat, value = true, comparison = "eq" },
 			{ left = left.forms, right = right.forms, value = 0, comparison = "gt" },
-			{ left = left.pet, right = right.pet, value = 0, comparison = "gt" },
-			{ left = left.stealth, right = right.stealth, value = 0, comparison = "gt" },
-			{ left = left.mounted, right = right.mounted, value = 0, comparison = "gt" },
-			{ left = left.outdoors, right = right.outdoors, value = 0, comparison = "gt" },
-			{ left = left.swimming, right = right.swimming, value = 0, comparison = "gt" },
-			{ left = left.flying, right = right.flying, value = 0, comparison = "gt" },
-			{ left = left.flyable, right = right.flyable, value = 0, comparison = "gt" },
+			{ left = left.pet, right = right.pet, value = true, comparison = "eq" },
+			{ left = left.stealth, right = right.stealth, value = true, comparison = "eq" },
+			{ left = left.mounted, right = right.mounted, value = true, comparison = "eq" },
+			{ left = left.outdoors, right = right.outdoors, value = true, comparison = "eq" },
+			{ left = left.swimming, right = right.swimming, value = true, comparison = "eq" },
+			{ left = left.flying, right = right.flying, value = true, comparison = "eq" },
+			{ left = left.flyable, right = right.flyable, value = true, comparison = "eq" },
 
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
@@ -1031,24 +1031,24 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	-- Add all action groups in order
 	do
 		-- Parse and sort action groups
-		local actionGroups = {}
+		local bindingGroups = {}
 
+		local actionsSequence = {}
 		local actions = {}
+
 		local macros = {}
 		local appends = {}
 
 		for _, binding in ipairs(bindings) do
 			local order = binding.action.executionOrder
 
-			actionGroups[order] = actionGroups[order] or {}
-			table.insert(actionGroups[order], binding)
+			bindingGroups[order] = bindingGroups[order] or {}
+			table.insert(bindingGroups[order], binding)
 		end
 
 		-- Generate actions for SPELL and ITEM bindings, and insert macro values
 		do
-			local actionsSequence = {}
-
-			for order, group in pairs(actionGroups) do
+			for order, group in pairs(bindingGroups) do
 				actions[order] = {}
 				macros[order] = {}
 				appends[order] = {}
@@ -1072,20 +1072,18 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					end
 				end
 			end
-
-			for _, actionGroup in pairs(actions) do
-				SortActions(actionGroup, actionsSequence)
-			end
 		end
 
 		-- Add all commands to the macro
-		for order in pairs(actionGroups) do
+		for order in pairs(bindingGroups) do
 			local localSegments = {}
 
 			-- Put any custom macros on top
 			for _, macro in ipairs(macros[order]) do
 				table.insert(lines, macro)
 			end
+
+			SortActions(actions[order], actionsSequence)
 
 			for index, action in ipairs(actions[order]) do
 				local conditions = GetMacroSegmentFromAction(action, interactionType, index == #actions[order])
