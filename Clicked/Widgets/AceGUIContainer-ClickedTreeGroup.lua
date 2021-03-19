@@ -403,12 +403,6 @@ local function Button_OnEnter(frame)
 		local binding = frame.binding
 		local text = Addon:GetBindingNameAndIcon(binding)
 
-		if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
-			text = text .. "\n\n"
-			text = text .. MACRO .. "\n|cFFFFFFFF"
-			text = text .. Addon:GetBindingValue(binding) .. "|r"
-		end
-
 		text = text .. "\n\n"
 		text = text .. L["Targets"] .. "\n"
 
