@@ -161,8 +161,11 @@ local function ConstructAction(binding, target)
 	AppendCondition(binding.load.mounted, "mounted")
 	AppendCondition(binding.load.outdoors, "outdoors")
 	AppendCondition(binding.load.swimming, "swimming")
-	AppendCondition(binding.load.flying, "flying")
-	AppendCondition(binding.load.flyable, "flyable")
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		AppendCondition(binding.load.flying, "flying")
+		AppendCondition(binding.load.flyable, "flyable")
+	end
 
 	do
 		local forms = Addon:GetAvailableShapeshiftForms(binding)
