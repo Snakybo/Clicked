@@ -12,4 +12,5 @@
 	<Script file="AceGUIWidget-ClickedSearchBox.lua"/>
 	<Script file="AceGUIWidget-ClickedSimpleGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>
+	<Script file="AceGUIWidget-ClickedReorderableLabel.lua"/>
 </Ui>

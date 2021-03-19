@@ -204,7 +204,7 @@ function Addon:GetNewBindingTemplate()
 			macroValue = "",
 			macroName = L["Run custom macro"],
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
-			macroMode = Addon.MacroMode.FIRST,
+			executionOrder = 1,
 			interrupt = false,
 			allowStartAttack = true,
 			cancelQueuedSpell = false,
@@ -817,6 +817,8 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 				binding.action.macroIcon = binding.cache.displayIcon
 			end
 
+			binding.action.executionOrder = 1
+
 			binding.load.combat.value = binding.load.combat.value == "IN_COMBAT"
 			binding.load.pet.value = binding.load.pet.value == "ACTIVE"
 
@@ -860,6 +862,43 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 			}
 
 			binding.cache = nil
+		end
+
+		local function GetRelatedBindings(binding)
+			local result = {}
+
+			for _, other in ipairs(profile.bindings) do
+				if other ~= binding and other.keybind == binding.keybind and other.type ~= "APPEND" and other.action.macroMode ~= "APPEND" then
+					table.insert(result, other)
+				end
+			end
+
+			return ipairs(result)
+		end
+
+		for _, binding in ipairs(profile.bindings) do
+			if binding.type == Addon.BindingTypes.MACRO then
+				if binding.action.macroMode == "FIRST" then
+					for _, other in GetRelatedBindings(binding) do
+						other.action.executionOrder = other.action.executionOrder + 1
+					end
+				elseif binding.action.macroMode == "LAST" then
+					local last = 0
+
+					for _, other in GetRelatedBindings(binding) do
+						if other.action.executionOrder > last then
+							last = other.action.executionOrder
+						end
+					end
+
+					binding.action.executionOrder = last + 1
+				elseif binding.action.macroMode == "Append" then
+					binding.type = "APPEND"
+				end
+
+			end
+
+			binding.action.macroMode = nil
 		end
 
 		FinalizeVersionUpgrade("0.18.0")

@@ -375,7 +375,7 @@ function Addon:HasBindingValue(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	local value = Addon:GetBindingValue(binding)
-	return not Addon:IsStringNilOrEmpty(value)
+	return not Addon:IsStringNilOrEmpty(tostring(value))
 end
 
 --- @param binding Binding
@@ -391,7 +391,7 @@ function Addon:GetBindingValue(binding)
 		return GetItemInfo(binding.action.itemValue) or binding.action.itemValue
 	end
 
-	if binding.type == Addon.BindingTypes.MACRO then
+	if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
 		return binding.action.macroValue
 	end
 
@@ -421,6 +421,61 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	end
 
 	return nil, nil, nil
+end
+
+--- @param binding Binding
+--- @return string name
+--- @return string|number icon
+function Addon:GetBindingNameAndIcon(binding)
+	local function IsValidIcon(icon)
+		if icon == nil then
+			return false
+		end
+
+		if type(icon) == "string" and #icon == 0 then
+			return false
+		end
+
+		if type(icon) == "number" and icon <= 0 then
+			return false
+		end
+
+		return true
+	end
+
+	local name = ""
+	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
+
+	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+		local label = binding.type == Addon.BindingTypes.SPELL and L["Cast %s"] or L["Use %s"]
+
+		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local value = Addon:GetBindingValue(binding)
+
+		if spellName ~= nil or value ~= nil then
+			name = string.format(label, spellName or value)
+		end
+
+		if IsValidIcon(spellIcon) then
+			icon = spellIcon
+		end
+	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
+			name = L["Run custom macro"]
+		else
+			name = binding.action.macroName
+		end
+
+		if binding.action.macroIcon ~= nil then
+			icon = binding.action.macroIcon
+		end
+	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
+		name = L["Target the unit"]
+	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
+		name = L["Open the unit menu"]
+	end
+
+	return name, icon
 end
 
 --- @param nameOrEquipmentSlotId string|integer

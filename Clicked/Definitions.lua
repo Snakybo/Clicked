@@ -16,17 +16,21 @@
 
 --- @class Profile
 --- @field public version string
---- @field public options table
---- @field public options.onKeyDown boolean
---- @field public options.tooltips boolean
---- @field public options.minimap table
---- @field public options.minimap.hide boolean
---- @field public options.minimap.minimapPos number
+--- @field public options Profile.Options
 --- @field public groups Group[]
 --- @field public groups.next integer
 --- @field public bindings Binding[]
 --- @field public bindings.next integer
 --- @field public blacklist string[]
+
+--- @class Profile.Options
+--- @field public onKeyDown boolean
+--- @field public tooltips boolean
+--- @field public minimap Profile.Options.Minimap
+
+--- @class Profile.Options.Minimap
+--- @field public hide boolean
+--- @field public minimapPos number
 
 --- @alias Localization table<string,string>
 
@@ -39,8 +43,8 @@
 --- @field public action.spellValue string
 --- @field public action.itemValue string
 --- @field public action.macroValue string
---- @field public action.macroMode string
 --- @field public action.interrupt boolean
+--- @field public action.executionOrder integer
 --- @field public action.allowStartAttack boolean
 --- @field public action.cancelQueuedSpell boolean
 --- @field public action.targetUnitAfterCast boolean

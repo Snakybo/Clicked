@@ -20,6 +20,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add `flyable`/`noflyable` macro condition
 - Add `swimming`/`noswimming` macro condition
 - Add Zone Name(s) load condition, specify multiple using comma as a seperator, or use `!` to negate a condition
+- Add the option to execute multiple actions in a single macro, see action groups on the binding Action page
+- Add a new binding type to replace the "Append" macro behavior
+- Add shared binding options to macros
 
 ### Fixed
 
@@ -27,13 +30,23 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Improve behavior of target spell and item text field shift-clicks
 - Fix shared binding options being changable during combat
 
+### Removed
+
+- Remove the macro mode dropdown, the "Run first" and "Run last" behavior can now be achieved by modifying the action group
+- Remove the binding type dropdown
+- Remove the ability to change a binding type after creation
+- Remove unitframe local and shared macros from the binding status page
+- Remove the local generated macro from the binding status page
+
 ### Changed
 
 - Save spells and items as ID instead of name
 - Separate macro conditions from load conditions
 - Hide binding status page if the binding is not loaded
 - Hide binding status page from target/menu bindings
+- Hide binding action page from "Target the unit" and "Open the unit menu" binding types
 - Slightly increase width of the binding configuration window
+- Rework the binding templates list, it now lists presets of all available binding types, to replace the binding type dropdown
 
 ## [0.17.2] - 2021-03-10
 

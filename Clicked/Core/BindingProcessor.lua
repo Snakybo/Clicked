@@ -5,6 +5,7 @@ Addon.BindingTypes = {
 	SPELL = "SPELL",
 	ITEM = "ITEM",
 	MACRO = "MACRO",
+	APPEND = "APPEND",
 	UNIT_SELECT = "UNIT_SELECT",
 	UNIT_MENU = "UNIT_MENU"
 }
@@ -45,12 +46,6 @@ Addon.TargetVitals = {
 	ANY = "ANY",
 	ALIVE = "ALIVE",
 	DEAD = "DEAD"
-}
-
-Addon.MacroMode = {
-	FIRST = "FIRST",
-	APPEND = "APPEND",
-	LAST = "LAST"
 }
 
 Addon.GroupState = {
@@ -150,7 +145,8 @@ end
 --- @return Action
 local function ConstructAction(binding, target)
 	local action = {
-		ability = Addon:GetBindingValue(binding)
+		ability = Addon:GetBindingValue(binding),
+		type = binding.type
 	}
 
 	local function AppendCondition(condition, key)
@@ -297,6 +293,10 @@ local function GetInternalBindingType(binding)
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
+		return Addon.BindingTypes.MACRO
+	end
+
+	if binding.type == Addon.BindingTypes.APPEND then
 		return Addon.BindingTypes.MACRO
 	end
 
@@ -989,109 +989,142 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	assert(type(bindings) == "table", "bad argument #1, expected table but got " .. type(bindings))
 	assert(type(interactionType) == "number", "bad argument #1, expected number but got " .. type(interactionType))
 
-	local result = {}
-	local interrupt = false
-	local startAutoAttack = false
-	local cancelQueuedSpell = false
-	local targetUnitAfterCast = false
+	local lines = {}
 
-	local actions = {}
-	local actionIndexMap = {}
+	local macroConditions = {}
+	local macroSegments = {}
 
-	-- add a segment to remove the blue casting cursor
-	table.insert(result, "/click " .. Addon.STOP_CASTING_BUTTON_NAME)
+	-- Add all prefix shared binding options
+	do
+		local interrupt = false
+		local startAutoAttack = false
+		local cancelQueuedSpell = false
 
-	for _, binding in ipairs(bindings) do
-		local value = Addon:GetBindingValue(binding)
+		for _, binding in ipairs(bindings) do
+			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+				if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
+					cancelQueuedSpell = true
+					table.insert(lines, "/cancelqueuedspell")
+				end
 
-		if binding.type == Addon.BindingTypes.MACRO then
-			if binding.action.macroMode == Addon.MacroMode.FIRST then
-				table.insert(result, value)
+				if not startAutoAttack and binding.action.allowStartAttack and interactionType == Addon.InteractionType.REGULAR then
+					for _, target in ipairs(binding.targets.regular) do
+						if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
+							startAutoAttack = true
+							table.insert(lines, "/startattack [@target,harm]")
+							break
+						end
+					end
+				end
+
+				if not interrupt and binding.action.interrupt then
+					interrupt = true
+					table.insert(lines, "/stopcasting")
+				end
 			end
-		else
-			local extra = {}
+		end
 
-			if not interrupt and binding.action.interrupt then
-				interrupt = true
-				table.insert(extra, "/stopcasting")
-			end
+		-- add a command to remove the blue casting cursor
+		table.insert(lines, "/click " .. Addon.STOP_CASTING_BUTTON_NAME)
+	end
 
-			if not startAutoAttack and binding.action.allowStartAttack and interactionType == Addon.InteractionType.REGULAR then
-				for _, target in ipairs(binding.targets.regular) do
-					if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
-						startAutoAttack = true
-						table.insert(extra, "/startattack [@target,harm]")
-						break
+	-- Add all action groups in order
+	do
+		-- Parse and sort action groups
+		local actionGroups = {}
+
+		local actions = {}
+		local macros = {}
+		local appends = {}
+
+		for _, binding in ipairs(bindings) do
+			local order = binding.action.executionOrder
+
+			actionGroups[order] = actionGroups[order] or {}
+			table.insert(actionGroups[order], binding)
+		end
+
+		-- Generate actions for SPELL and ITEM bindings, and insert macro values
+		do
+			local actionsSequence = {}
+
+			for order, group in pairs(actionGroups) do
+				actions[order] = {}
+				macros[order] = {}
+				appends[order] = {}
+
+				local nextActionIndex = 1
+
+				for _, binding in ipairs(group) do
+					if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+						for _, action in ipairs(ConstructActions(binding, interactionType)) do
+							table.insert(actions[order], action)
+
+							actionsSequence[action] = nextActionIndex
+							nextActionIndex = nextActionIndex + 1
+						end
+					elseif binding.type == Addon.BindingTypes.MACRO then
+						local value = Addon:GetBindingValue(binding)
+						table.insert(macros[order], value)
+					elseif binding.type == Addon.BindingTypes.APPEND then
+						local value = Addon:GetBindingValue(binding)
+						table.insert(appends[order], value)
 					end
 				end
 			end
 
-			if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
-				cancelQueuedSpell = true
-				table.insert(extra, "/cancelqueuedspell")
+			for _, actionGroup in pairs(actions) do
+				SortActions(actionGroup, actionsSequence)
+			end
+		end
+
+		-- Add all commands to the macro
+		for order in pairs(actionGroups) do
+			local localSegments = {}
+
+			-- Put any custom macros on top
+			for _, macro in ipairs(macros[order]) do
+				table.insert(lines, macro)
 			end
 
-			for i = #extra, 1, - 1 do
-				table.insert(result, 1, extra[i])
+			for index, action in ipairs(actions[order]) do
+				local conditions = GetMacroSegmentFromAction(action, interactionType, index == #actions[order])
+
+				if #conditions > 0 then
+					conditions = "[" .. conditions .. "] "
+				end
+
+				table.insert(macroConditions, conditions)
+				table.insert(macroSegments, conditions .. action.ability)
+				table.insert(localSegments, conditions .. action.ability)
 			end
 
-			local next = 1
+			if #localSegments > 0 then
+				local command = "/use " .. table.concat(localSegments, "; ")
 
-			for _, action in ipairs(ConstructActions(binding, interactionType)) do
-				table.insert(actions, action)
+				-- Insert any APPEND bindings
+				for _, append in ipairs(appends[order]) do
+					command = command .. "; " .. append
+				end
 
-				actionIndexMap[action] = next
-				next = next + 1
+				table.insert(lines, command)
 			end
 		end
 	end
 
-	-- Now sort the actions according to the above schema
-
-	SortActions(actions, actionIndexMap)
-
-	-- Construct a valid macro from the data
-
-	local allFlags = {}
-	local segments = {}
-
-	for i, action in ipairs(actions) do
-		local flags = GetMacroSegmentFromAction(action, interactionType, i == #actions)
-
-		if #flags > 0 then
-			flags = "[" .. flags .. "] "
-		end
-
-		table.insert(allFlags, flags)
-		table.insert(segments, flags .. action.ability)
-	end
-
-	if #segments > 0 then
-		local command = "/use " .. table.concat(segments, "; ")
+	-- Add all suffix shared binding options
+	do
+		local targetUnitAfterCast = false
 
 		for _, binding in ipairs(bindings) do
-			local value = Addon:GetBindingValue(binding)
-
-			if binding.type == Addon.BindingTypes.MACRO and binding.action.macroMode == Addon.MacroMode.APPEND then
-				command = command .. "; " .. value
+			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+				if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
+					targetUnitAfterCast = true
+					table.insert(lines, "/tar " .. table.concat(macroConditions, ""))
+				end
 			end
 		end
-
-		table.insert(result, command)
 	end
 
-	for _, binding in ipairs(bindings) do
-		local value = Addon:GetBindingValue(binding)
-
-		if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
-			targetUnitAfterCast = true
-			table.insert(result, "/tar " .. table.concat(allFlags, ""))
-		end
-
-		if binding.type == Addon.BindingTypes.MACRO and binding.action.macroMode == Addon.MacroMode.LAST then
-			table.insert(result, value)
-		end
-	end
-
-	return table.concat(result, "\n"), table.concat(segments, "; ")
+	return table.concat(lines, "\n"), table.concat(macroSegments, "; ")
 end

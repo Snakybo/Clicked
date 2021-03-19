@@ -114,7 +114,7 @@ Constructor
 
 local function Constructor()
 	local widget = AceGUI:Create("TabGroup")
-	widget.Type = type
+	widget.type = type
 
 	for method, func in pairs(methods) do
 		widget[method] = func

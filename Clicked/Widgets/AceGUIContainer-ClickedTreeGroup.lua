@@ -94,58 +94,10 @@ local function TreeSortAlphabetical(left, right)
 	return left.title < right.title
 end
 
-local function IsValidIcon(icon)
-	if icon == nil then
-		return false
-	end
-
-	if type(icon) == "string" and #icon == 0 then
-		return false
-	end
-
-	if type(icon) == "number" and icon <= 0 then
-		return false
-	end
-
-	return true
-end
-
 --- @param item table
 --- @param binding Binding
 local function UpdateBindingItemVisual(item, binding)
-	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-		local label = binding.type == Addon.BindingTypes.SPELL and L["Cast %s"] or L["Use %s"]
-
-		local name, icon = Addon:GetSimpleSpellOrItemInfo(binding)
-		local value = Addon:GetBindingValue(binding)
-
-		if name ~= nil or value ~= nil then
-			item.title = string.format(label, name or value)
-		elseif Addon:IsStringNilOrEmpty(item.title) then
-			item.title = label
-		end
-
-		if IsValidIcon(icon) then
-			item.icon = icon
-		end
-	elseif binding.type == Addon.BindingTypes.MACRO then
-		item.title = binding.action.macroName
-
-		if binding.action.macroIcon ~= nil then
-			item.icon = binding.action.macroIcon
-		else
-			binding.action.macroIcon = item.icon
-		end
-
-		if Addon:IsStringNilOrEmpty(item.title) then
-			item.title = L["Run custom macro"]
-		end
-	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
-		item.title = L["Target the unit"]
-	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
-		item.title = L["Open the unit menu"]
-	end
-
+	item.title, item.icon = Addon:GetBindingNameAndIcon(binding)
 	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
 end
 
@@ -449,33 +401,12 @@ local function Button_OnEnter(frame)
 	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
 		local tooltip = AceGUI.tooltip
 		local binding = frame.binding
-		local text
+		local text = Addon:GetBindingNameAndIcon(binding)
 
-		if binding.type == Addon.BindingTypes.SPELL then
-			local value = Addon:GetBindingValue(binding)
-			local name = Addon:GetSimpleSpellOrItemInfo(binding) or value
-
-			text = string.format(L["Cast %s"], name or "")
-		elseif binding.type == Addon.BindingTypes.ITEM then
-			local value = Addon:GetBindingValue(binding)
-			local name = Addon:GetSimpleSpellOrItemInfo(binding) or value
-
-			text = string.format(L["Use %s"], name or "")
-		elseif binding.type == Addon.BindingTypes.MACRO then
-			text = binding.action.macroName or ""
-
-			if #text > 0 then
-				text = text .. "\n\n"
-				text = text .. MACRO .. "\n|cFFFFFFFF"
-			else
-				text = "";
-			end
-
+		if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+			text = text .. "\n\n"
+			text = text .. MACRO .. "\n|cFFFFFFFF"
 			text = text .. Addon:GetBindingValue(binding) .. "|r"
-		elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
-			text = L["Target the unit"]
-		elseif binding.type == Addon.BindingTypes.UNIT_MENU then
-			text = L["Open the unit menu"]
 		end
 
 		text = text .. "\n\n"
@@ -862,7 +793,7 @@ local methods = {
 						table.insert(strings, value)
 					end
 
-					if item.binding.type == Addon.BindingTypes.MACRO then
+					if item.binding.type == Addon.BindingTypes.MACRO or item.binding.type == Addon.BindingTypes.APPEND then
 						table.insert(strings, item.binding.action.macroName)
 					end
 
