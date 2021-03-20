@@ -806,7 +806,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		FinalizeVersionUpgrade("0.17.0")
 	end
 
-	-- 0.17.x to 0.18.0
+	-- 0.17.x to 1.0.0
 	if string.sub(from, 1, 4) == "0.17" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.action.macroName = L["Run custom macro"]
@@ -901,7 +901,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 			binding.action.macroMode = nil
 		end
 
-		FinalizeVersionUpgrade("0.18.0")
+		FinalizeVersionUpgrade("1.0.0")
 	end
 
 	profile.version = Clicked.VERSION
