@@ -45,6 +45,7 @@ L["Simple Binding"] = true
 L["Clickcast Binding"] = true
 L["Healer Binding"] = true
 L["Custom Macro (advanced)"] = true
+L["Convert to"] = true
 L["Group"] = true
 L["Group %d"] = true
 L["Group Name and Icon"] = true

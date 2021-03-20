@@ -35,7 +35,6 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Remove the macro mode dropdown, the "Run first" and "Run last" behavior can now be achieved by modifying the action group
 - Remove the binding type dropdown
-- Remove the ability to change a binding type after creation
 - Remove unitframe local and shared macros from the binding status page
 - Remove the local generated macro from the binding status page
 
@@ -43,6 +42,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Save spells and items as ID instead of name
 - Separate macro conditions from load conditions
+- Move the binding type dropdown to the right click context menu
 - Hide binding status page if the binding is not loaded
 - Hide binding status page from target/menu bindings
 - Hide binding action page from "Target the unit" and "Open the unit menu" binding types

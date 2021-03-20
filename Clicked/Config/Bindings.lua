@@ -51,27 +51,6 @@ local function GetCurrentGroup()
 	return nil
 end
 
-local function UpdateRequiredTargetModesForBinding(targets, keybind, type)
-	local hovercast = targets.hovercast
-	local regular = targets.regular
-
-	if Addon:IsRestrictedKeybind(keybind) or type == Addon.BindingTypes.UNIT_SELECT or type == Addon.BindingTypes.UNIT_MENU then
-		hovercast.enabled = true
-		regular.enabled = false
-	end
-
-	if type == Addon.BindingTypes.MACRO then
-		while #regular > 0 do
-			table.remove(regular, 1)
-		end
-
-		regular[1] = Addon:GetNewBindingTargetTemplate()
-
-		hovercast.hostility = Addon.TargetHostility.ANY
-		hovercast.vitals = Addon.TargetVitals.ANY
-	end
-end
-
 local function CanEnableHovercastTargetMode(binding)
 	return true
 end
@@ -1747,7 +1726,7 @@ local function DrawBinding(container)
 	-- keybinding button
 	do
 		local function OnKeyChanged(frame, event, value)
-			UpdateRequiredTargetModesForBinding(binding.targets, value, binding.type)
+			Addon:EnsureSupportedTargetModes(binding.targets, value, binding.type)
 			Addon:GUI_Serialize(frame, event, value)
 		end
 

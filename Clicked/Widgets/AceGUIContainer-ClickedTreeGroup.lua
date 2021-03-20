@@ -326,6 +326,46 @@ local function Button_OnClick(frame, button)
 					self:SelectByBindingOrGroup(clone)
 				end
 			})
+
+			do
+				local convertTo = {
+					text = L["Convert to"],
+					hasArrow = true,
+					notCheckable = true,
+					menuList = {}
+				}
+
+				local function AddConvertToOption(type, label)
+					if frame.binding.type == type then
+						return
+					end
+
+					table.insert(convertTo.menuList, {
+						text = label,
+						notCheckable = true,
+						disabled = inCombat,
+						func = function()
+							self:SelectByBindingOrGroup(frame.binding)
+
+							frame.binding.type = type
+
+							Addon:EnsureSupportedTargetModes(frame.binding.targets, frame.binding.keybind, type)
+							Clicked:ReloadActiveBindings()
+
+							contextMenuFrame:Hide()
+						end
+					})
+				end
+
+				table.insert(menu, convertTo)
+
+				AddConvertToOption(Addon.BindingTypes.SPELL, L["Cast a spell"])
+				AddConvertToOption(Addon.BindingTypes.ITEM, L["Use an item"])
+				AddConvertToOption(Addon.BindingTypes.UNIT_SELECT, L["Target the unit"])
+				AddConvertToOption(Addon.BindingTypes.UNIT_MENU, L["Open the unit menu"])
+				AddConvertToOption(Addon.BindingTypes.MACRO, L["Run a macro"])
+				AddConvertToOption(Addon.BindingTypes.APPEND, L["Append a binding segment"])
+			end
 		end
 
 		table.insert(menu, {

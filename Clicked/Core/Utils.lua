@@ -769,6 +769,34 @@ function Addon:IsMouseButton(keybind)
 	return buttonIndex ~= nil
 end
 
+--- Ensure that the specified `targets` table is properly updated after switching
+--- the type or keybind of a binding. Some bindings only support hovercast, e.g. mouse button 1 and 2.
+--- Other binding types, such as `MACRO` do not support specifying multiple targets.
+---
+--- @param targets table
+--- @param keybind string
+--- @param type string
+function Addon:EnsureSupportedTargetModes(targets, keybind, type)
+	local hovercast = targets.hovercast
+	local regular = targets.regular
+
+	if Addon:IsRestrictedKeybind(keybind) or type == Addon.BindingTypes.UNIT_SELECT or type == Addon.BindingTypes.UNIT_MENU then
+		hovercast.enabled = true
+		regular.enabled = false
+	end
+
+	if type == Addon.BindingTypes.MACRO then
+		while #regular > 0 do
+			table.remove(regular, 1)
+		end
+
+		regular[1] = Addon:GetNewBindingTargetTemplate()
+
+		hovercast.hostility = Addon.TargetHostility.ANY
+		hovercast.vitals = Addon.TargetVitals.ANY
+	end
+end
+
 --- Check if a binding's target unit can have a hostility. This will be
 --- `false` when, for example, `PARTY_2` is passed in because party members
 --- are by definition always friendly during the configuration phase.
