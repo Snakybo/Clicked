@@ -18,6 +18,7 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 * **Easily select spells from the spellbook**
 * **Configure binding target priorities**
 * **Configure binding load conditions**
+* **Configure macro conditionals**
 * **Configure multiple bindings on the same keybind**
 * **Configure custom macros without taking up a macro slot**
 * **Configure a unit frame blacklist**
@@ -55,7 +56,7 @@ In addition to the unit to cast on, you can also configure (optional) modifiers 
 
 ### Configure binding load conditions
 
-You can configure the exact load conditions on a per-target basis, through this interface you can specify the exact requirements that have to be met for this binding to activate. For example you can configure a binding to only load when a talent has been selected, when you're in war mode, or when you're in a specific shapeshift form.
+You can configure the exact load conditions on a per-target basis, through this interface you can specify the exact requirements that have to be met for this binding to activate. For example you can configure a binding to only load when a talent has been selected, when you're in war mode, or when you're in a specific zone.
 
 A full list of all available load conditions:
 
@@ -66,17 +67,29 @@ A full list of all available load conditions:
 * **Talent specialization** checks if you are in the selected talent specialization(s)
 * **Talent selected** checks if you have the selected talent(s) active
 * **PvP talent selected** checks if you have the selected PvP talent(s) active
-* **Stance** (or **Form**) checks if you are in the selected stance(s) or shapeshift form(s)
 * **War Mode** checks if you are in the selected War Mode state
 * **Covenant selected** checks if you are in one of the selected convenant(s)
-* **Combat** checks if you are in the selected combat state
+* **(not) in zone(s)** checks if you are (not) in the specified zone(s)
 * **Spell known** checks if you can currently cast the specified spell or ability
 * **In group** checks if you are in the specified group type (solo, party, raid)
 * **Instance type** checks if you are in the specified instance type(s) (none, arena, battleground, dungeon, raid)
 * **Player in group** checks if the specified player is in your group
-* **Pet** checks if your pet is (in)active
 
 ![Binding load conditions](https://i.imgur.com/vbqRYuw.png)
+
+### Configure macro conditionals
+
+These map directly to the macro conditionals found [here](https://wow.gamepedia.com/Macro_conditionals). Most of them are negatable, allowing for nearly all conditional functionality macros offer without writing a single line of text.
+
+* **Stance** (or **Form**) checks if you are in the selected stance(s) or shapeshift form(s)
+* **Combat** checks if you are in the selected combat state
+* **Pet** checks if your pet is active
+* **Stealth** checks if you are stealthed
+* **Mounted** checks if you are  mounted
+* **Outdoors** checks if you are outdoors
+* **Swimming** checks if you are swimming
+* **Flying** checks if you are flying
+* **Flyable** checks if you are in an area that permits flying
 
 ### Configure multiple bindings on the same keybind
 
