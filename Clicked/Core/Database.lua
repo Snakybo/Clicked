@@ -809,7 +809,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 	-- 0.17.x to 0.18.0
 	if string.sub(from, 1, 4) == "0.17" then
 		for _, binding in ipairs(profile.bindings) do
-			binding.action.macroName = ""
+			binding.action.macroName = L["Run custom macro"]
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
 			if binding.type == Addon.BindingTypes.MACRO then
