@@ -34,15 +34,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Removed
 
 - Remove the macro mode dropdown, the "Run first" and "Run last" behavior can now be achieved by modifying the action group
-- Remove the binding type dropdown
-- Remove unitframe local and shared macros from the binding status page
-- Remove the local generated macro from the binding status page
 
 ### Changed
 
 - Save spells and items as ID instead of name
 - Separate macro conditions from load conditions
-- Move the binding type dropdown to the right click context menu
+- Replace the binding type dropdown with a the right click context menu option
 - Hide binding status page if the binding is not loaded
 - Hide binding status page from target/menu bindings
 - Simplify the binding status page, remove the "local" macro and condense the related bindings into one list
