@@ -29,6 +29,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Fix various issues with binding display names
 - Improve behavior of target spell and item text field shift-clicks
 - Fix shared binding options being changable during combat
+- Fix custom macros that call protected functions not working [#57]
 
 ### Removed
 
@@ -669,6 +670,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#57]: https://github.com/Snakybo/Clicked/issues/57
 [#52]: https://github.com/Snakybo/Clicked/issues/52
 [#51]: https://github.com/Snakybo/Clicked/issues/51
 [#50]: https://github.com/Snakybo/Clicked/issues/50
