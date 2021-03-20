@@ -1,14 +1,10 @@
 --- @type ClickedInternal
 local _, Addon = ...
 
-Addon.STOP_CASTING_BUTTON_NAME = "ClickedStopCastingButton"
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
 --- @type table
 local macroFrameHandler
-
---- @type table
-local stopCastingButton
 
 -- Local support functions
 
@@ -29,15 +25,6 @@ local function CreateStateDriverAttribute(frame, state, condition)
 	]])
 
 	RegisterStateDriver(frame, state, condition)
-end
-
-local function EnsureStopCastingButton()
-	if stopCastingButton ~= nil then
-		return
-	end
-
-	stopCastingButton = CreateFrame("Button", Addon.STOP_CASTING_BUTTON_NAME, nil, "SecureActionButtonTemplate")
-	stopCastingButton:SetAttribute("type", "stop")
 end
 
 local function EnsureMacroFrameHandler()
@@ -161,7 +148,6 @@ function Addon:ProcessCommands(commands)
 	--- @type table<string,string>
 	local newMacroFrameHandlerAttributes = {}
 
-	EnsureStopCastingButton()
 	EnsureMacroFrameHandler()
 
 	-- Unregister all current keybinds

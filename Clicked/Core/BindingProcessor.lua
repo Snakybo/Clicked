@@ -1028,7 +1028,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		end
 
 		-- add a command to remove the blue casting cursor
-		table.insert(lines, "/click " .. Addon.STOP_CASTING_BUTTON_NAME)
+		table.insert(lines, "/stopspelltarget")
 	end
 
 	-- Add all action groups in order
