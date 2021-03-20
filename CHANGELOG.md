@@ -45,6 +45,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Move the binding type dropdown to the right click context menu
 - Hide binding status page if the binding is not loaded
 - Hide binding status page from target/menu bindings
+- Simplify the binding status page, remove the "local" macro and condense the related bindings into one list
 - Hide binding action page from "Target the unit" and "Open the unit menu" binding types
 - Slightly increase width of the binding configuration window
 - Rework the binding templates list, it now lists presets of all available binding types, to replace the binding type dropdown

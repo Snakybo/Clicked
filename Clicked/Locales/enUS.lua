@@ -156,6 +156,7 @@ L["Scenario"] = true
 L["Dungeon"] = true
 L["Raid"] = true
 L["Not loaded"] = true
+L["Generated hovercast macro"] = true
 L["Generated macro"] = true
 L["Unit frame macro"] = true
 L["%d related binding(s)"] = true

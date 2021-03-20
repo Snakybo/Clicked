@@ -1572,59 +1572,84 @@ end
 
 local function DrawBindingStatusPage(container, binding)
 	local function DrawStatus(group, bindings, interactionType)
+		if #bindings == 0 then
+			return
+		end
+
 		-- output of full macro
 		do
 			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
-			widget:SetLabel(L["Generated macro"])
+
+			if interactionType == Addon.InteractionType.HOVERCAST then
+				widget:SetLabel(L["Generated hovercast macro"])
+			else
+				widget:SetLabel(L["Generated macro"])
+			end
+
 			widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
 			group:AddChild(widget)
 		end
+	end
 
-		if #bindings > 1 then
-			do
-				local widget = AceGUI:Create("Heading")
-				widget:SetFullWidth(true)
-				widget:SetText(L["%d related binding(s)"]:format(#bindings - 1))
+	local hovercast = {}
+	local regular = {}
+	local all = {}
 
-				group:AddChild(widget)
+	for _, other in Clicked:IterateActiveBindings() do
+		if other.keybind == binding.keybind then
+			local valid = false
+
+			if binding.targets.hovercast.enabled and other.targets.hovercast.enabled then
+				table.insert(hovercast, other)
+				valid = true
 			end
 
-			for _, other in ipairs(bindings) do
-				if other ~= binding then
-					do
-						local function OnClick()
-							tree:SelectByBindingOrGroup(other)
-						end
+			if binding.targets.regular.enabled and other.targets.regular.enabled then
+				table.insert(regular, other)
+				valid = true
+			end
 
-						local name, icon = Addon:GetBindingNameAndIcon(other)
-
-						local widget = AceGUI:Create("InteractiveLabel")
-						widget:SetFontObject(GameFontHighlight)
-						widget:SetText(name)
-						widget:SetImage(icon)
-						widget:SetFullWidth(true)
-						widget:SetCallback("OnClick", OnClick)
-
-						group:AddChild(widget)
-					end
-				end
+			if valid then
+				table.insert(all, other)
 			end
 		end
 	end
 
-	if binding.targets.regular.enabled then
-		local bindings = {}
+	DrawStatus(container, hovercast, Addon.InteractionType.HOVERCAST)
+	DrawStatus(container, regular, Addon.InteractionType.REGULAR)
 
-		for _, other in Clicked:IterateActiveBindings() do
-			if other.keybind == binding.keybind and other.targets.regular.enabled then
-				table.insert(bindings, other)
-			end
+	if #all > 1 then
+		do
+			local widget = AceGUI:Create("Heading")
+			widget:SetFullWidth(true)
+			widget:SetText(L["%d related binding(s)"]:format(#all - 1))
+
+			container:AddChild(widget)
 		end
 
-		DrawStatus(container, bindings, Addon.InteractionType.REGULAR)
+		for _, other in ipairs(all) do
+			if other ~= binding then
+				do
+					local function OnClick()
+						tree:SelectByBindingOrGroup(other)
+					end
+
+					local name, icon = Addon:GetBindingNameAndIcon(other)
+
+					local widget = AceGUI:Create("InteractiveLabel")
+					widget:SetFontObject(GameFontHighlight)
+					widget:SetText(name)
+					widget:SetImage(icon)
+					widget:SetFullWidth(true)
+					widget:SetCallback("OnClick", OnClick)
+
+					container:AddChild(widget)
+				end
+			end
+		end
 	end
 end
 
@@ -1794,7 +1819,7 @@ local function DrawBinding(container)
 
 
 		if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
-			if binding.targets.regular.enabled and Addon:CanBindingLoad(binding) then
+			if Addon:CanBindingLoad(binding) then
 				table.insert(items, {
 					text = L["Status"],
 					value = "status"
