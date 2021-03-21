@@ -146,7 +146,7 @@ See the GitHub [Issue tracker](https://github.com/Snakybo/Clicked/issues).
 
 Please include the output from `/cc dump` if you have any issues, if there are any specific binding that are causing issues please include information about which ones are problematic.
 
-See the [discussions](https://github.com/Snakybo/Clicked/discussions) page for sugestions or questions.
+See the [discussions](https://github.com/Snakybo/Clicked/discussions) page for suggestions or questions.
 
 ## Changelog
 
