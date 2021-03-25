@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Update retail icons with new ones from 9.0.5
 
+### Fixed
+
+- Fix binding config occasionally resetting input field text whilst typing
+
 ## [1.0.0] - 2021-03-21
 
 ### Added

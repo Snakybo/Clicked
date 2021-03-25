@@ -478,7 +478,7 @@ function Addon:GetBindingNameAndIcon(binding)
 	return name, icon
 end
 
---- @param nameOrEquipmentSlotId string|integer
+--- @param input string|integer
 --- @return string itemName
 --- @return string itemLink
 --- @return number itemQuality
@@ -496,18 +496,24 @@ end
 --- @return number expacID
 --- @return number setID
 --- @return boolean isCraftingReagent
-function Addon:GetItemInfo(nameOrEquipmentSlotId)
-	local inventorySlotId = tonumber(nameOrEquipmentSlotId)
+function Addon:GetItemInfo(input)
+	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
-	if inventorySlotId ~= nil and inventorySlotId >= 0 and inventorySlotId <= 19 then
-		local itemId = GetInventoryItemID("player", inventorySlotId)
+	local itemId = tonumber(input)
 
-		if itemId ~= nil then
-			return GetItemInfo(itemId)
+	if itemId ~= nil then
+		input = itemId
+
+		if itemId >= 0 and itemId <= 19 then
+			input = GetInventoryItemID("player", itemId)
+
+			if input == nil then
+				return nil
+			end
 		end
 	end
 
-	return GetItemInfo(nameOrEquipmentSlotId)
+	return GetItemInfo(input)
 end
 
 --- Get the ID for the specified item.

@@ -20,7 +20,7 @@ local spellFlyOutButtons = {}
 
 local iconCache = nil
 local showIconPicker = false
-local waitingForItemInfo = false
+local waitingForItemInfo = {}
 
 local root
 local tree
@@ -144,6 +144,35 @@ local function RegisterTooltip(widget, text, subText)
 
 	widget:SetCallback("OnEnter", OnEnter)
 	widget:SetCallback("OnLeave", OnLeave)
+end
+
+local function GetSpellItemNameAndId(input, mode)
+	local name
+	local id
+
+	if type(input) == "number" and tonumber(input) >= 20 then
+		id = input
+
+		if mode == Addon.BindingTypes.SPELL then
+			name = GetSpellInfo(id)
+		elseif mode == Addon.BindingTypes.ITEM then
+			name = GetItemInfo(id)
+			waitingForItemInfo[input] = name == nil
+		end
+	elseif type(input) == "number" and tonumber(input) < 20 then
+		name = input
+	elseif type(input) == "string" then
+		name = input
+
+		if mode == Addon.BindingTypes.SPELL then
+			id = select(7, GetSpellInfo(name))
+		elseif mode == Addon.BindingTypes.ITEM then
+			id = Addon:GetItemId(name)
+			waitingForItemInfo[input] = id == nil
+		end
+	end
+
+	return name, id
 end
 
 -- Spell book integration
@@ -523,77 +552,40 @@ local function DrawSpellItemSelection(container, action, mode)
 		local group = Addon:GUI_InlineGroup(mode == Addon.BindingTypes.SPELL and L["Target Spell"] or L["Target Item"])
 		container:AddChild(group)
 
-		local hasId = false
+		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
+
+		if id ~= nil then
+			action[valueKey] = id
+		end
 
 		-- edit box
 		do
 			local widget = nil
-			local text = action[valueKey]
-
-			if type(text) == "number" and tonumber(text) >= 20 then
-				if mode == Addon.BindingTypes.SPELL then
-					text = GetSpellInfo(text)
-				else
-					text = GetItemInfo(text)
-
-					if text == nil then
-						waitingForItemInfo = true
-					end
-				end
-
-				hasId = true
-			elseif type(text) == "string" then
-				if mode == Addon.BindingTypes.SPELL then
-					local id = select(7, GetSpellInfo(text))
-
-					if id ~= nil then
-						action[valueKey] = id
-						hasId = true
-					end
-				else
-					local id = Addon:GetItemId(text)
-
-					if id == nil then
-						waitingForItemInfo = true
-					else
-						action[valueKey] = id
-						hasId = true
-					end
-				end
-			end
 
 			local function OnEnterPressed(frame, event, value)
 				if InCombatLockdown() then
-					widget:SetText(text)
+					widget:SetText(name)
 					widget:ClearFocus()
 					return
 				end
 
-				if value == text then
+				if value == name then
 					widget:ClearFocus()
 					return
 				end
 
-				action[valueKey] = Addon:TrimString(value)
+				value = Addon:TrimString(value)
 
-				if not Addon:IsStringNilOrEmpty(action[valueKey]) then
-					local id
+				if not Addon:IsStringNilOrEmpty(value) then
+					value = tonumber(value) or value
+					local _, newId = GetSpellItemNameAndId(value, mode)
 
-					if mode == Addon.BindingTypes.SPELL then
-						id = select(7, GetSpellInfo(value))
-					else
-						if tonumber(value) ~= nil then
-							id = tonumber(value)
-						else
-							id = Addon:GetItemId(value)
-						end
-					end
-
-					if id ~= nil and id > 0 then
-						action[valueKey] = id
+					if newId ~= nil then
+						value = newId
 					end
 				end
 
+				action[valueKey] = value
 				Clicked:ReloadActiveBindings()
 			end
 
@@ -601,22 +593,22 @@ local function DrawSpellItemSelection(container, action, mode)
 				local itemLink = string.match(value, "item[%-?%d:]+")
 				local spellLink = string.match(value, "spell[%-?%d:]+")
 				local talentLink = string.match(value, "talent[%-?%d:]+")
-				local id = nil
+				local linkId = nil
 
 				if not Addon:IsStringNilOrEmpty(itemLink) then
 					local match = string.match(itemLink, "(%d+)")
-					id = tonumber(match)
+					linkId = tonumber(match)
 				elseif not Addon:IsStringNilOrEmpty(spellLink) then
 					local match = string.match(spellLink, "(%d+)")
-					id = tonumber(match)
+					linkId = tonumber(match)
 				elseif not Addon:IsStringNilOrEmpty(talentLink) then
 					local match = string.match(talentLink, "(%d+)")
-					id = tonumber(select(6, GetTalentInfoByID(match)))
+					linkId = tonumber(select(6, GetTalentInfoByID(match)))
 				end
 
-				if id ~= nil and id > 0 then
-					action[valueKey] = id
-					value = mode == Addon.BindingTypes.SPELL and GetSpellInfo(id) or GetItemInfo(id)
+				if linkId ~= nil and linkId > 0 then
+					action[valueKey] = linkId
+					value = mode == Addon.BindingTypes.SPELL and GetSpellInfo(linkId) or GetItemInfo(linkId)
 
 					widget:SetText(value)
 					widget:ClearFocus()
@@ -626,11 +618,11 @@ local function DrawSpellItemSelection(container, action, mode)
 			end
 
 			widget = AceGUI:Create("EditBox")
-			widget:SetText(text)
+			widget:SetText(name)
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 
-			if hasId then
+			if id ~= nil then
 				widget:SetRelativeWidth(0.85)
 			else
 				widget:SetFullWidth(true)
@@ -646,7 +638,7 @@ local function DrawSpellItemSelection(container, action, mode)
 		end
 
 		-- spell id
-		if hasId then
+		if id ~= nil then
 			local widget = Addon:GUI_Label(tostring(action[valueKey]))
 			widget:SetJustifyH("RIGHT")
 			widget:SetRelativeWidth(0.15)
@@ -1986,24 +1978,34 @@ function Addon:BindingConfig_Open()
 		Addon:NotifyCombatLockdown()
 	end
 
+	wipe(waitingForItemInfo)
+
 	DrawHeader(root)
 	DrawTreeView(root)
 
 	Addon:BindingConfig_Redraw()
 end
 
---- @param itemInfoReceived nil|boolean
-function Addon:BindingConfig_Redraw(itemInfoReceived)
+--- @param itemId number
+--- @param success boolean
+function Addon:BindingConfig_ItemInfoReceived(itemId, success)
+	if success == true then
+		for item in pairs(waitingForItemInfo) do
+			if tonumber(item) == itemId or item == GetItemInfo(itemId) then
+				waitingForItemInfo[item] = nil
+				self:BindingConfig_Redraw()
+				break
+			end
+		end
+	elseif success == nil then
+		-- if the item doesn't exist, just delete it from the queue if it's present
+		waitingForItemInfo[itemId] = nil
+	end
+end
+
+function Addon:BindingConfig_Redraw()
 	if root == nil or not root:IsVisible() then
 		return
-	end
-
-	if itemInfoReceived and not waitingForItemInfo then
-		return
-	end
-
-	if itemInfoReceived then
-		waitingForItemInfo = false
 	end
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))

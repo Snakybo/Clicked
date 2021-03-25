@@ -95,8 +95,8 @@ local function ADDON_LOADED()
 	Addon:ProcessFrameQueue()
 end
 
-local function GET_ITEM_INFO_RECEIVED()
-	Addon:BindingConfig_Redraw(true)
+local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
+	Addon:BindingConfig_ItemInfoReceived(itemId, success)
 end
 
 local function ZONE_CHANGED_NEW_AREA()
