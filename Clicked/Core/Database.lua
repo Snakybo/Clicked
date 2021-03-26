@@ -188,7 +188,6 @@ end
 
 -- Private addon API
 
----
 --- @return Binding
 function Addon:GetNewBindingTemplate()
 	local template = {
@@ -210,14 +209,14 @@ function Addon:GetNewBindingTemplate()
 		},
 		targets = {
 			hovercast = {
-				enabled = false,
 				hostility = Addon.TargetHostility.ANY,
 				vitals = Addon.TargetVitals.ANY
 			},
 			regular = {
-				enabled = true,
 				Addon:GetNewBindingTargetTemplate()
-			}
+			},
+			hovercastEnabled = false,
+			regularEnabled = true
 		},
 		load = {
 			never = false,
