@@ -446,7 +446,7 @@ local function Button_OnEnter(frame)
 		text = text .. "\n\n"
 		text = text .. L["Targets"] .. "\n"
 
-		if binding.targets.hovercast.enabled then
+		if binding.targets.hovercastEnabled then
 			local str = Addon:GetLocalizedTargetString(binding.targets.hovercast)
 
 			if #str > 0 then
@@ -457,7 +457,7 @@ local function Button_OnEnter(frame)
 			text = text .. "|cFFFFFFFF* " .. str .. "|r\n"
 		end
 
-		if binding.targets.regular.enabled then
+		if binding.targets.regularEnabled then
 			for i, target in ipairs(binding.targets.regular) do
 				local str = Addon:GetLocalizedTargetString(target)
 				text = text .. "|cFFFFFFFF" .. i .. ". " .. str .. "|r\n"

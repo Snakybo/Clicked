@@ -199,12 +199,12 @@ end
 local function ConstructActions(binding, interactionType)
 	local actions = {}
 
-	if binding.targets.hovercast.enabled and interactionType == Addon.InteractionType.HOVERCAST then
+	if binding.targets.hovercastEnabled and interactionType == Addon.InteractionType.HOVERCAST then
 		local action = ConstructAction(binding, binding.targets.hovercast)
 		table.insert(actions, action)
 	end
 
-	if binding.targets.regular.enabled and interactionType == Addon.InteractionType.REGULAR then
+	if binding.targets.regularEnabled and interactionType == Addon.InteractionType.REGULAR then
 		for _, target in ipairs(binding.targets.regular) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
@@ -378,12 +378,12 @@ local function GenerateBuckets(bindings)
 	for _, binding in ipairs(bindings) do
 		local key = binding.keybind
 
-		if binding.targets.hovercast.enabled then
+		if binding.targets.hovercastEnabled then
 			hovercastBucket[key] = hovercastBucket[key] or {}
 			Insert(hovercastBucket[key], binding)
 		end
 
-		if binding.targets.regular.enabled then
+		if binding.targets.regularEnabled then
 			regularBucket[key] = regularBucket[key] or {}
 			Insert(regularBucket[key], binding)
 		end
@@ -427,12 +427,12 @@ function Clicked:EvaluateBindingMacro(binding)
 	local hovercastTarget = nil
 	local regularTarget = nil
 
-	if binding.targets.hovercast.enabled then
+	if binding.targets.hovercastEnabled then
 		local _, hovercast = Addon:GetMacroForBindings(bindings, Addon.InteractionType.HOVERCAST)
 		_, hovercastTarget = SecureCmdOptionParse(hovercast)
 	end
 
-	if binding.targets.regular.enabled then
+	if binding.targets.regularEnabled then
 		local _, regular = Addon:GetMacroForBindings(bindings, Addon.InteractionType.REGULAR)
 		_, regularTarget = SecureCmdOptionParse(regular)
 	end
@@ -509,17 +509,18 @@ function Clicked:GetBindingsForUnit(unit)
 		-- hovercast
 		do
 			local hovercast = binding.targets.hovercast
+			local enabled = binding.targets.hovercastEnabled
 
-			if hovercast.enabled and GetMouseFocus() ~= WorldFrame and IsTargetValid(hovercast) then
+			if enabled and GetMouseFocus() ~= WorldFrame and IsTargetValid(hovercast) then
 				return true
 			end
 		end
 
 		-- regular
 		do
-			local regular = binding.targets.regular
+			local enabled = binding.targets.regularEnabled
 
-			if regular.enabled then
+			if enabled then
 				local _, target = Clicked:EvaluateBindingMacro(binding)
 
 				if target ~= nil and units[target] then
@@ -601,7 +602,7 @@ function Addon:CanBindingLoad(binding)
 	do
 		local targets = binding.targets
 
-		if not targets.hovercast.enabled and not targets.regular.enabled then
+		if not targets.hovercastEnabled and not targets.regularEnabled then
 			return false
 		end
 	end

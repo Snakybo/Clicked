@@ -277,6 +277,10 @@ function Addon:ProfileOptions_Open()
 	InterfaceOptionsFrame_OpenToCategory(panel)
 end
 
+--- @param prefix string
+--- @param message string
+--- @param distribution string
+--- @param sender string
 function Addon:OnCommReceived(prefix, message, distribution, sender)
 	if InCombatLockdown() then
 		return
@@ -311,6 +315,8 @@ function Addon:OnCommReceived(prefix, message, distribution, sender)
 	AceConfigRegistry:NotifyChange("Clicked/Profile")
 end
 
+--- @param sent number
+--- @param total number
 function Addon:OnCommProgress(sent, total)
 	shareBytesSent = sent
 	shareBytesTotal = total

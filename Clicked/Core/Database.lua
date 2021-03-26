@@ -54,13 +54,11 @@ function Clicked:GetDatabaseDefaults()
 					hide = false
 				}
 			},
-			groups = {
-				next = 1
-			},
-			bindings = {
-				next = 1
-			},
-			blacklist = {}
+			groups = {},
+			bindings = {},
+			blacklist = {},
+			nextGroupId = 1,
+			nextBindingId = 1
 		}
 	}
 
@@ -84,8 +82,8 @@ end
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
 --- @return Group
 function Clicked:CreateGroup()
-	local identifier = Addon.db.profile.groups.next
-	Addon.db.profile.groups.next = Addon.db.profile.groups.next + 1
+	local identifier = Addon.db.profile.nextGroupId
+	Addon.db.profile.nextGroupId = Addon.db.profile.nextGroupId + 1
 
 	local group = {
 		name = L["New Group"],
@@ -286,8 +284,8 @@ end
 
 --- @return integer
 function Addon:GetNextBindingIdentifier()
-	local identifier = Addon.db.profile.bindings.next
-	Addon.db.profile.bindings.next = Addon.db.profile.bindings.next + 1
+	local identifier = Addon.db.profile.nextBindingId
+	Addon.db.profile.nextBindingId = Addon.db.profile.nextBindingId + 1
 
 	return identifier
 end
@@ -902,6 +900,25 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.0.0")
+	end
+
+	-- 1.0.0 to 1.1.0
+	if string.sub(from, 1, 3) == "1.0" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.targets.regularEnabled = binding.targets.regular.enabled
+			binding.targets.regular.enabled = nil
+
+			binding.targets.hovercastEnabled = binding.targets.hovercast.enabled
+			binding.targets.hovercast.enabled = nil
+		end
+
+		profile.nextGroupId = profile.groups.next
+		profile.groups.next = nil
+
+		profile.nextBindingId = profile.bindings.next
+		profile.bindings.next = nil
+
+		FinalizeVersionUpgrade("1.1.0")
 	end
 
 	profile.version = Clicked.VERSION

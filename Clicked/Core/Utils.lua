@@ -384,11 +384,13 @@ function Addon:GetBindingValue(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		return GetSpellInfo(binding.action.spellValue) or binding.action.spellValue
+		local spell = binding.action.spellValue
+		return self:GetSpellInfo(spell) or spell
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
-		return GetItemInfo(binding.action.itemValue) or binding.action.itemValue
+		local item = binding.action.itemValue
+		return self:GetItemInfo(item) or item
 	end
 
 	if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
@@ -518,8 +520,10 @@ end
 
 --- Get the ID for the specified item.
 --- @param name string
---- @return number
+--- @return integer
 function Addon:GetItemId(name)
+	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
+
 	local itemName, link = Addon:GetItemInfo(name)
 
 	if itemName == nil then
@@ -779,27 +783,24 @@ end
 --- the type or keybind of a binding. Some bindings only support hovercast, e.g. mouse button 1 and 2.
 --- Other binding types, such as `MACRO` do not support specifying multiple targets.
 ---
---- @param targets table
+--- @param targets Binding.Targets
 --- @param keybind string
 --- @param type string
 function Addon:EnsureSupportedTargetModes(targets, keybind, type)
-	local hovercast = targets.hovercast
-	local regular = targets.regular
-
 	if Addon:IsRestrictedKeybind(keybind) or type == Addon.BindingTypes.UNIT_SELECT or type == Addon.BindingTypes.UNIT_MENU then
-		hovercast.enabled = true
-		regular.enabled = false
+		targets.hovercastEnabled = true
+		targets.regularEnabled = false
 	end
 
 	if type == Addon.BindingTypes.MACRO then
-		while #regular > 0 do
-			table.remove(regular, 1)
+		while #targets.regular > 0 do
+			table.remove(targets.regular, 1)
 		end
 
-		regular[1] = Addon:GetNewBindingTargetTemplate()
+		targets.regular[1] = Addon:GetNewBindingTargetTemplate()
 
-		hovercast.hostility = Addon.TargetHostility.ANY
-		hovercast.vitals = Addon.TargetVitals.ANY
+		targets.hovercast.hostility = Addon.TargetHostility.ANY
+		targets.hovercast.vitals = Addon.TargetVitals.ANY
 	end
 end
 

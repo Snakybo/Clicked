@@ -18,10 +18,10 @@
 --- @field public version string
 --- @field public options Profile.Options
 --- @field public groups Group[]
---- @field public groups.next integer
 --- @field public bindings Binding[]
---- @field public bindings.next integer
 --- @field public blacklist string[]
+--- @field public nextGroupId integer
+--- @field public nextBindingId integer
 
 --- @class Profile.Options
 --- @field public onKeyDown boolean
@@ -39,27 +39,34 @@
 --- @field public identifier integer
 --- @field public keybind string
 --- @field public parent Group
---- @field public action table
---- @field public action.spellValue string
---- @field public action.itemValue string
---- @field public action.macroValue string
---- @field public action.interrupt boolean
---- @field public action.executionOrder integer
---- @field public action.allowStartAttack boolean
---- @field public action.cancelQueuedSpell boolean
---- @field public action.targetUnitAfterCast boolean
---- @field public targets table
---- @field public targets.hovercast Binding.Target
---- @field public targets.hovercast.enabled boolean
---- @field public targets.regular Binding.Target[]
---- @field public targets.regular.enabled boolean
+--- @field public action Binding.Action
+--- @field public targets Binding.Targets
 --- @field public load Binding.Load
 --- @field public integrations table<string,any>
+
+--- @class Binding.Targets
+--- @field public hovercast Binding.Target
+--- @field public hovercastEnabled boolean
+--- @field public regular Binding.Target[]
+--- @field public regularEnabled boolean
 
 --- @class Binding.Target
 --- @field public unit string
 --- @field public hostility string
 --- @field public vitals string
+
+--- @class Binding.Action
+--- @field public spellValue string|integer
+--- @field public spellSubValue string
+--- @field public itemValue string|integer
+--- @field public macroValue string
+--- @field public macroName string
+--- @field public macroIcon string|integer
+--- @field public interrupt boolean
+--- @field public executionOrder integer
+--- @field public allowStartAttack boolean
+--- @field public cancelQueuedSpell boolean
+--- @field public targetUnitAfterCast boolean
 
 --- @class Binding.Load
 --- @field public never boolean

@@ -31,6 +31,7 @@ local didOpenSpellbook
 
 -- Utility functions
 
+--- @return Binding
 local function GetCurrentBinding()
 	local item = tree:GetSelectedItem()
 
@@ -41,6 +42,7 @@ local function GetCurrentBinding()
 	return nil
 end
 
+--- @return Group
 local function GetCurrentGroup()
 	local item = tree:GetSelectedItem()
 
@@ -51,10 +53,14 @@ local function GetCurrentGroup()
 	return nil
 end
 
+--- @param binding Binding
+--- @return boolean
 local function CanEnableHovercastTargetMode(binding)
 	return true
 end
 
+--- @param binding Binding
+--- @return boolean
 local function CanEnableRegularTargetMode(binding)
 	if Addon:IsRestrictedKeybind(binding.keybind) or binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
 		return false
@@ -63,6 +69,8 @@ local function CanEnableRegularTargetMode(binding)
 	return true
 end
 
+--- @param option Binding.TriStateLoadOption
+--- @return string[]|number[]
 local function GetTriStateLoadOptionValue(option)
 	if option.selected == 1 then
 		return { option.single }
@@ -73,6 +81,9 @@ local function GetTriStateLoadOptionValue(option)
 	return nil
 end
 
+--- @param classNames string[]
+--- @param specIndices integer[]
+--- @return integer[]
 local function GetRelevantSpecializationIds(classNames, specIndices)
 	local specializationIds = {}
 
@@ -114,6 +125,9 @@ end
 
 -- Tooltips
 
+--- @param widget table
+--- @param text string
+--- @param subText string|nil
 local function ShowTooltip(widget, text, subText)
 	local tooltip = AceGUI.tooltip
 
@@ -133,6 +147,9 @@ local function HideTooltip()
 	tooltip:Hide()
 end
 
+--- @param widget table
+--- @param text string
+--- @param subText string|nil
 local function RegisterTooltip(widget, text, subText)
 	local function OnEnter()
 		ShowTooltip(widget, text, subText)
@@ -146,6 +163,11 @@ local function RegisterTooltip(widget, text, subText)
 	widget:SetCallback("OnLeave", OnLeave)
 end
 
+--- @param input string|number
+--- @param mode string
+--- @return string name
+--- @return integer id
+--- @return string subtext
 local function GetSpellItemNameAndId(input, mode)
 	local name
 	local id
@@ -213,15 +235,15 @@ local function HijackSpellBookButtons(base)
 			button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 			button:SetID(parent:GetID())
 
-			button:SetScript("OnEnter", function(self, motion)
+			button:SetScript("OnEnter", function(_, motion)
 				SpellButton_OnEnter(parent, motion)
 			end)
 
-			button:SetScript("OnLeave", function(self)
+			button:SetScript("OnLeave", function()
 				SpellButton_OnLeave(parent)
 			end)
 
-			button:SetScript("OnClick", function(self, btn)
+			button:SetScript("OnClick", function()
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
@@ -372,6 +394,9 @@ local function EnsureIconCache()
 	table.sort(iconCache)
 end
 
+--- @param container table
+--- @param data Binding.Action
+--- @param key string
 local function DrawIconPicker(container, data, key)
 	EnsureIconCache()
 
@@ -419,6 +444,12 @@ end
 
 -- Common draw functions
 
+--- @generic T
+--- @param container table
+--- @param title string
+--- @param items table<T,any>
+--- @param order T[]
+--- @param data Binding.LoadOption
 local function DrawDropdownLoadOption(container, title, items, order, data)
 	-- enabled toggle
 	do
@@ -444,11 +475,16 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	end
 end
 
+--- @param container table
+--- @param title string
+--- @param data Binding.LoadOption
+--- @return boolean enabled
+--- @return string input
 local function DrawEditFieldLoadOption(container, title, data)
 	local toggle
 	local input
 
-	-- spell known toggle
+	-- selected
 	do
 		toggle = Addon:GUI_CheckBox(title, data, "selected")
 
@@ -462,7 +498,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 	end
 
 	if data.selected then
-		-- spell known
+		-- input
 		do
 			input = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
 			input:SetRelativeWidth(0.5)
@@ -474,6 +510,12 @@ local function DrawEditFieldLoadOption(container, title, data)
 	return toggle, input
 end
 
+--- @generic T
+--- @param container table
+--- @param title string
+--- @param items table<T,any>
+--- @param order T[]
+--- @param data Binding.TriStateLoadOption
 local function DrawTristateLoadOption(container, title, items, order, data)
 	assert(type(data) == "table", "bad argument #5, expected table but got " .. type(data))
 
@@ -544,6 +586,9 @@ end
 
 -- Binding action page and components
 
+--- @param container table
+--- @param action Binding.Action
+--- @param mode string
 local function DrawSpellItemSelection(container, action, mode)
 	local valueKey = mode == Addon.BindingTypes.SPELL and "spellValue" or "itemValue"
 
@@ -562,7 +607,7 @@ local function DrawSpellItemSelection(container, action, mode)
 		do
 			local widget = nil
 
-			local function OnEnterPressed(frame, event, value)
+			local function OnEnterPressed(_, _, value)
 				if InCombatLockdown() then
 					widget:SetText(name)
 					widget:ClearFocus()
@@ -589,7 +634,7 @@ local function DrawSpellItemSelection(container, action, mode)
 				Clicked:ReloadActiveBindings()
 			end
 
-			local function OnTextChanged(frame, event, value)
+			local function OnTextChanged(_, _, value)
 				local itemLink = string.match(value, "item[%-?%d:]+")
 				local spellLink = string.match(value, "spell[%-?%d:]+")
 				local talentLink = string.match(value, "talent[%-?%d:]+")
@@ -673,6 +718,9 @@ local function DrawSpellItemSelection(container, action, mode)
 	end
 end
 
+--- @param container table
+--- @param targets Binding.Target[]
+--- @param action Binding.Action
 local function DrawMacroSelection(container, targets, action)
 	-- macro name and icon
 	do
@@ -715,7 +763,7 @@ local function DrawMacroSelection(container, targets, action)
 		container:AddChild(group)
 
 		-- help text
-		if targets.hovercast.enabled and not targets.regular.enabled then
+		if targets.hovercastEnabled and not targets.regularEnabled then
 			local widget = Addon:GUI_Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
@@ -732,6 +780,8 @@ local function DrawMacroSelection(container, targets, action)
 	end
 end
 
+--- @param container table
+--- @param action Binding.Action
 local function DrawAppendSelection(container, action)
 	-- macro name and icon
 	do
@@ -784,6 +834,8 @@ local function DrawAppendSelection(container, action)
 	end
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawActionGroupOptions(container, binding)
 	local function SortFunc(left, right)
 		if left.type == Addon.BindingTypes.MACRO and right.type ~= Addon.BindingTypes.MACRO then
@@ -903,6 +955,8 @@ local function DrawActionGroupOptions(container, binding)
 	end
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawSharedOptions(container, binding)
 	local function IsSharedDataSet(key)
 		for _, other in Clicked:IterateActiveBindings() do
@@ -975,6 +1029,8 @@ local function DrawSharedOptions(container, binding)
 	CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawIntegrationsOptions(container, binding)
 	local group = Addon:GUI_InlineGroup(L["External Integrations"])
 	local hasAnyChildren = false
@@ -1003,6 +1059,8 @@ local function DrawIntegrationsOptions(container, binding)
 	end
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawBindingActionPage(container, binding)
 	local type = binding.type
 
@@ -1045,6 +1103,10 @@ end
 
 -- Binding target page and components
 
+--- @param container table
+--- @param targets Binding.Target[]
+--- @param enabled boolean
+--- @param index integer
 local function DrawTargetSelectionUnit(container, targets, enabled, index)
 	local target
 
@@ -1110,6 +1172,9 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 	container:AddChild(widget)
 end
 
+--- @param container table
+--- @param enabled boolean
+--- @param target Binding.Target
 local function DrawTargetSelectionHostility(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetHostility()
 	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "hostility")
@@ -1119,6 +1184,9 @@ local function DrawTargetSelectionHostility(container, enabled, target)
 	container:AddChild(widget)
 end
 
+--- @param container table
+--- @param enabled boolean
+--- @param target Binding.Target
 local function DrawTargetSelectionVitals(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetVitals()
 	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "vitals")
@@ -1128,6 +1196,8 @@ local function DrawTargetSelectionVitals(container, enabled, target)
 	container:AddChild(widget)
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawBindingTargetPage(container, binding)
 	if Addon:IsRestrictedKeybind(binding.keybind) then
 		local widget = Addon:GUI_Label(L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
@@ -1141,23 +1211,25 @@ local function DrawBindingTargetPage(container, binding)
 	-- hovercast targets
 	do
 		local hovercast = binding.targets.hovercast
+		local enabled = binding.targets.hovercastEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(L["Unit Frame Target"], hovercast, "enabled")
+			local widget = Addon:GUI_ToggleHeading(L["Unit Frame Target"], binding.targets, "hovercastEnabled")
 			widget:SetDisabled(not CanEnableHovercastTargetMode(binding))
 			container:AddChild(widget)
 		end
 
-		DrawTargetSelectionHostility(container, hovercast.enabled and not isMacro, hovercast)
-		DrawTargetSelectionVitals(container, hovercast.enabled and not isMacro, hovercast)
+		DrawTargetSelectionHostility(container, enabled and not isMacro, hovercast)
+		DrawTargetSelectionVitals(container, enabled and not isMacro, hovercast)
 	end
 
 	-- regular targets
 	do
 		local regular = binding.targets.regular
+		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(L["Binding Targets"], regular, "enabled")
+			local widget = Addon:GUI_ToggleHeading(L["Binding Targets"], binding.targets, "regularEnabled")
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
@@ -1168,11 +1240,9 @@ local function DrawBindingTargetPage(container, binding)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
 		else
-			local enabled = regular.enabled
-
 			-- existing targets
 			for i, target in ipairs(regular) do
-				local function OnMove(frame, event)
+				local function OnMove(_, event)
 					if event == "OnMoveUp" then
 						local temp = regular[i - 1]
 						regular[i - 1] = regular[i]
@@ -1194,7 +1264,7 @@ local function DrawBindingTargetPage(container, binding)
 				group:SetCallback("OnMoveUp", OnMove)
 				container:AddChild(group)
 
-				if not binding.targets.hovercast.enabled and target.unit == Addon.TargetUnits.MOUSEOVER and Addon:IsMouseButton(binding.keybind) then
+				if not binding.targets.hovercastEnabled and target.unit == Addon.TargetUnits.MOUSEOVER and Addon:IsMouseButton(binding.keybind) then
 					local widget = Addon:GUI_Label(L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
 					widget:SetFullWidth(true)
 
@@ -1225,6 +1295,9 @@ end
 
 -- Binding macro conditions page and components
 
+--- @param container table
+--- @param form Binding.TriStateLoadOption
+--- @param specIds integer[]
 local function DrawLoadInStance(container, form, specIds)
 	local label = L["Stance"]
 
@@ -1246,6 +1319,8 @@ local function DrawLoadInStance(container, form, specIds)
 	DrawTristateLoadOption(container, label, items, order, form)
 end
 
+--- @param container table
+--- @param combat Binding.LoadOption
 local function DrawLoadCombat(container, combat)
 	local items = {
 		[true] = L["In combat"],
@@ -1260,6 +1335,8 @@ local function DrawLoadCombat(container, combat)
 	DrawDropdownLoadOption(container, COMBAT, items, order, combat)
 end
 
+--- @param container table
+--- @param pet Binding.LoadOption
 local function DrawLoadPet(container, pet)
 	local items = {
 		[true] = L["Pet exists"],
@@ -1274,6 +1351,8 @@ local function DrawLoadPet(container, pet)
 	DrawDropdownLoadOption(container, PET, items, order, pet)
 end
 
+--- @param container table
+--- @param stealth Binding.LoadOption
 local function DrawLoadStealth(container, stealth)
 	local items = {
 		[true] = L["In Stealth"],
@@ -1288,6 +1367,8 @@ local function DrawLoadStealth(container, stealth)
 	DrawDropdownLoadOption(container, L["Stealth"], items, order, stealth)
 end
 
+--- @param container table
+--- @param mounted Binding.LoadOption
 local function DrawLoadMounted(container, mounted)
 	local items = {
 		[true] = L["Mounted"],
@@ -1302,6 +1383,8 @@ local function DrawLoadMounted(container, mounted)
 	DrawDropdownLoadOption(container, L["Mounted"], items, order, mounted)
 end
 
+--- @param container table
+--- @param flying Binding.LoadOption
 local function DrawLoadFlying(container, flying)
 	local items = {
 		[true] = L["Flying"],
@@ -1316,6 +1399,8 @@ local function DrawLoadFlying(container, flying)
 	DrawDropdownLoadOption(container, L["Flying"], items, order, flying)
 end
 
+--- @param container table
+--- @param flyable Binding.LoadOption
 local function DrawLoadFlyable(container, flyable)
 	local items = {
 		[true] = L["Flyable"],
@@ -1330,6 +1415,8 @@ local function DrawLoadFlyable(container, flyable)
 	DrawDropdownLoadOption(container, L["Flyable"], items, order, flyable)
 end
 
+--- @param container table
+--- @param outdoors Binding.LoadOption
 local function DrawLoadOutdoors(container, outdoors)
 	local items = {
 		[true] = L["Outdoors"],
@@ -1344,6 +1431,8 @@ local function DrawLoadOutdoors(container, outdoors)
 	DrawDropdownLoadOption(container, L["Outdoors"], items, order, outdoors)
 end
 
+--- @param container table
+--- @param swimming Binding.LoadOption
 local function DrawLoadSwimming(container, swimming)
 	local items = {
 		[true] = L["Swimming"],
@@ -1358,6 +1447,8 @@ local function DrawLoadSwimming(container, swimming)
 	DrawDropdownLoadOption(container, L["Swimming"], items, order, swimming)
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
 
@@ -1384,6 +1475,8 @@ end
 
 -- Binding load conditions page and components
 
+--- @param container table
+--- @param load Binding.LoadOption
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
@@ -1394,31 +1487,46 @@ local function DrawLoadNeverSelection(container, load)
 	end
 end
 
+--- @param container table
+--- @param class Binding.TriStateLoadOption
 local function DrawLoadClass(container, class)
 	local items, order = Addon:GetLocalizedClasses()
 	DrawTristateLoadOption(container, CLASS, items, order, class)
 end
 
+--- @param container table
+--- @param race Binding.TriStateLoadOption
 local function DrawLoadRace(container, race)
 	local items, order = Addon:GetLocalizedRaces()
 	DrawTristateLoadOption(container, RACE, items, order, race)
 end
 
+--- @param container table
+--- @param specialization Binding.TriStateLoadOption
+--- @param classNames string[]
 local function DrawLoadSpecialization(container, specialization, classNames)
 	local items, order = Addon:GetLocalizedSpecializations(classNames)
 	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
 end
 
+--- @param container table
+--- @param talent Binding.TriStateLoadOption
+--- @param specIds integer[]
 local function DrawLoadTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedTalents(specIds)
 	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
 end
 
+--- @param container table
+--- @param talent Binding.TriStateLoadOption
+--- @param specIds integer[]
 local function DrawLoadPvPTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedPvPTalents(specIds)
 	DrawTristateLoadOption(container, L["PvP talent selected"], items, order, talent)
 end
 
+--- @param container table
+--- @param warMode Binding.LoadOption
 local function DrawLoadWarMode(container, warMode)
 	local items = {
 		[true] = L["War Mode enabled"],
@@ -1433,14 +1541,20 @@ local function DrawLoadWarMode(container, warMode)
 	DrawDropdownLoadOption(container, L["War Mode"], items, order, warMode)
 end
 
+--- @param container table
+--- @param playerNameRealm Binding.LoadOption
 local function DrawLoadPlayerNameRealm(container, playerNameRealm)
 	DrawEditFieldLoadOption(container, L["Player Name-Realm"], playerNameRealm)
 end
 
+--- @param container table
+--- @param spellKnown Binding.LoadOption
 local function DrawLoadSpellKnown(container, spellKnown)
 	DrawEditFieldLoadOption(container, L["Spell known"], spellKnown)
 end
 
+--- @param container table
+--- @param inGroup Binding.LoadOption
 local function DrawLoadInGroup(container, inGroup)
 	local items = {
 		IN_GROUP_PARTY_OR_RAID = L["In a party or raid group"],
@@ -1459,10 +1573,14 @@ local function DrawLoadInGroup(container, inGroup)
 	DrawDropdownLoadOption(container, L["In group"], items, order, inGroup)
 end
 
+--- @param container table
+--- @param playerInGroup Binding.LoadOption
 local function DrawLoadPlayerInGroup(container, playerInGroup)
 	DrawEditFieldLoadOption(container, L["Player in group"], playerInGroup)
 end
 
+--- @param container table
+--- @param covenant Binding.TriStateLoadOption
 local function DrawLoadInCovenant(container, covenant)
 	local ids = C_Covenants.GetCovenantIDs()
 	local items = {}
@@ -1479,6 +1597,8 @@ local function DrawLoadInCovenant(container, covenant)
 	DrawTristateLoadOption(container, L["Covenant selected"], items, order, covenant)
 end
 
+--- @param container table
+--- @param instanceType Binding.TriStateLoadOption
 local function DrawLoadInInstanceType(container, instanceType)
 	local items
 	local order
@@ -1518,6 +1638,8 @@ local function DrawLoadInInstanceType(container, instanceType)
 	DrawTristateLoadOption(container, L["Instance type"], items, order, instanceType)
 end
 
+--- @param container table
+--- @param zoneName Binding.LoadOption
 local function DrawLoadZoneName(container, zoneName)
 	local _, inputField = DrawEditFieldLoadOption(container, L["Zone name(s)"], zoneName)
 
@@ -1533,6 +1655,8 @@ local function DrawLoadZoneName(container, zoneName)
 	end
 end
 
+--- @param container table
+--- @param binding Binding
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
 
@@ -1562,6 +1686,8 @@ end
 
 -- Binding status page and components
 
+--- @param container table
+--- @param binding Binding
 local function DrawBindingStatusPage(container, binding)
 	local function DrawStatus(group, bindings, interactionType)
 		if #bindings == 0 then
@@ -1594,12 +1720,12 @@ local function DrawBindingStatusPage(container, binding)
 		if other.keybind == binding.keybind then
 			local valid = false
 
-			if binding.targets.hovercast.enabled and other.targets.hovercast.enabled then
+			if binding.targets.hovercastEnabled and other.targets.hovercastEnabled then
 				table.insert(hovercast, other)
 				valid = true
 			end
 
-			if binding.targets.regular.enabled and other.targets.regular.enabled then
+			if binding.targets.regularEnabled and other.targets.regularEnabled then
 				table.insert(regular, other)
 				valid = true
 			end
@@ -1647,6 +1773,7 @@ end
 
 -- Group page
 
+--- @param container table
 local function DrawGroup(container)
 	local group = GetCurrentGroup()
 
@@ -1684,6 +1811,7 @@ end
 
 -- Item templates
 
+--- @param identifier string
 local function CreateFromItemTemplate(identifier)
 	local item = nil
 
@@ -1715,7 +1843,10 @@ local function CreateFromItemTemplate(identifier)
 	end
 end
 
-local function DrawItemTemplate(container, identifier, name, description)
+--- @param container table
+--- @param identifier string
+--- @param name string
+local function DrawItemTemplate(container, identifier, name)
 	do
 		local widget = Addon:GUI_Label(name, "medium")
 		widget:SetRelativeWidth(0.79)
@@ -1737,6 +1868,7 @@ end
 
 -- Main binding frame
 
+--- @param container table
 local function DrawBinding(container)
 	local binding = GetCurrentBinding()
 
@@ -1840,6 +1972,7 @@ local function DrawBinding(container)
 	end
 end
 
+--- @param container table
 local function DrawItemTemplateSelector(container)
 	local scrollFrame = AceGUI:Create("ScrollFrame")
 	scrollFrame:SetLayout("Flow")
@@ -1876,6 +2009,7 @@ end
 
 -- Main frame
 
+--- @param container table
 local function DrawHeader(container)
 	local line = AceGUI:Create("ClickedSimpleGroup")
 	line:SetWidth(325)
@@ -1896,6 +2030,7 @@ local function DrawHeader(container)
 	end
 end
 
+--- @param container table
 local function DrawTreeContainer(container)
 	container:ReleaseChildren()
 
@@ -1919,6 +2054,7 @@ local function DrawTreeContainer(container)
 	end
 end
 
+--- @param container table
 local function DrawTreeView(container)
 	-- tree view
 	do
