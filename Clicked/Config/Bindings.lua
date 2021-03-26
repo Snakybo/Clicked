@@ -171,23 +171,23 @@ end
 local function GetSpellItemNameAndId(input, mode)
 	local name, id
 
-	if type(input) == "number" and tonumber(input) >= 20 then
-		id = input
-
-		if mode == Addon.BindingTypes.SPELL then
+	if mode == Addon.BindingTypes.SPELL then
+		if type(input) == "number" then
+			id = input
 			name = Addon:GetSpellInfo(id)
-		elseif mode == Addon.BindingTypes.ITEM then
+		else
+			name = input
+			id = Addon:GetSpellId(name)
+		end
+	elseif Addon.BindingTypes.ITEM then
+		if type(input) == "number" and tonumber(input) < 20 then
+			name = input
+		elseif type(input) == "number" then
+			id = input
 			name = Addon:GetItemInfo(id)
 			waitingForItemInfo[input] = name == nil
-		end
-	elseif type(input) == "number" and tonumber(input) < 20 then
-		name = input
-	elseif type(input) == "string" then
-		name = input
-
-		if mode == Addon.BindingTypes.SPELL then
-			id = Addon:GetSpellId(name)
-		elseif mode == Addon.BindingTypes.ITEM then
+		else
+			name = input
 			id = Addon:GetItemId(name)
 			waitingForItemInfo[input] = id == nil
 		end
