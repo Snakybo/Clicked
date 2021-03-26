@@ -169,16 +169,15 @@ end
 --- @return integer id
 --- @return string subtext
 local function GetSpellItemNameAndId(input, mode)
-	local name
-	local id
+	local name, id
 
 	if type(input) == "number" and tonumber(input) >= 20 then
 		id = input
 
 		if mode == Addon.BindingTypes.SPELL then
-			name = GetSpellInfo(id)
+			name = Addon:GetSpellInfo(id)
 		elseif mode == Addon.BindingTypes.ITEM then
-			name = GetItemInfo(id)
+			name = Addon:GetItemInfo(id)
 			waitingForItemInfo[input] = name == nil
 		end
 	elseif type(input) == "number" and tonumber(input) < 20 then
@@ -187,7 +186,7 @@ local function GetSpellItemNameAndId(input, mode)
 		name = input
 
 		if mode == Addon.BindingTypes.SPELL then
-			id = select(7, GetSpellInfo(name))
+			id = Addon:GetSpellId(name)
 		elseif mode == Addon.BindingTypes.ITEM then
 			id = Addon:GetItemId(name)
 			waitingForItemInfo[input] = id == nil
@@ -337,7 +336,7 @@ local function HijackSpellBookFlyoutButtons()
 				end)
 
 				button:SetScript("OnClick", function(self)
-					local name = GetSpellInfo(parent.spellID);
+					local name = Addon:GetSpellInfo(parent.spellID);
 					OnSpellBookButtonClick(name)
 				end)
 
@@ -653,7 +652,12 @@ local function DrawSpellItemSelection(container, action, mode)
 
 				if linkId ~= nil and linkId > 0 then
 					action[valueKey] = linkId
-					value = mode == Addon.BindingTypes.SPELL and GetSpellInfo(linkId) or GetItemInfo(linkId)
+
+					if mode == Addon.BindingTypes.SPELL then
+						value = Addon:GetSpellInfo(linkId)
+					elseif mode == Addon.BindingTypes.ITEM then
+						value = Addon:GetItemInfo(linkId)
+					end
 
 					widget:SetText(value)
 					widget:ClearFocus()
@@ -2127,7 +2131,7 @@ end
 function Addon:BindingConfig_ItemInfoReceived(itemId, success)
 	if success == true then
 		for item in pairs(waitingForItemInfo) do
-			if tonumber(item) == itemId or item == GetItemInfo(itemId) then
+			if tonumber(item) == itemId or item == Addon:GetItemInfo(itemId) then
 				waitingForItemInfo[item] = nil
 				self:BindingConfig_Redraw()
 				break

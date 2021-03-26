@@ -81,6 +81,7 @@ read_globals = {
 	"GetSpecializationInfoByID",
 	"GetSpellBookItemName",
 	"GetSpellInfo",
+	"GetSpellSubtext",
 	"GetTalentInfo",
 	"GetTalentInfoByID",
 	"GetTime",

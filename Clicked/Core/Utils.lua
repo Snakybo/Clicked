@@ -408,7 +408,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local name, _, icon, _, _, _, id = GetSpellInfo(binding.action.spellValue)
+		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.spellValue)
 		return name, icon, id
 	end
 
@@ -518,7 +518,31 @@ function Addon:GetItemInfo(input)
 	return GetItemInfo(input)
 end
 
---- Get the ID for the specified item.
+--- @param input string|integer
+--- @return string name
+--- @return nil rank
+--- @return integer icon
+--- @return number castTime
+--- @return number minRange
+--- @return number maxRange
+--- @return integer spellId
+function Addon:GetSpellInfo(input)
+	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
+
+	local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
+
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		local subtext = GetSpellSubtext(spellId)
+
+		if subtext ~= nil then
+			name = string.format("%s(%s)", name, subtext)
+		end
+	end
+
+	return name, rank, icon, castTime, minRange, maxRange, spellId
+end
+
+--- Get the ID for the specified item name.
 --- @param name string
 --- @return integer
 function Addon:GetItemId(name)
@@ -532,6 +556,15 @@ function Addon:GetItemId(name)
 
 	local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 	return tonumber(id)
+end
+
+--- Get the spell ID for the specified spell name.
+---@param name string
+---@return integer
+function Addon:GetSpellId(name)
+	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
+
+	return select(7, self:GetSpellInfo(name))
 end
 
 --- Generate an attribute identifier for a key. This will

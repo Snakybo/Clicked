@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix binding config occasionally resetting input field text whilst typing
+- Fix spell ranks being ignored on Classic
 
 ## [1.0.0] - 2021-03-21
 
