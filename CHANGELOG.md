@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Fix binding config occasionally resetting input field text whilst typing
 - Fix spell ranks being ignored on Classic
+- Fix not being able to create a "Open the unit menu" binding
 
 ## [1.0.0] - 2021-03-21
 

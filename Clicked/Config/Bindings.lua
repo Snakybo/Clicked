@@ -1834,7 +1834,7 @@ local function CreateFromItemTemplate(identifier)
 	elseif identifier == ITEM_TEMPLATE_TARGET then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.UNIT_SELECT
-	elseif identifier == ITEM_TEMPLATE_TARGET then
+	elseif identifier == ITEM_TEMPLATE_MENU then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.UNIT_MENU
 	elseif identifier == ITEM_TEMPLATE_GROUP then
