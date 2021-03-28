@@ -1,3 +1,4 @@
+--- @type LibTalentInfo
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 --- @type ClickedInternal
@@ -7,10 +8,13 @@ local _, Addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 --- @type integer[]
-local races
+local allRaces
+
+--- @type string[]
+local allClasses
 
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	races = {
+	allRaces = {
 		-- Alliance
 		1, -- Human
 		3, -- Dwarf
@@ -40,8 +44,23 @@ if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		-- Neutral
 		24, -- Pandaren
 	}
+
+	allClasses = {
+		"WARRIOR",
+		"PALADIN",
+		"HUNTER",
+		"ROGUE",
+		"PRIEST",
+		"DEATHKNIGHT",
+		"SHAMAN",
+		"MAGE",
+		"WARLOCK",
+		"MONK",
+		"DRUID",
+		"DEMONHUNTER"
+	}
 elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	races = {
+	allRaces = {
 		-- Alliance
 		1, -- Human
 		3, -- Dwarf
@@ -53,6 +72,18 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 		5, -- Scourge
 		6, -- Tauren
 		8, -- Troll
+	}
+
+	allClasses = {
+		"WARRIOR",
+		"PALADIN",
+		"HUNTER",
+		"ROGUE",
+		"PRIEST",
+		"SHAMAN",
+		"MAGE",
+		"WARLOCK",
+		"DRUID"
 	}
 end
 
@@ -90,8 +121,8 @@ end
 
 --- Get a localized list of all available target units for a binding.
 ---
---- @return table<any,string> items
---- @return any[] order
+--- @return table<string,string> items
+--- @return string[] order
 function Addon:GetLocalizedTargetUnits()
 	local items = {
 		[Addon.TargetUnits.DEFAULT] = DEFAULT,
@@ -138,8 +169,8 @@ end
 
 --- Get a localized list of all available target hostility settings.
 ---
---- @return table<any,string> items
---- @return any[] order
+--- @return table<string,string> items
+--- @return string[] order
 function Addon:GetLocalizedTargetHostility()
 	local items = {
 		[Addon.TargetHostility.ANY] = L["Friendly, Hostile"],
@@ -158,8 +189,8 @@ end
 
 --- Get a localized list of all available target vitals settings.
 ---
---- @return table<any,string> items
---- @return any[] order
+--- @return table<string,string> items
+--- @return string[] order
 function Addon:GetLocalizedTargetVitals()
 	local items = {
 		[Addon.TargetVitals.ANY] = L["Alive, Dead"],
@@ -179,12 +210,13 @@ end
 --- Get a localized list of all available classes, this will
 --- return the correct value for both Retail and Classic.
 ---
---- @return table<any,string> items
---- @return any[] order
+--- @return table<integer,string> items
+--- @return integer[] order
 function Addon:GetLocalizedClasses()
 	local items = {}
 	local order = {}
 
+	--- @type table<integer,string>
 	local classes = {}
 	FillLocalizedClassList(classes)
 
@@ -204,13 +236,16 @@ end
 --- Get a localized list of all available races, this will
 --- return the correct value for both Retail and Classic.
 ---
---- @return table<any,string> items
---- @return any[] order
+--- @return table<string,string> items
+--- @return string[] order
 function Addon:GetLocalizedRaces()
+	--- @type table<string,string>
 	local items = {}
+
+	--- @type string[]
 	local order = {}
 
-	for _, raceId in ipairs(races) do
+	for _, raceId in ipairs(allRaces) do
 		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
 
 		items[raceInfo.clientFileString] = string.format("<text=%s>", raceInfo.raceName)
@@ -227,10 +262,13 @@ end
 --- will return results for the player's current class.
 ---
 --- @param classNames string[]
---- @return table<any,string> items
---- @return any[] order
+--- @return table<integer,string> items
+--- @return integer[] order
 function Addon:GetLocalizedSpecializations(classNames)
+	--- @type table<integer,string>
 	local items = {}
+
+	--- @type integer[]
 	local order = {}
 
 	if classNames == nil then
@@ -240,7 +278,7 @@ function Addon:GetLocalizedSpecializations(classNames)
 
 	if #classNames == 1 then
 		local class = classNames[1]
-		local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
+		local specs = LibTalentInfo:GetClassSpecIDs(class)
 
 		for specIndex, specId in pairs(specs) do
 			local _, name, _, icon = GetSpecializationInfoByID(specId)
@@ -252,10 +290,12 @@ function Addon:GetLocalizedSpecializations(classNames)
 			end
 		end
 	else
+		--- @param specs table<integer,integer>
+		--- @return integer
 		local function CountSpecs(specs)
 			local count = 0
 
-			for specIndex in pairs(specs) do
+			for _ in pairs(specs) do
 				count = count + 1
 			end
 
@@ -266,7 +306,8 @@ function Addon:GetLocalizedSpecializations(classNames)
 
 		-- Find class with the most specializations out of all available classes
 		if #classNames == 0 then
-			for _, specs in LibTalentInfo:AllClasses() do
+			for _, class in ipairs(allClasses) do
+				local specs = LibTalentInfo:GetClassSpecIDs(class)
 				local count = CountSpecs(specs)
 
 				if count > max then
@@ -277,7 +318,7 @@ function Addon:GetLocalizedSpecializations(classNames)
 		else
 			for i = 1, #classNames do
 				local class = classNames[i]
-				local specs = LibTalentInfo:GetClassSpecIDs(class) or {}
+				local specs = LibTalentInfo:GetClassSpecIDs(class)
 				local count = CountSpecs(specs)
 
 				if count > max then
@@ -302,10 +343,13 @@ end
 --- is `nil` it will return results for the player's current specialization.
 ---
 --- @param specializations integer[]
---- @return table<any,string> items
---- @return any[] order
+--- @return table<integer,string> items
+--- @return integer[] order
 function Addon:GetLocalizedTalents(specializations)
+	--- @type table<integer,string>
 	local items = {}
+
+	--- @type integer[]
 	local order = {}
 
 	if specializations == nil then
@@ -346,10 +390,13 @@ end
 --- is `nil` it will return results for the player's current specialization.
 ---
 --- @param specializations integer[]
---- @return table<any,string> items
---- @return any[] order
+--- @return table<integer,string> items
+--- @return integer[] order
 function Addon:GetLocalizedPvPTalents(specializations)
+	--- @type table<integer,string>
 	local items = {}
+
+	--- @type integer[]
 	local order = {}
 
 	if specializations == nil then
@@ -373,7 +420,9 @@ function Addon:GetLocalizedPvPTalents(specializations)
 
 		-- Find specialization with the highest number of PvP talents
 		if #specializations == 0 then
-			for _, specs in LibTalentInfo:AllClasses() do
+			for _, class in ipairs(allClasses) do
+				local specs = LibTalentInfo:GetClassSpecIDs(class)
+
 				for _, spec in pairs(specs) do
 					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
 
@@ -409,10 +458,13 @@ end
 --- is `nil` it will return results for the player's current specialization.
 ---
 --- @param specializations integer[]
---- @return table<any,string> items
---- @return any[] order
+--- @return table<integer,string> items
+--- @return integer[] order
 function Addon:GetLocalizedForms(specializations)
+	--- @type table<integer,string>
 	local items = {}
+
+	--- @type integer[]
 	local order = {}
 
 	if specializations == nil then

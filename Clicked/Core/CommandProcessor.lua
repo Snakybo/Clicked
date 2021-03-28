@@ -8,9 +8,9 @@ local macroFrameHandler
 
 -- Local support functions
 
----@param frame table
----@param state string
----@param condition string
+--- @param frame table
+--- @param state string
+--- @param condition string
 local function CreateStateDriverAttribute(frame, state, condition)
 	frame:SetAttribute("_onstate-" .. state, [[
 		if not self:IsShown() then

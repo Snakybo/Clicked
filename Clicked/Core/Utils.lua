@@ -559,8 +559,8 @@ function Addon:GetItemId(name)
 end
 
 --- Get the spell ID for the specified spell name.
----@param name string
----@return integer
+--- @param name string
+--- @return integer
 function Addon:GetSpellId(name)
 	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
 

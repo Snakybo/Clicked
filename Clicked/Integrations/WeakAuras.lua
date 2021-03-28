@@ -371,7 +371,7 @@ local itemActionButtonTemplate = {
 -- Local support functions
 
 --- @param binding Binding
---- @return any
+--- @return table
 local function PopulateTemplate(binding)
 	local template
 	local name, icon, id = Addon:GetSimpleSpellOrItemInfo(binding)

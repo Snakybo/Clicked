@@ -1,4 +1,6 @@
 local AceGUI = LibStub("AceGUI-3.0")
+
+--- @type LibTalentInfo
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 --- @type ClickedInternal
@@ -18,16 +20,24 @@ local ITEM_TEMPLATE_MENU = "UNIT_MENU"
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
 
-local iconCache = nil
-local showIconPicker = false
+--- @type string[]
+local iconCache
+
+--- @type table<string|number,boolean>
 local waitingForItemInfo = {}
 
+--- @type table
 local root
+
+--- @type table
 local tree
+
+--- @type table
 local tab
 
 -- reset on close
 local didOpenSpellbook
+local showIconPicker
 
 -- Utility functions
 
@@ -446,7 +456,7 @@ end
 --- @generic T
 --- @param container table
 --- @param title string
---- @param items table<T,any>
+--- @param items table<T,string>
 --- @param order T[]
 --- @param data Binding.LoadOption
 local function DrawDropdownLoadOption(container, title, items, order, data)
