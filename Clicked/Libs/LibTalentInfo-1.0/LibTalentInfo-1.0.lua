@@ -1,18 +1,18 @@
 local VERSION_MAJOR = "LibTalentInfo-1.0"
-local VERSION_MINOR = 7
+local VERSION_MINOR = 8
 
 if LibStub == nil then
 	error(VERSION_MAJOR .. " requires LibStub")
-end
-
-if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
-	return
 end
 
 --- @class LibTalentInfo
 local LibTalentInfo = LibStub:NewLibrary(VERSION_MAJOR, VERSION_MINOR)
 
 if LibTalentInfo == nil then
+	return
+end
+
+if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
 	return
 end
 

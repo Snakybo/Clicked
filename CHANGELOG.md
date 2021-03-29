@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.1.2] - 2021-03-29
+
+### Fixed
+
+- Fix Lua error on Classic [#59]
+
 ## [1.1.1] - 2021-03-29
 
 ### Fixed
@@ -690,6 +696,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
 [#52]: https://github.com/Snakybo/Clicked/issues/52
