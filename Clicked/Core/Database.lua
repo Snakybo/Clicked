@@ -340,11 +340,11 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		-- number in 0.12.0. This will check for all the characteristics of a 0.12
 		-- profile to determine if it's an existing profile, or a new profile.
 		local function IsProfileFrom_0_12()
-			if profile.bindings and profile.bindings.next > 1 then
+			if profile.bindings and profile.bindings.next and profile.bindings.next > 1 then
 				return true
 			end
 
-			if profile.groups and profile.groups.next > 1 then
+			if profile.groups and profile.groups.next and profile.groups.next > 1 then
 				return true
 			end
 
