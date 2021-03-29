@@ -8,6 +8,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.1.1] - 2021-03-29
+
+### Fixed
+
+- Fix PvP talent ordering for some specs
+- Fix a Lua error when creating a new profile [#58] ([hythloday](https://github.com/hythloday))
+
 ## [1.1.0] - 2021-03-26
 
 ### Added
@@ -633,7 +640,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.1.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.1.1...master
+[1.1.1]: https://github.com/Snakybo/Clicked/releases/tag/1.1.1
 [1.1.0]: https://github.com/Snakybo/Clicked/releases/tag/1.1.0
 [1.0.0]: https://github.com/Snakybo/Clicked/releases/tag/1.0.0
 [0.17.2]: https://github.com/Snakybo/Clicked/releases/tag/0.17.2
@@ -682,6 +690,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
 [#52]: https://github.com/Snakybo/Clicked/issues/52
 [#51]: https://github.com/Snakybo/Clicked/issues/51
