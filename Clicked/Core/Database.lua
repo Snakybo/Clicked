@@ -182,6 +182,8 @@ end
 --- @param from string
 function Clicked:UpgradeDatabase(from)
 	Addon:UpgradeDatabaseProfile(Addon.db.profile, from)
+
+	Clicked:ReloadActiveBindings()
 end
 
 --@end-debug@
@@ -234,7 +236,8 @@ function Addon:GetNewBindingTemplate()
 			outdoors = GetNegatableLoadOptionTemplate(),
 			swimming = GetNegatableLoadOptionTemplate(),
 			instanceType = GetTriStateLoadOptionTemplate("NONE"),
-			zoneName = GetLoadOptionTemplate("")
+			zoneName = GetLoadOptionTemplate(""),
+			equipped = GetLoadOptionTemplate("")
 		},
 		integrations = {
 		}
@@ -901,7 +904,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		FinalizeVersionUpgrade("1.0.0")
 	end
 
-	-- 1.0.0 to 1.1.0
+	-- 1.0.x to 1.1.0
 	if string.sub(from, 1, 3) == "1.0" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.targets.regularEnabled = binding.targets.regular.enabled
@@ -918,6 +921,18 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		profile.bindings.next = nil
 
 		FinalizeVersionUpgrade("1.1.0")
+	end
+
+	-- 1.1.x to 1.2.0
+	if string.sub(from, 1, 3) == "1.1" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.equipped = {
+				selected = false,
+				value = ""
+			}
+		end
+
+		FinalizeVersionUpgrade("1.2.0")
 	end
 
 	profile.version = Clicked.VERSION

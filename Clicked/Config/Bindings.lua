@@ -485,36 +485,36 @@ end
 --- @param container table
 --- @param title string
 --- @param data Binding.LoadOption
---- @return boolean enabled
---- @return string input
+--- @return table enabled
+--- @return table inputField
 local function DrawEditFieldLoadOption(container, title, data)
-	local toggle
-	local input
+	local enabled
+	local inputField
 
 	-- selected
 	do
-		toggle = Addon:GUI_CheckBox(title, data, "selected")
+		enabled = Addon:GUI_CheckBox(title, data, "selected")
 
 		if not data.selected then
-			toggle:SetRelativeWidth(1)
+			enabled:SetRelativeWidth(1)
 		else
-			toggle:SetRelativeWidth(0.5)
+			enabled:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(toggle)
+		container:AddChild(enabled)
 	end
 
 	if data.selected then
 		-- input
 		do
-			input = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
-			input:SetRelativeWidth(0.5)
+			inputField = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
+			inputField:SetRelativeWidth(0.5)
 
-			container:AddChild(input)
+			container:AddChild(inputField)
 		end
 	end
 
-	return toggle, input
+	return enabled, inputField
 end
 
 --- @generic T
@@ -1695,6 +1695,37 @@ local function DrawLoadZoneName(container, zoneName)
 end
 
 --- @param container table
+--- @param equipped Binding.LoadOption
+local function DrawLoadItemEquipped(container, equipped)
+	local _, inputField = DrawEditFieldLoadOption(container, L["Item equipped"], equipped)
+
+	if inputField ~= nil then
+		local function OnTextChanged(_, _, value)
+			local itemLink = string.match(value, "item[%-?%d:]+")
+			local linkId = nil
+
+			if not Addon:IsStringNilOrEmpty(itemLink) then
+				local match = string.match(itemLink, "(%d+)")
+				linkId = tonumber(match)
+			end
+
+			if linkId ~= nil and linkId > 0 then
+				equipped.value = Addon:GetItemInfo(linkId)
+
+				inputField:SetText(equipped.value)
+				inputField:ClearFocus()
+
+				Clicked:ReloadActiveBindings()
+			end
+		end
+
+		inputField:SetCallback("OnTextChanged", OnTextChanged)
+
+		RegisterTooltip(inputField, L["This will not update when in combat, so swapping weapons or shields during combat does not work."])
+	end
+end
+
+--- @param container table
 --- @param binding Binding
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
@@ -1721,6 +1752,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
 	DrawLoadPlayerInGroup(container, load.playerInGroup)
+	DrawLoadItemEquipped(container, load.equipped)
 end
 
 -- Binding status page and components

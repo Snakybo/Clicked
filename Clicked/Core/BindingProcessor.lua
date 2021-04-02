@@ -892,6 +892,17 @@ function Addon:CanBindingLoad(binding)
 		end
 	end
 
+	-- item equipped
+	do
+		local equipped = load.equipped
+
+		if equipped.selected then
+			if not IsEquippedItem(equipped.value) then
+				return false
+			end
+		end
+	end
+
 	return true
 end
 

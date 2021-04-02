@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Show icon next to spell/item ID
 - Show spell/item tooltip when hovering over the ID
+- Add item equipped load option to bindings
 
 ## [1.1.2] - 2021-03-29
 

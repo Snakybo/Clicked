@@ -87,6 +87,7 @@
 --- @field public flyable Binding.LoadOption
 --- @field public instanceType Binding.TriStateLoadOption
 --- @field public zoneName Binding.LoadOption
+--- @field public equipped Binding.LoadOption
 --- @field public specialization Binding.TriStateLoadOption
 --- @field public talent Binding.TriStateLoadOption
 --- @field public pvpTalent Binding.TriStateLoadOption
