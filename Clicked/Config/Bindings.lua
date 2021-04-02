@@ -65,12 +65,6 @@ end
 
 --- @param binding Binding
 --- @return boolean
-local function CanEnableHovercastTargetMode(binding)
-	return true
-end
-
---- @param binding Binding
---- @return boolean
 local function CanEnableRegularTargetMode(binding)
 	if Addon:IsRestrictedKeybind(binding.keybind) or binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
 		return false
@@ -179,7 +173,11 @@ end
 --- @return integer id
 --- @return string subtext
 local function GetSpellItemNameAndId(input, mode)
-	local name, id
+	--- @type string
+	local name
+
+	--- @type integer
+	local id
 
 	if mode == Addon.BindingTypes.SPELL then
 		if type(input) == "number" then
@@ -698,8 +696,18 @@ local function DrawSpellItemSelection(container, action, mode)
 
 		-- spell id
 		if id ~= nil then
-			local widget = Addon:GUI_Label(tostring(action[valueKey]))
-			widget:SetJustifyH("RIGHT")
+			local icon
+
+			if mode == Addon.BindingTypes.SPELL then
+				icon = select(3, Addon:GetSpellInfo(id))
+			elseif mode == Addon.BindingTypes.ITEM then
+				icon = select(10, Addon.GetItemInfo(id))
+			end
+
+			local widget = AceGUI:Create("ClickedHorizontalIcon")
+			widget:SetLabel(tostring(id))
+			widget:SetImage(icon)
+			widget:SetImageSize(16, 16)
 			widget:SetRelativeWidth(0.15)
 
 			group:AddChild(widget)
@@ -1229,7 +1237,6 @@ local function DrawBindingTargetPage(container, binding)
 
 		do
 			local widget = Addon:GUI_ToggleHeading(L["Unit Frame Target"], binding.targets, "hovercastEnabled")
-			widget:SetDisabled(not CanEnableHovercastTargetMode(binding))
 			container:AddChild(widget)
 		end
 
