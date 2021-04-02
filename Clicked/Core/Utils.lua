@@ -224,7 +224,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 		DisableAddOn(self.data.addon)
 		ReloadUI()
 	end,
-	OnCancel = function(self)
+	OnCancel = function()
 		DisableAddOn("Clicked")
 		ReloadUI()
 	end,

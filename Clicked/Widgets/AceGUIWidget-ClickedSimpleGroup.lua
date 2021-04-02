@@ -27,7 +27,7 @@ local methods = {
 
 	-- ["OnRelease"] = nil,
 
-	["LayoutFinished"] = function(self, width, height)
+	["LayoutFinished"] = function(self, _, height)
 		if self.noAutoHeight then return end
 		self:SetHeight(height or 0)
 	end,

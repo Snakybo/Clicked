@@ -170,13 +170,13 @@ function Addon:ProfileOptions_Initialize()
 		name = L["Target player"],
 		type = "input",
 		order = 66,
-		disabled = function(info)
+		disabled = function()
 			return shareBusy
 		end,
-		get = function(info)
+		get = function()
 			return shareTarget
 		end,
-		set = function(info, value)
+		set = function(_, value)
 			shareTarget = value
 		end
 	}
@@ -185,7 +185,7 @@ function Addon:ProfileOptions_Initialize()
 		name = L["Share"],
 		type = "execute",
 		order = 67,
-		disabled = function(info)
+		disabled = function()
 			if Addon:IsStringNilOrEmpty(shareTarget) then
 				return true
 			end
@@ -225,10 +225,10 @@ function Addon:ProfileOptions_Initialize()
 		name = L["Allow profile sharing"],
 		type = "toggle",
 		order = 68,
-		get = function(info)
+		get = function()
 			return shareEnabled
 		end,
-		set = function(info, value)
+		set = function(_, value)
 			shareEnabled = value
 
 			if value then
@@ -240,7 +240,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	plugin.sendProgressDesc = {
-		name = function(info)
+		name = function()
 			if not shareAckReceived then
 				local label = L["Waiting for acknowledgement from %s"]
 				return string.format(label, shareTarget)
@@ -257,7 +257,7 @@ function Addon:ProfileOptions_Initialize()
 		end,
 		type = "description",
 		order = 69,
-		hidden = function(info)
+		hidden = function()
 			return not shareBusy
 		end
 	}
@@ -277,11 +277,9 @@ function Addon:ProfileOptions_Open()
 	InterfaceOptionsFrame_OpenToCategory(panel)
 end
 
---- @param prefix string
 --- @param message string
---- @param distribution string
 --- @param sender string
-function Addon:OnCommReceived(prefix, message, distribution, sender)
+function Addon:OnCommReceived(_, message, _, sender)
 	if InCombatLockdown() then
 		return
 	end

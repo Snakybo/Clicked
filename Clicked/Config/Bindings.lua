@@ -335,15 +335,15 @@ local function HijackSpellBookFlyoutButtons()
 				button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 				button:SetID(parent:GetID())
 
-				button:SetScript("OnEnter", function(self, motion)
+				button:SetScript("OnEnter", function()
 					SpellFlyoutButton_SetTooltip(parent);
 				end)
 
-				button:SetScript("OnLeave", function(self)
+				button:SetScript("OnLeave", function()
 					GameTooltip:Hide();
 				end)
 
-				button:SetScript("OnClick", function(self)
+				button:SetScript("OnClick", function()
 					local name = Addon:GetSpellInfo(parent.spellID);
 					OnSpellBookButtonClick(name)
 				end)
@@ -432,7 +432,7 @@ local function DrawIconPicker(container, data, key)
 
 	do
 		-- luacheck: ignore container
-		local function OnIconSelected(container, event, value)
+		local function OnIconSelected(_, _, value)
 			data[key] = value
 			Addon:BindingConfig_Redraw()
 		end
@@ -996,7 +996,7 @@ local function DrawSharedOptions(container, binding)
 		local isUsingShared = false
 		local widget
 
-		local function OnValueChanged(frame, event, value)
+		local function OnValueChanged(_, _, value)
 			if InCombatLockdown() then
 				Addon:NotifyCombatLockdown()
 
@@ -1132,7 +1132,7 @@ end
 local function DrawTargetSelectionUnit(container, targets, enabled, index)
 	local target
 
-	local function OnValueChanged(frame, event, value)
+	local function OnValueChanged(frame, _, value)
 		if not InCombatLockdown() then
 			if value == "_NONE_" then
 				return
@@ -1912,7 +1912,7 @@ local function DrawBinding(container)
 	-- tabs
 	do
 		-- luacheck: ignore container
-		local function OnGroupSelected(container, event, group)
+		local function OnGroupSelected(container, _, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
 			scrollFrame:SetLayout("Flow")
 

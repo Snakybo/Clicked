@@ -212,7 +212,7 @@ end
 
 local function ShouldDisplayLevel(tree)
 	local result = false
-	for k, v in ipairs(tree) do
+	for _, v in ipairs(tree) do
 		if v.children == nil and v.visible ~= false then
 			result = true
 		elseif v.children then
@@ -621,7 +621,7 @@ local function Searchbar_OnSearchTermChanged(handler)
 	self:RefreshTree()
 end
 
-local function Sort_OnClick(frame, ...)
+local function Sort_OnClick(frame)
 	local self = frame.obj
 
 	AceGUI:ClearFocus()
@@ -794,7 +794,7 @@ local methods = {
 	["BuildLevel"] = function(self, tree, level, parent)
 		local groups = (self.status or self.localstatus).groups
 
-		for i, v in ipairs(tree) do
+		for _, v in ipairs(tree) do
 			if v.children then
 				if not self.filter or ShouldDisplayLevel(v.children) then
 					local line = addLine(self, v, tree, level, parent)
@@ -1262,7 +1262,7 @@ local methods = {
 		return current
 	end,
 
-	["LayoutFinished"] = function(self, width, height)
+	["LayoutFinished"] = function(self, _, height)
 		if self.noAutoHeight then return end
 		self:SetHeight((height or 0) + 20)
 	end

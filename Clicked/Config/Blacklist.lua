@@ -104,7 +104,7 @@ local function SetSelectedItem(name, enabled)
 			type = "toggle",
 			width = "full",
 			order = 3,
-			set = function(info, value)
+			set = function(_, value)
 				if not value then
 					Addon.db.profile.blacklist[name] = nil
 					args[name] = nil
@@ -115,7 +115,7 @@ local function SetSelectedItem(name, enabled)
 					Clicked:ReloadActiveBindings()
 				end
 			end,
-			get = function(info)
+			get = function()
 				return Addon.db.profile.blacklist[name] or false
 			end
 		}
@@ -141,7 +141,7 @@ function Addon:BlacklistOptions_Initialize()
 				name = L["Add a unit frame"],
 				width = "full",
 				order = 1,
-				values = function(info)
+				values = function()
 					local result = {}
 
 					for source, frames in pairs(values) do
@@ -154,7 +154,7 @@ function Addon:BlacklistOptions_Initialize()
 
 					return result
 				end,
-				sorting = function(info)
+				sorting = function()
 					local result = {}
 					local current = 1
 
@@ -175,7 +175,7 @@ function Addon:BlacklistOptions_Initialize()
 					return result
 				end,
 				itemControl = "Clicked-Blacklist-Dropdown-Item",
-				set = function(info, val)
+				set = function(_, val)
 					if val ~= "_NIL_" then
 						Addon.db.profile.blacklist[val] = true
 
@@ -186,7 +186,7 @@ function Addon:BlacklistOptions_Initialize()
 						Clicked:ReloadActiveBindings()
 					end
 				end,
-				get = function(info)
+				get = function()
 					return ""
 				end
 			},

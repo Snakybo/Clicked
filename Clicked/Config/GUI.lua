@@ -6,9 +6,8 @@ local _, Addon = ...
 local widgets = {}
 
 --- @param frame table
---- @param event string
 --- @param value any
-local function OnSerialize(frame, event, value)
+local function OnSerialize(frame, _, value)
 	local data = widgets[frame]
 
 	if InCombatLockdown() then

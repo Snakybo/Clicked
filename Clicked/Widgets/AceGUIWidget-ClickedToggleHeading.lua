@@ -20,7 +20,7 @@ local function Control_OnLeave(frame)
 	frame.obj:Fire("OnLeave")
 end
 
-local function CheckBox_OnMouseDown(frame)
+local function CheckBox_OnMouseDown()
 	AceGUI:ClearFocus()
 end
 

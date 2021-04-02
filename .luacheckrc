@@ -1,9 +1,6 @@
 -- Disable unused self warnings.
 self = false
 
--- Allow unused arguments.
-unused_args = false
-
 -- Disable line length limits.
 max_line_length = false
 max_code_line_length = false

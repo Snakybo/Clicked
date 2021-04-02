@@ -27,7 +27,7 @@ local function LoadIconsOverTime(frame)
 		return
 	end
 
-	for i = 1, math.min(status.numColumns * 3, #self.loadQueue) do
+	for _ = 1, math.min(status.numColumns * 3, #self.loadQueue) do
 		local next = self.loadQueue[1]
 		table.remove(self.loadQueue, 1)
 
@@ -248,7 +248,7 @@ local methods = {
 		self.updateLock = nil
 	end,
 
-	["LayoutFinished"] = function(self, width, height)
+	["LayoutFinished"] = function(self, _, height)
 		self.content:SetHeight(height or 20)
 
 		-- update the scrollframe

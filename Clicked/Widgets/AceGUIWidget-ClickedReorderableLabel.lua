@@ -100,7 +100,7 @@ local methods = {
 
 	-- ["OnRelease"] = nil
 
-	["OnWidthSet"] = function(self, width)
+	["OnWidthSet"] = function(self)
 		UpdateAnchor(self)
 	end,
 

@@ -24,7 +24,7 @@ do
 		self:SetValue(nil)
 	end
 
-	local function Frame_OnClick(this, button)
+	local function Frame_OnClick(this)
 		local self = this.obj
 		if self.disabled then return end
 		self.value = not self.value
@@ -117,7 +117,7 @@ do
 		self.useHighlight = not self.isHeader
 	end
 
-	local function Frame_OnClick(this, button)
+	local function Frame_OnClick(this)
 		local self = this.obj
 		if self.disabled then return end
 		self.value = not self.value
