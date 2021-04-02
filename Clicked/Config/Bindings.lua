@@ -696,6 +696,22 @@ local function DrawSpellItemSelection(container, action, mode)
 
 		-- spell id
 		if id ~= nil then
+			local function OnEnter(widget)
+				GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
+
+				if mode == Addon.BindingTypes.SPELL then
+					GameTooltip:SetSpellByID(id)
+				elseif mode == Addon.BindingTypes.ITEM then
+					GameTooltip:SetItemByID(id)
+				end
+
+				GameTooltip:Show()
+			end
+
+			local function OnLeave()
+				GameTooltip:Hide()
+			end
+
 			local icon
 
 			if mode == Addon.BindingTypes.SPELL then
@@ -709,6 +725,8 @@ local function DrawSpellItemSelection(container, action, mode)
 			widget:SetImage(icon)
 			widget:SetImageSize(16, 16)
 			widget:SetRelativeWidth(0.15)
+			widget:SetCallback("OnEnter", OnEnter)
+			widget:SetCallback("OnLeave", OnLeave)
 
 			group:AddChild(widget)
 		end

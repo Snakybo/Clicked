@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Show icon next to spell/item ID
+- Show spell/item tooltip when hovering over the ID
 
 ## [1.1.2] - 2021-03-29
 
