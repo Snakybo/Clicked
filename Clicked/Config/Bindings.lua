@@ -717,7 +717,7 @@ local function DrawSpellItemSelection(container, action, mode)
 			if mode == Addon.BindingTypes.SPELL then
 				icon = select(3, Addon:GetSpellInfo(id))
 			elseif mode == Addon.BindingTypes.ITEM then
-				icon = select(10, Addon.GetItemInfo(id))
+				icon = select(10, Addon:GetItemInfo(id))
 			end
 
 			local widget = AceGUI:Create("ClickedHorizontalIcon")
