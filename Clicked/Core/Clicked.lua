@@ -122,7 +122,7 @@ local function PLAYER_LEVEL_CHANGED()
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
-	Addon:BindingConfig_Redraw()
+	Clicked:ReloadActiveBindings()
 end
 
 local function GROUP_ROSTER_UPDATE()
