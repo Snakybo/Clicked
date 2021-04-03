@@ -90,6 +90,7 @@ read_globals = {
 	"IsAddOnLoaded",
 	"IsAltKeyDown",
 	"IsControlKeyDown",
+	"IsEquippedItem",
 	"IsInInstance",
 	"IsInRaid",
 	"IsMetaKeyDown",
