@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Show spell/item tooltip when hovering over the ID
 - Add item equipped load option to bindings
 
+### Fixed
+
+- Fix equipped usable items not working after changing equipped items
+
 ## [1.1.2] - 2021-03-29
 
 ### Fixed

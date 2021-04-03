@@ -390,6 +390,11 @@ function Addon:GetBindingValue(binding)
 
 	if binding.type == Addon.BindingTypes.ITEM then
 		local item = binding.action.itemValue
+
+		if type(item) == "number" and item < 20 then
+			return item
+		end
+
 		return self:GetItemInfo(item) or item
 	end
 

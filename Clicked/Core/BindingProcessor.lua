@@ -144,6 +144,7 @@ end
 --- @param target Binding.Target
 --- @return Action
 local function ConstructAction(binding, target)
+	--- @type Action
 	local action = {
 		ability = Addon:GetBindingValue(binding),
 		type = binding.type
