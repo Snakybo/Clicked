@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Show spell/item tooltip when hovering over the ID
 - Add item equipped load option to bindings
 - Add tooltips to load options
+- Add quick start create option to import the entire spellbook and talent pane
 
 ### Fixed
 

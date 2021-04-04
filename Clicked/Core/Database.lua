@@ -93,8 +93,6 @@ function Clicked:CreateGroup()
 
 	table.insert(Addon.db.profile.groups, group)
 
-	Addon:BindingConfig_Redraw()
-
 	return group
 end
 
@@ -102,8 +100,6 @@ end
 --- @param group Group
 function Clicked:DeleteGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
-
-	local shouldReloadBindings = false
 
 	for i, e in ipairs(Addon.db.profile.groups) do
 		if e.identifier == group.identifier then
@@ -116,15 +112,8 @@ function Clicked:DeleteGroup(group)
 		local binding = Addon.db.profile.bindings[i]
 
 		if binding.parent == group.identifier then
-			shouldReloadBindings = true
 			table.remove(Addon.db.profile.bindings, i)
 		end
-	end
-
-	Addon:BindingConfig_Redraw()
-
-	if shouldReloadBindings then
-		Clicked:ReloadActiveBindings()
 	end
 end
 
@@ -158,11 +147,6 @@ function Clicked:DeleteBinding(binding)
 	for index, other in ipairs(Addon.db.profile.bindings) do
 		if other == binding then
 			table.remove(Addon.db.profile.bindings, index)
-
-			if Addon:CanBindingLoad(binding) then
-				Clicked:ReloadActiveBindings()
-			end
-
 			break
 		end
 	end

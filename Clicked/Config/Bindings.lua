@@ -16,6 +16,7 @@ local ITEM_TEMPLATE_MACRO = "RUN_MACRO"
 local ITEM_TEMPLATE_APPEND = "RUN_MACRO_APPEND"
 local ITEM_TEMPLATE_TARGET = "UNIT_TARGET"
 local ITEM_TEMPLATE_MENU = "UNIT_MENU"
+local ITEM_TEMPLATE_IMPORT_SPELLBOOK = "IMPORT_SPELLBOOK"
 
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
@@ -1953,6 +1954,106 @@ local function CreateFromItemTemplate(identifier)
 		item.type = Addon.BindingTypes.UNIT_MENU
 	elseif identifier == ITEM_TEMPLATE_GROUP then
 		item = Clicked:CreateGroup()
+	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK then
+		for tabIndex = 2, GetNumSpellTabs() do
+			local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(tabIndex)
+			local pendingSpellIds = {}
+			local specIndex = nil
+
+			local function RegisterSpell(spellId)
+				if IsPassiveSpell(spellId) then
+					return {}
+				end
+
+				if pendingSpellIds[spellId] == nil then
+					pendingSpellIds[spellId] = {
+						talentTier = nil,
+						talentColumn = nil,
+						pvpTalentIndex = nil
+					}
+				end
+
+				return pendingSpellIds[spellId]
+			end
+
+			-- Get spec index from ID
+			if tabIndex > 2 then
+				if specId == 0 then
+					specIndex = GetSpecialization()
+					specId = GetSpecializationInfo(specIndex)
+				else
+					for index = 1, GetNumSpecializations() do
+						local id = GetSpecializationInfo(index)
+
+						if id == specId then
+							specIndex = index
+							break
+						end
+					end
+				end
+			end
+
+			-- Spellbook items
+			for spellBookItemIndex = offset + 1, offset + count do
+				local type = GetSpellBookItemInfo(spellBookItemIndex, BOOKTYPE_SPELL)
+
+				if type == "SPELL" or type == "FUTURESPELL" then
+					local _, _, spellId = GetSpellBookItemName(spellBookItemIndex, BOOKTYPE_SPELL)
+					RegisterSpell(spellId)
+				end
+			end
+
+			if specId > 0 then
+				-- Talents
+				for tier = 1, MAX_TALENT_TIERS do
+					for column = 1, NUM_TALENT_COLUMNS do
+						local _, _, _, _, _, spellId = LibTalentInfo:GetTalentInfo(specId, tier, column)
+
+						local data = RegisterSpell(spellId)
+						data.talentTier = tier
+						data.talentColumn = column
+					end
+				end
+
+				-- PvP talents
+				for index = 1, LibTalentInfo:GetNumPvPTalentsForSpec(specId, 1) do
+					local _, _, _, _, _, spellId = LibTalentInfo:GetPvPTalentInfo(specId, 1, index)
+
+					local data = RegisterSpell(spellId)
+					data.pvpTalentIndex = index
+				end
+			end
+
+			if next(pendingSpellIds) ~= nil then
+				local group = Clicked:CreateGroup()
+				group.name = tabName
+				group.displayIcon = tabIcon
+
+				for spellId, data in pairs(pendingSpellIds) do
+					local binding = Clicked:CreateBinding()
+					binding.type = Addon.BindingTypes.SPELL
+					binding.parent = group.identifier
+					binding.action.spellValue = spellId
+
+					if specIndex ~= nil then
+						binding.load.specialization.selected = 1
+						binding.load.specialization.single = specIndex
+					end
+
+					if data.talentTier ~= nil and data.talentColumn ~= nil then
+						binding.load.talent.selected = 1
+						binding.load.talent.single = (data.talentTier - 1) * NUM_TALENT_COLUMNS + data.talentColumn
+					end
+
+					if data.pvpTalentIndex ~= nil then
+						binding.load.pvpTalent.selected = 1
+						binding.load.pvpTalent.single = data.pvpTalentIndex
+					end
+				end
+			end
+		end
+
+		Clicked:ReloadActiveBindings()
 	end
 
 	if item ~= nil then
@@ -2100,7 +2201,16 @@ local function DrawItemTemplateSelector(container)
 	container:AddChild(scrollFrame)
 
 	do
-		local widget = Addon:GUI_Label(L["Create a new binding"], "large")
+		local widget = Addon:GUI_Label(L["Quick start"], "large")
+		widget:SetFullWidth(true)
+
+		scrollFrame:AddChild(widget)
+	end
+
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_IMPORT_SPELLBOOK, L["Automatically import from spellbook"])
+
+	do
+		local widget = Addon:GUI_Label("\n" .. L["Create a new binding"], "large")
 		widget:SetFullWidth(true)
 
 		scrollFrame:AddChild(widget)

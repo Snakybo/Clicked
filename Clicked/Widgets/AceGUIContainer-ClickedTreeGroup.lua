@@ -109,7 +109,8 @@ local function UpdateGroupItemVisual(item, group)
 		label = group.name
 	end
 
-	if not Addon:IsStringNilOrEmpty(group.displayIcon) then
+	if (type(group.displayIcon) == "string" and not Addon:IsStringNilOrEmpty(group.displayIcon)) or
+	   (type(group.displayIcon) == "number" and group.displayIcon > 0) then
 		icon = group.displayIcon
 	end
 
@@ -385,7 +386,7 @@ local function Button_OnClick(frame, button)
 						Clicked:DeleteGroup(frame.group)
 					end
 
-					Addon:BindingConfig_Redraw()
+					Clicked:ReloadActiveBindings()
 				end
 
 				if IsShiftKeyDown() then

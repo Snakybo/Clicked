@@ -57,7 +57,6 @@
 
 --- @class Binding.Action
 --- @field public spellValue string|integer
---- @field public spellSubValue string
 --- @field public itemValue string|integer
 --- @field public macroValue string
 --- @field public macroName string
