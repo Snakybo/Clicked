@@ -440,6 +440,8 @@ local function Button_OnEnter(frame)
 
 	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
 		local tooltip = AceGUI.tooltip
+
+		--- @type Binding
 		local binding = frame.binding
 		local text = Addon:GetBindingNameAndIcon(binding)
 
@@ -466,6 +468,10 @@ local function Button_OnEnter(frame)
 
 		text = text .. "\n"
 		text = text .. (Addon:CanBindingLoad(binding) and L["Loaded"] or L["Unloaded"])
+
+		if IsShiftKeyDown() then
+			text = text .. string.format(" (%s)", binding.identifier)
+		end
 
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
