@@ -152,6 +152,7 @@ read_globals = {
 	"NEW",
 	"NO",
 	"NONE",
+	"OFF",
 	"OTHER",
 	"TARGET",
 	"PET",

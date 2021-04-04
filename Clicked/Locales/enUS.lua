@@ -157,6 +157,9 @@ L["This will not update when in combat, so swapping weapons or shields during co
 L["Scenario"] = true
 L["Dungeon"] = true
 L["Raid"] = true
+L["On"] = true
+L["Single"] = true
+L["Multiple"] = true
 L["Not loaded"] = true
 L["Generated hovercast macro"] = true
 L["Generated macro"] = true

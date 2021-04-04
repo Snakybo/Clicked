@@ -127,6 +127,45 @@ local function GetRelevantSpecializationIds(classNames, specIndices)
 	return specializationIds
 end
 
+--- @param type '"LoadOption"'|'"TriStateLoadOption'
+--- @param selected boolean|integer
+local function CreateLoadOptionTooltip(type, selected)
+	local options
+	local order
+
+	if type == "LoadOption" then
+		options = {
+			["false"] = OFF,
+			["true"] = L["On"]
+		}
+
+		order = { "false", "true" }
+	elseif type == "TriStateLoadOption" then
+		options = {
+			["0"] = OFF,
+			["1"] = L["Single"],
+			["2"] = L["Multiple"]
+		}
+
+		order = { "0", "1", "2" }
+	end
+
+	selected = tostring(selected)
+	options[selected] = "|cff00ff00" .. options[selected] .. "|r"
+
+	local result = ""
+
+	for _, v in ipairs(order) do
+		if not Addon:IsStringNilOrEmpty(result) then
+			result = result .. " - "
+		end
+
+		result = result .. options[v]
+	end
+
+	return result
+end
+
 -- Tooltips
 
 --- @param widget table
@@ -469,6 +508,8 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 		end
 
 		container:AddChild(widget)
+
+		RegisterTooltip(widget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
 	end
 
 	-- state
@@ -502,6 +543,8 @@ local function DrawEditFieldLoadOption(container, title, data)
 		end
 
 		container:AddChild(enabled)
+
+		RegisterTooltip(enabled, title, CreateLoadOptionTooltip("LoadOption", data.selected))
 	end
 
 	if data.selected then
@@ -538,6 +581,8 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 		end
 
 		container:AddChild(widget)
+
+		RegisterTooltip(widget, title, CreateLoadOptionTooltip("TriStateLoadOption", data.selected))
 	end
 
 	local widget
@@ -1515,7 +1560,7 @@ end
 -- Binding load conditions page and components
 
 --- @param container table
---- @param load Binding.LoadOption
+--- @param load Binding.Load
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
@@ -1523,6 +1568,8 @@ local function DrawLoadNeverSelection(container, load)
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
+
+		RegisterTooltip(widget, L["Never load"], CreateLoadOptionTooltip("LoadOption", load.never))
 	end
 end
 
