@@ -89,7 +89,7 @@ L["Allow this binding to override a spell that is queued by the lag-tolerance sy
 L["Target on cast"] = true
 L["Targets the unit you are casting on."] = true
 L["Unit Frame Target"] = true
-L["Binding Targets"] = true
+L["Macro Targets"] = true
 L["Player (you)"] = true
 L["Target of target"] = true
 L["Mouseover"] = true

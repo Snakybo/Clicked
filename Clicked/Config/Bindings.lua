@@ -1268,7 +1268,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(L["Binding Targets"], binding.targets, "regularEnabled")
+			local widget = Addon:GUI_ToggleHeading(L["Macro Targets"], binding.targets, "regularEnabled")
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
