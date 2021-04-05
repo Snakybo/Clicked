@@ -21,6 +21,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix equipped usable items not working after changing equipped items
+- Fix empty `/tar` commands being generated if a target cannot be inferred from the binding
 
 ## [1.1.2] - 2021-03-29
 

@@ -1108,9 +1108,14 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					conditions = "[" .. conditions .. "] "
 				end
 
-				table.insert(macroConditions, conditions)
-				table.insert(macroSegments, conditions .. action.ability)
-				table.insert(localSegments, conditions .. action.ability)
+				if not Addon:IsStringNilOrEmpty(conditions) then
+					table.insert(macroConditions, conditions)
+					table.insert(macroSegments, conditions .. action.ability)
+					table.insert(localSegments, conditions .. action.ability)
+				else
+					table.insert(macroSegments, action.ability)
+					table.insert(localSegments, action.ability)
+				end
 			end
 
 			if #localSegments > 0 then
@@ -1130,11 +1135,13 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	do
 		local targetUnitAfterCast = false
 
-		for _, binding in ipairs(bindings) do
-			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-				if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
-					targetUnitAfterCast = true
-					table.insert(lines, "/tar " .. table.concat(macroConditions, ""))
+		if #macroConditions > 0 then
+			for _, binding in ipairs(bindings) do
+				if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+					if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
+						targetUnitAfterCast = true
+						table.insert(lines, "/tar " .. table.concat(macroConditions, ""))
+					end
 				end
 			end
 		end
