@@ -128,7 +128,7 @@ local function GetRelevantSpecializationIds(classNames, specIndices)
 	return specializationIds
 end
 
---- @param type '"LoadOption"'|'"TriStateLoadOption'
+--- @param type '"LoadOption"'|'"TriStateLoadOption"'
 --- @param selected boolean|integer
 local function CreateLoadOptionTooltip(type, selected)
 	local options
@@ -1977,7 +1977,7 @@ local function CreateFromItemTemplate(identifier)
 			end
 
 			-- Get spec index from ID
-			if tabIndex > 2 then
+			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and tabIndex > 2 then
 				if specId == 0 then
 					specIndex = GetSpecialization()
 					specId = GetSpecializationInfo(specIndex)
@@ -2003,7 +2003,7 @@ local function CreateFromItemTemplate(identifier)
 				end
 			end
 
-			if specId > 0 then
+			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and specId > 0 then
 				-- Talents
 				for tier = 1, MAX_TALENT_TIERS do
 					for column = 1, NUM_TALENT_COLUMNS do
