@@ -539,7 +539,7 @@ function Addon:GetSpellInfo(input)
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 		local subtext = GetSpellSubtext(spellId)
 
-		if subtext ~= nil then
+		if not self:IsStringNilOrEmpty(subtext) then
 			name = string.format("%s(%s)", name, subtext)
 		end
 	end
