@@ -8,12 +8,16 @@
 ## Dependencies: Clicked
 ## LoadOnDemand: 1
 
-#@retail@
+#@version-retail@
 MediaRetail.lua
-#@end-retail@
-#@non-retail@
+#@end-version-retail@
+#@version-classic@
 # MediaClassic.lua
-#@end-non-retail@
+#@end-version-classic@
+#@version-bc@
+# MediaBurningCrusade.lua
+#@end-version-bc@
 #@debug@
 MediaClassic.lua
+MediaBurningCrusade.lua
 #@end-debug

@@ -8,6 +8,18 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+- Add support for TBC Classic
+- Add missing instance type load option to Classic
+
+### Removed
+
+- Remove `Focus` binding target on Classic
+- Remove `Arena` binding targets on Classic
+
 ## [1.2.0] - 2021-04-06
 
 ### Added

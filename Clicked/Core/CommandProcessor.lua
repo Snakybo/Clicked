@@ -101,7 +101,7 @@ local function EnsureMacroFrameHandler()
 		end
 	]])
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
 		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
 	end

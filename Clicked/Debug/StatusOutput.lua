@@ -16,11 +16,12 @@ local function GetBasicinfoString()
 	local lines = {}
 
 	table.insert(lines, "Version: " .. Clicked.VERSION)
+	table.insert(lines, "Project ID: " .. WOW_PROJECT_ID)
 	table.insert(lines, "Race: " .. select(2, UnitRace("player")))
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		do
 			local id = GetSpecializationInfo(GetSpecialization())
 			table.insert(lines, "Specialization: " .. id)
@@ -49,7 +50,7 @@ local function GetBasicinfoString()
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
 	table.insert(lines, "Override Bar: " .. driver:GetAttribute("state-overridebar"))
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
 		table.insert(lines, "Vehicle UI: " .. driver:GetAttribute("state-vehicleui"))
 		table.insert(lines, "Pet Battle: " .. driver:GetAttribute("state-petbattle"))
@@ -184,7 +185,7 @@ function Addon:StatusOutput_Initialize()
 	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
 		CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")

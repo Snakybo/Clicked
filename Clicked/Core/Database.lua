@@ -227,7 +227,12 @@ function Addon:GetNewBindingTemplate()
 		}
 	}
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("BC") then
+		template.load.flying = GetNegatableLoadOptionTemplate()
+		template.load.flyable = GetNegatableLoadOptionTemplate()
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		--- @type number
 		local specIndex = GetSpecialization()
 
@@ -240,8 +245,6 @@ function Addon:GetNewBindingTemplate()
 		template.load.talent = GetTriStateLoadOptionTemplate(1)
 		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
 		template.load.warMode = GetNegatableLoadOptionTemplate()
-		template.load.flying = GetNegatableLoadOptionTemplate()
-		template.load.flyable = GetNegatableLoadOptionTemplate()
 
 		--- @type number
 		local covenantId = C_Covenants.GetActiveCovenantID()
@@ -522,7 +525,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 				value = "ACTIVE"
 			}
 
-			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			if Addon:IsGameVersionAtleast("RETAIL") then
 				binding.load.pvpTalent = {
 					selected = 0,
 					single = 1,

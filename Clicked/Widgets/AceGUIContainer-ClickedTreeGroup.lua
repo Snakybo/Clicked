@@ -1382,7 +1382,7 @@ local function Constructor()
 			treeframe:SetTemplate('Transparent')
 			S:HandleScrollBar(scrollbar)
 
-			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			if Addon:IsGameVersionAtleast("BC") then
 				S:HandleButton(sortButton, true)
 			else
 				S:HandleButton(sortButton, true, nil, true)

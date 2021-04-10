@@ -536,7 +536,7 @@ function Addon:GetSpellInfo(input)
 
 	local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
 
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if Addon:IsClassic() or Addon:IsBC() then
 		local subtext = GetSpellSubtext(spellId)
 
 		if not self:IsStringNilOrEmpty(subtext) then
@@ -725,7 +725,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 		end
 	end
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		if select(2, UnitClass("player")) == "DRUID" then
 			local specId = GetSpecializationInfo(GetSpecialization())
 			local all = Addon:GetShapeshiftFormsForSpecId(specId)
@@ -932,4 +932,42 @@ end
 --- @return boolean
 function Addon:IsBindingType(binding)
 	return type(binding) == "table" and binding.identifier ~= nil and binding.type ~= nil
+end
+
+--- Check if the game client is running the retail version of the API.
+---
+--- @return boolean
+function Addon:IsRetail()
+	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+end
+
+--- Check if the game client is running the Classic version of the API.
+---
+--- @return boolean
+function Addon:IsClassic()
+	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and BackdropTemplateMixin == nil
+end
+
+--- Check if the game client is running the Burning Crusade version of the API.
+---
+--- @return boolean
+function Addon:IsBC()
+	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and BackdropTemplateMixin ~= nil
+end
+
+--- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
+--- game, but `false` on Classic.
+---
+--- @param version '"RETAIL"'|'"CLASSIC"'|'"BC"'
+--- @return boolean
+function Addon:IsGameVersionAtleast(version)
+	if version == "CLASSIC" then
+		return Addon:IsClassic() or Addon:IsBC() or Addon:IsRetail()
+	elseif version == "BC" then
+		return Addon:IsBC() or Addon:IsRetail()
+	elseif version == "RETAIL" then
+		return Addon:IsRetail()
+	end
+
+	return false
 end

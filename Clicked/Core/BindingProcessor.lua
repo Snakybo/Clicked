@@ -163,7 +163,7 @@ local function ConstructAction(binding, target)
 	AppendCondition(binding.load.outdoors, "outdoors")
 	AppendCondition(binding.load.swimming, "swimming")
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("BC") then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
 	end
@@ -655,7 +655,7 @@ function Addon:CanBindingLoad(binding)
 		end
 	end
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		-- specialization
 		do
 			local function IsSpecializationIndexSelected(index)

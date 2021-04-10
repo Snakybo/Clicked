@@ -1,59 +1,43 @@
 --- @type ClickedInternal
 local _, Addon = ...
 
-local unitFrames
+local unitFrames = {}
 
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	unitFrames = {
-		[""] = {
-			"PlayerFrame",
-			"PetFrame",
-			"TargetFrame",
-			"TargetFrameToT",
-			"FocusFrame",
-			"FocusFrameToT",
-			"PartyMemberFrame1",
-			"PartyMemberFrame1PetFrame",
-			"PartyMemberFrame2",
-			"PartyMemberFrame2PetFrame",
-			"PartyMemberFrame3",
-			"PartyMemberFrame3PetFrame",
-			"PartyMemberFrame4",
-			"PartyMemberFrame4PetFrame",
-			"Boss1TargetFrame",
-			"Boss2TargetFrame",
-			"Boss3TargetFrame",
-			"Boss4TargetFrame",
-			"Boss5TargetFrame"
-		},
-		["Blizzard_ArenaUI"] = {
-			"ArenaEnemyFrame1",
-			"ArenaEnemyFrame2",
-			"ArenaEnemyFrame3"
-		}
-	}
-else
-	unitFrames = {
-		[""] = {
-			"PlayerFrame",
-			"PetFrame",
-			"TargetFrame",
-			"TargetFrameToT",
-			"PartyMemberFrame1",
-			"PartyMemberFrame1PetFrame",
-			"PartyMemberFrame2",
-			"PartyMemberFrame2PetFrame",
-			"PartyMemberFrame3",
-			"PartyMemberFrame3PetFrame",
-			"PartyMemberFrame4",
-			"PartyMemberFrame4PetFrame",
-			"Boss1TargetFrame",
-			"Boss2TargetFrame",
-			"Boss3TargetFrame",
-			"Boss4TargetFrame",
-			"Boss5TargetFrame"
-		}
-	}
+if Addon:IsGameVersionAtleast("CLASSIC") then
+	unitFrames[""] = unitFrames[""] or {}
+
+	table.insert(unitFrames[""], "PlayerFrame")
+	table.insert(unitFrames[""], "PetFrame")
+	table.insert(unitFrames[""], "TargetFrame")
+	table.insert(unitFrames[""], "TargetFrameToT")
+	table.insert(unitFrames[""], "PartyMemberFrame1")
+	table.insert(unitFrames[""], "PartyMemberFrame1PetFrame")
+	table.insert(unitFrames[""], "PartyMemberFrame2")
+	table.insert(unitFrames[""], "PartyMemberFrame2PetFrame")
+	table.insert(unitFrames[""], "PartyMemberFrame3")
+	table.insert(unitFrames[""], "PartyMemberFrame3PetFrame")
+	table.insert(unitFrames[""], "PartyMemberFrame4")
+	table.insert(unitFrames[""], "PartyMemberFrame4PetFrame")
+	table.insert(unitFrames[""], "Boss1TargetFrame")
+	table.insert(unitFrames[""], "Boss2TargetFrame")
+	table.insert(unitFrames[""], "Boss3TargetFrame")
+	table.insert(unitFrames[""], "Boss4TargetFrame")
+	table.insert(unitFrames[""], "Boss5TargetFrame")
+end
+
+if Addon:IsGameVersionAtleast("BC") then
+	unitFrames[""] = unitFrames[""] or {}
+
+	table.insert(unitFrames[""], "FocusFrame")
+	table.insert(unitFrames[""], "FocusFrameToT")
+end
+
+if Addon:IsGameVersionAtleast("RETAIL") then
+	unitFrames["Blizzard_ArenaUI"] = unitFrames["Blizzard_ArenaUI"] or {}
+
+	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame1")
+	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame2")
+	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame3")
 end
 
 -- Local support functions
