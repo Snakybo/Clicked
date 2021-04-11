@@ -1014,6 +1014,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	do
 		local interrupt = false
 		local startAutoAttack = false
+		local startPetAttack = false
 		local cancelQueuedSpell = false
 
 		for _, binding in ipairs(bindings) do
@@ -1023,12 +1024,24 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					table.insert(lines, "/cancelqueuedspell")
 				end
 
-				if not startAutoAttack and binding.action.allowStartAttack and interactionType == Addon.InteractionType.REGULAR then
-					for _, target in ipairs(binding.targets.regular) do
-						if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
-							startAutoAttack = true
-							table.insert(lines, "/startattack [@target,harm]")
-							break
+				if interactionType == Addon.InteractionType.REGULAR then
+					if not startAutoAttack and binding.action.startAutoAttack then
+						for _, target in ipairs(binding.targets.regular) do
+							if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
+								startAutoAttack = true
+								table.insert(lines, "/startattack [@target,harm]")
+								break
+							end
+						end
+					end
+
+					if not startPetAttack and binding.action.startPetAttack then
+						for _, target in ipairs(binding.targets.regular) do
+							if target.unit == Addon.TargetUnits.TARGET and target.hostility ~= Addon.TargetHostility.HELP then
+								startPetAttack = true
+								table.insert(lines, "/petattack [@target,harm]")
+								break
+							end
 						end
 					end
 				end

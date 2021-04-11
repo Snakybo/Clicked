@@ -1110,7 +1110,8 @@ local function DrawSharedOptions(container, binding)
 	container:AddChild(group)
 
 	CreateCheckbox(group, L["Interrupt current cast"], L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
-	CreateCheckbox(group, L["Allow starting of auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "allowStartAttack")
+	CreateCheckbox(group, L["Start auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
+	CreateCheckbox(group, L["Start pet attacks"], L["Allow this binding to start pet attacks."], "startPetAttack")
 	CreateCheckbox(group, L["Override queued spell"], L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
 	CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
 end
