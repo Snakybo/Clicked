@@ -63,7 +63,8 @@
 --- @field public macroIcon string|integer
 --- @field public interrupt boolean
 --- @field public executionOrder integer
---- @field public allowStartAttack boolean
+--- @field public startAutoAttack boolean
+--- @field public startPetAttack boolean
 --- @field public cancelQueuedSpell boolean
 --- @field public targetUnitAfterCast boolean
 

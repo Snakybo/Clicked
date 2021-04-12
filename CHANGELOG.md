@@ -12,6 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+- Add shared binding option to start pet attacks
 - Add support for TBC Classic
 - Add missing instance type load option to Classic
 

@@ -189,7 +189,8 @@ function Addon:GetNewBindingTemplate()
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			executionOrder = 1,
 			interrupt = false,
-			allowStartAttack = true,
+			startAutoAttack = true,
+			startPetAttack = false,
 			cancelQueuedSpell = false,
 			targetUnitAfterCast = false
 		},
@@ -920,6 +921,18 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.2.0")
+	end
+
+	-- 1.2.x to 1.3.0
+	if string.sub(from, 1, 3) == "1.2" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.startAutoAttack = binding.action.allowStartAttack
+			binding.action.startPetAttack = false
+
+			binding.action.allowStartAttack = nil
+		end
+
+		FinalizeVersionUpgrade("1.3.0")
 	end
 
 	profile.version = Clicked.VERSION
