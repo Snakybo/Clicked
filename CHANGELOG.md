@@ -8,11 +8,15 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.3.0] - 2021-04-17
 
 ### Added
 
 - Add shared binding option to start pet attacks
+
+### Fixed
+
+- Fixed a Lua error when copy-pasting binding data
 
 ## [1.2.0] - 2021-04-06
 
