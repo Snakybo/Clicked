@@ -13,6 +13,7 @@ jobs:
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
+        annotate: warning
     - name: "Generate recent changes"
       uses: kemayo/actions-recent-changelog@v1
       with:
