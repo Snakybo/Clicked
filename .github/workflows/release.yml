@@ -13,6 +13,7 @@ jobs:
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
+        annotate: warning
     - name: "Generate recent changes"
       uses: kemayo/actions-recent-changelog@v1
       with:
@@ -26,6 +27,7 @@ jobs:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
     - name: Package Burning Crusade
       uses: BigWigsMods/packager@master
       with:
@@ -34,9 +36,11 @@ jobs:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
     - name: Package Retail
       uses: BigWigsMods/packager@master
       env:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}

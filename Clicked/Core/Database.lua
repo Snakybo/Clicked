@@ -283,7 +283,7 @@ end
 --- @param original Binding
 --- @param replacement Binding
 function Addon:ReplaceBinding(original, replacement)
-	assert(Addon:IsBindingType(original) "bad argument #1, expected Binding but got " .. type(original))
+	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
 	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
 
 	for index, binding in ipairs(Addon.db.profile.bindings) do
