@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 - Allow `/startattack` to target a unit if none is specified [#63]
+- Don't enable the "Start auto attacks" for new bindings automatically
 
 ## [1.3.0] - 2021-04-17
 
