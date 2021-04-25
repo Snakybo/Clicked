@@ -189,7 +189,7 @@ function Addon:GetNewBindingTemplate()
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			executionOrder = 1,
 			interrupt = false,
-			startAutoAttack = true,
+			startAutoAttack = false,
 			startPetAttack = false,
 			cancelQueuedSpell = false,
 			targetUnitAfterCast = false

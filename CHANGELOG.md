@@ -18,6 +18,17 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Remove `Focus` binding target on Classic
 - Remove `Arena` binding targets on Classic
 
+## [1.3.1] - 2021-04-25
+
+### Added
+
+- Add Chinese translations
+
+### Changed
+
+- Allow `/startattack` to target a unit if none is specified [#63]
+- Don't enable the "Start auto attacks" for new bindings automatically
+
 ## [1.3.0] - 2021-04-17
 
 ### Added
@@ -681,7 +692,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.3.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.3.1...master
+[1.3.1]: https://github.com/Snakybo/Clicked/releases/tag/1.3.1
 [1.3.0]: https://github.com/Snakybo/Clicked/releases/tag/1.3.0
 [1.2.0]: https://github.com/Snakybo/Clicked/releases/tag/1.2.0
 [1.1.2]: https://github.com/Snakybo/Clicked/releases/tag/1.1.2
@@ -734,6 +746,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
