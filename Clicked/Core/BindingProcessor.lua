@@ -1032,7 +1032,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 					if not startPetAttack and binding.action.startPetAttack then
 						startPetAttack = true
-						table.insert(lines, "/petattack [@target,harm]")
+						table.insert(lines, "/petattack")
 					end
 				end
 
