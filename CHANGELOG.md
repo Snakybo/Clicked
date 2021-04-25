@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add Chinese translations
 
+### Changed
+
+- Allow `/startattack` to target a unit if none is specified [#63]
+
 ## [1.3.0] - 2021-04-17
 
 ### Added
@@ -730,6 +734,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
