@@ -830,7 +830,8 @@ local methods = {
 				if item.binding ~= nil then
 					local value = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
 
-					if not Addon:IsStringNilOrEmpty(value) then
+					if (type(value) == "string" and not Addon:IsStringNilOrEmpty(value)) or
+					   (type(value) == "number" and value > 0) then
 						table.insert(strings, value)
 					end
 
