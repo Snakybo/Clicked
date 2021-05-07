@@ -1,0 +1,76 @@
+name: Bug Report
+description: Is something not working as expected? Create a bug report
+labels: Bug
+body:
+- type: textarea
+  attributes:
+    label: Describe the bug
+    description: What did you expect to happen and what happened instead?
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Clicked Version
+    description: You can see the current version in the bottom left of the configuration window, if the window does not open, check the CurseForge app or the `## Version:` field in the Clicked.toc file.
+    placeholder: Clicked 1.3.0
+  validations:
+    required: true
+- type: dropdown
+  id: flavor
+  attributes:
+    label: World of Warcraft Flavor
+    description: What version of World of Warcraft are are you running?
+    options:
+      - Shadowlands
+      - Classic
+      - The Burning Crusade Classic
+  validations:
+    required: true
+- type: checkboxes
+  id: testing
+  attributes:
+    label: Testing
+    description: Did you try having Clicked as the only enabled addon and everything else disabled?
+    options:
+      - label: "Yes"
+      - label: "No"
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Lua Errors
+    description: Do you have an error log of what happened? If you don't see any errors, make sure that error reporting is enabled (`/console scriptErrors 1`) or install [BugSack](https://www.curseforge.com/wow/addons/bugsack) & [BugGrabber](https://www.curseforge.com/wow/addons/bug-grabber), yes both are needed.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Reproduction Steps
+    description: Please list out the steps to reproduce your bug.
+    placeholder: |
+      1. Go to '...'
+      2. Click on '...'
+      3. Scroll down to '...'
+      4. See error
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Last Working Version
+    description: Was it working in a previous version? If yes, which one?
+    placeholder: Clicked 1.0.0
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Screenshots
+    description: If applicable, add screenshots to help explain your problem.
+    placeholder: Attach screenshots by dragging & dropping or pasting them inside of this field.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Debug Output
+    description: The built-in debug output utility contains a lot of information to help solve your issue, paste the contents of the `/clicked dump` window in below.
+    placeholder: Paste the contents of the `/clicked dump` window here.
+  validations:
+    required: false
