@@ -171,10 +171,13 @@ function Clicked:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("BC") then
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 	end
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED);
@@ -192,10 +195,13 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("BC") then
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
-		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
 	end
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")

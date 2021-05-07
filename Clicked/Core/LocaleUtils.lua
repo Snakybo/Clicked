@@ -8,83 +8,55 @@ local _, Addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 --- @type integer[]
-local allRaces
+local allRaces = {}
 
 --- @type string[]
-local allClasses
+local allClasses = {}
 
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	allRaces = {
-		-- Alliance
-		1, -- Human
-		3, -- Dwarf
-		4, -- NightElf
-		7, -- Gnome
-		11, -- Draenei
-		22, -- Worgen
-		29, -- VoidElf
-		30, -- LightforgedDraenei
-		32, -- KulTiran
-		34, -- DarkIronDwarf
-		37, -- Mechagnome
+if Addon:IsGameVersionAtleast("CLASSIC") then
+	table.insert(allRaces, 1) -- Human
+	table.insert(allRaces, 2) -- Orc
+	table.insert(allRaces, 3) -- Dwarf
+	table.insert(allRaces, 4) -- NightElf
+	table.insert(allRaces, 5) -- Scourge
+	table.insert(allRaces, 6) -- Tauren
+	table.insert(allRaces, 7) -- Gnome
+	table.insert(allRaces, 8) -- Troll
 
-		-- Horde
-		2, -- Orc
-		5, -- Scourge
-		6, -- Tauren
-		8, -- Troll
-		9, -- Goblin
-		10, -- BloodElf
-		27, -- Nightborne
-		28, -- HighmountainTauren
-		31, -- ZandalariTroll
-		35, -- Vulpera
-		36, -- MagharOrc
+	table.insert(allClasses, "WARRIOR")
+	table.insert(allClasses, "PALADIN")
+	table.insert(allClasses, "HUNTER")
+	table.insert(allClasses, "ROGUE")
+	table.insert(allClasses, "PRIEST")
+	table.insert(allClasses, "SHAMAN")
+	table.insert(allClasses, "MAGE")
+	table.insert(allClasses, "WARLOCK")
+	table.insert(allClasses, "DRUID")
+end
 
-		-- Neutral
-		24, -- Pandaren
-	}
+if Addon:IsGameVersionAtleast("BC") then
+	table.insert(allRaces, 10) -- BloodElf
+	table.insert(allRaces, 11) -- Draenei
+end
 
-	allClasses = {
-		"WARRIOR",
-		"PALADIN",
-		"HUNTER",
-		"ROGUE",
-		"PRIEST",
-		"DEATHKNIGHT",
-		"SHAMAN",
-		"MAGE",
-		"WARLOCK",
-		"MONK",
-		"DRUID",
-		"DEMONHUNTER"
-	}
-elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	allRaces = {
-		-- Alliance
-		1, -- Human
-		3, -- Dwarf
-		4, -- NightElf
-		7, -- Gnome
+if Addon:IsGameVersionAtleast("RETAIL") then
+	table.insert(allRaces, 9) -- Goblin
+	table.insert(allRaces, 22) -- Worgen
+	table.insert(allRaces, 24) -- Pandaren
+	table.insert(allRaces, 27) -- Nightborne
+	table.insert(allRaces, 28) -- HighmountainTauren
+	table.insert(allRaces, 29) -- VoidElf
+	table.insert(allRaces, 30) -- LightforgedDraenei
+	table.insert(allRaces, 31) -- HighmountainTauren
+	table.insert(allRaces, 32) -- KulTiran
+	table.insert(allRaces, 34) -- DarkIronDwarf
+	table.insert(allRaces, 35) -- Vulpera
+	table.insert(allRaces, 36) -- MagharOrc
+	table.insert(allRaces, 37) -- Mechagnome
 
-		-- Horde
-		2, -- Orc
-		5, -- Scourge
-		6, -- Tauren
-		8, -- Troll
-	}
-
-	allClasses = {
-		"WARRIOR",
-		"PALADIN",
-		"HUNTER",
-		"ROGUE",
-		"PRIEST",
-		"SHAMAN",
-		"MAGE",
-		"WARLOCK",
-		"DRUID"
-	}
+	table.insert(allClasses, "DEATHKNIGHT")
+	table.insert(allClasses, "MONK")
+	table.insert(allClasses, "DEMONHUNTER")
 end
 
 -- Private addon API
@@ -124,45 +96,87 @@ end
 --- @return table<string,string> items
 --- @return string[] order
 function Addon:GetLocalizedTargetUnits()
-	local items = {
-		[Addon.TargetUnits.DEFAULT] = DEFAULT,
-		[Addon.TargetUnits.PLAYER] = L["Player (you)"],
-		[Addon.TargetUnits.TARGET] = TARGET,
-		[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"],
-		[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"],
-		[Addon.TargetUnits.FOCUS] = FOCUS,
-		[Addon.TargetUnits.CURSOR] = L["Cursor"],
-		[Addon.TargetUnits.PET] = PET,
-		[Addon.TargetUnits.PET_TARGET] = L["Pet target"],
-		[Addon.TargetUnits.PARTY_1] = L["Party %s"]:format("1"),
-		[Addon.TargetUnits.PARTY_2] = L["Party %s"]:format("2"),
-		[Addon.TargetUnits.PARTY_3] = L["Party %s"]:format("3"),
-		[Addon.TargetUnits.PARTY_4] = L["Party %s"]:format("4"),
-		[Addon.TargetUnits.PARTY_5] = L["Party %s"]:format("5"),
-		[Addon.TargetUnits.ARENA_1] = L["Arena %s"]:format("1"),
-		[Addon.TargetUnits.ARENA_2] = L["Arena %s"]:format("2"),
-		[Addon.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
-	}
+	local items = {}
+	local order
 
-	local order = {
-		Addon.TargetUnits.DEFAULT,
-		Addon.TargetUnits.PLAYER,
-		Addon.TargetUnits.TARGET,
-		Addon.TargetUnits.TARGET_OF_TARGET,
-		Addon.TargetUnits.MOUSEOVER,
-		Addon.TargetUnits.FOCUS,
-		Addon.TargetUnits.CURSOR,
-		Addon.TargetUnits.PET,
-		Addon.TargetUnits.PET_TARGET,
-		Addon.TargetUnits.PARTY_1,
-		Addon.TargetUnits.PARTY_2,
-		Addon.TargetUnits.PARTY_3,
-		Addon.TargetUnits.PARTY_4,
-		Addon.TargetUnits.PARTY_5,
-		Addon.TargetUnits.ARENA_1,
-		Addon.TargetUnits.ARENA_2,
-		Addon.TargetUnits.ARENA_3
-	}
+	if Addon:IsGameVersionAtleast("CLASSIC") then
+		items[Addon.TargetUnits.DEFAULT] = DEFAULT
+		items[Addon.TargetUnits.PLAYER] = L["Player (you)"]
+		items[Addon.TargetUnits.TARGET] = TARGET
+		items[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"]
+		items[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"]
+		items[Addon.TargetUnits.CURSOR] = L["Cursor"]
+		items[Addon.TargetUnits.PET] = PET
+		items[Addon.TargetUnits.PET_TARGET] = L["Pet target"]
+		items[Addon.TargetUnits.PARTY_1] = L["Party %s"]:format("1")
+		items[Addon.TargetUnits.PARTY_2] = L["Party %s"]:format("2")
+		items[Addon.TargetUnits.PARTY_3] = L["Party %s"]:format("3")
+		items[Addon.TargetUnits.PARTY_4] = L["Party %s"]:format("4")
+		items[Addon.TargetUnits.PARTY_5] = L["Party %s"]:format("5")
+
+		order = {
+			Addon.TargetUnits.DEFAULT,
+			Addon.TargetUnits.PLAYER,
+			Addon.TargetUnits.TARGET,
+			Addon.TargetUnits.TARGET_OF_TARGET,
+			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.CURSOR,
+			Addon.TargetUnits.PET,
+			Addon.TargetUnits.PET_TARGET,
+			Addon.TargetUnits.PARTY_1,
+			Addon.TargetUnits.PARTY_2,
+			Addon.TargetUnits.PARTY_3,
+			Addon.TargetUnits.PARTY_4,
+			Addon.TargetUnits.PARTY_5
+		}
+	end
+
+	if Addon:IsGameVersionAtleast("BC") then
+		items[Addon.TargetUnits.FOCUS] = FOCUS
+
+		order = {
+			Addon.TargetUnits.DEFAULT,
+			Addon.TargetUnits.PLAYER,
+			Addon.TargetUnits.TARGET,
+			Addon.TargetUnits.TARGET_OF_TARGET,
+			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.FOCUS,
+			Addon.TargetUnits.CURSOR,
+			Addon.TargetUnits.PET,
+			Addon.TargetUnits.PET_TARGET,
+			Addon.TargetUnits.PARTY_1,
+			Addon.TargetUnits.PARTY_2,
+			Addon.TargetUnits.PARTY_3,
+			Addon.TargetUnits.PARTY_4,
+			Addon.TargetUnits.PARTY_5,
+		}
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		items[Addon.TargetUnits.ARENA_1] = L["Arena %s"]:format("1")
+		items[Addon.TargetUnits.ARENA_2] = L["Arena %s"]:format("2")
+		items[Addon.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
+
+		order = {
+			Addon.TargetUnits.DEFAULT,
+			Addon.TargetUnits.PLAYER,
+			Addon.TargetUnits.TARGET,
+			Addon.TargetUnits.TARGET_OF_TARGET,
+			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.FOCUS,
+			Addon.TargetUnits.CURSOR,
+			Addon.TargetUnits.PET,
+			Addon.TargetUnits.PET_TARGET,
+			Addon.TargetUnits.PARTY_1,
+			Addon.TargetUnits.PARTY_2,
+			Addon.TargetUnits.PARTY_3,
+			Addon.TargetUnits.PARTY_4,
+			Addon.TargetUnits.PARTY_5,
+			Addon.TargetUnits.ARENA_1,
+			Addon.TargetUnits.ARENA_2,
+			Addon.TargetUnits.ARENA_3
+		}
+	end
 
 	return items, order
 end

@@ -18,6 +18,10 @@ jobs:
       uses: BigWigsMods/packager@master
       with:
         args: -d -g classic
+    - name: Package Burning Crusade
+      uses: BigWigsMods/packager@master
+      with:
+        args: -d -g bc
     - name: Package Retail
       uses: BigWigsMods/packager@master
       with:

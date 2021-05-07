@@ -294,7 +294,7 @@ local function HijackSpellBookButtons(base)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not Addon:IsStringNilOrEmpty(subName) then
+				if Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
@@ -427,10 +427,12 @@ local function EnsureIconCache()
 			end
 		end
 
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		if Addon:IsRetail() then
 			iconCache = ClickedMedia:GetRetailIcons()
-		elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		elseif Addon:IsClassic() then
 			iconCache = ClickedMedia:GetClassicIcons()
+		elseif Addon:IsBC() then
+			iconCache = ClickedMedia:GetBurningCrusadeIcons()
 		end
 	end
 
@@ -1538,7 +1540,7 @@ end
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
@@ -1553,7 +1555,7 @@ local function DrawBindingMacroConditionsPage(container, binding)
 	DrawLoadOutdoors(container, load.outdoors)
 	DrawLoadSwimming(container, load.swimming)
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("BC") then
 		DrawLoadFlying(container, load.flying)
 		DrawLoadFlyable(container, load.flyable)
 	end
@@ -1688,19 +1690,39 @@ end
 --- @param container table
 --- @param instanceType Binding.TriStateLoadOption
 local function DrawLoadInInstanceType(container, instanceType)
-	local items
+	local items = {}
 	local order
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		items = {
-			NONE = L["No Instance"],
-			SCENARIO = L["Scenario"],
-			PARTY = L["Dungeon"],
-			RAID = L["Raid"],
-			PVP = BATTLEGROUND,
-			ARENA = ARENA
-		}
+	if Addon:IsGameVersionAtleast("CLASSIC") then
+		items["NONE"] = L["No Instance"]
+		items["PARTY"] = L["Dungeon"]
+		items["RAID"] = L["Raid"]
+	end
 
+	if Addon:IsGameVersionAtleast("BC") then
+		items["PVP"] = BATTLEGROUND
+		items["ARENA"] = ARENA
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		items["SCENARIO"] = L["Scenario"]
+	end
+
+	if Addon:IsClassic() then
+		order = {
+			"NONE",
+			"PARTY",
+			"RAID"
+		}
+	elseif Addon:IsBC() then
+		order = {
+			"NONE",
+			"PARTY",
+			"RAID",
+			"PVP",
+			"ARENA"
+		}
+	elseif Addon:IsRetail() then
 		order = {
 			"NONE",
 			"SCENARIO",
@@ -1708,18 +1730,6 @@ local function DrawLoadInInstanceType(container, instanceType)
 			"RAID",
 			"PVP",
 			"ARENA"
-		}
-	else
-		items = {
-			NONE = L["No Instance"],
-			DUNGEON = L["Dungeon"],
-			RAID = L["Raid"]
-		}
-
-		order = {
-			"NONE",
-			"DUNGEON",
-			"RAID"
 		}
 	end
 
@@ -1784,7 +1794,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	DrawLoadClass(container, load.class)
 	DrawLoadRace(container, load.race)
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
@@ -1793,10 +1803,10 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
-		DrawLoadInInstanceType(container, load.instanceType)
 		DrawLoadInCovenant(container, load.covenant)
 	end
 
+	DrawLoadInInstanceType(container, load.instanceType)
 	DrawLoadZoneName(container, load.zoneName)
 	DrawLoadSpellKnown(container, load.spellKnown)
 	DrawLoadInGroup(container, load.inGroup)
@@ -1978,7 +1988,7 @@ local function CreateFromItemTemplate(identifier)
 			end
 
 			-- Get spec index from ID
-			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and tabIndex > 2 then
+			if Addon:IsGameVersionAtleast("RETAIL") and tabIndex > 2 then
 				if specId == 0 then
 					specIndex = GetSpecialization()
 					specId = GetSpecializationInfo(specIndex)
@@ -2004,7 +2014,7 @@ local function CreateFromItemTemplate(identifier)
 				end
 			end
 
-			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and specId > 0 then
+			if Addon:IsGameVersionAtleast("RETAIL") and specId > 0 then
 				-- Talents
 				for tier = 1, MAX_TALENT_TIERS do
 					for column = 1, NUM_TALENT_COLUMNS do
@@ -2306,7 +2316,7 @@ function Addon:BindingConfig_Initialize()
 
 	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
 		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
 	end
