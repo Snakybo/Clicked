@@ -408,6 +408,28 @@ local function HijackSpellBookFlyoutButtons()
 	end
 end
 
+local function HijackSpellUpdateButton(self)
+	if self.SpellHighlightTexture == nil or SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
+		return
+	end
+
+	local slot = SpellBook_GetSpellBookSlot(self)
+
+	if slot ~= nil then
+		local _, _, spellId = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+
+		if spellId ~= nil then
+			--- @type Binding
+			for _, binding in Clicked:IterateActiveBindings() do
+				if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+					self.SpellHighlightTexture:Hide()
+					break
+				end
+			end
+		end
+	end
+end
+
 -- Icon picker
 
 local function EnsureIconCache()
@@ -2319,6 +2341,7 @@ function Addon:BindingConfig_Initialize()
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
 		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
+		hooksecurefunc("SpellButton_UpdateButton", HijackSpellUpdateButton)
 	end
 end
 
@@ -2381,6 +2404,10 @@ end
 function Addon:BindingConfig_Redraw()
 	if root == nil or not root:IsVisible() then
 		return
+	end
+
+	if SpellBookFrame:IsShown() then
+		SpellBookFrame_UpdateSpells()
 	end
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))

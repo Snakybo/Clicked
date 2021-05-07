@@ -10,8 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
 - Add support for TBC Classic
 - Add missing instance type load option to Classic
+- Hide spellbook spell icon highlight when an active binding casts the spell
 
 ### Removed
 

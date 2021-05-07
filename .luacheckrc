@@ -116,6 +116,7 @@ read_globals = {
 	"SetDesaturation",
 	"ShowUIPanel",
 	"SpellBookFrame",
+	"SpellBookFrame_UpdateSpells",
 	"SpellBook_GetSpellBookSlot",
 	"SpellButton_OnEnter",
 	"SpellButton_OnLeave",
