@@ -3953,6 +3953,7 @@ local icons = {
 	"inv_axe_31",
 	"inv_warpstalkermountbc",
 	"pvp-arenapoints-icon",
+	"ui_shop_gameupgrades",
 }
 
 function ClickedMedia:GetBurningCrusadeIcons()
