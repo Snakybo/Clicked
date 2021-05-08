@@ -93,6 +93,7 @@
 --- @field public pvpTalent Binding.TriStateLoadOption
 --- @field public warMode Binding.LoadOption
 --- @field public covenant Binding.TriStateLoadOption
+--- @field public channeling Binding.NegatableStringLoadOption
 
 --- @class Binding.LoadOption
 --- @field public selected boolean
@@ -102,6 +103,11 @@
 --- @field public selected "0"|"1"|"2"
 --- @field public single number|string
 --- @field public multiple number[]|string[]
+
+--- @class Binding.NegatableStringLoadOption
+--- @field public selected boolean
+--- @field public negated boolean
+--- @field public value string
 
 --- @class Group
 --- @field public name string
@@ -118,10 +124,15 @@
 --- @field public flying string
 --- @field public flyable string
 --- @field public swimming string
+--- @field public channeling Action.NegatableValueString
 --- @field public forms string
 --- @field public unit string
 --- @field public hostility string
 --- @field public vitals string
+
+--- @class Action.NegatableValueString
+--- @field public negated boolean
+--- @field public value string
 
 --- @class Command
 --- @field public keybind string

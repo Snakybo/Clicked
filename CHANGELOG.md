@@ -15,6 +15,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add support for TBC Classic
 - Add missing instance type load option to Classic
 - Hide spellbook spell icon highlight when an active binding casts the spell
+- Add `channeling` and `nochanneling` macro options
 
 ### Removed
 

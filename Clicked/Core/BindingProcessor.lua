@@ -81,7 +81,11 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local unit, needsExistsCheck = Addon:GetWoWUnitFromUnit(action.unit, true)
 
-	local function ParseNegatableCondition(condition, value, negated, isUnit)
+	--- @param condition boolean|string
+	--- @param value string
+	--- @param negated string
+	--- @param isUnit boolean
+	local function ParseNegatableBooleanCondition(condition, value, negated, isUnit)
 		if condition == true then
 			table.insert(flags, value)
 
@@ -91,6 +95,16 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		elseif condition == false then
 			negated = negated or ("no" .. value)
 			table.insert(flags, negated)
+		end
+	end
+
+	--- @param condition Action.NegatableValueString
+	--- @param value string
+	--- @param negated string
+	local function ParseNegatableStringCondition(condition, value, negated)
+		if condition ~= nil then
+			local key = condition.negated and negated or value
+			table.insert(flags, key .. ":" .. condition.value)
 		end
 	end
 
@@ -120,14 +134,15 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		end
 	end
 
-	ParseNegatableCondition(action.pet, "pet", "nopet", true)
-	ParseNegatableCondition(action.combat, "combat")
-	ParseNegatableCondition(action.stealth, "stealth")
-	ParseNegatableCondition(action.mounted, "mounted")
-	ParseNegatableCondition(action.outdoors, "outdoors", "indoors")
-	ParseNegatableCondition(action.swimming, "swimming")
-	ParseNegatableCondition(action.flying, "flying")
-	ParseNegatableCondition(action.flyable, "flyable")
+	ParseNegatableBooleanCondition(action.pet, "pet", "nopet", true)
+	ParseNegatableBooleanCondition(action.combat, "combat")
+	ParseNegatableBooleanCondition(action.stealth, "stealth")
+	ParseNegatableBooleanCondition(action.mounted, "mounted")
+	ParseNegatableBooleanCondition(action.outdoors, "outdoors", "indoors")
+	ParseNegatableBooleanCondition(action.swimming, "swimming")
+	ParseNegatableBooleanCondition(action.flying, "flying")
+	ParseNegatableBooleanCondition(action.flyable, "flyable")
+	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
@@ -150,9 +165,22 @@ local function ConstructAction(binding, target)
 		type = binding.type
 	}
 
+	--- @param condition Binding.LoadOption
+	--- @param key string
 	local function AppendCondition(condition, key)
 		if condition.selected then
 			action[key] = condition.value
+		end
+	end
+
+	--- @param condition Binding.NegatableStringLoadOption
+	--- @param key string
+	local function AppendNegatableStringCondition(condition, key)
+		if condition.selected and not Addon:IsStringNilOrEmpty(condition.value) then
+			action[key] = {
+				negated = condition.negated,
+				value = condition.value
+			}
 		end
 	end
 
@@ -162,6 +190,7 @@ local function ConstructAction(binding, target)
 	AppendCondition(binding.load.mounted, "mounted")
 	AppendCondition(binding.load.outdoors, "outdoors")
 	AppendCondition(binding.load.swimming, "swimming")
+	AppendNegatableStringCondition(binding.load.channeling, "channeling")
 
 	if Addon:IsGameVersionAtleast("BC") then
 		AppendCondition(binding.load.flying, "flying")

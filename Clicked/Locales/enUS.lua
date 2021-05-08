@@ -144,6 +144,7 @@ L["Not swimming"] = true
 L["Outdoors"] = true
 L["Indoors"] = true
 L["Covenant selected"] = true
+L["Not channeling"] = true
 L["Instance type"] = true
 L["No Instance"] = true
 L["Zone name(s)"] = true

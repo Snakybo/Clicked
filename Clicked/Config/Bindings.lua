@@ -548,6 +548,54 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	end
 end
 
+--- @generic T
+--- @param container table
+--- @param title string
+--- @param items table<T,string>
+--- @param order T[]
+--- @param data Binding.NegatableStringLoadOption
+local function DrawNegatableStringLoadOption(container, title, items, order, data)
+	-- enabled toggle
+	do
+		local widget = Addon:GUI_CheckBox(title, data, "selected")
+
+		if not data.selected then
+			widget:SetRelativeWidth(1)
+		else
+			widget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(widget)
+
+		RegisterTooltip(widget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+	end
+
+	-- state and value
+	if data.selected then
+		do
+			local widget = Addon:GUI_Dropdown(nil, items, order, nil, data, "negated")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+
+		-- whitespace
+		do
+			local widget = Addon:GUI_Label("")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+
+		do
+			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+	end
+end
+
 --- @param container table
 --- @param title string
 --- @param data Binding.LoadOption
@@ -1558,6 +1606,22 @@ local function DrawLoadSwimming(container, swimming)
 end
 
 --- @param container table
+--- @param channeling Binding.NegatableStringLoadOption
+local function DrawLoadChanneling(container, channeling)
+	local items = {
+		[false] = CHANNELING,
+		[true] = L["Not channeling"]
+	}
+
+	local order = {
+		false,
+		true
+	}
+
+	DrawNegatableStringLoadOption(container, CHANNELING, items, order, channeling)
+end
+
+--- @param container table
 --- @param binding Binding
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
@@ -1576,6 +1640,7 @@ local function DrawBindingMacroConditionsPage(container, binding)
 	DrawLoadMounted(container, load.mounted)
 	DrawLoadOutdoors(container, load.outdoors)
 	DrawLoadSwimming(container, load.swimming)
+	DrawLoadChanneling(container, load.channeling)
 
 	if Addon:IsGameVersionAtleast("BC") then
 		DrawLoadFlying(container, load.flying)

@@ -24,6 +24,17 @@ local function GetNegatableLoadOptionTemplate()
 	return GetLoadOptionTemplate(true)
 end
 
+--- @return Binding.NegatableStringLoadOption
+local function GetNegatableStringLoadOptionTemplate()
+	local template = {
+		selected = false,
+		negated = false,
+		value = ""
+	}
+
+	return template
+end
+
 --- @param default number|string
 --- @return Binding.TriStateLoadOption
 local function GetTriStateLoadOptionTemplate(default)
@@ -222,7 +233,8 @@ function Addon:GetNewBindingTemplate()
 			swimming = GetNegatableLoadOptionTemplate(),
 			instanceType = GetTriStateLoadOptionTemplate("NONE"),
 			zoneName = GetLoadOptionTemplate(""),
-			equipped = GetLoadOptionTemplate("")
+			equipped = GetLoadOptionTemplate(""),
+			channeling = GetNegatableStringLoadOptionTemplate(),
 		},
 		integrations = {
 		}
@@ -933,6 +945,19 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.3.0")
+	end
+
+	-- 1.3.x to 1.4.0
+	if string.sub(from, 1, 3) == "1.3" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.channeling = {
+				selected = false,
+				negated = false,
+				value = ""
+			}
+		end
+
+		FinalizeVersionUpgrade("1.4.0")
 	end
 
 	profile.version = Clicked.VERSION

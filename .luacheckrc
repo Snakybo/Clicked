@@ -147,6 +147,7 @@ read_globals = {
 	"ARENA",
 	"BATTLEGROUND",
 	"CANCEL",
+	"CHANNELING",
 	"CLASS",
 	"COMBAT",
 	"CONTINUE",
