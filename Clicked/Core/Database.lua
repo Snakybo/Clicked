@@ -955,6 +955,12 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 				negated = false,
 				value = ""
 			}
+
+			-- Somehow `load.never` could potentially be nil in some magical circumstances..
+			-- This should make sure that doesn't happen.
+			if binding.load.never == nil then
+				binding.load.never = false
+			end
 		end
 
 		FinalizeVersionUpgrade("1.4.0")
