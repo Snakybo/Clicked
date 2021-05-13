@@ -17,6 +17,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Hide spellbook spell icon highlight when an active binding casts the spell
 - Add `channeling` and `nochanneling` macro options
 
+### Fixed
+
+- Fix a potential Lua error when opening binding load options
+
 ### Removed
 
 - Remove `Focus` binding target on Classic
