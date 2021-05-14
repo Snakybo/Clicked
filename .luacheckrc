@@ -35,6 +35,7 @@ read_globals = {
 	-- Libraries
 	"LibStub",
 	"ElvUI",
+	"ElvUISpellBookTooltip",
 	"WeakAuras",
 	"WeakAurasSaved",
 
