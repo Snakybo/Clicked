@@ -103,6 +103,7 @@ read_globals = {
 	"IsPassiveSpell",
 	"IsShiftKeyDown",
 	"IsSpellKnown",
+	"LIGHTBLUE_FONT_COLOR",
 	"LoadAddOn",
 	"MAX_SPELLS",
 	"MAX_TALENT_TIERS",

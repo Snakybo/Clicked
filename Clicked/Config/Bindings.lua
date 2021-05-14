@@ -246,6 +246,33 @@ end
 
 -- Spell book integration
 
+--- @param button table
+--- @param bookType string
+--- @return boolean
+--- @return Binding
+local function IsSpellButtonBound(button, bookType)
+	if button == nil then
+		return false, nil
+	end
+
+	local slot = SpellBook_GetSpellBookSlot(button)
+
+	if slot ~= nil then
+		local _, _, spellId = GetSpellBookItemName(slot, bookType)
+
+		if spellId ~= nil then
+			--- @type Binding
+			for _, binding in Clicked:IterateActiveBindings() do
+				if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+					return true, binding
+				end
+			end
+		end
+	end
+
+	return false, nil
+end
+
 local function OnSpellBookButtonClick(name)
 	if GetCurrentBinding() == nil or name == nil then
 		return
@@ -265,7 +292,7 @@ local function OnSpellBookButtonClick(name)
 	end
 end
 
-local function HijackSpellBookButtons(base)
+local function HijackSpellButton_UpdateButton(self)
 	if didOpenSpellbook and not SpellBookFrame:IsShown() then
 		GameTooltip:Hide()
 		didOpenSpellbook = false
@@ -274,7 +301,7 @@ local function HijackSpellBookButtons(base)
 	for i = 1, SPELLS_PER_PAGE do
 		local parent = _G["SpellButton" .. i]
 		local button = spellbookButtons[i]
-		local shouldUpdate = base == nil or base == parent
+		local shouldUpdate = self == nil or self == parent
 
 		if button == nil then
 			button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
@@ -354,9 +381,26 @@ local function HijackSpellBookButtons(base)
 			end
 		end
 	end
+
+	if self ~= nil and self.SpellHighlightTexture ~= nil and IsSpellButtonBound(self, SpellBookFrame.bookType) then
+		self.SpellHighlightTexture:Hide()
+	end
 end
 
-local function HijackSpellBookFlyoutButtons()
+local function OnTooltipSetSpell(self)
+	local _, spellId = self:GetSpell()
+
+	--- @type Binding
+	for _, binding in Clicked:IterateActiveBindings() do
+		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+			local text = string.format(L["Bound to %s"], binding.keybind)
+			GameTooltip:AddLine(text, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
+			break
+		end
+	end
+end
+
+local function HijackSpellFlyout_Toggle()
 	if root == nil or not root:IsVisible() then
 		return
 	end
@@ -404,28 +448,6 @@ local function HijackSpellBookFlyoutButtons()
 		for i = 1, #spellFlyOutButtons do
 			local button = spellFlyOutButtons[i]
 			button:Hide()
-		end
-	end
-end
-
-local function HijackSpellUpdateButton(self)
-	if self.SpellHighlightTexture == nil or SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
-		return
-	end
-
-	local slot = SpellBook_GetSpellBookSlot(self)
-
-	if slot ~= nil then
-		local _, _, spellId = GetSpellBookItemName(slot, SpellBookFrame.bookType)
-
-		if spellId ~= nil then
-			--- @type Binding
-			for _, binding in Clicked:IterateActiveBindings() do
-				if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
-					self.SpellHighlightTexture:Hide()
-					break
-				end
-			end
 		end
 	end
 end
@@ -860,7 +882,7 @@ local function DrawSpellItemSelection(container, action, mode)
 				didOpenSpellbook = true
 
 				if SpellBookFrame:IsShown() then
-					HijackSpellBookButtons(nil)
+					HijackSpellButton_UpdateButton(nil)
 				else
 					ShowUIPanel(SpellBookFrame)
 				end
@@ -2398,15 +2420,19 @@ end
 
 function Addon:BindingConfig_Initialize()
 	SpellBookFrame:HookScript("OnHide", function()
-		HijackSpellBookButtons(nil)
+		HijackSpellButton_UpdateButton(nil)
 	end)
 
-	hooksecurefunc("SpellButton_UpdateButton", HijackSpellBookButtons)
+	hooksecurefunc("SpellButton_UpdateButton", HijackSpellButton_UpdateButton)
+
+	-- Add a delay here to make sure we're the always at the bottom of the tooltip
+	C_Timer.After(1, function()
+		GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+	end)
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellBookFlyoutButtons)
-		hooksecurefunc("SpellFlyout_Toggle", HijackSpellBookFlyoutButtons)
-		hooksecurefunc("SpellButton_UpdateButton", HijackSpellUpdateButton)
+		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellFlyout_Toggle)
+		hooksecurefunc("SpellFlyout_Toggle", HijackSpellFlyout_Toggle)
 	end
 end
 
