@@ -1,6 +1,6 @@
 ## Interface: 90005
 ## Interface-Classic: 11307
-## Interface-BC: 20501
+## Interface-BCC: 20501
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: 1.4.1

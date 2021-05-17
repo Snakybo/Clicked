@@ -21,7 +21,7 @@ jobs:
     - name: Package Burning Crusade
       uses: BigWigsMods/packager@master
       with:
-        args: -d -g bc
+        args: -d -g bcc
     - name: Package Retail
       uses: BigWigsMods/packager@master
       with:

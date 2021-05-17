@@ -1,6 +1,6 @@
 ## Interface: 90005
 ## Interface-Classic: 11307
-## Interface-BC: 20501
+## Interface-BCC: 20501
 ## Title: ClickedMedia
 ## Author: Snakybo
 ## Version: @project-version@
@@ -14,9 +14,9 @@ MediaRetail.lua
 #@version-classic@
 # MediaClassic.lua
 #@end-version-classic@
-#@version-bc@
+#@version-bcc@
 # MediaBurningCrusade.lua
-#@end-version-bc@
+#@end-version-bcc@
 #@debug@
 MediaClassic.lua
 MediaBurningCrusade.lua
