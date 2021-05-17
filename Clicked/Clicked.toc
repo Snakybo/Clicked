@@ -3,7 +3,7 @@
 ## Interface-BC: 20501
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 1.4.0
+## Version: 1.4.1
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
 ## X-Website: https://www.curseforge.com/wow/addons/clicked
