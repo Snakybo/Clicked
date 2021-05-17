@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Show keybind in spell tooltip when bound
 
+### Fixed
+
+- Fix icon picker on Classic and Burning Crusade Classic
+
 ## [1.4.0] - 2021-05-13
 
 ### Added
