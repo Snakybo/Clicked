@@ -235,15 +235,16 @@ function Addon:GetNewBindingTemplate()
 			zoneName = GetLoadOptionTemplate(""),
 			equipped = GetLoadOptionTemplate(""),
 			channeling = GetNegatableStringLoadOptionTemplate(),
+			flying = GetNegatableLoadOptionTemplate(),
+			flyable = GetNegatableLoadOptionTemplate(),
+			specialization = GetTriStateLoadOptionTemplate(1),
+			talent = GetTriStateLoadOptionTemplate(1),
+			pvpTalent = GetTriStateLoadOptionTemplate(1),
+			warMode = GetNegatableLoadOptionTemplate()
 		},
 		integrations = {
 		}
 	}
-
-	if Addon:IsGameVersionAtleast("BC") then
-		template.load.flying = GetNegatableLoadOptionTemplate()
-		template.load.flyable = GetNegatableLoadOptionTemplate()
-	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		--- @type number
@@ -255,9 +256,6 @@ function Addon:GetNewBindingTemplate()
 		end
 
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-		template.load.talent = GetTriStateLoadOptionTemplate(1)
-		template.load.pvpTalent = GetTriStateLoadOptionTemplate(1)
-		template.load.warMode = GetNegatableLoadOptionTemplate()
 
 		--- @type number
 		local covenantId = C_Covenants.GetActiveCovenantID()
@@ -964,6 +962,52 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.4.0")
+	end
+
+	-- 1.4.x to 1.5.0
+	if string.sub(from, 1, 3) == "1.4" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.flying = binding.load.flying or {
+				selected = false,
+				value = false
+			}
+
+			binding.load.flyable = binding.load.flyable or {
+				selected = false,
+				value = false
+			}
+
+			binding.load.specialization = binding.load.specialization or {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
+			}
+
+			binding.load.talent = binding.load.talent or {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
+			}
+
+			binding.load.pvpTalent = binding.load.pvpTalent or {
+				selected = 0,
+				single = 1,
+				multiple = {
+					1
+				}
+			}
+
+			binding.load.warMode = binding.load.warMode or {
+				selected = false,
+				value = true
+			}
+		end
+
+		FinalizeVersionUpgrade("1.5.0")
 	end
 
 	profile.version = Clicked.VERSION
