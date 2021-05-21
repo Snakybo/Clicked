@@ -98,7 +98,7 @@ end
 local function SetSelectedItem(name, enabled)
 	local args = config.args
 
-		if enabled then
+	if enabled then
 		args[name] = {
 			name = GetUnitFrameSource(name) .. ":" .. name,
 			type = "toggle",
@@ -219,16 +219,20 @@ end
 
 --- @param frame table
 function Addon:BlacklistOptions_RegisterFrame(frame)
-	local name = frame:GetName()
+	local name = frame.GetName and frame:GetName()
 
-	SetSelectedItem(name, Addon.db.profile.blacklist[name])
-	SetDropdownItem(name, not Addon.db.profile.blacklist[name])
+	if name ~= nil then
+		SetSelectedItem(name, Addon.db.profile.blacklist[name])
+		SetDropdownItem(name, not Addon.db.profile.blacklist[name])
+	end
 end
 
 --- @param frame table
 function Addon:BlacklistOptions_UnregisterFrame(frame)
-	local name = frame:GetName()
+	local name = frame.GetName and frame:GetName()
 
-	SetSelectedItem(name, false)
-	SetDropdownItem(name, false)
+	if name ~= nil then
+		SetSelectedItem(name, false)
+		SetDropdownItem(name, false)
+	end
 end

@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add "target of mouseover" target (`@mouseovertarget`)
 
+### Fixed
+
+- Fix Lua error if click-cast frames don't have a name [#55]
+
 ## [1.5.0] - 2021-05-19
 
 ### Fixed
@@ -790,6 +794,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
+[#55]: https://github.com/Snakybo/Clicked/issues/55
 [#52]: https://github.com/Snakybo/Clicked/issues/52
 [#51]: https://github.com/Snakybo/Clicked/issues/51
 [#50]: https://github.com/Snakybo/Clicked/issues/50
