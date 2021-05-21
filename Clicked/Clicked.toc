@@ -6,7 +6,7 @@
 ## Version: 1.5.0
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
-## X-Website: https://www.curseforge.com/wow/addons/clicked
+## X-Website: https://github.com/Snakybo/Clicked
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703
 ## X-Wago-ID: WL6JPYGv
