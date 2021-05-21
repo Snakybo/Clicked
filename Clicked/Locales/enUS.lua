@@ -94,6 +94,7 @@ L["Macro Targets"] = true
 L["Player (you)"] = true
 L["Target of target"] = true
 L["Mouseover"] = true
+L["Target of mouseover"] = true
 L["Unit frame"] = true
 L["Cursor"] = true
 L["Pet target"] = true

@@ -105,6 +105,7 @@ function Addon:GetLocalizedTargetUnits()
 		items[Addon.TargetUnits.TARGET] = TARGET
 		items[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"]
 		items[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"]
+		items[Addon.TargetUnits.MOUSEOVER_TARGET] = L["Target of mouseover"]
 		items[Addon.TargetUnits.CURSOR] = L["Cursor"]
 		items[Addon.TargetUnits.PET] = PET
 		items[Addon.TargetUnits.PET_TARGET] = L["Pet target"]
@@ -120,6 +121,7 @@ function Addon:GetLocalizedTargetUnits()
 			Addon.TargetUnits.TARGET,
 			Addon.TargetUnits.TARGET_OF_TARGET,
 			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.MOUSEOVER_TARGET,
 			Addon.TargetUnits.CURSOR,
 			Addon.TargetUnits.PET,
 			Addon.TargetUnits.PET_TARGET,
@@ -140,6 +142,7 @@ function Addon:GetLocalizedTargetUnits()
 			Addon.TargetUnits.TARGET,
 			Addon.TargetUnits.TARGET_OF_TARGET,
 			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.MOUSEOVER_TARGET,
 			Addon.TargetUnits.FOCUS,
 			Addon.TargetUnits.CURSOR,
 			Addon.TargetUnits.PET,
@@ -163,6 +166,7 @@ function Addon:GetLocalizedTargetUnits()
 			Addon.TargetUnits.TARGET,
 			Addon.TargetUnits.TARGET_OF_TARGET,
 			Addon.TargetUnits.MOUSEOVER,
+			Addon.TargetUnits.MOUSEOVER_TARGET,
 			Addon.TargetUnits.FOCUS,
 			Addon.TargetUnits.CURSOR,
 			Addon.TargetUnits.PET,

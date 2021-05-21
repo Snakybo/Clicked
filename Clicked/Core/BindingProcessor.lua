@@ -33,6 +33,7 @@ Addon.TargetUnits = {
 	ARENA_3 = "ARENA_3",
 	FOCUS = "FOCUS",
 	MOUSEOVER = "MOUSEOVER",
+	MOUSEOVER_TARGET = "MOUSEOVER_TARGET",
 	CURSOR = "CURSOR"
 }
 
@@ -254,6 +255,7 @@ local function SortActions(actions, indexMap)
 		local priority = {
 			-- 1. Mouseover targets always come first
 			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.MOUSEOVER, comparison = "eq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnits.MOUSEOVER_TARGET, comparison = "eq"},
 
 			-- 2. Macro conditions take presedence over actions that don't specify them explicitly
 			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },

@@ -330,6 +330,7 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 		[Addon.TargetUnits.TARGET] = "target",
 		[Addon.TargetUnits.TARGET_OF_TARGET] = "targettarget",
 		[Addon.TargetUnits.MOUSEOVER] = "mouseover",
+		[Addon.TargetUnits.MOUSEOVER_TARGET] = "mouseovertarget",
 		[Addon.TargetUnits.PET] = "pet",
 		[Addon.TargetUnits.PET_TARGET] = "pettarget",
 		[Addon.TargetUnits.PARTY_1] = "party1",
@@ -348,6 +349,7 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 		[Addon.TargetUnits.TARGET] = true,
 		[Addon.TargetUnits.TARGET_OF_TARGET] = true,
 		[Addon.TargetUnits.MOUSEOVER] = true,
+		[Addon.TargetUnits.MOUSEOVER_TARGET] = true,
 		[Addon.TargetUnits.PET] = true,
 		[Addon.TargetUnits.PET_TARGET] = true,
 		[Addon.TargetUnits.PARTY_1] = true,
@@ -857,7 +859,8 @@ function Addon:CanUnitBeHostile(unit)
 		[Addon.TargetUnits.ARENA_2] = true,
 		[Addon.TargetUnits.ARENA_3] = true,
 		[Addon.TargetUnits.FOCUS] = true,
-		[Addon.TargetUnits.MOUSEOVER] = true
+		[Addon.TargetUnits.MOUSEOVER] = true,
+		[Addon.TargetUnits.MOUSEOVER_TARGET] = true
 	}
 
 	return valid[unit] == true
@@ -885,7 +888,8 @@ function Addon:CanUnitBeDead(unit)
 		[Addon.TargetUnits.ARENA_2] = true,
 		[Addon.TargetUnits.ARENA_3] = true,
 		[Addon.TargetUnits.FOCUS] = true,
-		[Addon.TargetUnits.MOUSEOVER] = true
+		[Addon.TargetUnits.MOUSEOVER] = true,
+		[Addon.TargetUnits.MOUSEOVER_TARGET] = true
 	}
 
 	return valid[unit] == true
