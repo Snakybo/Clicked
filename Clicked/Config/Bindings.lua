@@ -2479,7 +2479,7 @@ function Addon:BindingConfig_Redraw()
 		return
 	end
 
-	if not InCombatLockdown() and SpellBookFrame:IsShown() then
+	if not InCombatLockdown() and SpellBookFrame:IsShown() and SpellBookFrame.bookType == BOOKTYPE_SPELL then
 		SpellBookFrame_UpdateSpells()
 	end
 

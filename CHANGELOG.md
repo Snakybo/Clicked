@@ -17,7 +17,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix Lua error if click-cast frames don't have a name [#55]
+- Fix a Lua error if click-cast frames don't have a name [#55]
+- Fix a Lua error when opening the binding configuration window if the profession spell book is open
 
 ## [1.5.0] - 2021-05-19
 
