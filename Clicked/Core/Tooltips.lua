@@ -126,7 +126,6 @@ local function OnTooltipSetSpell(self)
 		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
 			local text = string.format(L["Bound to %s"], binding.keybind)
 			self:AddLine(text, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
-			break
 		end
 	end
 end

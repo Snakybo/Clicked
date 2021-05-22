@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add "target of mouseover" target (`@mouseovertarget`)
+- Add support for multiple "bound to" labels on spell tooltips
 
 ### Fixed
 
