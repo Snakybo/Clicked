@@ -1,6 +1,9 @@
 --- @type ClickedInternal
 local _, Addon = ...
 
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 local lastTooltipUpdateTime
 
 -- Local support functions
@@ -106,6 +109,28 @@ local function OnTooltipSetUnit(self)
 	end
 end
 
+--- @param self table
+local function OnTooltipSetSpell(self)
+	if self:IsForbidden() then
+		return
+	end
+
+	local _, spellId = self:GetSpell()
+
+	if spellId == nil then
+		return
+	end
+
+	--- @type Binding
+	for _, binding in Clicked:IterateActiveBindings() do
+		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+			local text = string.format(L["Bound to %s"], binding.keybind)
+			self:AddLine(text, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
+			break
+		end
+	end
+end
+
 -- Private addon API
 
 function Addon:AbilityTooltips_Initialize()
@@ -113,6 +138,12 @@ function Addon:AbilityTooltips_Initialize()
 	C_Timer.After(1, function()
 		GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 	end)
+
+	GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+
+	if ElvUISpellBookTooltip ~= nil then
+		ElvUISpellBookTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+	end
 end
 
 function Addon:AbilityTooltips_Refresh()

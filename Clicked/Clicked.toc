@@ -27,7 +27,7 @@ Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
 Core\Serializer.lua
-Core\AbilityTooltips.lua
+Core\Tooltips.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
