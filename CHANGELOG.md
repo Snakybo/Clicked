@@ -19,6 +19,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Fix a Lua error if click-cast frames don't have a name [#55]
 - Fix a Lua error when opening the binding configuration window if the profession spell book is open
+- Fix an issue with the on key down setting not being respected in all scenarios [#54]
 
 ## [1.5.0] - 2021-05-19
 
@@ -797,6 +798,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#58]: https://github.com/Snakybo/Clicked/pull/58
 [#57]: https://github.com/Snakybo/Clicked/issues/57
 [#55]: https://github.com/Snakybo/Clicked/issues/55
+[#54]: https://github.com/Snakybo/Clicked/issues/54
 [#52]: https://github.com/Snakybo/Clicked/issues/52
 [#51]: https://github.com/Snakybo/Clicked/issues/51
 [#50]: https://github.com/Snakybo/Clicked/issues/50
