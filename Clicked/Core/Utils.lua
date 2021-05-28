@@ -831,7 +831,6 @@ function Addon:IterateShapeshiftForms(specId)
 	end
 end
 
-
 --- Iterate through all available classic shapeshift forms, this function behaves
 --- slightly differently depending on the input value.
 ---

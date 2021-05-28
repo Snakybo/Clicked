@@ -1491,12 +1491,6 @@ end
 local function DrawLoadClassicInStance(container, form, classNames)
 	local label = L["Stance"]
 
-	--- @type table<integer,string>
-	local items = {}
-
-	--- @type integer[]
-	local order = {}
-
 	if #classNames == 1 and classNames[1] == "DRUID" then
 		label = L["Form"]
 	end
