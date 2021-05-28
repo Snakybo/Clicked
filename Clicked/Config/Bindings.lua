@@ -1486,6 +1486,25 @@ local function DrawLoadInStance(container, form, specIds)
 	DrawTristateLoadOption(container, label, items, order, form)
 end
 
+--- @param form Binding.TriStateLoadOption
+--- @param classes string[]
+local function DrawLoadClassicInStance(container, form, classNames)
+	local label = L["Stance"]
+
+	--- @type table<integer,string>
+	local items = {}
+
+	--- @type integer[]
+	local order = {}
+
+	if #classNames == 1 and classNames[1] == "DRUID" then
+		label = L["Form"]
+	end
+
+	local items, order = Addon:GetLocalizedClassicForms(classNames)
+	DrawTristateLoadOption(container, label, items, order, form)
+end
+
 --- @param container table
 --- @param combat Binding.LoadOption
 local function DrawLoadCombat(container, combat)
@@ -1641,6 +1660,10 @@ local function DrawBindingMacroConditionsPage(container, binding)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 		DrawLoadInStance(container, load.form, specializationIds)
+	elseif Addon:IsGameVersionAtleast("BC") then
+		local classNames = GetTriStateLoadOptionValue(load.class)
+
+		DrawLoadClassicInStance(container, load.form, classNames)
 	end
 
 	DrawLoadCombat(container, load.combat)
