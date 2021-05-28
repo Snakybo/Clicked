@@ -30,7 +30,7 @@ local waitingForItemInfo = {}
 --- @type table
 local root
 
---- @type table
+--- @type ClickedTreeGroup
 local tree
 
 --- @type table
@@ -39,6 +39,7 @@ local tab
 -- reset on close
 local didOpenSpellbook
 local showIconPicker
+local currentItem
 
 -- Utility functions
 
@@ -165,6 +166,35 @@ local function CreateLoadOptionTooltip(type, selected)
 	end
 
 	return result
+end
+
+--- @param binding Binding
+local function GetAvailableTabs(binding)
+	local items = {}
+	local type = binding.type
+
+	if type ~= Addon.BindingTypes.UNIT_SELECT and type ~= Addon.BindingTypes.UNIT_MENU then
+		table.insert(items, "action")
+	end
+
+	if type ~= Addon.BindingTypes.APPEND then
+		table.insert(items, "target")
+	end
+
+	table.insert(items, "load_conditions")
+
+	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO then
+		table.insert(items, "macro_conditions")
+	end
+
+
+	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
+		if Addon:CanBindingLoad(binding) then
+			table.insert(items, "status")
+		end
+	end
+
+	return items
 end
 
 -- Tooltips
@@ -2195,7 +2225,7 @@ end
 -- Main binding frame
 
 --- @param container table
-local function DrawBinding(container)
+local function DrawBinding(container, redraw)
 	local binding = GetCurrentBinding()
 
 	-- keybinding button
@@ -2238,63 +2268,63 @@ local function DrawBinding(container)
 			scrollFrame:DoLayout()
 		end
 
-		local items = {}
-		local type = binding.type
+		--- @param availableTabs string[]
+		local function CreateTabGroup(availableTabs)
+			local items = {}
 
-		if type ~= Addon.BindingTypes.UNIT_SELECT and type ~= Addon.BindingTypes.UNIT_MENU then
-			table.insert(items, {
-				text = L["Action"],
-				value = "action"
-			})
-		end
+			for i, availableTab in ipairs(availableTabs) do
+				local text = nil
 
-		if type ~= Addon.BindingTypes.APPEND then
-			table.insert(items, {
-				text = L["Targets"],
-				value = "target"
-			})
-		end
+				if availableTab == "action" then
+					text = L["Action"]
+				elseif availableTab == "target" then
+					text = L["Targets"]
+				elseif availableTab == "load_conditions" then
+					text = L["Load conditions"]
+				elseif availableTab == "macro_conditions" then
+					text = L["Macro conditions"]
+				elseif availableTab == "status" then
+					text = L["Status"]
+				end
 
-		table.insert(items, {
-			text = L["Load conditions"],
-			value = "load_conditions"
-		})
-
-		if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO then
-			table.insert(items, {
-				text = L["Macro conditions"],
-				value = "macro_conditions"
-			})
-		end
-
-
-		if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
-			if Addon:CanBindingLoad(binding) then
-				table.insert(items, {
-					text = L["Status"],
-					value = "status"
-				})
+				if text ~= nil then
+					items[i] = {
+						text = text,
+						value = availableTab
+					}
+				end
 			end
+
+			return items
 		end
 
+		local availableTabs = GetAvailableTabs(binding)
 		local hasSelectedTab = false
 
-		for _, item in ipairs(items) do
-			if item.value == tab.selected then
+		for _, availableTab in ipairs(availableTabs) do
+			if availableTab == tab.selected then
 				hasSelectedTab = true
 				break
 			end
 		end
 
 		if not hasSelectedTab then
-			tab.selected = items[1].value
+			tab.selected = availableTabs[1]
 		end
 
-		local widget = Addon:GUI_TabGroup(items, OnGroupSelected)
-		widget:SetStatusTable(tab)
-		widget:SelectTab(tab.selected)
+		if redraw then
+			tab.widget = Addon:GUI_TabGroup(CreateTabGroup(availableTabs), OnGroupSelected)
+			tab.widget:SetStatusTable(tab)
+			tab.widget:SelectTab(tab.selected)
 
-		container:AddChild(widget)
+			container:AddChild(tab.widget)
+		else
+			tab.widget:SetTabs(CreateTabGroup(availableTabs))
+
+			if not hasSelectedTab then
+				tab.widget:SelectTab(tab.selected)
+			end
+		end
 	end
 end
 
@@ -2367,10 +2397,34 @@ end
 
 --- @param container table
 local function DrawTreeContainer(container)
-	container:ReleaseChildren()
-
 	local binding = GetCurrentBinding()
 	local group = GetCurrentGroup()
+	local redraw = true
+
+	if not showIconPicker then
+		if binding ~= nil and binding == currentItem then
+			if tab ~= nil then
+				local availableTabs = GetAvailableTabs(binding)
+
+				for _, availableTab in ipairs(availableTabs) do
+					if availableTab == tab.selected then
+						redraw = false
+						break
+					end
+				end
+			end
+		elseif group ~= nil and group == currentItem then
+			redraw = false
+		end
+
+		currentItem = binding or group
+	else
+		currentItem = nil
+	end
+
+	if redraw then
+		container:ReleaseChildren()
+	end
 
 	if showIconPicker then
 		local data = binding ~= nil and binding.action or group
@@ -2380,7 +2434,7 @@ local function DrawTreeContainer(container)
 		DrawIconPicker(container, data, key)
 	else
 		if binding ~= nil then
-			DrawBinding(container)
+			DrawBinding(container, redraw)
 		elseif group ~= nil then
 			DrawGroup(container)
 		else
@@ -2431,6 +2485,8 @@ function Addon:BindingConfig_Open()
 			if didOpenSpellbook then
 				HideUIPanel(SpellBookFrame)
 			end
+
+			currentItem = nil
 		end
 
 		root = AceGUI:Create("ClickedFrame")
