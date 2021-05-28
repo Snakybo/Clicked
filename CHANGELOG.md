@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Prevent binding configuration window from redrawing the selected element
 
+### Fixed
+
+- Fix a rare occurance where unit frames would not respect the cast on key down setting
+
 ## [1.5.1] - 2021-05-27
 
 ### Added

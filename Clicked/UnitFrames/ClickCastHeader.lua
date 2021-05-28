@@ -143,7 +143,7 @@ function Addon:RegisterClickCastHeader()
 	-- Hook into Clique because a lot of (older) addons are hardcoded to add Clique-support
 	Clique = {}
 	Clique.header = ClickCastHeader
-	Clique.UpdateRegisteredClicks = function(frame)
+	Clique.UpdateRegisteredClicks = function(_, frame)
 		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
 	end
 end
