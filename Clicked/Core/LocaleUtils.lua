@@ -580,9 +580,9 @@ function Addon:GetLocalizedClassicForms(classNames)
 			table.insert(order, key)
 		end
 
-		for _, spellIds in Addon:IterateClassicShapeshiftForms(className) do
+		for i, spellIds in Addon:IterateClassicShapeshiftForms(className) do
 			local key = #order + 1
-			
+
 			items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
 
 			-- Find first available form to set name
