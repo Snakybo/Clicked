@@ -142,12 +142,12 @@ local classicShapeshiftForms = {
 	WARLOCK = {},
 
 	DRUID = {
-		{ 5487, 9634 }, -- Bear Form, Dire Bear Form
+		{ 9634, 5487 }, -- Dire Bear Form, Bear Form
 		{ 1066 }, -- Aquatic Form
 		{ 768 }, -- Cat Form
 		{ 783 }, -- Travel Form
 		{ 24858, 33891 }, -- Moonkin Form, Tree of Life Form
-		{ 33943, 40120} -- Flight Form, Swift Flight Form
+		{ 40120, 33943 } -- Swift Flight Form, Flight Form
 	}
 }
 

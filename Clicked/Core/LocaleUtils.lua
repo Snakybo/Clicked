@@ -581,18 +581,22 @@ function Addon:GetLocalizedClassicForms(classNames)
 		end
 
 		for _, spellIds in Addon:IterateClassicShapeshiftForms(className) do
-			local name, _, icon = Addon:GetSpellInfo(spellIds[1])
-			if #spellIds > 1 then
-				for i = 2, #spellIds do
+			local key = #order + 1
+			
+			items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
+
+			-- Find first available form to set name
+			if #spellIds > 0 then
+				for i = 1, #spellIds do
 					if IsSpellKnown(spellIds[i]) then
-						name, _, icon = Addon:GetSpellInfo(spellIds[i])
+						local name, _, icon = Addon:GetSpellInfo(spellIds[i])
+
+						items[key] = string.format("<icon=%d><text=%s>", icon, name)
+						break
 					end
 				end
 			end
 
-			local key = #order + 1
-
-			items[key] = string.format("<icon=%d><text=%s>", icon, name)
 			table.insert(order, key)
 		end
 	else
