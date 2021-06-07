@@ -2225,7 +2225,7 @@ end
 -- Main binding frame
 
 --- @param container table
-local function DrawBinding(container, redraw)
+local function DrawBinding(container)
 	local binding = GetCurrentBinding()
 
 	-- keybinding button
@@ -2312,19 +2312,11 @@ local function DrawBinding(container, redraw)
 			tab.selected = availableTabs[1]
 		end
 
-		if redraw then
-			tab.widget = Addon:GUI_TabGroup(CreateTabGroup(availableTabs), OnGroupSelected)
-			tab.widget:SetStatusTable(tab)
-			tab.widget:SelectTab(tab.selected)
+		tab.widget = Addon:GUI_TabGroup(CreateTabGroup(availableTabs), OnGroupSelected)
+		tab.widget:SetStatusTable(tab)
+		tab.widget:SelectTab(tab.selected)
 
-			container:AddChild(tab.widget)
-		else
-			tab.widget:SetTabs(CreateTabGroup(availableTabs))
-
-			if not hasSelectedTab then
-				tab.widget:SelectTab(tab.selected)
-			end
-		end
+		container:AddChild(tab.widget)
 	end
 end
 
@@ -2399,32 +2391,8 @@ end
 local function DrawTreeContainer(container)
 	local binding = GetCurrentBinding()
 	local group = GetCurrentGroup()
-	local redraw = true
 
-	if not showIconPicker then
-		if binding ~= nil and binding == currentItem then
-			if tab ~= nil then
-				local availableTabs = GetAvailableTabs(binding)
-
-				for _, availableTab in ipairs(availableTabs) do
-					if availableTab == tab.selected then
-						redraw = false
-						break
-					end
-				end
-			end
-		elseif group ~= nil and group == currentItem then
-			redraw = false
-		end
-
-		currentItem = binding or group
-	else
-		currentItem = nil
-	end
-
-	if redraw then
-		container:ReleaseChildren()
-	end
+	container:ReleaseChildren()
 
 	if showIconPicker then
 		local data = binding ~= nil and binding.action or group
@@ -2434,7 +2402,7 @@ local function DrawTreeContainer(container)
 		DrawIconPicker(container, data, key)
 	else
 		if binding ~= nil then
-			DrawBinding(container, redraw)
+			DrawBinding(container)
 		elseif group ~= nil then
 			DrawGroup(container)
 		else
