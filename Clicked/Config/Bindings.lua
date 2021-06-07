@@ -39,7 +39,6 @@ local tab
 -- reset on close
 local didOpenSpellbook
 local showIconPicker
-local currentItem
 
 -- Utility functions
 
@@ -2453,8 +2452,6 @@ function Addon:BindingConfig_Open()
 			if didOpenSpellbook then
 				HideUIPanel(SpellBookFrame)
 			end
-
-			currentItem = nil
 		end
 
 		root = AceGUI:Create("ClickedFrame")
