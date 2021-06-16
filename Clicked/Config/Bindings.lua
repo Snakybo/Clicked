@@ -11,6 +11,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local ITEM_TEMPLATE_GROUP = "GROUP"
 local ITEM_TEMPLATE_SPELL = "CAST_SPELL"
+local ITEM_TEMPLATE_SPELL_CC = "CAST_SPELL_CC"
 local ITEM_TEMPLATE_ITEM = "USE_ITEM"
 local ITEM_TEMPLATE_MACRO = "RUN_MACRO"
 local ITEM_TEMPLATE_APPEND = "RUN_MACRO_APPEND"
@@ -2073,6 +2074,11 @@ local function CreateFromItemTemplate(identifier)
 	if identifier == ITEM_TEMPLATE_SPELL then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.SPELL
+	elseif identifier == ITEM_TEMPLATE_SPELL_CC then
+		item = Clicked:CreateBinding()
+		item.type = Addon.BindingTypes.SPELL
+		item.targets.hovercastEnabled = true
+		item.targets.regularEnabled = false
 	elseif identifier == ITEM_TEMPLATE_ITEM then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.ITEM
@@ -2346,6 +2352,7 @@ local function DrawItemTemplateSelector(container)
 
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["Group"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL, L["Cast a spell"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL_CC, L["Cast a spell on a unit frame"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_ITEM, L["Use an item"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_TARGET, L["Target the unit"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MENU, L["Open the unit menu"])
