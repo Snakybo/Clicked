@@ -381,6 +381,20 @@ function Addon:HasBindingValue(binding)
 end
 
 --- @param binding Binding
+--- @param value string|integer
+function Addon:SetBindingValue(binding, value)
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+
+	if binding.type == Addon.BindingTypes.SPELL then
+		binding.action.spellValue = value
+	elseif binding.type == Addon.BindingTypes.ITEM then
+		binding.action.itemValue = value
+	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+		binding.action.macroValue = value
+	end
+end
+
+--- @param binding Binding
 --- @return string|integer
 function Addon:GetBindingValue(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))

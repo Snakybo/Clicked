@@ -22,6 +22,12 @@ local function Frame_OnKeyDown(frame, key)
 	end
 end
 
+local function Frame_OnReceiveDrag(frame)
+	local self = frame.obj
+
+	self:Fire("OnReceiveDrag")
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -41,6 +47,7 @@ local function Constructor()
 
 	local frame = widget.frame
 	frame:SetScript("OnKeyDown", Frame_OnKeyDown)
+	frame:SetScript("OnReceiveDrag", Frame_OnReceiveDrag)
 
 	widget.BaseOnAcquire = widget.OnAcquire
 	widget.OnAcquire = OnAquire

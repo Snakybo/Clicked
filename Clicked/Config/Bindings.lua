@@ -2461,8 +2461,34 @@ function Addon:BindingConfig_Open()
 			end
 		end
 
+		local function OnReceiveDrag()
+			local infoType, info1, info2 = GetCursorInfo()
+			local bindingType = nil
+
+			if infoType == "item" then
+				bindingType = Addon.BindingTypes.ITEM
+			elseif infoType == "spell" then
+				bindingType = Addon.BindingTypes.SPELL
+				info1 = select(3, GetSpellBookItemName(info1, info2))
+			elseif infoType == "petaction" then
+				bindingType = Addon.BindingTypes.SPELL
+			end
+
+			if bindingType ~= nil then
+				local binding = Clicked:CreateBinding()
+				binding.type = bindingType
+				Addon:SetBindingValue(binding, info1)
+
+				Clicked:ReloadActiveBindings()
+				tree:SelectByBindingOrGroup(binding)
+
+				ClearCursor()
+			end
+		end
+
 		root = AceGUI:Create("ClickedFrame")
 		root:SetCallback("OnClose", OnClose)
+		root:SetCallback("OnReceiveDrag", OnReceiveDrag)
 		root:SetTitle(L["Clicked Binding Configuration"])
 		root:SetLayout("Flow")
 		root:SetWidth(900)

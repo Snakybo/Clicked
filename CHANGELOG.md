@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add binding template for a hovercast spell [#71]
+- Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
 
 ## [1.5.3] - 2021-06-08
 
