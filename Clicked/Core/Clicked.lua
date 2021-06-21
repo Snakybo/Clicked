@@ -12,7 +12,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 
 --- The current version of Clicked.
---- @type string
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 local isPlayerInCombat = false
