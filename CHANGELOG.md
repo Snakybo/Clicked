@@ -819,6 +819,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#71]: https://github.com/Snakybo/Clicked/issues/71
+[#64]: https://github.com/Snakybo/Clicked/issues/64
 [#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58
