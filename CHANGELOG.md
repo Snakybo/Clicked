@@ -131,7 +131,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix PvP talent ordering for some specs
-- Fix a Lua error when creating a new profile [#58] ([hythloday](https://github.com/hythloday))
+- Fix a Lua error when creating a new profile [#58] (by [hythloday](https://github.com/hythloday))
 
 ## [1.1.0] - 2021-03-26
 
@@ -234,7 +234,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add an option to show unit-frame bindings on tooltips ([h2oboi89](https://github.com/h2oboi89))
+- Add an option to show unit-frame bindings on tooltips ([h2oboi89](by https://github.com/h2oboi89))
 - Add an experimental WeakAura export function for spells and items, creates an icon that shows the spell/item status
 
 ## [0.15.5] - 2021-02-15
@@ -248,7 +248,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add user-friendly tooltips explaining the binding action page
-- Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Update Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ## [0.15.3] - 2021-02-01
 
@@ -289,7 +289,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add Covenant Selected load condition
 - Add an option to target a unit after casting on them
-- Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Update Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ### Changed
 
@@ -300,7 +300,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Add Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ### Fixed
 
@@ -465,7 +465,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix Lua errors on new and low level characters [#16] [#18]
+- Fix Lua errors on new and low level characters [#16] [#18] (by [Squishes](https://github.com/Squishes))
 
 ## [0.10.0] - 2020-11-03
 
