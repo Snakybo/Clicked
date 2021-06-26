@@ -128,6 +128,21 @@ function Clicked:DeleteGroup(group)
 	end
 end
 
+--- Attempt to get a binding group with the specified identifier.
+--- @param identifier string
+--- @return Group
+function Clicked:GetGroupById(identifier)
+	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
+
+	for _, group in ipairs(Addon.db.profile.groups) do
+		if group.identifier == identifier then
+			return group
+		end
+	end
+
+	return nil
+end
+
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
 ---
 --- @return function iterator

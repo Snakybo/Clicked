@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Improve visualization of unloaded bindings [#74] (by [gitarrg](https://github.com/gitarrg))
 - Add "spell known" load condition for WeakAuras export
 - Add the ability to remove a spell rank on Classic and Burning Crusade Classic [#70]
+- Make import from spellbook only import new spells on subsequent imports [#75]
 
 ## [1.5.3] - 2021-06-08
 
@@ -822,6 +823,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#75]: https://github.com/Snakybo/Clicked/issues/75
 [#74]: https://github.com/Snakybo/Clicked/pull/74
 [#71]: https://github.com/Snakybo/Clicked/issues/71
 [#70]: https://github.com/Snakybo/Clicked/issues/70

@@ -2143,6 +2143,19 @@ local function CreateFromItemTemplate(identifier)
 					return {}
 				end
 
+				--- @type Binding
+				for _, binding in Clicked:IterateConfiguredBindings() do
+					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
+						local group = Clicked:GetGroupById(binding.parent)
+
+						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
+						-- before excluding it
+						if group.name == tabName and group.displayIcon == tabIcon then
+							return {}
+						end
+					end
+				end
+
 				if pendingSpellIds[spellId] == nil then
 					pendingSpellIds[spellId] = {
 						talentTier = nil,
@@ -2203,9 +2216,21 @@ local function CreateFromItemTemplate(identifier)
 			end
 
 			if next(pendingSpellIds) ~= nil then
-				local group = Clicked:CreateGroup()
-				group.name = tabName
-				group.displayIcon = tabIcon
+				local group = nil
+
+				--- @type Group
+				for _, g in Clicked:IterateGroups() do
+					if g.name == tabName and g.displayIcon == tabIcon then
+						group = g
+						break
+					end
+				end
+
+				if group == nil then
+					group = Clicked:CreateGroup()
+					group.name = tabName
+					group.displayIcon = tabIcon
+				end
 
 				for spellId, data in pairs(pendingSpellIds) do
 					local binding = Clicked:CreateBinding()
