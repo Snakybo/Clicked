@@ -38,6 +38,7 @@ end
 
 local DEFAULT_TREE_WIDTH = 325
 local DEFAULT_TREE_SIZABLE = false
+local GREY_FONT_COLOR = {r=0.75, g=0.75, b=0.75, a=0.5}
 
 local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "UIDropDownMenuTemplate")
 
@@ -177,11 +178,27 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	button.keybind:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
 	button.keybind:SetText(string.format(format, keybind))
 
-	if icon then
-		local desaturate = false
+	local desaturate = false
+	if binding ~= nil and not Addon:CanBindingLoad(binding) then
+		desaturate = true
+	end
 
-		if binding ~= nil and not Addon:CanBindingLoad(binding) then
-			desaturate = true
+	if desaturate then
+		-- dim text colors
+		button.title:SetTextColor(GREY_FONT_COLOR.r, GREY_FONT_COLOR.g, GREY_FONT_COLOR.b, GREY_FONT_COLOR.a)
+		button.keybind:SetTextColor(GREY_FONT_COLOR.r, GREY_FONT_COLOR.g, GREY_FONT_COLOR.b, GREY_FONT_COLOR.a)
+	else
+		-- reset back to default colors
+		button.title:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+		button.keybind:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	end
+
+	if icon then
+
+		if desaturate then
+			button.icon:SetVertexColor(GREY_FONT_COLOR.r, GREY_FONT_COLOR.g, GREY_FONT_COLOR.b, GREY_FONT_COLOR.a)
+		else
+			button.icon:SetVertexColor(1.0, 1.0, 1.0, 1.0)
 		end
 
 		button.icon:SetDesaturated(desaturate)

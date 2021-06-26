@@ -128,6 +128,21 @@ function Clicked:DeleteGroup(group)
 	end
 end
 
+--- Attempt to get a binding group with the specified identifier.
+--- @param identifier string
+--- @return Group
+function Clicked:GetGroupById(identifier)
+	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
+
+	for _, group in ipairs(Addon.db.profile.groups) do
+		if group.identifier == identifier then
+			return group
+		end
+	end
+
+	return nil
+end
+
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
 ---
 --- @return function iterator
@@ -199,6 +214,7 @@ function Addon:GetNewBindingTemplate()
 			macroName = L["Run custom macro"],
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			executionOrder = 1,
+			convertValueToId = true,
 			interrupt = false,
 			startAutoAttack = false,
 			startPetAttack = false,
@@ -1008,6 +1024,15 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.5.0")
+	end
+
+	-- 1.5.x to 1.6.0
+	if string.sub(from, 1, 3) == "1.5" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.convertValueToId = true
+		end
+
+		FinalizeVersionUpgrade("1.6.0")
 	end
 
 	profile.version = Clicked.VERSION

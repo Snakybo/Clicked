@@ -401,7 +401,7 @@ function Addon:GetBindingValue(binding)
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		local spell = binding.action.spellValue
-		return self:GetSpellInfo(spell) or spell
+		return self:GetSpellInfo(spell, binding.action.convertValueToId) or spell
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
@@ -429,7 +429,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.spellValue)
+		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.spellValue, binding.action.convertValueToId)
 		return name, icon, id
 	end
 
@@ -540,6 +540,7 @@ function Addon:GetItemInfo(input)
 end
 
 --- @param input string|integer
+--- @param addSubText? boolean
 --- @return string name
 --- @return nil rank
 --- @return integer icon
@@ -547,12 +548,16 @@ end
 --- @return number minRange
 --- @return number maxRange
 --- @return integer spellId
-function Addon:GetSpellInfo(input)
+function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
 	local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
 
-	if Addon:IsClassic() or Addon:IsBC() then
+	if addSubText == nil then
+		addSubText = true
+	end
+
+	if addSubText and (Addon:IsClassic() or Addon:IsBC()) then
 		local subtext = GetSpellSubtext(spellId)
 
 		if not self:IsStringNilOrEmpty(subtext) then
