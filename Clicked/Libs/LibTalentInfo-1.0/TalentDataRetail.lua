@@ -1,6 +1,6 @@
 --- @type LibTalentInfo
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 39069
+local version = 39172
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -552,9 +552,9 @@ local pvpTalents = {
 	},
 	-- Guardian Druid
 	[104] = {
-		[1] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
-		[2] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
-		[3] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
+		[1] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 5410, 3750, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Grove Protection, Freedom of the Herd
+		[2] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 5410, 3750, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Grove Protection, Freedom of the Herd
+		[3] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 5410, 3750, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Grove Protection, Freedom of the Herd
 	},
 	-- Restoration Druid
 	[105] = {
