@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add binding template for a hovercast spell [#71]
 - Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
+- Improve visualization of unloaded bindings [#74] (by [gitarrg](https://github.com/gitarrg))
 
 ## [1.5.3] - 2021-06-08
 
@@ -819,6 +820,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#74]: https://github.com/Snakybo/Clicked/pull/74
 [#71]: https://github.com/Snakybo/Clicked/issues/71
 [#64]: https://github.com/Snakybo/Clicked/issues/64
 [#63]: https://github.com/Snakybo/Clicked/issues/63
