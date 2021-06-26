@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
 - Improve visualization of unloaded bindings [#74] (by [gitarrg](https://github.com/gitarrg))
 - Add "spell known" load condition for WeakAuras export
+- Add the ability to remove a spell rank on Classic and Burning Crusade Classic [#70]
 
 ## [1.5.3] - 2021-06-08
 
@@ -823,6 +824,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 [#74]: https://github.com/Snakybo/Clicked/pull/74
 [#71]: https://github.com/Snakybo/Clicked/issues/71
+[#70]: https://github.com/Snakybo/Clicked/issues/70
 [#64]: https://github.com/Snakybo/Clicked/issues/64
 [#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59

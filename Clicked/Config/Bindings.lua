@@ -303,7 +303,7 @@ local function IsSpellButtonBound(button, bookType)
 	return false, nil
 end
 
-local function OnSpellBookButtonClick(name)
+local function OnSpellBookButtonClick(name, convertValueToId)
 	if GetCurrentBinding() == nil or name == nil then
 		return
 	end
@@ -317,6 +317,8 @@ local function OnSpellBookButtonClick(name)
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = name
+		binding.action.convertValueToId = convertValueToId
+
 		HideUIPanel(SpellBookFrame)
 		Clicked:ReloadActiveBindings()
 	end
@@ -347,15 +349,15 @@ local function HijackSpellButton_UpdateButton(self)
 				SpellButton_OnLeave(parent)
 			end)
 
-			button:SetScript("OnClick", function()
+			button:SetScript("OnClick", function(_, mouseButton)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName) then
+				if mouseButton ~= "RightButton" and (Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName)) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
-				OnSpellBookButtonClick(name)
+				OnSpellBookButtonClick(name, mouseButton ~= "RightButton")
 			end)
 
 			-- Respect ElvUI skinning
@@ -763,7 +765,7 @@ local function DrawSpellItemSelection(container, action, mode)
 
 		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
 
-		if id ~= nil then
+		if id ~= nil and action.convertValueToId then
 			action[valueKey] = id
 		end
 
@@ -795,6 +797,8 @@ local function DrawSpellItemSelection(container, action, mode)
 				end
 
 				action[valueKey] = value
+				action.convertValueToId = true
+
 				Clicked:ReloadActiveBindings()
 			end
 
@@ -888,29 +892,61 @@ local function DrawSpellItemSelection(container, action, mode)
 			group:AddChild(widget)
 		end
 
-		-- pick from spellbook button
 		if mode == Addon.BindingTypes.SPELL then
-			local function OnClick()
-				if InCombatLockdown() then
-					Addon:NotifyCombatLockdown()
-					return
+			local hasRank = id ~= nil and string.find(name, "%((.+)%)")
+
+			-- pick from spellbook button
+			do
+				local function OnClick()
+					if InCombatLockdown() then
+						Addon:NotifyCombatLockdown()
+						return
+					end
+
+					didOpenSpellbook = true
+
+					if SpellBookFrame:IsShown() then
+						HijackSpellButton_UpdateButton(nil)
+					else
+						ShowUIPanel(SpellBookFrame)
+					end
 				end
 
-				didOpenSpellbook = true
+				local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
 
-				if SpellBookFrame:IsShown() then
-					HijackSpellButton_UpdateButton(nil)
+				if hasRank then
+					widget:SetRelativeWidth(0.65)
 				else
-					ShowUIPanel(SpellBookFrame)
+					widget:SetFullWidth(true)
 				end
+
+				local tooltip = L["Click on a spell book entry to select it."]
+
+				if Addon:IsClassic() or Addon:IsBC() then
+					tooltip = tooltip .. "\n" .. L["Right click to use the max rank."]
+				end
+
+				RegisterTooltip(widget, tooltip)
+
+				group:AddChild(widget)
 			end
 
-			local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
-			widget:SetFullWidth(true)
+			-- remove rank button
+			do
+				if hasRank then
+					local function OnClick()
+						action[valueKey] = Addon:GetSpellInfo(id, false)
+						action.convertValueToId = false
 
-			RegisterTooltip(widget, L["Click on a spell book entry to select it."])
+						Clicked:ReloadActiveBindings()
+					end
 
-			group:AddChild(widget)
+					local widget = Addon:GUI_Button(L["Remove rank"], OnClick)
+					widget:SetRelativeWidth(0.35)
+
+					group:AddChild(widget)
+				end
+			end
 		end
 	end
 end
