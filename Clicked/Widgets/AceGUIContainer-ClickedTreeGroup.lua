@@ -1406,9 +1406,6 @@ local function Constructor()
 			else
 				S:HandleButton(sortButton, true, nil, true)
 			end
-
-			sortButton.backdrop:SetInside()
-			sortLabel:SetParent(sortButton.backdrop)
 		end
 	end
 
