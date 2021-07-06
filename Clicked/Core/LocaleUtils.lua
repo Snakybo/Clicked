@@ -545,3 +545,89 @@ function Addon:GetLocalizedForms(specializations)
 
 	return items, order
 end
+
+--- Get a localized list of all available classic shapeshift forms for the
+--- given class names. If the `classNames` parameter
+--- is `nil` it will return results for the player's current class.
+---
+--- @param classNames string[]
+--- @return table<integer,string> items
+--- @return integer[] order
+function Addon:GetLocalizedClassicForms(classNames)
+	--- @type table<integer,string>
+	local items = {}
+
+	--- @type integer[]
+	local order = {}
+
+	if classNames == nil then
+		classNames = {}
+		-- TODO: Set to player's current class
+	end
+
+	if #classNames == 1 then
+		local className = classNames[1]
+		local defaultForm = NONE
+
+		if className == "DRUID" then
+			defaultForm = L["Humanoid Form"]
+		end
+
+		do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", defaultForm)
+			table.insert(order, key)
+		end
+
+		for i, spellIds in Addon:IterateClassicShapeshiftForms(className) do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
+
+			-- Find first available form to set name
+			if #spellIds > 0 then
+				for i = 1, #spellIds do
+					if IsSpellKnown(spellIds[i]) then
+						local name, _, icon = Addon:GetSpellInfo(spellIds[i])
+
+						items[key] = string.format("<icon=%d><text=%s>", icon, name)
+						break
+					end
+				end
+			end
+
+			table.insert(order, key)
+		end
+	else
+		local max = 0
+
+		-- Find specialization with the highest number of forms
+		if #classNames == 0 then
+			for _, forms in Addon:IterateClassicShapeshiftForms() do
+				if #forms > max then
+					max = #forms
+				end
+			end
+		-- Find specialization with the highest number of forms out of the selected specializations
+		else
+			for _, className in ipairs(classNames) do
+				local forms = Addon:GetClassicShapeshiftFormsForClass(className)
+
+				if #forms > max then
+					max = #forms
+				end
+			end
+		end
+
+		-- start at 0 because [form:0] is no form
+		for i = 0, max do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
+			table.insert(order, key)
+		end
+	end
+
+	return items, order
+end

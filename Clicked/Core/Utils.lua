@@ -124,6 +124,33 @@ local shapeshiftForms = {
 	[1456] = {}
 }
 
+local classicShapeshiftForms = {
+	WARRIOR = {},
+
+	PALADIN = {},
+
+	HUNTER = {},
+
+	ROGUE = {},
+
+	PRIEST = {},
+
+	SHAMAN = {},
+
+	MAGE = {},
+
+	WARLOCK = {},
+
+	DRUID = {
+		{ 9634, 5487 }, -- Dire Bear Form, Bear Form
+		{ 1066 }, -- Aquatic Form
+		{ 768 }, -- Cat Form
+		{ 783 }, -- Travel Form
+		{ 24858, 33891 }, -- Moonkin Form, Tree of Life Form
+		{ 40120, 33943 } -- Swift Flight Form, Flight Form
+	}
+}
+
 -- Local support functions
 
 local function errorhandler(err)
@@ -731,6 +758,20 @@ function Addon:GetShapeshiftFormsForSpecId(specId)
 	return { unpack(forms) }
 end
 
+--- Get all available classic shapeshift forms the the specified class name.
+--- Note that this does not mean _currently available_ shapeshift forms,
+--- just all possible shapeshift forms.
+---
+--- To ensure that shapeshift form data does not get corrupted when switching
+--- talents, we store all available shapeshift forms manually.
+---
+--- @param className string
+--- @return integer[]
+function Addon:GetClassicShapeshiftFormsForClass(className)
+	local forms = classicShapeshiftForms[className] or {}
+	return { unpack(forms) }
+end
+
 ---@param binding Binding
 ---@return integer[]
 function Addon:GetAvailableShapeshiftForms(binding)
@@ -806,6 +847,27 @@ function Addon:IterateShapeshiftForms(specId)
 		return pairs(shapeshiftForms)
 	else
 		return ipairs(shapeshiftForms[specId])
+	end
+end
+
+--- Iterate through all available classic shapeshift forms, this function behaves
+--- slightly differently depending on the input value.
+---
+--- If `className` is not set (or is `nil`), this will return a `pairs` iterator
+--- containing all class names and shapeshift forms per class name.
+---
+--- If `className` is set, it will return an `ipairs` iterator containing all
+--- shapeshift forms for the specified class name.
+---
+--- @param className string
+--- @return function
+--- @return table
+--- @return number
+function Addon:IterateClassicShapeshiftForms(className)
+	if className == nil then
+		return pairs(classicShapeshiftForms)
+	else
+		return ipairs(classicShapeshiftForms[className])
 	end
 end
 
