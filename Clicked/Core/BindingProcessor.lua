@@ -871,7 +871,7 @@ function Addon:CanBindingLoad(binding)
 			local realZone = GetRealZoneText()
 			local anyTrue = false
 
-			for zone in string.gmatch(zoneName.value, "([^,]+)") do
+			for zone in string.gmatch(zoneName.value, "([^;]+)") do
 				local negate = false
 
 				if string.sub(zone, 0, 1) == "!" then

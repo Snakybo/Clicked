@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.6.2] - 2021-07-12
+
+### Fixed
+
+- **Breaking Change** Fixed zone name condition not working when a zone has a comma in the name, a semicolon is now used to OR the zone load condition
+
 ## [1.6.1] - 2021-06-30
 
 ### Fixed

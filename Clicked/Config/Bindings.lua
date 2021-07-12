@@ -1905,10 +1905,10 @@ local function DrawLoadZoneName(container, zoneName)
 
 	if inputField ~= nil then
 		local tips = {
-			string.format(L["Comma separated, use an exclamation mark (%s) to inverse a zone condition, for example:"], "|r!|cffffffff"),
+			string.format(L["Semicolon separated, use an exclamation mark (%s) to negate a zone condition, for example:"], "|r!|cffffffff"),
 			"\n",
 			string.format(L["%s will be active if you're not in Oribos"], "|r!" .. L["Oribos"] .. "|cffffffff"),
-			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. "," .. L["Orgrimmar"] .. "|cffffffff")
+			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. ";" .. L["Orgrimmar"] .. "|cffffffff")
 		}
 
 		RegisterTooltip(inputField, L["Zone name(s)"],  table.concat(tips, "\n"))
