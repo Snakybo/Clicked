@@ -12,7 +12,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- **Breaking Change** Fixed zone name condition not working when a zone has a comma in the name, a semicolon is now used to OR the zone load condition
+- **Breaking Change** Fix zone name condition not working when a zone has a comma in the name, a semicolon is now used to OR the zone load condition
+- Fix "open unit menu" not working with all unit frames (VuhDo)
 
 ## [1.6.1] - 2021-06-30
 
