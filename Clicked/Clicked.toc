@@ -1,9 +1,9 @@
 ## Interface: 90100
 ## Interface-Classic: 11307
-## Interface-BCC: 20501
+## Interface-BCC: 20502
 ## Title: Clicked
 ## Author: Snakybo
-## Version: 1.6.3
+## Version: 1.6.4
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
 ## X-Website: https://github.com/Snakybo/Clicked
