@@ -8,6 +8,65 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+- Fix "Bound to" tooltip text appearing twice on talents
+
+## [1.6.4] - 2021-09-01
+
+### Added
+
+- Update ToC for Burning Crusade Classic
+
+## [1.6.3] - 2021-08-07
+
+### Added
+
+- Update Chinese translations
+
+## [1.6.2] - 2021-07-12
+
+### Fixed
+
+- **Breaking Change** Fix zone name condition not working when a zone has a comma in the name, a semicolon is now used to OR the zone load condition
+- Fix "open unit menu" not working with all unit frames (VuhDo)
+
+## [1.6.1] - 2021-06-30
+
+### Fixed
+
+- Fix error when opening the binding configuration window with ElvUI skinning enabled
+
+## [1.6.0] - 2021-06-29
+
+### Added
+
+- Add support for 9.1
+- Add binding template for a hovercast spell [#71]
+- Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
+- Improve visualization of unloaded bindings [#74] (by [gitarrg](https://github.com/gitarrg))
+- Add "spell known" load condition for WeakAuras export
+- Add the ability to remove a spell rank on Classic and Burning Crusade Classic [#70]
+- Make import from spellbook only import new spells on subsequent imports [#75]
+
+## [1.5.3] - 2021-06-08
+
+### Fixed
+
+- Fix binding configuration pages not properly redrawing (revert from 1.5.2)
+
+## [1.5.2] - 2021-06-03
+
+### Added
+
+- Prevent binding configuration window from redrawing the selected element
+
+### Fixed
+
+- Fix a rare occurance where unit frames would not respect the cast on key down setting
+
 ## [1.5.1] - 2021-05-27
 
 ### Added
@@ -108,7 +167,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix PvP talent ordering for some specs
-- Fix a Lua error when creating a new profile [#58] ([hythloday](https://github.com/hythloday))
+- Fix a Lua error when creating a new profile [#58] (by [hythloday](https://github.com/hythloday))
 
 ## [1.1.0] - 2021-03-26
 
@@ -211,7 +270,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add an option to show unit-frame bindings on tooltips ([h2oboi89](https://github.com/h2oboi89))
+- Add an option to show unit-frame bindings on tooltips ([h2oboi89](by https://github.com/h2oboi89))
 - Add an experimental WeakAura export function for spells and items, creates an icon that shows the spell/item status
 
 ## [0.15.5] - 2021-02-15
@@ -225,7 +284,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add user-friendly tooltips explaining the binding action page
-- Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Update Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ## [0.15.3] - 2021-02-01
 
@@ -266,7 +325,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add Covenant Selected load condition
 - Add an option to target a unit after casting on them
-- Update Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Update Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ### Changed
 
@@ -277,7 +336,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add Korean translations ([netaras](https://www.curseforge.com/members/netaras))
+- Add Korean translations (by [netaras](https://www.curseforge.com/members/netaras))
 
 ### Fixed
 
@@ -442,7 +501,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix Lua errors on new and low level characters [#16] [#18]
+- Fix Lua errors on new and low level characters [#16] [#18] (by [Squishes](https://github.com/Squishes))
 
 ## [0.10.0] - 2020-11-03
 
@@ -735,7 +794,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.5.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.6.4...master
+[1.6.4]: https://github.com/Snakybo/Clicked/releases/tag/1.6.4
+[1.6.3]: https://github.com/Snakybo/Clicked/releases/tag/1.6.3
+[1.6.2]: https://github.com/Snakybo/Clicked/releases/tag/1.6.2
+[1.6.1]: https://github.com/Snakybo/Clicked/releases/tag/1.6.1
+[1.6.0]: https://github.com/Snakybo/Clicked/releases/tag/1.6.0
+[1.5.3]: https://github.com/Snakybo/Clicked/releases/tag/1.5.3
+[1.5.2]: https://github.com/Snakybo/Clicked/releases/tag/1.5.2
 [1.5.1]: https://github.com/Snakybo/Clicked/releases/tag/1.5.1
 [1.5.0]: https://github.com/Snakybo/Clicked/releases/tag/1.5.0
 [1.4.1]: https://github.com/Snakybo/Clicked/releases/tag/1.4.1
@@ -794,6 +860,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#75]: https://github.com/Snakybo/Clicked/issues/75
+[#74]: https://github.com/Snakybo/Clicked/pull/74
+[#71]: https://github.com/Snakybo/Clicked/issues/71
+[#70]: https://github.com/Snakybo/Clicked/issues/70
+[#64]: https://github.com/Snakybo/Clicked/issues/64
 [#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59
 [#58]: https://github.com/Snakybo/Clicked/pull/58

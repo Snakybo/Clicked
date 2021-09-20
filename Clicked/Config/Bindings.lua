@@ -11,6 +11,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local ITEM_TEMPLATE_GROUP = "GROUP"
 local ITEM_TEMPLATE_SPELL = "CAST_SPELL"
+local ITEM_TEMPLATE_SPELL_CC = "CAST_SPELL_CC"
 local ITEM_TEMPLATE_ITEM = "USE_ITEM"
 local ITEM_TEMPLATE_MACRO = "RUN_MACRO"
 local ITEM_TEMPLATE_APPEND = "RUN_MACRO_APPEND"
@@ -30,7 +31,7 @@ local waitingForItemInfo = {}
 --- @type table
 local root
 
---- @type table
+--- @type ClickedTreeGroup
 local tree
 
 --- @type table
@@ -167,6 +168,35 @@ local function CreateLoadOptionTooltip(type, selected)
 	return result
 end
 
+--- @param binding Binding
+local function GetAvailableTabs(binding)
+	local items = {}
+	local type = binding.type
+
+	if type ~= Addon.BindingTypes.UNIT_SELECT and type ~= Addon.BindingTypes.UNIT_MENU then
+		table.insert(items, "action")
+	end
+
+	if type ~= Addon.BindingTypes.APPEND then
+		table.insert(items, "target")
+	end
+
+	table.insert(items, "load_conditions")
+
+	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO then
+		table.insert(items, "macro_conditions")
+	end
+
+
+	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
+		if Addon:CanBindingLoad(binding) then
+			table.insert(items, "status")
+		end
+	end
+
+	return items
+end
+
 -- Tooltips
 
 --- @param widget table
@@ -273,7 +303,7 @@ local function IsSpellButtonBound(button, bookType)
 	return false, nil
 end
 
-local function OnSpellBookButtonClick(name)
+local function OnSpellBookButtonClick(name, convertValueToId)
 	if GetCurrentBinding() == nil or name == nil then
 		return
 	end
@@ -287,6 +317,8 @@ local function OnSpellBookButtonClick(name)
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = name
+		binding.action.convertValueToId = convertValueToId
+
 		HideUIPanel(SpellBookFrame)
 		Clicked:ReloadActiveBindings()
 	end
@@ -317,15 +349,15 @@ local function HijackSpellButton_UpdateButton(self)
 				SpellButton_OnLeave(parent)
 			end)
 
-			button:SetScript("OnClick", function()
+			button:SetScript("OnClick", function(_, mouseButton)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName) then
+				if mouseButton ~= "RightButton" and (Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName)) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
-				OnSpellBookButtonClick(name)
+				OnSpellBookButtonClick(name, mouseButton ~= "RightButton")
 			end)
 
 			-- Respect ElvUI skinning
@@ -733,7 +765,7 @@ local function DrawSpellItemSelection(container, action, mode)
 
 		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
 
-		if id ~= nil then
+		if id ~= nil and action.convertValueToId then
 			action[valueKey] = id
 		end
 
@@ -765,6 +797,8 @@ local function DrawSpellItemSelection(container, action, mode)
 				end
 
 				action[valueKey] = value
+				action.convertValueToId = true
+
 				Clicked:ReloadActiveBindings()
 			end
 
@@ -858,29 +892,61 @@ local function DrawSpellItemSelection(container, action, mode)
 			group:AddChild(widget)
 		end
 
-		-- pick from spellbook button
 		if mode == Addon.BindingTypes.SPELL then
-			local function OnClick()
-				if InCombatLockdown() then
-					Addon:NotifyCombatLockdown()
-					return
+			local hasRank = id ~= nil and string.find(name, "%((.+)%)")
+
+			-- pick from spellbook button
+			do
+				local function OnClick()
+					if InCombatLockdown() then
+						Addon:NotifyCombatLockdown()
+						return
+					end
+
+					didOpenSpellbook = true
+
+					if SpellBookFrame:IsShown() then
+						HijackSpellButton_UpdateButton(nil)
+					else
+						ShowUIPanel(SpellBookFrame)
+					end
 				end
 
-				didOpenSpellbook = true
+				local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
 
-				if SpellBookFrame:IsShown() then
-					HijackSpellButton_UpdateButton(nil)
+				if hasRank then
+					widget:SetRelativeWidth(0.65)
 				else
-					ShowUIPanel(SpellBookFrame)
+					widget:SetFullWidth(true)
 				end
+
+				local tooltip = L["Click on a spell book entry to select it."]
+
+				if Addon:IsClassic() or Addon:IsBC() then
+					tooltip = tooltip .. "\n" .. L["Right click to use the max rank."]
+				end
+
+				RegisterTooltip(widget, tooltip)
+
+				group:AddChild(widget)
 			end
 
-			local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
-			widget:SetFullWidth(true)
+			-- remove rank button
+			do
+				if hasRank then
+					local function OnClick()
+						action[valueKey] = Addon:GetSpellInfo(id, false)
+						action.convertValueToId = false
 
-			RegisterTooltip(widget, L["Click on a spell book entry to select it."])
+						Clicked:ReloadActiveBindings()
+					end
 
-			group:AddChild(widget)
+					local widget = Addon:GUI_Button(L["Remove rank"], OnClick)
+					widget:SetRelativeWidth(0.35)
+
+					group:AddChild(widget)
+				end
+			end
 		end
 	end
 end
@@ -1856,10 +1922,10 @@ local function DrawLoadZoneName(container, zoneName)
 
 	if inputField ~= nil then
 		local tips = {
-			string.format(L["Comma separated, use an exclamation mark (%s) to inverse a zone condition, for example:"], "|r!|cffffffff"),
+			string.format(L["Semicolon separated, use an exclamation mark (%s) to negate a zone condition, for example:"], "|r!|cffffffff"),
 			"\n",
 			string.format(L["%s will be active if you're not in Oribos"], "|r!" .. L["Oribos"] .. "|cffffffff"),
-			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. "," .. L["Orgrimmar"] .. "|cffffffff")
+			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. ";" .. L["Orgrimmar"] .. "|cffffffff")
 		}
 
 		RegisterTooltip(inputField, L["Zone name(s)"],  table.concat(tips, "\n"))
@@ -2061,6 +2127,11 @@ local function CreateFromItemTemplate(identifier)
 	if identifier == ITEM_TEMPLATE_SPELL then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.SPELL
+	elseif identifier == ITEM_TEMPLATE_SPELL_CC then
+		item = Clicked:CreateBinding()
+		item.type = Addon.BindingTypes.SPELL
+		item.targets.hovercastEnabled = true
+		item.targets.regularEnabled = false
 	elseif identifier == ITEM_TEMPLATE_ITEM then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.ITEM
@@ -2087,6 +2158,19 @@ local function CreateFromItemTemplate(identifier)
 			local function RegisterSpell(spellId)
 				if IsPassiveSpell(spellId) then
 					return {}
+				end
+
+				--- @type Binding
+				for _, binding in Clicked:IterateConfiguredBindings() do
+					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
+						local group = Clicked:GetGroupById(binding.parent)
+
+						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
+						-- before excluding it
+						if group.name == tabName and group.displayIcon == tabIcon then
+							return {}
+						end
+					end
 				end
 
 				if pendingSpellIds[spellId] == nil then
@@ -2149,9 +2233,21 @@ local function CreateFromItemTemplate(identifier)
 			end
 
 			if next(pendingSpellIds) ~= nil then
-				local group = Clicked:CreateGroup()
-				group.name = tabName
-				group.displayIcon = tabIcon
+				local group = nil
+
+				--- @type Group
+				for _, g in Clicked:IterateGroups() do
+					if g.name == tabName and g.displayIcon == tabIcon then
+						group = g
+						break
+					end
+				end
+
+				if group == nil then
+					group = Clicked:CreateGroup()
+					group.name = tabName
+					group.displayIcon = tabIcon
+				end
 
 				for spellId, data in pairs(pendingSpellIds) do
 					local binding = Clicked:CreateBinding()
@@ -2255,63 +2351,55 @@ local function DrawBinding(container)
 			scrollFrame:DoLayout()
 		end
 
-		local items = {}
-		local type = binding.type
+		--- @param availableTabs string[]
+		local function CreateTabGroup(availableTabs)
+			local items = {}
 
-		if type ~= Addon.BindingTypes.UNIT_SELECT and type ~= Addon.BindingTypes.UNIT_MENU then
-			table.insert(items, {
-				text = L["Action"],
-				value = "action"
-			})
-		end
+			for i, availableTab in ipairs(availableTabs) do
+				local text = nil
 
-		if type ~= Addon.BindingTypes.APPEND then
-			table.insert(items, {
-				text = L["Targets"],
-				value = "target"
-			})
-		end
+				if availableTab == "action" then
+					text = L["Action"]
+				elseif availableTab == "target" then
+					text = L["Targets"]
+				elseif availableTab == "load_conditions" then
+					text = L["Load conditions"]
+				elseif availableTab == "macro_conditions" then
+					text = L["Macro conditions"]
+				elseif availableTab == "status" then
+					text = L["Status"]
+				end
 
-		table.insert(items, {
-			text = L["Load conditions"],
-			value = "load_conditions"
-		})
-
-		if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO then
-			table.insert(items, {
-				text = L["Macro conditions"],
-				value = "macro_conditions"
-			})
-		end
-
-
-		if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
-			if Addon:CanBindingLoad(binding) then
-				table.insert(items, {
-					text = L["Status"],
-					value = "status"
-				})
+				if text ~= nil then
+					items[i] = {
+						text = text,
+						value = availableTab
+					}
+				end
 			end
+
+			return items
 		end
 
+		local availableTabs = GetAvailableTabs(binding)
 		local hasSelectedTab = false
 
-		for _, item in ipairs(items) do
-			if item.value == tab.selected then
+		for _, availableTab in ipairs(availableTabs) do
+			if availableTab == tab.selected then
 				hasSelectedTab = true
 				break
 			end
 		end
 
 		if not hasSelectedTab then
-			tab.selected = items[1].value
+			tab.selected = availableTabs[1]
 		end
 
-		local widget = Addon:GUI_TabGroup(items, OnGroupSelected)
-		widget:SetStatusTable(tab)
-		widget:SelectTab(tab.selected)
+		tab.widget = Addon:GUI_TabGroup(CreateTabGroup(availableTabs), OnGroupSelected)
+		tab.widget:SetStatusTable(tab)
+		tab.widget:SelectTab(tab.selected)
 
-		container:AddChild(widget)
+		container:AddChild(tab.widget)
 	end
 end
 
@@ -2342,6 +2430,7 @@ local function DrawItemTemplateSelector(container)
 
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["Group"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL, L["Cast a spell"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL_CC, L["Cast a spell on a unit frame"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_ITEM, L["Use an item"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_TARGET, L["Target the unit"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MENU, L["Open the unit menu"])
@@ -2384,10 +2473,10 @@ end
 
 --- @param container table
 local function DrawTreeContainer(container)
-	container:ReleaseChildren()
-
 	local binding = GetCurrentBinding()
 	local group = GetCurrentGroup()
+
+	container:ReleaseChildren()
 
 	if showIconPicker then
 		local data = binding ~= nil and binding.action or group
@@ -2450,8 +2539,34 @@ function Addon:BindingConfig_Open()
 			end
 		end
 
+		local function OnReceiveDrag()
+			local infoType, info1, info2 = GetCursorInfo()
+			local bindingType = nil
+
+			if infoType == "item" then
+				bindingType = Addon.BindingTypes.ITEM
+			elseif infoType == "spell" then
+				bindingType = Addon.BindingTypes.SPELL
+				info1 = select(3, GetSpellBookItemName(info1, info2))
+			elseif infoType == "petaction" then
+				bindingType = Addon.BindingTypes.SPELL
+			end
+
+			if bindingType ~= nil then
+				local binding = Clicked:CreateBinding()
+				binding.type = bindingType
+				Addon:SetBindingValue(binding, info1)
+
+				Clicked:ReloadActiveBindings()
+				tree:SelectByBindingOrGroup(binding)
+
+				ClearCursor()
+			end
+		end
+
 		root = AceGUI:Create("ClickedFrame")
 		root:SetCallback("OnClose", OnClose)
+		root:SetCallback("OnReceiveDrag", OnReceiveDrag)
 		root:SetTitle(L["Clicked Binding Configuration"])
 		root:SetLayout("Flow")
 		root:SetWidth(900)

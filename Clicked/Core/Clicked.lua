@@ -12,7 +12,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 
 --- The current version of Clicked.
---- @type string
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 local isPlayerInCombat = false
@@ -121,6 +120,10 @@ local function PLAYER_LEVEL_CHANGED()
 	Clicked:ReloadActiveBindings()
 end
 
+local function LEARNED_SPELL_IN_TAB()
+	Clicked:ReloadActiveBindings()
+end
+
 local function PLAYER_EQUIPMENT_CHANGED()
 	Clicked:ReloadActiveBindings()
 end
@@ -180,7 +183,8 @@ function Clicked:OnEnable()
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
 	end
 
-	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED);
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
@@ -205,6 +209,7 @@ function Clicked:OnDisable()
 	end
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
+	self:UnregisterEvent("LEARNED_SPELL_IN_TAB")
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")

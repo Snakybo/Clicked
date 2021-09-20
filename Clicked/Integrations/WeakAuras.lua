@@ -87,6 +87,7 @@ local spellActionButtonTemplate = {
 	},
 	["height"] = 64,
 	["load"] = {
+		["use_spellknown"] = true,
 		["talent"] = {
 			["multi"] = {
 			},
@@ -99,6 +100,7 @@ local spellActionButtonTemplate = {
 			["multi"] = {
 			},
 		},
+		["spellknown"] = "",
 		["size"] = {
 			["multi"] = {
 			},
@@ -384,6 +386,7 @@ local function PopulateTemplate(binding)
 		template = Addon:DeepCopyTable(spellActionButtonTemplate)
 		template.triggers[1].trigger.realSpellName = name
 		template.triggers[1].trigger.spellName = id
+		template.load.spellknown = id
 	elseif binding.type == Addon.BindingTypes.ITEM then
 		template = Addon:DeepCopyTable(itemActionButtonTemplate)
 		template.triggers[1].trigger.itemName = id

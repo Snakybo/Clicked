@@ -81,12 +81,13 @@ local function OnTooltipSetUnit(self)
 		return
 	end
 
-	lastTooltipUpdateTime = GetTime()
 	local _, unit = self:GetUnit()
 
-	if Addon:IsStringNilOrEmpty(unit) then
+	if Addon:IsStringNilOrEmpty(unit) or lastTooltipUpdateTime == GetTime() then
 		return
 	end
+
+	lastTooltipUpdateTime = GetTime()
 
 	local bindings = Clicked:GetBindingsForUnit(unit)
 	local first = true
@@ -117,9 +118,11 @@ local function OnTooltipSetSpell(self)
 
 	local _, spellId = self:GetSpell()
 
-	if spellId == nil then
+	if spellId == nil or lastTooltipUpdateTime == GetTime()then
 		return
 	end
+
+	lastTooltipUpdateTime = GetTime()
 
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do

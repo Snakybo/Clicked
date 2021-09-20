@@ -50,11 +50,10 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 	EnsureCache(frame)
 
 	for key, value in pairs(attributes) do
-		-- Some unit frames use "togglemenu" instead of "menu",
-		-- so to ensure both work convert the value to whatever is
-		-- bound to *type2
-		if value == "menu" then
-			value = frame:GetAttribute("*type2")
+		-- Some unit frames use "menu" instead of "togglemenu", an easy way to make sure we use the correct variant is to look at *type2 and check whether that
+		-- is set to `menu`. If it is, we use "menu" instead.
+		if value == "togglemenu" and frame:GetAttribute("*type2") == "menu" then
+			value = "menu"
 		end
 
 		frameCache[frame].pending[key] = value
@@ -96,7 +95,7 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	if command.action == Addon.CommandType.TARGET then
 		CreateAttribute(register, prefix, "type", suffix, "target")
 	elseif command.action == Addon.CommandType.MENU then
-		CreateAttribute(register, prefix, "type", suffix, "menu")
+		CreateAttribute(register, prefix, "type", suffix, "togglemenu")
 	elseif command.action == Addon.CommandType.MACRO then
 		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)

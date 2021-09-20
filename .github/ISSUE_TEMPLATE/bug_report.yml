@@ -23,7 +23,7 @@ body:
     options:
       - Shadowlands
       - Classic
-      - The Burning Crusade Classic
+      - Burning Crusade Classic
   validations:
     required: true
 - type: checkboxes
