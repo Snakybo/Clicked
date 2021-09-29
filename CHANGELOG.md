@@ -8,7 +8,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.6.5] - 2021-09-29
+
+### Added
+
+- Add support for WoW Classic 1.14.0
 
 ### Fixed
 
@@ -18,7 +22,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Update ToC for Burning Crusade Classic
+- Add support for for Burning Crusade Classic 2.5.1
 
 ## [1.6.3] - 2021-08-07
 
@@ -794,7 +798,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.6.4...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.6.5...master
+[1.6.5]: https://github.com/Snakybo/Clicked/releases/tag/1.6.5
 [1.6.4]: https://github.com/Snakybo/Clicked/releases/tag/1.6.4
 [1.6.3]: https://github.com/Snakybo/Clicked/releases/tag/1.6.3
 [1.6.2]: https://github.com/Snakybo/Clicked/releases/tag/1.6.2
