@@ -414,6 +414,10 @@ function Addon:GetBindingValue(binding)
 		return self:GetItemInfo(item) or item
 	end
 
+	if binding.type == Addon.BindingTypes.CANCELAURA then
+		return binding.action.auraName
+	end
+
 	if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
 		return binding.action.macroValue
 	end
@@ -441,6 +445,11 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 		end
 
 		return name, icon, self:GetItemId(name)
+	end
+
+	if binding.type == Addon.BindingTypes.CANCELAURA then
+		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.auraName)
+		return name, icon, id
 	end
 
 	return nil, nil, nil
@@ -489,8 +498,19 @@ function Addon:GetBindingNameAndIcon(binding)
 			name = binding.action.macroName
 		end
 
-		if binding.action.macroIcon ~= nil then
+		if not Addon:IsStringNilOrEmpty(binding.action.macroIcon) then
 			icon = binding.action.macroIcon
+		end
+	elseif binding.type == Addon.BindingTypes.CANCELAURA then
+		local _, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local value = Addon:GetBindingValue(binding)
+
+		if value ~= nil then
+			name = string.format(L["Cancel %s"], value)
+		end
+
+		if IsValidIcon(spellIcon) then
+			icon = spellIcon
 		end
 	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
 		name = L["Target the unit"]
@@ -862,6 +882,30 @@ function Addon:IsMouseButton(keybind)
 	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	return buttonIndex ~= nil
+end
+
+--- Check if the hovercast targeting mode should be enabled for a binding.
+---
+--- @param binding Binding
+--- @return boolean
+function Addon:IsHovercastEnabled(binding)
+	if binding.type == Addon.BindingTypes.CANCELAURA then
+		return false
+	end
+
+	return binding.targets.hovercastEnabled
+end
+
+--- Check if the regular/macro targeting mode should be enabled for a binding.
+---
+--- @param binding Binding
+--- @return boolean
+function Addon:IsMacroCastEnabled(binding)
+	if binding.type == Addon.BindingTypes.CANCELAURA then
+		return true
+	end
+
+	return binding.targets.regularEnabled
 end
 
 --- Ensure that the specified `targets` table is properly updated after switching

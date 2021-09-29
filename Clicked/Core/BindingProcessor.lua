@@ -6,6 +6,7 @@ Addon.BindingTypes = {
 	ITEM = "ITEM",
 	MACRO = "MACRO",
 	APPEND = "APPEND",
+	CANCELAURA = "CANCELAURA",
 	UNIT_SELECT = "UNIT_SELECT",
 	UNIT_MENU = "UNIT_MENU"
 }
@@ -236,12 +237,12 @@ end
 local function ConstructActions(binding, interactionType)
 	local actions = {}
 
-	if binding.targets.hovercastEnabled and interactionType == Addon.InteractionType.HOVERCAST then
+	if Addon:IsHovercastEnabled(binding) and interactionType == Addon.InteractionType.HOVERCAST then
 		local action = ConstructAction(binding, binding.targets.hovercast)
 		table.insert(actions, action)
 	end
 
-	if binding.targets.regularEnabled and interactionType == Addon.InteractionType.REGULAR then
+	if Addon:IsMacroCastEnabled(binding) and interactionType == Addon.InteractionType.REGULAR then
 		for _, target in ipairs(binding.targets.regular) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
@@ -326,24 +327,6 @@ local function SortActions(actions, indexMap)
 	table.sort(actions, SortFunc)
 end
 
---- @param binding Binding
---- @return string
-local function GetInternalBindingType(binding)
-	if binding.type == Addon.BindingTypes.SPELL then
-		return Addon.BindingTypes.MACRO
-	end
-
-	if binding.type == Addon.BindingTypes.ITEM then
-		return Addon.BindingTypes.MACRO
-	end
-
-	if binding.type == Addon.BindingTypes.APPEND then
-		return Addon.BindingTypes.MACRO
-	end
-
-	return binding.type
-end
-
 local function ProcessBuckets()
 	--- @param keybind string
 	--- @param bindings Binding[]
@@ -362,7 +345,7 @@ local function ProcessBuckets()
 
 		command.prefix, command.suffix = Addon:CreateAttributeIdentifier(command.keybind, command.hovercast)
 
-		if GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
+		if Addon:GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
@@ -411,7 +394,7 @@ local function GenerateBuckets(bindings)
 		else
 			local reference = bucket[1]
 
-			if GetInternalBindingType(binding) == GetInternalBindingType(reference) then
+			if Addon:GetInternalBindingType(binding) == Addon:GetInternalBindingType(reference) then
 				table.insert(bucket, binding)
 			end
 		end
@@ -424,12 +407,12 @@ local function GenerateBuckets(bindings)
 	for _, binding in ipairs(bindings) do
 		local key = binding.keybind
 
-		if binding.targets.hovercastEnabled then
+		if Addon:IsHovercastEnabled(binding) then
 			hovercastBucket[key] = hovercastBucket[key] or {}
 			Insert(hovercastBucket[key], binding)
 		end
 
-		if binding.targets.regularEnabled then
+		if Addon:IsMacroCastEnabled(binding) then
 			regularBucket[key] = regularBucket[key] or {}
 			Insert(regularBucket[key], binding)
 		end
@@ -473,12 +456,12 @@ function Clicked:EvaluateBindingMacro(binding)
 	local hovercastTarget = nil
 	local regularTarget = nil
 
-	if binding.targets.hovercastEnabled then
+	if Addon:IsHovercastEnabled(binding) then
 		local _, hovercast = Addon:GetMacroForBindings(bindings, Addon.InteractionType.HOVERCAST)
 		_, hovercastTarget = SecureCmdOptionParse(hovercast)
 	end
 
-	if binding.targets.regularEnabled then
+	if Addon:IsMacroCastEnabled(binding) then
 		local _, regular = Addon:GetMacroForBindings(bindings, Addon.InteractionType.REGULAR)
 		_, regularTarget = SecureCmdOptionParse(regular)
 	end
@@ -555,7 +538,7 @@ function Clicked:GetBindingsForUnit(unit)
 		-- hovercast
 		do
 			local hovercast = binding.targets.hovercast
-			local enabled = binding.targets.hovercastEnabled
+			local enabled = Addon:IsHovercastEnabled(binding)
 
 			if enabled and GetMouseFocus() ~= WorldFrame and IsTargetValid(hovercast) then
 				return true
@@ -564,7 +547,7 @@ function Clicked:GetBindingsForUnit(unit)
 
 		-- regular
 		do
-			local enabled = binding.targets.regularEnabled
+			local enabled = Addon:IsMacroCastEnabled(binding)
 
 			if enabled then
 				local _, target = Clicked:EvaluateBindingMacro(binding)
@@ -646,9 +629,7 @@ function Addon:CanBindingLoad(binding)
 
 	-- both hovercast and regular targets disabled
 	do
-		local targets = binding.targets
-
-		if not targets.hovercastEnabled and not targets.regularEnabled then
+		if not Addon:IsHovercastEnabled(binding) and not Addon:IsMacroCastEnabled(binding) then
 			return false
 		end
 	end
@@ -1021,6 +1002,28 @@ function Addon:IsBindingValidForCurrentState(binding)
 	return true
 end
 
+--- @param binding Binding
+--- @return string
+function Addon:GetInternalBindingType(binding)
+	if binding.type == Addon.BindingTypes.SPELL then
+		return Addon.BindingTypes.MACRO
+	end
+
+	if binding.type == Addon.BindingTypes.ITEM then
+		return Addon.BindingTypes.MACRO
+	end
+
+	if binding.type == Addon.BindingTypes.APPEND then
+		return Addon.BindingTypes.MACRO
+	end
+
+	if binding.type == Addon.BindingTypes.CANCELAURA then
+		return Addon.BindingTypes.MACRO
+	end
+
+	return binding.type
+end
+
 --- Construct a valid macro that correctly prioritizes all specified bindings.
 --- It will prioritize bindings in the following order:
 ---
@@ -1094,6 +1097,20 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 	-- Add all action groups in order
 	do
+		--- @param binding Binding
+		--- @return string
+		local function GetPrefixForBinding(binding)
+			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+				return "/use "
+			end
+
+			if binding.type == Addon.BindingTypes.CANCELAURA then
+				return "/cancelaura "
+			end
+
+			return nil
+		end
+
 		-- Parse and sort action groups
 		local bindingGroups = {}
 
@@ -1106,8 +1123,18 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		for _, binding in ipairs(bindings) do
 			local order = binding.action.executionOrder
 
-			bindingGroups[order] = bindingGroups[order] or {}
-			table.insert(bindingGroups[order], binding)
+			if bindingGroups[order] == nil then
+				bindingGroups[order] = {
+					prefix = GetPrefixForBinding(binding)
+				}
+			end
+
+			local prefix = GetPrefixForBinding(binding)
+			local other = bindingGroups[order].prefix
+
+			if prefix == other or prefix == nil then
+				table.insert(bindingGroups[order], binding)
+			end
 		end
 
 		-- Generate actions for SPELL and ITEM bindings, and insert macro values
@@ -1133,13 +1160,25 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					elseif binding.type == Addon.BindingTypes.APPEND then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(appends[order], value)
+					elseif binding.type == Addon.BindingTypes.CANCELAURA then
+						local target = Addon:GetNewBindingTargetTemplate()
+						target.unit = Addon.TargetUnits.DEFAULT
+						target.hostility = Addon.TargetHostility.ANY
+						target.vitals = Addon.TargetVitals.ANY
+
+						local action = ConstructAction(binding, target)
+
+						table.insert(actions[order], action)
+
+						actionsSequence[action] = nextActionIndex
+						nextActionIndex = nextActionIndex + 1
 					end
 				end
 			end
 		end
 
 		-- Add all commands to the macro
-		for order in pairs(bindingGroups) do
+		for order, group in pairs(bindingGroups) do
 			local localSegments = {}
 
 			-- Put any custom macros on top
@@ -1167,7 +1206,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 			end
 
 			if #localSegments > 0 then
-				local command = "/use " .. table.concat(localSegments, "; ")
+				local command = group.prefix .. table.concat(localSegments, "; ")
 
 				-- Insert any APPEND bindings
 				for _, append in ipairs(appends[order]) do
@@ -1185,11 +1224,9 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 		if #macroConditions > 0 then
 			for _, binding in ipairs(bindings) do
-				if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-					if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
-						targetUnitAfterCast = true
-						table.insert(lines, "/tar " .. table.concat(macroConditions, ""))
-					end
+				if not targetUnitAfterCast and binding.action.targetUnitAfterCast then
+					targetUnitAfterCast = true
+					table.insert(lines, "/tar " .. table.concat(macroConditions, ""))
 				end
 			end
 		end

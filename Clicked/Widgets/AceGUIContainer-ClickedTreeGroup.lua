@@ -407,6 +407,7 @@ local function Button_OnClick(frame, button)
 
 				AddConvertToOption(Addon.BindingTypes.SPELL, L["Cast a spell"])
 				AddConvertToOption(Addon.BindingTypes.ITEM, L["Use an item"])
+				AddConvertToOption(Addon.BindingTypes.CANCELAURA, L["Cancel an aura"])
 				AddConvertToOption(Addon.BindingTypes.UNIT_SELECT, L["Target the unit"])
 				AddConvertToOption(Addon.BindingTypes.UNIT_MENU, L["Open the unit menu"])
 				AddConvertToOption(Addon.BindingTypes.MACRO, L["Run a macro"])
@@ -494,7 +495,7 @@ local function Button_OnEnter(frame)
 		text = text .. "\n\n"
 		text = text .. L["Targets"] .. "\n"
 
-		if binding.targets.hovercastEnabled then
+		if Addon:IsHovercastEnabled(binding) then
 			local str = Addon:GetLocalizedTargetString(binding.targets.hovercast)
 
 			if #str > 0 then
@@ -505,7 +506,7 @@ local function Button_OnEnter(frame)
 			text = text .. "|cFFFFFFFF* " .. str .. "|r\n"
 		end
 
-		if binding.targets.regularEnabled then
+		if Addon:IsMacroCastEnabled(binding) then
 			for i, target in ipairs(binding.targets.regular) do
 				local str = Addon:GetLocalizedTargetString(target)
 				text = text .. "|cFFFFFFFF" .. i .. ". " .. str .. "|r\n"

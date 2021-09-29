@@ -15,6 +15,7 @@ local ITEM_TEMPLATE_SPELL_CC = "CAST_SPELL_CC"
 local ITEM_TEMPLATE_ITEM = "USE_ITEM"
 local ITEM_TEMPLATE_MACRO = "RUN_MACRO"
 local ITEM_TEMPLATE_APPEND = "RUN_MACRO_APPEND"
+local ITEM_TEMPLATE_CANCELAURA = "CANCELAURA"
 local ITEM_TEMPLATE_TARGET = "UNIT_TARGET"
 local ITEM_TEMPLATE_MENU = "UNIT_MENU"
 local ITEM_TEMPLATE_IMPORT_SPELLBOOK = "IMPORT_SPELLBOOK"
@@ -177,7 +178,7 @@ local function GetAvailableTabs(binding)
 		table.insert(items, "action")
 	end
 
-	if type ~= Addon.BindingTypes.APPEND then
+	if type ~= Addon.BindingTypes.APPEND and type ~= Addon.BindingTypes.CANCELAURA then
 		table.insert(items, "target")
 	end
 
@@ -185,7 +186,11 @@ local function GetAvailableTabs(binding)
 	table.insert(items, "macro_conditions")
 
 
-	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
+	if type == Addon.BindingTypes.SPELL or
+	   type == Addon.BindingTypes.ITEM or
+	   type == Addon.BindingTypes.MACRO or
+	   type == Addon.BindingTypes.APPEND or
+	   type == Addon.BindingTypes.CANCELAURA then
 		if Addon:CanBindingLoad(binding) then
 			table.insert(items, "status")
 		end
@@ -752,12 +757,24 @@ end
 --- @param container table
 --- @param action Binding.Action
 --- @param mode string
-local function DrawSpellItemSelection(container, action, mode)
-	local valueKey = mode == Addon.BindingTypes.SPELL and "spellValue" or "itemValue"
+local function DrawSpellItemAuraSelection(container, action, mode)
+	local valueKey = nil
+	local headerText = nil
+
+	if mode == Addon.BindingTypes.SPELL then
+		valueKey = "spellValue"
+		headerText = L["Target Spell"]
+	elseif mode == Addon.BindingTypes.ITEM then
+		valueKey = "itemValue"
+		headerText = L["Target Item"]
+	elseif mode == Addon.BindingTypes.CANCELAURA then
+		valueKey = "auraName"
+		headerText = L["Target Aura"]
+	end
 
 	-- target spell or item
 	do
-		local group = Addon:GUI_InlineGroup(mode == Addon.BindingTypes.SPELL and L["Target Spell"] or L["Target Item"])
+		local group = Addon:GUI_InlineGroup(headerText)
 		container:AddChild(group)
 
 		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
@@ -845,8 +862,10 @@ local function DrawSpellItemSelection(container, action, mode)
 
 			if mode == Addon.BindingTypes.SPELL then
 				RegisterTooltip(widget, L["Target Spell"], L["Enter the spell name or spell ID."])
-			else
+			elseif mode == Addon.BindingTypes.ITEM then
 				RegisterTooltip(widget, L["Target Item"], L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
+			elseif mode == Addon.BindingTypes.CANCELAURA then
+				RegisterTooltip(widget, L["Target Aura"], L["Enter the aura name or spell ID."])
 			end
 
 			group:AddChild(widget)
@@ -1065,8 +1084,11 @@ local function DrawAppendSelection(container, action)
 end
 
 --- @param container table
---- @param binding Binding
-local function DrawActionGroupOptions(container, binding)
+--- @param keybind string
+local function DrawActionGroupOptions(container, keybind)
+	--- @param left Binding
+	--- @param right Binding
+	--- @return boolean
 	local function SortFunc(left, right)
 		if left.type == Addon.BindingTypes.MACRO and right.type ~= Addon.BindingTypes.MACRO then
 			return true
@@ -1084,10 +1106,7 @@ local function DrawActionGroupOptions(container, binding)
 			return false
 		end
 
-		local leftName = Addon:GetBindingNameAndIcon(left)
-		local rightName = Addon:GetBindingNameAndIcon(right)
-
-		return leftName < rightName
+		return left.identifier < right.identifier
 	end
 
 	local group = Addon:GUI_InlineGroup(L["Action Groups"])
@@ -1097,7 +1116,7 @@ local function DrawActionGroupOptions(container, binding)
 	local count = 0
 
 	for _, other in Clicked:IterateActiveBindings() do
-		if other.keybind == binding.keybind then
+		if other.keybind == keybind then
 			local id = other.action.executionOrder
 
 			if groups[id] == nil then
@@ -1125,9 +1144,9 @@ local function DrawActionGroupOptions(container, binding)
 
 		group:AddChild(header)
 
-		for _, other in ipairs(bindings) do
+		for index, binding in ipairs(bindings) do
 			local function OnClick()
-				tree:SelectByBindingOrGroup(other)
+				tree:SelectByBindingOrGroup(binding)
 			end
 
 			local function OnMoveUp()
@@ -1136,13 +1155,13 @@ local function DrawActionGroupOptions(container, binding)
 					return
 				end
 
-				if other.action.executionOrder > 1 then
-					other.action.executionOrder = other.action.executionOrder - 1
+				if binding.action.executionOrder > 1 then
+					binding.action.executionOrder = binding.action.executionOrder - 1
 				else
 					for oid, obindings in pairs(groups) do
 						if oid >= id then
 							for _, obinding in ipairs(obindings) do
-								if obinding ~= other then
+								if obinding ~= binding then
 									obinding.action.executionOrder = obinding.action.executionOrder + 1
 								end
 							end
@@ -1159,12 +1178,36 @@ local function DrawActionGroupOptions(container, binding)
 					return
 				end
 
-				other.action.executionOrder = other.action.executionOrder + 1
+				binding.action.executionOrder = binding.action.executionOrder + 1
 
 				Clicked:ReloadActiveBindings()
 			end
 
-			local name, icon = Addon:GetBindingNameAndIcon(other)
+			local name, icon = Addon:GetBindingNameAndIcon(binding)
+
+			if index > 1 then
+				--- @param b Binding
+				--- @return string
+				local function GetType(b)
+					if b.type == Addon.BindingTypes.SPELL or b.type == Addon.BindingTypes.ITEM then
+						return "use"
+					elseif b.type == Addon.BindingTypes.CANCELAURA then
+						return "cancel"
+					end
+
+					return nil
+				end
+
+				--- @type Binding
+				local previous = bindings[index - 1]
+
+				local type = GetType(binding)
+				local previousType = GetType(previous)
+
+				if type ~= nil and previousType ~= nil and type ~= previousType then
+					name = "|cffff0000" .. name .. "|r"
+				end
+			end
 
 			local widget = AceGUI:Create("ClickedReorderableLabel")
 			widget:SetFontObject(GameFontHighlight)
@@ -1254,10 +1297,13 @@ local function DrawSharedOptions(container, binding)
 	container:AddChild(group)
 
 	CreateCheckbox(group, L["Interrupt current cast"], L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
-	CreateCheckbox(group, L["Start auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
-	CreateCheckbox(group, L["Start pet attacks"], L["Allow this binding to start pet attacks."], "startPetAttack")
-	CreateCheckbox(group, L["Override queued spell"], L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
-	CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
+
+	if binding.type ~= Addon.BindingTypes.CANCELAURA then
+		CreateCheckbox(group, L["Start auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
+		CreateCheckbox(group, L["Start pet attacks"], L["Allow this binding to start pet attacks."], "startPetAttack")
+		CreateCheckbox(group, L["Override queued spell"], L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
+		CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
+	end
 end
 
 --- @param container table
@@ -1299,9 +1345,10 @@ local function DrawBindingActionPage(container, binding)
 	local ITEM = Addon.BindingTypes.ITEM
 	local MACRO = Addon.BindingTypes.MACRO
 	local APPEND = Addon.BindingTypes.APPEND
+	local CANCELAURA = Addon.BindingTypes.CANCELAURA
 
-	if type == SPELL or type == ITEM then
-		DrawSpellItemSelection(container, binding.action, binding.type)
+	if type == SPELL or type == ITEM or type == CANCELAURA then
+		DrawSpellItemAuraSelection(container, binding.action, binding.type)
 	elseif type == MACRO then
 		DrawMacroSelection(container, binding.targets, binding.action)
 	elseif type == APPEND then
@@ -1321,9 +1368,9 @@ local function DrawBindingActionPage(container, binding)
 		DrawAppendSelection(container, binding.action)
 	end
 
-	DrawActionGroupOptions(container, binding)
+	DrawActionGroupOptions(container, binding.keybind)
 
-	if type == SPELL or type == ITEM or type == MACRO or type == APPEND then
+	if type == SPELL or type == ITEM or type == MACRO or type == APPEND or type == CANCELAURA then
 		DrawSharedOptions(container, binding)
 	end
 
@@ -2013,12 +2060,12 @@ local function DrawBindingStatusPage(container, binding)
 		if other.keybind == binding.keybind then
 			local valid = false
 
-			if binding.targets.hovercastEnabled and other.targets.hovercastEnabled then
+			if Addon:IsHovercastEnabled(binding) and Addon:IsHovercastEnabled(other) then
 				table.insert(hovercast, other)
 				valid = true
 			end
 
-			if binding.targets.regularEnabled and other.targets.regularEnabled then
+			if Addon:IsMacroCastEnabled(binding) and Addon:IsMacroCastEnabled(other) then
 				table.insert(regular, other)
 				valid = true
 			end
@@ -2125,6 +2172,9 @@ local function CreateFromItemTemplate(identifier)
 	elseif identifier == ITEM_TEMPLATE_APPEND then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.APPEND
+	elseif identifier == ITEM_TEMPLATE_CANCELAURA then
+		item = Clicked:CreateBinding()
+		item.type = Addon.BindingTypes.CANCELAURA
 	elseif identifier == ITEM_TEMPLATE_TARGET then
 		item = Clicked:CreateBinding()
 		item.type = Addon.BindingTypes.UNIT_SELECT
@@ -2416,6 +2466,7 @@ local function DrawItemTemplateSelector(container)
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL, L["Cast a spell"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL_CC, L["Cast a spell on a unit frame"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_ITEM, L["Use an item"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CANCELAURA, L["Cancel an aura"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_TARGET, L["Target the unit"])
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MENU, L["Open the unit menu"])
 

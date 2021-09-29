@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add combat modifier to unit target and menu bindings [#97]
 - Allow `channeling` and `nochanneling` without a value
+- Add cancelaura binding type [#76]
 
 ## [1.6.12] - 2022-06-27
 
@@ -949,6 +950,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#97]: https://github.com/Snakybo/Clicked/issues/97
 [#91]: https://github.com/Snakybo/Clicked/issues/91
 [#84]: https://github.com/Snakybo/Clicked/issues/84
+[#76]: https://github.com/Snakybo/Clicked/issues/76
 [#75]: https://github.com/Snakybo/Clicked/issues/75
 [#74]: https://github.com/Snakybo/Clicked/pull/74
 [#71]: https://github.com/Snakybo/Clicked/issues/71

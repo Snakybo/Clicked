@@ -213,6 +213,7 @@ function Addon:GetNewBindingTemplate()
 			macroValue = "",
 			macroName = L["Run custom macro"],
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
+			auraName = "",
 			executionOrder = 1,
 			convertValueToId = true,
 			interrupt = false,
@@ -1033,6 +1034,15 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.6.0")
+	end
+
+	-- 1.6.x to 1.7.0
+	if string.sub(from, 1, 3) == "1.6" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.auraName = ""
+		end
+
+		FinalizeVersionUpgrade("1.7.0")
 	end
 
 	profile.version = Clicked.VERSION

@@ -61,6 +61,7 @@
 --- @field public macroValue string
 --- @field public macroName string
 --- @field public macroIcon string|integer
+--- @field public auraName string|integer
 --- @field public interrupt boolean
 --- @field public executionOrder integer
 --- @field public convertValueToId boolean
