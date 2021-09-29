@@ -40,7 +40,6 @@ read_globals = {
 	"WeakAurasSaved",
 
 	-- WoW API globals
-	"BackdropTemplateMixin",
 	"BOOKTYPE_PROFESSION",
 	"BOOKTYPE_SPELL",
 	"CreateFrame",
