@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add support for WoW 9.1.5
+- Update talent data for WoW 9.1.5
 
 ## [1.6.5] - 2021-09-29
 
