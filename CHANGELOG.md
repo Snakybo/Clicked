@@ -32,7 +32,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add support for for Burning Crusade Classic 2.5.1
+- Add support for for Burning Crusade Classic 2.5.2
 
 ## [1.6.3] - 2021-08-07
 
@@ -808,7 +808,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.6.5...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.6.6...master
+[1.6.6]: https://github.com/Snakybo/Clicked/releases/tag/1.6.6
 [1.6.5]: https://github.com/Snakybo/Clicked/releases/tag/1.6.5
 [1.6.4]: https://github.com/Snakybo/Clicked/releases/tag/1.6.4
 [1.6.3]: https://github.com/Snakybo/Clicked/releases/tag/1.6.3
