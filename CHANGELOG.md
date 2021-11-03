@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.6.6] - 2021-11-03
+
+### Added
+
+- Add support for WoW 9.1.5
+
 ## [1.6.5] - 2021-09-29
 
 ### Added
