@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add support for WoW 9.1.5
 - Update talent data for WoW 9.1.5
+- Update icons for Burning Crusade Classic 2.5.2
 
 ## [1.6.5] - 2021-09-29
 
