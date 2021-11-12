@@ -999,7 +999,7 @@ end
 --- @param keybind string
 function Addon:SanitizeKeybind(keybind)
 	if IsMacClient() then
-		return  string.gsub(keybind, "META%-", "CMD%-")
+		return string.gsub(keybind, "META%-", "CMD%-")
 	end
 
 	return keybind
