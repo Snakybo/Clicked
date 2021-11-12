@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 - Fix META key not working in conjunction with other modifiers [#84] (by [tflo](https://github.com/tflo))
+- Visualize META key as CMD on Mac clients
 
 ## [1.6.6] - 2021-11-03
 

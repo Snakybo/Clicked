@@ -99,7 +99,7 @@ end
 --- @param binding Binding
 local function UpdateBindingItemVisual(item, binding)
 	item.title, item.icon = Addon:GetBindingNameAndIcon(binding)
-	item.keybind = #binding.keybind > 0 and binding.keybind or L["UNBOUND"]
+	item.keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or L["UNBOUND"]
 end
 
 local function UpdateGroupItemVisual(item, group)

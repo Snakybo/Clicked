@@ -101,6 +101,7 @@ read_globals = {
 	"IsEquippedItem",
 	"IsInInstance",
 	"IsInRaid",
+	"IsMacClient",
 	"IsMetaKeyDown",
 	"IsModifierKeyDown",
 	"IsPassiveSpell",

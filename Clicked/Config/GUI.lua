@@ -289,8 +289,10 @@ function Addon:GUI_KeybindingButton(label, ref, key)
 	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
 
 	local widget = CreateGUI("ClickedKeybinding")
+	local keybind = Addon:SanitizeKeybind(ref[key])
+
 	widget:SetLabel(label)
-	widget:SetKey(ref[key])
+	widget:SetKey(keybind)
 	widget:SetCallback("OnKeyChanged", OnSerialize)
 
 	widgets[widget] = {

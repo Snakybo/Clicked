@@ -994,3 +994,13 @@ function Addon:IsGameVersionAtleast(version)
 
 	return false
 end
+
+--- Sanitize the keybind to make it display properly for the current game platform (Windows, Mac)
+--- @param keybind string
+function Addon:SanitizeKeybind(keybind)
+	if IsMacClient() then
+		return  string.gsub(keybind, "META%-", "CMD%-")
+	end
+
+	return keybind
+end

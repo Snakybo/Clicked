@@ -97,7 +97,7 @@ local function OnTooltipSetUnit(self)
 	for _, binding in ipairs(bindings) do
 		if IsKeybindValidForCurrentModifiers(binding.keybind) then
 			local left = Addon:GetSimpleSpellOrItemInfo(binding)
-			local right = binding.keybind
+			local right = Addon:SanitizeKeybind(binding.keybind)
 
 			if first then
 				self:AddLine(" ")
@@ -127,7 +127,7 @@ local function OnTooltipSetSpell(self)
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do
 		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
-			local text = string.format(L["Bound to %s"], binding.keybind)
+			local text = string.format(L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
 			self:AddLine(text, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
 		end
 	end
