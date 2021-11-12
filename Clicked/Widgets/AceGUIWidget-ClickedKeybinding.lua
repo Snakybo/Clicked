@@ -47,6 +47,10 @@ local function Keybinding_OnKeyDown(frame, key)
 				return
 			end
 
+			if IsMetaKeyDown ~= nil and IsMetaKeyDown() then
+				keyPressed = "META-" .. keyPressed
+			end
+
 			if IsShiftKeyDown() then
 				keyPressed = "SHIFT-" .. keyPressed
 			end
@@ -57,10 +61,6 @@ local function Keybinding_OnKeyDown(frame, key)
 
 			if IsAltKeyDown() then
 				keyPressed = "ALT-" .. keyPressed
-			end
-
-			if IsMetaKeyDown ~= nil and IsMetaKeyDown() then
-				keyPressed = "META-" .. keyPressed
 			end
 		end
 
