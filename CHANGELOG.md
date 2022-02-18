@@ -8,6 +8,20 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+- Add support for WoW 9.2.0
+- Add support for WoW Classic 1.14.1
+- Add support for WoW Burning Crusade Classic 2.5.3
+- Update talent data for WoW 9.2.0
+- Update icons for WoW 9.2.0
+- Update icons for WoW Classic 1.14.1
+- Update icons for WoW Burning Crusade Classic 2.5.3
+- Desaturate group icons when all bindings in a group are disabled [#91]
+- Sort groups with active bindings above groups without [#91]
+
 ## [1.6.7] - 2021-11-12
 
 ### Fixed
@@ -884,6 +898,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#91]: https://github.com/Snakybo/Clicked/issues/91
 [#84]: https://github.com/Snakybo/Clicked/issues/84
 [#75]: https://github.com/Snakybo/Clicked/issues/75
 [#74]: https://github.com/Snakybo/Clicked/pull/74
