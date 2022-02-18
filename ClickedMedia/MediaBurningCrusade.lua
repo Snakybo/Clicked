@@ -3975,6 +3975,8 @@ local icons = {
 	"inv_warpstalkermountbc",
 	"pvp-arenapoints-icon",
 	"ui_shop_gameupgrades",
+	"ability_warlock_incubus",
+	"ability_warlock_randomizesuccubusincubus",
 }
 
 function ClickedMedia:GetBurningCrusadeIcons()
