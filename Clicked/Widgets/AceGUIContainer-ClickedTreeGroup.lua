@@ -682,7 +682,7 @@ function Methods:OnAcquire()
 	self.sortMode = 1
 end
 
-function Methods:OnReleas()
+function Methods:OnRelease()
 	self.status = nil
 	self.tree = nil
 	self.bindingCopyBuffer = nil
