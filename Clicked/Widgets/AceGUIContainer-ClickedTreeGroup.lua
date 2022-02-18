@@ -45,22 +45,6 @@ local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "U
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
-local function TreeSortKeybind(left, right)
-	if left.children ~= nil and right.children == nil then
-		return true
-	end
-
-	if left.children == nil and right.children ~= nil then
-		return false
-	end
-
-	if left.binding ~= nil and right.binding ~= nil then
-		return Addon:CompareBindings(left.binding, right.binding)
-	else
-		return left.title < right.title
-	end
-end
-
 local function TreeSortAlphabetical(left, right)
 	if left.children ~= nil and right.children == nil then
 		return true
@@ -70,8 +54,27 @@ local function TreeSortAlphabetical(left, right)
 		return false
 	end
 
-	if left.group ~= nil and right.group ~= nil then
-		return left.title < right.title
+	if left.children ~= nil and right.children ~= nil then
+		local leftHasAnyActive = false
+		local rightHasAnyActive = false
+
+		for _, child in Clicked:IterateConfiguredBindings() do
+			if child.parent == left.group.identifier and Addon:CanBindingLoad(child) then
+				leftHasAnyActive = true
+			elseif child.parent == right.group.identifier and Addon:CanBindingLoad(child) then
+				rightHasAnyActive = true
+			end
+
+			if leftHasAnyActive and rightHasAnyActive then
+				break
+			end
+		end
+
+		if leftHasAnyActive and not rightHasAnyActive then
+			return true
+		elseif not leftHasAnyActive and rightHasAnyActive then
+			return false
+		end
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
@@ -93,6 +96,22 @@ local function TreeSortAlphabetical(left, right)
 	end
 
 	return left.title < right.title
+end
+
+local function TreeSortKeybind(left, right)
+	if left.children ~= nil and right.children == nil then
+		return true
+	end
+
+	if left.children == nil and right.children ~= nil then
+		return false
+	end
+
+	if left.binding ~= nil and right.binding ~= nil then
+		return Addon:CompareBindings(left.binding, right.binding)
+	end
+
+	return TreeSortAlphabetical(left, right)
 end
 
 --- @param item table
