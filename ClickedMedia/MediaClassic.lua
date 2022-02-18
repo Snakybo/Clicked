@@ -2715,6 +2715,7 @@ local icons = {
 	"trade_tailoring",
 	"achievement_character_dwarf_male",
 	"achievement_character_troll_male",
+	"achievement_boss_ragnaros",
 	"achievement_guildperk_havegroup willtravel",
 	"achievement_guildperk_everybodysfriend",
 	"achievement_general_stayclassy",
@@ -2734,6 +2735,8 @@ local icons = {
 	"inv_scarab_ivory",
 	"inv_mace23",
 	"inv_mace_22",
+	"ability_warlock_incubus",
+	"ability_warlock_randomizesuccubusincubus",
 }
 
 function ClickedMedia:GetClassicIcons()
