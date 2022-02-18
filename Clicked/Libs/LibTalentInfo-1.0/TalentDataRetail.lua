@@ -1,6 +1,6 @@
 --- @type LibTalentInfo
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 40906
+local version = 42423
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -288,9 +288,9 @@ local talents = {
 	[257] = {
 		22312, 19753, 19754, -- Enlightenment, Trail of Light, Renewed Faith
 		22325, 22326, 19758, -- Angel's Mercy, Body and Soul, Angelic Feather
-		22487, 22095, 22562, -- Cosmic Ripple, Guardian Angel, Afterlife
+		22487, 22095, 22562, -- Binding Heals, Guardian Angel, Afterlife
 		21750, 21977, 19761, -- Psychic Voice, Censure, Shining Force
-		19764, 22327, 21754, -- Surge of Light, Binding Heal, Prayer Circle
+		19764, 22327, 21754, -- Surge of Light, Cosmic Ripple, Prayer Circle
 		19767, 19760, 19763, -- Benediction, Divine Star, Halo
 		21636, 21644, 23145, -- Light of the Naaru, Apotheosis, Holy Word: Salvation
 	},
