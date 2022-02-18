@@ -179,8 +179,17 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	button.keybind:SetText(string.format(format, keybind))
 
 	local desaturate = false
+
 	if binding ~= nil and not Addon:CanBindingLoad(binding) then
 		desaturate = true
+	elseif group ~= nil then
+		desaturate = true
+		for _, child in Clicked:IterateConfiguredBindings() do
+			if child.parent == group.identifier and Addon:CanBindingLoad(child) then
+				desaturate = false
+				break
+			end
+		end
 	end
 
 	if desaturate then
