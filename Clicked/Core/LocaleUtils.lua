@@ -100,14 +100,14 @@ function Addon:GetLocalizedTargetUnits()
 	local order
 
 	if Addon:IsGameVersionAtleast("CLASSIC") then
-		items[Addon.TargetUnits.DEFAULT] = DEFAULT
+		items[Addon.TargetUnits.DEFAULT] = L["Default"]
 		items[Addon.TargetUnits.PLAYER] = L["Player (you)"]
-		items[Addon.TargetUnits.TARGET] = TARGET
+		items[Addon.TargetUnits.TARGET] = L["Target"]
 		items[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"]
 		items[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"]
 		items[Addon.TargetUnits.MOUSEOVER_TARGET] = L["Target of mouseover"]
 		items[Addon.TargetUnits.CURSOR] = L["Cursor"]
-		items[Addon.TargetUnits.PET] = PET
+		items[Addon.TargetUnits.PET] = L["Pet"]
 		items[Addon.TargetUnits.PET_TARGET] = L["Pet target"]
 		items[Addon.TargetUnits.PARTY_1] = L["Party %s"]:format("1")
 		items[Addon.TargetUnits.PARTY_2] = L["Party %s"]:format("2")
@@ -134,7 +134,7 @@ function Addon:GetLocalizedTargetUnits()
 	end
 
 	if Addon:IsGameVersionAtleast("BC") then
-		items[Addon.TargetUnits.FOCUS] = FOCUS
+		items[Addon.TargetUnits.FOCUS] = L["Focus"]
 
 		order = {
 			Addon.TargetUnits.DEFAULT,
@@ -192,8 +192,8 @@ end
 function Addon:GetLocalizedTargetHostility()
 	local items = {
 		[Addon.TargetHostility.ANY] = L["Friendly, Hostile"],
-		[Addon.TargetHostility.HELP] = FRIENDLY,
-		[Addon.TargetHostility.HARM] = HOSTILE
+		[Addon.TargetHostility.HELP] = L["Friendly"],
+		[Addon.TargetHostility.HARM] = L["Hostile"]
 	}
 
 	local order = {
@@ -213,7 +213,7 @@ function Addon:GetLocalizedTargetVitals()
 	local items = {
 		[Addon.TargetVitals.ANY] = L["Alive, Dead"],
 		[Addon.TargetVitals.ALIVE] = L["Alive"],
-		[Addon.TargetVitals.DEAD] = DEAD
+		[Addon.TargetVitals.DEAD] = L["Dead"]
 	}
 
 	local order = {
@@ -492,7 +492,7 @@ function Addon:GetLocalizedForms(specializations)
 
 	if #specializations == 1 then
 		local specId = specializations[1]
-		local defaultForm = NONE
+		local defaultForm = L["None"]
 
 		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
 		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then

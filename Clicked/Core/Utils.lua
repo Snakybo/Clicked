@@ -235,7 +235,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 
 StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	text = "",
-	button1 = CONTINUE,
+	button1 = L["Continue"],
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,
@@ -246,8 +246,8 @@ StaticPopupDialogs["CLICKED_MESSAGE"] = {
 
 StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	text = "",
-	button1 = YES,
-	button2 = NO,
+	button1 = L["Yes"],
+	button2 = L["No"],
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,

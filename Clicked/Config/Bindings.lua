@@ -137,14 +137,14 @@ local function CreateLoadOptionTooltip(type, selected)
 
 	if type == "LoadOption" then
 		options = {
-			["false"] = OFF,
+			["false"] = L["Off"],
 			["true"] = L["On"]
 		}
 
 		order = { "false", "true" }
 	elseif type == "TriStateLoadOption" then
 		options = {
-			["0"] = OFF,
+			["0"] = L["Off"],
 			["1"] = L["Single"],
 			["2"] = L["Multiple"]
 		}
@@ -529,7 +529,7 @@ local function DrawIconPicker(container, data, key)
 			tree:Redraw()
 		end
 
-		local widget = Addon:GUI_Button(CANCEL, OnClick)
+		local widget = Addon:GUI_Button(L["Cancel"], OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -1565,7 +1565,7 @@ local function DrawLoadCombat(container, combat)
 		false
 	}
 
-	DrawDropdownLoadOption(container, COMBAT, items, order, combat)
+	DrawDropdownLoadOption(container, L["Combat"], items, order, combat)
 end
 
 --- @param container table
@@ -1581,7 +1581,7 @@ local function DrawLoadPet(container, pet)
 		false
 	}
 
-	DrawDropdownLoadOption(container, PET, items, order, pet)
+	DrawDropdownLoadOption(container, L["Pet"], items, order, pet)
 end
 
 --- @param container table
@@ -1684,7 +1684,7 @@ end
 --- @param channeling Binding.NegatableStringLoadOption
 local function DrawLoadChanneling(container, channeling)
 	local items = {
-		[false] = CHANNELING,
+		[false] = L["Channeling"],
 		[true] = L["Not channeling"]
 	}
 
@@ -1693,7 +1693,7 @@ local function DrawLoadChanneling(container, channeling)
 		true
 	}
 
-	DrawNegatableStringLoadOption(container, CHANNELING, items, order, channeling)
+	DrawNegatableStringLoadOption(container, L["Channeling"], items, order, channeling)
 end
 
 --- @param container table
@@ -1743,14 +1743,14 @@ end
 --- @param class Binding.TriStateLoadOption
 local function DrawLoadClass(container, class)
 	local items, order = Addon:GetLocalizedClasses()
-	DrawTristateLoadOption(container, CLASS, items, order, class)
+	DrawTristateLoadOption(container, L["Class"], items, order, class)
 end
 
 --- @param container table
 --- @param race Binding.TriStateLoadOption
 local function DrawLoadRace(container, race)
 	local items, order = Addon:GetLocalizedRaces()
-	DrawTristateLoadOption(container, RACE, items, order, race)
+	DrawTristateLoadOption(container, L["Race"], items, order, race)
 end
 
 --- @param container table
@@ -1862,8 +1862,8 @@ local function DrawLoadInInstanceType(container, instanceType)
 	end
 
 	if Addon:IsGameVersionAtleast("BC") then
-		items["PVP"] = BATTLEGROUND
-		items["ARENA"] = ARENA
+		items["PVP"] = L["Battleground"]
+		items["ARENA"] = L["Arena"]
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
@@ -2447,7 +2447,7 @@ local function DrawHeader(container)
 			tree:SelectByValue("")
 		end
 
-		local widget = Addon:GUI_Button(NEW, OnClick)
+		local widget = Addon:GUI_Button(L["New"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)

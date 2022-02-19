@@ -67,7 +67,7 @@ local function GetUnitFrameSource(name)
 	end
 
 	if nameSource == nil then
-		return OTHER
+		return L["Other"]
 	end
 end
 

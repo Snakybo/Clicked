@@ -415,7 +415,7 @@ local function Button_OnClick(frame, button)
 		end
 
 		table.insert(menu, {
-			text = DELETE,
+			text = L["Delete"],
 			notCheckable = true,
 			disabled = inCombat,
 			func = function()

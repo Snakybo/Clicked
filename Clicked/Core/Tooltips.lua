@@ -101,7 +101,7 @@ local function OnTooltipSetUnit(self)
 
 			if first then
 				self:AddLine(" ")
-				self:AddLine(ABILITIES, 1, 0.85, 0)
+				self:AddLine(L["Abilities"], 1, 0.85, 0)
 				first = false
 			end
 
