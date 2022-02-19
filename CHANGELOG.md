@@ -21,6 +21,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Update icons for WoW Burning Crusade Classic 2.5.3
 - Desaturate group icons when all bindings in a group are disabled [#91]
 - Sort groups with active bindings above groups without [#91]
+- Update Chinese translations (by Jokey)
 
 ## [1.6.7] - 2021-11-12
 
@@ -59,7 +60,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Update Chinese translations
+- Update Chinese translations (by Jokey)
 
 ## [1.6.2] - 2021-07-12
 
@@ -159,7 +160,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-- Add Chinese translations
+- Add Chinese translations (by Jokey)
 
 ### Changed
 
