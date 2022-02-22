@@ -13,7 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add support for WoW 9.2.0
-- Add support for WoW Classic 1.14.1
+- Add support for WoW Classic 1.14.2
 - Add support for WoW Burning Crusade Classic 2.5.3
 - Update talent data for WoW 9.2.0
 - Update icons for WoW 9.2.0
