@@ -17,7 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add support for WoW Burning Crusade Classic 2.5.3
 - Update talent data for WoW 9.2.0
 - Update icons for WoW 9.2.0
-- Update icons for WoW Classic 1.14.1
+- Update icons for WoW Classic 1.14.2
 - Update icons for WoW Burning Crusade Classic 2.5.3
 - Desaturate group icons when all bindings in a group are disabled [#91]
 - Sort groups with active bindings above groups without [#91]
