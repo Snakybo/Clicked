@@ -112,6 +112,10 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	end
 end
 
+local function COVENANT_CHOSEN()
+	Clicked:ReloadActiveBindings()
+end
+
 local function PLAYER_FOCUS_CHANGED()
 	Addon:AbilityTooltips_Refresh()
 end
@@ -181,6 +185,9 @@ function Clicked:OnEnable()
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+
+		-- 9.0
+		self:RegisterEvent("COVENANT_CHOSEN", COVENANT_CHOSEN)
 	end
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
@@ -206,6 +213,8 @@ function Clicked:OnDisable()
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
+
+		self:UnregisterEvent("COVENANT_CHOSEN")
 	end
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
