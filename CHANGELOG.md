@@ -12,6 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
+- Fix Restoration Druid 4-Set not being detected as Incarnation: Tree of Life ([Squishes](https://github.com/Squishes))
 - Fix covenant load condition not always being triggered immediately after switching covenants
 
 ## [1.6.8] - 2022-02-22

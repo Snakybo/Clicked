@@ -768,7 +768,12 @@ function Addon:GetAvailableShapeshiftForms(binding)
 
 					-- Incarnation: Tree of Life does not show up as a shapeshift form,
 					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-					if IsSpellKnown(33891) then
+
+					-- 9.2: Restoration Druid 4-set bonus gives them Incarnation: Tree of Life without having it talented
+					local items = { 188847, 188848, 188849, 188851, 188853  }
+					local is92RestoSetActive = specId == 105 and Addon:IsSetBonusActive(items, 4)
+
+					if IsSpellKnown(33891) or is92RestoSetActive then
 						table.insert(result, GetNumShapeshiftForms() + 1)
 					end
 				else
@@ -807,6 +812,27 @@ function Addon:IterateShapeshiftForms(specId)
 	else
 		return ipairs(shapeshiftForms[specId])
 	end
+end
+
+--- Check if an item set bonus is active.
+---
+--- @param setItemIds integer[]
+--- @param numSetPieces integer
+--- @return boolean
+function Addon:IsSetBonusActive(setItemIds, numSetPieces)
+	local count = 0
+
+	for _, itemId in ipairs(setItemIds) do
+		if IsEquippedItem(itemId) then
+			count = count + 1
+
+			if count >= numSetPieces then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 --- Check if the specified keybind is "restricted", a restricted keybind
