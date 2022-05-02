@@ -669,8 +669,7 @@ local function Searchbar_OnSearchTermChanged(handler)
 	local treeframe = handler.frame:GetParent()
 	local self = treeframe.obj
 
-	self:BuildCache()
-	self:RefreshTree()
+	self:ConstructTree()
 end
 
 local function Sort_OnClick(frame)
