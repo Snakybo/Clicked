@@ -10,6 +10,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [1.6.10] - 2022-05-05
 
+### Added
+
+- Add support for WoW Burning Crusade Classic 2.5.4
+
+### Changed
+
+- Switch to single package release
+
 ### Fixed
 
 - Fix binding config search bar permanently filtering out items
