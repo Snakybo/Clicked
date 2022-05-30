@@ -1,6 +1,6 @@
 --- @type LibTalentInfo
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 42423
+local version = 43903
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -486,219 +486,219 @@ local talents = {
 local pvpTalents = {
 	-- Arcane Mage
 	[62] = {
-		[1] = { 3442, 3531, 5397, 635, 3529, 637, 62, 61, 3517, }, -- Netherwind Armor, Prismatic Cloak, Arcanosphere, Master of Escape, Kleptomania, Mass Invisibility, Torment the Weak, Arcane Empowerment, Temporal Shield
-		[2] = { 3442, 3531, 5397, 635, 3529, 637, 62, 61, 3517, }, -- Netherwind Armor, Prismatic Cloak, Arcanosphere, Master of Escape, Kleptomania, Mass Invisibility, Torment the Weak, Arcane Empowerment, Temporal Shield
-		[3] = { 3442, 3531, 5397, 635, 3529, 637, 62, 61, 3517, }, -- Netherwind Armor, Prismatic Cloak, Arcanosphere, Master of Escape, Kleptomania, Mass Invisibility, Torment the Weak, Arcane Empowerment, Temporal Shield
+		[1] = { 635, 61, 62, 3442, 5397, 3531, 3529, 3517, 637, }, -- Master of Escape, Arcane Empowerment, Torment the Weak, Netherwind Armor, Arcanosphere, Prismatic Cloak, Kleptomania, Temporal Shield, Mass Invisibility
+		[2] = { 635, 61, 62, 3442, 5397, 3531, 3529, 3517, 637, }, -- Master of Escape, Arcane Empowerment, Torment the Weak, Netherwind Armor, Arcanosphere, Prismatic Cloak, Kleptomania, Temporal Shield, Mass Invisibility
+		[3] = { 635, 61, 62, 3442, 5397, 3531, 3529, 3517, 637, }, -- Master of Escape, Arcane Empowerment, Torment the Weak, Netherwind Armor, Arcanosphere, Prismatic Cloak, Kleptomania, Temporal Shield, Mass Invisibility
 	},
 	-- Fire Mage
 	[63] = {
-		[1] = { 53, 648, 647, 646, 644, 643, 645, 5389, 828, }, -- Netherwind Armor, Greater Pyroblast, Flamecannon, Pyrokinesis, World in Flames, Tinder, Controlled Burn, Ring of Fire, Prismatic Cloak
-		[2] = { 53, 648, 647, 646, 644, 643, 645, 5389, 828, }, -- Netherwind Armor, Greater Pyroblast, Flamecannon, Pyrokinesis, World in Flames, Tinder, Controlled Burn, Ring of Fire, Prismatic Cloak
-		[3] = { 53, 648, 647, 646, 644, 643, 645, 5389, 828, }, -- Netherwind Armor, Greater Pyroblast, Flamecannon, Pyrokinesis, World in Flames, Tinder, Controlled Burn, Ring of Fire, Prismatic Cloak
+		[1] = { 53, 5389, 648, 647, 646, 645, 644, 643, 828, }, -- Netherwind Armor, Ring of Fire, Greater Pyroblast, Flamecannon, Pyrokinesis, Controlled Burn, World in Flames, Tinder, Prismatic Cloak
+		[2] = { 53, 5389, 648, 647, 646, 645, 644, 643, 828, }, -- Netherwind Armor, Ring of Fire, Greater Pyroblast, Flamecannon, Pyrokinesis, Controlled Burn, World in Flames, Tinder, Prismatic Cloak
+		[3] = { 53, 5389, 648, 647, 646, 645, 644, 643, 828, }, -- Netherwind Armor, Ring of Fire, Greater Pyroblast, Flamecannon, Pyrokinesis, Controlled Burn, World in Flames, Tinder, Prismatic Cloak
 	},
 	-- Frost Mage
 	[64] = {
-		[1] = { 5390, 632, 633, 68, 3532, 3443, 634, 66, 67, }, -- Ice Wall, Concentrated Coolness, Burst of Cold, Deep Shatter, Prismatic Cloak, Netherwind Armor, Ice Form, Chilled to the Bone, Frostbite
-		[2] = { 5390, 632, 633, 68, 3532, 3443, 634, 66, 67, }, -- Ice Wall, Concentrated Coolness, Burst of Cold, Deep Shatter, Prismatic Cloak, Netherwind Armor, Ice Form, Chilled to the Bone, Frostbite
-		[3] = { 5390, 632, 633, 68, 3532, 3443, 634, 66, 67, }, -- Ice Wall, Concentrated Coolness, Burst of Cold, Deep Shatter, Prismatic Cloak, Netherwind Armor, Ice Form, Chilled to the Bone, Frostbite
+		[1] = { 634, 3532, 3443, 5390, 633, 68, 632, 66, 67, }, -- Ice Form, Prismatic Cloak, Netherwind Armor, Ice Wall, Burst of Cold, Deep Shatter, Concentrated Coolness, Chilled to the Bone, Frostbite
+		[2] = { 634, 3532, 3443, 5390, 633, 68, 632, 66, 67, }, -- Ice Form, Prismatic Cloak, Netherwind Armor, Ice Wall, Burst of Cold, Deep Shatter, Concentrated Coolness, Chilled to the Bone, Frostbite
+		[3] = { 634, 3532, 3443, 5390, 633, 68, 632, 66, 67, }, -- Ice Form, Prismatic Cloak, Netherwind Armor, Ice Wall, Burst of Cold, Deep Shatter, Concentrated Coolness, Chilled to the Bone, Frostbite
 	},
 	-- Holy Paladin
 	[65] = {
-		[1] = { 640, 86, 87, 88, 642, 85, 689, 3618, 859, 5421, 82, }, -- Divine Vision, Darkest before the Dawn, Spreading the Word, Blessed Hands, Cleanse the Weak, Ultimate Sacrifice, Divine Favor, Hallowed Ground, Light's Grace, Judgments of the Pure, Avenging Light
-		[2] = { 640, 86, 87, 88, 642, 85, 689, 3618, 859, 5421, 82, }, -- Divine Vision, Darkest before the Dawn, Spreading the Word, Blessed Hands, Cleanse the Weak, Ultimate Sacrifice, Divine Favor, Hallowed Ground, Light's Grace, Judgments of the Pure, Avenging Light
-		[3] = { 640, 86, 87, 88, 642, 85, 689, 3618, 859, 5421, 82, }, -- Divine Vision, Darkest before the Dawn, Spreading the Word, Blessed Hands, Cleanse the Weak, Ultimate Sacrifice, Divine Favor, Hallowed Ground, Light's Grace, Judgments of the Pure, Avenging Light
+		[1] = { 87, 859, 5421, 689, 3618, 642, 640, 88, 82, 86, 85, }, -- Spreading the Word, Light's Grace, Judgments of the Pure, Divine Favor, Hallowed Ground, Cleanse the Weak, Divine Vision, Blessed Hands, Avenging Light, Darkest before the Dawn, Ultimate Sacrifice
+		[2] = { 87, 859, 5421, 689, 3618, 642, 640, 88, 82, 86, 85, }, -- Spreading the Word, Light's Grace, Judgments of the Pure, Divine Favor, Hallowed Ground, Cleanse the Weak, Divine Vision, Blessed Hands, Avenging Light, Darkest before the Dawn, Ultimate Sacrifice
+		[3] = { 87, 859, 5421, 689, 3618, 642, 640, 88, 82, 86, 85, }, -- Spreading the Word, Light's Grace, Judgments of the Pure, Divine Favor, Hallowed Ground, Cleanse the Weak, Divine Vision, Blessed Hands, Avenging Light, Darkest before the Dawn, Ultimate Sacrifice
 	},
 	-- Protection Paladin
 	[66] = {
-		[1] = { 844, 90, 91, 92, 93, 94, 97, 861, 860, 3475, 3474, }, -- Inquisition, Hallowed Ground, Steed of Glory, Sacred Duty, Judgments of the Pure, Guardian of the Forgotten Queen, Guarded by the Light, Shield of Virtue, Warrior of Light, Unbound Freedom, Luminescence
-		[2] = { 844, 90, 91, 92, 93, 94, 97, 861, 860, 3475, 3474, }, -- Inquisition, Hallowed Ground, Steed of Glory, Sacred Duty, Judgments of the Pure, Guardian of the Forgotten Queen, Guarded by the Light, Shield of Virtue, Warrior of Light, Unbound Freedom, Luminescence
-		[3] = { 844, 90, 91, 92, 93, 94, 97, 861, 860, 3475, 3474, }, -- Inquisition, Hallowed Ground, Steed of Glory, Sacred Duty, Judgments of the Pure, Guardian of the Forgotten Queen, Guarded by the Light, Shield of Virtue, Warrior of Light, Unbound Freedom, Luminescence
+		[1] = { 93, 92, 861, 91, 94, 97, 3474, 3475, 844, 90, 860, }, -- Judgments of the Pure, Sacred Duty, Shield of Virtue, Steed of Glory, Guardian of the Forgotten Queen, Guarded by the Light, Luminescence, Unbound Freedom, Inquisition, Hallowed Ground, Warrior of Light
+		[2] = { 93, 92, 861, 91, 94, 97, 3474, 3475, 844, 90, 860, }, -- Judgments of the Pure, Sacred Duty, Shield of Virtue, Steed of Glory, Guardian of the Forgotten Queen, Guarded by the Light, Luminescence, Unbound Freedom, Inquisition, Hallowed Ground, Warrior of Light
+		[3] = { 93, 92, 861, 91, 94, 97, 3474, 3475, 844, 90, 860, }, -- Judgments of the Pure, Sacred Duty, Shield of Virtue, Steed of Glory, Guardian of the Forgotten Queen, Guarded by the Light, Luminescence, Unbound Freedom, Inquisition, Hallowed Ground, Warrior of Light
 	},
 	-- Retribution Paladin
 	[70] = {
-		[1] = { 641, 751, 752, 753, 754, 755, 756, 757, 858, 5422, 81, }, -- Unbound Freedom, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Law and Order, Judgments of the Pure, Luminescence
-		[2] = { 641, 751, 752, 753, 754, 755, 756, 757, 858, 5422, 81, }, -- Unbound Freedom, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Law and Order, Judgments of the Pure, Luminescence
-		[3] = { 641, 751, 752, 753, 754, 755, 756, 757, 858, 5422, 81, }, -- Unbound Freedom, Vengeance Aura, Blessing of Sanctuary, Ultimate Retribution, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Law and Order, Judgments of the Pure, Luminescence
+		[1] = { 641, 754, 755, 756, 757, 753, 752, 751, 858, 5422, 81, }, -- Unbound Freedom, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Ultimate Retribution, Blessing of Sanctuary, Vengeance Aura, Law and Order, Judgments of the Pure, Luminescence
+		[2] = { 641, 754, 755, 756, 757, 753, 752, 751, 858, 5422, 81, }, -- Unbound Freedom, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Ultimate Retribution, Blessing of Sanctuary, Vengeance Aura, Law and Order, Judgments of the Pure, Luminescence
+		[3] = { 641, 754, 755, 756, 757, 753, 752, 751, 858, 5422, 81, }, -- Unbound Freedom, Lawbringer, Divine Punisher, Aura of Reckoning, Jurisdiction, Ultimate Retribution, Blessing of Sanctuary, Vengeance Aura, Law and Order, Judgments of the Pure, Luminescence
 	},
 	-- Arms Warrior
 	[71] = {
-		[1] = { 5376, 33, 5372, 34, 32, 31, 29, 28, 3534, 3522, }, -- Warbringer, Sharpen Blade, Demolition, Duel, War Banner, Storm of Destruction, Shadow of the Colossus, Master and Commander, Disarm, Death Sentence
-		[2] = { 5376, 33, 5372, 34, 32, 31, 29, 28, 3534, 3522, }, -- Warbringer, Sharpen Blade, Demolition, Duel, War Banner, Storm of Destruction, Shadow of the Colossus, Master and Commander, Disarm, Death Sentence
-		[3] = { 5376, 33, 5372, 34, 32, 31, 29, 28, 3534, 3522, }, -- Warbringer, Sharpen Blade, Demolition, Duel, War Banner, Storm of Destruction, Shadow of the Colossus, Master and Commander, Disarm, Death Sentence
+		[1] = { 3522, 5372, 32, 31, 5376, 34, 3534, 28, 29, 33, }, -- Death Sentence, Demolition, War Banner, Storm of Destruction, Warbringer, Duel, Disarm, Master and Commander, Shadow of the Colossus, Sharpen Blade
+		[2] = { 3522, 5372, 32, 31, 5376, 34, 3534, 28, 29, 33, }, -- Death Sentence, Demolition, War Banner, Storm of Destruction, Warbringer, Duel, Disarm, Master and Commander, Shadow of the Colossus, Sharpen Blade
+		[3] = { 3522, 5372, 32, 31, 5376, 34, 3534, 28, 29, 33, }, -- Death Sentence, Demolition, War Banner, Storm of Destruction, Warbringer, Duel, Disarm, Master and Commander, Shadow of the Colossus, Sharpen Blade
 	},
 	-- Fury Warrior
 	[72] = {
-		[1] = { 5373, 3735, 166, 170, 172, 177, 5431, 3533, 3528, 25, 179, }, -- Demolition, Slaughterhouse, Barbarian, Battle Trance, Bloodrage, Enduring Rage, Warbringer, Disarm, Master and Commander, Death Sentence, Death Wish
-		[2] = { 5373, 3735, 166, 170, 172, 177, 5431, 3533, 3528, 25, 179, }, -- Demolition, Slaughterhouse, Barbarian, Battle Trance, Bloodrage, Enduring Rage, Warbringer, Disarm, Master and Commander, Death Sentence, Death Wish
-		[3] = { 5373, 3735, 166, 170, 172, 177, 5431, 3533, 3528, 25, 179, }, -- Demolition, Slaughterhouse, Barbarian, Battle Trance, Bloodrage, Enduring Rage, Warbringer, Disarm, Master and Commander, Death Sentence, Death Wish
+		[1] = { 177, 179, 166, 170, 5373, 3735, 25, 172, 3533, 5431, 3528, }, -- Enduring Rage, Death Wish, Barbarian, Battle Trance, Demolition, Slaughterhouse, Death Sentence, Bloodrage, Disarm, Warbringer, Master and Commander
+		[2] = { 177, 179, 166, 170, 5373, 3735, 25, 172, 3533, 5431, 3528, }, -- Enduring Rage, Death Wish, Barbarian, Battle Trance, Demolition, Slaughterhouse, Death Sentence, Bloodrage, Disarm, Warbringer, Master and Commander
+		[3] = { 177, 179, 166, 170, 5373, 3735, 25, 172, 3533, 5431, 3528, }, -- Enduring Rage, Death Wish, Barbarian, Battle Trance, Demolition, Slaughterhouse, Death Sentence, Bloodrage, Disarm, Warbringer, Master and Commander
 	},
 	-- Protection Warrior
 	[73] = {
-		[1] = { 833, 175, 831, 845, 167, 168, 178, 171, 173, 24, 5374, 5432, }, -- Rebound, Thunderstruck, Dragon Charge, Oppressor, Sword and Board, Bodyguard, Warpath, Morale Killer, Shield Bash, Disarm, Demolition, Warbringer
-		[2] = { 833, 175, 831, 845, 167, 168, 178, 171, 173, 24, 5374, 5432, }, -- Rebound, Thunderstruck, Dragon Charge, Oppressor, Sword and Board, Bodyguard, Warpath, Morale Killer, Shield Bash, Disarm, Demolition, Warbringer
-		[3] = { 833, 175, 831, 845, 167, 168, 178, 171, 173, 24, 5374, 5432, }, -- Rebound, Thunderstruck, Dragon Charge, Oppressor, Sword and Board, Bodyguard, Warpath, Morale Killer, Shield Bash, Disarm, Demolition, Warbringer
+		[1] = { 833, 845, 831, 173, 167, 168, 5374, 171, 24, 175, 178, 5432, }, -- Rebound, Oppressor, Dragon Charge, Shield Bash, Sword and Board, Bodyguard, Demolition, Morale Killer, Disarm, Thunderstruck, Warpath, Warbringer
+		[2] = { 833, 845, 831, 173, 167, 168, 5374, 171, 24, 175, 178, 5432, }, -- Rebound, Oppressor, Dragon Charge, Shield Bash, Sword and Board, Bodyguard, Demolition, Morale Killer, Disarm, Thunderstruck, Warpath, Warbringer
+		[3] = { 833, 845, 831, 173, 167, 168, 5374, 171, 24, 175, 178, 5432, }, -- Rebound, Oppressor, Dragon Charge, Shield Bash, Sword and Board, Bodyguard, Demolition, Morale Killer, Disarm, Thunderstruck, Warpath, Warbringer
 	},
 	-- Balance Druid
 	[102] = {
-		[1] = { 185, 3058, 822, 182, 3728, 5407, 836, 834, 5383, 180, 3731, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Crescent Burn, Protector of the Grove, Owlkin Adept, Faerie Swarm, Deep Roots, High Winds, Celestial Guardian, Thorns, Moon and Stars
-		[2] = { 185, 3058, 822, 182, 3728, 5407, 836, 834, 5383, 180, 3731, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Crescent Burn, Protector of the Grove, Owlkin Adept, Faerie Swarm, Deep Roots, High Winds, Celestial Guardian, Thorns, Moon and Stars
-		[3] = { 185, 3058, 822, 182, 3728, 5407, 836, 834, 5383, 180, 3731, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Crescent Burn, Protector of the Grove, Owlkin Adept, Faerie Swarm, Deep Roots, High Winds, Celestial Guardian, Thorns, Moon and Stars
+		[1] = { 185, 3058, 822, 834, 3731, 836, 5383, 5407, 3728, 180, 182, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Deep Roots, Thorns, Faerie Swarm, High Winds, Owlkin Adept, Protector of the Grove, Celestial Guardian, Crescent Burn, Moon and Stars
+		[2] = { 185, 3058, 822, 834, 3731, 836, 5383, 5407, 3728, 180, 182, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Deep Roots, Thorns, Faerie Swarm, High Winds, Owlkin Adept, Protector of the Grove, Celestial Guardian, Crescent Burn, Moon and Stars
+		[3] = { 185, 3058, 822, 834, 3731, 836, 5383, 5407, 3728, 180, 182, 184, }, -- Moonkin Aura, Star Burst, Dying Stars, Deep Roots, Thorns, Faerie Swarm, High Winds, Owlkin Adept, Protector of the Grove, Celestial Guardian, Crescent Burn, Moon and Stars
 	},
 	-- Feral Druid
 	[103] = {
-		[1] = { 5384, 3053, 602, 820, 601, 201, 3751, 203, 611, 612, 620, }, -- High Winds, Strength of the Wild, King of the Jungle, Savage Momentum, Malorne's Swiftness, Thorns, Leader of the Pack, Freedom of the Herd, Ferocious Wound, Fresh Wound, Wicked Claws
-		[2] = { 5384, 3053, 602, 820, 601, 201, 3751, 203, 611, 612, 620, }, -- High Winds, Strength of the Wild, King of the Jungle, Savage Momentum, Malorne's Swiftness, Thorns, Leader of the Pack, Freedom of the Herd, Ferocious Wound, Fresh Wound, Wicked Claws
-		[3] = { 5384, 3053, 602, 820, 601, 201, 3751, 203, 611, 612, 620, }, -- High Winds, Strength of the Wild, King of the Jungle, Savage Momentum, Malorne's Swiftness, Thorns, Leader of the Pack, Freedom of the Herd, Ferocious Wound, Fresh Wound, Wicked Claws
+		[1] = { 602, 201, 601, 3053, 203, 3751, 820, 5384, 611, 612, 620, }, -- King of the Jungle, Thorns, Malorne's Swiftness, Strength of the Wild, Freedom of the Herd, Leader of the Pack, Savage Momentum, High Winds, Ferocious Wound, Fresh Wound, Wicked Claws
+		[2] = { 602, 201, 601, 3053, 203, 3751, 820, 5384, 611, 612, 620, }, -- King of the Jungle, Thorns, Malorne's Swiftness, Strength of the Wild, Freedom of the Herd, Leader of the Pack, Savage Momentum, High Winds, Ferocious Wound, Fresh Wound, Wicked Claws
+		[3] = { 602, 201, 601, 3053, 203, 3751, 820, 5384, 611, 612, 620, }, -- King of the Jungle, Thorns, Malorne's Swiftness, Strength of the Wild, Freedom of the Herd, Leader of the Pack, Savage Momentum, High Winds, Ferocious Wound, Fresh Wound, Wicked Claws
 	},
 	-- Guardian Druid
 	[104] = {
-		[1] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
-		[2] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
-		[3] = { 842, 49, 50, 51, 52, 1237, 195, 194, 193, 192, 196, 197, 3750, 5410, }, -- Alpha Challenge, Master Shapeshifter, Toughness, Den Mother, Demoralizing Roar, Malorne's Swiftness, Entangling Claws, Charging Bash, Sharpened Claws, Raging Frenzy, Overrun, Emerald Slumber, Freedom of the Herd, Grove Protection
+		[1] = { 194, 195, 196, 197, 52, 51, 50, 49, 842, 1237, 5410, 192, 3750, 193, }, -- Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Demoralizing Roar, Den Mother, Toughness, Master Shapeshifter, Alpha Challenge, Malorne's Swiftness, Grove Protection, Raging Frenzy, Freedom of the Herd, Sharpened Claws
+		[2] = { 194, 195, 196, 197, 52, 51, 50, 49, 842, 1237, 5410, 192, 3750, 193, }, -- Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Demoralizing Roar, Den Mother, Toughness, Master Shapeshifter, Alpha Challenge, Malorne's Swiftness, Grove Protection, Raging Frenzy, Freedom of the Herd, Sharpened Claws
+		[3] = { 194, 195, 196, 197, 52, 51, 50, 49, 842, 1237, 5410, 192, 3750, 193, }, -- Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Demoralizing Roar, Den Mother, Toughness, Master Shapeshifter, Alpha Challenge, Malorne's Swiftness, Grove Protection, Raging Frenzy, Freedom of the Herd, Sharpened Claws
 	},
 	-- Restoration Druid
 	[105] = {
-		[1] = { 59, 5387, 700, 838, 1215, 697, 692, 3752, 691, 3048, 835, }, -- Disentanglement, Keeper of the Grove, Deep Roots, High Winds, Early Spring, Thorns, Entangling Bark, Mark of the Wild, Reactive Resin, Master Shapeshifter, Focused Growth
-		[2] = { 59, 5387, 700, 838, 1215, 697, 692, 3752, 691, 3048, 835, }, -- Disentanglement, Keeper of the Grove, Deep Roots, High Winds, Early Spring, Thorns, Entangling Bark, Mark of the Wild, Reactive Resin, Master Shapeshifter, Focused Growth
-		[3] = { 59, 5387, 700, 838, 1215, 697, 692, 3752, 691, 3048, 835, }, -- Disentanglement, Keeper of the Grove, Deep Roots, High Winds, Early Spring, Thorns, Entangling Bark, Mark of the Wild, Reactive Resin, Master Shapeshifter, Focused Growth
+		[1] = { 838, 697, 1215, 700, 3752, 59, 835, 3048, 5387, 692, 691, }, -- High Winds, Thorns, Early Spring, Deep Roots, Mark of the Wild, Disentanglement, Focused Growth, Master Shapeshifter, Keeper of the Grove, Entangling Bark, Reactive Resin
+		[2] = { 838, 697, 1215, 700, 3752, 59, 835, 3048, 5387, 692, 691, }, -- High Winds, Thorns, Early Spring, Deep Roots, Mark of the Wild, Disentanglement, Focused Growth, Master Shapeshifter, Keeper of the Grove, Entangling Bark, Reactive Resin
+		[3] = { 838, 697, 1215, 700, 3752, 59, 835, 3048, 5387, 692, 691, }, -- High Winds, Thorns, Early Spring, Deep Roots, Mark of the Wild, Disentanglement, Focused Growth, Master Shapeshifter, Keeper of the Grove, Entangling Bark, Reactive Resin
 	},
 	-- Blood Death Knight
 	[250] = {
-		[1] = { 204, 841, 3441, 5426, 5368, 5425, 609, 608, 607, 206, 205, 3511, }, -- Rot and Wither, Murderous Intent, Decomposing Aura, Death's Echo, Dome of Ancient Shadow, Spellwarden, Death Chain, Last Dance, Blood for Blood, Strangulate, Walking Dead, Dark Simulacrum
-		[2] = { 204, 841, 3441, 5426, 5368, 5425, 609, 608, 607, 206, 205, 3511, }, -- Rot and Wither, Murderous Intent, Decomposing Aura, Death's Echo, Dome of Ancient Shadow, Spellwarden, Death Chain, Last Dance, Blood for Blood, Strangulate, Walking Dead, Dark Simulacrum
-		[3] = { 204, 841, 3441, 5426, 5368, 5425, 609, 608, 607, 206, 205, 3511, }, -- Rot and Wither, Murderous Intent, Decomposing Aura, Death's Echo, Dome of Ancient Shadow, Spellwarden, Death Chain, Last Dance, Blood for Blood, Strangulate, Walking Dead, Dark Simulacrum
+		[1] = { 3441, 841, 608, 204, 205, 206, 607, 609, 3511, 5425, 5426, }, -- Decomposing Aura, Murderous Intent, Last Dance, Rot and Wither, Walking Dead, Strangulate, Blood for Blood, Death Chain, Dark Simulacrum, Spellwarden, Death's Echo
+		[2] = { 3441, 841, 608, 204, 205, 206, 607, 609, 3511, 5425, 5426, }, -- Decomposing Aura, Murderous Intent, Last Dance, Rot and Wither, Walking Dead, Strangulate, Blood for Blood, Death Chain, Dark Simulacrum, Spellwarden, Death's Echo
+		[3] = { 3441, 841, 608, 204, 205, 206, 607, 609, 3511, 5425, 5426, }, -- Decomposing Aura, Murderous Intent, Last Dance, Rot and Wither, Walking Dead, Strangulate, Blood for Blood, Death Chain, Dark Simulacrum, Spellwarden, Death's Echo
 	},
 	-- Frost Death Knight
 	[251] = {
-		[1] = { 701, 702, 706, 3512, 5435, 3439, 5369, 5424, 5427, 5429, 3743, }, -- Deathchill, Delirium, Chill Streak, Dark Simulacrum, Bitter Chill, Shroud of Winter, Dome of Ancient Shadow, Spellwarden, Death's Echo, Strangulate, Dead of Winter
-		[2] = { 701, 702, 706, 3512, 5435, 3439, 5369, 5424, 5427, 5429, 3743, }, -- Deathchill, Delirium, Chill Streak, Dark Simulacrum, Bitter Chill, Shroud of Winter, Dome of Ancient Shadow, Spellwarden, Death's Echo, Strangulate, Dead of Winter
-		[3] = { 701, 702, 706, 3512, 5435, 3439, 5369, 5424, 5427, 5429, 3743, }, -- Deathchill, Delirium, Chill Streak, Dark Simulacrum, Bitter Chill, Shroud of Winter, Dome of Ancient Shadow, Spellwarden, Death's Echo, Strangulate, Dead of Winter
+		[1] = { 5427, 701, 5424, 3512, 702, 3743, 706, 5429, 5435, 3439, }, -- Death's Echo, Deathchill, Spellwarden, Dark Simulacrum, Delirium, Dead of Winter, Chill Streak, Strangulate, Bitter Chill, Shroud of Winter
+		[2] = { 5427, 701, 5424, 3512, 702, 3743, 706, 5429, 5435, 3439, }, -- Death's Echo, Deathchill, Spellwarden, Dark Simulacrum, Delirium, Dead of Winter, Chill Streak, Strangulate, Bitter Chill, Shroud of Winter
+		[3] = { 5427, 701, 5424, 3512, 702, 3743, 706, 5429, 5435, 3439, }, -- Death's Echo, Deathchill, Spellwarden, Dark Simulacrum, Delirium, Dead of Winter, Chill Streak, Strangulate, Bitter Chill, Shroud of Winter
 	},
 	-- Unholy Death Knight
 	[252] = {
-		[1] = { 3437, 5423, 5428, 5436, 3746, 5367, 3747, 5430, 152, 40, 41, 149, }, -- Necrotic Aura, Spellwarden, Death's Echo, Doomburst, Necromancer's Bargain, Dome of Ancient Shadow, Raise Abomination, Strangulate, Reanimation, Life and Death, Dark Simulacrum, Necrotic Wounds
-		[2] = { 3437, 5423, 5428, 5436, 3746, 5367, 3747, 5430, 152, 40, 41, 149, }, -- Necrotic Aura, Spellwarden, Death's Echo, Doomburst, Necromancer's Bargain, Dome of Ancient Shadow, Raise Abomination, Strangulate, Reanimation, Life and Death, Dark Simulacrum, Necrotic Wounds
-		[3] = { 3437, 5423, 5428, 5436, 3746, 5367, 3747, 5430, 152, 40, 41, 149, }, -- Necrotic Aura, Spellwarden, Death's Echo, Doomburst, Necromancer's Bargain, Dome of Ancient Shadow, Raise Abomination, Strangulate, Reanimation, Life and Death, Dark Simulacrum, Necrotic Wounds
+		[1] = { 5428, 5423, 149, 3747, 3746, 152, 5430, 40, 3437, 5436, 41, }, -- Death's Echo, Spellwarden, Necrotic Wounds, Raise Abomination, Necromancer's Bargain, Reanimation, Strangulate, Life and Death, Necrotic Aura, Doomburst, Dark Simulacrum
+		[2] = { 5428, 5423, 149, 3747, 3746, 152, 5430, 40, 3437, 5436, 41, }, -- Death's Echo, Spellwarden, Necrotic Wounds, Raise Abomination, Necromancer's Bargain, Reanimation, Strangulate, Life and Death, Necrotic Aura, Doomburst, Dark Simulacrum
+		[3] = { 5428, 5423, 149, 3747, 3746, 152, 5430, 40, 3437, 5436, 41, }, -- Death's Echo, Spellwarden, Necrotic Wounds, Raise Abomination, Necromancer's Bargain, Reanimation, Strangulate, Life and Death, Necrotic Aura, Doomburst, Dark Simulacrum
 	},
 	-- Beast Mastery Hunter
 	[253] = {
-		[1] = { 1214, 825, 824, 5418, 3730, 3612, 693, 5441, 3605, 3604, 3600, 3599, 5444, }, -- Interlope, Dire Beast: Basilisk, Dire Beast: Hawk, Tranquilizing Darts, Hunting Pack, Roar of Sacrifice, The Beast Within, Wild Kingdom, Hi-Explosive Trap, Chimaeral Sting, Dragonscale Armor, Survival Tactics, Kindred Beasts
-		[2] = { 1214, 825, 824, 5418, 3730, 3612, 693, 5441, 3605, 3604, 3600, 3599, 5444, }, -- Interlope, Dire Beast: Basilisk, Dire Beast: Hawk, Tranquilizing Darts, Hunting Pack, Roar of Sacrifice, The Beast Within, Wild Kingdom, Hi-Explosive Trap, Chimaeral Sting, Dragonscale Armor, Survival Tactics, Kindred Beasts
-		[3] = { 1214, 825, 824, 5418, 3730, 3612, 693, 5441, 3605, 3604, 3600, 3599, 5444, }, -- Interlope, Dire Beast: Basilisk, Dire Beast: Hawk, Tranquilizing Darts, Hunting Pack, Roar of Sacrifice, The Beast Within, Wild Kingdom, Hi-Explosive Trap, Chimaeral Sting, Dragonscale Armor, Survival Tactics, Kindred Beasts
+		[1] = { 3730, 825, 3599, 3600, 3604, 3605, 3612, 5418, 5444, 5441, 693, 824, 1214, }, -- Hunting Pack, Dire Beast: Basilisk, Survival Tactics, Dragonscale Armor, Chimaeral Sting, Hi-Explosive Trap, Roar of Sacrifice, Tranquilizing Darts, Kindred Beasts, Wild Kingdom, The Beast Within, Dire Beast: Hawk, Interlope
+		[2] = { 3730, 825, 3599, 3600, 3604, 3605, 3612, 5418, 5444, 5441, 693, 824, 1214, }, -- Hunting Pack, Dire Beast: Basilisk, Survival Tactics, Dragonscale Armor, Chimaeral Sting, Hi-Explosive Trap, Roar of Sacrifice, Tranquilizing Darts, Kindred Beasts, Wild Kingdom, The Beast Within, Dire Beast: Hawk, Interlope
+		[3] = { 3730, 825, 3599, 3600, 3604, 3605, 3612, 5418, 5444, 5441, 693, 824, 1214, }, -- Hunting Pack, Dire Beast: Basilisk, Survival Tactics, Dragonscale Armor, Chimaeral Sting, Hi-Explosive Trap, Roar of Sacrifice, Tranquilizing Darts, Kindred Beasts, Wild Kingdom, The Beast Within, Dire Beast: Hawk, Interlope
 	},
 	-- Marksmanship Hunter
 	[254] = {
-		[1] = { 658, 657, 656, 653, 651, 649, 659, 660, 5419, 3614, 5442, 3729, 5440, }, -- Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Survival Tactics, Dragonscale Armor, Ranger's Finesse, Sniper Shot, Tranquilizing Darts, Roar of Sacrifice, Wild Kingdom, Hunting Pack, Consecutive Concussion
-		[2] = { 658, 657, 656, 653, 651, 649, 659, 660, 5419, 3614, 5442, 3729, 5440, }, -- Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Survival Tactics, Dragonscale Armor, Ranger's Finesse, Sniper Shot, Tranquilizing Darts, Roar of Sacrifice, Wild Kingdom, Hunting Pack, Consecutive Concussion
-		[3] = { 658, 657, 656, 653, 651, 649, 659, 660, 5419, 3614, 5442, 3729, 5440, }, -- Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Survival Tactics, Dragonscale Armor, Ranger's Finesse, Sniper Shot, Tranquilizing Darts, Roar of Sacrifice, Wild Kingdom, Hunting Pack, Consecutive Concussion
+		[1] = { 3614, 660, 659, 658, 657, 656, 653, 5442, 5440, 5419, 649, 3729, 651, }, -- Roar of Sacrifice, Sniper Shot, Ranger's Finesse, Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Wild Kingdom, Consecutive Concussion, Tranquilizing Darts, Dragonscale Armor, Hunting Pack, Survival Tactics
+		[2] = { 3614, 660, 659, 658, 657, 656, 653, 5442, 5440, 5419, 649, 3729, 651, }, -- Roar of Sacrifice, Sniper Shot, Ranger's Finesse, Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Wild Kingdom, Consecutive Concussion, Tranquilizing Darts, Dragonscale Armor, Hunting Pack, Survival Tactics
+		[3] = { 3614, 660, 659, 658, 657, 656, 653, 5442, 5440, 5419, 649, 3729, 651, }, -- Roar of Sacrifice, Sniper Shot, Ranger's Finesse, Trueshot Mastery, Hi-Explosive Trap, Scatter Shot, Chimaeral Sting, Wild Kingdom, Consecutive Concussion, Tranquilizing Darts, Dragonscale Armor, Hunting Pack, Survival Tactics
 	},
 	-- Survival Hunter
 	[255] = {
-		[1] = { 3609, 5443, 3610, 686, 3607, 3606, 665, 664, 663, 662, 661, 5420, }, -- Chimaeral Sting, Wild Kingdom, Dragonscale Armor, Diamond Ice, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Tranquilizing Darts
-		[2] = { 3609, 5443, 3610, 686, 3607, 3606, 665, 664, 663, 662, 661, 5420, }, -- Chimaeral Sting, Wild Kingdom, Dragonscale Armor, Diamond Ice, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Tranquilizing Darts
-		[3] = { 3609, 5443, 3610, 686, 3607, 3606, 665, 664, 663, 662, 661, 5420, }, -- Chimaeral Sting, Wild Kingdom, Dragonscale Armor, Diamond Ice, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Tranquilizing Darts
+		[1] = { 5443, 3609, 3607, 3606, 665, 664, 663, 662, 661, 3610, 686, 5420, }, -- Wild Kingdom, Chimaeral Sting, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Dragonscale Armor, Diamond Ice, Tranquilizing Darts
+		[2] = { 5443, 3609, 3607, 3606, 665, 664, 663, 662, 661, 3610, 686, 5420, }, -- Wild Kingdom, Chimaeral Sting, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Dragonscale Armor, Diamond Ice, Tranquilizing Darts
+		[3] = { 5443, 3609, 3607, 3606, 665, 664, 663, 662, 661, 3610, 686, 5420, }, -- Wild Kingdom, Chimaeral Sting, Survival Tactics, Hi-Explosive Trap, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Dragonscale Armor, Diamond Ice, Tranquilizing Darts
 	},
 	-- Discipline Priest
 	[256] = {
-		[1] = { 855, 117, 114, 5416, 1244, 123, 98, 126, 100, 5403, 111, 109, }, -- Thoughtsteal, Dome of Light, Ultimate Radiance, Inner Light and Shadow, Blaze of Light, Archangel, Purification, Dark Archangel, Purified Resolve, Improved Mass Dispel, Strength of Soul, Trinity
-		[2] = { 855, 117, 114, 5416, 1244, 123, 98, 126, 100, 5403, 111, 109, }, -- Thoughtsteal, Dome of Light, Ultimate Radiance, Inner Light and Shadow, Blaze of Light, Archangel, Purification, Dark Archangel, Purified Resolve, Improved Mass Dispel, Strength of Soul, Trinity
-		[3] = { 855, 117, 114, 5416, 1244, 123, 98, 126, 100, 5403, 111, 109, }, -- Thoughtsteal, Dome of Light, Ultimate Radiance, Inner Light and Shadow, Blaze of Light, Archangel, Purification, Dark Archangel, Purified Resolve, Improved Mass Dispel, Strength of Soul, Trinity
+		[1] = { 855, 1244, 5416, 5403, 98, 100, 109, 111, 114, 117, 123, 126, }, -- Thoughtsteal, Blaze of Light, Inner Light and Shadow, Improved Mass Dispel, Purification, Purified Resolve, Trinity, Strength of Soul, Ultimate Radiance, Dome of Light, Archangel, Dark Archangel
+		[2] = { 855, 1244, 5416, 5403, 98, 100, 109, 111, 114, 117, 123, 126, }, -- Thoughtsteal, Blaze of Light, Inner Light and Shadow, Improved Mass Dispel, Purification, Purified Resolve, Trinity, Strength of Soul, Ultimate Radiance, Dome of Light, Archangel, Dark Archangel
+		[3] = { 855, 1244, 5416, 5403, 98, 100, 109, 111, 114, 117, 123, 126, }, -- Thoughtsteal, Blaze of Light, Inner Light and Shadow, Improved Mass Dispel, Purification, Purified Resolve, Trinity, Strength of Soul, Ultimate Radiance, Dome of Light, Archangel, Dark Archangel
 	},
 	-- Holy Priest
 	[257] = {
-		[1] = { 1242, 1927, 5365, 5366, 5404, 112, 101, 108, 115, 118, 124, 127, }, -- Greater Fade, Delivered from Evil, Thoughtsteal, Divine Ascension, Improved Mass Dispel, Greater Heal, Holy Ward, Sanctified Ground, Cardinal Mending, Miracle Worker, Spirit of the Redeemer, Ray of Hope
-		[2] = { 1242, 1927, 5365, 5366, 5404, 112, 101, 108, 115, 118, 124, 127, }, -- Greater Fade, Delivered from Evil, Thoughtsteal, Divine Ascension, Improved Mass Dispel, Greater Heal, Holy Ward, Sanctified Ground, Cardinal Mending, Miracle Worker, Spirit of the Redeemer, Ray of Hope
-		[3] = { 1242, 1927, 5365, 5366, 5404, 112, 101, 108, 115, 118, 124, 127, }, -- Greater Fade, Delivered from Evil, Thoughtsteal, Divine Ascension, Improved Mass Dispel, Greater Heal, Holy Ward, Sanctified Ground, Cardinal Mending, Miracle Worker, Spirit of the Redeemer, Ray of Hope
+		[1] = { 1242, 5366, 1927, 115, 124, 112, 108, 127, 101, 5404, 118, 5365, }, -- Greater Fade, Divine Ascension, Delivered from Evil, Cardinal Mending, Spirit of the Redeemer, Greater Heal, Sanctified Ground, Ray of Hope, Holy Ward, Improved Mass Dispel, Miracle Worker, Thoughtsteal
+		[2] = { 1242, 5366, 1927, 115, 124, 112, 108, 127, 101, 5404, 118, 5365, }, -- Greater Fade, Divine Ascension, Delivered from Evil, Cardinal Mending, Spirit of the Redeemer, Greater Heal, Sanctified Ground, Ray of Hope, Holy Ward, Improved Mass Dispel, Miracle Worker, Thoughtsteal
+		[3] = { 1242, 5366, 1927, 115, 124, 112, 108, 127, 101, 5404, 118, 5365, }, -- Greater Fade, Divine Ascension, Delivered from Evil, Cardinal Mending, Spirit of the Redeemer, Greater Heal, Sanctified Ground, Ray of Hope, Holy Ward, Improved Mass Dispel, Miracle Worker, Thoughtsteal
 	},
 	-- Shadow Priest
 	[258] = {
-		[1] = { 5447, 102, 106, 5381, 739, 763, 3753, 128, 5380, 113, 5446, }, -- Void Volley, Void Shield, Driven to Madness, Thoughtsteal, Void Origins, Psyfiend, Greater Fade, Void Shift, Improved Mass Dispel, Mind Trauma, Megalomania
-		[2] = { 5447, 102, 106, 5381, 739, 763, 3753, 128, 5380, 113, 5446, }, -- Void Volley, Void Shield, Driven to Madness, Thoughtsteal, Void Origins, Psyfiend, Greater Fade, Void Shift, Improved Mass Dispel, Mind Trauma, Megalomania
-		[3] = { 5447, 102, 106, 5381, 739, 763, 3753, 128, 5380, 113, 5446, }, -- Void Volley, Void Shield, Driven to Madness, Thoughtsteal, Void Origins, Psyfiend, Greater Fade, Void Shift, Improved Mass Dispel, Mind Trauma, Megalomania
+		[1] = { 3753, 106, 113, 128, 102, 763, 739, 5381, 5380, 5447, 5446, }, -- Greater Fade, Driven to Madness, Mind Trauma, Void Shift, Void Shield, Psyfiend, Void Origins, Thoughtsteal, Improved Mass Dispel, Void Volley, Megalomania
+		[2] = { 3753, 106, 113, 128, 102, 763, 739, 5381, 5380, 5447, 5446, }, -- Greater Fade, Driven to Madness, Mind Trauma, Void Shift, Void Shield, Psyfiend, Void Origins, Thoughtsteal, Improved Mass Dispel, Void Volley, Megalomania
+		[3] = { 3753, 106, 113, 128, 102, 763, 739, 5381, 5380, 5447, 5446, }, -- Greater Fade, Driven to Madness, Mind Trauma, Void Shift, Void Shield, Psyfiend, Void Origins, Thoughtsteal, Improved Mass Dispel, Void Volley, Megalomania
 	},
 	-- Assassination Rogue
 	[259] = {
-		[1] = { 141, 3448, 3479, 130, 3480, 147, 5405, 830, 5408, 144, }, -- Creeping Venom, Maneuverability, Death from Above, Intent to Kill, Smoke Bomb, System Shock, Dismantle, Hemotoxin, Thick as Thieves, Flying Daggers
-		[2] = { 141, 3448, 3479, 130, 3480, 147, 5405, 830, 5408, 144, }, -- Creeping Venom, Maneuverability, Death from Above, Intent to Kill, Smoke Bomb, System Shock, Dismantle, Hemotoxin, Thick as Thieves, Flying Daggers
-		[3] = { 141, 3448, 3479, 130, 3480, 147, 5405, 830, 5408, 144, }, -- Creeping Venom, Maneuverability, Death from Above, Intent to Kill, Smoke Bomb, System Shock, Dismantle, Hemotoxin, Thick as Thieves, Flying Daggers
+		[1] = { 3479, 5408, 147, 5405, 130, 3480, 141, 144, 830, 3448, }, -- Death from Above, Thick as Thieves, System Shock, Dismantle, Intent to Kill, Smoke Bomb, Creeping Venom, Flying Daggers, Hemotoxin, Maneuverability
+		[2] = { 3479, 5408, 147, 5405, 130, 3480, 141, 144, 830, 3448, }, -- Death from Above, Thick as Thieves, System Shock, Dismantle, Intent to Kill, Smoke Bomb, Creeping Venom, Flying Daggers, Hemotoxin, Maneuverability
+		[3] = { 3479, 5408, 147, 5405, 130, 3480, 141, 144, 830, 3448, }, -- Death from Above, Thick as Thieves, System Shock, Dismantle, Intent to Kill, Smoke Bomb, Creeping Venom, Flying Daggers, Hemotoxin, Maneuverability
 	},
 	-- Outlaw Rogue
 	[260] = {
-		[1] = { 3483, 145, 138, 5412, 3619, 1208, 135, 5413, 139, 129, 3421, 853, }, -- Smoke Bomb, Dismantle, Control is King, Enduring Brawler, Death from Above, Thick as Thieves, Take Your Cut, Float Like a Butterfly, Drink Up Me Hearties, Maneuverability, Turn the Tables, Boarding Party
-		[2] = { 3483, 145, 138, 5412, 3619, 1208, 135, 5413, 139, 129, 3421, 853, }, -- Smoke Bomb, Dismantle, Control is King, Enduring Brawler, Death from Above, Thick as Thieves, Take Your Cut, Float Like a Butterfly, Drink Up Me Hearties, Maneuverability, Turn the Tables, Boarding Party
-		[3] = { 3483, 145, 138, 5412, 3619, 1208, 135, 5413, 139, 129, 3421, 853, }, -- Smoke Bomb, Dismantle, Control is King, Enduring Brawler, Death from Above, Thick as Thieves, Take Your Cut, Float Like a Butterfly, Drink Up Me Hearties, Maneuverability, Turn the Tables, Boarding Party
+		[1] = { 3483, 1208, 135, 3421, 139, 5413, 129, 5412, 145, 138, 853, 3619, }, -- Smoke Bomb, Thick as Thieves, Take Your Cut, Turn the Tables, Drink Up Me Hearties, Float Like a Butterfly, Maneuverability, Enduring Brawler, Dismantle, Control is King, Boarding Party, Death from Above
+		[2] = { 3483, 1208, 135, 3421, 139, 5413, 129, 5412, 145, 138, 853, 3619, }, -- Smoke Bomb, Thick as Thieves, Take Your Cut, Turn the Tables, Drink Up Me Hearties, Float Like a Butterfly, Maneuverability, Enduring Brawler, Dismantle, Control is King, Boarding Party, Death from Above
+		[3] = { 3483, 1208, 135, 3421, 139, 5413, 129, 5412, 145, 138, 853, 3619, }, -- Smoke Bomb, Thick as Thieves, Take Your Cut, Turn the Tables, Drink Up Me Hearties, Float Like a Butterfly, Maneuverability, Enduring Brawler, Dismantle, Control is King, Boarding Party, Death from Above
 	},
 	-- Subtlety Rogue
 	[261] = {
-		[1] = { 5411, 5409, 5406, 136, 1209, 153, 846, 146, 3447, 3462, 856, }, -- Distracting Mirage, Thick as Thieves, Dismantle, Veil of Midnight, Smoke Bomb, Shadowy Duel, Dagger in the Dark, Thief's Bargain, Maneuverability, Death from Above, Silhouette
-		[2] = { 5411, 5409, 5406, 136, 1209, 153, 846, 146, 3447, 3462, 856, }, -- Distracting Mirage, Thick as Thieves, Dismantle, Veil of Midnight, Smoke Bomb, Shadowy Duel, Dagger in the Dark, Thief's Bargain, Maneuverability, Death from Above, Silhouette
-		[3] = { 5411, 5409, 5406, 136, 1209, 153, 846, 146, 3447, 3462, 856, }, -- Distracting Mirage, Thick as Thieves, Dismantle, Veil of Midnight, Smoke Bomb, Shadowy Duel, Dagger in the Dark, Thief's Bargain, Maneuverability, Death from Above, Silhouette
+		[1] = { 136, 153, 146, 856, 846, 1209, 5409, 5411, 5406, 3447, 3462, }, -- Veil of Midnight, Shadowy Duel, Thief's Bargain, Silhouette, Dagger in the Dark, Smoke Bomb, Thick as Thieves, Distracting Mirage, Dismantle, Maneuverability, Death from Above
+		[2] = { 136, 153, 146, 856, 846, 1209, 5409, 5411, 5406, 3447, 3462, }, -- Veil of Midnight, Shadowy Duel, Thief's Bargain, Silhouette, Dagger in the Dark, Smoke Bomb, Thick as Thieves, Distracting Mirage, Dismantle, Maneuverability, Death from Above
+		[3] = { 136, 153, 146, 856, 846, 1209, 5409, 5411, 5406, 3447, 3462, }, -- Veil of Midnight, Shadowy Duel, Thief's Bargain, Silhouette, Dagger in the Dark, Smoke Bomb, Thick as Thieves, Distracting Mirage, Dismantle, Maneuverability, Death from Above
 	},
 	-- Elemental Shaman
 	[262] = {
-		[1] = { 3062, 3621, 3620, 731, 730, 728, 727, 3488, 5415, 3490, 3491, }, -- Spectral Recovery, Swelling Waves, Grounding Totem, Lightning Lasso, Traveling Storms, Control of Lava, Static Field Totem, Skyfury Totem, Seasoned Winds, Counterstrike Totem, Unleash Shield
-		[2] = { 3062, 3621, 3620, 731, 730, 728, 727, 3488, 5415, 3490, 3491, }, -- Spectral Recovery, Swelling Waves, Grounding Totem, Lightning Lasso, Traveling Storms, Control of Lava, Static Field Totem, Skyfury Totem, Seasoned Winds, Counterstrike Totem, Unleash Shield
-		[3] = { 3062, 3621, 3620, 731, 730, 728, 727, 3488, 5415, 3490, 3491, }, -- Spectral Recovery, Swelling Waves, Grounding Totem, Lightning Lasso, Traveling Storms, Control of Lava, Static Field Totem, Skyfury Totem, Seasoned Winds, Counterstrike Totem, Unleash Shield
+		[1] = { 727, 5415, 3062, 730, 728, 731, 3621, 3491, 3490, 3620, 3488, }, -- Static Field Totem, Seasoned Winds, Spectral Recovery, Traveling Storms, Control of Lava, Lightning Lasso, Swelling Waves, Unleash Shield, Counterstrike Totem, Grounding Totem, Skyfury Totem
+		[2] = { 727, 5415, 3062, 730, 728, 731, 3621, 3491, 3490, 3620, 3488, }, -- Static Field Totem, Seasoned Winds, Spectral Recovery, Traveling Storms, Control of Lava, Lightning Lasso, Swelling Waves, Unleash Shield, Counterstrike Totem, Grounding Totem, Skyfury Totem
+		[3] = { 727, 5415, 3062, 730, 728, 731, 3621, 3491, 3490, 3620, 3488, }, -- Static Field Totem, Seasoned Winds, Spectral Recovery, Traveling Storms, Control of Lava, Lightning Lasso, Swelling Waves, Unleash Shield, Counterstrike Totem, Grounding Totem, Skyfury Totem
 	},
 	-- Enhancement Shaman
 	[263] = {
-		[1] = { 3487, 722, 721, 3623, 3519, 3622, 5438, 1944, 725, 5414, 3489, 3492, }, -- Skyfury Totem, Shamanism, Ride the Lightning, Swelling Waves, Spectral Recovery, Grounding Totem, Static Field Totem, Ethereal Form, Thundercharge, Seasoned Winds, Counterstrike Totem, Unleash Shield
-		[2] = { 3487, 722, 721, 3623, 3519, 3622, 5438, 1944, 725, 5414, 3489, 3492, }, -- Skyfury Totem, Shamanism, Ride the Lightning, Swelling Waves, Spectral Recovery, Grounding Totem, Static Field Totem, Ethereal Form, Thundercharge, Seasoned Winds, Counterstrike Totem, Unleash Shield
-		[3] = { 3487, 722, 721, 3623, 3519, 3622, 5438, 1944, 725, 5414, 3489, 3492, }, -- Skyfury Totem, Shamanism, Ride the Lightning, Swelling Waves, Spectral Recovery, Grounding Totem, Static Field Totem, Ethereal Form, Thundercharge, Seasoned Winds, Counterstrike Totem, Unleash Shield
+		[1] = { 3623, 3622, 725, 722, 721, 5438, 1944, 5414, 3487, 3489, 3492, 3519, }, -- Swelling Waves, Grounding Totem, Thundercharge, Shamanism, Ride the Lightning, Static Field Totem, Ethereal Form, Seasoned Winds, Skyfury Totem, Counterstrike Totem, Unleash Shield, Spectral Recovery
+		[2] = { 3623, 3622, 725, 722, 721, 5438, 1944, 5414, 3487, 3489, 3492, 3519, }, -- Swelling Waves, Grounding Totem, Thundercharge, Shamanism, Ride the Lightning, Static Field Totem, Ethereal Form, Seasoned Winds, Skyfury Totem, Counterstrike Totem, Unleash Shield, Spectral Recovery
+		[3] = { 3623, 3622, 725, 722, 721, 5438, 1944, 5414, 3487, 3489, 3492, 3519, }, -- Swelling Waves, Grounding Totem, Thundercharge, Shamanism, Ride the Lightning, Static Field Totem, Ethereal Form, Seasoned Winds, Skyfury Totem, Counterstrike Totem, Unleash Shield, Spectral Recovery
 	},
 	-- Restoration Shaman
 	[264] = {
-		[1] = { 5388, 3756, 3755, 1930, 5437, 3520, 715, 714, 713, 712, 708, 707, }, -- Living Tide, Ancestral Gift, Cleansing Waters, Tidebringer, Unleash Shield, Spectral Recovery, Grounding Totem, Electrocute, Voodoo Mastery, Swelling Waves, Counterstrike Totem, Skyfury Totem
-		[2] = { 5388, 3756, 3755, 1930, 5437, 3520, 715, 714, 713, 712, 708, 707, }, -- Living Tide, Ancestral Gift, Cleansing Waters, Tidebringer, Unleash Shield, Spectral Recovery, Grounding Totem, Electrocute, Voodoo Mastery, Swelling Waves, Counterstrike Totem, Skyfury Totem
-		[3] = { 5388, 3756, 3755, 1930, 5437, 3520, 715, 714, 713, 712, 708, 707, }, -- Living Tide, Ancestral Gift, Cleansing Waters, Tidebringer, Unleash Shield, Spectral Recovery, Grounding Totem, Electrocute, Voodoo Mastery, Swelling Waves, Counterstrike Totem, Skyfury Totem
+		[1] = { 1930, 3755, 3756, 5437, 707, 708, 712, 714, 713, 3520, 715, 5388, }, -- Tidebringer, Cleansing Waters, Ancestral Gift, Unleash Shield, Skyfury Totem, Counterstrike Totem, Swelling Waves, Electrocute, Voodoo Mastery, Spectral Recovery, Grounding Totem, Living Tide
+		[2] = { 1930, 3755, 3756, 5437, 707, 708, 712, 714, 713, 3520, 715, 5388, }, -- Tidebringer, Cleansing Waters, Ancestral Gift, Unleash Shield, Skyfury Totem, Counterstrike Totem, Swelling Waves, Electrocute, Voodoo Mastery, Spectral Recovery, Grounding Totem, Living Tide
+		[3] = { 1930, 3755, 3756, 5437, 707, 708, 712, 714, 713, 3520, 715, 5388, }, -- Tidebringer, Cleansing Waters, Ancestral Gift, Unleash Shield, Skyfury Totem, Counterstrike Totem, Swelling Waves, Electrocute, Voodoo Mastery, Spectral Recovery, Grounding Totem, Living Tide
 	},
 	-- Affliction Warlock
 	[265] = {
-		[1] = { 5392, 19, 18, 20, 11, 12, 15, 16, 3740, 17, 5386, 5379, 5370, }, -- Shadow Rift, Essence Drain, Nether Ward, Casting Circle, Bane of Fragility, Deathbolt, Gateway Mastery, Rot and Decay, Demon Armor, Bane of Shadows, Rapid Contagion, Rampant Afflictions, Amplify Curse
-		[2] = { 5392, 19, 18, 20, 11, 12, 15, 16, 3740, 17, 5386, 5379, 5370, }, -- Shadow Rift, Essence Drain, Nether Ward, Casting Circle, Bane of Fragility, Deathbolt, Gateway Mastery, Rot and Decay, Demon Armor, Bane of Shadows, Rapid Contagion, Rampant Afflictions, Amplify Curse
-		[3] = { 5392, 19, 18, 20, 11, 12, 15, 16, 3740, 17, 5386, 5379, 5370, }, -- Shadow Rift, Essence Drain, Nether Ward, Casting Circle, Bane of Fragility, Deathbolt, Gateway Mastery, Rot and Decay, Demon Armor, Bane of Shadows, Rapid Contagion, Rampant Afflictions, Amplify Curse
+		[1] = { 5370, 20, 19, 5379, 18, 17, 16, 15, 12, 5386, 5392, 3740, 11, }, -- Amplify Curse, Casting Circle, Essence Drain, Rampant Afflictions, Nether Ward, Bane of Shadows, Rot and Decay, Gateway Mastery, Deathbolt, Rapid Contagion, Shadow Rift, Shadowfall, Bane of Fragility
+		[2] = { 5370, 20, 19, 5379, 18, 17, 16, 15, 12, 5386, 5392, 3740, 11, }, -- Amplify Curse, Casting Circle, Essence Drain, Rampant Afflictions, Nether Ward, Bane of Shadows, Rot and Decay, Gateway Mastery, Deathbolt, Rapid Contagion, Shadow Rift, Shadowfall, Bane of Fragility
+		[3] = { 5370, 20, 19, 5379, 18, 17, 16, 15, 12, 5386, 5392, 3740, 11, }, -- Amplify Curse, Casting Circle, Essence Drain, Rampant Afflictions, Nether Ward, Bane of Shadows, Rot and Decay, Gateway Mastery, Deathbolt, Rapid Contagion, Shadow Rift, Shadowfall, Bane of Fragility
 	},
 	-- Demonology Warlock
 	[266] = {
-		[1] = { 165, 162, 158, 5394, 5400, 1213, 156, 3505, 3506, 3507, 3624, 3625, 3626, }, -- Call Observer, Call Fel Lord, Pleasure through Pain, Shadow Rift, Fel Obelisk, Master Summoner, Call Felhunter, Bane of Fragility, Gateway Mastery, Amplify Curse, Nether Ward, Essence Drain, Casting Circle
-		[2] = { 165, 162, 158, 5394, 5400, 1213, 156, 3505, 3506, 3507, 3624, 3625, 3626, }, -- Call Observer, Call Fel Lord, Pleasure through Pain, Shadow Rift, Fel Obelisk, Master Summoner, Call Felhunter, Bane of Fragility, Gateway Mastery, Amplify Curse, Nether Ward, Essence Drain, Casting Circle
-		[3] = { 165, 162, 158, 5394, 5400, 1213, 156, 3505, 3506, 3507, 3624, 3625, 3626, }, -- Call Observer, Call Fel Lord, Pleasure through Pain, Shadow Rift, Fel Obelisk, Master Summoner, Call Felhunter, Bane of Fragility, Gateway Mastery, Amplify Curse, Nether Ward, Essence Drain, Casting Circle
+		[1] = { 165, 3506, 5394, 3505, 1213, 3624, 3625, 3626, 3507, 158, 5400, 162, 156, }, -- Call Observer, Gateway Mastery, Shadow Rift, Bane of Fragility, Master Summoner, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Pleasure through Pain, Fel Obelisk, Call Fel Lord, Call Felhunter
+		[2] = { 165, 3506, 5394, 3505, 1213, 3624, 3625, 3626, 3507, 158, 5400, 162, 156, }, -- Call Observer, Gateway Mastery, Shadow Rift, Bane of Fragility, Master Summoner, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Pleasure through Pain, Fel Obelisk, Call Fel Lord, Call Felhunter
+		[3] = { 165, 3506, 5394, 3505, 1213, 3624, 3625, 3626, 3507, 158, 5400, 162, 156, }, -- Call Observer, Gateway Mastery, Shadow Rift, Bane of Fragility, Master Summoner, Nether Ward, Essence Drain, Casting Circle, Amplify Curse, Pleasure through Pain, Fel Obelisk, Call Fel Lord, Call Felhunter
 	},
 	-- Destruction Warlock
 	[267] = {
-		[1] = { 5401, 5382, 3510, 3509, 5393, 3508, 159, 3741, 164, 157, 3502, 3504, }, -- Bonds of Fel, Gateway Mastery, Casting Circle, Essence Drain, Shadow Rift, Nether Ward, Cremation, Demon Armor, Bane of Havoc, Fel Fissure, Bane of Fragility, Amplify Curse
-		[2] = { 5401, 5382, 3510, 3509, 5393, 3508, 159, 3741, 164, 157, 3502, 3504, }, -- Bonds of Fel, Gateway Mastery, Casting Circle, Essence Drain, Shadow Rift, Nether Ward, Cremation, Demon Armor, Bane of Havoc, Fel Fissure, Bane of Fragility, Amplify Curse
-		[3] = { 5401, 5382, 3510, 3509, 5393, 3508, 159, 3741, 164, 157, 3502, 3504, }, -- Bonds of Fel, Gateway Mastery, Casting Circle, Essence Drain, Shadow Rift, Nether Ward, Cremation, Demon Armor, Bane of Havoc, Fel Fissure, Bane of Fragility, Amplify Curse
+		[1] = { 164, 5382, 159, 3502, 5401, 3504, 5393, 3508, 3509, 3510, 157, }, -- Bane of Havoc, Gateway Mastery, Cremation, Bane of Fragility, Bonds of Fel, Amplify Curse, Shadow Rift, Nether Ward, Essence Drain, Casting Circle, Fel Fissure
+		[2] = { 164, 5382, 159, 3502, 5401, 3504, 5393, 3508, 3509, 3510, 157, }, -- Bane of Havoc, Gateway Mastery, Cremation, Bane of Fragility, Bonds of Fel, Amplify Curse, Shadow Rift, Nether Ward, Essence Drain, Casting Circle, Fel Fissure
+		[3] = { 164, 5382, 159, 3502, 5401, 3504, 5393, 3508, 3509, 3510, 157, }, -- Bane of Havoc, Gateway Mastery, Cremation, Bane of Fragility, Bonds of Fel, Amplify Curse, Shadow Rift, Nether Ward, Essence Drain, Casting Circle, Fel Fissure
 	},
 	-- Brewmaster Monk
 	[268] = {
-		[1] = { 765, 5417, 843, 667, 670, 669, 668, 666, 1958, 671, 672, 673, }, -- Eerie Fermentation, Rodeo, Admonishment, Hot Trub, Nimble Brew, Avert Harm, Guided Meditation, Microbrew, Niuzao's Essence, Incendiary Breath, Double Barrel, Mighty Ox Kick
-		[2] = { 765, 5417, 843, 667, 670, 669, 668, 666, 1958, 671, 672, 673, }, -- Eerie Fermentation, Rodeo, Admonishment, Hot Trub, Nimble Brew, Avert Harm, Guided Meditation, Microbrew, Niuzao's Essence, Incendiary Breath, Double Barrel, Mighty Ox Kick
-		[3] = { 765, 5417, 843, 667, 670, 669, 668, 666, 1958, 671, 672, 673, }, -- Eerie Fermentation, Rodeo, Admonishment, Hot Trub, Nimble Brew, Avert Harm, Guided Meditation, Microbrew, Niuzao's Essence, Incendiary Breath, Double Barrel, Mighty Ox Kick
+		[1] = { 671, 667, 668, 765, 669, 670, 843, 673, 1958, 672, 5417, 666, }, -- Incendiary Breath, Hot Trub, Guided Meditation, Eerie Fermentation, Avert Harm, Nimble Brew, Admonishment, Mighty Ox Kick, Niuzao's Essence, Double Barrel, Rodeo, Microbrew
+		[2] = { 671, 667, 668, 765, 669, 670, 843, 673, 1958, 672, 5417, 666, }, -- Incendiary Breath, Hot Trub, Guided Meditation, Eerie Fermentation, Avert Harm, Nimble Brew, Admonishment, Mighty Ox Kick, Niuzao's Essence, Double Barrel, Rodeo, Microbrew
+		[3] = { 671, 667, 668, 765, 669, 670, 843, 673, 1958, 672, 5417, 666, }, -- Incendiary Breath, Hot Trub, Guided Meditation, Eerie Fermentation, Avert Harm, Nimble Brew, Admonishment, Mighty Ox Kick, Niuzao's Essence, Double Barrel, Rodeo, Microbrew
 	},
 	-- Windwalker Monk
 	[269] = {
-		[1] = { 3744, 3745, 3737, 675, 3050, 852, 3052, 3734, 77, 5448, }, -- Pressure Points, Turbo Fists, Wind Waker, Tigereye Brew, Disabling Reach, Reverse Harm, Grapple Weapon, Alpha Tiger, Ride the Wind, Perpetual Paralysis
-		[2] = { 3744, 3745, 3737, 675, 3050, 852, 3052, 3734, 77, 5448, }, -- Pressure Points, Turbo Fists, Wind Waker, Tigereye Brew, Disabling Reach, Reverse Harm, Grapple Weapon, Alpha Tiger, Ride the Wind, Perpetual Paralysis
-		[3] = { 3744, 3745, 3737, 675, 3050, 852, 3052, 3734, 77, 5448, }, -- Pressure Points, Turbo Fists, Wind Waker, Tigereye Brew, Disabling Reach, Reverse Harm, Grapple Weapon, Alpha Tiger, Ride the Wind, Perpetual Paralysis
+		[1] = { 5448, 77, 675, 852, 3050, 3052, 3734, 3737, 3744, 3745, }, -- Perpetual Paralysis, Ride the Wind, Tigereye Brew, Reverse Harm, Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Pressure Points, Turbo Fists
+		[2] = { 5448, 77, 675, 852, 3050, 3052, 3734, 3737, 3744, 3745, }, -- Perpetual Paralysis, Ride the Wind, Tigereye Brew, Reverse Harm, Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Pressure Points, Turbo Fists
+		[3] = { 5448, 77, 675, 852, 3050, 3052, 3734, 3737, 3744, 3745, }, -- Perpetual Paralysis, Ride the Wind, Tigereye Brew, Reverse Harm, Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Pressure Points, Turbo Fists
 	},
 	-- Mistweaver Monk
 	[270] = {
-		[1] = { 5402, 683, 5395, 682, 680, 679, 678, 3732, 1928, 5398, 70, }, -- Thunderous Focus Tea, Healing Sphere, Peaceweaver, Refreshing Breeze, Dome of Mist, Counteract Magic, Chrysalis, Grapple Weapon, Zen Focus Tea, Dematerialize, Eminence
-		[2] = { 5402, 683, 5395, 682, 680, 679, 678, 3732, 1928, 5398, 70, }, -- Thunderous Focus Tea, Healing Sphere, Peaceweaver, Refreshing Breeze, Dome of Mist, Counteract Magic, Chrysalis, Grapple Weapon, Zen Focus Tea, Dematerialize, Eminence
-		[3] = { 5402, 683, 5395, 682, 680, 679, 678, 3732, 1928, 5398, 70, }, -- Thunderous Focus Tea, Healing Sphere, Peaceweaver, Refreshing Breeze, Dome of Mist, Counteract Magic, Chrysalis, Grapple Weapon, Zen Focus Tea, Dematerialize, Eminence
+		[1] = { 5402, 70, 678, 682, 680, 1928, 679, 3732, 683, 5398, 5395, }, -- Thunderous Focus Tea, Eminence, Chrysalis, Refreshing Breeze, Dome of Mist, Zen Focus Tea, Counteract Magic, Grapple Weapon, Healing Sphere, Dematerialize, Peaceweaver
+		[2] = { 5402, 70, 678, 682, 680, 1928, 679, 3732, 683, 5398, 5395, }, -- Thunderous Focus Tea, Eminence, Chrysalis, Refreshing Breeze, Dome of Mist, Zen Focus Tea, Counteract Magic, Grapple Weapon, Healing Sphere, Dematerialize, Peaceweaver
+		[3] = { 5402, 70, 678, 682, 680, 1928, 679, 3732, 683, 5398, 5395, }, -- Thunderous Focus Tea, Eminence, Chrysalis, Refreshing Breeze, Dome of Mist, Zen Focus Tea, Counteract Magic, Grapple Weapon, Healing Sphere, Dematerialize, Peaceweaver
 	},
 	-- Havoc Demon Hunter
 	[577] = {
-		[1] = { 5433, 812, 1218, 805, 806, 809, 810, 1206, 1204, 811, 813, 5445, }, -- Blood Moon, Detainment, Unending Hatred, Cleansed by Flame, Reverse Magic, Chaotic Imprint, Demonic Origins, Cover of Darkness, Mortal Dance, Rain from Above, Glimpse, Isolated Prey
-		[2] = { 5433, 812, 1218, 805, 806, 809, 810, 1206, 1204, 811, 813, 5445, }, -- Blood Moon, Detainment, Unending Hatred, Cleansed by Flame, Reverse Magic, Chaotic Imprint, Demonic Origins, Cover of Darkness, Mortal Dance, Rain from Above, Glimpse, Isolated Prey
-		[3] = { 5433, 812, 1218, 805, 806, 809, 810, 1206, 1204, 811, 813, 5445, }, -- Blood Moon, Detainment, Unending Hatred, Cleansed by Flame, Reverse Magic, Chaotic Imprint, Demonic Origins, Cover of Darkness, Mortal Dance, Rain from Above, Glimpse, Isolated Prey
+		[1] = { 810, 5433, 809, 806, 805, 811, 1218, 1206, 1204, 5445, 813, 812, }, -- Demonic Origins, Blood Moon, Chaotic Imprint, Reverse Magic, Cleansed by Flame, Rain from Above, Unending Hatred, Cover of Darkness, Mortal Dance, Isolated Prey, Glimpse, Detainment
+		[2] = { 810, 5433, 809, 806, 805, 811, 1218, 1206, 1204, 5445, 813, 812, }, -- Demonic Origins, Blood Moon, Chaotic Imprint, Reverse Magic, Cleansed by Flame, Rain from Above, Unending Hatred, Cover of Darkness, Mortal Dance, Isolated Prey, Glimpse, Detainment
+		[3] = { 810, 5433, 809, 806, 805, 811, 1218, 1206, 1204, 5445, 813, 812, }, -- Demonic Origins, Blood Moon, Chaotic Imprint, Reverse Magic, Cleansed by Flame, Rain from Above, Unending Hatred, Cover of Darkness, Mortal Dance, Isolated Prey, Glimpse, Detainment
 	},
 	-- Vengeance Demon Hunter
 	[581] = {
-		[1] = { 3727, 1948, 3423, 5434, 5439, 3429, 1220, 814, 3430, 819, 816, 815, }, -- Unending Hatred, Sigil Mastery, Demonic Trample, Blood Moon, Chaotic Imprint, Reverse Magic, Tormentor, Cleansed by Flame, Detainment, Illidan's Grasp, Jagged Spikes, Everlasting Hunt
-		[2] = { 3727, 1948, 3423, 5434, 5439, 3429, 1220, 814, 3430, 819, 816, 815, }, -- Unending Hatred, Sigil Mastery, Demonic Trample, Blood Moon, Chaotic Imprint, Reverse Magic, Tormentor, Cleansed by Flame, Detainment, Illidan's Grasp, Jagged Spikes, Everlasting Hunt
-		[3] = { 3727, 1948, 3423, 5434, 5439, 3429, 1220, 814, 3430, 819, 816, 815, }, -- Unending Hatred, Sigil Mastery, Demonic Trample, Blood Moon, Chaotic Imprint, Reverse Magic, Tormentor, Cleansed by Flame, Detainment, Illidan's Grasp, Jagged Spikes, Everlasting Hunt
+		[1] = { 816, 819, 3423, 5439, 3429, 3727, 3430, 1220, 5434, 815, 814, 1948, }, -- Jagged Spikes, Illidan's Grasp, Demonic Trample, Chaotic Imprint, Reverse Magic, Unending Hatred, Detainment, Tormentor, Blood Moon, Everlasting Hunt, Cleansed by Flame, Sigil Mastery
+		[2] = { 816, 819, 3423, 5439, 3429, 3727, 3430, 1220, 5434, 815, 814, 1948, }, -- Jagged Spikes, Illidan's Grasp, Demonic Trample, Chaotic Imprint, Reverse Magic, Unending Hatred, Detainment, Tormentor, Blood Moon, Everlasting Hunt, Cleansed by Flame, Sigil Mastery
+		[3] = { 816, 819, 3423, 5439, 3429, 3727, 3430, 1220, 5434, 815, 814, 1948, }, -- Jagged Spikes, Illidan's Grasp, Demonic Trample, Chaotic Imprint, Reverse Magic, Unending Hatred, Detainment, Tormentor, Blood Moon, Everlasting Hunt, Cleansed by Flame, Sigil Mastery
 	},
 	-- Initial Shaman
 	[1444] = {
