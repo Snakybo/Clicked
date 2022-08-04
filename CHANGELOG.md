@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 - Add combat modifier to unit target and menu bindings [#97]
+- Allow `channeling` and `nochanneling` without a value
 
 ## [1.6.12] - 2022-06-27
 

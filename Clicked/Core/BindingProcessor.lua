@@ -105,7 +105,13 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local function ParseNegatableStringCondition(condition, value, negated)
 		if condition ~= nil then
 			local key = condition.negated and negated or value
-			table.insert(flags, key .. ":" .. condition.value)
+			local macro = key
+
+			if not Addon:IsStringNilOrEmpty(condition.value) then
+				macro = macro .. ":" .. condition.value
+			end
+
+			table.insert(flags, macro)
 		end
 	end
 
@@ -177,7 +183,7 @@ local function ConstructAction(binding, target)
 	--- @param condition Binding.NegatableStringLoadOption
 	--- @param key string
 	local function AppendNegatableStringCondition(condition, key)
-		if condition.selected and not Addon:IsStringNilOrEmpty(condition.value) then
+		if condition.selected then
 			action[key] = {
 				negated = condition.negated,
 				value = condition.value
