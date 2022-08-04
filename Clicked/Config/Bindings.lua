@@ -182,10 +182,7 @@ local function GetAvailableTabs(binding)
 	end
 
 	table.insert(items, "load_conditions")
-
-	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO then
-		table.insert(items, "macro_conditions")
-	end
+	table.insert(items, "macro_conditions")
 
 
 	if type == Addon.BindingTypes.SPELL or type == Addon.BindingTypes.ITEM or type == Addon.BindingTypes.MACRO or type == Addon.BindingTypes.APPEND then
@@ -1531,7 +1528,7 @@ end
 --- @param container table
 --- @param form Binding.TriStateLoadOption
 --- @param specIds integer[]
-local function DrawLoadInStance(container, form, specIds)
+local function DrawMacroInStance(container, form, specIds)
 	local label = L["Stance"]
 
 	if specIds == nil then
@@ -1554,7 +1551,7 @@ end
 
 --- @param container table
 --- @param combat Binding.LoadOption
-local function DrawLoadCombat(container, combat)
+local function DrawMacroCombat(container, combat)
 	local items = {
 		[true] = L["In combat"],
 		[false] = L["Not in combat"]
@@ -1570,7 +1567,7 @@ end
 
 --- @param container table
 --- @param pet Binding.LoadOption
-local function DrawLoadPet(container, pet)
+local function DrawMacroPet(container, pet)
 	local items = {
 		[true] = L["Pet exists"],
 		[false] = L["No pet"],
@@ -1586,7 +1583,7 @@ end
 
 --- @param container table
 --- @param stealth Binding.LoadOption
-local function DrawLoadStealth(container, stealth)
+local function DrawMacroStealth(container, stealth)
 	local items = {
 		[true] = L["In Stealth"],
 		[false] = L["Not in Stealth"],
@@ -1602,7 +1599,7 @@ end
 
 --- @param container table
 --- @param mounted Binding.LoadOption
-local function DrawLoadMounted(container, mounted)
+local function DrawMacroMounted(container, mounted)
 	local items = {
 		[true] = L["Mounted"],
 		[false] = L["Not mounted"],
@@ -1618,7 +1615,7 @@ end
 
 --- @param container table
 --- @param flying Binding.LoadOption
-local function DrawLoadFlying(container, flying)
+local function DrawMacroFlying(container, flying)
 	local items = {
 		[true] = L["Flying"],
 		[false] = L["Not flying"],
@@ -1634,7 +1631,7 @@ end
 
 --- @param container table
 --- @param flyable Binding.LoadOption
-local function DrawLoadFlyable(container, flyable)
+local function DrawMacroFlyable(container, flyable)
 	local items = {
 		[true] = L["Flyable"],
 		[false] = L["Not flyable"],
@@ -1650,7 +1647,7 @@ end
 
 --- @param container table
 --- @param outdoors Binding.LoadOption
-local function DrawLoadOutdoors(container, outdoors)
+local function DrawMacroOutdoors(container, outdoors)
 	local items = {
 		[true] = L["Outdoors"],
 		[false] = L["Indoors"],
@@ -1666,7 +1663,7 @@ end
 
 --- @param container table
 --- @param swimming Binding.LoadOption
-local function DrawLoadSwimming(container, swimming)
+local function DrawMacroSwimming(container, swimming)
 	local items = {
 		[true] = L["Swimming"],
 		[false] = L["Not swimming"],
@@ -1682,7 +1679,7 @@ end
 
 --- @param container table
 --- @param channeling Binding.NegatableStringLoadOption
-local function DrawLoadChanneling(container, channeling)
+local function DrawMacroChanneling(container, channeling)
 	local items = {
 		[false] = L["Channeling"],
 		[true] = L["Not channeling"]
@@ -1701,25 +1698,29 @@ end
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		local classNames = GetTriStateLoadOptionValue(load.class)
-		local specIndices = GetTriStateLoadOptionValue(load.specialization)
-		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
+	if binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
+		DrawMacroCombat(container, load.combat)
+	else
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			local classNames = GetTriStateLoadOptionValue(load.class)
+			local specIndices = GetTriStateLoadOptionValue(load.specialization)
+			local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
-		DrawLoadInStance(container, load.form, specializationIds)
-	end
+			DrawMacroInStance(container, load.form, specializationIds)
+		end
 
-	DrawLoadCombat(container, load.combat)
-	DrawLoadPet(container, load.pet)
-	DrawLoadStealth(container, load.stealth)
-	DrawLoadMounted(container, load.mounted)
-	DrawLoadOutdoors(container, load.outdoors)
-	DrawLoadSwimming(container, load.swimming)
-	DrawLoadChanneling(container, load.channeling)
+		DrawMacroCombat(container, load.combat)
+		DrawMacroPet(container, load.pet)
+		DrawMacroStealth(container, load.stealth)
+		DrawMacroMounted(container, load.mounted)
+		DrawMacroOutdoors(container, load.outdoors)
+		DrawMacroSwimming(container, load.swimming)
+		DrawMacroChanneling(container, load.channeling)
 
-	if Addon:IsGameVersionAtleast("BC") then
-		DrawLoadFlying(container, load.flying)
-		DrawLoadFlyable(container, load.flyable)
+		if Addon:IsGameVersionAtleast("BC") then
+			DrawMacroFlying(container, load.flying)
+			DrawMacroFlyable(container, load.flyable)
+		end
 	end
 end
 

@@ -139,7 +139,7 @@
 --- @field public keybind string
 --- @field public hovercast boolean
 --- @field public action string
---- @field public data string
+--- @field public data any
 --- @field public prefix string
 --- @field public suffix string
 

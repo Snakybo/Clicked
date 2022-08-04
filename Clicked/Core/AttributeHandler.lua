@@ -38,6 +38,24 @@ local function CreateAttribute(register, prefix, type, suffix, value)
 	register[key] = value
 end
 
+--- @param data boolean
+--- @return boolean
+local function IsCombatStatusValid(data)
+	if data == nil then
+		return true
+	end
+
+	if data == true and Addon:IsPlayerInCombat() then
+		return true
+	end
+
+	if data == false and not Addon:IsPlayerInCombat() then
+		return true
+	end
+
+	return false
+end
+
 -- Private addon API
 
 --- @param frame table
@@ -93,9 +111,11 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	end
 
 	if command.action == Addon.CommandType.TARGET then
-		CreateAttribute(register, prefix, "type", suffix, "target")
+		local value = IsCombatStatusValid(command.data) and "target" or ""
+		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MENU then
-		CreateAttribute(register, prefix, "type", suffix, "togglemenu")
+		local value = IsCombatStatusValid(command.data) and "togglemenu" or ""
+		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MACRO then
 		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)

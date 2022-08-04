@@ -71,6 +71,7 @@ end
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
 
+	Clicked:ReloadActiveBindings()
 	Addon:AbilityTooltips_Refresh()
 end
 
@@ -78,7 +79,7 @@ local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
-	Addon:ReloadActiveBindingsIfPending()
+	Clicked:ReloadActiveBindings()
 	Addon:AbilityTooltips_Refresh()
 end
 

@@ -84,8 +84,8 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 
 	--- @param condition boolean|string
 	--- @param value string
-	--- @param negated string
-	--- @param isUnit boolean
+	--- @param negated? string
+	--- @param isUnit? boolean
 	local function ParseNegatableBooleanCondition(condition, value, negated, isUnit)
 		if condition == true then
 			table.insert(flags, value)
@@ -361,8 +361,16 @@ local function ProcessBuckets()
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
+
+			if reference.load.combat.selected then
+				command.data = reference.load.combat.value
+			end
 		elseif reference.type == Addon.BindingTypes.UNIT_MENU then
 			command.action = Addon.CommandType.MENU
+
+			if reference.load.combat.selected then
+				command.data = reference.load.combat.value
+			end
 		else
 			error("Unhandled binding type: " .. reference.type)
 		end
