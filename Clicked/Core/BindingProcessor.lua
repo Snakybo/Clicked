@@ -1066,7 +1066,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		local cancelQueuedSpell = false
 
 		for _, binding in ipairs(bindings) do
-			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM or binding.type == Addon.BindingTypes.CANCELAURA then
 				if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
 					cancelQueuedSpell = true
 					table.insert(lines, "/cancelqueuedspell")
