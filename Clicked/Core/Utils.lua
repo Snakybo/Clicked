@@ -468,7 +468,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			return false
 		end
 
-		if type(icon) == "number" and icon <= 0 then
+		if tonumber(icon) ~= nil and tonumber(icon) <= 0 then
 			return false
 		end
 
@@ -476,6 +476,8 @@ function Addon:GetBindingNameAndIcon(binding)
 	end
 
 	local name = ""
+
+	--- @type string|integer
 	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
 	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
@@ -498,7 +500,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			name = binding.action.macroName
 		end
 
-		if not Addon:IsStringNilOrEmpty(binding.action.macroIcon) then
+		if IsValidIcon(binding.action.macroIcon) then
 			icon = binding.action.macroIcon
 		end
 	elseif binding.type == Addon.BindingTypes.CANCELAURA then
