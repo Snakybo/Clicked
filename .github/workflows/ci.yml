@@ -1,31 +1,29 @@
 name: CI
+
 on:
   push:
     branches:
       - "*"
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v1
+
     - name: "Run Luacheck"
       uses: nebularg/actions-luacheck@v1
       with:
         args: "--no-color -q"
         annotate: warning
-    - name: Package Classic
-      uses: BigWigsMods/packager@master
-      with:
-        args: -d -g classic
-    - name: Package Burning Crusade
-      uses: BigWigsMods/packager@master
-      with:
-        args: -d -g bcc
-    - name: Package Retail
-      uses: BigWigsMods/packager@master
+
+    - name: Package
+      uses: BigWigsMods/packager@v2
       with:
         args: -d
+
     - name: "Archive"
       uses: "actions/upload-artifact@v2"
       if: success()

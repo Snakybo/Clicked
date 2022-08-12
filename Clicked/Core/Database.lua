@@ -192,7 +192,6 @@ end
 --- @param from string
 function Clicked:UpgradeDatabase(from)
 	Addon:UpgradeDatabaseProfile(Addon.db.profile, from)
-
 	Clicked:ReloadActiveBindings()
 end
 

@@ -1,4 +1,4 @@
-## Interface: 90205
+## Interface: 20504
 ## Title: ClickedMedia
 ## Author: Snakybo
 ## Version: @project-version@
@@ -6,4 +6,4 @@
 ## Dependencies: Clicked
 ## LoadOnDemand: 1
 
-MediaRetail.lua
+MediaBurningCrusade.lua

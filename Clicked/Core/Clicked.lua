@@ -14,6 +14,12 @@ Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 --- The current version of Clicked.
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
+--@debug@
+if Clicked.VERSION == "@project-version@" then
+	Clicked.VERSION = "development"
+end
+--@end-debug@
+
 local isPlayerInCombat = false
 local isInitialized = false
 
