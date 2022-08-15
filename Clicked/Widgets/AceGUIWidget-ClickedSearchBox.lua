@@ -3,7 +3,7 @@ SearchBox Widget
 
 Adds OnFocusGained and OnFocusLost callbacks.
 -------------------------------------------------------------------------------]]
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 local Type, Version = "ClickedSearchBox", 1

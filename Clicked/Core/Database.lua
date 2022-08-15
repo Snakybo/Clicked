@@ -1,6 +1,6 @@
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 --- @type Localization

@@ -1,4 +1,4 @@
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 local AceGUI = LibStub("AceGUI-3.0")

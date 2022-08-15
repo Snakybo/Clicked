@@ -1,7 +1,7 @@
 local AceSerializer = LibStub("AceSerializer-3.0")
 local LibDeflate = LibStub("LibDeflate")
 
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 -- Local support functions

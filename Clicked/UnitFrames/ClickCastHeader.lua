@@ -1,4 +1,4 @@
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 -- Local support functions

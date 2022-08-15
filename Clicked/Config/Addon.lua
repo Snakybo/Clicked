@@ -2,7 +2,7 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 --- @type Localization

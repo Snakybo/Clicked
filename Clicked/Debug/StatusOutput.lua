@@ -1,6 +1,6 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 local driver

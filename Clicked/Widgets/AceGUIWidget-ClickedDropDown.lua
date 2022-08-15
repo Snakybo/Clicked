@@ -3,7 +3,7 @@ Clicked DropDown Widget
 Adds support for setting of icons and texts in one command using the following
 format: |icon:PATH\\TO\\ICONS|text:Some Text
 -------------------------------------------------------------------------------]]
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 local Type, Version = "ClickedDropDown", 1

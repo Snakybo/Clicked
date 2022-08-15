@@ -2,7 +2,7 @@
 Clicked TreeGroup Container
 Container that uses a tree control to switch between groups.
 -------------------------------------------------------------------------------]]
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 --- @type Localization

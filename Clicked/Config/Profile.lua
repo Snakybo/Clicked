@@ -5,7 +5,7 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
 local AceComm = LibStub("AceComm-3.0")
 
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 --- @type Localization

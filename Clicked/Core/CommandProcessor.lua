@@ -1,4 +1,4 @@
---- @type ClickedInternal
+--- @class ClickedInternal
 local _, Addon = ...
 
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
