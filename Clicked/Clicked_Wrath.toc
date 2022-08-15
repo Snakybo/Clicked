@@ -1,0 +1,44 @@
+## Interface: 30400
+## Title: Clicked
+## Author: Snakybo
+## Version: @project-version@
+## Notes: Easy keybind and macro management
+## SavedVariables: ClickedDB
+## X-Website: https://github.com/Snakybo/Clicked
+## X-Curse-Project-ID: 405267
+## X-WoWI-ID: 25703
+## X-Wago-ID: WL6JPYGv
+## X-Github: https://github.com/Snakybo/Clicked
+
+# Libraries, etc.
+Libs\Libs.xml
+Locales\Locales.xml
+Widgets\Widgets.xml
+Templates\Clicked.xml
+
+# Core systems
+Core\Clicked.lua
+Core\Database.lua
+Core\AttributeHandler.lua
+Core\BindingProcessor.lua
+Core\CommandProcessor.lua
+Core\Utils.lua
+Core\LocaleUtils.lua
+Core\Serializer.lua
+Core\Tooltips.lua
+
+# Unitframe and clickcast support
+UnitFrames\ClickCastHeader.lua
+UnitFrames\ClickCastFrames.lua
+UnitFrames\Blizzard.lua
+
+# Configuration and UI
+Config\GUI.lua
+Config\Addon.lua
+Config\Profile.lua
+Config\Bindings.lua
+Config\Blacklist.lua
+Debug\StatusOutput.lua
+
+# Third party integrations
+Integrations\WeakAuras.lua
