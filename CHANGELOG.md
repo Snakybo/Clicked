@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Switch to single addon package release mode.
 - Update Chinese translations (by Jokey)
+- Add support for WoW 9.2.7
 
 ## [1.7.1] - 2022-08-10
 
