@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Update Chinese translations (by Jokey)
 - Add support for WoW 9.2.7
 
+### Fixed
+
+- Fix click-cast targeting issue after entering or leaving combat
+
 ## [1.7.1] - 2022-08-10
 
 ### Fixed

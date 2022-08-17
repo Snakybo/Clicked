@@ -185,4 +185,13 @@ function Addon:UpdateClickCastHeader(keybinds)
 
 	Addon.ClickCastHeader:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
 	Addon.ClickCastHeader:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
+
+	Addon.ClickCastHeader:Execute([[
+		local button = currentClickcastButton
+
+		if button ~= nil then
+			self:RunFor(button, self:GetAttribute("clear-keybinds"))
+			self:RunFor(button, self:GetAttribute("setup-keybinds"))
+		end
+	]])
 end
