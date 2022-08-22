@@ -783,7 +783,7 @@ function Addon:CanBindingLoad(binding)
 		-- talent selected (classic)
 		do
 			local function IsTalentIndexSelected(index)
-				local tab = ceil(index / MAX_NUM_TALENTS)
+				local tab = math.ceil(index / MAX_NUM_TALENTS)
 				local talentIndex = (index - 1) % MAX_NUM_TALENTS + 1
 
 				local _, _, _, _, rank = GetTalentInfo(tab, talentIndex)

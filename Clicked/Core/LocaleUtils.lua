@@ -426,7 +426,7 @@ function Addon:GetLocalizedTalentsClassic(classes)
 
 		for tab = 1, GetNumTalentTabs() do
 			for index = 1, GetNumTalents(tab) do
-				local talentID, name, texture = LibTalentInfoClassic:GetTalentInfo(class, tab, index)
+				local _, name, texture = LibTalentInfoClassic:GetTalentInfo(class, tab, index)
 				local key = #order + 1
 
 				if not Addon:IsStringNilOrEmpty(name) then
