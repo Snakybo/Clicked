@@ -2312,6 +2312,9 @@ local function CreateFromItemTemplate(identifier)
 					binding.parent = group.identifier
 					binding.action.spellValue = spellId
 
+					binding.load.class.selected = 1
+					binding.load.class.single = select(2, UnitClass("player"))
+
 					if specIndex ~= nil then
 						binding.load.specialization.selected = 1
 						binding.load.specialization.single = specIndex

@@ -102,7 +102,7 @@
 --- @field public value string|boolean
 
 --- @class Binding.TriStateLoadOption
---- @field public selected "0"|"1"|"2"
+--- @field public selected 0|1|2
 --- @field public single number|string
 --- @field public multiple number[]|string[]
 
