@@ -1056,21 +1056,35 @@ end
 ---
 --- @return boolean
 function Addon:IsBC()
-	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE
+end
+
+--- Check if the game client is running the Wrath of the Lich King version of the API.
+---
+--- @return boolean
+function Addon:IsWotLK()
+	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING
 end
 
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
 --- game, but `false` on Classic.
 ---
---- @param version '"RETAIL"'|'"CLASSIC"'|'"BC"'
+--- @param version '"RETAIL"'|'"CLASSIC"'|'"BC"'|'"WOTLK"'
 --- @return boolean
 function Addon:IsGameVersionAtleast(version)
-	if version == "CLASSIC" then
-		return Addon:IsClassic() or Addon:IsBC() or Addon:IsRetail()
-	elseif version == "BC" then
-		return Addon:IsBC() or Addon:IsRetail()
-	elseif version == "RETAIL" then
-		return Addon:IsRetail()
+	local isRetail = Addon:IsRetail()
+	local isWOTLK = isRetail or Addon:IsWotLK()
+	local isBC = isWOTLK or Addon:IsBC()
+	local isClassic = isBC or Addon:IsClassic()
+
+	if version == "RETAIL" and isRetail then
+		return true
+	elseif version == "WOTLK" and isWOTLK then
+		return true
+	elseif version == "BC" and isBC then
+		return true
+	elseif version == "CLASSIC" and isClassic then
+		return true
 	end
 
 	return false

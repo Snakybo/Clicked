@@ -39,6 +39,10 @@ if Addon:IsGameVersionAtleast("BC") then
 	table.insert(allRaces, 11) -- Draenei
 end
 
+if Addon:IsGameVersionAtleast("WOTLK") then
+	table.insert(allClasses, "DEATHKNIGHT")
+end
+
 if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allRaces, 9) -- Goblin
 	table.insert(allRaces, 22) -- Worgen
@@ -54,7 +58,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allRaces, 36) -- MagharOrc
 	table.insert(allRaces, 37) -- Mechagnome
 
-	table.insert(allClasses, "DEATHKNIGHT")
 	table.insert(allClasses, "MONK")
 	table.insert(allClasses, "DEMONHUNTER")
 end
