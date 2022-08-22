@@ -12,7 +12,7 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 
 ## Features
 
-* **Create keyboard and mouse button bindings for spells, items, and custom macros**
+* **Create keyboard and mouse button bindings for spells, items, cancelauras, and custom macros**
 * **Cast spells without action bars**
 * **Cast spells by clicking on unit frames**
 * **Easily select spells from the spellbook**
@@ -88,6 +88,7 @@ These map directly to the macro conditionals found [here](https://wow.gamepedia.
 * **Mounted** checks if you are  mounted
 * **Outdoors** checks if you are outdoors
 * **Swimming** checks if you are swimming
+* **Channeling** checks if you are channeling a specific item or spell, or just in general
 * **Flying** checks if you are flying
 * **Flyable** checks if you are in an area that permits flying
 
@@ -100,7 +101,7 @@ You can configure as many bindings on the same keybind as you want, Clicked will
 
 With the above configuration, Clicked will automatically combine the Flash of Light and Crusader Strike bindings and generate a macro:
 
-```
+```txt
 /cast [@target,help] Flash of Light; [@target,harm] Crusader Strike; [@player] Flash of Light
 ```
 
