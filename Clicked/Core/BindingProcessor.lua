@@ -816,6 +816,10 @@ function Addon:CanBindingLoad(binding)
 			local forms = Addon:GetShapeshiftFormsForSpecId(specId)
 			local spellId = forms[formIndex]
 
+			if spellId == nil then
+				return false
+			end
+
 			return IsSpellKnown(spellId)
 		end
 
