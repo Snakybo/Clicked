@@ -355,7 +355,7 @@ local function HijackSpellButton_UpdateButton(self)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if mouseButton ~= "RightButton" and (Addon:IsClassic() or Addon:IsBC() and not Addon:IsStringNilOrEmpty(subName)) then
+				if mouseButton ~= "RightButton" and (not Addon:IsGameVersionAtleast("RETAIL") and not Addon:IsStringNilOrEmpty(subName)) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
@@ -938,7 +938,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 				local tooltip = L["Click on a spell book entry to select it."]
 
-				if Addon:IsClassic() or Addon:IsBC() then
+				if not Addon:IsGameVersionAtleast("RETAIL") then
 					tooltip = tooltip .. "\n" .. L["Right click to use the max rank."]
 				end
 
@@ -1943,21 +1943,7 @@ local function DrawLoadInInstanceType(container, instanceType)
 		items["SCENARIO"] = L["Scenario"]
 	end
 
-	if Addon:IsClassic() then
-		order = {
-			"NONE",
-			"PARTY",
-			"RAID"
-		}
-	elseif Addon:IsBC() then
-		order = {
-			"NONE",
-			"PARTY",
-			"RAID",
-			"PVP",
-			"ARENA"
-		}
-	elseif Addon:IsRetail() then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		order = {
 			"NONE",
 			"SCENARIO",
@@ -1965,6 +1951,20 @@ local function DrawLoadInInstanceType(container, instanceType)
 			"RAID",
 			"PVP",
 			"ARENA"
+		}
+	elseif Addon:IsGameVersionAtleast("BC") then
+		order = {
+			"NONE",
+			"PARTY",
+			"RAID",
+			"PVP",
+			"ARENA"
+		}
+	elseif Addon:IsGameVersionAtleast("CLASSIC") then
+		order = {
+			"NONE",
+			"PARTY",
+			"RAID"
 		}
 	end
 

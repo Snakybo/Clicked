@@ -588,7 +588,7 @@ function Addon:GetSpellInfo(input, addSubText)
 		addSubText = true
 	end
 
-	if addSubText and (Addon:IsClassic() or Addon:IsBC()) then
+	if addSubText and not Addon:IsGameVersionAtleast("RETAIL") then
 		local subtext = GetSpellSubtext(spellId)
 
 		if not self:IsStringNilOrEmpty(subtext) then
