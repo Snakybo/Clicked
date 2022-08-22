@@ -8,17 +8,17 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.7.3] - 2022-08-22
 
 ### Changed
 
-- Change `/use` command to `/cast` to prioritize spells over items. [#102]
+- Change `/use` command to `/cast` to prioritize spells over items [#102]
 
 ## [1.7.2] - 2022-08-17
 
 ### Added
 
-- Switch to single addon package release mode.
+- Switch to single addon package release mode
 - Update Chinese translations (by Jokey)
 - Add support for WoW 9.2.7
 
@@ -897,7 +897,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.7.2...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.7.3...master
+[1.7.3]: https://github.com/Snakybo/Clicked/releases/tag/1.7.3
 [1.7.2]: https://github.com/Snakybo/Clicked/releases/tag/1.7.2
 [1.7.1]: https://github.com/Snakybo/Clicked/releases/tag/1.7.1
 [1.7.0]: https://github.com/Snakybo/Clicked/releases/tag/1.7.0
