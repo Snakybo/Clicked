@@ -262,7 +262,7 @@ function Addon:GetNewBindingTemplate()
 		}
 	}
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon:IsGameVersionAtleast("WOTLK") and not Addon:IsGameVersionAtleast("RETAIL") then
 		local specIndex = GetActiveTalentGroup()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
 	end
