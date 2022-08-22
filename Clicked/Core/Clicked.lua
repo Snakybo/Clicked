@@ -187,10 +187,10 @@ function Clicked:OnEnable()
 
 	if Addon:IsGameVersionAtleast("BC") then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
 
 		-- 9.0
@@ -215,10 +215,10 @@ function Clicked:OnDisable()
 
 	if Addon:IsGameVersionAtleast("BC") then
 		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
+		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 
 		self:UnregisterEvent("COVENANT_CHOSEN")

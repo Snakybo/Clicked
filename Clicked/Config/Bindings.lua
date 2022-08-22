@@ -1819,6 +1819,14 @@ end
 
 --- @param container table
 --- @param talent Binding.TriStateLoadOption
+--- @param classes string[]
+local function DrawLoadTalentClassic(container, talent, classes)
+	local items, order = Addon:GetLocalizedTalentsClassic(classes)
+	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
+end
+
+--- @param container table
+--- @param talent Binding.TriStateLoadOption
 --- @param specIds integer[]
 local function DrawLoadPvPTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedPvPTalents(specIds)
@@ -2014,6 +2022,10 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 		DrawLoadInCovenant(container, load.covenant)
+	else
+		local classNames = GetTriStateLoadOptionValue(load.class)
+
+		DrawLoadTalentClassic(container, load.talent, classNames)
 	end
 
 	DrawLoadInInstanceType(container, load.instanceType)

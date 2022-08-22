@@ -1,6 +1,9 @@
 --- @type LibTalentInfo
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
+--- @type LibTalentInfoClassic
+local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
+
 --- @class ClickedInternal
 local _, Addon = ...
 
@@ -398,6 +401,57 @@ function Addon:GetLocalizedTalents(specializations)
 				local key = #order + 1
 
 				items[key] = string.format("<text=%s>", L["Talent %s/%s"]:format(tier, column))
+				table.insert(order, key)
+			end
+		end
+	end
+
+	return items, order
+end
+
+function Addon:GetLocalizedTalentsClassic(classes)
+	--- @type table<integer,string>
+	local items = {}
+
+	--- @type integer[]
+	local order = {}
+
+	if classes == nil then
+		classes = {}
+		classes[1] = select(2, UnitClass("player"))
+	end
+
+	if #classes == 1 and classes[1] == select(2, UnitClass("player")) then
+		local class = classes[1]
+
+		for tab = 1, GetNumTalentTabs() do
+			for index = 1, GetNumTalents(tab) do
+				local talentID, name, texture = LibTalentInfoClassic:GetTalentInfo(class, tab, index)
+				local key = #order + 1
+
+				if not Addon:IsStringNilOrEmpty(name) then
+					items[key] = string.format("<icon=%d><text=%s>", texture, name)
+					table.insert(order, key)
+				end
+			end
+		end
+	else
+		for tab = 1, MAX_TALENT_TABS do
+			local max = 0
+
+			-- Find the class with the highest number of talents for the given tab
+			for _, class in ipairs(classes) do
+				local count = LibTalentInfoClassic:GetNumTalentsForTab(class, tab)
+
+				if count > max then
+					max = count
+				end
+			end
+
+			for index = 1, max do
+				local key = #order + 1
+
+				items[key] = string.format("<text=%s>", L["Talent %s/%s"]:format(tab, index))
 				table.insert(order, key)
 			end
 		end

@@ -768,6 +768,21 @@ function Addon:CanBindingLoad(binding)
 				return false
 			end
 		end
+	else
+		-- talent selected (classic)
+		do
+			local function IsTalentIndexSelected(index)
+				local tab = ceil(index / MAX_NUM_TALENTS)
+				local talentIndex = (index - 1) % MAX_NUM_TALENTS + 1
+
+				local _, _, _, _, rank = GetTalentInfo(tab, talentIndex)
+				return rank and rank > 0
+			end
+
+			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then
+				return false
+			end
+		end
 	end
 
 	-- forms
