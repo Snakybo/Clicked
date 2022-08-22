@@ -27,7 +27,7 @@ local function LoadIconsOverTime(frame)
 		return
 	end
 
-	for _ = 1, math.min(status.numColumns * 3, #self.loadQueue) do
+	for _ = 1, math.min(status.numColumns * 9, #self.loadQueue) do
 		local next = self.loadQueue[1]
 		table.remove(self.loadQueue, 1)
 

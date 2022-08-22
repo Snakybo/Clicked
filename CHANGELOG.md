@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add talent selected load condtion for WOTLK
 - Add specialization selected load condition for WOTLK [#101]
 
+### Fixed
+
+- Improve icon picker load speed
+
 ## [1.7.4] - 2022-08-25
 
 ### Fixed
