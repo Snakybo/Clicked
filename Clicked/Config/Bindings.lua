@@ -492,13 +492,7 @@ local function EnsureIconCache()
 			end
 		end
 
-		if Addon:IsRetail() then
-			iconCache = ClickedMedia:GetRetailIcons()
-		elseif Addon:IsClassic() then
-			iconCache = ClickedMedia:GetClassicIcons()
-		elseif Addon:IsBC() then
-			iconCache = ClickedMedia:GetBurningCrusadeIcons()
-		end
+		iconCache = ClickedMedia:GetIcons()
 	end
 
 	if iconCache == nil then

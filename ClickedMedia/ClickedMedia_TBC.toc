@@ -6,4 +6,4 @@
 ## Dependencies: Clicked
 ## LoadOnDemand: 1
 
-MediaBurningCrusade.lua
+MediaBC.lua
