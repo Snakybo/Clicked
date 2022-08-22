@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 - Add support for Wrath of the Lich King Classic 3.4.0
 - Add talent selected load condtion for WOTLK
+- Add specialization selected load condition for WOTLK [#101]
 
 ## [1.7.4] - 2022-08-25
 
@@ -991,6 +992,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 [#108]: https://github.com/Snakybo/Clicked/issues/108
 [#102]: https://github.com/Snakybo/Clicked/issues/102
+[#101]: https://github.com/Snakybo/Clicked/issues/101
 [#100]: https://github.com/Snakybo/Clicked/issues/100
 [#97]: https://github.com/Snakybo/Clicked/issues/97
 [#91]: https://github.com/Snakybo/Clicked/issues/91

@@ -768,7 +768,18 @@ function Addon:CanBindingLoad(binding)
 				return false
 			end
 		end
-	else
+	elseif Addon:IsGameVersionAtleast("WOTLK") then
+		-- specialization (classic)
+		do
+			local function IsSpecializationIndexSelected(index)
+				return index == GetActiveTalentGroup()
+			end
+
+			if not ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected) then
+				return false
+			end
+		end
+
 		-- talent selected (classic)
 		do
 			local function IsTalentIndexSelected(index)

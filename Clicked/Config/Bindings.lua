@@ -1810,6 +1810,23 @@ local function DrawLoadSpecialization(container, specialization, classNames)
 end
 
 --- @param container table
+--- @param specialization Binding.TriStateLoadOption
+--- @param classNames string[]
+local function DrawLoadSpecializationClassic(container, specialization, classNames)
+	local items = {
+		[1] = L["Primary Specialization"],
+		[2] = L["Secondary Specialization"]
+	}
+
+	local order = {
+		1,
+		2
+	}
+
+	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
+end
+
+--- @param container table
 --- @param talent Binding.TriStateLoadOption
 --- @param specIds integer[]
 local function DrawLoadTalent(container, talent, specIds)
@@ -2025,6 +2042,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	else
 		local classNames = GetTriStateLoadOptionValue(load.class)
 
+		DrawLoadSpecializationClassic(container, load.specialization, classNames)
 		DrawLoadTalentClassic(container, load.talent, classNames)
 	end
 
