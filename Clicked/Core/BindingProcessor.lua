@@ -1039,11 +1039,11 @@ end
 ---
 --- In text, this boils down to: combat -> mouseover -> hostility -> default
 ---
---- It will construct an /use command that is mix-and-matched from all configured
+--- It will construct a /cast command that is mix-and-matched from all configured
 --- bindings, so if there are two bindings, and one of them has Holy Light with the
 --- `[@mouseover,help]` and `[@target]` target priority order, and the other one has
 --- Crusader Strike with `[@target,harm]`, it will create a command like this:
---- `/use [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light`
+--- `/cast [@mouseover,help] Holy Light; [@target,harm] Crusader Strike; [@target] Holy Light`
 ---
 --- @param bindings Binding[]
 --- @param interactionType number
@@ -1098,10 +1098,10 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	-- Add all action groups in order
 	do
 		--- @param binding Binding
-		--- @return string
+		--- @return string|nil
 		local function GetPrefixForBinding(binding)
 			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-				return "/use "
+				return "/cast "
 			end
 
 			if binding.type == Addon.BindingTypes.CANCELAURA then
