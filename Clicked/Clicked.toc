@@ -1,4 +1,4 @@
-## Interface: 90207
+## Interface: 100000
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: @project-version@
