@@ -773,17 +773,6 @@ function Addon:CanBindingLoad(binding)
 				end
 			end
 		end
-
-		-- covenant
-		do
-			local function IsCovenantIndexSelected(index)
-				return index == C_Covenants.GetActiveCovenantID()
-			end
-
-			if not ValidateTriStateLoadOption(load.covenant, IsCovenantIndexSelected) then
-				return false
-			end
-		end
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		-- specialization (classic)
 		do

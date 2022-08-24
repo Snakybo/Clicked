@@ -167,7 +167,6 @@ L["Swimming"] = "游泳状态"
 L["Not swimming"] = "未游泳"
 L["Outdoors"] = "野外"
 L["Indoors"] = "室内"
-L["Covenant selected"] = "盟约选择"
 L["Not channeling"] = true
 L["Instance type"] = "副本类型"
 L["No Instance"] = "不在副本"

@@ -1915,24 +1915,6 @@ local function DrawLoadPlayerInGroup(container, playerInGroup)
 end
 
 --- @param container table
---- @param covenant Binding.TriStateLoadOption
-local function DrawLoadInCovenant(container, covenant)
-	local ids = C_Covenants.GetCovenantIDs()
-	local items = {}
-	local order = {}
-
-	for _, id in ipairs(ids) do
-		local data = C_Covenants.GetCovenantData(id)
-		local name = data.name
-
-		items[id] = name
-		table.insert(order, id)
-	end
-
-	DrawTristateLoadOption(container, L["Covenant selected"], items, order, covenant)
-end
-
---- @param container table
 --- @param instanceType Binding.TriStateLoadOption
 local function DrawLoadInInstanceType(container, instanceType)
 	local items = {}
@@ -2048,7 +2030,6 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
-		DrawLoadInCovenant(container, load.covenant)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 

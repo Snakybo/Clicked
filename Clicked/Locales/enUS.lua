@@ -167,7 +167,6 @@ L["Swimming"] = true
 L["Not swimming"] = true
 L["Outdoors"] = true
 L["Indoors"] = true
-L["Covenant selected"] = true
 L["Not channeling"] = true
 L["Primary Specialization"] = true
 L["Secondary Specialization"] = true

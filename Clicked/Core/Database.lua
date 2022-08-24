@@ -293,16 +293,6 @@ function Addon:GetNewBindingTemplate()
 		end
 
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-
-		--- @type number
-		local covenantId = C_Covenants.GetActiveCovenantID()
-
-		-- No covenant selected
-		if covenantId == 0 then
-			covenantId = 1
-		end
-
-		template.load.covenant = GetTriStateLoadOptionTemplate(covenantId)
 	end
 
 	return template
@@ -1063,6 +1053,15 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.7.0")
+	end
+
+	-- 1.7.x to 1.8.0
+	if string.sub(from, 1, 3) == "1.7" then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.covenant = nil
+		end
+
+		FinalizeVersionUpgrade("1.8.0")
 	end
 
 	profile.version = Clicked.VERSION

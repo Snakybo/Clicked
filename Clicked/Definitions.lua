@@ -110,7 +110,6 @@
 --- @field public talent Binding.TriStateLoadOption
 --- @field public pvpTalent Binding.TriStateLoadOption
 --- @field public warMode Binding.LoadOption
---- @field public covenant Binding.TriStateLoadOption
 --- @field public channeling Binding.NegatableStringLoadOption
 
 --- @class Binding.LoadOption
