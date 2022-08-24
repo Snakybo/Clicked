@@ -39,7 +39,7 @@ local function LoadIconsOverTime(frame)
 			tooltip:SetOwner(button.frame, "ANCHOR_NONE")
 			tooltip:ClearAllPoints()
 			tooltip:SetPoint("RIGHT", button.frame, "LEFT")
-			tooltip:SetText(next.image, 1, 0.82, 0, 1)
+			tooltip:SetText(next.icon .. "\n" .. next.id, 1, 0.82, 0, 1)
 			tooltip:Show()
 		end)
 
@@ -49,10 +49,10 @@ local function LoadIconsOverTime(frame)
 		end)
 
 		button:SetCallback("OnClick", function()
-			self:Fire("OnIconSelected", next.image)
+			self:Fire("OnIconSelected", next.icon)
 		end)
 
-		button:SetImage(next.image)
+		button:SetImage(next.icon)
 		button.frame:Show()
 	end
 end
@@ -97,6 +97,7 @@ local methods = {
 
 		self.buttons = {}
 		self.icons = {}
+		self.order = {}
 		self.loadQueue = {}
 		self.scrollframe:SetPoint("BOTTOMRIGHT")
 		self.scrollbar:Hide()
@@ -147,8 +148,9 @@ local methods = {
 		self:RefreshIcons()
 	end,
 
-	["SetIcons"] = function(self, icons)
+	["SetIcons"] = function(self, icons, order)
 		self.icons = icons
+		self.order = order
 
 		self:FixScroll()
 		self.scrollframe:SetScript("OnUpdate", FixScrollOnUpdate)
@@ -159,7 +161,7 @@ local methods = {
 			v.frame:Hide()
 		end
 
-		if self.icons == nil or #self.icons == 0 then
+		if self.icons == nil or #self.order == 0 then
 			return
 		end
 
@@ -168,19 +170,25 @@ local methods = {
 		end
 
 		local icons = {}
+		local order = {}
 
 		if self.searchHandler ~= nil and #self.searchHandler.searchTerm > 0 then
 			local searchTerm = string.gsub(string.lower(self.searchHandler.searchTerm), "%s+", "_")
 
-			for i = 1, #self.icons do
-				local icon = string.lower(self.icons[i])
+			for k, v in pairs(self.icons) do
+				local id = tostring(k)
+				local name = string.lower(self.icons[k])
 
-				if string.match(icon, searchTerm) then
-					table.insert(icons, icon)
+				if string.match(name, searchTerm) or string.match(id, searchTerm) then
+					icons[k] = v
+					table.insert(order, k)
 				end
 			end
+
+			table.sort(order)
 		else
 			icons = self.icons
+			order = self.order
 		end
 
 		local status = self.status or self.localstatus
@@ -188,7 +196,7 @@ local methods = {
 		local viewRows = math.floor(viewHeight / (ICON_SIZE + 4))
 
 		status.numColumns = math.floor(self.content.width / (ICON_SIZE + 4))
-		status.numRows = math.max(math.ceil(#icons / status.numColumns) - viewRows, 0)
+		status.numRows = math.max(math.ceil(#order / status.numColumns) - viewRows, 0)
 		status.contentHeight = math.floor(status.numRows * (ICON_SIZE + 4))
 
 		local numIcons = viewRows * status.numColumns
@@ -210,10 +218,11 @@ local methods = {
 				self:AddChild(button)
 			end
 
-			if icons[offset + i] ~= nil then
+			if order[offset + i] ~= nil then
 				table.insert(self.loadQueue, {
 					button = button,
-					image = "Interface\\ICONS\\" .. icons[offset + i]
+					id = order[offset + i],
+					icon = "Interface\\ICONS\\" .. icons[order[offset + i]]
 				})
 			end
 		end
@@ -329,6 +338,7 @@ local function Constructor()
 		scrollframe   = scrollframe,
 		buttons       = {},
 		icons         = {},
+		order         = {},
 		loadQueue     = {},
 		scrollbar     = scrollbar,
 		searchHandler = nil,

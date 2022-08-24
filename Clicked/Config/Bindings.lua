@@ -23,8 +23,11 @@ local ITEM_TEMPLATE_IMPORT_SPELLBOOK = "IMPORT_SPELLBOOK"
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
 
---- @type string[]
+--- @type table<integer,string>
 local iconCache
+
+--- @type integer[]
+local iconCacheOrder
 
 --- @type table<string|number,boolean>
 local waitingForItemInfo = {}
@@ -492,14 +495,12 @@ local function EnsureIconCache()
 			end
 		end
 
-		iconCache = ClickedMedia:GetIcons()
+		iconCache, iconCacheOrder = ClickedMedia:GetIcons()
 	end
 
 	if iconCache == nil then
 		error("Unable to load icons")
 	end
-
-	table.sort(iconCache)
 end
 
 --- @param container table
@@ -542,7 +543,7 @@ local function DrawIconPicker(container, data, key)
 		scrollFrame:SetLayout("Flow")
 		scrollFrame:SetFullWidth(true)
 		scrollFrame:SetFullHeight(true)
-		scrollFrame:SetIcons(iconCache)
+		scrollFrame:SetIcons(iconCache, iconCacheOrder)
 		scrollFrame:SetSearchHandler(searchBox)
 		scrollFrame:SetCallback("OnIconSelected", OnIconSelected)
 

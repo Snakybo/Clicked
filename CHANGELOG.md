@@ -15,6 +15,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Add support for Wrath of the Lich King Classic 3.4.0
 - Add talent selected load condtion for WOTLK
 - Add specialization selected load condition for WOTLK [#101]
+- Add the ability to search for icons by file ID
 
 ### Fixed
 
