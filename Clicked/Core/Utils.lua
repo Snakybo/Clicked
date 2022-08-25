@@ -417,7 +417,7 @@ function Addon:GetBindingValue(binding)
 		local item = binding.action.itemValue
 
 		if type(item) == "number" and item < 20 then
-			return item
+			item = GetInventoryItemID("player", item)
 		end
 
 		return self:GetItemInfo(item) or item

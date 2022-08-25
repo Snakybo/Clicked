@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.7.4] - 2022-08-25
+
+### Fixed
+
+- Fix item equipment slot IDs not casting [#108]
+
 ## [1.7.3] - 2022-08-22
 
 ### Changed
@@ -898,6 +904,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 - Initial public release
 
 [Unreleased]: https://github.com/Snakybo/Clicked/compare/1.7.3...master
+[1.7.4]: https://github.com/Snakybo/Clicked/releases/tag/1.7.4
 [1.7.3]: https://github.com/Snakybo/Clicked/releases/tag/1.7.3
 [1.7.2]: https://github.com/Snakybo/Clicked/releases/tag/1.7.2
 [1.7.1]: https://github.com/Snakybo/Clicked/releases/tag/1.7.1
@@ -975,6 +982,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#108]: https://github.com/Snakybo/Clicked/issues/108
 [#102]: https://github.com/Snakybo/Clicked/issues/102
 [#100]: https://github.com/Snakybo/Clicked/issues/100
 [#97]: https://github.com/Snakybo/Clicked/issues/97
