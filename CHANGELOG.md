@@ -15,11 +15,17 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for Wrath of the Lich King Classic 3.4.0
 * Add talent selected load condtion for WOTLK
 * Add specialization selected load condition for WOTLK [#101]
+* Add improved (and hopefully more complete) icon data for all versions
 * Add the ability to search for icons by file ID
+
+### Changed
+
+* Automatically set the class load condition when importing from spellbook
 
 ### Fixed
 
 * Improve icon picker load speed
+* Fix a Lua when using the shapeshit macro condtion in addition to the class load condtion
 
 ## [1.7.4] - 2022-08-25
 
