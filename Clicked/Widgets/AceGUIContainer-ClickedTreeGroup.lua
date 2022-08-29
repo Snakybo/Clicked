@@ -150,6 +150,70 @@ local function GetButtonUniqueValue(line)
 	end
 end
 
+local function SetVisibleRecursive(item)
+	local current = item
+
+	while current ~= nil do
+		current.visible = true
+		current = current.parent
+	end
+end
+
+local function IsItemValidWithSearchQuery(item, search)
+	if Addon:IsStringNilOrEmpty(search) then
+		return true
+	end
+
+	local strings = {}
+
+	local prefix = string.match(search, "(.*):")
+	local suffix = string.match(search, ":(.*)")
+
+	if item.binding ~= nil then
+		if prefix == nil then
+			local value = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
+
+			if (type(value) == "string" and not Addon:IsStringNilOrEmpty(value)) or
+				(type(value) == "number" and value > 0) then
+				table.insert(strings, { value = value })
+			end
+
+			if item.binding.type == Addon.BindingTypes.MACRO or item.binding.type == Addon.BindingTypes.APPEND then
+				table.insert(strings, { value = item.binding.action.macroName })
+			end
+		end
+
+		if prefix == nil or string.lower(prefix) == "k" then
+			if item.binding.keybind ~= "" then
+				table.insert(strings, { value = item.binding.keybind, exact = true })
+			end
+		end
+	elseif item.group ~= nil then
+		if prefix == nil then
+			table.insert(strings, { value = item.title })
+		end
+	end
+
+	for i = 1, #strings do
+		if strings[i] ~= nil and strings[i].value ~= "" then
+			local str = string.lower(strings[i].value)
+			local pattern = string.lower(suffix or search)
+
+			if strings[i].exact then
+				if str == pattern then
+					return true
+				end
+			else
+				if string.find(str, pattern, 1, true) ~= nil then
+					return true
+				end
+			end
+		end
+	end
+
+	return false
+end
+
 local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local toggle = button.toggle
 	local title = treeline.title or ""
@@ -792,11 +856,9 @@ function Methods:SetStatusTable(status)
 	self:RefreshTree()
 end
 
-function Methods:ConstructTree(filter)
+function Methods:ConstructTree()
 	local status = self.status or self.localstatus
-	self.filter = filter
 	self.tree = {}
-	self.treeCache = self.tree
 
 	for _, group in Clicked:IterateGroups() do
 		local item = {
@@ -849,153 +911,61 @@ function Methods:BuildLevel(tree, level, parent)
 	local groups = (self.status or self.localstatus).groups
 
 	for _, v in ipairs(tree) do
-		if v.children then
-			if not self.filter or ShouldDisplayLevel(v.children) then
-				local line = addLine(self, v, tree, level, parent)
-				if groups[line.uniquevalue] then
-					self:BuildLevel(v.children, level+1, line)
+		if v.visible then
+			if v.children then
+				if ShouldDisplayLevel(v.children) then
+					local line = addLine(self, v, tree, level, parent)
+					if groups[line.uniquevalue] then
+						self:BuildLevel(v.children, level+1, line)
+					end
 				end
+			else
+				addLine(self, v, tree, level, parent)
 			end
-		elseif v.visible ~= false or not self.filter then
-			addLine(self, v, tree, level, parent)
 		end
 	end
 end
 
 function Methods:BuildCache()
 	if self.tree == nil then
-		self.treeCache = nil
 		return
 	end
 
-	local tree = {}
+	local open = { unpack(self.tree) }
 
-	if not Addon:IsStringNilOrEmpty(self.searchbar.searchTerm) then
-		local function IsItemValidWithSearchQuery(item)
-			local strings = {}
+	while #open > 0 do
+		local next = open[1]
+		table.remove(open, 1)
 
-			if item.binding ~= nil then
-				local value = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
-
-				if (type(value) == "string" and not Addon:IsStringNilOrEmpty(value)) or
-					(type(value) == "number" and value > 0) then
-					table.insert(strings, value)
-				end
-
-				if item.binding.type == Addon.BindingTypes.MACRO or item.binding.type == Addon.BindingTypes.APPEND then
-					table.insert(strings, item.binding.action.macroName)
-				end
-
-				if item.binding.keybind ~= "" then
-					table.insert(strings, item.binding.keybind)
-				end
-			elseif item.group ~= nil then
-				table.insert(strings, item.title)
+		-- Only search for bindings and not groups
+		if next.children == nil then
+			if IsItemValidWithSearchQuery(next, self.searchbar.searchTerm) then
+				SetVisibleRecursive(next)
 			end
-
-			for i = 1, #strings do
-				if strings[i] ~= nil and strings[i] ~= "" then
-					local str = string.lower(strings[i])
-					local pattern = string.lower(self.searchbar.searchTerm)
-
-					if string.find(str, pattern, 1, true) ~= nil then
-						return true
-					end
-				end
-			end
-
-			return false
-		end
-
-		local function TableContains(tbl, item)
-			for _, child in ipairs(tbl) do
-				if child == item then
-					return true
-				end
-			end
-
-			return false
-		end
-
-		local open = { unpack(self.tree) }
-
-		while #open > 0 do
-			local next = open[1]
-			table.remove(open, 1)
-
-			if IsItemValidWithSearchQuery(next) then
-				local current = next
-
-				while current ~= nil do
-					local parent = current.parent
-
-					if parent == nil then
-						if current.children ~= nil then
-							current.children2 = current.children2 or {}
-						end
-
-						if not TableContains(tree, current) then
-							table.insert(tree, current)
-						end
-					else
-						parent.children2 = parent.children2 or {}
-
-						if not TableContains(parent.children2, current) then
-							table.insert(parent.children2, current)
-						end
-					end
-
-					current = parent
-				end
-			end
-
-			if next.children ~= nil then
-				for i = 1, #next.children do
-					table.insert(open, next.children[i])
-				end
+		else
+			for i = 1, #next.children do
+				table.insert(open, next.children[i])
 			end
 		end
-
-		open = { unpack(self.tree) }
-
-		while #open > 0 do
-			local next = open[1]
-			table.remove(open, 1)
-
-			if next.children2 ~= nil then
-				next.children = next.children2
-				next.children2 = nil
-			end
-
-			if next.children ~= nil then
-				for i = 1, #next.children do
-					table.insert(open, next.children[i])
-				end
-			end
-		end
-	else
-		tree = self.tree
 	end
 
 	if self.sortMode == 1 then
-		table.sort(tree, TreeSortKeybind)
+		table.sort(self.tree, TreeSortKeybind)
 
-		for _, item in ipairs(tree) do
+		for _, item in ipairs(self.tree) do
 			if item.children ~= nil then
 				table.sort(item.children, TreeSortKeybind)
 			end
 		end
 	else
-		table.sort(tree, TreeSortAlphabetical)
+		table.sort(self.tree, TreeSortAlphabetical)
 
-		for _, item in ipairs(tree) do
+		for _, item in ipairs(self.tree) do
 			if item.children ~= nil then
 				table.sort(item.children, TreeSortAlphabetical)
 			end
 		end
 	end
-
-	self.treeCache = tree
 end
 
 function Methods:RefreshTree(scrollToSelection,fromOnUpdate)
@@ -1027,7 +997,7 @@ function Methods:RefreshTree(scrollToSelection,fromOnUpdate)
 
 	status.scrollToSelection = status.scrollToSelection or scrollToSelection	-- needs to be cached in case the control hasn't been drawn yet (code bails out below)
 
-	self:BuildLevel(self.treeCache, 1)
+	self:BuildLevel(self.tree, 1)
 
 	local numlines = #lines
 
@@ -1144,7 +1114,6 @@ function Methods:SetSelected(value)
 end
 
 function Methods:Select(uniquevalue, ...)
-	self.filter = false
 	local status = self.status or self.localstatus
 	local groups = status.groups
 	local path = {...}
@@ -1443,7 +1412,6 @@ local function Constructor()
 		buttons       = {},
 		hasChildren   = {},
 		localstatus   = { groups = { }, scrollvalue = 0 },
-		filter        = false,
 		treeframe     = treeframe,
 		dragger       = dragger,
 		scrollbar     = scrollbar,
