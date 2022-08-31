@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * Type `k:` to search for exact keybinds, for example `k:f` to search for all bindings bound to the `F` key
 * Ignore group names in searches
 
+### Fixed
+
+* Fix a Lua error on Classic Era when opening the binding load condtions page
+
 ## [1.7.5] - 2022-08-29
 
 ### Added

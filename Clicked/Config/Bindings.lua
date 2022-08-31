@@ -2049,7 +2049,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 		DrawLoadInCovenant(container, load.covenant)
-	else
+	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 
 		DrawLoadSpecializationClassic(container, load.specialization)
