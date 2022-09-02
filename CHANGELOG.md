@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix keybinds being active while in a vehicle on WOTLK
 * Fix WOTLK-specific features not working due to Blizzard code change
+* Fix empty groups not being visible with an empty search term
 
 ## [1.7.6] - 2022-08-31
 

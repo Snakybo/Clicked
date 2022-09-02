@@ -320,19 +320,6 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	end
 end
 
-local function ShouldDisplayLevel(tree)
-	local result = false
-	for _, v in ipairs(tree) do
-		if v.children == nil and v.visible ~= false then
-			result = true
-		elseif v.children then
-			result = result or ShouldDisplayLevel(v.children)
-		end
-		if result then return result end
-	end
-	return false
-end
-
 local function addLine(self, v, tree, level, parent)
 	local line = new()
 	line.value = v.value
@@ -913,11 +900,10 @@ function Methods:BuildLevel(tree, level, parent)
 	for _, v in ipairs(tree) do
 		if v.visible then
 			if v.children then
-				if ShouldDisplayLevel(v.children) then
-					local line = addLine(self, v, tree, level, parent)
-					if groups[line.uniquevalue] then
-						self:BuildLevel(v.children, level+1, line)
-					end
+				local line = addLine(self, v, tree, level, parent)
+
+				if groups[line.uniquevalue] then
+					self:BuildLevel(v.children, level+1, line)
 				end
 			else
 				addLine(self, v, tree, level, parent)
@@ -943,8 +929,14 @@ function Methods:BuildCache()
 				SetVisibleRecursive(next)
 			end
 		else
-			for i = 1, #next.children do
-				table.insert(open, next.children[i])
+			if #next.children == 0 then
+				if Addon:IsStringNilOrEmpty(self.searchbar.searchTerm) then
+					SetVisibleRecursive(next)
+				end
+			else
+				for i = 1, #next.children do
+					table.insert(open, next.children[i])
+				end
 			end
 		end
 	end
