@@ -2,7 +2,7 @@
 local LibTalentInfoClassic = LibStub and LibStub("LibTalentInfoClassic-1.0", true)
 local version = 45043
 
-if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC or LE_EXPANSION_LEVEL_CURRENT ~= LE_EXPANSION_WRATH_OF_THE_LICH_KING or LibTalentInfoClassic == nil or version <= LibTalentInfoClassic:GetTalentProviderVersion() then
+if WOW_PROJECT_ID ~= WOW_PROJECT_WRATH_CLASSIC or LibTalentInfoClassic == nil or version <= LibTalentInfoClassic:GetTalentProviderVersion() then
 	return
 end
 

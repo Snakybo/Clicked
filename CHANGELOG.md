@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix keybinds being active while in a vehicle on WOTLK
+* Fix WOTLK-specific features not working due to Blizzard code change
 
 ## [1.7.6] - 2022-08-31
 

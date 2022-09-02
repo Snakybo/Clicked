@@ -1072,14 +1072,14 @@ end
 ---
 --- @return boolean
 function Addon:IsBC()
-	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE
+	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
 
 --- Check if the game client is running the Wrath of the Lich King version of the API.
 ---
 --- @return boolean
 function Addon:IsWotLK()
-	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING
+	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
 
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
