@@ -117,8 +117,11 @@ local function EnsureMacroFrameHandler()
 		end
 	]])
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon:IsGameVersionAtleast("WOTLK") then
 		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
 	end
 

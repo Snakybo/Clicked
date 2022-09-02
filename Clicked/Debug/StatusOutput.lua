@@ -66,9 +66,12 @@ local function GetBasicinfoString()
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
 	table.insert(lines, "Override Bar: " .. driver:GetAttribute("state-overridebar"))
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon:IsGameVersionAtleast("WOTLK") then
 		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
 		table.insert(lines, "Vehicle UI: " .. driver:GetAttribute("state-vehicleui"))
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		table.insert(lines, "Pet Battle: " .. driver:GetAttribute("state-petbattle"))
 	end
 
@@ -201,9 +204,12 @@ function Addon:StatusOutput_Initialize()
 	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon:IsGameVersionAtleast("WOTLK") then
 		CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
 		CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
 	end
 
