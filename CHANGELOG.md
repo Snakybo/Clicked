@@ -10,9 +10,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add initial support for Dragonflight Beta and PTR
+
 ### Changed
 
-- Removed covenant selected load option
+* Removed covenant selected load option
 
 ## [1.7.7] - 2022-09-02
 
@@ -949,6 +953,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Initial public release
 
 [Unreleased]: https://github.com/Snakybo/Clicked/compare/1.7.7...master
+[1.7.7 Dragonflight Alpha]: https://github.com/Snakybo/Clicked/releases/tag/1.7.7-df-alpha
 [1.7.7]: https://github.com/Snakybo/Clicked/releases/tag/1.7.7
 [1.7.6]: https://github.com/Snakybo/Clicked/releases/tag/1.7.6
 [1.7.5]: https://github.com/Snakybo/Clicked/releases/tag/1.7.5
