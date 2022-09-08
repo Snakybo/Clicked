@@ -363,11 +363,19 @@ local function HijackSpellButton_UpdateButton(self)
 			button:SetID(parent:GetID())
 
 			button:SetScript("OnEnter", function(_, motion)
-				SpellButton_OnEnter(parent, motion)
+				if Addon:IsGameVersionAtleast("RETAIL") then
+					parent:OnEnter(parent, motion)
+				else
+					SpellButton_OnEnter(parent, motion)
+				end
 			end)
 
 			button:SetScript("OnLeave", function()
-				SpellButton_OnLeave(parent)
+				if Addon:IsGameVersionAtleast("RETAIL") then
+					parent:OnLeave(parent)
+				else
+					SpellButton_OnLeave(parent)
+				end
 			end)
 
 			button:SetScript("OnClick", function(_, mouseButton)
@@ -2575,11 +2583,16 @@ function Addon:BindingConfig_Initialize()
 		HijackSpellButton_UpdateButton(nil)
 	end)
 
-	hooksecurefunc("SpellButton_UpdateButton", HijackSpellButton_UpdateButton)
-
 	if Addon:IsGameVersionAtleast("RETAIL") then
+		for i = 1, SPELLS_PER_PAGE do
+			local currSpellButton = _G["SpellButton" .. i];
+			hooksecurefunc(currSpellButton, "UpdateButton", HijackSpellButton_UpdateButton)
+		end
+
 		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellFlyout_Toggle)
 		hooksecurefunc("SpellFlyout_Toggle", HijackSpellFlyout_Toggle)
+	else
+		hooksecurefunc("SpellButton_UpdateButton", HijackSpellButton_UpdateButton)
 	end
 end
 
