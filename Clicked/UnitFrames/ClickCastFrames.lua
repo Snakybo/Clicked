@@ -72,7 +72,7 @@ function Addon:ProcessFrameQueue()
 		registerClicksQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:RegisterFrameClicks(frame)
+			Clicked:RegisterFrameClicks(frame, true)
 		end
 	end
 end
@@ -190,7 +190,7 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 		return
 	end
 
-	Clicked:RegisterFrameClicks(frame)
+	Clicked:RegisterFrameClicks(frame, true)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
 	table.insert(frames, frame)
@@ -257,7 +257,8 @@ end
 --- this too.
 ---
 --- @param frame table The frame to register for clicks and scrollwheel events
-function Clicked:RegisterFrameClicks(frame)
+--- @param isUnitFrame boolean Whether the frame is an unit frame
+function Clicked:RegisterFrameClicks(frame, isUnitFrame)
 	if frame == nil or frame.RegisterForClicks == nil then
 		return
 	end
@@ -267,7 +268,16 @@ function Clicked:RegisterFrameClicks(frame)
 		return
 	end
 
-	frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		if isUnitFrame then
+			frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+		else
+			frame:RegisterForClicks("AnyDown", "AnyUp")
+		end
+	else
+		frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+	end
+
 	frame:EnableMouseWheel(true)
 end
 

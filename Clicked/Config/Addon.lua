@@ -51,7 +51,7 @@ function Addon:GeneralOptions_Initialize()
 				end
 			},
 			onKeyDown = {
-				name = L["Cast on key down rather than key up"],
+				name = Addon:IsGameVersionAtleast("RETAIL") and L["Cast on unit frames on key down rather than key up"] or L["Cast on key down rather than key up"],
 				desc = L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."],
 				type = "toggle",
 				order = 200,
@@ -60,10 +60,10 @@ function Addon:GeneralOptions_Initialize()
 					Addon.db.profile.options.onKeyDown = val
 
 					for _, frame in Clicked:IterateClickCastFrames() do
-						Clicked:RegisterFrameClicks(frame)
+						Clicked:RegisterFrameClicks(frame, true)
 					end
 
-					Clicked:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME])
+					Clicked:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME], false)
 					Addon:ShowInformationPopup(L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
 				end,
 				get = function()

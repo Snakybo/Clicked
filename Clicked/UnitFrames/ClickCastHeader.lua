@@ -160,7 +160,7 @@ function Addon:RegisterClickCastHeader()
 	Clique = {}
 	Clique.header = ClickCastHeader
 	Clique.UpdateRegisteredClicks = function(_, frame)
-		safecall(Clicked.RegisterFrameClicks, Clicked, frame)
+		safecall(Clicked.RegisterFrameClicks, Clicked, frame, true)
 	end
 end
 
