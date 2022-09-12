@@ -200,7 +200,6 @@ L["Enable or disable the minimap icon."] = true
 L["Show abilities in unit tooltips"] = true
 L["If enabled unit tooltips will be augmented to show abilities and keybinds that can be used on the target."] = true
 L["Cast on key down rather than key up"] = true
-L["Cast on unit frames on key down rather than key up"] = true
 L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."] = true
 L["If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."] = true
 L["Selected"] = true

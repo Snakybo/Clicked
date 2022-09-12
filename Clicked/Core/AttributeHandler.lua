@@ -112,6 +112,10 @@ function Addon:ApplyAttributesToFrame(frame)
 
 	if not Addon:IsFrameBlacklisted(frame) then
 		for key, value in pairs(pending) do
+			if frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME] then
+				key = string.gsub(key, "typerelease", "type")
+			end
+
 			frame:SetAttribute(key, value)
 		end
 	end
@@ -133,7 +137,13 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 		local value = IsCombatStatusValid(command.data) and "togglemenu" or ""
 		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MACRO then
-		CreateAttribute(register, prefix, "type", suffix, "macro")
+		local attributeType = "type"
+
+		if Addon:IsGameVersionAtleast("RETAIL") and not Addon.db.profile.options.onKeyDown then
+			attributeType = "typerelease"
+		end
+
+		CreateAttribute(register, prefix, attributeType, suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
 		error("Unhandled action type: " .. command.action)
