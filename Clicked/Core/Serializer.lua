@@ -26,7 +26,7 @@ local _, Addon = ...
 --- @return boolean status
 --- @return string message
 local function ValidateData(data)
-	if data.version ~= Clicked.VERSION then
+	if data.version ~= Clicked.VERSION and not Addon:IsDevelopmentBuild() then
 		return false, "Incompatible version: " .. data.version
 	end
 
@@ -109,13 +109,13 @@ function Clicked:DeserializeProfile(encoded, printable)
 	end
 
 	if compressed == nil then
-		return false, "Failed to decode"
+		return false, "Failed to decode", false
 	end
 
 	local serialized = LibDeflate:DecompressDeflate(compressed)
 
 	if serialized == nil then
-		return false, "Failed to decompress"
+		return false, "Failed to decompress", false
 	end
 
 	local success, data = AceSerializer:Deserialize(serialized)
@@ -124,10 +124,10 @@ function Clicked:DeserializeProfile(encoded, printable)
 		local validated, message = ValidateData(data)
 
 		if validated then
-			return true, data
+			return true, data, false
 		end
 
-		return false, "Failed to validate data: " .. message
+		return false, "Failed to validate data: " .. message, false
 	end
 
 	local lightweight = data.lightweight or false
