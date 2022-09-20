@@ -729,6 +729,7 @@ function Addon:CanBindingLoad(binding)
 
 						if node ~= nil and node.ID ~= 0 then
 							for _, entryId in ipairs(node.entryIDs) do
+								local entry = C_Traits.GetEntryInfo(configId, entryId)
 								local definition = C_Traits.GetDefinitionInfo(entry.definitionID)
 
 								if definition.spellID ~= nil then

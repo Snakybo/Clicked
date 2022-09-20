@@ -2214,7 +2214,7 @@ local function CreateFromItemTemplate(identifier)
 		item = Clicked:CreateGroup()
 	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK then
 		for tabIndex = 2, GetNumSpellTabs() do
-			local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(tabIndex)
+			local tabName, tabIcon, offset, count = GetSpellTabInfo(tabIndex)
 			local pendingSpellIds = {}
 			local specIndex = nil
 
@@ -2247,23 +2247,6 @@ local function CreateFromItemTemplate(identifier)
 				return pendingSpellIds[spellId]
 			end
 
-			-- Get spec index from ID
-			if Addon:IsGameVersionAtleast("RETAIL") and tabIndex > 2 then
-				if specId == 0 then
-					specIndex = GetSpecialization()
-					specId = GetSpecializationInfo(specIndex)
-				else
-					for index = 1, GetNumSpecializations() do
-						local id = GetSpecializationInfo(index)
-
-						if id == specId then
-							specIndex = index
-							break
-						end
-					end
-				end
-			end
-
 			-- Spellbook items
 			for spellBookItemIndex = offset + 1, offset + count do
 				local type = GetSpellBookItemInfo(spellBookItemIndex, BOOKTYPE_SPELL)
@@ -2291,7 +2274,7 @@ local function CreateFromItemTemplate(identifier)
 					group.displayIcon = tabIcon
 				end
 
-				for spellId, data in pairs(pendingSpellIds) do
+				for spellId in pairs(pendingSpellIds) do
 					local binding = Clicked:CreateBinding()
 					binding.type = Addon.BindingTypes.SPELL
 					binding.parent = group.identifier

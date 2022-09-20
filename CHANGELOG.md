@@ -12,7 +12,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add initial support for Dragonflight Beta and PTR
+* Add support for WoW 10.0.1 Dragonflight
+* Add support for the Dracthyr race [#104]
+* Add support for the Evoker class [#104]
+* Add support for the new talent tree system [#105]
+
 
 ### Changed
 
@@ -1036,6 +1040,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#108]: https://github.com/Snakybo/Clicked/issues/108
+[#105]: https://github.com/Snakybo/Clicked/issues/105
+[#104]: https://github.com/Snakybo/Clicked/issues/104
 [#102]: https://github.com/Snakybo/Clicked/issues/102
 [#101]: https://github.com/Snakybo/Clicked/issues/101
 [#100]: https://github.com/Snakybo/Clicked/issues/100
