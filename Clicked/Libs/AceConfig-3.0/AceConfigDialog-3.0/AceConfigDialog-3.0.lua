@@ -1,13 +1,13 @@
 --- AceConfigDialog-3.0 generates AceGUI-3.0 based windows based on option tables.
 -- @class file
 -- @name AceConfigDialog-3.0
--- @release $Id: AceConfigDialog-3.0.lua 1262 2022-04-07 23:00:32Z funkehdude $
+-- @release $Id: AceConfigDialog-3.0.lua 1277 2022-09-08 16:35:10Z nevcairiel $
 
 local LibStub = LibStub
 local gui = LibStub("AceGUI-3.0")
 local reg = LibStub("AceConfigRegistry-3.0")
 
-local MAJOR, MINOR = "AceConfigDialog-3.0", 82
+local MAJOR, MINOR = "AceConfigDialog-3.0", 83
 local AceConfigDialog, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceConfigDialog then return end
@@ -2000,7 +2000,18 @@ function AceConfigDialog:AddToBlizOptions(appName, name, parent, ...)
 		end
 		group:SetCallback("OnShow", FeedToBlizPanel)
 		group:SetCallback("OnHide", ClearBlizPanel)
-		InterfaceOptions_AddCategory(group.frame)
+		if Settings and Settings.RegisterCanvasLayoutCategory then
+			local categoryName = name or appName
+			if parent then
+				local category = Settings.GetCategory(parent)
+				Settings.RegisterCanvasLayoutSubcategory(category, group.frame, categoryName)
+			else
+				local category = Settings.RegisterCanvasLayoutCategory(group.frame, categoryName)
+				Settings.RegisterAddOnCategory(category)
+			end
+		else
+			InterfaceOptions_AddCategory(group.frame)
+		end
 		return group.frame
 	else
 		error(("%s has already been added to the Blizzard Options Window with the given path"):format(appName), 2)
