@@ -712,15 +712,40 @@ function Addon:CanBindingLoad(binding)
 		-- talent selected
 		do
 			local function IsTalentIndexSelected(index)
-				local tier = math.ceil(index / 3)
-				local column  = index % 3
+				local configId = C_ClassTalents.GetActiveConfigID()
+				local currentIndex = 0
 
-				if column == 0 then
-					column = 3
+				if configId == nil then
+					return false
 				end
 
-				local _, _, _, selected, _, _, _, _, _, _, known = GetTalentInfo(tier, column, 1)
-				return selected or known
+				local config = C_Traits.GetConfigInfo(configId)
+
+				for _, treeId in ipairs(config.treeIDs) do
+					local nodes = C_Traits.GetTreeNodes(treeId)
+
+					for _, nodeId in ipairs(nodes) do
+						local node = C_Traits.GetNodeInfo(configId, nodeId)
+
+						if node ~= nil and node.ID ~= 0 then
+							for _, entryId in ipairs(node.entryIDs) do
+								local definition = C_Traits.GetDefinitionInfo(entry.definitionID)
+
+								if definition.spellID ~= nil then
+									currentIndex = currentIndex + 1
+
+									if currentIndex == index then
+										if node.activeEntry ~= nil and node.activeEntry.entryID == entryId and node.currentRank > 0 then
+											return true
+										end
+
+										return false
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 
 			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then

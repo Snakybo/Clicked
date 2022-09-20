@@ -400,25 +400,33 @@ function Addon:GetLocalizedTalents(specializations)
 	if #specializations == 1 then
 		local spec = specializations[1]
 
-		for tier = 1, MAX_TALENT_TIERS do
-			for column = 1, NUM_TALENT_COLUMNS do
-				local _, name, texture = LibTalentInfo:GetTalentInfo(spec, tier, column)
-				local key = #order + 1
+		for i = 1, LibTalentInfo:GetNumTalents(spec) do
+			local spellID = LibTalentInfo:GetTalentAt(spec, i)
+			local name, _, texture = GetSpellInfo(spellID)
 
-				if not Addon:IsStringNilOrEmpty(name) then
-					items[key] = string.format("<icon=%d><text=%s>", texture, name)
-					table.insert(order, key)
-				end
+			local key = #order + 1
+
+			if not Addon:IsStringNilOrEmpty(name) then
+				items[key] = string.format("<icon=%d><text=%s>", texture, name)
+				table.insert(order, key)
 			end
 		end
 	else
-		for tier = 1, MAX_TALENT_TIERS do
-			for column = 1, NUM_TALENT_COLUMNS do
-				local key = #order + 1
+		local maxTalentCount = 0
 
-				items[key] = string.format("<text=%s>", L["Talent %s/%s"]:format(tier, column))
-				table.insert(order, key)
+		for _, spec in ipairs(specializations) do
+			local numTalents = LibTalentInfo:GetNumTalents(spec)
+
+			if numTalents > maxTalentCount then
+				maxTalentCount = numTalents
 			end
+		end
+
+		for i = 1, maxTalentCount do
+			local key = #order + 1
+
+			items[key] = string.format("<text=%s>", L["Talent %s"]:format(i))
+			table.insert(order, key)
 		end
 	end
 

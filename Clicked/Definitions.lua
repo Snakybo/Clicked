@@ -54,7 +54,7 @@
 --- @field public type string
 --- @field public identifier integer
 --- @field public keybind string
---- @field public parent Group
+--- @field public parent string
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
 --- @field public load Binding.Load

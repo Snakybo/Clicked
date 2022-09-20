@@ -2274,27 +2274,6 @@ local function CreateFromItemTemplate(identifier)
 				end
 			end
 
-			if Addon:IsGameVersionAtleast("RETAIL") and specId > 0 then
-				-- Talents
-				for tier = 1, MAX_TALENT_TIERS do
-					for column = 1, NUM_TALENT_COLUMNS do
-						local _, _, _, _, _, spellId = LibTalentInfo:GetTalentInfo(specId, tier, column)
-
-						local data = RegisterSpell(spellId)
-						data.talentTier = tier
-						data.talentColumn = column
-					end
-				end
-
-				-- PvP talents
-				for index = 1, LibTalentInfo:GetNumPvPTalentsForSpec(specId, 1) do
-					local _, _, _, _, _, spellId = LibTalentInfo:GetPvPTalentInfo(specId, 1, index)
-
-					local data = RegisterSpell(spellId)
-					data.pvpTalentIndex = index
-				end
-			end
-
 			if next(pendingSpellIds) ~= nil then
 				local group = nil
 
@@ -2324,16 +2303,6 @@ local function CreateFromItemTemplate(identifier)
 					if specIndex ~= nil then
 						binding.load.specialization.selected = 1
 						binding.load.specialization.single = specIndex
-					end
-
-					if data.talentTier ~= nil and data.talentColumn ~= nil then
-						binding.load.talent.selected = 1
-						binding.load.talent.single = (data.talentTier - 1) * NUM_TALENT_COLUMNS + data.talentColumn
-					end
-
-					if data.pvpTalentIndex ~= nil then
-						binding.load.pvpTalent.selected = 1
-						binding.load.pvpTalent.single = data.pvpTalentIndex
 					end
 				end
 			end

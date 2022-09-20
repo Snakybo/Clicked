@@ -5,7 +5,6 @@ if LibStub == nil then
 	error(VERSION_MAJOR .. " requires LibStub")
 end
 
---- @class LibTalentInfo
 local LibTalentInfo = LibStub:NewLibrary(VERSION_MAJOR, VERSION_MINOR)
 
 --- @class TalentProvider
@@ -91,26 +90,11 @@ function LibTalentInfo:GetNumPvPTalentsForSpec(specID, slotIndex)
 	return #slotTalents
 end
 
---- Get the info for a talent of the specified specialization.
+--- Get the number of talents of the specified specialization.
 ---
---- @param specID integer The specialization ID obtained by `GetSpecializationInfo`.
---- @param tier integer An integer value between 1 and `MAX_TALENT_TIERS`.
---- @param column integer An integer value between 1 and `NUM_TALENT_COLUMNS`.
---- @return integer talentID
---- @return string name
---- @return integer texture
---- @return boolean selected
---- @return boolean available
---- @return integer spellID
---- @return nil
---- @return integer row
---- @return integer column
---- @return boolean known
---- @return boolean grantedByAura
-function LibTalentInfo:GetTalentInfo(specID, tier, column)
-	assert(type(tier) == "number", "bad argument #2: expected number, got " .. type(tier))
-	assert(type(column) == "number", "bad argument #3: expected number, got " .. type(column))
-
+--- @param specID integer
+--- @returns integer? count
+function LibTalentInfo:GetNumTalents(specID)
 	if talentProvider == nil then
 		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
 	end
@@ -119,24 +103,24 @@ function LibTalentInfo:GetTalentInfo(specID, tier, column)
 		return nil
 	end
 
-	if tier <= 0 or tier > MAX_TALENT_TIERS then
-		error("Talent tier is out of range: " .. tier .. ". Must be an integer between 1 and " .. MAX_TALENT_TIERS)
+	return #talentProvider.talents[specID]
+end
+
+--- Get the spell ID of the talent at the specified index of the specified specialization.
+---
+--- @param specID integer
+--- @param index integer
+--- @returns integer? spellID
+function LibTalentInfo:GetTalentAt(specID, index)
+	if talentProvider == nil then
+		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
 	end
 
-	if column <= 0 or column > NUM_TALENT_COLUMNS then
-		error("Talent column is out of range: " .. column .. ". Must be an integer between 1 and " .. NUM_TALENT_COLUMNS)
-	end
-
-	local talentIndex = (tier - 1) * NUM_TALENT_COLUMNS + (column - 1)
-	local specTalents = talentProvider.talents[specID] or {}
-
-	if talentIndex + 1 > #specTalents then
+	if specID == nil or talentProvider.talents[specID] == nil then
 		return nil
 	end
 
-	local talentID = specTalents[talentIndex + 1]
-
-	return GetTalentInfoByID(talentID, 1)
+	return talentProvider.talents[specID][index]
 end
 
 --- Get info for a PvP talent of the specified specialization.
@@ -144,17 +128,17 @@ end
 --- @param specID integer The specialization ID obtained by `GetSpecializationInfo`.
 --- @param slotIndex integer The slot index of the PvP talent row, an integer between `1` and `LibTalentInfo.MAX_PVP_TALENT_SLOTS`.
 --- @param talentIndex integer An integer between `1` and the number of PvP talents available for the specified specialization.
---- @return integer talentID
---- @return string name
---- @return integer texture
---- @return boolean selected
---- @return boolean available
---- @return integer spellID
+--- @return integer? talentID
+--- @return string? name
+--- @return integer? texture
+--- @return boolean? selected
+--- @return boolean? available
+--- @return integer? spellID
 --- @return nil
---- @return integer row
---- @return integer column
---- @return boolean known
---- @return boolean grantedByAura
+--- @return integer? row
+--- @return integer? column
+--- @return boolean? known
+--- @return boolean? grantedByAura
 --- @see LibTalentInfo#GetNumPvPTalentsForSpec
 function LibTalentInfo:GetPvPTalentInfo(specID, slotIndex, talentIndex)
 	assert(type(slotIndex) == "number", "bad argument #2: expected number, got " .. type(slotIndex))
