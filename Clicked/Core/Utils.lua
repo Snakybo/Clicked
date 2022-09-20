@@ -137,7 +137,14 @@ local shapeshiftForms = {
 	-- Initial Demon Hunter
 	[577] = {},
 	[581] = {},
-	[1456] = {}
+	[1456] = {},
+
+	-- Devastation Evoker
+	-- Preservation Evoker
+	-- Initial Evoker
+	[1467] = {},
+	[1468] = {},
+	[1465] = {}
 }
 
 -- Local support functions

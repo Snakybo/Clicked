@@ -76,9 +76,11 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allRaces, 35) -- Vulpera
 	table.insert(allRaces, 36) -- MagharOrc
 	table.insert(allRaces, 37) -- Mechagnome
+	table.insert(allRaces, 70) -- Dracthyr
 
 	table.insert(allClasses, "MONK")
 	table.insert(allClasses, "DEMONHUNTER")
+	table.insert(allClasses, "EVOKER")
 end
 
 -- Private addon API
