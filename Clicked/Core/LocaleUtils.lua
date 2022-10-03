@@ -263,11 +263,13 @@ function Addon:GetLocalizedClasses()
 	FillLocalizedClassList(classes)
 
 	for classId, className in pairs(classes) do
-		local _, _, _, color = GetClassColor(classId)
-		local name = string.format("|c%s%s|r", color, className)
+		if classId ~= "Adventurer" then
+			local _, _, _, color = GetClassColor(classId)
+			local name = string.format("|c%s%s|r", color, className)
 
-		items[classId] = string.format("<text=%s>", name)
-		table.insert(order, classId)
+			items[classId] = string.format("<text=%s>", name)
+			table.insert(order, classId)
+		end
 	end
 
 	table.sort(order)
