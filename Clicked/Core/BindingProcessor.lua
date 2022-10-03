@@ -744,7 +744,7 @@ function Addon:CanBindingLoad(binding)
 								local entry = C_Traits.GetEntryInfo(configId, entryId)
 								local definition = C_Traits.GetDefinitionInfo(entry.definitionID)
 
-								if definition.spellID ~= nil then
+								if GetSpellInfo(definition.spellID) ~= nil then
 									currentIndex = currentIndex + 1
 
 									if currentIndex == index then
