@@ -16,7 +16,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for the Dracthyr race [#104]
 * Add support for the Evoker class [#104]
 * Add support for the new talent tree system [#105]
-
+* Add option to automatically bind unassigned modifier keys to cast a binding
+  * Creating a binding for 'Q' can automatically also bind 'SHIFT-Q', 'ALT-Q', etc.
 
 ### Changed
 

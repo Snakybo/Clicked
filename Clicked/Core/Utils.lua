@@ -918,6 +918,44 @@ function Addon:IsMouseButton(keybind)
 	return buttonIndex ~= nil
 end
 
+--- Check if the specified keybind is using no modifier buttons.
+---
+--- @param keybind string
+--- @return boolean
+function Addon:IsUnmodifiedKeybind(keybind)
+	if Addon:IsStringNilOrEmpty(keybind) then
+		return false
+	end
+
+	local modifiers = GetKeybindModifiersAndKey(keybind)
+	return Addon:IsStringNilOrEmpty(modifiers)
+end
+
+--- Get a list of unused modifier key keybinds.
+---
+--- @param keybind string
+--- @param bindings Binding[]
+--- @returns string[]
+function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
+	local result = {
+		"CTRL-" .. keybind,
+		"ALT-" .. keybind,
+		"SHIFT-" .. keybind,
+		"META-" .. keybind
+	}
+
+	for _, binding in ipairs(bindings) do
+		for i = 1, #result do
+			if result[i] == binding.keybind then
+				table.remove(result, i)
+				break
+			end
+		end
+	end
+
+	return result
+end
+
 --- Check if the hovercast targeting mode should be enabled for a binding.
 ---
 --- @param binding Binding

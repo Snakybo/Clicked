@@ -84,6 +84,20 @@ function Addon:GeneralOptions_Initialize()
 				get = function()
 					return Addon.db.profile.options.tooltips
 				end
+			},
+			bindUnassignedModifiers = {
+				name = L["Bind unassigned modifier keys automatically"],
+				desc = L["If enabled, modifier key combinations that aren't bound will be bound to the main key, for example, binding 'Q' will also bind 'SHIFT-Q', 'AlT-Q', and 'CTRL-Q'."],
+				type = "toggle",
+				order = 400,
+				width = "full",
+				set = function (_, val)
+					Addon.db.profile.options.bindUnassignedModifiers = val
+					Clicked:ReloadActiveBindings()
+				end,
+				get = function ()
+					return Addon.db.profile.options.bindUnassignedModifiers
+				end
 			}
 		}
 	}

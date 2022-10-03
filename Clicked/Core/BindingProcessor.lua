@@ -421,16 +421,28 @@ local function GenerateBuckets(bindings)
 
 	--- @type Binding
 	for _, binding in ipairs(bindings) do
-		local key = binding.keybind
+		local keys = { binding.keybind }
+
+		if Addon:IsUnmodifiedKeybind(keys[1]) then
+			local withModifiers = Addon:GetUnusedModifierKeyKeybinds(keys[1], bindings)
+
+			for i = 1, #withModifiers do
+				table.insert(keys, withModifiers[i])
+			end
+		end
 
 		if Addon:IsHovercastEnabled(binding) then
-			hovercastBucket[key] = hovercastBucket[key] or {}
-			Insert(hovercastBucket[key], binding)
+			for _, key in ipairs(keys) do
+				hovercastBucket[key] = hovercastBucket[key] or {}
+				Insert(hovercastBucket[key], binding)
+			end
 		end
 
 		if Addon:IsMacroCastEnabled(binding) then
-			regularBucket[key] = regularBucket[key] or {}
-			Insert(regularBucket[key], binding)
+			for _, key in ipairs(keys) do
+				regularBucket[key] = regularBucket[key] or {}
+				Insert(regularBucket[key], binding)
+			end
 		end
 	end
 end

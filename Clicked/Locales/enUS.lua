@@ -254,3 +254,5 @@ L["Target"] = true
 L["Pet"] = true
 L["Race"] = true
 L["Yes"] = true
+L["Bind unassigned modifier keys automatically"] = true
+L["If enabled, modifier key combinations that aren't bound will be bound to the main key, for example, binding 'Q' will also bind 'SHIFT-Q', 'AlT-Q', and 'CTRL-Q'."] = true

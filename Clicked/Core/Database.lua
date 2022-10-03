@@ -77,6 +77,7 @@ function Clicked:GetDatabaseDefaults()
 			options = {
 				onKeyDown = false,
 				tooltips = false,
+				bindUnassignedModifiers = false,
 				minimap = {
 					hide = false
 				}
@@ -1060,6 +1061,8 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.covenant = nil
 		end
+
+		profile.options.bindUnassignedModifiers = false
 
 		FinalizeVersionUpgrade("1.8.0")
 	end
