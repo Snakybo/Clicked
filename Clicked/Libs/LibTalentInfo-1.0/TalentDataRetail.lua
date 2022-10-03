@@ -1,5 +1,5 @@
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 45746
+local version = 45779
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -97,7 +97,7 @@ local talents = {
 		236628, -- [4] Amplification
 		383676, -- [5] Impetus
 		383782, -- [6] Nether Precision
-		321752, -- [7] Improved Arcane Explosion
+		321752, -- [7] Crackling Energy
 		79684, -- [8] Clearcasting
 		365350, -- [9] Arcane Surge
 		321526, -- [10] Mana Adept
@@ -111,24 +111,24 @@ local talents = {
 		153626, -- [18] Arcane Orb
 		383661, -- [19] Improved Arcane Missiles
 		384651, -- [20] Charged Orb
-		30449, -- [21] Spellsteal
-		382440, -- [22] Shifting Power
-		205036, -- [23] Ice Ward
-		386763, -- [24] Freezing Cold
-		113724, -- [25] Ring of Frost
-		389627, -- [26] Volatile Detonation
-		153561, -- [27] Meteor
-		31661, -- [28] Dragon's Breath
-		389713, -- [29] Displacement
-		382800, -- [30] Accumulative Shielding
-		383243, -- [31] Time Anomaly
-		386539, -- [32] Temporal Warp
-		110959, -- [33] Greater Invisibility
-		382268, -- [34] Flow of Time
-		31589, -- [35] Slow
-		382490, -- [36] Tome of Antonidas
-		382826, -- [37] Temporal Velocity
-		386828, -- [38] Energized Barriers
+		386828, -- [21] Energized Barriers
+		30449, -- [22] Spellsteal
+		382440, -- [23] Shifting Power
+		205036, -- [24] Ice Ward
+		386763, -- [25] Freezing Cold
+		113724, -- [26] Ring of Frost
+		389627, -- [27] Volatile Detonation
+		153561, -- [28] Meteor
+		31661, -- [29] Dragon's Breath
+		389713, -- [30] Displacement
+		382800, -- [31] Accumulative Shielding
+		383243, -- [32] Time Anomaly
+		386539, -- [33] Temporal Warp
+		110959, -- [34] Greater Invisibility
+		382268, -- [35] Flow of Time
+		31589, -- [36] Slow
+		382490, -- [37] Tome of Antonidas
+		382826, -- [38] Temporal Velocity
 		382270, -- [39] Diverted Energy
 		342249, -- [40] Master of Time
 		157981, -- [41] Blast Wave
@@ -167,16 +167,16 @@ local talents = {
 		384452, -- [74] Arcane Harmony
 		384858, -- [75] Orb Barrage
 		384612, -- [76] Prodigious Savant
-		114923, -- [77] Nether Tempest
-		281482, -- [78] Reverberate
+		281482, -- [77] Reverberate
+		114923, -- [78] Nether Tempest
 		231564, -- [79] Arcing Cleave
 		205028, -- [80] Resonance
 		235711, -- [81] Chrono Shift
 		384861, -- [82] Foresight
 		321387, -- [83] Enlightened
 		383980, -- [84] Arcane Tempo
-		205022, -- [85] Arcane Familiar
-		264354, -- [86] Rule of Threes
+		264354, -- [85] Rule of Threes
+		205022, -- [86] Arcane Familiar
 		205025, -- [87] Presence of Mind
 		12051, -- [88] Evocation
 		384187, -- [89] Siphon Storm
@@ -221,7 +221,7 @@ local talents = {
 		117216, -- [35] Critical Mass
 		342344, -- [36] From the Ashes
 		235870, -- [37] Alexstrasza's Fury
-		235313, -- [38] Blazing Barrier
+		386828, -- [38] Energized Barriers
 		205026, -- [39] Firestarter
 		30449, -- [40] Spellsteal
 		382440, -- [41] Shifting Power
@@ -240,26 +240,26 @@ local talents = {
 		31589, -- [54] Slow
 		382490, -- [55] Tome of Antonidas
 		382826, -- [56] Temporal Velocity
-		386828, -- [57] Energized Barriers
-		382270, -- [58] Diverted Energy
-		342249, -- [59] Master of Time
-		157981, -- [60] Blast Wave
-		382297, -- [61] Quick Witted
-		212653, -- [62] Shimmer
-		108839, -- [63] Ice Floes
-		383121, -- [64] Mass Polymorph
-		382292, -- [65] Cryo-Freeze
-		343183, -- [66] Improved Frost Nova
-		391102, -- [67] Mass Slow
-		382481, -- [68] Rigid Ice
-		382289, -- [69] Tempest Barrier
-		382293, -- [70] Incantation of Swiftness
-		1463, -- [71] Incanter's Flow
-		116011, -- [72] Rune of Power
-		383092, -- [73] Arcane Warding
-		342245, -- [74] Alter Time
-		475, -- [75] Remove Curse
-		66, -- [76] Invisibility
+		382270, -- [57] Diverted Energy
+		342249, -- [58] Master of Time
+		157981, -- [59] Blast Wave
+		382297, -- [60] Quick Witted
+		212653, -- [61] Shimmer
+		108839, -- [62] Ice Floes
+		383121, -- [63] Mass Polymorph
+		382292, -- [64] Cryo-Freeze
+		343183, -- [65] Improved Frost Nova
+		391102, -- [66] Mass Slow
+		382481, -- [67] Rigid Ice
+		382289, -- [68] Tempest Barrier
+		382293, -- [69] Incantation of Swiftness
+		1463, -- [70] Incanter's Flow
+		116011, -- [71] Rune of Power
+		383092, -- [72] Arcane Warding
+		342245, -- [73] Alter Time
+		475, -- [74] Remove Curse
+		66, -- [75] Invisibility
+		235313, -- [76] Blazing Barrier
 		390218, -- [77] Overflowing Energy
 		45438, -- [78] Ice Block
 		382424, -- [79] Winter's Protection
@@ -288,24 +288,24 @@ local talents = {
 		382110, -- [12] Cold Front
 		385167, -- [13] Everlasting Frost
 		378756, -- [14] Frostbite
-		30449, -- [15] Spellsteal
-		382440, -- [16] Shifting Power
-		205036, -- [17] Ice Ward
-		386763, -- [18] Freezing Cold
-		113724, -- [19] Ring of Frost
-		389627, -- [20] Volatile Detonation
-		153561, -- [21] Meteor
-		31661, -- [22] Dragon's Breath
-		389713, -- [23] Displacement
-		382800, -- [24] Accumulative Shielding
-		383243, -- [25] Time Anomaly
-		386539, -- [26] Temporal Warp
-		110959, -- [27] Greater Invisibility
-		382268, -- [28] Flow of Time
-		31589, -- [29] Slow
-		382490, -- [30] Tome of Antonidas
-		382826, -- [31] Temporal Velocity
-		386828, -- [32] Energized Barriers
+		386828, -- [15] Energized Barriers
+		30449, -- [16] Spellsteal
+		382440, -- [17] Shifting Power
+		205036, -- [18] Ice Ward
+		386763, -- [19] Freezing Cold
+		113724, -- [20] Ring of Frost
+		389627, -- [21] Volatile Detonation
+		153561, -- [22] Meteor
+		31661, -- [23] Dragon's Breath
+		389713, -- [24] Displacement
+		382800, -- [25] Accumulative Shielding
+		383243, -- [26] Time Anomaly
+		386539, -- [27] Temporal Warp
+		110959, -- [28] Greater Invisibility
+		382268, -- [29] Flow of Time
+		31589, -- [30] Slow
+		382490, -- [31] Tome of Antonidas
+		382826, -- [32] Temporal Velocity
 		382270, -- [33] Diverted Energy
 		342249, -- [34] Master of Time
 		157981, -- [35] Blast Wave
@@ -358,9 +358,9 @@ local talents = {
 		236662, -- [82] Ice Caller
 		381706, -- [83] Snowstorm
 		12472, -- [84] Icy Veins
-		378406, -- [85] Wintertide
-		205024, -- [86] Lonely Winter
-		31687, -- [87] Summon Water Elemental
+		205024, -- [85] Lonely Winter
+		31687, -- [86] Summon Water Elemental
+		378406, -- [87] Wintertide
 	},
 	-- Holy Paladin
 	[65] = {
@@ -383,743 +383,748 @@ local talents = {
 		385425, -- [16] Seal of Alacrity
 		223817, -- [17] Divine Purpose
 		105809, -- [18] Holy Avenger
-		384909, -- [19] Improved Blessing of Protection
-		204018, -- [20] Blessing of Spellwarding
-		1022, -- [21] Blessing of Protection
-		114154, -- [22] Unbreakable Spirit
-		6940, -- [23] Blessing of Sacrifice
-		385414, -- [24] Afterimage
-		384815, -- [25] Seal of Clarity
-		384897, -- [26] Seal of Mercy
-		377128, -- [27] Golden Path
-		385515, -- [28] Holy Aegis
-		183778, -- [29] Judgment of Light
-		384820, -- [30] Sacrifice of the Just
-		384914, -- [31] Recompense
-		384376, -- [32] Avenging Wrath
-		230332, -- [33] Cavalier
-		96231, -- [34] Rebuke
-		231663, -- [35] Greater Judgment
-		234299, -- [36] Fist of Justice
-		385639, -- [37] Auras of Swift Vengeance
-		1044, -- [38] Blessing of Freedom
-		385633, -- [39] Auras of the Resolute
-		20066, -- [40] Repentance
-		115750, -- [41] Blinding Light
-		633, -- [42] Lay on Hands
-		387893, -- [43] Divine Resonance
-		325966, -- [44] Glimmer of Light
-		196926, -- [45] Crusader's Might
-		388007, -- [46] Blessing of Summer
-		248033, -- [47] Awakening
-		392907, -- [48] Inflorescence of the Sunwell
-		387170, -- [49] Empyrean Legacy
-		383388, -- [50] Relentless Inquisitor
-		200474, -- [51] Power of the Silver Hand
-		200652, -- [52] Tyr's Deliverance
-		392951, -- [53] Boundless Salvation
-		231642, -- [54] Tower of Radiance
-		387805, -- [55] Divine Glimpse
-		384442, -- [56] Avenging Wrath: Might
-		394088, -- [57] Avenging Crusader
-		200482, -- [58] Second Sunrise
-		387879, -- [59] Breaking Dawn
-		392938, -- [60] Veneration
-		387781, -- [61] Commanding Light
-		375576, -- [62] Divine Toll
-		387808, -- [63] Divine Revelations
-		114158, -- [64] Light's Hammer
-		114165, -- [65] Holy Prism
-		388005, -- [66] Shining Savior
-		387791, -- [67] Empyreal Ward
-		231667, -- [68] Radiant Onslaught
-		392928, -- [69] Tirion's Devotion
-		387993, -- [70] Illumination
-		392914, -- [71] Divine Insight
-		387786, -- [72] Moment of Compassion
-		392902, -- [73] Resplendent Light
-		210294, -- [74] Divine Favor
-		393024, -- [75] Improved Cleanse
-		377043, -- [76] Hallowed Ground
-		24275, -- [77] Hammer of Wrath
-		156910, -- [78] Beacon of Faith
-		200025, -- [79] Beacon of Virtue
-		20473, -- [80] Holy Shock
-		387801, -- [81] Echoing Blessings
-		392961, -- [82] Imbued Infusions
-		148039, -- [83] Barrier of Faith
-		388018, -- [84] Maraad's Dying Breath
-		387814, -- [85] Untempered Dedication
-		183998, -- [86] Light of the Martyr
-		214202, -- [87] Rule of Law
-		157047, -- [88] Saved by the Light
-		387998, -- [89] Unending Light
-		223306, -- [90] Bestow Faith
-		85222, -- [91] Light of Dawn
-		392911, -- [92] Unwavering Spirit
-		200430, -- [93] Protection of Tyr
-		31821, -- [94] Aura Mastery
-		498, -- [95] Divine Protection
-		82326, -- [96] Holy Light
+		1022, -- [19] Blessing of Protection
+		114154, -- [20] Unbreakable Spirit
+		6940, -- [21] Blessing of Sacrifice
+		385414, -- [22] Afterimage
+		384815, -- [23] Seal of Clarity
+		384897, -- [24] Seal of Mercy
+		377128, -- [25] Golden Path
+		385515, -- [26] Holy Aegis
+		183778, -- [27] Judgment of Light
+		384820, -- [28] Sacrifice of the Just
+		384914, -- [29] Recompense
+		384376, -- [30] Avenging Wrath
+		230332, -- [31] Cavalier
+		96231, -- [32] Rebuke
+		231663, -- [33] Greater Judgment
+		234299, -- [34] Fist of Justice
+		385639, -- [35] Auras of Swift Vengeance
+		1044, -- [36] Blessing of Freedom
+		385633, -- [37] Auras of the Resolute
+		20066, -- [38] Repentance
+		115750, -- [39] Blinding Light
+		633, -- [40] Lay on Hands
+		387893, -- [41] Divine Resonance
+		325966, -- [42] Glimmer of Light
+		196926, -- [43] Crusader's Might
+		388007, -- [44] Blessing of Summer
+		248033, -- [45] Awakening
+		392907, -- [46] Inflorescence of the Sunwell
+		387170, -- [47] Empyrean Legacy
+		383388, -- [48] Relentless Inquisitor
+		200474, -- [49] Power of the Silver Hand
+		200652, -- [50] Tyr's Deliverance
+		392951, -- [51] Boundless Salvation
+		231642, -- [52] Tower of Radiance
+		387805, -- [53] Divine Glimpse
+		384442, -- [54] Avenging Wrath: Might
+		394088, -- [55] Avenging Crusader
+		200482, -- [56] Second Sunrise
+		387879, -- [57] Breaking Dawn
+		392938, -- [58] Veneration
+		387781, -- [59] Commanding Light
+		375576, -- [60] Divine Toll
+		387808, -- [61] Divine Revelations
+		114158, -- [62] Light's Hammer
+		114165, -- [63] Holy Prism
+		388005, -- [64] Shining Savior
+		387791, -- [65] Empyreal Ward
+		231667, -- [66] Radiant Onslaught
+		24275, -- [67] Hammer of Wrath
+		377043, -- [68] Hallowed Ground
+		393024, -- [69] Improved Cleanse
+		156910, -- [70] Beacon of Faith
+		200025, -- [71] Beacon of Virtue
+		20473, -- [72] Holy Shock
+		387801, -- [73] Echoing Blessings
+		392961, -- [74] Imbued Infusions
+		148039, -- [75] Barrier of Faith
+		388018, -- [76] Maraad's Dying Breath
+		387814, -- [77] Untempered Dedication
+		183998, -- [78] Light of the Martyr
+		214202, -- [79] Rule of Law
+		157047, -- [80] Saved by the Light
+		387998, -- [81] Unending Light
+		223306, -- [82] Bestow Faith
+		85222, -- [83] Light of Dawn
+		392911, -- [84] Unwavering Spirit
+		200430, -- [85] Protection of Tyr
+		31821, -- [86] Aura Mastery
+		498, -- [87] Divine Protection
+		82326, -- [88] Holy Light
+		210294, -- [89] Divine Favor
+		387786, -- [90] Moment of Compassion
+		392902, -- [91] Resplendent Light
+		387993, -- [92] Illumination
+		392914, -- [93] Divine Insight
+		392928, -- [94] Tirion's Devotion
+		204018, -- [95] Blessing of Spellwarding
+		393114, -- [96] Improved Ardent Defender
+		384909, -- [97] Improved Blessing of Protection
 	},
 	-- Protection Paladin
 	[66] = {
-		393022, -- [0] Inspiring Vanguard
-		204023, -- [1] Crusader's Judgment
+		379022, -- [0] Consecration in Flame
+		385422, -- [1] Resolute Defender
 		378845, -- [2] Focused Enmity
 		378457, -- [3] Soaring Shield
-		190784, -- [4] Divine Steed
-		376996, -- [5] Seasoned Warhorse
-		377016, -- [6] Seal of the Templar
-		10326, -- [7] Turn Evil
-		377053, -- [8] Seal of Reprisal
-		385464, -- [9] Incandescence
-		385349, -- [10] Touch of Light
-		385427, -- [11] Obduracy
-		385728, -- [12] Seal of the Crusader
-		391142, -- [13] Zealot's Paragon
-		385125, -- [14] Of Dusk and Dawn
-		385129, -- [15] Seal of Order
-		385416, -- [16] Aspiration of Divinity
-		385450, -- [17] Seal of Might
-		152262, -- [18] Seraphim
-		53376, -- [19] Sanctified Wrath
-		385425, -- [20] Seal of Alacrity
-		223817, -- [21] Divine Purpose
-		105809, -- [22] Holy Avenger
-		384909, -- [23] Improved Blessing of Protection
-		204018, -- [24] Blessing of Spellwarding
-		1022, -- [25] Blessing of Protection
-		114154, -- [26] Unbreakable Spirit
-		6940, -- [27] Blessing of Sacrifice
-		385414, -- [28] Afterimage
-		384815, -- [29] Seal of Clarity
-		384897, -- [30] Seal of Mercy
-		377128, -- [31] Golden Path
-		385515, -- [32] Holy Aegis
-		183778, -- [33] Judgment of Light
-		384820, -- [34] Sacrifice of the Just
-		384914, -- [35] Recompense
-		384376, -- [36] Avenging Wrath
-		230332, -- [37] Cavalier
-		96231, -- [38] Rebuke
-		231663, -- [39] Greater Judgment
-		234299, -- [40] Fist of Justice
-		385639, -- [41] Auras of Swift Vengeance
-		1044, -- [42] Blessing of Freedom
-		385633, -- [43] Auras of the Resolute
-		20066, -- [44] Repentance
-		115750, -- [45] Blinding Light
-		633, -- [46] Lay on Hands
-		204074, -- [47] Righteous Protector
-		393114, -- [48] Improved Ardent Defender
-		386738, -- [49] Divine Resonance
-		379391, -- [50] Quickened Invocations
-		379043, -- [51] Faith in the Light
-		31850, -- [52] Ardent Defender
-		378762, -- [53] Ferren Marcus's Fervor
-		384442, -- [54] Avenging Wrath: Might
-		385438, -- [55] Sentinel
-		378279, -- [56] Gift of the Golden Val'kyr
-		379008, -- [57] Strength of Conviction
-		393030, -- [58] Improved Holy Shield
-		379021, -- [59] Sanctuary
-		85043, -- [60] Grand Crusader
-		378974, -- [61] Bastion of Light
-		152261, -- [62] Holy Shield
-		86659, -- [63] Guardian of Ancient Kings
-		386653, -- [64] Bulwark of Righteous Fury
-		378285, -- [65] Tyr's Enforcer
-		315924, -- [66] Hand of the Protector
-		204054, -- [67] Consecrated Ground
-		393027, -- [68] Improved Lay on Hands
-		379017, -- [69] Faith's Armor
-		375576, -- [70] Divine Toll
-		387174, -- [71] Eye of Tyr
-		321136, -- [72] Shining Light
-		209389, -- [73] Bulwark of Order
-		378425, -- [74] Uther's Counsel
-		385726, -- [75] Barricade of Faith
-		31935, -- [76] Avenger's Shield
-		378405, -- [77] Light of the Titans
-		204077, -- [78] Final Stand
-		327193, -- [79] Moment of Glory
-		383388, -- [80] Relentless Inquisitor
-		213644, -- [81] Cleanse Toxins
-		377043, -- [82] Hallowed Ground
-		24275, -- [83] Hammer of Wrath
-		53595, -- [84] Hammer of the Righteous
-		204019, -- [85] Blessed Hammer
-		379022, -- [86] Consecration in Flame
-		385422, -- [87] Resolute Defender
-		386568, -- [88] Inner Light
-		280373, -- [89] Redoubt
-		393071, -- [90] Strength in Adversity
-		380188, -- [91] Crusader's Resolve
+		204023, -- [4] Crusader's Judgment
+		378285, -- [5] Tyr's Enforcer
+		315924, -- [6] Hand of the Protector
+		393022, -- [7] Inspiring Vanguard
+		190784, -- [8] Divine Steed
+		376996, -- [9] Seasoned Warhorse
+		377016, -- [10] Seal of the Templar
+		10326, -- [11] Turn Evil
+		377053, -- [12] Seal of Reprisal
+		385464, -- [13] Incandescence
+		385349, -- [14] Touch of Light
+		385427, -- [15] Obduracy
+		385728, -- [16] Seal of the Crusader
+		391142, -- [17] Zealot's Paragon
+		385125, -- [18] Of Dusk and Dawn
+		385129, -- [19] Seal of Order
+		385416, -- [20] Aspiration of Divinity
+		385450, -- [21] Seal of Might
+		152262, -- [22] Seraphim
+		53376, -- [23] Sanctified Wrath
+		385425, -- [24] Seal of Alacrity
+		223817, -- [25] Divine Purpose
+		105809, -- [26] Holy Avenger
+		1022, -- [27] Blessing of Protection
+		114154, -- [28] Unbreakable Spirit
+		6940, -- [29] Blessing of Sacrifice
+		385414, -- [30] Afterimage
+		384815, -- [31] Seal of Clarity
+		384897, -- [32] Seal of Mercy
+		377128, -- [33] Golden Path
+		385515, -- [34] Holy Aegis
+		183778, -- [35] Judgment of Light
+		384820, -- [36] Sacrifice of the Just
+		384914, -- [37] Recompense
+		384376, -- [38] Avenging Wrath
+		230332, -- [39] Cavalier
+		96231, -- [40] Rebuke
+		231663, -- [41] Greater Judgment
+		234299, -- [42] Fist of Justice
+		385639, -- [43] Auras of Swift Vengeance
+		1044, -- [44] Blessing of Freedom
+		385633, -- [45] Auras of the Resolute
+		20066, -- [46] Repentance
+		115750, -- [47] Blinding Light
+		633, -- [48] Lay on Hands
+		53595, -- [49] Hammer of the Righteous
+		204019, -- [50] Blessed Hammer
+		204074, -- [51] Righteous Protector
+		24275, -- [52] Hammer of Wrath
+		377043, -- [53] Hallowed Ground
+		213644, -- [54] Cleanse Toxins
+		383388, -- [55] Relentless Inquisitor
+		327193, -- [56] Moment of Glory
+		204077, -- [57] Final Stand
+		378405, -- [58] Light of the Titans
+		31935, -- [59] Avenger's Shield
+		385726, -- [60] Barricade of Faith
+		378425, -- [61] Uther's Counsel
+		209389, -- [62] Bulwark of Order
+		321136, -- [63] Shining Light
+		387174, -- [64] Eye of Tyr
+		375576, -- [65] Divine Toll
+		379017, -- [66] Faith's Armor
+		386568, -- [67] Inner Light
+		280373, -- [68] Redoubt
+		393071, -- [69] Strength in Adversity
+		380188, -- [70] Crusader's Resolve
+		204054, -- [71] Consecrated Ground
+		393027, -- [72] Improved Lay on Hands
+		386653, -- [73] Bulwark of Righteous Fury
+		86659, -- [74] Guardian of Ancient Kings
+		152261, -- [75] Holy Shield
+		378974, -- [76] Bastion of Light
+		85043, -- [77] Grand Crusader
+		393030, -- [78] Improved Holy Shield
+		379021, -- [79] Sanctuary
+		379008, -- [80] Strength of Conviction
+		378279, -- [81] Gift of the Golden Val'kyr
+		384442, -- [82] Avenging Wrath: Might
+		385438, -- [83] Sentinel
+		378762, -- [84] Ferren Marcus's Fervor
+		31850, -- [85] Ardent Defender
+		379043, -- [86] Faith in the Light
+		386738, -- [87] Divine Resonance
+		379391, -- [88] Quickened Invocations
+		204018, -- [89] Blessing of Spellwarding
+		393114, -- [90] Improved Ardent Defender
+		384909, -- [91] Improved Blessing of Protection
 	},
 	-- Retribution Paladin
 	[70] = {
-		190784, -- [0] Divine Steed
-		376996, -- [1] Seasoned Warhorse
-		377016, -- [2] Seal of the Templar
-		10326, -- [3] Turn Evil
-		377053, -- [4] Seal of Reprisal
-		385464, -- [5] Incandescence
-		385349, -- [6] Touch of Light
-		385427, -- [7] Obduracy
-		385728, -- [8] Seal of the Crusader
-		391142, -- [9] Zealot's Paragon
-		385125, -- [10] Of Dusk and Dawn
-		385129, -- [11] Seal of Order
-		385416, -- [12] Aspiration of Divinity
-		385450, -- [13] Seal of Might
-		152262, -- [14] Seraphim
-		53376, -- [15] Sanctified Wrath
-		385425, -- [16] Seal of Alacrity
-		223817, -- [17] Divine Purpose
-		105809, -- [18] Holy Avenger
-		384909, -- [19] Improved Blessing of Protection
-		204018, -- [20] Blessing of Spellwarding
-		1022, -- [21] Blessing of Protection
-		114154, -- [22] Unbreakable Spirit
-		6940, -- [23] Blessing of Sacrifice
-		385414, -- [24] Afterimage
-		384815, -- [25] Seal of Clarity
-		384897, -- [26] Seal of Mercy
-		377128, -- [27] Golden Path
-		385515, -- [28] Holy Aegis
-		183778, -- [29] Judgment of Light
-		384820, -- [30] Sacrifice of the Just
-		384914, -- [31] Recompense
-		384376, -- [32] Avenging Wrath
-		230332, -- [33] Cavalier
-		96231, -- [34] Rebuke
-		231663, -- [35] Greater Judgment
-		234299, -- [36] Fist of Justice
-		385639, -- [37] Auras of Swift Vengeance
-		1044, -- [38] Blessing of Freedom
-		385633, -- [39] Auras of the Resolute
-		20066, -- [40] Repentance
-		115750, -- [41] Blinding Light
-		633, -- [42] Lay on Hands
-		213644, -- [43] Cleanse Toxins
-		377043, -- [44] Hallowed Ground
-		24275, -- [45] Hammer of Wrath
-		387170, -- [46] Empyrean Legacy
-		383396, -- [47] Tempest of the Lightbringer
-		383263, -- [48] Blade of Condemnation
-		383314, -- [49] Vanguard's Momentum
-		383327, -- [50] Final Verdict
-		383274, -- [51] Templar's Vindication
-		215661, -- [52] Justicar's Vengeance
-		205191, -- [53] Eye for an Eye
-		387640, -- [54] Sealed Verdict
-		383344, -- [55] Expurgation
-		386901, -- [56] Seal of Wrath
-		231832, -- [57] Blade of Wrath
-		383350, -- [58] Truth's Wake
-		383300, -- [59] Ashes to Dust
-		384052, -- [60] Radiant Decree
-		255937, -- [61] Wake of Ashes
-		384442, -- [62] Avenging Wrath: Might
-		384392, -- [63] Crusade
-		184575, -- [64] Blade of Justice
-		386967, -- [65] Holy Crusader
-		383254, -- [66] Improved Crusader Strike
-		53385, -- [67] Divine Storm
-		383228, -- [68] Improved Judgment
-		267610, -- [69] Righteous Verdict
-		269569, -- [70] Zeal
-		383271, -- [71] Highlord's Judgment
-		383876, -- [72] Boundless Judgment
-		204054, -- [73] Consecrated Ground
-		387479, -- [74] Sanctified Ground
-		384162, -- [75] Executioner's Will
-		387196, -- [76] Executioner's Wrath
-		343527, -- [77] Execution Sentence
-		384027, -- [78] Divine Resonance
-		375576, -- [79] Divine Toll
-		383388, -- [80] Relentless Inquisitor
-		183218, -- [81] Hand of Hindrance
-		383185, -- [82] Exorcism
-		382430, -- [83] Sanctification
-		383334, -- [84] Inner Grace
-		382536, -- [85] Sanctify
-		184662, -- [86] Shield of Vengeance
-		498, -- [87] Divine Protection
-		383342, -- [88] Holy Blade
-		267344, -- [89] Art of War
-		343721, -- [90] Final Reckoning
-		383304, -- [91] Virtuous Command
-		383276, -- [92] Ashes to Ashes
-		85804, -- [93] Selfless Healer
-		326734, -- [94] Healing Hands
-		326732, -- [95] Empyrean Power
-		203316, -- [96] Fires of Justice
-		382275, -- [97] Consecrated Blade
+		267344, -- [0] Art of War
+		190784, -- [1] Divine Steed
+		376996, -- [2] Seasoned Warhorse
+		377016, -- [3] Seal of the Templar
+		10326, -- [4] Turn Evil
+		377053, -- [5] Seal of Reprisal
+		385464, -- [6] Incandescence
+		385349, -- [7] Touch of Light
+		385427, -- [8] Obduracy
+		385728, -- [9] Seal of the Crusader
+		391142, -- [10] Zealot's Paragon
+		385125, -- [11] Of Dusk and Dawn
+		385129, -- [12] Seal of Order
+		385416, -- [13] Aspiration of Divinity
+		385450, -- [14] Seal of Might
+		152262, -- [15] Seraphim
+		53376, -- [16] Sanctified Wrath
+		385425, -- [17] Seal of Alacrity
+		223817, -- [18] Divine Purpose
+		105809, -- [19] Holy Avenger
+		1022, -- [20] Blessing of Protection
+		114154, -- [21] Unbreakable Spirit
+		6940, -- [22] Blessing of Sacrifice
+		385414, -- [23] Afterimage
+		384815, -- [24] Seal of Clarity
+		384897, -- [25] Seal of Mercy
+		377128, -- [26] Golden Path
+		385515, -- [27] Holy Aegis
+		183778, -- [28] Judgment of Light
+		384820, -- [29] Sacrifice of the Just
+		384914, -- [30] Recompense
+		384376, -- [31] Avenging Wrath
+		230332, -- [32] Cavalier
+		96231, -- [33] Rebuke
+		231663, -- [34] Greater Judgment
+		234299, -- [35] Fist of Justice
+		385639, -- [36] Auras of Swift Vengeance
+		1044, -- [37] Blessing of Freedom
+		385633, -- [38] Auras of the Resolute
+		20066, -- [39] Repentance
+		115750, -- [40] Blinding Light
+		633, -- [41] Lay on Hands
+		383342, -- [42] Holy Blade
+		184662, -- [43] Shield of Vengeance
+		498, -- [44] Divine Protection
+		382536, -- [45] Sanctify
+		382430, -- [46] Sanctification
+		383334, -- [47] Inner Grace
+		383185, -- [48] Exorcism
+		183218, -- [49] Hand of Hindrance
+		383388, -- [50] Relentless Inquisitor
+		375576, -- [51] Divine Toll
+		384027, -- [52] Divine Resonance
+		343527, -- [53] Execution Sentence
+		384162, -- [54] Executioner's Will
+		387196, -- [55] Executioner's Wrath
+		204054, -- [56] Consecrated Ground
+		387479, -- [57] Sanctified Ground
+		383876, -- [58] Boundless Judgment
+		383271, -- [59] Highlord's Judgment
+		343721, -- [60] Final Reckoning
+		326732, -- [61] Empyrean Power
+		53385, -- [62] Divine Storm
+		383254, -- [63] Improved Crusader Strike
+		386967, -- [64] Holy Crusader
+		184575, -- [65] Blade of Justice
+		384442, -- [66] Avenging Wrath: Might
+		384392, -- [67] Crusade
+		255937, -- [68] Wake of Ashes
+		383300, -- [69] Ashes to Dust
+		384052, -- [70] Radiant Decree
+		383350, -- [71] Truth's Wake
+		231832, -- [72] Blade of Wrath
+		386901, -- [73] Seal of Wrath
+		383344, -- [74] Expurgation
+		387640, -- [75] Sealed Verdict
+		215661, -- [76] Justicar's Vengeance
+		205191, -- [77] Eye for an Eye
+		383274, -- [78] Templar's Vindication
+		383327, -- [79] Final Verdict
+		383314, -- [80] Vanguard's Momentum
+		383263, -- [81] Blade of Condemnation
+		383396, -- [82] Tempest of the Lightbringer
+		387170, -- [83] Empyrean Legacy
+		24275, -- [84] Hammer of Wrath
+		377043, -- [85] Hallowed Ground
+		213644, -- [86] Cleanse Toxins
+		383304, -- [87] Virtuous Command
+		383276, -- [88] Ashes to Ashes
+		85804, -- [89] Selfless Healer
+		326734, -- [90] Healing Hands
+		269569, -- [91] Zeal
+		203316, -- [92] Fires of Justice
+		382275, -- [93] Consecrated Blade
+		383228, -- [94] Improved Judgment
+		267610, -- [95] Righteous Verdict
+		204018, -- [96] Blessing of Spellwarding
+		393114, -- [97] Improved Ardent Defender
+		384909, -- [98] Improved Blessing of Protection
 	},
 	-- Arms Warrior
 	[71] = {
-		384277, -- [0] Blood and Thunder
-		203201, -- [1] Crackling Thunder
-		6343, -- [2] Thunder Clap
-		382258, -- [3] Siphoning Strikes
-		6544, -- [4] Heroic Leap
-		382764, -- [5] Crushing Force
-		384100, -- [6] Berserker Shout
-		12323, -- [7] Piercing Howl
-		384110, -- [8] Wrecking Throw
-		64382, -- [9] Shattering Throw
-		392777, -- [10] Cruel Strikes
-		103827, -- [11] Double Time
-		382954, -- [12] Cacophonous Roar
-		275338, -- [13] Menace
+		383341, -- [0] Sharpened Blades
+		383292, -- [1] Juggernaut
+		386634, -- [2] Executioner's Precision
+		389306, -- [3] Critical Thinking
+		385573, -- [4] Improved Mortal Strike
+		383338, -- [5] Valor in Victory
+		227847, -- [6] Bladestorm
+		386628, -- [7] Unhinged
+		390563, -- [8] Hurricane
+		383703, -- [9] Fatality
+		383154, -- [10] Bloodletting
+		389308, -- [11] Deft Experience
+		386630, -- [12] Battlelord
+		23920, -- [13] Spell Reflection
 		5246, -- [14] Intimidating Shout
-		23920, -- [15] Spell Reflection
-		392792, -- [16] Frothing Berserker
-		384318, -- [17] Thunderous Roar
-		382946, -- [18] Quick Thinking
-		390138, -- [19] Memory of a Tormented Blademaster
-		390140, -- [20] Memory of a Tormented Warlord
-		107574, -- [21] Avatar
-		384124, -- [22] Armored to the Teeth
-		382939, -- [23] Reinforced Plates
-		382260, -- [24] Fast Footwork
+		382954, -- [15] Cacophonous Roar
+		275338, -- [16] Menace
+		103827, -- [17] Double Time
+		392777, -- [18] Cruel Strikes
+		376079, -- [19] Spear of Bastion
+		382948, -- [20] Piercing Verdict
+		382767, -- [21] Overwhelming Rage
+		384404, -- [22] Sidearm
+		46968, -- [23] Shockwave
+		275339, -- [24] Rumbling Earth
 		18499, -- [25] Berserker Rage
-		275339, -- [26] Rumbling Earth
-		46968, -- [27] Shockwave
-		384404, -- [28] Sidearm
-		382767, -- [29] Overwhelming Rage
-		382948, -- [30] Piercing Verdict
-		376079, -- [31] Spear of Bastion
-		384969, -- [32] Thunderous Words
-		391572, -- [33] Uproar
-		383762, -- [34] Bitter Immunity
-		202163, -- [35] Bounding Stride
-		392383, -- [36] Wrenching Impact
+		382260, -- [26] Fast Footwork
+		382939, -- [27] Reinforced Plates
+		384124, -- [28] Armored to the Teeth
+		107574, -- [29] Avatar
+		390138, -- [30] Blademaster's Torment
+		390140, -- [31] Warlord's Torment
+		382946, -- [32] Wild Strikes
+		384318, -- [33] Thunderous Roar
+		384969, -- [34] Thunderous Words
+		391572, -- [35] Uproar
+		383762, -- [36] Bitter Immunity
 		382461, -- [37] Honed Reflexes
 		382549, -- [38] Pain and Gain
-		389308, -- [39] Deft Experience
-		383154, -- [40] Bloodletting
-		383703, -- [41] Fatality
-		386628, -- [42] Unhinged
-		390563, -- [43] Hurricane
-		227847, -- [44] Bladestorm
-		383338, -- [45] Valor in Victory
-		385573, -- [46] Improved Mortal Strike
-		389306, -- [47] Critical Thinking
-		386634, -- [48] Exploiter
-		383292, -- [49] Juggernaut
-		383341, -- [50] Sharpened Blades
+		392792, -- [39] Frothing Berserker
+		384110, -- [40] Wrecking Throw
+		64382, -- [41] Shattering Throw
+		384100, -- [42] Berserker Shout
+		12323, -- [43] Piercing Howl
+		382764, -- [44] Crushing Force
+		6544, -- [45] Heroic Leap
+		382258, -- [46] Leeching Strikes
+		6343, -- [47] Thunder Clap
+		384277, -- [48] Blood and Thunder
+		203201, -- [49] Crackling Thunder
+		384090, -- [50] Titanic Throw
 		382956, -- [51] Seismic Reverberation
-		384090, -- [52] Titanic Throw
-		382940, -- [53] Endurance Training
-		107570, -- [54] Storm Bolt
-		390354, -- [55] Furious Blows
-		383082, -- [56] Barbaric Training
-		383115, -- [57] Concussive Blows
-		382310, -- [58] Inspiring Presence
-		29838, -- [59] Second Wind
-		97462, -- [60] Rallying Cry
-		386208, -- [61] Defensive Stance
-		3411, -- [62] Intervene
-		262231, -- [63] War Machine
-		386164, -- [64] Battle Stance
-		202168, -- [65] Impending Victory
-		386285, -- [66] Elysian Might
-		382896, -- [67] Two-Handed Weapon Specialization
-		390725, -- [68] Sonic Boom
-		383293, -- [69] Reaping Swings
-		845, -- [70] Cleave
-		383430, -- [71] Impale
-		281001, -- [72] Massacre
-		167105, -- [73] Colossus Smash
-		152278, -- [74] Anger Management
-		248621, -- [75] In For The Kill
-		385008, -- [76] Test of Might
-		383442, -- [77] Blunt Instruments
-		262161, -- [78] Warbreaker
-		383219, -- [79] Exhilarating Blows
-		262150, -- [80] Dreadnaught
-		772, -- [81] Rend
-		383287, -- [82] Bloodborne
-		184783, -- [83] Tactician
-		260643, -- [84] Skullsplitter
-		386357, -- [85] Fracture
-		385571, -- [86] Improved Overpower
-		316440, -- [87] Martial Prowess
-		384361, -- [88] Bloodsurge
-		118038, -- [89] Die by the Sword
-		383103, -- [90] Fueled by Violence
-		29725, -- [91] Sudden Death
-		316405, -- [92] Improved Execute
-		202316, -- [93] Fervor of Battle
-		7384, -- [94] Overpower
-		12294, -- [95] Mortal Strike
-		388807, -- [96] Storm Wall
-		260708, -- [97] Sweeping Strikes
-		385512, -- [98] Storm of Swords
-		334779, -- [99] Collateral Damage
-		383317, -- [100] Merciless Bonegrinder
-		390713, -- [101] Dance of Death
-		386630, -- [102] Battlelord
+		390713, -- [52] Dance of Death
+		383317, -- [53] Merciless Bonegrinder
+		385512, -- [54] Storm of Swords
+		334779, -- [55] Collateral Damage
+		260708, -- [56] Sweeping Strikes
+		388807, -- [57] Storm Wall
+		12294, -- [58] Mortal Strike
+		7384, -- [59] Overpower
+		202316, -- [60] Fervor of Battle
+		316405, -- [61] Improved Execute
+		29725, -- [62] Sudden Death
+		383103, -- [63] Fueled by Violence
+		118038, -- [64] Die by the Sword
+		384361, -- [65] Bloodsurge
+		316440, -- [66] Martial Prowess
+		385571, -- [67] Improved Overpower
+		386357, -- [68] Tide of Blood
+		260643, -- [69] Skullsplitter
+		184783, -- [70] Tactician
+		383287, -- [71] Bloodborne
+		772, -- [72] Rend
+		262150, -- [73] Dreadnaught
+		383219, -- [74] Exhilarating Blows
+		383442, -- [75] Blunt Instruments
+		262161, -- [76] Warbreaker
+		248621, -- [77] In For The Kill
+		385008, -- [78] Test of Might
+		152278, -- [79] Anger Management
+		167105, -- [80] Colossus Smash
+		281001, -- [81] Massacre
+		383430, -- [82] Impale
+		845, -- [83] Cleave
+		383293, -- [84] Reaping Swings
+		390725, -- [85] Sonic Boom
+		382896, -- [86] Two-Handed Weapon Specialization
+		386285, -- [87] Elysian Might
+		202168, -- [88] Impending Victory
+		386164, -- [89] Battle Stance
+		262231, -- [90] War Machine
+		3411, -- [91] Intervene
+		386208, -- [92] Defensive Stance
+		97462, -- [93] Rallying Cry
+		382310, -- [94] Inspiring Presence
+		29838, -- [95] Second Wind
+		383082, -- [96] Barbaric Training
+		383115, -- [97] Concussive Blows
+		390354, -- [98] Furious Blows
+		107570, -- [99] Storm Bolt
+		382940, -- [100] Endurance Training
+		202163, -- [101] Bounding Stride
+		392383, -- [102] Wrenching Impact
 	},
 	-- Fury Warrior
 	[72] = {
-		384277, -- [0] Blood and Thunder
-		203201, -- [1] Crackling Thunder
-		6343, -- [2] Thunder Clap
-		382258, -- [3] Siphoning Strikes
-		6544, -- [4] Heroic Leap
-		384100, -- [5] Berserker Shout
-		12323, -- [6] Piercing Howl
-		382764, -- [7] Crushing Force
-		215571, -- [8] Frothing Berserker
-		384110, -- [9] Wrecking Throw
-		64382, -- [10] Shattering Throw
-		316402, -- [11] Improved Execute
-		280721, -- [12] Sudden Death
-		392777, -- [13] Cruel Strikes
-		103827, -- [14] Double Time
-		382954, -- [15] Cacophonous Roar
-		275338, -- [16] Menace
-		5246, -- [17] Intimidating Shout
-		23920, -- [18] Spell Reflection
-		346002, -- [19] War Machine
-		392936, -- [20] Wrath and Fury
-		228920, -- [21] Ravager
-		382953, -- [22] Storm of Steel
-		390563, -- [23] Hurricane
-		383854, -- [24] Improved Raging Blow
-		280392, -- [25] Meat Cleaver
-		23881, -- [26] Bloodthirst
-		383468, -- [27] Invigorating Fury
-		208154, -- [28] Warpaint
-		184364, -- [29] Enraged Regeneration
-		85288, -- [30] Raging Blow
-		383852, -- [31] Improved Bloodthirst
-		383848, -- [32] Improved Enrage
-		215568, -- [33] Fresh Meat
-		81099, -- [34] Single-Minded Fury
-		385703, -- [35] Bloodborne
-		383959, -- [36] Cold Steel, Hot Blood
-		383486, -- [37] Focus in Chaos
-		383885, -- [38] Vicious Contempt
-		393950, -- [39] Bloodcraze
-		335077, -- [40] Frenzy
-		383877, -- [41] Hack and Slash
-		184367, -- [42] Rampage
-		392536, -- [43] Ashen Juggernaut
-		206315, -- [44] Massacre
-		388004, -- [45] Slaughtering Strikes
-		383922, -- [46] Depths of Insanity
-		389603, -- [47] Unbridled Ferocity
-		152278, -- [48] Anger Management
-		202751, -- [49] Reckless Abandon
-		383459, -- [50] Swift Strikes
-		391683, -- [51] Dancing Blades
-		390376, -- [52] Placeholder Talent
-		385059, -- [53] Odyn's Fury
-		383916, -- [54] Annihilator
-		388903, -- [55] Storm of Swords
-		383295, -- [56] Deft Experience
-		383605, -- [57] Frenzied Flurry
-		388933, -- [58] Pulverize
-		315720, -- [59] Onslaught
-		383297, -- [60] Critical Thinking
-		388049, -- [61] Raging Armaments
-		12950, -- [62] Improved Whirlwind
-		392931, -- [63] Cruelty
-		384318, -- [64] Thunderous Roar
-		382946, -- [65] Quick Thinking
-		390123, -- [66] Memory of a Tormented Berserker
-		390135, -- [67] Memory of a Tormented Titan
-		107574, -- [68] Avatar
-		384124, -- [69] Armored to the Teeth
-		391270, -- [70] Honed Reflexes
-		382939, -- [71] Reinforced Plates
-		382260, -- [72] Fast Footwork
-		18499, -- [73] Berserker Rage
-		382900, -- [74] Dual Wield Specialization
-		275339, -- [75] Rumbling Earth
-		46968, -- [76] Shockwave
-		391997, -- [77] Endurance Training
-		384404, -- [78] Sidearm
-		382767, -- [79] Overwhelming Rage
-		382948, -- [80] Piercing Verdict
-		376079, -- [81] Spear of Bastion
-		384969, -- [82] Thunderous Words
-		391572, -- [83] Uproar
-		383762, -- [84] Bitter Immunity
-		202163, -- [85] Bounding Stride
-		392383, -- [86] Wrenching Impact
-		382549, -- [87] Pain and Gain
-		1719, -- [88] Recklessness
-		382956, -- [89] Seismic Reverberation
-		384090, -- [90] Titanic Throw
-		107570, -- [91] Storm Bolt
-		390354, -- [92] Furious Blows
-		390674, -- [93] Barbaric Training
-		383115, -- [94] Concussive Blows
-		382310, -- [95] Inspiring Presence
-		29838, -- [96] Second Wind
-		97462, -- [97] Rallying Cry
-		386208, -- [98] Defensive Stance
-		3411, -- [99] Intervene
-		202168, -- [100] Impending Victory
-		386196, -- [101] `
-		386285, -- [102] Elysian Might
-		390725, -- [103] Sonic Boom
+		384124, -- [0] Armored to the Teeth
+		316402, -- [1] Improved Execute
+		280721, -- [2] Sudden Death
+		392931, -- [3] Cruelty
+		12950, -- [4] Improved Whirlwind
+		388049, -- [5] Raging Armaments
+		383297, -- [6] Critical Thinking
+		315720, -- [7] Onslaught
+		388933, -- [8] Tenderize
+		383605, -- [9] Frenzied Flurry
+		383295, -- [10] Deft Experience
+		388903, -- [11] Storm of Swords
+		383916, -- [12] Annihilator
+		385059, -- [13] Odyn's Fury
+		391683, -- [14] Dancing Blades
+		394329, -- [15] Titanic Rage
+		383459, -- [16] Swift Strikes
+		152278, -- [17] Anger Management
+		202751, -- [18] Reckless Abandon
+		389603, -- [19] Unbridled Ferocity
+		383922, -- [20] Depths of Insanity
+		1719, -- [21] Recklessness
+		388004, -- [22] Slaughtering Strikes
+		206315, -- [23] Massacre
+		392536, -- [24] Ashen Juggernaut
+		184367, -- [25] Rampage
+		383877, -- [26] Hack and Slash
+		335077, -- [27] Frenzy
+		393950, -- [28] Bloodcraze
+		383885, -- [29] Vicious Contempt
+		383486, -- [30] Focus in Chaos
+		383959, -- [31] Cold Steel, Hot Blood
+		385703, -- [32] Bloodborne
+		81099, -- [33] Single-Minded Fury
+		215568, -- [34] Fresh Meat
+		383848, -- [35] Improved Enrage
+		383852, -- [36] Improved Bloodthirst
+		85288, -- [37] Raging Blow
+		184364, -- [38] Enraged Regeneration
+		208154, -- [39] Warpaint
+		383468, -- [40] Invigorating Fury
+		23881, -- [41] Bloodthirst
+		280392, -- [42] Meat Cleaver
+		383854, -- [43] Improved Raging Blow
+		382953, -- [44] Storm of Steel
+		390563, -- [45] Hurricane
+		228920, -- [46] Ravager
+		392936, -- [47] Wrath and Fury
+		346002, -- [48] War Machine
+		23920, -- [49] Spell Reflection
+		5246, -- [50] Intimidating Shout
+		382954, -- [51] Cacophonous Roar
+		275338, -- [52] Menace
+		103827, -- [53] Double Time
+		392777, -- [54] Cruel Strikes
+		376079, -- [55] Spear of Bastion
+		382948, -- [56] Piercing Verdict
+		382767, -- [57] Overwhelming Rage
+		384404, -- [58] Sidearm
+		391997, -- [59] Endurance Training
+		46968, -- [60] Shockwave
+		275339, -- [61] Rumbling Earth
+		382900, -- [62] Dual Wield Specialization
+		18499, -- [63] Berserker Rage
+		382260, -- [64] Fast Footwork
+		382939, -- [65] Reinforced Plates
+		391270, -- [66] Honed Reflexes
+		107574, -- [67] Avatar
+		390123, -- [68] Berserker's Torment
+		390135, -- [69] Titan's Torment
+		382946, -- [70] Wild Strikes
+		384318, -- [71] Thunderous Roar
+		384969, -- [72] Thunderous Words
+		391572, -- [73] Uproar
+		383762, -- [74] Bitter Immunity
+		382549, -- [75] Pain and Gain
+		384110, -- [76] Wrecking Throw
+		64382, -- [77] Shattering Throw
+		215571, -- [78] Frothing Berserker
+		382764, -- [79] Crushing Force
+		384100, -- [80] Berserker Shout
+		12323, -- [81] Piercing Howl
+		6544, -- [82] Heroic Leap
+		382258, -- [83] Leeching Strikes
+		6343, -- [84] Thunder Clap
+		384277, -- [85] Blood and Thunder
+		203201, -- [86] Crackling Thunder
+		384090, -- [87] Titanic Throw
+		382956, -- [88] Seismic Reverberation
+		390725, -- [89] Sonic Boom
+		386285, -- [90] Elysian Might
+		386196, -- [91] Berserker Stance
+		202168, -- [92] Impending Victory
+		3411, -- [93] Intervene
+		386208, -- [94] Defensive Stance
+		97462, -- [95] Rallying Cry
+		382310, -- [96] Inspiring Presence
+		29838, -- [97] Second Wind
+		390674, -- [98] Barbaric Training
+		383115, -- [99] Concussive Blows
+		390354, -- [100] Furious Blows
+		107570, -- [101] Storm Bolt
+		202163, -- [102] Bounding Stride
+		392383, -- [103] Wrenching Impact
 	},
 	-- Protection Warrior
 	[73] = {
-		202095, -- [0] Indomitable
-		228920, -- [1] Ravager
-		385888, -- [2] Spiked Shield
-		392966, -- [3] Spell Block
-		384277, -- [4] Blood and Thunder
-		203201, -- [5] Crackling Thunder
-		6343, -- [6] Thunder Clap
-		382258, -- [7] Siphoning Strikes
-		316733, -- [8] War Machine
-		6544, -- [9] Heroic Leap
-		384100, -- [10] Berserker Shout
-		12323, -- [11] Piercing Howl
-		384110, -- [12] Wrecking Throw
-		64382, -- [13] Shattering Throw
-		382953, -- [14] Storm of Steel
+		385888, -- [0] Tough as Nails
+		392966, -- [1] Spell Block
+		275334, -- [2] Punish
+		393967, -- [3] Juggernaut
+		385704, -- [4] Bloodborne
+		386394, -- [5] Battle-Scarred Veteran
+		202095, -- [6] Indomitable
+		384063, -- [7] Enduring Alacrity
+		228920, -- [8] Ravager
+		382953, -- [9] Storm of Steel
+		23920, -- [10] Spell Reflection
+		5246, -- [11] Intimidating Shout
+		382954, -- [12] Cacophonous Roar
+		275338, -- [13] Menace
+		103827, -- [14] Double Time
 		392777, -- [15] Cruel Strikes
-		103827, -- [16] Double Time
-		382954, -- [17] Cacophonous Roar
-		275338, -- [18] Menace
-		5246, -- [19] Intimidating Shout
-		23920, -- [20] Spell Reflection
-		384042, -- [21] Unnerving Focus
-		384063, -- [22] Enduring Alacrity
-		382940, -- [23] Endurance Training
-		384318, -- [24] Thunderous Roar
-		382946, -- [25] Quick Thinking
-		391271, -- [26] Honed Reflexes
-		394307, -- [27] Immovable Object
-		275336, -- [28] Unstoppable Force
-		107574, -- [29] Avatar
-		384124, -- [30] Armored to the Teeth
-		382939, -- [31] Reinforced Plates
-		390642, -- [32] Crushing Force
-		392790, -- [33] Frothing Berserker
-		382260, -- [34] Fast Footwork
-		18499, -- [35] Berserker Rage
-		275339, -- [36] Rumbling Earth
-		46968, -- [37] Shockwave
-		384404, -- [38] Sidearm
-		382767, -- [39] Overwhelming Rage
-		382948, -- [40] Piercing Verdict
-		376079, -- [41] Spear of Bastion
-		384969, -- [42] Thunderous Words
-		391572, -- [43] Uproar
-		383762, -- [44] Bitter Immunity
-		202163, -- [45] Bounding Stride
-		392383, -- [46] Wrenching Impact
-		382549, -- [47] Pain and Gain
-		383103, -- [48] Fueled by Violence
-		384036, -- [49] Brutal Vitality
-		385704, -- [50] Bloodborne
-		275334, -- [51] Punish
-		393967, -- [52] Juggernaut
-		382956, -- [53] Seismic Reverberation
-		384090, -- [54] Titanic Throw
-		107570, -- [55] Storm Bolt
-		390354, -- [56] Furious Blows
-		390675, -- [57] Barbaric Training
-		383115, -- [58] Concussive Blows
-		382310, -- [59] Inspiring Presence
-		29838, -- [60] Second Wind
-		97462, -- [61] Rallying Cry
-		386208, -- [62] Defensive Stance
-		3411, -- [63] Intervene
-		202168, -- [64] Impending Victory
-		382895, -- [65] One-Handed Weapon Specialization
-		386285, -- [66] Elysian Might
-		390725, -- [67] Sonic Boom
-		385843, -- [68] Show of Force
-		29725, -- [69] Sudden Death
-		203177, -- [70] Heavy Repercussions
-		202603, -- [71] Into the Fray
-		384067, -- [72] Focused Vigor
-		385952, -- [73] Shield Charge
-		386328, -- [74] Champion's Bulwark
-		386011, -- [75] Shield Specialization
-		202743, -- [76] Booming Voice
-		386027, -- [77] Enduring Defenses
-		281001, -- [78] Massacre
-		871, -- [79] Shield Wall
-		152278, -- [80] Anger Management
-		384074, -- [81] Unbreakable Will
-		384072, -- [82] The Wall
-		1161, -- [83] Challenging Shout
-		385840, -- [84] Thunderlord
-		386071, -- [85] Disrupting Shout
-		386034, -- [86] Improved Heroic Throw
-		1160, -- [87] Demoralizing Shout
-		202560, -- [88] Best Served Cold
-		384041, -- [89] Strategist
-		394062, -- [90] Rend
-		394311, -- [91] Instigate
-		384361, -- [92] Bloodsurge
-		236279, -- [93] Devastator
-		6572, -- [94] Revenge
-		12975, -- [95] Last Stand
-		386030, -- [96] Brace For Impact
-		190456, -- [97] Ignore Pain
-		386477, -- [98] Outburst
-		280001, -- [99] Bolster
-		394312, -- [100] Battering Ram
-		386164, -- [101] Battle Stance
-		393965, -- [102] Dance of Death
-		386394, -- [103] Battle-Scarred Veteran
+		376079, -- [16] Spear of Bastion
+		382948, -- [17] Piercing Verdict
+		382767, -- [18] Overwhelming Rage
+		384404, -- [19] Sidearm
+		46968, -- [20] Shockwave
+		275339, -- [21] Rumbling Earth
+		18499, -- [22] Berserker Rage
+		382260, -- [23] Fast Footwork
+		392790, -- [24] Frothing Berserker
+		390642, -- [25] Crushing Force
+		382939, -- [26] Reinforced Plates
+		107574, -- [27] Avatar
+		394307, -- [28] Immovable Object
+		275336, -- [29] Unstoppable Force
+		391271, -- [30] Honed Reflexes
+		382946, -- [31] Wild Strikes
+		384318, -- [32] Thunderous Roar
+		384969, -- [33] Thunderous Words
+		391572, -- [34] Uproar
+		383103, -- [35] Fueled by Violence
+		384036, -- [36] Brutal Vitality
+		384042, -- [37] Unnerving Focus
+		383762, -- [38] Bitter Immunity
+		382940, -- [39] Endurance Training
+		382549, -- [40] Pain and Gain
+		384110, -- [41] Wrecking Throw
+		64382, -- [42] Shattering Throw
+		384100, -- [43] Berserker Shout
+		12323, -- [44] Piercing Howl
+		6544, -- [45] Heroic Leap
+		316733, -- [46] War Machine
+		382258, -- [47] Leeching Strikes
+		6343, -- [48] Thunder Clap
+		384277, -- [49] Blood and Thunder
+		203201, -- [50] Crackling Thunder
+		384090, -- [51] Titanic Throw
+		382956, -- [52] Seismic Reverberation
+		394855, -- [53] Armored to the Teeth
+		393965, -- [54] Dance of Death
+		386164, -- [55] Battle Stance
+		394312, -- [56] Battering Ram
+		280001, -- [57] Bolster
+		386477, -- [58] Violent Outburst
+		190456, -- [59] Ignore Pain
+		386030, -- [60] Brace For Impact
+		12975, -- [61] Last Stand
+		6572, -- [62] Revenge
+		236279, -- [63] Devastator
+		384361, -- [64] Bloodsurge
+		394311, -- [65] Instigate
+		394062, -- [66] Rend
+		384041, -- [67] Strategist
+		202560, -- [68] Best Served Cold
+		1160, -- [69] Demoralizing Shout
+		386034, -- [70] Improved Heroic Throw
+		386071, -- [71] Disrupting Shout
+		385840, -- [72] Thunderlord
+		1161, -- [73] Challenging Shout
+		384074, -- [74] Unbreakable Will
+		384072, -- [75] Impenetrable Wall
+		152278, -- [76] Anger Management
+		871, -- [77] Shield Wall
+		386027, -- [78] Enduring Defenses
+		281001, -- [79] Massacre
+		202743, -- [80] Booming Voice
+		386011, -- [81] Shield Specialization
+		386328, -- [82] Champion's Bulwark
+		385952, -- [83] Shield Charge
+		384067, -- [84] Focused Vigor
+		203177, -- [85] Heavy Repercussions
+		202603, -- [86] Into the Fray
+		385843, -- [87] Show of Force
+		29725, -- [88] Sudden Death
+		390725, -- [89] Sonic Boom
+		386285, -- [90] Elysian Might
+		382895, -- [91] One-Handed Weapon Specialization
+		202168, -- [92] Impending Victory
+		3411, -- [93] Intervene
+		386208, -- [94] Defensive Stance
+		97462, -- [95] Rallying Cry
+		382310, -- [96] Inspiring Presence
+		29838, -- [97] Second Wind
+		390675, -- [98] Barbaric Training
+		383115, -- [99] Concussive Blows
+		390354, -- [100] Furious Blows
+		107570, -- [101] Storm Bolt
+		202163, -- [102] Bounding Stride
+		392383, -- [103] Wrenching Impact
 	},
 	-- Balance Druid
 	[102] = {
-		378986, -- [0] Furor
-		124974, -- [1] Nature's Vigil
-		29166, -- [2] Innervate
-		102359, -- [3] Mass Entanglement
-		102793, -- [4] Ursol's Vortex
-		48438, -- [5] Wild Growth
-		231040, -- [6] Improved Rejuvenation
-		131768, -- [7] Feline Swiftness
-		159286, -- [8] Primal Fury
-		99, -- [9] Incapacitating Roar
-		5211, -- [10] Mighty Bash
-		385786, -- [11] Matted Fur
-		377842, -- [12] Ursine Vigor
-		106898, -- [13] Stampeding Roar
-		378988, -- [14] Lycara's Teachings
-		108238, -- [15] Renewal
-		319454, -- [16] Heart of the Wild
-		288826, -- [17] Improved Stampeding Roar
-		2908, -- [18] Soothe
-		16931, -- [19] Thick Hide
-		192081, -- [20] Ironfur
-		213764, -- [21] Swipe
-		108299, -- [22] Killer Instinct
-		106839, -- [23] Skull Bash
-		106832, -- [24] Thrash
-		1079, -- [25] Rip
-		22570, -- [26] Maim
-		22842, -- [27] Frenzied Regeneration
-		327993, -- [28] Improved Barkskin
-		301768, -- [29] Verdant Heart
-		774, -- [30] Rejuvenation
-		18562, -- [31] Swiftmend
-		33873, -- [32] Nurturing Instinct
-		33786, -- [33] Cyclone
-		24858, -- [34] Moonkin Form
-		2637, -- [35] Hibernate
-		197524, -- [36] Astral Influence
-		132469, -- [37] Typhoon
-		93402, -- [38] Sunfire
-		377796, -- [39] Natural Recovery
-		2782, -- [40] Remove Corruption
-		78674, -- [41] Starsurge
-		194153, -- [42] Starfire
-		1822, -- [43] Rake
-		102401, -- [44] Wild Charge
-		252216, -- [45] Tiger Dash
-		377801, -- [46] Tireless Pursuit
-		279620, -- [47] Twin Moons
-		202347, -- [48] Stellar Flare
-		338657, -- [49] Circle of Life and Death
-		325727, -- [50] Adaptive Swarm
-		339942, -- [51] Balance of All Things
-		338661, -- [52] Oneth's Clear Vision
-		339949, -- [53] Timeworn Dreambinder
-		202737, -- [54] Blessing of Elune
-		202739, -- [55] Blessing of An'she
-		383196, -- [56] Umbral Infusion [NNF]
-		202770, -- [57] Fury of Elune
-		274281, -- [58] New Moon
-		383197, -- [59] Orbit Breaker
-		390378, -- [60] Syzygy
-		338668, -- [61] Primordial Arcanic Pulsar
-		343647, -- [62] Solstice
-		340706, -- [63] Precise Alignment
-		202345, -- [64] Starlord
-		383195, -- [65] Umbral Intensity
-		384656, -- [66] Fury of the Skies
-		102560, -- [67] Incarnation: Chosen of Elune
-		323764, -- [68] Convoke the Spirits
-		202918, -- [69] Light of the Sun
-		202996, -- [70] Power of Goldrinn
-		383194, -- [71] Stellar Inspiration
-		114107, -- [72] Soul of the Forest
-		327541, -- [73] Aetherial Kindling
-		202354, -- [74] Stellar Drift
-		328022, -- [75] Improved Starsurge
-		191034, -- [76] Starfall
-		78675, -- [77] Solar Beam
-		194223, -- [78] Celestial Alignment
-		202342, -- [79] Shooting Stars
-		202430, -- [80] Nature's Balance
-		231042, -- [81] Owlkin Frenzy
-		328021, -- [82] Improved Eclipse
-		205636, -- [83] Force of Nature
-		79577, -- [84] Eclipse
-		328023, -- [85] Improved Moonfire
-		202425, -- [86] Warrior of Elune
-		231050, -- [87] Improved Sunfire
-		377847, -- [88] Well-Honed Instincts
+		377801, -- [0] Tireless Pursuit
+		102401, -- [1] Wild Charge
+		252216, -- [2] Tiger Dash
+		1822, -- [3] Rake
+		194153, -- [4] Starfire
+		78674, -- [5] Starsurge
+		2782, -- [6] Remove Corruption
+		377796, -- [7] Natural Recovery
+		231050, -- [8] Improved Sunfire
+		93402, -- [9] Sunfire
+		132469, -- [10] Typhoon
+		197524, -- [11] Astral Influence
+		2637, -- [12] Hibernate
+		24858, -- [13] Moonkin Form
+		33786, -- [14] Cyclone
+		33873, -- [15] Nurturing Instinct
+		18562, -- [16] Swiftmend
+		774, -- [17] Rejuvenation
+		301768, -- [18] Verdant Heart
+		327993, -- [19] Improved Barkskin
+		22842, -- [20] Frenzied Regeneration
+		22570, -- [21] Maim
+		1079, -- [22] Rip
+		106832, -- [23] Thrash
+		106839, -- [24] Skull Bash
+		108299, -- [25] Killer Instinct
+		213764, -- [26] Swipe
+		192081, -- [27] Ironfur
+		16931, -- [28] Thick Hide
+		2908, -- [29] Soothe
+		288826, -- [30] Improved Stampeding Roar
+		319454, -- [31] Heart of the Wild
+		108238, -- [32] Renewal
+		378988, -- [33] Lycara's Teachings
+		106898, -- [34] Stampeding Roar
+		377842, -- [35] Ursine Vigor
+		385786, -- [36] Matted Fur
+		99, -- [37] Incapacitating Roar
+		5211, -- [38] Mighty Bash
+		159286, -- [39] Primal Fury
+		131768, -- [40] Feline Swiftness
+		231040, -- [41] Improved Rejuvenation
+		48438, -- [42] Wild Growth
+		102359, -- [43] Mass Entanglement
+		102793, -- [44] Ursol's Vortex
+		29166, -- [45] Innervate
+		124974, -- [46] Nature's Vigil
+		378986, -- [47] Protector of the Pack
+		393940, -- [48] Starweaver
+		393954, -- [49] Rattle the Stars
+		202359, -- [50] Astral Communion
+		394081, -- [51] Friend of the Fae
+		394094, -- [52] Sundered Firmament
+		393868, -- [53] Lunar Shrapnel
+		78675, -- [54] Solar Beam
+		383194, -- [55] Stellar Inspiration
+		202430, -- [56] Nature's Balance
+		393991, -- [57] Elune's Guidance
+		391969, -- [58] Circle of Life and Death
+		202425, -- [59] Warrior of Elune
+		202342, -- [60] Shooting Stars
+		202770, -- [61] Fury of Elune
+		274281, -- [62] New Moon
+		79577, -- [63] Eclipse
+		393958, -- [64] Nature's Grace
+		390378, -- [65] Syzygy
+		393960, -- [66] Primordial Arcanic Pulsar
+		88747, -- [67] Wild Mushroom
+		383195, -- [68] Umbral Intensity
+		394065, -- [69] Denizen of the Dream
+		394115, -- [70] Stellar Innervation
+		393760, -- [71] Umbral Embrace
+		194223, -- [72] Celestial Alignment
+		394048, -- [73] Balance of All Things
+		394121, -- [74] Radiant Moonlight
+		114107, -- [75] Soul of the Forest
+		202918, -- [76] Light of the Sun
+		205636, -- [77] Force of Nature
+		327541, -- [78] Aetherial Kindling
+		279620, -- [79] Twin Moons
+		202347, -- [80] Stellar Flare
+		394046, -- [81] Power of Goldrinn
+		394013, -- [82] Incarnation: Chosen of Elune
+		391528, -- [83] Convoke the Spirits
+		392999, -- [84] Fungal Growth
+		394058, -- [85] Astral Smolder
+		343647, -- [86] Solstice
+		393956, -- [87] Waning Twilight
+		191034, -- [88] Starfall
+		377847, -- [89] Well-Honed Instincts
+		202345, -- [90] Starlord
+		383197, -- [91] Orbit Breaker
 	},
 	-- Feral Druid
 	[103] = {
-		378986, -- [0] Furor
-		124974, -- [1] Nature's Vigil
-		29166, -- [2] Innervate
-		102359, -- [3] Mass Entanglement
-		102793, -- [4] Ursol's Vortex
-		48438, -- [5] Wild Growth
-		231040, -- [6] Improved Rejuvenation
-		131768, -- [7] Feline Swiftness
-		159286, -- [8] Primal Fury
-		99, -- [9] Incapacitating Roar
-		5211, -- [10] Mighty Bash
-		385786, -- [11] Matted Fur
-		377842, -- [12] Ursine Vigor
-		106898, -- [13] Stampeding Roar
-		378988, -- [14] Lycara's Teachings
-		108238, -- [15] Renewal
-		319454, -- [16] Heart of the Wild
-		288826, -- [17] Improved Stampeding Roar
-		2908, -- [18] Soothe
-		16931, -- [19] Thick Hide
-		192081, -- [20] Ironfur
-		213764, -- [21] Swipe
-		108299, -- [22] Killer Instinct
-		106839, -- [23] Skull Bash
-		106832, -- [24] Thrash
-		1079, -- [25] Rip
-		22570, -- [26] Maim
-		22842, -- [27] Frenzied Regeneration
-		327993, -- [28] Improved Barkskin
-		301768, -- [29] Verdant Heart
-		774, -- [30] Rejuvenation
-		18562, -- [31] Swiftmend
-		33873, -- [32] Nurturing Instinct
-		33786, -- [33] Cyclone
-		24858, -- [34] Moonkin Form
-		2637, -- [35] Hibernate
-		197524, -- [36] Astral Influence
-		132469, -- [37] Typhoon
-		93402, -- [38] Sunfire
-		377796, -- [39] Natural Recovery
-		2782, -- [40] Remove Corruption
-		194153, -- [41] Starfire
-		197626, -- [42] Starsurge
-		1822, -- [43] Rake
-		102401, -- [44] Wild Charge
-		252216, -- [45] Tiger Dash
-		377801, -- [46] Tireless Pursuit
-		231050, -- [47] Improved Sunfire
+		377801, -- [0] Tireless Pursuit
+		102401, -- [1] Wild Charge
+		252216, -- [2] Tiger Dash
+		1822, -- [3] Rake
+		197626, -- [4] Starsurge
+		194153, -- [5] Starfire
+		2782, -- [6] Remove Corruption
+		377796, -- [7] Natural Recovery
+		231050, -- [8] Improved Sunfire
+		93402, -- [9] Sunfire
+		132469, -- [10] Typhoon
+		197524, -- [11] Astral Influence
+		2637, -- [12] Hibernate
+		24858, -- [13] Moonkin Form
+		33786, -- [14] Cyclone
+		33873, -- [15] Nurturing Instinct
+		18562, -- [16] Swiftmend
+		774, -- [17] Rejuvenation
+		301768, -- [18] Verdant Heart
+		327993, -- [19] Improved Barkskin
+		22842, -- [20] Frenzied Regeneration
+		22570, -- [21] Maim
+		1079, -- [22] Rip
+		106832, -- [23] Thrash
+		106839, -- [24] Skull Bash
+		108299, -- [25] Killer Instinct
+		213764, -- [26] Swipe
+		192081, -- [27] Ironfur
+		16931, -- [28] Thick Hide
+		2908, -- [29] Soothe
+		288826, -- [30] Improved Stampeding Roar
+		319454, -- [31] Heart of the Wild
+		108238, -- [32] Renewal
+		378988, -- [33] Lycara's Teachings
+		106898, -- [34] Stampeding Roar
+		377842, -- [35] Ursine Vigor
+		385786, -- [36] Matted Fur
+		99, -- [37] Incapacitating Roar
+		5211, -- [38] Mighty Bash
+		159286, -- [39] Primal Fury
+		131768, -- [40] Feline Swiftness
+		231040, -- [41] Improved Rejuvenation
+		48438, -- [42] Wild Growth
+		102359, -- [43] Mass Entanglement
+		102793, -- [44] Ursol's Vortex
+		29166, -- [45] Innervate
+		124974, -- [46] Nature's Vigil
+		378986, -- [47] Protector of the Pack
 		377847, -- [48] Well-Honed Instincts
 		5217, -- [49] Tiger's Fury
 		16864, -- [50] Omen of Clarity
@@ -1169,76 +1174,76 @@ local talents = {
 	},
 	-- Guardian Druid
 	[104] = {
-		372567, -- [0] Twin Moonfire
-		238049, -- [1] Scintillating Moonlight
-		203964, -- [2] Galactic Guardian
-		279552, -- [3] Layered Mane
-		343240, -- [4] Berserk: Ravage
-		300346, -- [5] Ursine Adept
-		377210, -- [6] Ursoc's Fury
-		372119, -- [7] Dream of Cenarius
-		204053, -- [8] Rend and Tear
-		372943, -- [9] Untamed Savagery
-		80313, -- [10] Pulverize
-		372945, -- [11] Reinvigoration
-		377623, -- [12] Berserk: Unchecked Aggression
-		203974, -- [13] Earthwarden
-		393427, -- [14] Flashing Claws
-		371999, -- [15] Vicious Cycle
-		135288, -- [16] Tooth and Claw
-		377811, -- [17] Innate Resolve
-		378986, -- [18] Furor
-		124974, -- [19] Nature's Vigil
-		29166, -- [20] Innervate
-		102359, -- [21] Mass Entanglement
-		102793, -- [22] Ursol's Vortex
-		48438, -- [23] Wild Growth
-		231040, -- [24] Improved Rejuvenation
-		131768, -- [25] Feline Swiftness
-		159286, -- [26] Primal Fury
-		99, -- [27] Incapacitating Roar
-		5211, -- [28] Mighty Bash
-		385786, -- [29] Matted Fur
-		377842, -- [30] Ursine Vigor
-		106898, -- [31] Stampeding Roar
-		378988, -- [32] Lycara's Teachings
-		108238, -- [33] Renewal
-		319454, -- [34] Heart of the Wild
-		288826, -- [35] Improved Stampeding Roar
-		2908, -- [36] Soothe
-		16931, -- [37] Thick Hide
-		192081, -- [38] Ironfur
-		213764, -- [39] Swipe
-		108299, -- [40] Killer Instinct
+		343240, -- [0] Berserk: Ravage
+		300346, -- [1] Ursine Adept
+		377210, -- [2] Ursoc's Fury
+		372119, -- [3] Dream of Cenarius
+		204053, -- [4] Rend and Tear
+		372943, -- [5] Untamed Savagery
+		80313, -- [6] Pulverize
+		372945, -- [7] Reinvigoration
+		377623, -- [8] Berserk: Unchecked Aggression
+		203974, -- [9] Earthwarden
+		393427, -- [10] Flashing Claws
+		371999, -- [11] Vicious Cycle
+		135288, -- [12] Tooth and Claw
+		377811, -- [13] Innate Resolve
+		155835, -- [14] Bristling Fur
+		203953, -- [15] Brambles
+		345208, -- [16] Infected Wounds
+		377801, -- [17] Tireless Pursuit
+		102401, -- [18] Wild Charge
+		252216, -- [19] Tiger Dash
+		1822, -- [20] Rake
+		197626, -- [21] Starsurge
+		194153, -- [22] Starfire
+		377796, -- [23] Natural Recovery
+		231050, -- [24] Improved Sunfire
+		93402, -- [25] Sunfire
+		132469, -- [26] Typhoon
+		197524, -- [27] Astral Influence
+		2637, -- [28] Hibernate
+		24858, -- [29] Moonkin Form
+		33786, -- [30] Cyclone
+		33873, -- [31] Nurturing Instinct
+		2782, -- [32] Remove Corruption
+		18562, -- [33] Swiftmend
+		774, -- [34] Rejuvenation
+		301768, -- [35] Verdant Heart
+		327993, -- [36] Improved Barkskin
+		22842, -- [37] Frenzied Regeneration
+		22570, -- [38] Maim
+		1079, -- [39] Rip
+		106832, -- [40] Thrash
 		106839, -- [41] Skull Bash
-		106832, -- [42] Thrash
-		1079, -- [43] Rip
-		22570, -- [44] Maim
-		22842, -- [45] Frenzied Regeneration
-		327993, -- [46] Improved Barkskin
-		301768, -- [47] Verdant Heart
-		774, -- [48] Rejuvenation
-		18562, -- [49] Swiftmend
-		2782, -- [50] Remove Corruption
-		33873, -- [51] Nurturing Instinct
-		33786, -- [52] Cyclone
-		24858, -- [53] Moonkin Form
-		2637, -- [54] Hibernate
-		197524, -- [55] Astral Influence
-		132469, -- [56] Typhoon
-		93402, -- [57] Sunfire
-		155835, -- [58] Bristling Fur
-		203953, -- [59] Brambles
-		377796, -- [60] Natural Recovery
-		194153, -- [61] Starfire
-		197626, -- [62] Starsurge
-		1822, -- [63] Rake
-		102401, -- [64] Wild Charge
-		252216, -- [65] Tiger Dash
-		377801, -- [66] Tireless Pursuit
-		345208, -- [67] Infected Wounds
-		231050, -- [68] Improved Sunfire
-		377847, -- [69] Well-Honed Instincts
+		108299, -- [42] Killer Instinct
+		213764, -- [43] Swipe
+		192081, -- [44] Ironfur
+		16931, -- [45] Thick Hide
+		2908, -- [46] Soothe
+		288826, -- [47] Improved Stampeding Roar
+		319454, -- [48] Heart of the Wild
+		108238, -- [49] Renewal
+		378988, -- [50] Lycara's Teachings
+		106898, -- [51] Stampeding Roar
+		377842, -- [52] Ursine Vigor
+		385786, -- [53] Matted Fur
+		99, -- [54] Incapacitating Roar
+		5211, -- [55] Mighty Bash
+		159286, -- [56] Primal Fury
+		131768, -- [57] Feline Swiftness
+		231040, -- [58] Improved Rejuvenation
+		48438, -- [59] Wild Growth
+		102359, -- [60] Mass Entanglement
+		102793, -- [61] Ursol's Vortex
+		29166, -- [62] Innervate
+		124974, -- [63] Nature's Vigil
+		378986, -- [64] Protector of the Pack
+		377847, -- [65] Well-Honed Instincts
+		203964, -- [66] Galactic Guardian
+		238049, -- [67] Scintillating Moonlight
+		372567, -- [68] Twin Moonfire
+		377779, -- [69] Berserk: Persistence
 		203965, -- [70] Survival of the Fittest
 		203962, -- [71] Blood Frenzy
 		158477, -- [72] Soul of the Forest
@@ -1248,7 +1253,7 @@ local talents = {
 		393618, -- [76] Reinforced Fur
 		370695, -- [77] Fury of Nature
 		391969, -- [78] Circle of Life and Death
-		102558, -- [79] Incarnation: Guardian of Ursoc
+		394786, -- [79] Incarnation: Guardian of Ursoc
 		391528, -- [80] Convoke the Spirits
 		393414, -- [81] Ursoc's Guidance
 		370586, -- [82] Elune's Favored
@@ -1261,58 +1266,58 @@ local talents = {
 		6807, -- [89] Maul
 		210706, -- [90] Gore
 		377835, -- [91] Front of the Pack
-		377779, -- [92] Berserk: Persistence
+		279552, -- [92] Layered Mane
 	},
 	-- Restoration Druid
 	[105] = {
-		378986, -- [0] Furor
-		124974, -- [1] Nature's Vigil
-		29166, -- [2] Innervate
-		102359, -- [3] Mass Entanglement
-		102793, -- [4] Ursol's Vortex
-		48438, -- [5] Wild Growth
-		231040, -- [6] Improved Rejuvenation
-		131768, -- [7] Feline Swiftness
-		159286, -- [8] Primal Fury
-		99, -- [9] Incapacitating Roar
-		5211, -- [10] Mighty Bash
-		385786, -- [11] Matted Fur
-		377842, -- [12] Ursine Vigor
-		106898, -- [13] Stampeding Roar
-		378988, -- [14] Lycara's Teachings
-		108238, -- [15] Renewal
-		319454, -- [16] Heart of the Wild
-		288826, -- [17] Improved Stampeding Roar
-		2908, -- [18] Soothe
-		16931, -- [19] Thick Hide
-		192081, -- [20] Ironfur
-		213764, -- [21] Swipe
-		108299, -- [22] Killer Instinct
-		106839, -- [23] Skull Bash
-		106832, -- [24] Thrash
-		1079, -- [25] Rip
-		22570, -- [26] Maim
-		22842, -- [27] Frenzied Regeneration
-		327993, -- [28] Improved Barkskin
-		301768, -- [29] Verdant Heart
-		774, -- [30] Rejuvenation
-		18562, -- [31] Swiftmend
-		33873, -- [32] Nurturing Instinct
-		33786, -- [33] Cyclone
-		24858, -- [34] Moonkin Form
-		2637, -- [35] Hibernate
-		197524, -- [36] Astral Influence
-		132469, -- [37] Typhoon
-		93402, -- [38] Sunfire
-		377796, -- [39] Natural Recovery
-		392378, -- [40] Improved Nature's Cure
-		194153, -- [41] Starfire
-		197626, -- [42] Starsurge
-		1822, -- [43] Rake
-		102401, -- [44] Wild Charge
-		252216, -- [45] Tiger Dash
-		377801, -- [46] Tireless Pursuit
-		231050, -- [47] Improved Sunfire
+		377801, -- [0] Tireless Pursuit
+		102401, -- [1] Wild Charge
+		252216, -- [2] Tiger Dash
+		1822, -- [3] Rake
+		197626, -- [4] Starsurge
+		194153, -- [5] Starfire
+		392378, -- [6] Improved Nature's Cure
+		377796, -- [7] Natural Recovery
+		231050, -- [8] Improved Sunfire
+		93402, -- [9] Sunfire
+		132469, -- [10] Typhoon
+		197524, -- [11] Astral Influence
+		2637, -- [12] Hibernate
+		24858, -- [13] Moonkin Form
+		33786, -- [14] Cyclone
+		33873, -- [15] Nurturing Instinct
+		18562, -- [16] Swiftmend
+		774, -- [17] Rejuvenation
+		301768, -- [18] Verdant Heart
+		327993, -- [19] Improved Barkskin
+		22842, -- [20] Frenzied Regeneration
+		22570, -- [21] Maim
+		1079, -- [22] Rip
+		106832, -- [23] Thrash
+		106839, -- [24] Skull Bash
+		108299, -- [25] Killer Instinct
+		213764, -- [26] Swipe
+		192081, -- [27] Ironfur
+		16931, -- [28] Thick Hide
+		2908, -- [29] Soothe
+		288826, -- [30] Improved Stampeding Roar
+		319454, -- [31] Heart of the Wild
+		108238, -- [32] Renewal
+		378988, -- [33] Lycara's Teachings
+		106898, -- [34] Stampeding Roar
+		377842, -- [35] Ursine Vigor
+		385786, -- [36] Matted Fur
+		99, -- [37] Incapacitating Roar
+		5211, -- [38] Mighty Bash
+		159286, -- [39] Primal Fury
+		131768, -- [40] Feline Swiftness
+		231040, -- [41] Improved Rejuvenation
+		48438, -- [42] Wild Growth
+		102359, -- [43] Mass Entanglement
+		102793, -- [44] Ursol's Vortex
+		29166, -- [45] Innervate
+		124974, -- [46] Nature's Vigil
+		378986, -- [47] Protector of the Pack
 		377847, -- [48] Well-Honed Instincts
 		113043, -- [49] Omen of Clarity
 		392220, -- [50] Flash of Clarity
@@ -1400,111 +1405,111 @@ local talents = {
 		391395, -- [30] Iron Heart
 		55233, -- [31] Vampiric Blood
 		195679, -- [32] Bloodworms
-		391477, -- [33] Coagulopathy
-		391386, -- [34] Blood Feast
-		391517, -- [35] Umbilicus Eternus
-		391458, -- [36] Sanguine Ground
-		374715, -- [37] Improved Bone Shield
-		273953, -- [38] Voracious
-		207167, -- [39] Blinding Sleet
-		378848, -- [40] Coldthirst
-		205727, -- [41] Anti-Magic Barrier
-		373926, -- [42] Acclimation
-		374383, -- [43] Assimilation
-		383269, -- [44] Abomination Limb
-		47568, -- [45] Empower Rune Weapon
-		194878, -- [46] Icy Talons
-		391571, -- [47] Gloom Ward
-		343294, -- [48] Soul Reaper
-		206967, -- [49] Will of the Necropolis
-		374261, -- [50] Unholy Bond
-		356367, -- [51] Death's Echo
-		276079, -- [52] Death's Reach
-		273952, -- [53] Grip of the Dead
-		374265, -- [54] Unholy Ground
-		111673, -- [55] Control Undead
-		392566, -- [56] Enfeeble
-		374504, -- [57] Brittle
-		389679, -- [58] Clenching Grasp
-		389682, -- [59] Unholy Endurance
-		221562, -- [60] Asphyxiate
-		51052, -- [61] Anti-Magic Zone
-		374030, -- [62] Blood Scent
-		374277, -- [63] Improved Death Strike
-		48263, -- [64] Veteran of the Third War
-		391546, -- [65] March of Darkness
-		48707, -- [66] Anti-Magic Shell
-		49998, -- [67] Death Strike
-		46585, -- [68] Raise Dead
-		316916, -- [69] Cleaving Strikes
-		327574, -- [70] Sacrificial Pact
-		374049, -- [71] Suppression
-		374111, -- [72] Might of Thassarian
-		48743, -- [73] Death Pact
-		212552, -- [74] Wraith Walk
-		374598, -- [75] Blood Draw
-		374574, -- [76] Rune Mastery
-		45524, -- [77] Chains of Ice
-		47528, -- [78] Mind Freeze
-		207200, -- [79] Permafrost
-		48792, -- [80] Icebound Fortitude
+		48792, -- [33] Icebound Fortitude
+		391477, -- [34] Coagulopathy
+		391386, -- [35] Blood Feast
+		391517, -- [36] Umbilicus Eternus
+		391458, -- [37] Sanguine Ground
+		374715, -- [38] Improved Bone Shield
+		273953, -- [39] Voracious
+		207167, -- [40] Blinding Sleet
+		378848, -- [41] Coldthirst
+		205727, -- [42] Anti-Magic Barrier
+		373926, -- [43] Acclimation
+		374383, -- [44] Assimilation
+		383269, -- [45] Abomination Limb
+		47568, -- [46] Empower Rune Weapon
+		194878, -- [47] Icy Talons
+		391571, -- [48] Gloom Ward
+		343294, -- [49] Soul Reaper
+		206967, -- [50] Will of the Necropolis
+		374261, -- [51] Unholy Bond
+		356367, -- [52] Death's Echo
+		276079, -- [53] Death's Reach
+		273952, -- [54] Grip of the Dead
+		374265, -- [55] Unholy Ground
+		111673, -- [56] Control Undead
+		392566, -- [57] Enfeeble
+		374504, -- [58] Brittle
+		389679, -- [59] Clenching Grasp
+		389682, -- [60] Unholy Endurance
+		221562, -- [61] Asphyxiate
+		51052, -- [62] Anti-Magic Zone
+		374030, -- [63] Blood Scent
+		374277, -- [64] Improved Death Strike
+		48263, -- [65] Veteran of the Third War
+		391546, -- [66] March of Darkness
+		48707, -- [67] Anti-Magic Shell
+		49998, -- [68] Death Strike
+		46585, -- [69] Raise Dead
+		316916, -- [70] Cleaving Strikes
+		327574, -- [71] Sacrificial Pact
+		374049, -- [72] Suppression
+		374111, -- [73] Might of Thassarian
+		48743, -- [74] Death Pact
+		212552, -- [75] Wraith Walk
+		374598, -- [76] Blood Draw
+		374574, -- [77] Rune Mastery
+		45524, -- [78] Chains of Ice
+		47528, -- [79] Mind Freeze
+		207200, -- [80] Permafrost
 		373923, -- [81] Merciless Strikes
 		373930, -- [82] Proliferating Chill
 		207104, -- [83] Runic Attenuation
 		391566, -- [84] Insidious Chill
 		374747, -- [85] Perseverance of the Ebon Blade
-		374717, -- [86] Improved Heart Strike
-		391398, -- [87] Bloodshot
+		391398, -- [86] Bloodshot
+		374717, -- [87] Improved Heart Strike
 	},
 	-- Frost Death Knight
 	[251] = {
-		392950, -- [0] Icebreaker
-		207126, -- [1] Icecap
-		281208, -- [2] Cold Heart
-		377056, -- [3] Biting Cold
-		253593, -- [4] Inexorable Assault
-		207167, -- [5] Blinding Sleet
-		378848, -- [6] Coldthirst
-		205727, -- [7] Anti-Magic Barrier
-		373926, -- [8] Acclimation
-		374383, -- [9] Assimilation
-		383269, -- [10] Abomination Limb
-		47568, -- [11] Empower Rune Weapon
-		194878, -- [12] Icy Talons
-		391571, -- [13] Gloom Ward
-		343294, -- [14] Soul Reaper
-		206967, -- [15] Will of the Necropolis
-		374261, -- [16] Unholy Bond
-		356367, -- [17] Death's Echo
-		276079, -- [18] Death's Reach
-		273952, -- [19] Grip of the Dead
-		374265, -- [20] Unholy Ground
-		111673, -- [21] Control Undead
-		392566, -- [22] Enfeeble
-		374504, -- [23] Brittle
-		389679, -- [24] Clenching Grasp
-		389682, -- [25] Unholy Endurance
-		221562, -- [26] Asphyxiate
-		51052, -- [27] Anti-Magic Zone
-		374030, -- [28] Blood Scent
-		374277, -- [29] Improved Death Strike
-		48263, -- [30] Veteran of the Third War
-		391546, -- [31] March of Darkness
-		48707, -- [32] Anti-Magic Shell
-		49998, -- [33] Death Strike
-		46585, -- [34] Raise Dead
-		316916, -- [35] Cleaving Strikes
-		327574, -- [36] Sacrificial Pact
-		374049, -- [37] Suppression
-		374111, -- [38] Might of Thassarian
-		48743, -- [39] Death Pact
-		212552, -- [40] Wraith Walk
-		374598, -- [41] Blood Draw
-		374574, -- [42] Rune Mastery
-		45524, -- [43] Chains of Ice
-		47528, -- [44] Mind Freeze
-		207200, -- [45] Permafrost
-		48792, -- [46] Icebound Fortitude
+		48792, -- [0] Icebound Fortitude
+		392950, -- [1] Icebreaker
+		207126, -- [2] Icecap
+		281208, -- [3] Cold Heart
+		377056, -- [4] Biting Cold
+		253593, -- [5] Inexorable Assault
+		207167, -- [6] Blinding Sleet
+		378848, -- [7] Coldthirst
+		205727, -- [8] Anti-Magic Barrier
+		373926, -- [9] Acclimation
+		374383, -- [10] Assimilation
+		383269, -- [11] Abomination Limb
+		47568, -- [12] Empower Rune Weapon
+		194878, -- [13] Icy Talons
+		391571, -- [14] Gloom Ward
+		343294, -- [15] Soul Reaper
+		206967, -- [16] Will of the Necropolis
+		374261, -- [17] Unholy Bond
+		356367, -- [18] Death's Echo
+		276079, -- [19] Death's Reach
+		273952, -- [20] Grip of the Dead
+		374265, -- [21] Unholy Ground
+		111673, -- [22] Control Undead
+		392566, -- [23] Enfeeble
+		374504, -- [24] Brittle
+		389679, -- [25] Clenching Grasp
+		389682, -- [26] Unholy Endurance
+		221562, -- [27] Asphyxiate
+		51052, -- [28] Anti-Magic Zone
+		374030, -- [29] Blood Scent
+		374277, -- [30] Improved Death Strike
+		48263, -- [31] Veteran of the Third War
+		391546, -- [32] March of Darkness
+		48707, -- [33] Anti-Magic Shell
+		49998, -- [34] Death Strike
+		46585, -- [35] Raise Dead
+		316916, -- [36] Cleaving Strikes
+		327574, -- [37] Sacrificial Pact
+		374049, -- [38] Suppression
+		374111, -- [39] Might of Thassarian
+		48743, -- [40] Death Pact
+		212552, -- [41] Wraith Walk
+		374598, -- [42] Blood Draw
+		374574, -- [43] Rune Mastery
+		45524, -- [44] Chains of Ice
+		47528, -- [45] Mind Freeze
+		207200, -- [46] Permafrost
 		373923, -- [47] Merciless Strikes
 		373930, -- [48] Proliferating Chill
 		207104, -- [49] Runic Attenuation
@@ -1558,83 +1563,83 @@ local talents = {
 		276837, -- [6] Army of the Damned
 		377587, -- [7] Ghoulish Frenzy
 		390283, -- [8] Superstrain
-		277234, -- [9] Pestilence
-		377537, -- [10] Death Rot
-		390279, -- [11] Vile Contagion
-		194917, -- [12] Pestilent Pustules
-		207317, -- [13] Epidemic
-		115989, -- [14] Unholy Blight
-		377585, -- [15] Replenishing Wounds
-		207264, -- [16] Bursting Sores
-		207269, -- [17] Ebon Fever
-		276023, -- [18] Harbinger of Doom
-		49206, -- [19] Summon Gargoyle
-		377514, -- [20] Reaping
-		390275, -- [21] Rotten Touch
-		49530, -- [22] Sudden Doom
-		319230, -- [23] Unholy Pact
-		152280, -- [24] Defile
-		194916, -- [25] All Will Serve
-		207272, -- [26] Infected Claws
-		207311, -- [27] Clawing Shadows
+		390270, -- [9] Coil of Devastation
+		277234, -- [10] Pestilence
+		377537, -- [11] Death Rot
+		390279, -- [12] Vile Contagion
+		194917, -- [13] Pestilent Pustules
+		207317, -- [14] Epidemic
+		115989, -- [15] Unholy Blight
+		377585, -- [16] Replenishing Wounds
+		207264, -- [17] Bursting Sores
+		207269, -- [18] Ebon Fever
+		276023, -- [19] Harbinger of Doom
+		49206, -- [20] Summon Gargoyle
+		377514, -- [21] Reaping
+		390275, -- [22] Rotten Touch
+		49530, -- [23] Sudden Doom
+		319230, -- [24] Unholy Pact
+		152280, -- [25] Defile
+		194916, -- [26] All Will Serve
+		207272, -- [27] Infected Claws
 		390175, -- [28] Plaguebringer
-		377580, -- [29] Improved Death Coil
-		275699, -- [30] Apocalypse
-		390166, -- [31] Runic Mastery
-		63560, -- [32] Dark Transformation
-		46584, -- [33] Raise Dead
-		85948, -- [34] Festering Strike
-		55090, -- [35] Scourge Strike
-		77575, -- [36] Outbreak
-		316867, -- [37] Improved Festering Strike
-		390161, -- [38] Feasting Strikes
-		316941, -- [39] Unholy Command
-		390268, -- [40] Eternal Agony
-		42650, -- [41] Army of the Dead
-		377592, -- [42] Morbidity
-		390270, -- [43] Coil of Devastation
-		207167, -- [44] Blinding Sleet
-		378848, -- [45] Coldthirst
-		205727, -- [46] Anti-Magic Barrier
-		373926, -- [47] Acclimation
-		374383, -- [48] Assimilation
-		383269, -- [49] Abomination Limb
-		47568, -- [50] Empower Rune Weapon
-		194878, -- [51] Icy Talons
-		391571, -- [52] Gloom Ward
-		343294, -- [53] Soul Reaper
-		206967, -- [54] Will of the Necropolis
-		374261, -- [55] Unholy Bond
-		356367, -- [56] Death's Echo
-		276079, -- [57] Death's Reach
-		273952, -- [58] Grip of the Dead
-		374265, -- [59] Unholy Ground
-		111673, -- [60] Control Undead
-		392566, -- [61] Enfeeble
-		374504, -- [62] Brittle
-		389679, -- [63] Clenching Grasp
-		389682, -- [64] Unholy Endurance
-		221562, -- [65] Asphyxiate
-		51052, -- [66] Anti-Magic Zone
-		374030, -- [67] Blood Scent
-		374277, -- [68] Improved Death Strike
-		48263, -- [69] Veteran of the Third War
-		391546, -- [70] March of Darkness
-		48707, -- [71] Anti-Magic Shell
-		49998, -- [72] Death Strike
-		46585, -- [73] Raise Dead
-		316916, -- [74] Cleaving Strikes
-		327574, -- [75] Sacrificial Pact
-		374049, -- [76] Suppression
-		374111, -- [77] Might of Thassarian
-		48743, -- [78] Death Pact
-		212552, -- [79] Wraith Walk
-		374598, -- [80] Blood Draw
-		374574, -- [81] Rune Mastery
-		45524, -- [82] Chains of Ice
-		47528, -- [83] Mind Freeze
-		207200, -- [84] Permafrost
-		48792, -- [85] Icebound Fortitude
+		207311, -- [29] Clawing Shadows
+		377580, -- [30] Improved Death Coil
+		275699, -- [31] Apocalypse
+		390166, -- [32] Runic Mastery
+		63560, -- [33] Dark Transformation
+		46584, -- [34] Raise Dead
+		85948, -- [35] Festering Strike
+		55090, -- [36] Scourge Strike
+		77575, -- [37] Outbreak
+		316867, -- [38] Improved Festering Strike
+		390161, -- [39] Feasting Strikes
+		316941, -- [40] Unholy Command
+		390268, -- [41] Eternal Agony
+		42650, -- [42] Army of the Dead
+		377592, -- [43] Morbidity
+		48792, -- [44] Icebound Fortitude
+		207167, -- [45] Blinding Sleet
+		378848, -- [46] Coldthirst
+		205727, -- [47] Anti-Magic Barrier
+		373926, -- [48] Acclimation
+		374383, -- [49] Assimilation
+		383269, -- [50] Abomination Limb
+		47568, -- [51] Empower Rune Weapon
+		194878, -- [52] Icy Talons
+		391571, -- [53] Gloom Ward
+		343294, -- [54] Soul Reaper
+		206967, -- [55] Will of the Necropolis
+		374261, -- [56] Unholy Bond
+		356367, -- [57] Death's Echo
+		276079, -- [58] Death's Reach
+		273952, -- [59] Grip of the Dead
+		374265, -- [60] Unholy Ground
+		111673, -- [61] Control Undead
+		392566, -- [62] Enfeeble
+		374504, -- [63] Brittle
+		389679, -- [64] Clenching Grasp
+		389682, -- [65] Unholy Endurance
+		221562, -- [66] Asphyxiate
+		51052, -- [67] Anti-Magic Zone
+		374030, -- [68] Blood Scent
+		374277, -- [69] Improved Death Strike
+		48263, -- [70] Veteran of the Third War
+		391546, -- [71] March of Darkness
+		48707, -- [72] Anti-Magic Shell
+		49998, -- [73] Death Strike
+		46585, -- [74] Raise Dead
+		316916, -- [75] Cleaving Strikes
+		327574, -- [76] Sacrificial Pact
+		374049, -- [77] Suppression
+		374111, -- [78] Might of Thassarian
+		48743, -- [79] Death Pact
+		212552, -- [80] Wraith Walk
+		374598, -- [81] Blood Draw
+		374574, -- [82] Rune Mastery
+		45524, -- [83] Chains of Ice
+		47528, -- [84] Mind Freeze
+		207200, -- [85] Permafrost
 		373923, -- [86] Merciless Strikes
 		373930, -- [87] Proliferating Chill
 		207104, -- [88] Runic Attenuation
@@ -1642,216 +1647,122 @@ local talents = {
 	},
 	-- Beast Mastery Hunter
 	[253] = {
-		270581, -- [0] Natural Mending
-		34477, -- [1] Misdirection
-		343247, -- [2] Improved Traps
-		378004, -- [3] Keen Eyesight
-		109215, -- [4] Posthaste
-		321468, -- [5] Binding Shackles
-		343244, -- [6] Improved Tranquilizing Shot
-		378002, -- [7] Pathfinding
-		2643, -- [8] Multi-Shot
-		201430, -- [9] Stampede
-		375891, -- [10] Death Chakram
+		271788, -- [0] Serpent Sting
+		5116, -- [1] Concussive Shot
+		19801, -- [2] Tranquilizing Shot
+		162488, -- [3] Steel Trap
+		385539, -- [4] Rejuvenating Wind
+		19577, -- [5] Intimidation
+		236776, -- [6] High Explosive Trap
+		378014, -- [7] Poison Injection
+		260241, -- [8] Hydra's Bite
+		147362, -- [9] Counter Shot
+		260309, -- [10] Master Marksman
 		212431, -- [11] Explosive Shot
 		120360, -- [12] Barrage
-		321014, -- [13] Pack Tactics
-		120679, -- [14] Dire Beast
-		199528, -- [15] One with the Pack
-		199532, -- [16] Killer Cobra
-		392053, -- [17] Piercing Fangs
-		389654, -- [18] Master Handler
-		389660, -- [19] Snake Bite
-		378244, -- [20] Cobra Senses
-		257944, -- [21] Thrill of the Hunt
-		193532, -- [22] Scent of Blood
-		185789, -- [23] Wild Call
-		359844, -- [24] Call of the Wild
-		217200, -- [25] Barbed Shot
-		260309, -- [26] Master Marksman
-		393344, -- [27] Entrapment
-		273887, -- [28] Killer Instinct
-		269737, -- [29] Alpha Predator
-		271788, -- [30] Serpent Sting
-		5116, -- [31] Concussive Shot
-		19801, -- [32] Tranquilizing Shot
-		162488, -- [33] Steel Trap
-		385539, -- [34] Rejuvenating Wind
-		19577, -- [35] Intimidation
-		236776, -- [36] High Explosive Trap
-		378014, -- [37] Poison Injection
-		260241, -- [38] Hydra's Bite
-		147362, -- [39] Counter Shot
-		343248, -- [40] Improved Kill Shot
-		199921, -- [41] Trailblazer
-		378010, -- [42] Improved Kill Command
-		266921, -- [43] Born To Be Wild
-		199483, -- [44] Camouflage
-		34026, -- [45] Kill Command
-		343242, -- [46] Wilderness Medicine
-		213691, -- [47] Scatter Shot
-		109248, -- [48] Binding Shot
-		392060, -- [49] Wailing Arrow
-		378740, -- [50] Killer Command
-		378745, -- [51] Dire Pack
-		378750, -- [52] Cobra Sting
-		199530, -- [53] Stomp
-		131894, -- [54] A Murder of Crows
-		321530, -- [55] Bloodshed
-		191384, -- [56] Aspect of the Beast
-		378205, -- [57] Sharp Barbs
-		378442, -- [58] Wild Instincts
-		378739, -- [59] Bloody Frenzy
-		267116, -- [60] Animal Companion
-		378209, -- [61] Training Expert
-		193455, -- [62] Cobra Shot
-		193530, -- [63] Aspect of the Wild
-		378210, -- [64] Hunter's Prey
-		393933, -- [65] War Orders
-		378743, -- [66] Dire Command
-		378207, -- [67] Kill Cleave
-		19574, -- [68] Bestial Wrath
-		115939, -- [69] Beast Cleave
-		56315, -- [70] Kindred Spirits
-		389882, -- [71] Serrated Shots
-		390231, -- [72] Arctic Bola
-		386870, -- [73] Brutal Companion
-		388056, -- [74] Sentinel's Perception
-		388057, -- [75] Sentinel's Protection
-		388045, -- [76] Sentinel Owl
-		388039, -- [77] Lone Survivor
-		388042, -- [78] Nature's Endurance
-		264735, -- [79] Survival of the Fittest
-		385810, -- [80] Dire Frenzy
-		378007, -- [81] Beast Master
-		1513, -- [82] Scare Beast
-		187698, -- [83] Tar Trap
-		231548, -- [84] Barbed Wrath
-		384799, -- [85] Hunter's Avoidance
-		53351, -- [86] Kill Shot
-	},
-	-- Marksmanship Hunter
-	[254] = {
-		270581, -- [0] Natural Mending
-		34477, -- [1] Misdirection
-		343247, -- [2] Improved Traps
-		378004, -- [3] Keen Eyesight
-		109215, -- [4] Posthaste
-		321468, -- [5] Binding Shackles
-		343244, -- [6] Improved Tranquilizing Shot
-		378002, -- [7] Pathfinding
-		201430, -- [8] Stampede
-		375891, -- [9] Death Chakram
-		342049, -- [10] Chimaera Shot
-		212431, -- [11] Explosive Shot
-		120360, -- [12] Barrage
-		260309, -- [13] Master Marksman
-		393344, -- [14] Entrapment
-		378910, -- [15] Heavy Ammo
-		378913, -- [16] Light Ammo
-		273887, -- [17] Killer Instinct
-		269737, -- [18] Alpha Predator
-		271788, -- [19] Serpent Sting
-		5116, -- [20] Concussive Shot
-		19801, -- [21] Tranquilizing Shot
-		162488, -- [22] Steel Trap
-		385539, -- [23] Rejuvenating Wind
-		19577, -- [24] Intimidation
-		236776, -- [25] High Explosive Trap
-		378014, -- [26] Poison Injection
-		260241, -- [27] Hydra's Bite
-		343248, -- [28] Improved Kill Shot
-		199921, -- [29] Trailblazer
-		378010, -- [30] Improved Kill Command
-		266921, -- [31] Born To Be Wild
-		199483, -- [32] Camouflage
+		201430, -- [13] Stampede
+		375891, -- [14] Death Chakram
+		2643, -- [15] Multi-Shot
+		378002, -- [16] Pathfinding
+		343244, -- [17] Improved Tranquilizing Shot
+		321468, -- [18] Binding Shackles
+		109215, -- [19] Posthaste
+		378004, -- [20] Keen Eyesight
+		343247, -- [21] Improved Traps
+		34477, -- [22] Misdirection
+		270581, -- [23] Natural Mending
+		378007, -- [24] Beast Master
+		1513, -- [25] Scare Beast
+		187698, -- [26] Tar Trap
+		343248, -- [27] Improved Kill Shot
+		199921, -- [28] Trailblazer
+		378010, -- [29] Improved Kill Command
+		266921, -- [30] Born To Be Wild
+		199483, -- [31] Camouflage
+		34026, -- [32] Kill Command
 		343242, -- [33] Wilderness Medicine
 		213691, -- [34] Scatter Shot
 		109248, -- [35] Binding Shot
-		389866, -- [36] Windrunner's Barrage
-		389865, -- [37] Readiness
-		389882, -- [38] Serrated Shots
-		390231, -- [39] Arctic Bola
-		389019, -- [40] Bulletstorm
-		388056, -- [41] Sentinel's Perception
-		388057, -- [42] Sentinel's Protection
-		388045, -- [43] Sentinel Owl
-		388039, -- [44] Lone Survivor
-		388042, -- [45] Nature's Endurance
-		264735, -- [46] Survival of the Fittest
-		378007, -- [47] Beast Master
-		1513, -- [48] Scare Beast
-		187698, -- [49] Tar Trap
-		34026, -- [50] Kill Command
-		257620, -- [51] Multi-Shot
-		384791, -- [52] Salvo
-		384790, -- [53] Razor Fragments
-		384799, -- [54] Hunter's Avoidance
-		53351, -- [55] Kill Shot
-		147362, -- [56] Counter Shot
-		260404, -- [57] Calling the Shots
-		386878, -- [58] Unerring Vision
-		389449, -- [59] Eagletalon's True Focus
-		378765, -- [60] Killer Accuracy
-		190852, -- [61] Legacy of the Windrunners
-		321018, -- [62] Improved Steady Shot
-		260393, -- [63] Lethal Shots
-		391559, -- [64] Surging Shots
-		378767, -- [65] Focused Aim
-		321293, -- [66] Crack Shot
-		378905, -- [67] Windrunner's Guidance
-		260367, -- [68] Streamline
-		321460, -- [69] Deadeye
-		193533, -- [70] Steady Focus
-		260243, -- [71] Volley
-		378880, -- [72] Bombardment
-		378766, -- [73] Hunter's Knowledge
-		378907, -- [74] Sharpshooter
-		321287, -- [75] Target Practice
-		392060, -- [76] Wailing Arrow
-		194595, -- [77] Lock and Load
-		378769, -- [78] Deathblow
-		288613, -- [79] Trueshot
-		378888, -- [80] Serpentstalker's Trickery
-		257044, -- [81] Rapid Fire
-		260228, -- [82] Careful Aim
-		378771, -- [83] Quick Load
-		260240, -- [84] Precise Shots
-		204089, -- [85] Bullseye
-		257621, -- [86] Trick Shots
-		260402, -- [87] Double Tap
-		19434, -- [88] Aimed Shot
-		186387, -- [89] Bursting Shot
-		155228, -- [90] Lone Wolf
+		392060, -- [36] Wailing Arrow
+		378740, -- [37] Killer Command
+		378745, -- [38] Dire Pack
+		378750, -- [39] Cobra Sting
+		199530, -- [40] Stomp
+		131894, -- [41] A Murder of Crows
+		321530, -- [42] Bloodshed
+		191384, -- [43] Aspect of the Beast
+		378205, -- [44] Sharp Barbs
+		378442, -- [45] Wild Instincts
+		378739, -- [46] Bloody Frenzy
+		267116, -- [47] Animal Companion
+		378209, -- [48] Training Expert
+		193455, -- [49] Cobra Shot
+		193530, -- [50] Aspect of the Wild
+		378210, -- [51] Hunter's Prey
+		393933, -- [52] War Orders
+		378743, -- [53] Dire Command
+		378207, -- [54] Kill Cleave
+		19574, -- [55] Bestial Wrath
+		115939, -- [56] Beast Cleave
+		56315, -- [57] Kindred Spirits
+		321014, -- [58] Pack Tactics
+		120679, -- [59] Dire Beast
+		199528, -- [60] One with the Pack
+		199532, -- [61] Killer Cobra
+		392053, -- [62] Piercing Fangs
+		389654, -- [63] Master Handler
+		389660, -- [64] Snake Bite
+		378244, -- [65] Cobra Senses
+		257944, -- [66] Thrill of the Hunt
+		193532, -- [67] Scent of Blood
+		185789, -- [68] Wild Call
+		359844, -- [69] Call of the Wild
+		217200, -- [70] Barbed Shot
+		393344, -- [71] Entrapment
+		231548, -- [72] Barbed Wrath
+		389882, -- [73] Serrated Shots
+		390231, -- [74] Arctic Bola
+		386870, -- [75] Brutal Companion
+		388056, -- [76] Sentinel's Perception
+		388057, -- [77] Sentinel's Protection
+		388045, -- [78] Sentinel Owl
+		388039, -- [79] Lone Survivor
+		388042, -- [80] Nature's Endurance
+		264735, -- [81] Survival of the Fittest
+		385810, -- [82] Dire Frenzy
+		384799, -- [83] Hunter's Avoidance
+		53351, -- [84] Kill Shot
+		273887, -- [85] Killer Instinct
+		269737, -- [86] Alpha Predator
 	},
-	-- Survival Hunter
-	[255] = {
-		385739, -- [0] Coordinated Kill
-		270581, -- [1] Natural Mending
-		34477, -- [2] Misdirection
-		343247, -- [3] Improved Traps
-		378004, -- [4] Keen Eyesight
-		109215, -- [5] Posthaste
-		321468, -- [6] Binding Shackles
-		343244, -- [7] Improved Tranquilizing Shot
-		378002, -- [8] Pathfinding
-		201430, -- [9] Stampede
-		375891, -- [10] Death Chakram
-		212431, -- [11] Explosive Shot
-		120360, -- [12] Barrage
-		260309, -- [13] Master Marksman
-		393344, -- [14] Entrapment
-		273887, -- [15] Killer Instinct
-		269737, -- [16] Alpha Predator
-		271788, -- [17] Serpent Sting
-		5116, -- [18] Concussive Shot
-		19801, -- [19] Tranquilizing Shot
-		162488, -- [20] Steel Trap
-		385539, -- [21] Rejuvenating Wind
-		19577, -- [22] Intimidation
-		236776, -- [23] High Explosive Trap
-		378014, -- [24] Poison Injection
-		260241, -- [25] Hydra's Bite
+	-- Marksmanship Hunter
+	[254] = {
+		271788, -- [0] Serpent Sting
+		5116, -- [1] Concussive Shot
+		19801, -- [2] Tranquilizing Shot
+		162488, -- [3] Steel Trap
+		385539, -- [4] Rejuvenating Wind
+		19577, -- [5] Intimidation
+		236776, -- [6] High Explosive Trap
+		378014, -- [7] Poison Injection
+		260241, -- [8] Hydra's Bite
+		260309, -- [9] Master Marksman
+		212431, -- [10] Explosive Shot
+		120360, -- [11] Barrage
+		342049, -- [12] Chimaera Shot
+		201430, -- [13] Stampede
+		375891, -- [14] Death Chakram
+		378002, -- [15] Pathfinding
+		343244, -- [16] Improved Tranquilizing Shot
+		321468, -- [17] Binding Shackles
+		109215, -- [18] Posthaste
+		378004, -- [19] Keen Eyesight
+		343247, -- [20] Improved Traps
+		34477, -- [21] Misdirection
+		270581, -- [22] Natural Mending
+		378007, -- [23] Beast Master
+		1513, -- [24] Scare Beast
+		187698, -- [25] Tar Trap
 		343248, -- [26] Improved Kill Shot
 		199921, -- [27] Trailblazer
 		378010, -- [28] Improved Kill Command
@@ -1860,6 +1771,100 @@ local talents = {
 		343242, -- [31] Wilderness Medicine
 		213691, -- [32] Scatter Shot
 		109248, -- [33] Binding Shot
+		393344, -- [34] Entrapment
+		389866, -- [35] Windrunner's Barrage
+		389865, -- [36] Readiness
+		389882, -- [37] Serrated Shots
+		390231, -- [38] Arctic Bola
+		389019, -- [39] Bulletstorm
+		388056, -- [40] Sentinel's Perception
+		388057, -- [41] Sentinel's Protection
+		388045, -- [42] Sentinel Owl
+		388039, -- [43] Lone Survivor
+		388042, -- [44] Nature's Endurance
+		264735, -- [45] Survival of the Fittest
+		384791, -- [46] Salvo
+		384790, -- [47] Razor Fragments
+		384799, -- [48] Hunter's Avoidance
+		53351, -- [49] Kill Shot
+		147362, -- [50] Counter Shot
+		34026, -- [51] Kill Command
+		257620, -- [52] Multi-Shot
+		155228, -- [53] Lone Wolf
+		186387, -- [54] Bursting Shot
+		19434, -- [55] Aimed Shot
+		260402, -- [56] Double Tap
+		257621, -- [57] Trick Shots
+		204089, -- [58] Bullseye
+		260240, -- [59] Precise Shots
+		378771, -- [60] Quick Load
+		260228, -- [61] Careful Aim
+		257044, -- [62] Rapid Fire
+		378888, -- [63] Serpentstalker's Trickery
+		288613, -- [64] Trueshot
+		378769, -- [65] Deathblow
+		194595, -- [66] Lock and Load
+		392060, -- [67] Wailing Arrow
+		321287, -- [68] Target Practice
+		378907, -- [69] Sharpshooter
+		378766, -- [70] Hunter's Knowledge
+		378880, -- [71] Bombardment
+		260243, -- [72] Volley
+		193533, -- [73] Steady Focus
+		321460, -- [74] Deadeye
+		260367, -- [75] Streamline
+		378905, -- [76] Windrunner's Guidance
+		321293, -- [77] Crack Shot
+		378767, -- [78] Focused Aim
+		260393, -- [79] Lethal Shots
+		391559, -- [80] Surging Shots
+		321018, -- [81] Improved Steady Shot
+		190852, -- [82] Legacy of the Windrunners
+		378765, -- [83] Killer Accuracy
+		389449, -- [84] Eagletalon's True Focus
+		260404, -- [85] Calling the Shots
+		386878, -- [86] Unerring Vision
+		273887, -- [87] Killer Instinct
+		269737, -- [88] Alpha Predator
+		378910, -- [89] Heavy Ammo
+		378913, -- [90] Light Ammo
+	},
+	-- Survival Hunter
+	[255] = {
+		271788, -- [0] Serpent Sting
+		5116, -- [1] Concussive Shot
+		19801, -- [2] Tranquilizing Shot
+		162488, -- [3] Steel Trap
+		385539, -- [4] Rejuvenating Wind
+		19577, -- [5] Intimidation
+		236776, -- [6] High Explosive Trap
+		378014, -- [7] Poison Injection
+		260241, -- [8] Hydra's Bite
+		260309, -- [9] Master Marksman
+		212431, -- [10] Explosive Shot
+		120360, -- [11] Barrage
+		201430, -- [12] Stampede
+		375891, -- [13] Death Chakram
+		378002, -- [14] Pathfinding
+		343244, -- [15] Improved Tranquilizing Shot
+		321468, -- [16] Binding Shackles
+		109215, -- [17] Posthaste
+		378004, -- [18] Keen Eyesight
+		343247, -- [19] Improved Traps
+		34477, -- [20] Misdirection
+		270581, -- [21] Natural Mending
+		378007, -- [22] Beast Master
+		1513, -- [23] Scare Beast
+		187698, -- [24] Tar Trap
+		343248, -- [25] Improved Kill Shot
+		199921, -- [26] Trailblazer
+		378010, -- [27] Improved Kill Command
+		266921, -- [28] Born To Be Wild
+		199483, -- [29] Camouflage
+		343242, -- [30] Wilderness Medicine
+		213691, -- [31] Scatter Shot
+		109248, -- [32] Binding Shot
+		393344, -- [33] Entrapment
 		389882, -- [34] Serrated Shots
 		390231, -- [35] Arctic Bola
 		388056, -- [36] Sentinel's Perception
@@ -1868,713 +1873,710 @@ local talents = {
 		388039, -- [39] Lone Survivor
 		388042, -- [40] Nature's Endurance
 		264735, -- [41] Survival of the Fittest
-		378007, -- [42] Beast Master
-		1513, -- [43] Scare Beast
-		187698, -- [44] Tar Trap
-		259489, -- [45] Kill Command
-		269751, -- [46] Flanking Strike
-		190925, -- [47] Harpoon
-		268501, -- [48] Viper's Venom
-		385709, -- [49] Intense Focus
-		385737, -- [50] Bloody Claws
-		385718, -- [51] Ruthless Marauder
-		384799, -- [52] Hunter's Avoidance
-		320976, -- [53] Kill Shot
-		187707, -- [54] Muzzle
-		271014, -- [55] Wildfire Infusion
-		378962, -- [56] Deadly Duo
-		378940, -- [57] Quick Shot
-		264332, -- [58] Guerrilla Tactics
-		360966, -- [59] Spearhead
-		360952, -- [60] Coordinated Assault
-		260331, -- [61] Birds of Prey
-		389880, -- [62] Bombardier
-		259495, -- [63] Wildfire Bomb
-		265895, -- [64] Terms of Engagement
-		259387, -- [65] Mongoose Bite
-		263186, -- [66] Flanker's Advantage
-		260248, -- [67] Bloodseeker
-		378937, -- [68] Explosives Expert
+		385739, -- [42] Coordinated Kill
+		385695, -- [43] Ranger
+		268501, -- [44] Viper's Venom
+		385709, -- [45] Intense Focus
+		385737, -- [46] Bloody Claws
+		385718, -- [47] Ruthless Marauder
+		384799, -- [48] Hunter's Avoidance
+		320976, -- [49] Kill Shot
+		187707, -- [50] Muzzle
+		259489, -- [51] Kill Command
+		269751, -- [52] Flanking Strike
+		190925, -- [53] Harpoon
+		378948, -- [54] Sharp Edges
+		294029, -- [55] Frenzy Strikes
+		378916, -- [56] Ferocity
+		378934, -- [57] Lunge
+		186270, -- [58] Raptor Strike
+		187708, -- [59] Carve
+		212436, -- [60] Butchery
+		260285, -- [61] Tip of the Spear
+		321290, -- [62] Improved Wildfire Bomb
+		378951, -- [63] Tactical Advantage
+		203415, -- [64] Fury of the Eagle
+		378953, -- [65] Spear Focus
+		378955, -- [66] Killer Companion
+		378961, -- [67] Energetic Ally
+		378950, -- [68] Sweeping Spear
 		186289, -- [69] Aspect of the Eagle
-		378950, -- [70] Sweeping Spear
-		378961, -- [71] Energetic Ally
-		378955, -- [72] Killer Companion
-		378953, -- [73] Spear Focus
-		203415, -- [74] Fury of the Eagle
-		378951, -- [75] Tactical Advantage
-		321290, -- [76] Improved Wildfire Bomb
-		260285, -- [77] Tip of the Spear
-		187708, -- [78] Carve
-		212436, -- [79] Butchery
-		186270, -- [80] Raptor Strike
-		378934, -- [81] Lunge
-		378916, -- [82] Ferocity
-		294029, -- [83] Frenzy Strikes
-		378948, -- [84] Sharp Edges
-		385695, -- [85] Ranger
+		378937, -- [70] Explosives Expert
+		260248, -- [71] Bloodseeker
+		263186, -- [72] Flanker's Advantage
+		259387, -- [73] Mongoose Bite
+		265895, -- [74] Terms of Engagement
+		259495, -- [75] Wildfire Bomb
+		260331, -- [76] Birds of Prey
+		389880, -- [77] Bombardier
+		360952, -- [78] Coordinated Assault
+		360966, -- [79] Spearhead
+		264332, -- [80] Guerrilla Tactics
+		378940, -- [81] Quick Shot
+		378962, -- [82] Deadly Duo
+		271014, -- [83] Wildfire Infusion
+		273887, -- [84] Killer Instinct
+		269737, -- [85] Alpha Predator
 	},
 	-- Discipline Priest
 	[256] = {
-		372354, -- [0] Focused Mending
-		33076, -- [1] Prayer of Mending
-		139, -- [2] Renew
-		73325, -- [3] Leap of Faith
-		528, -- [4] Dispel Magic
-		393870, -- [5] Improved Flash Heal
-		34433, -- [6] Shadowfiend
-		32379, -- [7] Shadow Word: Death
-		321291, -- [8] Death and Madness
-		605, -- [9] Mind Control
-		205364, -- [10] Dominate Mind
-		377422, -- [11] Throes of Pain
-		390919, -- [12] Sheer Terror
-		108920, -- [13] Void Tendrils
-		193063, -- [14] Protective Light
-		390615, -- [15] From Darkness Comes Light
-		64129, -- [16] Body and Soul
-		390632, -- [17] Improved Purify
-		121536, -- [18] Angelic Feather
-		390620, -- [19] Move with Grace
-		132157, -- [20] Holy Nova
-		390622, -- [21] Rhapsody
-		32375, -- [22] Mass Dispel
-		341167, -- [23] Improved Mass Dispel
-		373456, -- [24] Unwavering Will
-		390676, -- [25] Inspiration
-		196704, -- [26] Psychic Voice
-		10060, -- [27] Power Infusion
-		9484, -- [28] Shackle Undead
-		280749, -- [29] Void Shield
-		15286, -- [30] Vampiric Embrace
-		199855, -- [31] San'layn
-		390668, -- [32] Apathy
-		373223, -- [33] Tithe Evasion
-		375901, -- [34] Mindgames
-		390670, -- [35] Improved Fade
-		373446, -- [36] Translucent Image
-		390972, -- [37] Twist of Fate
-		373466, -- [38] Twins of the Sun Priestess
-		110744, -- [39] Divine Star
-		120517, -- [40] Halo
-		373457, -- [41] Crystalline Reflection
-		373450, -- [42] Light's Inspiration
-		238100, -- [43] Angel's Mercy
-		368275, -- [44] Binding Heals
-		109186, -- [45] Surge of Light
-		373481, -- [46] Power Word: Life
-		108945, -- [47] Angelic Bulwark
-		108968, -- [48] Void Shift
-		391112, -- [49] Shattered Perceptions
-		390996, -- [50] Manipulation
-		390667, -- [51] Spell Warding
-		390767, -- [52] Blessed Recovery
-		377438, -- [53] Words of the Pious
-		390686, -- [54] Painful Punishment
-		47515, -- [55] Divine Aegis
-		390693, -- [56] Train of Thought
-		391079, -- [57] Make Amends
-		390691, -- [58] Borrowed Time
-		197419, -- [59] Contrition
-		47536, -- [60] Rapture
-		372972, -- [61] Dark Indulgence
-		198068, -- [62] Power of the Dark Side
-		81749, -- [63] Atonement
-		194509, -- [64] Power Word: Radiance
-		322115, -- [65] Light's Promise
-		390684, -- [66] Bright Pupil
-		390685, -- [67] Enduring Luminescence
-		204197, -- [68] Purge the Wicked
-		197045, -- [69] Shield Discipline
-		129250, -- [70] Power Word: Solace
-		372991, -- [71] Pain Transformation
-		373035, -- [72] Protector of the Frail
-		33206, -- [73] Pain Suppression
-		373427, -- [74] Inescapable Torment
-		390832, -- [75] Expiation
-		123040, -- [76] Mindbender
-		373054, -- [77] Stolen Psyche
-		372985, -- [78] Embrace Shadow
-		373065, -- [79] Twilight Corruption
-		314867, -- [80] Shadow Covenant
-		372969, -- [81] Malicious Intent
-		214621, -- [82] Schism
-		390689, -- [83] Pain and Suffering
-		193134, -- [84] Castigation
-		373042, -- [85] Exaltation
-		373178, -- [86] Light's Wrath
-		390765, -- [87] Resplendent Light
-		390781, -- [88] Wrath Unleashed
-		373180, -- [89] Harsh Discipline
-		390705, -- [90] Twilight Equilibrium
-		390770, -- [91] Void Summoner
-		390786, -- [92] Weal and Woe
-		280391, -- [93] Sins of the Many
-		238063, -- [94] Lenience
-		246287, -- [95] Evangelism
-		373003, -- [96] Revel in Purity
-		373049, -- [97] Indemnity
-		238135, -- [98] Aegis of Wrath
-		62618, -- [99] Power Word: Barrier
-		108942, -- [100] Phantasm
+		373457, -- [0] Crystalline Reflection
+		108942, -- [1] Phantasm
+		62618, -- [2] Power Word: Barrier
+		373003, -- [3] Revel in Purity
+		238063, -- [4] Lenience
+		246287, -- [5] Evangelism
+		280391, -- [6] Sins of the Many
+		390786, -- [7] Weal and Woe
+		390770, -- [8] Void Summoner
+		390705, -- [9] Twilight Equilibrium
+		373180, -- [10] Harsh Discipline
+		390781, -- [11] Wrath Unleashed
+		390765, -- [12] Resplendent Light
+		373178, -- [13] Light's Wrath
+		373042, -- [14] Exaltation
+		373049, -- [15] Indemnity
+		193134, -- [16] Castigation
+		390689, -- [17] Pain and Suffering
+		214621, -- [18] Schism
+		372969, -- [19] Malicious Intent
+		314867, -- [20] Shadow Covenant
+		372985, -- [21] Embrace Shadow
+		373065, -- [22] Twilight Corruption
+		373054, -- [23] Stolen Psyche
+		123040, -- [24] Mindbender
+		390832, -- [25] Expiation
+		373427, -- [26] Inescapable Torment
+		33206, -- [27] Pain Suppression
+		372991, -- [28] Pain Transformation
+		373035, -- [29] Protector of the Frail
+		197045, -- [30] Shield Discipline
+		129250, -- [31] Power Word: Solace
+		204197, -- [32] Purge the Wicked
+		390684, -- [33] Bright Pupil
+		390685, -- [34] Enduring Luminescence
+		322115, -- [35] Light's Promise
+		194509, -- [36] Power Word: Radiance
+		81749, -- [37] Atonement
+		377438, -- [38] Words of the Pious
+		390667, -- [39] Spell Warding
+		390767, -- [40] Blessed Recovery
+		372354, -- [41] Focused Mending
+		33076, -- [42] Prayer of Mending
+		139, -- [43] Renew
+		73325, -- [44] Leap of Faith
+		528, -- [45] Dispel Magic
+		393870, -- [46] Improved Flash Heal
+		34433, -- [47] Shadowfiend
+		32379, -- [48] Shadow Word: Death
+		321291, -- [49] Death and Madness
+		605, -- [50] Mind Control
+		205364, -- [51] Dominate Mind
+		377422, -- [52] Throes of Pain
+		390919, -- [53] Sheer Terror
+		108920, -- [54] Void Tendrils
+		193063, -- [55] Protective Light
+		390615, -- [56] From Darkness Comes Light
+		64129, -- [57] Body and Soul
+		390632, -- [58] Improved Purify
+		121536, -- [59] Angelic Feather
+		390620, -- [60] Move with Grace
+		132157, -- [61] Holy Nova
+		390622, -- [62] Rhapsody
+		32375, -- [63] Mass Dispel
+		341167, -- [64] Improved Mass Dispel
+		373456, -- [65] Unwavering Will
+		390676, -- [66] Inspiration
+		196704, -- [67] Psychic Voice
+		10060, -- [68] Power Infusion
+		9484, -- [69] Shackle Undead
+		280749, -- [70] Void Shield
+		15286, -- [71] Vampiric Embrace
+		199855, -- [72] San'layn
+		390668, -- [73] Apathy
+		373223, -- [74] Tithe Evasion
+		375901, -- [75] Mindgames
+		390670, -- [76] Improved Fade
+		373446, -- [77] Translucent Image
+		390972, -- [78] Twist of Fate
+		373466, -- [79] Twins of the Sun Priestess
+		110744, -- [80] Divine Star
+		120517, -- [81] Halo
+		238135, -- [82] Aegis of Wrath
+		391079, -- [83] Make Amends
+		198068, -- [84] Power of the Dark Side
+		372972, -- [85] Dark Indulgence
+		390686, -- [86] Painful Punishment
+		47536, -- [87] Rapture
+		197419, -- [88] Contrition
+		390691, -- [89] Borrowed Time
+		390693, -- [90] Train of Thought
+		47515, -- [91] Divine Aegis
+		390996, -- [92] Manipulation
+		391112, -- [93] Shattered Perceptions
+		108968, -- [94] Void Shift
+		108945, -- [95] Angelic Bulwark
+		373481, -- [96] Power Word: Life
+		109186, -- [97] Surge of Light
+		238100, -- [98] Angel's Mercy
+		368275, -- [99] Binding Heals
+		373450, -- [100] Light's Inspiration
 	},
 	-- Holy Priest
 	[257] = {
-		2050, -- [0] Holy Word: Serenity
-		372354, -- [1] Focused Mending
-		33076, -- [2] Prayer of Mending
-		139, -- [3] Renew
-		73325, -- [4] Leap of Faith
-		528, -- [5] Dispel Magic
-		393870, -- [6] Improved Flash Heal
-		34433, -- [7] Shadowfiend
-		32379, -- [8] Shadow Word: Death
-		321291, -- [9] Death and Madness
-		605, -- [10] Mind Control
-		205364, -- [11] Dominate Mind
-		377422, -- [12] Throes of Pain
-		390919, -- [13] Sheer Terror
-		108920, -- [14] Void Tendrils
-		193063, -- [15] Protective Light
-		390615, -- [16] From Darkness Comes Light
-		64129, -- [17] Body and Soul
-		390632, -- [18] Improved Purify
-		121536, -- [19] Angelic Feather
-		390620, -- [20] Move with Grace
-		132157, -- [21] Holy Nova
-		390622, -- [22] Rhapsody
-		32375, -- [23] Mass Dispel
-		341167, -- [24] Improved Mass Dispel
-		373456, -- [25] Unwavering Will
-		390676, -- [26] Inspiration
-		196704, -- [27] Psychic Voice
-		10060, -- [28] Power Infusion
-		9484, -- [29] Shackle Undead
-		280749, -- [30] Void Shield
-		15286, -- [31] Vampiric Embrace
-		199855, -- [32] San'layn
-		390668, -- [33] Apathy
-		373223, -- [34] Tithe Evasion
-		375901, -- [35] Mindgames
-		390670, -- [36] Improved Fade
-		373446, -- [37] Translucent Image
-		390972, -- [38] Twist of Fate
-		373466, -- [39] Twins of the Sun Priestess
-		110744, -- [40] Divine Star
-		120517, -- [41] Halo
-		373457, -- [42] Crystalline Reflection
-		373450, -- [43] Light's Inspiration
-		238100, -- [44] Angel's Mercy
-		368275, -- [45] Binding Heals
-		109186, -- [46] Surge of Light
-		373481, -- [47] Power Word: Life
-		108945, -- [48] Angelic Bulwark
-		108968, -- [49] Void Shift
-		391112, -- [50] Shattered Perceptions
-		390996, -- [51] Manipulation
-		391233, -- [52] Divine Service
-		193157, -- [53] Benediction
-		391154, -- [54] Holy Mending
-		372307, -- [55] Burning Vehemence
-		88625, -- [56] Holy Word: Chastise
-		390667, -- [57] Spell Warding
-		390767, -- [58] Blessed Recovery
-		377438, -- [59] Words of the Pious
-		200128, -- [60] Trail of Light
-		391208, -- [61] Revitalizing Prayers
-		196489, -- [62] Sanctified Prayers
-		34861, -- [63] Holy Word: Sanctify
-		596, -- [64] Prayer of Healing
-		238136, -- [65] Cosmic Ripple
-		196985, -- [66] Light of the Naaru
-		390980, -- [67] Pontifex
-		390954, -- [68] Crisis Management
-		390947, -- [69] Orison
-		321377, -- [70] Prayer Circle
-		390881, -- [71] Healing Chorus
-		204883, -- [72] Circle of Healing
-		391209, -- [73] Prayerful Litany
-		391161, -- [74] Everlasting Light
-		64843, -- [75] Divine Hymn
-		341997, -- [76] Renewed Faith
-		200199, -- [77] Censure
-		193155, -- [78] Enlightenment
-		64901, -- [79] Symbol of Hope
-		390977, -- [80] Prayers of the Virtuous
-		391186, -- [81] Say Your Prayers
-		390967, -- [82] Prismatic Echoes
-		372370, -- [83] Gales of Song
-		391339, -- [84] Empowered Renew
-		391368, -- [85] Rapid Recovery
-		390994, -- [86] Harmonious Apparatus
-		200183, -- [87] Apotheosis
-		265202, -- [88] Holy Word: Salvation
-		391381, -- [89] Desperate Times
-		391387, -- [90] Answered Prayers
-		372616, -- [91] Empyreal Blaze
-		372611, -- [92] Searing Light
-		235587, -- [93] Miracle Worker
-		391124, -- [94] Restitution
-		372309, -- [95] Resonant Words
-		390992, -- [96] Lightweaver
-		372835, -- [97] Lightwell
-		108942, -- [98] Phantasm
-		392988, -- [99] Divine Image
-		372760, -- [100] Divine Word
-		196707, -- [101] Afterlife
-		47788, -- [102] Guardian Spirit
-		200209, -- [103] Guardian Angel
-		196437, -- [104] Guardians of the Light
+		373457, -- [0] Crystalline Reflection
+		392988, -- [1] Divine Image
+		372760, -- [2] Divine Word
+		108942, -- [3] Phantasm
+		377438, -- [4] Words of the Pious
+		390667, -- [5] Spell Warding
+		390767, -- [6] Blessed Recovery
+		372354, -- [7] Focused Mending
+		33076, -- [8] Prayer of Mending
+		139, -- [9] Renew
+		73325, -- [10] Leap of Faith
+		528, -- [11] Dispel Magic
+		393870, -- [12] Improved Flash Heal
+		34433, -- [13] Shadowfiend
+		32379, -- [14] Shadow Word: Death
+		321291, -- [15] Death and Madness
+		605, -- [16] Mind Control
+		205364, -- [17] Dominate Mind
+		377422, -- [18] Throes of Pain
+		390919, -- [19] Sheer Terror
+		108920, -- [20] Void Tendrils
+		193063, -- [21] Protective Light
+		390615, -- [22] From Darkness Comes Light
+		64129, -- [23] Body and Soul
+		390632, -- [24] Improved Purify
+		121536, -- [25] Angelic Feather
+		390620, -- [26] Move with Grace
+		132157, -- [27] Holy Nova
+		390622, -- [28] Rhapsody
+		32375, -- [29] Mass Dispel
+		341167, -- [30] Improved Mass Dispel
+		373456, -- [31] Unwavering Will
+		390676, -- [32] Inspiration
+		196704, -- [33] Psychic Voice
+		10060, -- [34] Power Infusion
+		9484, -- [35] Shackle Undead
+		280749, -- [36] Void Shield
+		15286, -- [37] Vampiric Embrace
+		199855, -- [38] San'layn
+		390668, -- [39] Apathy
+		373223, -- [40] Tithe Evasion
+		375901, -- [41] Mindgames
+		390670, -- [42] Improved Fade
+		373446, -- [43] Translucent Image
+		390972, -- [44] Twist of Fate
+		373466, -- [45] Twins of the Sun Priestess
+		110744, -- [46] Divine Star
+		120517, -- [47] Halo
+		390992, -- [48] Lightweaver
+		372835, -- [49] Lightwell
+		372309, -- [50] Resonant Words
+		235587, -- [51] Miracle Worker
+		391124, -- [52] Restitution
+		372611, -- [53] Searing Light
+		372616, -- [54] Empyreal Blaze
+		391387, -- [55] Answered Prayers
+		391381, -- [56] Desperate Times
+		200183, -- [57] Apotheosis
+		265202, -- [58] Holy Word: Salvation
+		390994, -- [59] Harmonious Apparatus
+		391339, -- [60] Empowered Renew
+		391368, -- [61] Rapid Recovery
+		372370, -- [62] Gales of Song
+		390967, -- [63] Prismatic Echoes
+		391186, -- [64] Say Your Prayers
+		390977, -- [65] Prayers of the Virtuous
+		64901, -- [66] Symbol of Hope
+		193155, -- [67] Enlightenment
+		200199, -- [68] Censure
+		341997, -- [69] Renewed Faith
+		64843, -- [70] Divine Hymn
+		391161, -- [71] Everlasting Light
+		391209, -- [72] Prayerful Litany
+		204883, -- [73] Circle of Healing
+		321377, -- [74] Prayer Circle
+		390881, -- [75] Healing Chorus
+		390947, -- [76] Orison
+		390954, -- [77] Crisis Management
+		390980, -- [78] Pontifex
+		196985, -- [79] Light of the Naaru
+		238136, -- [80] Cosmic Ripple
+		596, -- [81] Prayer of Healing
+		34861, -- [82] Holy Word: Sanctify
+		391208, -- [83] Revitalizing Prayers
+		196489, -- [84] Sanctified Prayers
+		200128, -- [85] Trail of Light
+		196707, -- [86] Afterlife
+		200209, -- [87] Guardian Angel
+		196437, -- [88] Guardians of the Light
+		47788, -- [89] Guardian Spirit
+		2050, -- [90] Holy Word: Serenity
+		88625, -- [91] Holy Word: Chastise
+		372307, -- [92] Burning Vehemence
+		193157, -- [93] Benediction
+		391154, -- [94] Holy Mending
+		391233, -- [95] Divine Service
+		390996, -- [96] Manipulation
+		391112, -- [97] Shattered Perceptions
+		108968, -- [98] Void Shift
+		108945, -- [99] Angelic Bulwark
+		373481, -- [100] Power Word: Life
+		109186, -- [101] Surge of Light
+		238100, -- [102] Angel's Mercy
+		368275, -- [103] Binding Heals
+		373450, -- [104] Light's Inspiration
 	},
 	-- Shadow Priest
 	[258] = {
-		372354, -- [0] Focused Mending
-		33076, -- [1] Prayer of Mending
-		139, -- [2] Renew
-		73325, -- [3] Leap of Faith
-		528, -- [4] Dispel Magic
-		393870, -- [5] Improved Flash Heal
-		34433, -- [6] Shadowfiend
-		32379, -- [7] Shadow Word: Death
-		321291, -- [8] Death and Madness
-		605, -- [9] Mind Control
-		205364, -- [10] Dominate Mind
-		377422, -- [11] Throes of Pain
-		390919, -- [12] Sheer Terror
-		108920, -- [13] Void Tendrils
-		193063, -- [14] Protective Light
-		390615, -- [15] From Darkness Comes Light
-		64129, -- [16] Body and Soul
-		213634, -- [17] Purify Disease
-		121536, -- [18] Angelic Feather
-		390620, -- [19] Move with Grace
-		132157, -- [20] Holy Nova
-		390622, -- [21] Rhapsody
-		32375, -- [22] Mass Dispel
-		341167, -- [23] Improved Mass Dispel
-		373456, -- [24] Unwavering Will
-		390676, -- [25] Inspiration
-		196704, -- [26] Psychic Voice
-		10060, -- [27] Power Infusion
-		9484, -- [28] Shackle Undead
-		280749, -- [29] Void Shield
-		15286, -- [30] Vampiric Embrace
-		199855, -- [31] San'layn
-		390668, -- [32] Apathy
-		373223, -- [33] Tithe Evasion
-		375901, -- [34] Mindgames
-		390670, -- [35] Improved Fade
-		373446, -- [36] Translucent Image
-		390972, -- [37] Twist of Fate
-		373466, -- [38] Twins of the Sun Priestess
-		373457, -- [39] Crystalline Reflection
-		122121, -- [40] Divine Star
-		120644, -- [41] Halo
-		373450, -- [42] Light's Inspiration
-		238100, -- [43] Angel's Mercy
-		368275, -- [44] Binding Heals
-		109186, -- [45] Surge of Light
-		373481, -- [46] Power Word: Life
-		108945, -- [47] Angelic Bulwark
-		108968, -- [48] Void Shift
-		391112, -- [49] Shattered Perceptions
-		390996, -- [50] Manipulation
-		391288, -- [51] Pain of Death
-		199484, -- [52] Psychic Link
-		162448, -- [53] Surge of Darkness
-		73510, -- [54] Mind Spike
-		155271, -- [55] Auspicious Spirits
-		391284, -- [56] Tormented Spirits
-		341491, -- [57] Shadowy Apparitions
-		335467, -- [58] Devouring Plague
-		48045, -- [59] Mind Sear
-		47585, -- [60] Dispersion
-		375888, -- [61] Shadowy Insight
-		375994, -- [62] Mental Decay
-		391095, -- [63] Dark Evangelism
-		288733, -- [64] Intangibility
-		377065, -- [65] Mental Fortitude
-		341273, -- [66] Unfurling Darkness
-		391109, -- [67] Dark Ascension
-		228260, -- [68] Void Eruption
-		341240, -- [69] Ancient Madness
+		373457, -- [0] Crystalline Reflection
+		373273, -- [1] Idol of Yogg-Saron
+		108942, -- [2] Phantasm
+		205385, -- [3] Shadow Crash
+		392507, -- [4] Deathspeaker
+		391399, -- [5] Mind Flay: Insanity
+		391090, -- [6] Mind Melt
+		373212, -- [7] Insidious Ire
+		373202, -- [8] Mind Devourer
+		391235, -- [9] Encroaching Shadows
+		391137, -- [10] Whispers of the Damned
+		377438, -- [11] Words of the Pious
+		390667, -- [12] Spell Warding
+		390767, -- [13] Blessed Recovery
+		372354, -- [14] Focused Mending
+		33076, -- [15] Prayer of Mending
+		139, -- [16] Renew
+		73325, -- [17] Leap of Faith
+		528, -- [18] Dispel Magic
+		393870, -- [19] Improved Flash Heal
+		34433, -- [20] Shadowfiend
+		32379, -- [21] Shadow Word: Death
+		321291, -- [22] Death and Madness
+		605, -- [23] Mind Control
+		205364, -- [24] Dominate Mind
+		377422, -- [25] Throes of Pain
+		390919, -- [26] Sheer Terror
+		108920, -- [27] Void Tendrils
+		193063, -- [28] Protective Light
+		390615, -- [29] From Darkness Comes Light
+		64129, -- [30] Body and Soul
+		213634, -- [31] Purify Disease
+		121536, -- [32] Angelic Feather
+		390620, -- [33] Move with Grace
+		132157, -- [34] Holy Nova
+		390622, -- [35] Rhapsody
+		32375, -- [36] Mass Dispel
+		341167, -- [37] Improved Mass Dispel
+		373456, -- [38] Unwavering Will
+		390676, -- [39] Inspiration
+		196704, -- [40] Psychic Voice
+		10060, -- [41] Power Infusion
+		9484, -- [42] Shackle Undead
+		280749, -- [43] Void Shield
+		15286, -- [44] Vampiric Embrace
+		199855, -- [45] San'layn
+		390668, -- [46] Apathy
+		373223, -- [47] Tithe Evasion
+		375901, -- [48] Mindgames
+		390670, -- [49] Improved Fade
+		373446, -- [50] Translucent Image
+		390972, -- [51] Twist of Fate
+		373466, -- [52] Twins of the Sun Priestess
+		373310, -- [53] Idol of Y'Shaarj
+		373280, -- [54] Idol of N'Zoth
+		391242, -- [55] Coalescing Shadows
+		377349, -- [56] Idol of C'Thun
+		373427, -- [57] Inescapable Torment
+		391228, -- [58] Maddening Touch
+		377387, -- [59] Puppet Master
+		391296, -- [60] Harnessed Shadows
+		200174, -- [61] Mindbender
+		375767, -- [62] Screams of the Void
+		238558, -- [63] Misery
+		263346, -- [64] Dark Void
+		15487, -- [65] Silence
+		263716, -- [66] Last Word
+		64044, -- [67] Psychic Horror
+		341374, -- [68] Damnation
+		263165, -- [69] Void Torrent
 		373221, -- [70] Malediction
-		341374, -- [71] Damnation
-		263165, -- [72] Void Torrent
-		391242, -- [73] Coalescing Shadows
-		64044, -- [74] Psychic Horror
-		263716, -- [75] Last Word
-		15487, -- [76] Silence
-		238558, -- [77] Misery
-		263346, -- [78] Dark Void
-		375767, -- [79] Screams of the Void
-		200174, -- [80] Mindbender
-		391296, -- [81] Harnessed Shadows
-		377387, -- [82] Puppet Master
-		391228, -- [83] Maddening Touch
-		373427, -- [84] Inescapable Torment
-		377349, -- [85] Idol of C'Thun
-		390667, -- [86] Spell Warding
-		390767, -- [87] Blessed Recovery
-		377438, -- [88] Words of the Pious
-		373280, -- [89] Idol of N'Zoth
-		391137, -- [90] Whispers of the Damned
-		391235, -- [91] Encroaching Shadows
-		373202, -- [92] Mind Devourer
-		373212, -- [93] Insidious Ire
-		391090, -- [94] Mind Melt
-		392507, -- [95] Deathspeaker
-		391399, -- [96] Mind Flay: Insanity
-		205385, -- [97] Shadow Crash
-		108942, -- [98] Phantasm
-		373273, -- [99] Idol of Yogg-Saron
-		373310, -- [100] Idol of Y'Shaarj
+		341240, -- [71] Ancient Madness
+		391109, -- [72] Dark Ascension
+		228260, -- [73] Void Eruption
+		341273, -- [74] Unfurling Darkness
+		288733, -- [75] Intangibility
+		377065, -- [76] Mental Fortitude
+		391095, -- [77] Dark Evangelism
+		375994, -- [78] Mental Decay
+		375888, -- [79] Shadowy Insight
+		47585, -- [80] Dispersion
+		48045, -- [81] Mind Sear
+		335467, -- [82] Devouring Plague
+		341491, -- [83] Shadowy Apparitions
+		155271, -- [84] Auspicious Spirits
+		391284, -- [85] Tormented Spirits
+		73510, -- [86] Mind Spike
+		162448, -- [87] Surge of Darkness
+		199484, -- [88] Psychic Link
+		391288, -- [89] Pain of Death
+		390996, -- [90] Manipulation
+		391112, -- [91] Shattered Perceptions
+		108968, -- [92] Void Shift
+		108945, -- [93] Angelic Bulwark
+		373481, -- [94] Power Word: Life
+		109186, -- [95] Surge of Light
+		238100, -- [96] Angel's Mercy
+		368275, -- [97] Binding Heals
+		373450, -- [98] Light's Inspiration
+		122121, -- [99] Divine Star
+		120644, -- [100] Halo
 	},
 	-- Assassination Rogue
 	[259] = {
-		392384, -- [0] Poison Damage
-		382238, -- [1] Lethality
-		14983, -- [2] Vigor
-		280716, -- [3] Leeching Poison
-		14190, -- [4] Seal Fate
-		381623, -- [5] Thistle Tea
-		36554, -- [6] Shadowstep
-		379005, -- [7] Blackjack
-		381621, -- [8] Tight Spender
-		14062, -- [9] Nightstalker
-		79008, -- [10] Elusiveness
-		31230, -- [11] Cheat Death
-		381619, -- [12] So Versatile
-		196924, -- [13] Acrobatic Strikes
-		381620, -- [14] Improved Ambush
-		193539, -- [15] Alacrity
-		193531, -- [16] Deeper Stratagem
-		137619, -- [17] Marked for Death
-		393970, -- [18] Soothing Darkness
-		91023, -- [19] Find Weakness
-		185313, -- [20] Shadow Dance
-		381620, -- [21] Improved Ambush
-		14062, -- [22] Nightstalker
-		381622, -- [23] Resounding Clarity
-		385616, -- [24] Echoing Reprimand
-		378996, -- [25] Recuperator
-		381543, -- [26] Virulent Poisons
-		231719, -- [27] Deadened Nerves
-		381542, -- [28] Deadly Precision
-		378813, -- [29] Fleet Footed
-		5761, -- [30] Numbing Poison
-		381637, -- [31] Atrophic Poison
-		5277, -- [32] Evasion
-		378427, -- [33] Nimble Fingers
-		231691, -- [34] Improved Sprint
-		1776, -- [35] Gouge
-		1966, -- [36] Feint
-		378803, -- [37] Rushed Setup
-		131511, -- [38] Prey on the Weak
-		31224, -- [39] Cloak of Shadows
-		57934, -- [40] Tricks of the Trade
-		378807, -- [41] Shadowrunner
-		108208, -- [42] Subterfuge
-		6770, -- [43] Sap
-		2094, -- [44] Blind
-		193546, -- [45] Iron Stomach
-		378436, -- [46] Master Poisoner
-		319066, -- [47] Improved Wound Poison
-		5938, -- [48] Shiv
-		385408, -- [49] Sepsis
-		385424, -- [50] Serrated Bone Spike
-		381799, -- [51] Scent of Blood
-		381802, -- [52] Indiscriminate Carnage
-		381634, -- [53] Vicious Venoms
-		381652, -- [54] Maim, Mangle
-		328085, -- [55] Blindside
-		381798, -- [56] Zoldyck Recipe
-		385627, -- [57] Kingsbane
-		381624, -- [58] Improved Poisons
-		5938, -- [59] Shiv
-		360194, -- [60] Deathmark
-		381640, -- [61] Lethal Dose
-		381673, -- [62] Doomblade
-		381800, -- [63] Tiny Toxic Blade
-		381664, -- [64] Amplifying Poison
-		381669, -- [65] Twist the Knife
-		255544, -- [66] Poison Bomb
-		381797, -- [67] Dashing Scoundrel
-		381801, -- [68] Dragon-Tempered Blades
-		79134, -- [69] Venomous Wounds
-		381626, -- [70] Bloody Mess
-		381630, -- [71] Intent to Kill
-		255989, -- [72] Master Assassin
-		382245, -- [73] Cold Blood
-		385478, -- [74] Shrouded Suffocation
-		196861, -- [75] Iron Wire
-		381632, -- [76] Improved Garrote
-		381627, -- [77] Internal Bleeding
-		36554, -- [78] Shadowstep
-		2823, -- [79] Deadly Poison
-		152152, -- [80] Venom Rush
-		381631, -- [81] Flying Daggers
-		121411, -- [82] Crimson Tempest
-		381629, -- [83] Poisoned Katar
-		51667, -- [84] Cut to the Chase
-		319032, -- [85] Improved Shiv
-		193640, -- [86] Elaborate Planning
-		200806, -- [87] Exsanguinate
+		193531, -- [0] Deeper Stratagem
+		137619, -- [1] Marked for Death
+		193539, -- [2] Alacrity
+		196924, -- [3] Acrobatic Strikes
+		381619, -- [4] Thief's Versatility
+		79008, -- [5] Elusiveness
+		31230, -- [6] Cheat Death
+		382245, -- [7] Cold Blood
+		382238, -- [8] Lethality
+		185313, -- [9] Shadow Dance
+		91023, -- [10] Find Weakness
+		393970, -- [11] Soothing Darkness
+		381620, -- [12] Improved Ambush
+		14062, -- [13] Nightstalker
+		378803, -- [14] Rushed Setup
+		131511, -- [15] Prey on the Weak
+		381623, -- [16] Thistle Tea
+		14190, -- [17] Seal Fate
+		280716, -- [18] Leeching Poison
+		14983, -- [19] Vigor
+		381542, -- [20] Deadly Precision
+		381543, -- [21] Virulent Poisons
+		319066, -- [22] Improved Wound Poison
+		378436, -- [23] Master Poisoner
+		385408, -- [24] Sepsis
+		385424, -- [25] Serrated Bone Spike
+		79134, -- [26] Venomous Wounds
+		392384, -- [27] Fatal Concoction
+		381624, -- [28] Improved Poisons
+		193640, -- [29] Elaborate Planning
+		319032, -- [30] Improved Shiv
+		51667, -- [31] Cut to the Chase
+		394983, -- [32] Lightweight Shiv
+		381631, -- [33] Flying Daggers
+		121411, -- [34] Crimson Tempest
+		381629, -- [35] Thrown Precision
+		381626, -- [36] Bloody Mess
+		381801, -- [37] Dragon-Tempered Blades
+		381797, -- [38] Dashing Scoundrel
+		255544, -- [39] Poison Bomb
+		381669, -- [40] Twist the Knife
+		360194, -- [41] Deathmark
+		381800, -- [42] Tiny Toxic Blade
+		381652, -- [43] Systemic Failure
+		381634, -- [44] Vicious Venoms
+		152152, -- [45] Venom Rush
+		381802, -- [46] Indiscriminate Carnage
+		381799, -- [47] Scent of Blood
+		385478, -- [48] Shrouded Suffocation
+		381673, -- [49] Doomblade
+		196861, -- [50] Iron Wire
+		200806, -- [51] Exsanguinate
+		381632, -- [52] Improved Garrote
+		381627, -- [53] Internal Bleeding
+		36554, -- [54] Shadowstep
+		2823, -- [55] Deadly Poison
+		385627, -- [56] Kingsbane
+		381798, -- [57] Zoldyck Recipe
+		328085, -- [58] Blindside
+		381630, -- [59] Intent to Kill
+		381664, -- [60] Amplifying Poison
+		255989, -- [61] Master Assassin
+		381640, -- [62] Lethal Dose
+		381622, -- [63] Resounding Clarity
+		394332, -- [64] Reverberation
+		385616, -- [65] Echoing Reprimand
+		378996, -- [66] Recuperator
+		57934, -- [67] Tricks of the Trade
+		378807, -- [68] Shadowrunner
+		108208, -- [69] Subterfuge
+		381621, -- [70] Tight Spender
+		36554, -- [71] Shadowstep
+		2094, -- [72] Blind
+		1966, -- [73] Feint
+		1776, -- [74] Gouge
+		231691, -- [75] Improved Sprint
+		379005, -- [76] Blackjack
+		31224, -- [77] Cloak of Shadows
+		6770, -- [78] Sap
+		5938, -- [79] Shiv
+		5277, -- [80] Evasion
+		5761, -- [81] Numbing Poison
+		381637, -- [82] Atrophic Poison
+		378813, -- [83] Fleet Footed
+		231719, -- [84] Deadened Nerves
+		193546, -- [85] Iron Stomach
+		378427, -- [86] Nimble Fingers
 	},
 	-- Outlaw Rogue
 	[260] = {
-		382238, -- [0] Lethality
-		14983, -- [1] Vigor
-		280716, -- [2] Leeching Poison
-		14190, -- [3] Seal Fate
-		381623, -- [4] Thistle Tea
-		36554, -- [5] Shadowstep
-		379005, -- [6] Blackjack
-		381621, -- [7] Tight Spender
-		14062, -- [8] Nightstalker
-		79008, -- [9] Elusiveness
-		31230, -- [10] Cheat Death
-		381619, -- [11] So Versatile
-		196924, -- [12] Acrobatic Strikes
-		381620, -- [13] Improved Ambush
-		193539, -- [14] Alacrity
-		193531, -- [15] Deeper Stratagem
-		137619, -- [16] Marked for Death
-		393970, -- [17] Soothing Darkness
-		91023, -- [18] Find Weakness
-		185313, -- [19] Shadow Dance
-		381620, -- [20] Improved Ambush
-		14062, -- [21] Nightstalker
-		381622, -- [22] Resounding Clarity
-		385616, -- [23] Echoing Reprimand
-		378996, -- [24] Recuperator
-		381543, -- [25] Virulent Poisons
-		231719, -- [26] Deadened Nerves
-		381542, -- [27] Deadly Precision
-		378813, -- [28] Fleet Footed
-		5761, -- [29] Numbing Poison
-		381637, -- [30] Atrophic Poison
-		5277, -- [31] Evasion
-		378427, -- [32] Nimble Fingers
-		231691, -- [33] Improved Sprint
-		1776, -- [34] Gouge
-		1966, -- [35] Feint
-		378803, -- [36] Rushed Setup
-		131511, -- [37] Prey on the Weak
+		193531, -- [0] Deeper Stratagem
+		137619, -- [1] Marked for Death
+		193539, -- [2] Alacrity
+		196924, -- [3] Acrobatic Strikes
+		381619, -- [4] Thief's Versatility
+		79008, -- [5] Elusiveness
+		31230, -- [6] Cheat Death
+		382245, -- [7] Cold Blood
+		382238, -- [8] Lethality
+		185313, -- [9] Shadow Dance
+		91023, -- [10] Find Weakness
+		393970, -- [11] Soothing Darkness
+		381620, -- [12] Improved Ambush
+		14062, -- [13] Nightstalker
+		378803, -- [14] Rushed Setup
+		131511, -- [15] Prey on the Weak
+		381623, -- [16] Thistle Tea
+		14190, -- [17] Seal Fate
+		280716, -- [18] Leeching Poison
+		14983, -- [19] Vigor
+		381542, -- [20] Deadly Precision
+		381543, -- [21] Virulent Poisons
+		319066, -- [22] Improved Wound Poison
+		378436, -- [23] Master Poisoner
+		381622, -- [24] Resounding Clarity
+		394332, -- [25] Reverberation
+		385616, -- [26] Echoing Reprimand
+		378996, -- [27] Recuperator
+		57934, -- [28] Tricks of the Trade
+		378807, -- [29] Shadowrunner
+		108208, -- [30] Subterfuge
+		381621, -- [31] Tight Spender
+		36554, -- [32] Shadowstep
+		2094, -- [33] Blind
+		1966, -- [34] Feint
+		1776, -- [35] Gouge
+		231691, -- [36] Improved Sprint
+		379005, -- [37] Blackjack
 		31224, -- [38] Cloak of Shadows
-		57934, -- [39] Tricks of the Trade
-		378807, -- [40] Shadowrunner
-		108208, -- [41] Subterfuge
-		6770, -- [42] Sap
-		2094, -- [43] Blind
-		193546, -- [44] Iron Stomach
-		378436, -- [45] Master Poisoner
-		319066, -- [46] Improved Wound Poison
-		5938, -- [47] Shiv
-		381990, -- [48] Summarily Dispatched
-		381989, -- [49] Keep It Rolling
-		385408, -- [50] Sepsis
-		196937, -- [51] Ghostly Strike
-		382742, -- [52] Take 'em by Surprise
-		383281, -- [53] Hidden Opportunity
-		271877, -- [54] Blade Rush
-		381894, -- [55] Triple Threat
-		193531, -- [56] Deeper Stratagem
-		14161, -- [57] Ruthlessness
-		381885, -- [58] Heavy Hitter
-		381845, -- [59] Audacity
-		381877, -- [60] Combat Stamina
-		195457, -- [61] Grappling Hook
-		256188, -- [62] Retractable Hook
-		382245, -- [63] Cold Blood
-		256165, -- [64] Blinding Powder
-		381988, -- [65] Swift Slashes
-		79096, -- [66] Restless Blades
-		354897, -- [67] Float Like a Butterfly
-		315508, -- [68] Roll the Bones
-		256170, -- [69] Loaded Dice
-		382794, -- [70] Restless Crew [NYI]
-		381982, -- [71] Count the Odds
-		381839, -- [72] Sleight of Hand
-		381822, -- [73] Ambidexterity
-		13877, -- [74] Blade Flurry
-		344363, -- [75] Riposte
-		315341, -- [76] Between the Eyes
-		108216, -- [77] Dirty Tricks
-		196922, -- [78] Hit and Run
-		381828, -- [79] Ace Up Your Sleeve
-		381878, -- [80] Long Arm of the Outlaw
-		272026, -- [81] Dancing Steel
-		381985, -- [82] Precise Cuts
-		386823, -- [83] Greenskin's Wickers
-		381846, -- [84] Fan the Hammer
-		51690, -- [85] Killing Spree
-		343142, -- [86] Dreadblades
-		382746, -- [87] Improved Main Gauche
-		196938, -- [88] Quick Draw
-		35551, -- [89] Fatal Flourish
-		13750, -- [90] Adrenaline Rush
-		61329, -- [91] Combat Potency
-		200733, -- [92] Weaponmaster
-		279876, -- [93] Opportunity
+		6770, -- [39] Sap
+		271877, -- [40] Blade Rush
+		108216, -- [41] Dirty Tricks
+		200733, -- [42] Weaponmaster
+		256165, -- [43] Blinding Powder
+		381845, -- [44] Audacity
+		381885, -- [45] Heavy Hitter
+		14161, -- [46] Ruthlessness
+		256188, -- [47] Retractable Hook
+		195457, -- [48] Grappling Hook
+		279876, -- [49] Opportunity
+		61329, -- [50] Combat Potency
+		354897, -- [51] Float Like a Butterfly
+		256170, -- [52] Loaded Dice
+		381989, -- [53] Keep It Rolling
+		381990, -- [54] Summarily Dispatched
+		382794, -- [55] Restless Crew
+		381982, -- [56] Count the Odds
+		381839, -- [57] Sleight of Hand
+		315508, -- [58] Roll the Bones
+		79096, -- [59] Restless Blades
+		13750, -- [60] Adrenaline Rush
+		381822, -- [61] Ambidexterity
+		344363, -- [62] Riposte
+		35551, -- [63] Fatal Flourish
+		196938, -- [64] Quick Draw
+		51690, -- [65] Killing Spree
+		343142, -- [66] Dreadblades
+		386823, -- [67] Greenskin's Wickers
+		381846, -- [68] Fan the Hammer
+		381985, -- [69] Precise Cuts
+		382746, -- [70] Improved Main Gauche
+		272026, -- [71] Dancing Steel
+		381878, -- [72] Deft Maneuvers
+		196922, -- [73] Hit and Run
+		381828, -- [74] Ace Up Your Sleeve
+		315341, -- [75] Between the Eyes
+		13877, -- [76] Blade Flurry
+		383281, -- [77] Hidden Opportunity
+		382742, -- [78] Take 'em by Surprise
+		385408, -- [79] Sepsis
+		196937, -- [80] Ghostly Strike
+		381894, -- [81] Triple Threat
+		394321, -- [82] Devious Stratagem
+		381988, -- [83] Swift Slasher
+		381877, -- [84] Combat Stamina
+		5938, -- [85] Shiv
+		5277, -- [86] Evasion
+		5761, -- [87] Numbing Poison
+		381637, -- [88] Atrophic Poison
+		378813, -- [89] Fleet Footed
+		231719, -- [90] Deadened Nerves
+		193546, -- [91] Iron Stomach
+		378427, -- [92] Nimble Fingers
 	},
 	-- Subtlety Rogue
 	[261] = {
-		382238, -- [0] Lethality
-		14983, -- [1] Vigor
-		280716, -- [2] Leeching Poison
-		14190, -- [3] Seal Fate
-		381623, -- [4] Thistle Tea
-		36554, -- [5] Shadowstep
-		379005, -- [6] Blackjack
-		381621, -- [7] Tight Spender
-		14062, -- [8] Nightstalker
-		79008, -- [9] Elusiveness
-		31230, -- [10] Cheat Death
-		381619, -- [11] So Versatile
-		196924, -- [12] Acrobatic Strikes
-		381620, -- [13] Improved Ambush
-		193539, -- [14] Alacrity
-		193531, -- [15] Deeper Stratagem
-		137619, -- [16] Marked for Death
-		393970, -- [17] Soothing Darkness
-		91023, -- [18] Find Weakness
-		185313, -- [19] Shadow Dance
-		381620, -- [20] Improved Ambush
-		14062, -- [21] Nightstalker
-		381622, -- [22] Resounding Clarity
-		385616, -- [23] Echoing Reprimand
-		378996, -- [24] Recuperator
-		381543, -- [25] Virulent Poisons
-		231719, -- [26] Deadened Nerves
-		381542, -- [27] Deadly Precision
-		378813, -- [28] Fleet Footed
-		5761, -- [29] Numbing Poison
-		381637, -- [30] Atrophic Poison
-		5277, -- [31] Evasion
-		378427, -- [32] Nimble Fingers
-		231691, -- [33] Improved Sprint
-		1776, -- [34] Gouge
-		1966, -- [35] Feint
-		378803, -- [36] Rushed Setup
-		131511, -- [37] Prey on the Weak
-		31224, -- [38] Cloak of Shadows
-		57934, -- [39] Tricks of the Trade
-		378807, -- [40] Shadowrunner
-		108208, -- [41] Subterfuge
-		6770, -- [42] Sap
-		2094, -- [43] Blind
-		193546, -- [44] Iron Stomach
-		378436, -- [45] Master Poisoner
-		319066, -- [46] Improved Wound Poison
-		5938, -- [47] Shiv
-		382245, -- [48] Cold Blood
-		382503, -- [49] Quick Decisions
-		319951, -- [50] Improved Shuriken Storm
-		319175, -- [51] Black Powder
-		277953, -- [52] Night Terrors
-		280719, -- [53] Secret Technique
-		385722, -- [54] Silent Storm
-		58423, -- [55] Relentless Strikes
-		36554, -- [56] Shadowstep
-		108209, -- [57] Shadow Focus
-		121471, -- [58] Shadow Blades
-		382509, -- [59] Stiletto Staccato
-		185314, -- [60] Deepening Shadows
-		382017, -- [61] Veiltouched
-		277925, -- [62] Shuriken Tornado
-		382506, -- [63] Replicating Shadows
-		382511, -- [64] Shadowed Finishers
-		193531, -- [65] Deeper Stratagem
-		384631, -- [66] Flagellation
-		382504, -- [67] Dark Brew
-		382525, -- [68] Finality
-		382517, -- [69] Deeper Daggers
-		257505, -- [70] Shot in the Dark
-		200758, -- [71] Gloomblade
-		382507, -- [72] Shrouded in Darkness
-		212283, -- [73] Symbols of Death
-		382508, -- [74] Planned Execution
-		382512, -- [75] Inevitability
-		385408, -- [76] Sepsis
-		382015, -- [77] The Rotten
-		382523, -- [78] Invigorating Shadowdust
-		382518, -- [79] Perforated Veins
-		382513, -- [80] Without a Trace
-		245687, -- [81] Dark Shadow
-		382515, -- [82] Cloaked in Shadows
-		382514, -- [83] Fade to Nothing
-		393972, -- [84] Improved Shadow Dance
-		382505, -- [85] The First Dance
-		196976, -- [86] Master of Shadows
-		394023, -- [87] Improved Shadow Techniques
-		343160, -- [88] Premeditation
-		193537, -- [89] Weaponmaster
-		319949, -- [90] Improved Backstab
-		382528, -- [91] Danse Macabre
-		382524, -- [92] Lingering Shadow
+		319951, -- [0] Improved Shuriken Storm
+		319175, -- [1] Black Powder
+		277953, -- [2] Night Terrors
+		382017, -- [3] Veiltouched
+		185314, -- [4] Deepening Shadows
+		384631, -- [5] Flagellation
+		382504, -- [6] Dark Brew
+		382525, -- [7] Finality
+		382517, -- [8] Deeper Daggers
+		394320, -- [9] Secret Stratagem
+		382511, -- [10] Shadowed Finishers
+		277925, -- [11] Shuriken Tornado
+		382506, -- [12] Replicating Shadows
+		280719, -- [13] Secret Technique
+		385722, -- [14] Silent Storm
+		58423, -- [15] Relentless Strikes
+		382503, -- [16] Quick Decisions
+		36554, -- [17] Shadowstep
+		382528, -- [18] Danse Macabre
+		382524, -- [19] Lingering Shadow
+		245687, -- [20] Dark Shadow
+		382515, -- [21] Cloaked in Shadows
+		382514, -- [22] Fade to Nothing
+		393972, -- [23] Improved Shadow Dance
+		382505, -- [24] The First Dance
+		196976, -- [25] Master of Shadows
+		382509, -- [26] Stiletto Staccato
+		121471, -- [27] Shadow Blades
+		193531, -- [28] Deeper Stratagem
+		137619, -- [29] Marked for Death
+		193539, -- [30] Alacrity
+		196924, -- [31] Acrobatic Strikes
+		381619, -- [32] Thief's Versatility
+		79008, -- [33] Elusiveness
+		31230, -- [34] Cheat Death
+		382245, -- [35] Cold Blood
+		382238, -- [36] Lethality
+		185313, -- [37] Shadow Dance
+		91023, -- [38] Find Weakness
+		393970, -- [39] Soothing Darkness
+		381620, -- [40] Improved Ambush
+		14062, -- [41] Nightstalker
+		378803, -- [42] Rushed Setup
+		131511, -- [43] Prey on the Weak
+		381623, -- [44] Thistle Tea
+		14190, -- [45] Seal Fate
+		280716, -- [46] Leeching Poison
+		14983, -- [47] Vigor
+		381542, -- [48] Deadly Precision
+		381543, -- [49] Virulent Poisons
+		319066, -- [50] Improved Wound Poison
+		378436, -- [51] Master Poisoner
+		108209, -- [52] Shadow Focus
+		381622, -- [53] Resounding Clarity
+		394332, -- [54] Reverberation
+		385616, -- [55] Echoing Reprimand
+		378996, -- [56] Recuperator
+		57934, -- [57] Tricks of the Trade
+		378807, -- [58] Shadowrunner
+		108208, -- [59] Subterfuge
+		381621, -- [60] Tight Spender
+		36554, -- [61] Shadowstep
+		2094, -- [62] Blind
+		1966, -- [63] Feint
+		1776, -- [64] Gouge
+		231691, -- [65] Improved Sprint
+		379005, -- [66] Blackjack
+		31224, -- [67] Cloak of Shadows
+		6770, -- [68] Sap
+		5938, -- [69] Shiv
+		5277, -- [70] Evasion
+		5761, -- [71] Numbing Poison
+		381637, -- [72] Atrophic Poison
+		378813, -- [73] Fleet Footed
+		231719, -- [74] Deadened Nerves
+		193546, -- [75] Iron Stomach
+		378427, -- [76] Nimble Fingers
+		319949, -- [77] Improved Backstab
+		257505, -- [78] Shot in the Dark
+		193537, -- [79] Weaponmaster
+		394023, -- [80] Improved Shadow Techniques
+		343160, -- [81] Premeditation
+		200758, -- [82] Gloomblade
+		382507, -- [83] Shrouded in Darkness
+		394309, -- [84] Swift Death
+		382513, -- [85] Without a Trace
+		382508, -- [86] Planned Execution
+		385408, -- [87] Sepsis
+		382015, -- [88] The Rotten
+		382523, -- [89] Invigorating Shadowdust
+		382512, -- [90] Inevitability
+		382518, -- [91] Perforated Veins
 	},
 	-- Elemental Shaman
 	[262] = {
-		381647, -- [0] Planes Traveler
-		377933, -- [1] Astral Bulwark
-		108271, -- [2] Astral Shift
-		381666, -- [3] Focused Insight
-		382888, -- [4] Flurry
-		187880, -- [5] Maelstrom Weapon
-		188443, -- [6] Chain Lightning
-		51505, -- [7] Lava Burst
-		1064, -- [8] Chain Heal
-		198103, -- [9] Earth Elemental
-		192088, -- [10] Graceful Spirit
-		378077, -- [11] Spiritwalker's Aegis
-		79206, -- [12] Spiritwalker's Grace
-		382886, -- [13] Fire and Ice
-		57994, -- [14] Wind Shear
-		8143, -- [15] Tremor Totem
-		265046, -- [16] Static Charge
-		381819, -- [17] Guardian's Cudgel
-		192058, -- [18] Capacitor Totem
-		260878, -- [19] Spirit Wolf
-		378075, -- [20] Thunderous Paws
-		196840, -- [21] Frost Shock
-		51886, -- [22] Cleanse Spirit
-		370, -- [23] Purge
-		378773, -- [24] Greater Purge
-		204268, -- [25] Voodoo Mastery
-		378079, -- [26] Enfeeblement
-		51514, -- [27] Hex
-		108287, -- [28] Totemic Projection
-		30884, -- [29] Nature's Guardian
-		192077, -- [30] Wind Rush Totem
-		51485, -- [31] Earthgrab Totem
-		382947, -- [32] Ancestral Defense
-		381689, -- [33] Brimming with Life
-		381655, -- [34] Nature's Fury
-		382215, -- [35] Winds of Al'Akir
-		58875, -- [36] Spirit Walk
-		192063, -- [37] Gust of Wind
-		381678, -- [38] Go with the Flow
-		383011, -- [39] Call of the Elements
-		383012, -- [40] Creation Core
-		108285, -- [41] Totemic Recall
-		382033, -- [42] Surging Shields
-		383013, -- [43] Poison Cleansing Totem
-		382201, -- [44] Totemic Focus
-		383017, -- [45] Stoneskin Totem
-		383019, -- [46] Tranquil Air Totem
-		378779, -- [47] Thundershock
-		305483, -- [48] Lightning Lasso
-		51490, -- [49] Thunderstorm
-		381674, -- [50] Improved Lightning Bolt
-		378081, -- [51] Nature's Swiftness
-		5394, -- [52] Healing Stream Totem
-		378094, -- [53] Swirling Currents
-		108281, -- [54] Ancestral Guidance
-		381930, -- [55] Mana Spring Totem
-		381867, -- [56] Totemic Surge
-		383010, -- [57] Elemental Orbit
-		974, -- [58] Earth Shield
-		381650, -- [59] Elemental Warding
+		8143, -- [0] Tremor Totem
+		265046, -- [1] Static Charge
+		381819, -- [2] Guardian's Cudgel
+		192058, -- [3] Capacitor Totem
+		260878, -- [4] Spirit Wolf
+		378075, -- [5] Thunderous Paws
+		196840, -- [6] Frost Shock
+		51886, -- [7] Cleanse Spirit
+		370, -- [8] Purge
+		378773, -- [9] Greater Purge
+		204268, -- [10] Voodoo Mastery
+		378079, -- [11] Enfeeblement
+		51514, -- [12] Hex
+		108287, -- [13] Totemic Projection
+		30884, -- [14] Nature's Guardian
+		192077, -- [15] Wind Rush Totem
+		51485, -- [16] Earthgrab Totem
+		382947, -- [17] Ancestral Defense
+		381650, -- [18] Elemental Warding
+		381689, -- [19] Brimming with Life
+		381655, -- [20] Nature's Fury
+		382215, -- [21] Winds of Al'Akir
+		58875, -- [22] Spirit Walk
+		192063, -- [23] Gust of Wind
+		381678, -- [24] Go with the Flow
+		383011, -- [25] Call of the Elements
+		383012, -- [26] Creation Core
+		108285, -- [27] Totemic Recall
+		382033, -- [28] Surging Shields
+		383013, -- [29] Poison Cleansing Totem
+		382201, -- [30] Totemic Focus
+		383017, -- [31] Stoneskin Totem
+		383019, -- [32] Tranquil Air Totem
+		378779, -- [33] Thundershock
+		305483, -- [34] Lightning Lasso
+		51490, -- [35] Thunderstorm
+		381674, -- [36] Improved Lightning Bolt
+		378081, -- [37] Nature's Swiftness
+		5394, -- [38] Healing Stream Totem
+		378094, -- [39] Swirling Currents
+		108281, -- [40] Ancestral Guidance
+		381930, -- [41] Mana Spring Totem
+		381867, -- [42] Totemic Surge
+		383010, -- [43] Elemental Orbit
+		974, -- [44] Earth Shield
+		57994, -- [45] Wind Shear
+		382886, -- [46] Fire and Ice
+		79206, -- [47] Spiritwalker's Grace
+		192088, -- [48] Graceful Spirit
+		378077, -- [49] Spiritwalker's Aegis
+		198103, -- [50] Earth Elemental
+		1064, -- [51] Chain Heal
+		51505, -- [52] Lava Burst
+		188443, -- [53] Chain Lightning
+		187880, -- [54] Maelstrom Weapon
+		382888, -- [55] Flurry
+		381666, -- [56] Focused Insight
+		108271, -- [57] Astral Shift
+		381647, -- [58] Planes Traveler
+		377933, -- [59] Astral Bulwark
 		381707, -- [60] Swelling Maelstrom
 		191861, -- [61] Power of the Maelstrom
 		375982, -- [62] Primordial Wave
@@ -2629,284 +2631,372 @@ local talents = {
 	},
 	-- Enhancement Shaman
 	[263] = {
-		381647, -- [0] Planes Traveler
-		377933, -- [1] Astral Bulwark
-		108271, -- [2] Astral Shift
-		381666, -- [3] Focused Insight
-		382888, -- [4] Flurry
-		187880, -- [5] Maelstrom Weapon
-		188443, -- [6] Chain Lightning
-		51505, -- [7] Lava Burst
-		1064, -- [8] Chain Heal
-		198103, -- [9] Earth Elemental
-		192088, -- [10] Graceful Spirit
-		378077, -- [11] Spiritwalker's Aegis
-		79206, -- [12] Spiritwalker's Grace
-		382886, -- [13] Fire and Ice
-		57994, -- [14] Wind Shear
-		8143, -- [15] Tremor Totem
-		265046, -- [16] Static Charge
-		381819, -- [17] Guardian's Cudgel
-		192058, -- [18] Capacitor Totem
-		260878, -- [19] Spirit Wolf
-		378075, -- [20] Thunderous Paws
-		196840, -- [21] Frost Shock
-		370, -- [22] Purge
-		378773, -- [23] Greater Purge
-		51886, -- [24] Cleanse Spirit
-		204268, -- [25] Voodoo Mastery
-		378079, -- [26] Enfeeblement
-		51514, -- [27] Hex
-		108287, -- [28] Totemic Projection
-		30884, -- [29] Nature's Guardian
-		192077, -- [30] Wind Rush Totem
-		51485, -- [31] Earthgrab Totem
-		382947, -- [32] Ancestral Defense
-		381689, -- [33] Brimming with Life
-		381655, -- [34] Nature's Fury
-		382215, -- [35] Winds of Al'Akir
-		58875, -- [36] Spirit Walk
-		192063, -- [37] Gust of Wind
-		381678, -- [38] Go with the Flow
-		383011, -- [39] Call of the Elements
-		383012, -- [40] Creation Core
-		108285, -- [41] Totemic Recall
-		382033, -- [42] Surging Shields
-		383013, -- [43] Poison Cleansing Totem
-		382201, -- [44] Totemic Focus
-		383017, -- [45] Stoneskin Totem
-		383019, -- [46] Tranquil Air Totem
-		378779, -- [47] Thundershock
-		305483, -- [48] Lightning Lasso
-		51490, -- [49] Thunderstorm
-		381674, -- [50] Improved Lightning Bolt
-		378081, -- [51] Nature's Swiftness
-		5394, -- [52] Healing Stream Totem
-		378094, -- [53] Swirling Currents
-		108281, -- [54] Ancestral Guidance
-		381930, -- [55] Mana Spring Totem
-		381867, -- [56] Totemic Surge
-		383010, -- [57] Elemental Orbit
-		974, -- [58] Earth Shield
-		381650, -- [59] Elemental Warding
-		393905, -- [60] Refreshing Waters
-		382197, -- [61] Ancestral Wolf Affinity
-		384149, -- [62] Overflowing Maelstrom
-		197214, -- [63] Sundering
-		187874, -- [64] Crash Lightning
-		384363, -- [65] Gathering Storms
-		51533, -- [66] Feral Spirit
-		384447, -- [67] Witch Doctor's Ancestry
-		262624, -- [68] Elemental Spirits
-		198434, -- [69] Alpha Wolf
-		262647, -- [70] Forceful Winds
-		390288, -- [71] Unruly Winds
-		392352, -- [72] Storm's Wrath
-		117014, -- [73] Elemental Blast
-		375982, -- [74] Primordial Wave
-		384405, -- [75] Primal Maelstrom
-		382042, -- [76] Splintered Elements
-		210853, -- [77] Elemental Assault
-		384355, -- [78] Elemental Weapons
-		319930, -- [79] Stormblast
-		384352, -- [80] Doom Winds
-		33757, -- [81] Windfury Weapon
-		383303, -- [82] Improved Maelstrom Weapon
-		342240, -- [83] Ice Strike
-		384359, -- [84] Swirling Maelstrom
-		344357, -- [85] Stormflurry
-		334308, -- [86] Crashing Storms
-		114051, -- [87] Ascendance
-		378270, -- [88] Deeply Rooted Elements
-		384450, -- [89] Legacy of the Frost Witch
-		384411, -- [90] Static Accumulation
-		384444, -- [91] Thorim's Invocation
-		334046, -- [92] Lashing Flames
-		390370, -- [93] Ashen Catalyst
-		196884, -- [94] Feral Lunge
-		201900, -- [95] Hot Hand
-		334195, -- [96] Hailstorm
-		333974, -- [97] Fire Nova
-		334033, -- [98] Molten Assault
-		60103, -- [99] Lava Lash
-		17364, -- [100] Stormstrike
-		8512, -- [101] Windfury Totem
-		384143, -- [102] Raging Maelstrom
+		8143, -- [0] Tremor Totem
+		265046, -- [1] Static Charge
+		381819, -- [2] Guardian's Cudgel
+		192058, -- [3] Capacitor Totem
+		260878, -- [4] Spirit Wolf
+		378075, -- [5] Thunderous Paws
+		196840, -- [6] Frost Shock
+		370, -- [7] Purge
+		378773, -- [8] Greater Purge
+		51886, -- [9] Cleanse Spirit
+		204268, -- [10] Voodoo Mastery
+		378079, -- [11] Enfeeblement
+		51514, -- [12] Hex
+		108287, -- [13] Totemic Projection
+		30884, -- [14] Nature's Guardian
+		192077, -- [15] Wind Rush Totem
+		51485, -- [16] Earthgrab Totem
+		382947, -- [17] Ancestral Defense
+		381650, -- [18] Elemental Warding
+		381689, -- [19] Brimming with Life
+		381655, -- [20] Nature's Fury
+		382215, -- [21] Winds of Al'Akir
+		58875, -- [22] Spirit Walk
+		192063, -- [23] Gust of Wind
+		381678, -- [24] Go with the Flow
+		383011, -- [25] Call of the Elements
+		383012, -- [26] Creation Core
+		108285, -- [27] Totemic Recall
+		382033, -- [28] Surging Shields
+		383013, -- [29] Poison Cleansing Totem
+		382201, -- [30] Totemic Focus
+		383017, -- [31] Stoneskin Totem
+		383019, -- [32] Tranquil Air Totem
+		378779, -- [33] Thundershock
+		305483, -- [34] Lightning Lasso
+		51490, -- [35] Thunderstorm
+		381674, -- [36] Improved Lightning Bolt
+		378081, -- [37] Nature's Swiftness
+		5394, -- [38] Healing Stream Totem
+		378094, -- [39] Swirling Currents
+		108281, -- [40] Ancestral Guidance
+		381930, -- [41] Mana Spring Totem
+		381867, -- [42] Totemic Surge
+		383010, -- [43] Elemental Orbit
+		974, -- [44] Earth Shield
+		57994, -- [45] Wind Shear
+		382886, -- [46] Fire and Ice
+		79206, -- [47] Spiritwalker's Grace
+		393905, -- [48] Refreshing Waters
+		382197, -- [49] Ancestral Wolf Affinity
+		384149, -- [50] Overflowing Maelstrom
+		384143, -- [51] Raging Maelstrom
+		8512, -- [52] Windfury Totem
+		17364, -- [53] Stormstrike
+		60103, -- [54] Lava Lash
+		334033, -- [55] Molten Assault
+		334195, -- [56] Hailstorm
+		333974, -- [57] Fire Nova
+		201900, -- [58] Hot Hand
+		196884, -- [59] Feral Lunge
+		390370, -- [60] Ashen Catalyst
+		334046, -- [61] Lashing Flames
+		384444, -- [62] Thorim's Invocation
+		384411, -- [63] Static Accumulation
+		384450, -- [64] Legacy of the Frost Witch
+		114051, -- [65] Ascendance
+		378270, -- [66] Deeply Rooted Elements
+		334308, -- [67] Crashing Storms
+		344357, -- [68] Stormflurry
+		384359, -- [69] Swirling Maelstrom
+		342240, -- [70] Ice Strike
+		383303, -- [71] Improved Maelstrom Weapon
+		33757, -- [72] Windfury Weapon
+		384352, -- [73] Doom Winds
+		384355, -- [74] Elemental Weapons
+		210853, -- [75] Elemental Assault
+		192088, -- [76] Graceful Spirit
+		378077, -- [77] Spiritwalker's Aegis
+		198103, -- [78] Earth Elemental
+		1064, -- [79] Chain Heal
+		51505, -- [80] Lava Burst
+		188443, -- [81] Chain Lightning
+		187880, -- [82] Maelstrom Weapon
+		382888, -- [83] Flurry
+		381666, -- [84] Focused Insight
+		108271, -- [85] Astral Shift
+		381647, -- [86] Planes Traveler
+		377933, -- [87] Astral Bulwark
+		197214, -- [88] Sundering
+		187874, -- [89] Crash Lightning
+		384363, -- [90] Gathering Storms
+		51533, -- [91] Feral Spirit
+		384447, -- [92] Witch Doctor's Ancestry
+		262624, -- [93] Elemental Spirits
+		198434, -- [94] Alpha Wolf
+		262647, -- [95] Forceful Winds
+		390288, -- [96] Unruly Winds
+		392352, -- [97] Storm's Wrath
+		117014, -- [98] Elemental Blast
+		375982, -- [99] Primordial Wave
+		384405, -- [100] Primal Maelstrom
+		382042, -- [101] Splintered Elements
+		319930, -- [102] Stormblast
 	},
 	-- Restoration Shaman
 	[264] = {
-		108280, -- [0] Healing Tide Totem
-		98008, -- [1] Spirit Link Totem
-		382046, -- [2] Continuous Waves
-		382040, -- [3] Tumbling Waves
-		382191, -- [4] Improved Primordial Wave
-		375982, -- [5] Primordial Wave
-		200071, -- [6] Undulation
-		73685, -- [7] Unleash Life
-		381946, -- [8] Wavespeaker's Blessing
-		383222, -- [9] Overflowing Shores
-		378443, -- [10] Acid Rain
-		73920, -- [11] Healing Rain
-		382019, -- [12] Nature's Focus
-		382045, -- [13] Primal Tide Core
-		157154, -- [14] High Tide
-		382309, -- [15] Ancestral Awakening
-		333919, -- [16] Echo of the Elements
-		16191, -- [17] Mana Tide Totem
-		198838, -- [18] Earthen Wall Totem
-		207399, -- [19] Ancestral Protection Totem
-		200072, -- [20] Torrent
-		382482, -- [21] Living Stream
-		157153, -- [22] Cloudburst Totem
-		382021, -- [23] Earthliving Weapon
-		382315, -- [24] Improved Earthliving Weapon
-		378270, -- [25] Deeply Rooted Elements
-		197995, -- [26] Wellspring
-		382194, -- [27] Undercurrent
-		382029, -- [28] Ever-Rising Tide
-		382020, -- [29] Earthen Harmony
-		114052, -- [30] Ascendance
-		381647, -- [31] Planes Traveler
-		377933, -- [32] Astral Bulwark
-		108271, -- [33] Astral Shift
-		381666, -- [34] Focused Insight
-		382888, -- [35] Flurry
-		187880, -- [36] Maelstrom Weapon
-		188443, -- [37] Chain Lightning
-		51505, -- [38] Lava Burst
-		1064, -- [39] Chain Heal
-		198103, -- [40] Earth Elemental
-		192088, -- [41] Graceful Spirit
-		378077, -- [42] Spiritwalker's Aegis
-		79206, -- [43] Spiritwalker's Grace
-		382886, -- [44] Fire and Ice
-		57994, -- [45] Wind Shear
-		8143, -- [46] Tremor Totem
-		265046, -- [47] Static Charge
-		381819, -- [48] Guardian's Cudgel
-		192058, -- [49] Capacitor Totem
-		260878, -- [50] Spirit Wolf
-		378075, -- [51] Thunderous Paws
-		383016, -- [52] Improved Purify Spirit
-		196840, -- [53] Frost Shock
-		370, -- [54] Purge
-		378773, -- [55] Greater Purge
-		204268, -- [56] Voodoo Mastery
-		378079, -- [57] Enfeeblement
-		51514, -- [58] Hex
-		108287, -- [59] Totemic Projection
-		30884, -- [60] Nature's Guardian
-		192077, -- [61] Wind Rush Totem
-		51485, -- [62] Earthgrab Totem
-		382947, -- [63] Ancestral Defense
-		381689, -- [64] Brimming with Life
-		381655, -- [65] Nature's Fury
-		382215, -- [66] Winds of Al'Akir
-		58875, -- [67] Spirit Walk
-		192063, -- [68] Gust of Wind
-		381678, -- [69] Go with the Flow
-		383011, -- [70] Call of the Elements
-		383012, -- [71] Creation Core
-		108285, -- [72] Totemic Recall
-		382033, -- [73] Surging Shields
-		383013, -- [74] Poison Cleansing Totem
-		382201, -- [75] Totemic Focus
-		383017, -- [76] Stoneskin Totem
-		383019, -- [77] Tranquil Air Totem
-		378779, -- [78] Thundershock
-		305483, -- [79] Lightning Lasso
-		51490, -- [80] Thunderstorm
-		381674, -- [81] Improved Lightning Bolt
-		378081, -- [82] Nature's Swiftness
-		5394, -- [83] Healing Stream Totem
-		378094, -- [84] Swirling Currents
-		108281, -- [85] Ancestral Guidance
-		381930, -- [86] Mana Spring Totem
-		381867, -- [87] Totemic Surge
-		383010, -- [88] Elemental Orbit
-		974, -- [89] Earth Shield
-		381650, -- [90] Elemental Warding
-		382197, -- [91] Ancestral Wolf Affinity
-		383009, -- [92] Stormkeeper
-		200076, -- [93] Deluge
-		61295, -- [94] Riptide
-		77472, -- [95] Healing Wave
-		52127, -- [96] Water Shield
-		16196, -- [97] Resurgence
-		378241, -- [98] Call of Thunder
-		5394, -- [99] Healing Stream Totem
-		51564, -- [100] Tidal Waves
-		280614, -- [101] Flash Flood
-		378211, -- [102] Refreshing Waters
-		16166, -- [103] Master of the Elements
-		382030, -- [104] Water Totem Mastery
-		77756, -- [105] Lava Surge
-		207778, -- [106] Downpour
-		207401, -- [107] Ancestral Vigor
-		382732, -- [108] Ancestral Reach
-		382039, -- [109] Flow of the Tides
+		98008, -- [0] Spirit Link Totem
+		207401, -- [1] Ancestral Vigor
+		382197, -- [2] Ancestral Wolf Affinity
+		383009, -- [3] Stormkeeper
+		200076, -- [4] Deluge
+		61295, -- [5] Riptide
+		77472, -- [6] Healing Wave
+		8143, -- [7] Tremor Totem
+		265046, -- [8] Static Charge
+		381819, -- [9] Guardian's Cudgel
+		192058, -- [10] Capacitor Totem
+		260878, -- [11] Spirit Wolf
+		378075, -- [12] Thunderous Paws
+		383016, -- [13] Improved Purify Spirit
+		196840, -- [14] Frost Shock
+		370, -- [15] Purge
+		378773, -- [16] Greater Purge
+		204268, -- [17] Voodoo Mastery
+		378079, -- [18] Enfeeblement
+		51514, -- [19] Hex
+		108287, -- [20] Totemic Projection
+		30884, -- [21] Nature's Guardian
+		192077, -- [22] Wind Rush Totem
+		51485, -- [23] Earthgrab Totem
+		382947, -- [24] Ancestral Defense
+		381650, -- [25] Elemental Warding
+		381689, -- [26] Brimming with Life
+		381655, -- [27] Nature's Fury
+		382215, -- [28] Winds of Al'Akir
+		58875, -- [29] Spirit Walk
+		192063, -- [30] Gust of Wind
+		381678, -- [31] Go with the Flow
+		383011, -- [32] Call of the Elements
+		383012, -- [33] Creation Core
+		108285, -- [34] Totemic Recall
+		382033, -- [35] Surging Shields
+		383013, -- [36] Poison Cleansing Totem
+		382201, -- [37] Totemic Focus
+		383017, -- [38] Stoneskin Totem
+		383019, -- [39] Tranquil Air Totem
+		378779, -- [40] Thundershock
+		305483, -- [41] Lightning Lasso
+		51490, -- [42] Thunderstorm
+		381674, -- [43] Improved Lightning Bolt
+		378081, -- [44] Nature's Swiftness
+		5394, -- [45] Healing Stream Totem
+		378094, -- [46] Swirling Currents
+		108281, -- [47] Ancestral Guidance
+		381930, -- [48] Mana Spring Totem
+		381867, -- [49] Totemic Surge
+		383010, -- [50] Elemental Orbit
+		974, -- [51] Earth Shield
+		382045, -- [52] Primal Tide Core
+		157154, -- [53] High Tide
+		382309, -- [54] Ancestral Awakening
+		333919, -- [55] Echo of the Elements
+		16191, -- [56] Mana Tide Totem
+		198838, -- [57] Earthen Wall Totem
+		207399, -- [58] Ancestral Protection Totem
+		200072, -- [59] Torrent
+		382482, -- [60] Living Stream
+		157153, -- [61] Cloudburst Totem
+		382021, -- [62] Earthliving Weapon
+		382315, -- [63] Improved Earthliving Weapon
+		378270, -- [64] Deeply Rooted Elements
+		197995, -- [65] Wellspring
+		382194, -- [66] Undercurrent
+		382029, -- [67] Ever-Rising Tide
+		382020, -- [68] Earthen Harmony
+		57994, -- [69] Wind Shear
+		382886, -- [70] Fire and Ice
+		79206, -- [71] Spiritwalker's Grace
+		382732, -- [72] Ancestral Reach
+		382039, -- [73] Flow of the Tides
+		108280, -- [74] Healing Tide Totem
+		382191, -- [75] Improved Primordial Wave
+		375982, -- [76] Primordial Wave
+		200071, -- [77] Undulation
+		73685, -- [78] Unleash Life
+		381946, -- [79] Wavespeaker's Blessing
+		383222, -- [80] Overflowing Shores
+		378443, -- [81] Acid Rain
+		73920, -- [82] Healing Rain
+		382019, -- [83] Nature's Focus
+		192088, -- [84] Graceful Spirit
+		378077, -- [85] Spiritwalker's Aegis
+		198103, -- [86] Earth Elemental
+		1064, -- [87] Chain Heal
+		51505, -- [88] Lava Burst
+		188443, -- [89] Chain Lightning
+		187880, -- [90] Maelstrom Weapon
+		382888, -- [91] Flurry
+		381666, -- [92] Focused Insight
+		108271, -- [93] Astral Shift
+		381647, -- [94] Planes Traveler
+		377933, -- [95] Astral Bulwark
+		114052, -- [96] Ascendance
+		52127, -- [97] Water Shield
+		16196, -- [98] Resurgence
+		378241, -- [99] Call of Thunder
+		5394, -- [100] Healing Stream Totem
+		51564, -- [101] Tidal Waves
+		280614, -- [102] Flash Flood
+		378211, -- [103] Refreshing Waters
+		16166, -- [104] Master of the Elements
+		382030, -- [105] Water Totem Mastery
+		77756, -- [106] Lava Surge
+		207778, -- [107] Downpour
+		382046, -- [108] Continuous Waves
+		382040, -- [109] Tumbling Waves
 	},
 	-- Affliction Warlock
 	[265] = {
-		108558, -- [0] Nightfall
-		32388, -- [1] Shadow Embrace
-		201424, -- [2] Harvester of Souls
-		387073, -- [3] Soul Tap
-		199471, -- [4] Soul Flame
-		196102, -- [5] Writhe in Agony
-		196226, -- [6] Sow the Seeds
-		386922, -- [7] Agonizing Corruption
-		386951, -- [8] Soul Swap
-		205179, -- [9] Phantom Singularity
-		278350, -- [10] Vile Taint
-		386986, -- [11] Sacrolash's Dark Strike
-		205180, -- [12] Summon Darkglare
-		387065, -- [13] Wrath of Consumption
-		48181, -- [14] Haunt
-		387075, -- [15] Tormented Crescendo
-		264000, -- [16] Creeping Death
-		387016, -- [17] Dark Harvest
-		386997, -- [18] Soul Rot
-		386976, -- [19] Withering Bolt
-		108503, -- [20] Grimoire of Sacrifice
-		196103, -- [21] Absolute Corruption
-		63106, -- [22] Siphon Life
-		386759, -- [23] Pandemic Invocation
-		317031, -- [24] Xavian Teachings
-		27243, -- [25] Seed of Corruption
-		324536, -- [26] Malefic Rapture
-		316099, -- [27] Unstable Affliction
-		334319, -- [28] Inevitable Demise
-		108416, -- [29] Dark Pact
-		386664, -- [30] Ichor of Devils
-		386686, -- [31] Frequent Donor
-		389623, -- [32] Gorefiend's Resolve
-		389590, -- [33] Demonic Resilience
-		389367, -- [34] Fel Synergy
-		389576, -- [35] Profane Bargain
-		389630, -- [36] Soul-Eater's Gluttony
-		389761, -- [37] Malefic Affliction
-		386617, -- [38] Demonic Fortitude
-		215941, -- [39] Soul Conduit
-		171975, -- [40] Grimoire of Synergy
-		108415, -- [41] Soul Link
-		386689, -- [42] Grim Feast
-		386620, -- [43] Sweet Souls
-		386858, -- [44] Demonic Inspiration
-		386619, -- [45] Desperate Pact
-		288843, -- [46] Demonic Embrace
-		333889, -- [47] Fel Domination
-		386113, -- [48] Fel Pact
-		268358, -- [49] Demonic Circle
-		328774, -- [50] Amplify Curse
-		387972, -- [51] Teachings of the Satyr
-		387250, -- [52] Seized Vitality
-		387301, -- [53] Haunted Soul
-		337020, -- [54] Wilfred's Sigil of Superior Summoning
+		268358, -- [0] Demonic Circle
+		386113, -- [1] Fel Pact
+		333889, -- [2] Fel Domination
+		288843, -- [3] Demonic Embrace
+		386619, -- [4] Desperate Pact
+		386858, -- [5] Demonic Inspiration
+		386620, -- [6] Sweet Souls
+		386689, -- [7] Grim Feast
+		108415, -- [8] Soul Link
+		171975, -- [9] Grimoire of Synergy
+		215941, -- [10] Soul Conduit
+		386617, -- [11] Demonic Fortitude
+		389761, -- [12] Malefic Affliction
+		389630, -- [13] Soul-Eater's Gluttony
+		389576, -- [14] Profane Bargain
+		389367, -- [15] Fel Synergy
+		389590, -- [16] Demonic Resilience
+		389623, -- [17] Gorefiend's Resolve
+		389359, -- [18] Resolute Barrier
+		264000, -- [19] Creeping Death
+		387016, -- [20] Dark Harvest
+		386997, -- [21] Soul Rot
+		386976, -- [22] Withering Bolt
+		108503, -- [23] Grimoire of Sacrifice
+		196103, -- [24] Absolute Corruption
+		63106, -- [25] Siphon Life
+		386759, -- [26] Pandemic Invocation
+		317031, -- [27] Xavian Teachings
+		27243, -- [28] Seed of Corruption
+		324536, -- [29] Malefic Rapture
+		316099, -- [30] Unstable Affliction
+		108558, -- [31] Nightfall
+		334319, -- [32] Inevitable Demise
+		198590, -- [33] Drain Soul
+		32388, -- [34] Shadow Embrace
+		201424, -- [35] Harvester of Souls
+		387073, -- [36] Soul Tap
+		199471, -- [37] Soul Flame
+		196102, -- [38] Writhe in Agony
+		196226, -- [39] Sow the Seeds
+		386922, -- [40] Agonizing Corruption
+		386951, -- [41] Soul Swap
+		205179, -- [42] Phantom Singularity
+		278350, -- [43] Vile Taint
+		386986, -- [44] Sacrolash's Dark Strike
+		205180, -- [45] Summon Darkglare
+		387065, -- [46] Wrath of Consumption
+		48181, -- [47] Haunt
+		387075, -- [48] Tormented Crescendo
+		328774, -- [49] Amplify Curse
+		387972, -- [50] Teachings of the Satyr
+		389764, -- [51] Doom Blossom
+		389775, -- [52] Dread Touch
+		387273, -- [53] Malevolent Visionary
+		387084, -- [54] Grand Warlock's Design
 		389992, -- [55] Grim Reach
-		387273, -- [56] Malevolent Visionary
-		389764, -- [57] Doom Blossom
-		389775, -- [58] Dread Touch
+		386664, -- [56] Ichor of Devils
+		386686, -- [57] Frequent Donor
+		387301, -- [58] Haunted Soul
+		387250, -- [59] Seized Vitality
+		385899, -- [60] Soulburn
+		317138, -- [61] Strength of Will
+		386659, -- [62] Dark Accord
+		111771, -- [63] Demonic Gateway
+		389609, -- [64] Abyss Walker
+		386613, -- [65] Accrued Vitality
+		219272, -- [66] Demon Skin
+		386105, -- [67] Curses of Enfeeblement
+		386124, -- [68] Fel Armor
+		111400, -- [69] Burning Rush
+		386110, -- [70] Fiendish Stride
+		5484, -- [71] Howl of Terror
+		6789, -- [72] Mortal Coil
+		386864, -- [73] Wrathful Minion
+		386648, -- [74] Nightmare
+		710, -- [75] Banish
+		386651, -- [76] Greater Banish
+		30283, -- [77] Shadowfury
+		264874, -- [78] Darkfury
+		384069, -- [79] Shadowflame
+		386646, -- [80] Lifeblood
+		386256, -- [81] Summon Soulkeeper
+		386344, -- [82] Inquisitor's Gaze
+		385881, -- [83] Teachings of the Black Harvest
+		108416, -- [84] Dark Pact
+	},
+	-- Demonology Warlock
+	[266] = {
+		268358, -- [0] Demonic Circle
+		386113, -- [1] Fel Pact
+		333889, -- [2] Fel Domination
+		288843, -- [3] Demonic Embrace
+		386619, -- [4] Desperate Pact
+		386858, -- [5] Demonic Inspiration
+		386620, -- [6] Sweet Souls
+		386689, -- [7] Grim Feast
+		108415, -- [8] Soul Link
+		171975, -- [9] Grimoire of Synergy
+		215941, -- [10] Soul Conduit
+		386617, -- [11] Demonic Fortitude
+		389576, -- [12] Profane Bargain
+		389367, -- [13] Fel Synergy
+		389590, -- [14] Demonic Resilience
+		389623, -- [15] Gorefiend's Resolve
+		389359, -- [16] Resolute Barrier
+		265187, -- [17] Summon Demonic Tyrant
+		387483, -- [18] Kazaak's Final Curse
+		603, -- [19] Doom
+		267216, -- [20] Inner Demons
+		386185, -- [21] Demonic Knowledge
+		387322, -- [22] Shadow's Bite
+		264178, -- [23] Demonbolt
+		104316, -- [24] Call Dreadstalkers
+		386174, -- [25] Annihilan Training
+		267211, -- [26] Bilescourge Bombers
+		267171, -- [27] Demonic Strength
+		264078, -- [28] Dreadlash
+		264119, -- [29] Summon Vilefiend
+		264057, -- [30] Soul Strike
+		386194, -- [31] Carnivorous Stalkers
+		205145, -- [32] Demonic Calling
+		386200, -- [33] Fel and Steel
+		328774, -- [34] Amplify Curse
+		387972, -- [35] Teachings of the Satyr
+		267170, -- [36] From the Shadows
+		387399, -- [37] Fel Sunder
+		111898, -- [38] Grimoire: Felguard
+		387396, -- [39] Demonic Meteor
+		387488, -- [40] Hounds of War
+		386664, -- [41] Ichor of Devils
+		386686, -- [42] Frequent Donor
+		390173, -- [43] Reign of Tyranny
+		387084, -- [44] Grand Warlock's Design
+		334585, -- [45] Soulbound Tyrant
+		267214, -- [46] Sacrificed Souls
+		387600, -- [47] The Expendables
+		387578, -- [48] Gul'dan's Ambition
+		387526, -- [49] Ner'zhul's Volition
+		267217, -- [50] Nether Portal
+		387445, -- [51] Imp Gang Boss
+		387391, -- [52] Dread Calling
+		387432, -- [53] Fel Covenant
+		387349, -- [54] Bloodbound Imps
+		196277, -- [55] Implosion
+		264130, -- [56] Power Siphon
+		387541, -- [57] Pact of the Imp Mother
+		387549, -- [58] Infernal Command
 		385899, -- [59] Soulburn
 		317138, -- [60] Strength of Will
 		386659, -- [61] Dark Accord
@@ -2922,179 +3012,91 @@ local talents = {
 		6789, -- [71] Mortal Coil
 		386864, -- [72] Wrathful Minion
 		386648, -- [73] Nightmare
-		710, -- [74] Banish
-		386651, -- [75] Greater Banish
-		30283, -- [76] Shadowfury
-		264874, -- [77] Darkfury
-		384069, -- [78] Shadowflame
-		386646, -- [79] Lifeblood
-		386244, -- [80] Summon Soulkeeper
-		386344, -- [81] Inquisitor's Gaze
-		385881, -- [82] Teachings of the Black Harvest
-		389359, -- [83] Resolute Barrier
-		388667, -- [84] Drain Soul
-	},
-	-- Demonology Warlock
-	[266] = {
-		387578, -- [0] Gul'dan's Ambition
-		387526, -- [1] Ner'zhul's Volition
-		267217, -- [2] Nether Portal
-		387445, -- [3] Imp Gang Boss
-		387391, -- [4] Dread Calling
-		387432, -- [5] Fel Covenant
-		387349, -- [6] Bloodbound Imps
-		196277, -- [7] Implosion
-		264130, -- [8] Power Siphon
-		387541, -- [9] Pact of the Imp Mother
-		386833, -- [10] Guillotine
-		387549, -- [11] Infernal Command
-		387602, -- [12] Stolen Power
-		387494, -- [13] Antoran Armaments
-		387485, -- [14] Ripped through the Portal
-		387399, -- [15] Fel Sunder
-		387488, -- [16] Hounds of War
-		387396, -- [17] Demonic Meteor
-		111898, -- [18] Grimoire: Felguard
-		387338, -- [19] Fel Might
-		267170, -- [20] From the Shadows
-		386200, -- [21] Fel and Steel
-		205145, -- [22] Demonic Calling
-		386194, -- [23] Carnivorous Stalkers
-		264119, -- [24] Summon Vilefiend
-		264057, -- [25] Soul Strike
-		264078, -- [26] Dreadlash
-		265187, -- [27] Summon Demonic Tyrant
-		387483, -- [28] Kazaak's Final Curse
-		603, -- [29] Doom
-		267216, -- [30] Inner Demons
-		386185, -- [31] Demonic Knowledge
-		387322, -- [32] Shadow's Bite
-		264178, -- [33] Demonbolt
-		104316, -- [34] Call Dreadstalkers
-		386174, -- [35] Annihilan Training
-		267211, -- [36] Bilescourge Bombers
-		267171, -- [37] Demonic Strength
-		387600, -- [38] The Expendables
-		267214, -- [39] Sacrificed Souls
-		334585, -- [40] Soulbound Tyrant
-		108416, -- [41] Dark Pact
-		386664, -- [42] Ichor of Devils
-		386686, -- [43] Frequent Donor
-		389623, -- [44] Gorefiend's Resolve
-		389590, -- [45] Demonic Resilience
-		389367, -- [46] Fel Synergy
-		389576, -- [47] Profane Bargain
-		386617, -- [48] Demonic Fortitude
-		215941, -- [49] Soul Conduit
-		171975, -- [50] Grimoire of Synergy
-		108415, -- [51] Soul Link
-		386689, -- [52] Grim Feast
-		386620, -- [53] Sweet Souls
-		386858, -- [54] Demonic Inspiration
-		386619, -- [55] Desperate Pact
-		288843, -- [56] Demonic Embrace
-		333889, -- [57] Fel Domination
-		386113, -- [58] Fel Pact
-		268358, -- [59] Demonic Circle
-		328774, -- [60] Amplify Curse
-		387972, -- [61] Teachings of the Satyr
-		390173, -- [62] Reign of Tyranny
-		337020, -- [63] Wilfred's Sigil of Superior Summoning
-		385899, -- [64] Soulburn
-		317138, -- [65] Strength of Will
-		386659, -- [66] Dark Accord
-		111771, -- [67] Demonic Gateway
-		389609, -- [68] Abyss Walker
-		386613, -- [69] Accrued Vitality
-		219272, -- [70] Demon Skin
-		386105, -- [71] Curses of Enfeeblement
-		386124, -- [72] Fel Armor
-		111400, -- [73] Burning Rush
-		386110, -- [74] Fiendish Stride
-		5484, -- [75] Howl of Terror
-		6789, -- [76] Mortal Coil
-		386864, -- [77] Wrathful Minion
-		386648, -- [78] Nightmare
-		710, -- [79] Banish
-		386651, -- [80] Greater Banish
-		30283, -- [81] Shadowfury
-		264874, -- [82] Darkfury
-		384069, -- [83] Shadowflame
-		386646, -- [84] Lifeblood
-		386244, -- [85] Summon Soulkeeper
-		386344, -- [86] Inquisitor's Gaze
-		385881, -- [87] Teachings of the Black Harvest
-		389359, -- [88] Resolute Barrier
+		386833, -- [74] Guillotine
+		710, -- [75] Banish
+		386651, -- [76] Greater Banish
+		30283, -- [77] Shadowfury
+		264874, -- [78] Darkfury
+		384069, -- [79] Shadowflame
+		386646, -- [80] Lifeblood
+		386256, -- [81] Summon Soulkeeper
+		386344, -- [82] Inquisitor's Gaze
+		385881, -- [83] Teachings of the Black Harvest
+		108416, -- [84] Dark Pact
+		387602, -- [85] Stolen Power
+		387494, -- [86] Antoran Armaments
+		387485, -- [87] Ripped through the Portal
+		387338, -- [88] Fel Might
 	},
 	-- Destruction Warlock
 	[267] = {
-		5740, -- [0] Rain of Fire
-		116858, -- [1] Chaos Bolt
-		17962, -- [2] Conflagrate
-		196406, -- [3] Backdraft
-		205184, -- [4] Roaring Blaze
-		231793, -- [5] Improved Conflagrate
-		196447, -- [6] Channel Demonfire
-		387166, -- [7] Raging Demonfire
-		387103, -- [8] Ruin
-		387108, -- [9] Conflagration of Chaos
-		17877, -- [10] Shadowburn
-		388827, -- [11] Explosive Potential
-		108416, -- [12] Dark Pact
-		386664, -- [13] Ichor of Devils
-		386686, -- [14] Frequent Donor
-		389623, -- [15] Gorefiend's Resolve
+		266086, -- [0] Rain of Chaos
+		387084, -- [1] Grand Warlock's Design
+		268358, -- [2] Demonic Circle
+		386113, -- [3] Fel Pact
+		333889, -- [4] Fel Domination
+		288843, -- [5] Demonic Embrace
+		386619, -- [6] Desperate Pact
+		386858, -- [7] Demonic Inspiration
+		386620, -- [8] Sweet Souls
+		386689, -- [9] Grim Feast
+		108415, -- [10] Soul Link
+		171975, -- [11] Grimoire of Synergy
+		215941, -- [12] Soul Conduit
+		386617, -- [13] Demonic Fortitude
+		389576, -- [14] Profane Bargain
+		389367, -- [15] Fel Synergy
 		389590, -- [16] Demonic Resilience
-		389367, -- [17] Fel Synergy
-		389576, -- [18] Profane Bargain
-		386617, -- [19] Demonic Fortitude
-		215941, -- [20] Soul Conduit
-		171975, -- [21] Grimoire of Synergy
-		108415, -- [22] Soul Link
-		386689, -- [23] Grim Feast
-		386620, -- [24] Sweet Souls
-		386858, -- [25] Demonic Inspiration
-		386619, -- [26] Desperate Pact
-		288843, -- [27] Demonic Embrace
-		333889, -- [28] Fel Domination
-		386113, -- [29] Fel Pact
-		268358, -- [30] Demonic Circle
+		389623, -- [17] Gorefiend's Resolve
+		389359, -- [18] Resolute Barrier
+		5740, -- [19] Rain of Fire
+		116858, -- [20] Chaos Bolt
+		17962, -- [21] Conflagrate
+		196406, -- [22] Backdraft
+		205184, -- [23] Roaring Blaze
+		231793, -- [24] Improved Conflagrate
+		196447, -- [25] Channel Demonfire
+		387166, -- [26] Raging Demonfire
+		387103, -- [27] Ruin
+		387108, -- [28] Conflagration of Chaos
+		17877, -- [29] Shadowburn
+		388827, -- [30] Explosive Potential
 		328774, -- [31] Amplify Curse
 		387972, -- [32] Teachings of the Satyr
-		1122, -- [33] Summon Infernal
-		196412, -- [34] Eradication
-		387384, -- [35] Backlash
-		196408, -- [36] Fire and Brimstone
-		387509, -- [37] Pandemonium
-		387522, -- [38] Cry Havoc
-		205148, -- [39] Reverse Entropy
-		266134, -- [40] Internal Combustion
-		387506, -- [41] Mayhem
-		80240, -- [42] Havoc
-		6353, -- [43] Soul Fire
-		387176, -- [44] Decimation
-		387093, -- [45] Improved Immolate
-		387095, -- [46] Pyrogenics
-		270545, -- [47] Inferno
-		152108, -- [48] Cataclysm
-		388832, -- [49] Scalding Flames
-		387259, -- [50] Flashpoint
-		108503, -- [51] Grimoire of Sacrifice
-		387156, -- [52] Ritual of Ruin
-		387252, -- [53] Ashen Remains
-		387173, -- [54] Diabolic Embers
-		387400, -- [55] Madness of the Azj'Aqir
-		387275, -- [56] Chaos Incarnate
-		387976, -- [57] Dimensional Rift
-		387279, -- [58] Power Overwhelming
-		387153, -- [59] Burn to Ashes
-		387159, -- [60] Avatar of Destruction
-		387165, -- [61] Master Ritualist
-		387569, -- [62] Rolling Havoc
-		387355, -- [63] Crashing Chaos
-		266086, -- [64] Rain of Chaos
-		387084, -- [65] Grand Warlock's Design
-		387475, -- [66] Infernal Brand
+		387475, -- [33] Infernal Brand
+		387355, -- [34] Crashing Chaos
+		387569, -- [35] Rolling Havoc
+		387165, -- [36] Master Ritualist
+		387159, -- [37] Avatar of Destruction
+		387153, -- [38] Burn to Ashes
+		387279, -- [39] Power Overwhelming
+		387275, -- [40] Chaos Incarnate
+		387976, -- [41] Dimensional Rift
+		387400, -- [42] Madness of the Azj'Aqir
+		387173, -- [43] Diabolic Embers
+		387252, -- [44] Ashen Remains
+		387156, -- [45] Ritual of Ruin
+		108503, -- [46] Grimoire of Sacrifice
+		387259, -- [47] Flashpoint
+		388832, -- [48] Scalding Flames
+		270545, -- [49] Inferno
+		152108, -- [50] Cataclysm
+		387095, -- [51] Pyrogenics
+		387093, -- [52] Improved Immolate
+		387176, -- [53] Decimation
+		6353, -- [54] Soul Fire
+		387506, -- [55] Mayhem
+		80240, -- [56] Havoc
+		205148, -- [57] Reverse Entropy
+		266134, -- [58] Internal Combustion
+		387509, -- [59] Pandemonium
+		387522, -- [60] Cry Havoc
+		196408, -- [61] Fire and Brimstone
+		387384, -- [62] Backlash
+		196412, -- [63] Eradication
+		1122, -- [64] Summon Infernal
+		386664, -- [65] Ichor of Devils
+		386686, -- [66] Frequent Donor
 		385899, -- [67] Soulburn
 		317138, -- [68] Strength of Will
 		386659, -- [69] Dark Accord
@@ -3116,10 +3118,10 @@ local talents = {
 		264874, -- [85] Darkfury
 		384069, -- [86] Shadowflame
 		386646, -- [87] Lifeblood
-		386244, -- [88] Summon Soulkeeper
+		386256, -- [88] Summon Soulkeeper
 		386344, -- [89] Inquisitor's Gaze
 		385881, -- [90] Teachings of the Black Harvest
-		389359, -- [91] Resolute Barrier
+		108416, -- [91] Dark Pact
 	},
 	-- Brewmaster Monk
 	[268] = {
@@ -3180,7 +3182,7 @@ local talents = {
 		387276, -- [54] Strength of Spirit
 		388814, -- [55] Ironshell Brew
 		388813, -- [56] Expeditious Fortification
-		115203, -- [57] Fortifying Brew
+		388917, -- [57] Fortifying Brew
 		116095, -- [58] Disable
 		196736, -- [59] Blackout Combo
 		387046, -- [60] Elusive Footwork
@@ -3222,393 +3224,393 @@ local talents = {
 	},
 	-- Windwalker Monk
 	[269] = {
-		389577, -- [0] Bounce Back
-		115315, -- [1] Summon Black Ox Statue
-		394110, -- [2] Escape from Reality
-		389579, -- [3] Save Them All
-		115313, -- [4] Summon Jade Serpent Statue
-		328669, -- [5] Improved Roll
-		392900, -- [6] Vigorous Expulsion
-		388811, -- [7] Grace of the Crane
-		115098, -- [8] Chi Wave
-		123986, -- [9] Chi Burst
-		392910, -- [10] Profound Rebuttal
-		389574, -- [11] Close to Heart
-		388674, -- [12] Ferocity of Xuen
-		388809, -- [13] Fast Feet
-		122278, -- [14] Dampen Harm
-		394123, -- [15] Fatal Touch
-		389578, -- [16] Resonant Fists
-		388686, -- [17] Summon White Tiger Statue
-		196607, -- [18] Eye of the Tiger
-		157411, -- [19] Windwalking
-		116844, -- [20] Ring of Peace
-		122783, -- [21] Diffuse Magic
-		328670, -- [22] Hasty Provocation
-		388812, -- [23] Vivacious Vivification
-		101643, -- [24] Transcendence
-		388664, -- [25] Calming Presence
-		231602, -- [26] Improved Vivify
-		115175, -- [27] Soothing Mist
-		107428, -- [28] Rising Sun Kick
-		116841, -- [29] Tiger's Lust
-		115078, -- [30] Paralysis
-		344359, -- [31] Paralysis
-		116705, -- [32] Spear Hand Strike
-		115173, -- [33] Celerity
-		115008, -- [34] Chi Torpedo
-		322113, -- [35] Improved Touch of Death
-		389575, -- [36] Generous Pour
-		387276, -- [37] Strength of Spirit
-		388814, -- [38] Ironshell Brew
-		388813, -- [39] Expeditious Fortification
-		115203, -- [40] Fortifying Brew
-		116095, -- [41] Disable
-		392970, -- [42] Open Palm Strikes
-		392958, -- [43] Glory of the Dawn
-		392979, -- [44] Jade Ignition
-		392983, -- [45] Strike of the Windlord
-		392985, -- [46] Thunderfist
-		392986, -- [47] Xuen's Bond
-		392989, -- [48] Last Emperor's Capacitor
-		388849, -- [49] Rising Star
-		391412, -- [50] Faeline Harmony
-		394093, -- [51] Dust in the Wind
-		386276, -- [52] Bonedust Brew
-		386941, -- [53] Attenuation
-		388848, -- [54] Crane Vortex
-		331679, -- [55] Fatal Flying Guillotine
-		388681, -- [56] Elusive Mists
-		264348, -- [57] Tiger Tail Sweep
-		392994, -- [58] Way of the Fae
-		218164, -- [59] Detox
-		196740, -- [60] Hit Combo
-		393098, -- [61] Forbidden Technique
-		388846, -- [62] Widening Whirl
-		122470, -- [63] Touch of Karma
-		391383, -- [64] Hardened Soles
-		115396, -- [65] Ascension
-		113656, -- [66] Fists of Fury
-		388193, -- [67] Faeline Stomp
-		121817, -- [68] Power Strikes
-		388854, -- [69] Flashing Fists
-		116645, -- [70] Teachings of the Monastery
-		280197, -- [71] Spiritual Focus
-		137639, -- [72] Storm, Earth, and Fire
-		152173, -- [73] Serenity
-		391370, -- [74] Drinking Horn Cover
-		391330, -- [75] Meridian Strikes
-		101545, -- [76] Flying Serpent Kick
-		388856, -- [77] Touch of the Tiger
-		228287, -- [78] Mark of the Crane
-		392982, -- [79] Shadowboxing Treads
-		116847, -- [80] Rushing Jade Wind
-		325201, -- [81] Dance of Chi-Ji
-		195243, -- [82] Inner Peace
-		287055, -- [83] Fury of Xuen
-		123904, -- [84] Invoke Xuen, the White Tiger
-		152175, -- [85] Whirling Dragon Punch
-		335913, -- [86] Empowered Tiger Lightning
-		195300, -- [87] Transfer the Power
-		388661, -- [88] Invoker's Delight
-		392993, -- [89] Xuen's Battlegear
-		392991, -- [90] Skyreach
+		388193, -- [0] Faeline Stomp
+		389577, -- [1] Bounce Back
+		115315, -- [2] Summon Black Ox Statue
+		394110, -- [3] Escape from Reality
+		389579, -- [4] Save Them All
+		115313, -- [5] Summon Jade Serpent Statue
+		328669, -- [6] Improved Roll
+		392900, -- [7] Vigorous Expulsion
+		388811, -- [8] Grace of the Crane
+		115098, -- [9] Chi Wave
+		123986, -- [10] Chi Burst
+		392910, -- [11] Profound Rebuttal
+		389574, -- [12] Close to Heart
+		388674, -- [13] Ferocity of Xuen
+		388809, -- [14] Fast Feet
+		122278, -- [15] Dampen Harm
+		394123, -- [16] Fatal Touch
+		389578, -- [17] Resonant Fists
+		388686, -- [18] Summon White Tiger Statue
+		196607, -- [19] Eye of the Tiger
+		157411, -- [20] Windwalking
+		116844, -- [21] Ring of Peace
+		122783, -- [22] Diffuse Magic
+		328670, -- [23] Hasty Provocation
+		388812, -- [24] Vivacious Vivification
+		101643, -- [25] Transcendence
+		388664, -- [26] Calming Presence
+		231602, -- [27] Improved Vivify
+		115175, -- [28] Soothing Mist
+		107428, -- [29] Rising Sun Kick
+		116841, -- [30] Tiger's Lust
+		115078, -- [31] Paralysis
+		344359, -- [32] Paralysis
+		116705, -- [33] Spear Hand Strike
+		115173, -- [34] Celerity
+		115008, -- [35] Chi Torpedo
+		322113, -- [36] Improved Touch of Death
+		389575, -- [37] Generous Pour
+		387276, -- [38] Strength of Spirit
+		388814, -- [39] Ironshell Brew
+		388813, -- [40] Expeditious Fortification
+		388917, -- [41] Fortifying Brew
+		116095, -- [42] Disable
+		392970, -- [43] Open Palm Strikes
+		392958, -- [44] Glory of the Dawn
+		196740, -- [45] Hit Combo
+		392983, -- [46] Strike of the Windlord
+		392985, -- [47] Thunderfist
+		388849, -- [48] Rising Star
+		195243, -- [49] Inner Peace
+		388681, -- [50] Elusive Mists
+		264348, -- [51] Tiger Tail Sweep
+		392994, -- [52] Way of the Fae
+		218164, -- [53] Detox
+		392979, -- [54] Jade Ignition
+		393098, -- [55] Forbidden Technique
+		388846, -- [56] Widening Whirl
+		122470, -- [57] Touch of Karma
+		391383, -- [58] Hardened Soles
+		115396, -- [59] Ascension
+		113656, -- [60] Fists of Fury
+		121817, -- [61] Power Strikes
+		388854, -- [62] Flashing Fists
+		116645, -- [63] Teachings of the Monastery
+		280197, -- [64] Spiritual Focus
+		137639, -- [65] Storm, Earth, and Fire
+		152173, -- [66] Serenity
+		391370, -- [67] Drinking Horn Cover
+		391330, -- [68] Meridian Strikes
+		101545, -- [69] Flying Serpent Kick
+		388856, -- [70] Touch of the Tiger
+		228287, -- [71] Mark of the Crane
+		392982, -- [72] Shadowboxing Treads
+		116847, -- [73] Rushing Jade Wind
+		325201, -- [74] Dance of Chi-Ji
+		287055, -- [75] Fury of Xuen
+		123904, -- [76] Invoke Xuen, the White Tiger
+		152175, -- [77] Whirling Dragon Punch
+		335913, -- [78] Empowered Tiger Lightning
+		195300, -- [79] Transfer the Power
+		388661, -- [80] Invoker's Delight
+		392993, -- [81] Xuen's Battlegear
+		392991, -- [82] Skyreach
+		392989, -- [83] Last Emperor's Capacitor
+		392986, -- [84] Xuen's Bond
+		394923, -- [85] Fatal Flying Guillotine
+		388848, -- [86] Crane Vortex
+		386941, -- [87] Attenuation
+		386276, -- [88] Bonedust Brew
+		394093, -- [89] Dust in the Wind
+		391412, -- [90] Faeline Harmony
 	},
 	-- Mistweaver Monk
 	[270] = {
-		388682, -- [0] Misty Peaks
-		388604, -- [1] Echoing Reverberation
-		388564, -- [2] Accumulating Mist
-		393460, -- [3] Tea of Serenity
-		388517, -- [4] Tea of Plenty
-		124081, -- [5] Zen Pulse
-		388548, -- [6] Mists of Life
-		124682, -- [7] Enveloping Mist
-		388740, -- [8] Ancient Concordance
-		388491, -- [9] Secret Infusion
-		388661, -- [10] Invoker's Delight
-		122281, -- [11] Healing Elixir
-		388477, -- [12] Unison
-		388509, -- [13] Mending Proliferation
-		115310, -- [14] Revival
-		388615, -- [15] Restoral
-		197915, -- [16] Lifecycles
-		197908, -- [17] Mana Tea
-		388847, -- [18] Rapid Diffusion
-		388874, -- [19] Improved Detox
-		388038, -- [20] Yu'lon's Whisper
-		388779, -- [21] Awakened Faeline
-		388031, -- [22] Jade Bond
-		388212, -- [23] Gift of the Celestials
-		210802, -- [24] Spirit of the Crane
-		198898, -- [25] Song of Chi-Ji
-		388193, -- [26] Faeline Stomp
-		274586, -- [27] Invigorating Mists
-		387991, -- [28] Tear of Morning
-		274909, -- [29] Rising Mist
-		389577, -- [30] Bounce Back
-		115315, -- [31] Summon Black Ox Statue
-		394110, -- [32] Escape from Reality
-		389579, -- [33] Save Them All
-		115313, -- [34] Summon Jade Serpent Statue
-		328669, -- [35] Improved Roll
-		392900, -- [36] Vigorous Expulsion
-		388811, -- [37] Grace of the Crane
-		115098, -- [38] Chi Wave
-		123986, -- [39] Chi Burst
-		392910, -- [40] Profound Rebuttal
-		389574, -- [41] Close to Heart
-		388674, -- [42] Ferocity of Xuen
-		388809, -- [43] Fast Feet
-		122278, -- [44] Dampen Harm
-		394123, -- [45] Fatal Touch
-		389578, -- [46] Resonant Fists
-		388686, -- [47] Summon White Tiger Statue
-		196607, -- [48] Eye of the Tiger
-		157411, -- [49] Windwalking
-		116844, -- [50] Ring of Peace
-		122783, -- [51] Diffuse Magic
-		328670, -- [52] Hasty Provocation
-		388812, -- [53] Vivacious Vivification
-		101643, -- [54] Transcendence
-		388664, -- [55] Calming Presence
-		231602, -- [56] Improved Vivify
-		115175, -- [57] Soothing Mist
-		107428, -- [58] Rising Sun Kick
-		116841, -- [59] Tiger's Lust
-		115078, -- [60] Paralysis
-		344359, -- [61] Paralysis
-		116705, -- [62] Spear Hand Strike
-		115173, -- [63] Celerity
-		115008, -- [64] Chi Torpedo
-		322113, -- [65] Improved Touch of Death
-		389575, -- [66] Generous Pour
-		387276, -- [67] Strength of Spirit
-		388814, -- [68] Ironshell Brew
-		388813, -- [69] Expeditious Fortification
-		115203, -- [70] Fortifying Brew
-		116095, -- [71] Disable
-		388511, -- [72] Overflowing Mists
-		343655, -- [73] Enveloping Breath
-		388218, -- [74] Calming Coalescence
-		116849, -- [75] Life Cocoon
-		197900, -- [76] Mist Wrap
-		196725, -- [77] Refreshing Jade Wind
-		197895, -- [78] Focused Thunder
-		274963, -- [79] Upwelling
-		388020, -- [80] Resplendent Mist
+		198898, -- [0] Song of Chi-Ji
+		210802, -- [1] Spirit of the Crane
+		197900, -- [2] Mist Wrap
+		196725, -- [3] Refreshing Jade Wind
+		388604, -- [4] Echoing Reverberation
+		388564, -- [5] Accumulating Mist
+		393460, -- [6] Tea of Serenity
+		388517, -- [7] Tea of Plenty
+		124081, -- [8] Zen Pulse
+		388548, -- [9] Mists of Life
+		124682, -- [10] Enveloping Mist
+		388740, -- [11] Ancient Concordance
+		388491, -- [12] Secret Infusion
+		388661, -- [13] Invoker's Delight
+		122281, -- [14] Healing Elixir
+		388477, -- [15] Unison
+		388509, -- [16] Mending Proliferation
+		115310, -- [17] Revival
+		388615, -- [18] Restoral
+		197915, -- [19] Lifecycles
+		197908, -- [20] Mana Tea
+		388031, -- [21] Jade Bond
+		388212, -- [22] Gift of the Celestials
+		388779, -- [23] Awakened Faeline
+		388038, -- [24] Yu'lon's Whisper
+		388847, -- [25] Rapid Diffusion
+		337209, -- [26] Font of Life
+		388511, -- [27] Overflowing Mists
+		343655, -- [28] Enveloping Breath
+		388218, -- [29] Calming Coalescence
+		388874, -- [30] Improved Detox
+		389577, -- [31] Bounce Back
+		115315, -- [32] Summon Black Ox Statue
+		394110, -- [33] Escape from Reality
+		389579, -- [34] Save Them All
+		115313, -- [35] Summon Jade Serpent Statue
+		328669, -- [36] Improved Roll
+		392900, -- [37] Vigorous Expulsion
+		388811, -- [38] Grace of the Crane
+		115098, -- [39] Chi Wave
+		123986, -- [40] Chi Burst
+		392910, -- [41] Profound Rebuttal
+		389574, -- [42] Close to Heart
+		388674, -- [43] Ferocity of Xuen
+		388809, -- [44] Fast Feet
+		122278, -- [45] Dampen Harm
+		394123, -- [46] Fatal Touch
+		389578, -- [47] Resonant Fists
+		388686, -- [48] Summon White Tiger Statue
+		196607, -- [49] Eye of the Tiger
+		157411, -- [50] Windwalking
+		116844, -- [51] Ring of Peace
+		122783, -- [52] Diffuse Magic
+		328670, -- [53] Hasty Provocation
+		388812, -- [54] Vivacious Vivification
+		101643, -- [55] Transcendence
+		388664, -- [56] Calming Presence
+		231602, -- [57] Improved Vivify
+		115175, -- [58] Soothing Mist
+		107428, -- [59] Rising Sun Kick
+		116841, -- [60] Tiger's Lust
+		115078, -- [61] Paralysis
+		344359, -- [62] Paralysis
+		116705, -- [63] Spear Hand Strike
+		115173, -- [64] Celerity
+		115008, -- [65] Chi Torpedo
+		322113, -- [66] Improved Touch of Death
+		389575, -- [67] Generous Pour
+		387276, -- [68] Strength of Spirit
+		388814, -- [69] Ironshell Brew
+		388813, -- [70] Expeditious Fortification
+		388917, -- [71] Fortifying Brew
+		116095, -- [72] Disable
+		388193, -- [73] Faeline Stomp
+		274586, -- [74] Invigorating Mists
+		387991, -- [75] Tear of Morning
+		274909, -- [76] Rising Mist
+		116849, -- [77] Life Cocoon
+		388020, -- [78] Resplendent Mist
+		386276, -- [79] Bonedust Brew
+		388701, -- [80] Dancing Mists
 		115151, -- [81] Renewing Mist
 		281231, -- [82] Mastery of Mist
 		322118, -- [83] Invoke Yu'lon, the Jade Serpent
 		325197, -- [84] Invoke Chi-Ji, the Red Crane
 		388551, -- [85] Uplifted Spirits
 		388593, -- [86] Peaceful Mending
-		116645, -- [87] Teachings of the Monastery
-		386949, -- [88] Bountiful Brew
-		386941, -- [89] Attenuation
-		191837, -- [90] Essence Font
-		388023, -- [91] Ancient Teachings
-		388047, -- [92] Clouded Focus
-		387765, -- [93] Nourishing Chi
-		116680, -- [94] Thunder Focus Tea
-		388681, -- [95] Elusive Mists
-		264348, -- [96] Tiger Tail Sweep
-		337209, -- [97] Font of Life
-		388701, -- [98] Dancing Mists
-		386276, -- [99] Bonedust Brew
+		197895, -- [87] Focused Thunder
+		274963, -- [88] Upwelling
+		388682, -- [89] Misty Peaks
+		116645, -- [90] Teachings of the Monastery
+		386949, -- [91] Bountiful Brew
+		386941, -- [92] Attenuation
+		191837, -- [93] Essence Font
+		388023, -- [94] Ancient Teachings
+		388047, -- [95] Clouded Focus
+		387765, -- [96] Nourishing Chi
+		116680, -- [97] Thunder Focus Tea
+		388681, -- [98] Elusive Mists
+		264348, -- [99] Tiger Tail Sweep
 	},
 	-- Havoc Demon Hunter
 	[577] = {
-		320654, -- [0] Pursuit
-		393029, -- [1] Furious Throws
-		206478, -- [2] Demonic Appetite
-		343017, -- [3] Improved Fel Rush
-		343206, -- [4] Improved Chaos Strike
-		328725, -- [5] Mortal Dance
-		206416, -- [6] First Blood
-		388109, -- [7] Felfire Heart
-		320374, -- [8] Burning Hatred
-		258881, -- [9] Trail of Ruin
-		389978, -- [10] Dancing with Fate
-		211881, -- [11] Fel Eruption
-		389977, -- [12] Relentless Onslaught
-		390154, -- [13] Serrated Glaive
-		320415, -- [14] Looks Can Kill
-		388112, -- [15] Chaotic Transformation
-		320413, -- [16] Critical Chaos
-		388108, -- [17] Initiative
-		206476, -- [18] Momentum
-		389688, -- [19] Tactical Retreat
-		347461, -- [20] Unbound Chaos
-		388113, -- [21] Isolated Prey
-		203550, -- [22] Blind Fury
-		343311, -- [23] Furious Gaze
-		389693, -- [24] Inner Demon
-		391429, -- [25] Fodder to the Flame
-		390163, -- [26] Elysian Decree
-		391275, -- [27] Mo'arg Bionics
-		391189, -- [28] Burning Wound
-		390158, -- [29] Growing Inferno
-		388114, -- [30] Any Means Necessary
-		388106, -- [31] Soulrend
-		258860, -- [32] Essence Break
-		388118, -- [33] Know Your Enemy
-		389687, -- [34] Chaos Theory
-		342817, -- [35] Glaive Tempest
-		258925, -- [36] Fel Barrage
-		390142, -- [37] Restless Hunter
-		258887, -- [38] Cycle of Hatred
-		388116, -- [39] Shattered Destiny
-		258876, -- [40] Insatiable Hunger
-		203555, -- [41] Demon Blades
-		198013, -- [42] Eye Beam
-		320386, -- [43] Bouncing Glaives
-		217832, -- [44] Imprison
-		320416, -- [45] Hot Feet
-		198793, -- [46] Vengeful Retreat
-		320635, -- [47] Vengeful Restraint
-		320770, -- [48] Unrestrained Fury
-		389763, -- [49] Master of the Glaive
-		389846, -- [50] Felfire Haste
-		205411, -- [51] Desperate Instincts
-		196555, -- [52] Netherwalk
-		388107, -- [53] Ragefire
-		320361, -- [54] Improved Disrupt
-		320418, -- [55] Improved Sigil of Misery
-		388110, -- [56] Misery in Defeat
-		320313, -- [57] Consume Magic
-		320331, -- [58] Infernal Armor
-		320421, -- [59] Rush of Chaos
-		204909, -- [60] Soul Rending
-		213410, -- [61] Demonic
-		235893, -- [62] Demonic Origins
-		389781, -- [63] Long Night
-		389783, -- [64] Pitch Black
-		196718, -- [65] Darkness
-		179057, -- [66] Chaos Nova
-		389696, -- [67] Illidari Knowledge
-		209281, -- [68] Quickened Sigils
-		389697, -- [69] Extended Sigils
-		391409, -- [70] Aldrachi Design
-		202137, -- [71] Sigil of Silence
-		389695, -- [72] Will of the Illidari
-		207666, -- [73] Concentrated Sigils
-		389799, -- [74] Precise Sigils
-		389811, -- [75] Unnatural Malice
-		389819, -- [76] Fae Empowered Elixir
-		370965, -- [77] The Hunt
-		207684, -- [78] Sigil of Misery
-		204596, -- [79] Sigil of Flame
-		389824, -- [80] Shattered Restoration
-		389694, -- [81] Flames of Fury
-		213010, -- [82] Charred Warblades
-		389849, -- [83] Lost in Darkness
-		183782, -- [84] Disrupting Fury
-		393822, -- [85] Internal Struggle
-		391397, -- [86] Erratic Felheart
-		390152, -- [87] Collective Anguish
-		320412, -- [88] Chaos Fragments
-		206477, -- [89] Unleashed Power
-		388111, -- [90] Demon Muzzle [NYI]
-		278326, -- [91] Consume Magic
-		207347, -- [92] Aura of Pain
-		232893, -- [93] Felblade
+		388107, -- [0] Ragefire
+		209281, -- [1] Quickened Sigils
+		389697, -- [2] Extended Sigils
+		320418, -- [3] Improved Sigil of Misery
+		388110, -- [4] Misery in Defeat
+		207684, -- [5] Sigil of Misery
+		202137, -- [6] Sigil of Silence
+		389695, -- [7] Will of the Illidari
+		389781, -- [8] Long Night
+		389783, -- [9] Pitch Black
+		196718, -- [10] Darkness
+		179057, -- [11] Chaos Nova
+		393822, -- [12] Internal Struggle
+		391397, -- [13] Erratic Felheart
+		343206, -- [14] Improved Chaos Strike
+		390152, -- [15] Collective Anguish
+		388114, -- [16] Any Means Necessary
+		388106, -- [17] Soulrend
+		391275, -- [18] Accelerating Blade
+		391429, -- [19] Fodder to the Flame
+		390163, -- [20] Elysian Decree
+		389693, -- [21] Inner Demon
+		343311, -- [22] Furious Gaze
+		390142, -- [23] Restless Hunter
+		342817, -- [24] Glaive Tempest
+		258925, -- [25] Fel Barrage
+		389687, -- [26] Chaos Theory
+		388113, -- [27] Isolated Prey
+		388116, -- [28] Shattered Destiny
+		258887, -- [29] Cycle of Hatred
+		258860, -- [30] Essence Break
+		388118, -- [31] Know Your Enemy
+		206476, -- [32] Momentum
+		389688, -- [33] Tactical Retreat
+		258876, -- [34] Insatiable Hunger
+		203555, -- [35] Demon Blades
+		198013, -- [36] Eye Beam
+		204596, -- [37] Sigil of Flame
+		343017, -- [38] Improved Fel Rush
+		320413, -- [39] Critical Chaos
+		388108, -- [40] Initiative
+		347461, -- [41] Unbound Chaos
+		203550, -- [42] Blind Fury
+		205411, -- [43] Desperate Instincts
+		196555, -- [44] Netherwalk
+		388112, -- [45] Chaotic Transformation
+		320415, -- [46] Looks Can Kill
+		390154, -- [47] Serrated Glaive
+		389977, -- [48] Relentless Onslaught
+		390158, -- [49] Growing Inferno
+		389824, -- [50] Shattered Restoration
+		391189, -- [51] Burning Wound
+		388111, -- [52] Demon Muzzle
+		391409, -- [53] Aldrachi Design
+		320412, -- [54] Chaos Fragments
+		206477, -- [55] Unleashed Power
+		258881, -- [56] Trail of Ruin
+		211881, -- [57] Fel Eruption
+		393029, -- [58] Furious Throws
+		388109, -- [59] Felfire Heart
+		320374, -- [60] Burning Hatred
+		206416, -- [61] First Blood
+		328725, -- [62] Mortal Dance
+		206478, -- [63] Demonic Appetite
+		389811, -- [64] Unnatural Malice
+		389819, -- [65] Relentless Pursuit
+		370965, -- [66] The Hunt
+		213410, -- [67] Demonic
+		235893, -- [68] First of the Illidari
+		320331, -- [69] Infernal Armor
+		320421, -- [70] Rush of Chaos
+		204909, -- [71] Soul Rending
+		183782, -- [72] Disrupting Fury
+		320361, -- [73] Improved Disrupt
+		207347, -- [74] Aura of Pain
+		232893, -- [75] Felblade
+		278326, -- [76] Consume Magic
+		320313, -- [77] Swallowed Anger
+		213010, -- [78] Charred Warblades
+		207666, -- [79] Concentrated Sigils
+		389799, -- [80] Precise Sigils
+		389849, -- [81] Lost in Darkness
+		389694, -- [82] Flames of Fury
+		320416, -- [83] Blazing Path
+		217832, -- [84] Imprison
+		320386, -- [85] Bouncing Glaives
+		198793, -- [86] Vengeful Retreat
+		320770, -- [87] Unrestrained Fury
+		320654, -- [88] Pursuit
+		389763, -- [89] Master of the Glaive
+		389696, -- [90] Illidari Knowledge
+		389846, -- [91] Felfire Haste
+		320635, -- [92] Vengeful Bonds
+		389978, -- [93] Dancing with Fate
 	},
 	-- Vengeance Demon Hunter
 	[581] = {
-		320654, -- [0] Pursuit
-		389985, -- [1] The Weak-Willed
-		389976, -- [2] Vulnerability
-		207407, -- [3] Soul Carver
-		218612, -- [4] Feed the Demon
-		393827, -- [5] Stoke the Flames
-		389708, -- [6] Darkglare Boon
-		390808, -- [7] Volatile Flameblood
-		390213, -- [8] Burning Blood
-		391178, -- [9] Roaring Fire
-		321028, -- [10] Deflecting Spikes
-		320386, -- [11] Bouncing Glaives
-		217832, -- [12] Imprison
-		320416, -- [13] Hot Feet
-		198793, -- [14] Vengeful Retreat
-		320635, -- [15] Vengeful Restraint
-		320770, -- [16] Unrestrained Fury
-		389763, -- [17] Master of the Glaive
-		389846, -- [18] Felfire Haste
-		391165, -- [19] Soul Furnace
-		320361, -- [20] Improved Disrupt
-		320418, -- [21] Improved Sigil of Misery
-		388110, -- [22] Misery in Defeat
-		320313, -- [23] Consume Magic
-		320331, -- [24] Infernal Armor
-		320421, -- [25] Rush of Chaos
-		204909, -- [26] Soul Rending
-		213410, -- [27] Demonic
-		235893, -- [28] Demonic Origins
-		389781, -- [29] Long Night
-		389783, -- [30] Pitch Black
-		196718, -- [31] Darkness
-		179057, -- [32] Chaos Nova
-		389696, -- [33] Illidari Knowledge
-		209281, -- [34] Quickened Sigils
-		389697, -- [35] Extended Sigils
-		391409, -- [36] Aldrachi Design
-		202137, -- [37] Sigil of Silence
-		389695, -- [38] Will of the Illidari
-		207666, -- [39] Concentrated Sigils
-		389799, -- [40] Precise Sigils
-		389811, -- [41] Unnatural Malice
-		389819, -- [42] Fae Empowered Elixir
-		370965, -- [43] The Hunt
-		207684, -- [44] Sigil of Misery
-		343207, -- [45] Focused Cleave
-		207387, -- [46] Painbringer
-		389711, -- [47] Soulmonger
-		389958, -- [48] Frailty
-		320387, -- [49] Perfectly Balanced Glaive
-		389997, -- [50] Shear Fury
-		263642, -- [51] Fracture
-		207548, -- [52] Agonizing Flames
-		268175, -- [53] Void Reaver
-		247454, -- [54] Spirit Bomb
-		207697, -- [55] Feast of Souls
-		227174, -- [56] Fallout
-		389721, -- [57] Extended Spikes
-		326853, -- [58] Ruinous Bulwark
-		389720, -- [59] Calcified Spikes
-		212084, -- [60] Fel Devastation
-		204021, -- [61] Fiery Brand
-		389724, -- [62] Abyssal Haste
-		389729, -- [63] Retaliation
-		389705, -- [64] Fel Flame Fortification
-		263648, -- [65] Soul Barrier
-		320341, -- [66] Bulk Extraction
-		343014, -- [67] Revel in Pain
-		389715, -- [68] Chains of Anger
-		389718, -- [69] Cycle of Binding
-		336639, -- [70] Charred Flesh
-		389732, -- [71] Down in Flames
-		391429, -- [72] Fodder to the Flame
-		390163, -- [73] Elysian Decree
-		207739, -- [74] Burning Alive
-		389220, -- [75] Fiery Demise
-		202138, -- [76] Sigil of Chains
-		209258, -- [77] Last Resort
-		204596, -- [78] Sigil of Flame
-		389824, -- [79] Shattered Restoration
-		389694, -- [80] Flames of Fury
-		213010, -- [81] Charred Warblades
-		389849, -- [82] Lost in Darkness
-		183782, -- [83] Disrupting Fury
-		393822, -- [84] Internal Struggle
-		391397, -- [85] Erratic Felheart
-		390152, -- [86] Collective Anguish
-		320412, -- [87] Chaos Fragments
-		206477, -- [88] Unleashed Power
-		388111, -- [89] Demon Muzzle [NYI]
-		278326, -- [90] Consume Magic
-		207347, -- [91] Aura of Pain
-		232893, -- [92] Felblade
+		209281, -- [0] Quickened Sigils
+		389697, -- [1] Extended Sigils
+		320418, -- [2] Improved Sigil of Misery
+		388110, -- [3] Misery in Defeat
+		207684, -- [4] Sigil of Misery
+		202137, -- [5] Sigil of Silence
+		389695, -- [6] Will of the Illidari
+		389781, -- [7] Long Night
+		389783, -- [8] Pitch Black
+		196718, -- [9] Darkness
+		179057, -- [10] Chaos Nova
+		393822, -- [11] Internal Struggle
+		391397, -- [12] Erratic Felheart
+		207739, -- [13] Burning Alive
+		389718, -- [14] Cycle of Binding
+		389715, -- [15] Chains of Anger
+		343014, -- [16] Revel in Pain
+		390213, -- [17] Burning Blood
+		391178, -- [18] Roaring Fire
+		321028, -- [19] Deflecting Spikes
+		389958, -- [20] Frailty
+		320387, -- [21] Perfectly Balanced Glaive
+		389720, -- [22] Calcified Spikes
+		212084, -- [23] Fel Devastation
+		204021, -- [24] Fiery Brand
+		247454, -- [25] Spirit Bomb
+		390152, -- [26] Collective Anguish
+		204596, -- [27] Sigil of Flame
+		389824, -- [28] Shattered Restoration
+		388111, -- [29] Demon Muzzle
+		391409, -- [30] Aldrachi Design
+		320412, -- [31] Chaos Fragments
+		206477, -- [32] Unleashed Power
+		389976, -- [33] Vulnerability
+		207407, -- [34] Soul Carver
+		218612, -- [35] Feed the Demon
+		391429, -- [36] Fodder to the Flame
+		390163, -- [37] Elysian Decree
+		336639, -- [38] Charred Flesh
+		389732, -- [39] Down in Flames
+		209258, -- [40] Last Resort
+		389708, -- [41] Darkglare Boon
+		393827, -- [42] Stoke the Flames
+		207387, -- [43] Painbringer
+		343207, -- [44] Focused Cleave
+		389811, -- [45] Unnatural Malice
+		389819, -- [46] Relentless Pursuit
+		370965, -- [47] The Hunt
+		213410, -- [48] Demonic
+		235893, -- [49] First of the Illidari
+		320331, -- [50] Infernal Armor
+		320421, -- [51] Rush of Chaos
+		204909, -- [52] Soul Rending
+		183782, -- [53] Disrupting Fury
+		320361, -- [54] Improved Disrupt
+		207347, -- [55] Aura of Pain
+		232893, -- [56] Felblade
+		278326, -- [57] Consume Magic
+		320313, -- [58] Swallowed Anger
+		213010, -- [59] Charred Warblades
+		207666, -- [60] Concentrated Sigils
+		389799, -- [61] Precise Sigils
+		268175, -- [62] Void Reaver
+		389997, -- [63] Shear Fury
+		263642, -- [64] Fracture
+		207548, -- [65] Agonizing Flames
+		227174, -- [66] Fallout
+		389721, -- [67] Extended Spikes
+		390808, -- [68] Volatile Flameblood
+		389220, -- [69] Fiery Demise
+		389849, -- [70] Lost in Darkness
+		389694, -- [71] Flames of Fury
+		389724, -- [72] Meteoric Strikes
+		389729, -- [73] Retaliation
+		389705, -- [74] Fel Flame Fortification
+		263648, -- [75] Soul Barrier
+		320341, -- [76] Bulk Extraction
+		202138, -- [77] Sigil of Chains
+		326853, -- [78] Ruinous Bulwark
+		207697, -- [79] Feast of Souls
+		389711, -- [80] Soulmonger
+		389985, -- [81] Soulcrush
+		320416, -- [82] Blazing Path
+		217832, -- [83] Imprison
+		320386, -- [84] Bouncing Glaives
+		198793, -- [85] Vengeful Retreat
+		320770, -- [86] Unrestrained Fury
+		320654, -- [87] Pursuit
+		389763, -- [88] Master of the Glaive
+		389696, -- [89] Illidari Knowledge
+		389846, -- [90] Felfire Haste
+		320635, -- [91] Vengeful Bonds
+		391165, -- [92] Soul Furnace
 	},
 	-- Initial Shaman
 	[1444] = {
@@ -3651,193 +3653,190 @@ local talents = {
 	},
 	-- Devastation Evoker
 	[1467] = {
-		371032, -- [0] Terror of the Skies
-		374968, -- [1] Time Spiral
-		387787, -- [2] Regenerative Magic
-		375561, -- [3] Lush Growth
-		374348, -- [4] Renewing Blaze
-		375574, -- [5] Foci of Life
-		375577, -- [6] Fire Within
-		374227, -- [7] Zephyr
-		370888, -- [8] Twin Guardian
-		387341, -- [9] Walloping Blow
-		370665, -- [10] Rescue
-		365933, -- [11] Aerial Mastery
-		374346, -- [12] Overawe
-		369909, -- [13] Protracted Talons
-		369939, -- [14] Leaping Flames
-		368432, -- [15] Unravel
-		375507, -- [16] Roar of Exhilaration
-		351338, -- [17] Quell
-		375510, -- [18] Blast Furnace
-		372048, -- [19] Oppressing Roar
-		369459, -- [20] Source of Magic
-		375544, -- [21] Tempered Scales
-		369990, -- [22] Ancient Flame
+		386348, -- [0] Onyx Legacy
+		370821, -- [1] Scintillation
+		370845, -- [2] Spellweaver's Dominance
+		370455, -- [3] Charged Blast
+		371038, -- [4] Honed Aggression
+		375722, -- [5] Essence Attunement
+		365585, -- [6] Expunge
+		360995, -- [7] Verdant Embrace
+		372469, -- [8] Scarlet Adaptation
+		370553, -- [9] Tip the Scales
+		376166, -- [10] Draconic Legacy
+		371806, -- [11] Recall
+		375520, -- [12] Innate Magic
+		369913, -- [13] Natural Convergence
+		358385, -- [14] Landslide
+		387761, -- [15] Panacea
+		375517, -- [16] Extended Flight
+		375556, -- [17] Tailwind
+		375554, -- [18] Enkindled
+		370897, -- [19] Permeating Chill
+		363916, -- [20] Obsidian Scales
+		375406, -- [21] Obsidian Bulwark
+		374251, -- [22] Cauterizing Flame
 		376930, -- [23] Attuned to the Dream
-		374251, -- [24] Cauterizing Flame
-		375406, -- [25] Obsidian Bulwark
-		363916, -- [26] Obsidian Scales
-		370897, -- [27] Permeating Chill
-		375554, -- [28] Enkindled
-		375556, -- [29] Tailwind
-		375517, -- [30] Extended Flight
-		387761, -- [31] Panacea
-		358385, -- [32] Landslide
-		369913, -- [33] Natural Convergence
-		375520, -- [34] Innate Magic
-		371806, -- [35] Recall
-		376166, -- [36] Draconic Legacy
-		370553, -- [37] Tip the Scales
-		372469, -- [38] Scarlet Adaptation
-		360995, -- [39] Verdant Embrace
-		365585, -- [40] Expunge
-		376164, -- [41] Instinctive Arcana
-		375528, -- [42] Forger of Mountains
-		368838, -- [43] Heavy Wingbeats
-		375443, -- [44] Clobbering Sweep
-		360806, -- [45] Sleep Walk
-		370886, -- [46] Bountiful Bloom
-		375542, -- [47] Exuberance
-		377082, -- [48] Dreamwalker
-		377086, -- [49] Rush of Vitality
-		370960, -- [50] Emerald Communion
-		377100, -- [51] Exhilarating Burst
+		369990, -- [24] Ancient Flame
+		369089, -- [25] Volatility
+		365937, -- [26] Ruby Embers
+		370837, -- [27] Engulfing Blaze
+		371032, -- [28] Terror of the Skies
+		374968, -- [29] Time Spiral
+		387787, -- [30] Regenerative Magic
+		375561, -- [31] Lush Growth
+		374348, -- [32] Renewing Blaze
+		375574, -- [33] Foci of Life
+		375577, -- [34] Fire Within
+		374227, -- [35] Zephyr
+		370888, -- [36] Twin Guardian
+		387341, -- [37] Walloping Blow
+		370665, -- [38] Rescue
+		365933, -- [39] Aerial Mastery
+		374346, -- [40] Overawe
+		369909, -- [41] Protracted Talons
+		369939, -- [42] Leaping Flames
+		368432, -- [43] Unravel
+		375507, -- [44] Roar of Exhilaration
+		351338, -- [45] Quell
+		376164, -- [46] Instinctive Arcana
+		375510, -- [47] Blast Furnace
+		372048, -- [48] Oppressing Roar
+		369459, -- [49] Source of Magic
+		375544, -- [50] Tempered Scales
+		370962, -- [51] Dense Energy
 		375783, -- [52] Font of Magic
-		359816, -- [53] Dream Flight
-		369908, -- [54] Power Nexus
-		371257, -- [55] Renewing Breath
-		381921, -- [56] Ouroboros
-		376207, -- [57] Delay Harm
-		376204, -- [58] Just in Time
-		370537, -- [59] Stasis
-		368412, -- [60] Time of Need
-		376240, -- [61] Timeless Magic
-		372233, -- [62] Energy Loop
-		371270, -- [63] Punctuality
-		376236, -- [64] Resonating Sphere
-		376237, -- [65] Nozdormu's Teachings
-		385696, -- [66] Flow State
-		373861, -- [67] Temporal Anomaly
-		363534, -- [68] Rewind
-		357170, -- [69] Time Dilation
-		378196, -- [70] Golden Hour
-		372527, -- [71] Time Lord
-		371426, -- [72] Life-Giver's Flame
-		376179, -- [73] Lifeforce Mender
-		373834, -- [74] Call of Ysera
-		376210, -- [75] Erasure
-		381922, -- [76] Temporal Artificer
-		376239, -- [77] Grace Period
-		371832, -- [78] Cycle of Life
-		376138, -- [79] Empath
-		376150, -- [80] Spiritual Clarity
-		367226, -- [81] Spiritbloom
-		362874, -- [82] Temporal Compression
-		355936, -- [83] Dream Breath
-		364343, -- [84] Echo
-		366155, -- [85] Reversion
-		369297, -- [86] Essence Burst
-		375722, -- [87] Essence Attunement
-		359793, -- [88] Fluttering Seedlings
-		370062, -- [89] Field of Dreams
-		373270, -- [90] Lifebind
-		377099, -- [91] Spark of Insight
+		375801, -- [53] Burnout
+		370783, -- [54] Snapfire
+		368847, -- [55] Firestorm
+		386283, -- [56] Catalyze
+		375725, -- [57] Heat Wave
+		376888, -- [58] Tyranny
+		386272, -- [59] Titanic Wrath
+		375797, -- [60] Animosity
+		375087, -- [61] Dragonrage
+		371016, -- [62] Imposing Presence
+		386405, -- [63] Inner Radiance
+		375721, -- [64] Azure Essence Burst
+		357211, -- [65] Pyre
+		376872, -- [66] Ruby Essence Burst
+		371034, -- [67] Lay Waste
+		359073, -- [68] Eternity Surge
+		375618, -- [69] Arcane Intensity
+		375757, -- [70] Eternity's Span
+		370839, -- [71] Power Swell
+		386336, -- [72] Focusing Iris
+		386342, -- [73] Arcane Vigor
+		370452, -- [74] Shattering Star
+		369375, -- [75] Eye of Infinity
+		375777, -- [76] Causality
+		370867, -- [77] Iridescence
+		369846, -- [78] Feed the Flames
+		370819, -- [79] Everburning Flame
+		375796, -- [80] Hoarded Power
+		369908, -- [81] Power Nexus
+		375542, -- [82] Exuberance
+		370886, -- [83] Bountiful Bloom
+		360806, -- [84] Sleep Walk
+		368838, -- [85] Heavy Wingbeats
+		375443, -- [86] Clobbering Sweep
+		375528, -- [87] Forger of Mountains
+		370781, -- [88] Imminent Destruction
 	},
 	-- Preservation Evoker
 	[1468] = {
-		371032, -- [0] Terror of the Skies
-		374968, -- [1] Time Spiral
-		387787, -- [2] Regenerative Magic
-		375561, -- [3] Lush Growth
-		374348, -- [4] Renewing Blaze
-		375574, -- [5] Foci of Life
-		375577, -- [6] Fire Within
-		374227, -- [7] Zephyr
-		370888, -- [8] Twin Guardian
-		387341, -- [9] Walloping Blow
-		370665, -- [10] Rescue
-		365933, -- [11] Aerial Mastery
-		374346, -- [12] Overawe
-		369909, -- [13] Protracted Talons
-		369939, -- [14] Leaping Flames
-		368432, -- [15] Unravel
-		375507, -- [16] Roar of Exhilaration
-		351338, -- [17] Quell
-		375510, -- [18] Blast Furnace
-		372048, -- [19] Oppressing Roar
-		369459, -- [20] Source of Magic
-		375544, -- [21] Tempered Scales
-		369990, -- [22] Ancient Flame
-		376930, -- [23] Attuned to the Dream
-		374251, -- [24] Cauterizing Flame
-		375406, -- [25] Obsidian Bulwark
-		363916, -- [26] Obsidian Scales
-		370897, -- [27] Permeating Chill
-		375554, -- [28] Enkindled
-		375556, -- [29] Tailwind
-		375517, -- [30] Extended Flight
-		387761, -- [31] Panacea
-		358385, -- [32] Landslide
-		369913, -- [33] Natural Convergence
-		375520, -- [34] Innate Magic
-		371806, -- [35] Recall
-		376166, -- [36] Draconic Legacy
-		370553, -- [37] Tip the Scales
-		372469, -- [38] Scarlet Adaptation
-		360995, -- [39] Verdant Embrace
-		365585, -- [40] Expunge
-		376164, -- [41] Instinctive Arcana
-		375528, -- [42] Forger of Mountains
-		368838, -- [43] Heavy Wingbeats
-		375443, -- [44] Clobbering Sweep
-		360806, -- [45] Sleep Walk
-		370886, -- [46] Bountiful Bloom
-		375542, -- [47] Exuberance
-		377082, -- [48] Dreamwalker
-		377086, -- [49] Rush of Vitality
-		370960, -- [50] Emerald Communion
-		377100, -- [51] Exhilarating Burst
-		375783, -- [52] Font of Magic
-		359816, -- [53] Dream Flight
-		369908, -- [54] Power Nexus
-		371257, -- [55] Renewing Breath
-		381921, -- [56] Ouroboros
-		376207, -- [57] Delay Harm
-		376204, -- [58] Just in Time
-		370537, -- [59] Stasis
-		368412, -- [60] Time of Need
-		376240, -- [61] Timeless Magic
-		372233, -- [62] Energy Loop
-		371270, -- [63] Punctuality
-		376236, -- [64] Resonating Sphere
-		376237, -- [65] Nozdormu's Teachings
-		385696, -- [66] Flow State
-		373861, -- [67] Temporal Anomaly
-		363534, -- [68] Rewind
-		357170, -- [69] Time Dilation
-		378196, -- [70] Golden Hour
-		372527, -- [71] Time Lord
-		371426, -- [72] Life-Giver's Flame
-		376179, -- [73] Lifeforce Mender
-		373834, -- [74] Call of Ysera
-		376210, -- [75] Erasure
-		381922, -- [76] Temporal Artificer
-		376239, -- [77] Grace Period
-		371832, -- [78] Cycle of Life
-		376138, -- [79] Empath
-		376150, -- [80] Spiritual Clarity
-		367226, -- [81] Spiritbloom
-		362874, -- [82] Temporal Compression
-		355936, -- [83] Dream Breath
-		364343, -- [84] Echo
-		366155, -- [85] Reversion
-		369297, -- [86] Essence Burst
-		375722, -- [87] Essence Attunement
-		359793, -- [88] Fluttering Seedlings
-		370062, -- [89] Field of Dreams
-		373270, -- [90] Lifebind
-		377099, -- [91] Spark of Insight
+		365585, -- [0] Expunge
+		360995, -- [1] Verdant Embrace
+		372469, -- [2] Scarlet Adaptation
+		370553, -- [3] Tip the Scales
+		376166, -- [4] Draconic Legacy
+		371806, -- [5] Recall
+		375520, -- [6] Innate Magic
+		369913, -- [7] Natural Convergence
+		358385, -- [8] Landslide
+		387761, -- [9] Panacea
+		375517, -- [10] Extended Flight
+		375556, -- [11] Tailwind
+		375554, -- [12] Enkindled
+		370897, -- [13] Permeating Chill
+		363916, -- [14] Obsidian Scales
+		375406, -- [15] Obsidian Bulwark
+		374251, -- [16] Cauterizing Flame
+		376930, -- [17] Attuned to the Dream
+		369990, -- [18] Ancient Flame
+		371032, -- [19] Terror of the Skies
+		374968, -- [20] Time Spiral
+		387787, -- [21] Regenerative Magic
+		375561, -- [22] Lush Growth
+		374348, -- [23] Renewing Blaze
+		375574, -- [24] Foci of Life
+		375577, -- [25] Fire Within
+		374227, -- [26] Zephyr
+		370888, -- [27] Twin Guardian
+		387341, -- [28] Walloping Blow
+		370665, -- [29] Rescue
+		365933, -- [30] Aerial Mastery
+		374346, -- [31] Overawe
+		369909, -- [32] Protracted Talons
+		369939, -- [33] Leaping Flames
+		368432, -- [34] Unravel
+		375507, -- [35] Roar of Exhilaration
+		351338, -- [36] Quell
+		376164, -- [37] Instinctive Arcana
+		375510, -- [38] Blast Furnace
+		372048, -- [39] Oppressing Roar
+		369459, -- [40] Source of Magic
+		375544, -- [41] Tempered Scales
+		377099, -- [42] Spark of Insight
+		373270, -- [43] Lifebind
+		370062, -- [44] Field of Dreams
+		359793, -- [45] Fluttering Seedlings
+		375722, -- [46] Essence Attunement
+		369297, -- [47] Essence Burst
+		366155, -- [48] Reversion
+		364343, -- [49] Echo
+		355936, -- [50] Dream Breath
+		362874, -- [51] Temporal Compression
+		367226, -- [52] Spiritbloom
+		376138, -- [53] Empath
+		376150, -- [54] Spiritual Clarity
+		371832, -- [55] Cycle of Life
+		376239, -- [56] Grace Period
+		376210, -- [57] Erasure
+		381922, -- [58] Temporal Artificer
+		373834, -- [59] Call of Ysera
+		376179, -- [60] Lifeforce Mender
+		371426, -- [61] Life-Giver's Flame
+		372527, -- [62] Time Lord
+		378196, -- [63] Golden Hour
+		357170, -- [64] Time Dilation
+		363534, -- [65] Rewind
+		373861, -- [66] Temporal Anomaly
+		385696, -- [67] Flow State
+		376236, -- [68] Resonating Sphere
+		376237, -- [69] Nozdormu's Teachings
+		371270, -- [70] Punctuality
+		372233, -- [71] Energy Loop
+		376240, -- [72] Timeless Magic
+		368412, -- [73] Time of Need
+		370537, -- [74] Stasis
+		376207, -- [75] Delay Harm
+		376204, -- [76] Just in Time
+		381921, -- [77] Ouroboros
+		371257, -- [78] Renewing Breath
+		369908, -- [79] Power Nexus
+		359816, -- [80] Dream Flight
+		375783, -- [81] Font of Magic
+		377100, -- [82] Exhilarating Burst
+		370960, -- [83] Emerald Communion
+		377082, -- [84] Dreamwalker
+		377086, -- [85] Rush of Vitality
+		375542, -- [86] Exuberance
+		370886, -- [87] Bountiful Bloom
+		360806, -- [88] Sleep Walk
+		368838, -- [89] Heavy Wingbeats
+		375443, -- [90] Clobbering Sweep
+		375528, -- [91] Forger of Mountains
 	},
 }
 
@@ -4049,9 +4048,9 @@ local pvpTalents = {
 	},
 	-- Havoc Demon Hunter
 	[577] = {
-		[1] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, Demonic Origins, Cleansed by Flame
-		[2] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, Demonic Origins, Cleansed by Flame
-		[3] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, Demonic Origins, Cleansed by Flame
+		[1] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, First of the Illidari, Cleansed by Flame
+		[2] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, First of the Illidari, Cleansed by Flame
+		[3] = { 1204, 1206, 811, 5523, 812, 813, 1218, 806, 809, 5433, 810, 805, }, -- Mortal Dance, Cover of Darkness, Rain from Above, Sigil Mastery, Detainment, Glimpse, Unending Hatred, Reverse Magic, Chaotic Imprint, Blood Moon, First of the Illidari, Cleansed by Flame
 	},
 	-- Vengeance Demon Hunter
 	[581] = {
