@@ -29,6 +29,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Removed covenant selected load option
 
+### Known issues
+
+* Party frame integration is not functional [#109]
+
 ## [1.7.7] - 2022-09-02
 
 ### Fixed
@@ -964,7 +968,6 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Initial public release
 
 [Unreleased]: https://github.com/Snakybo/Clicked/compare/1.7.7...master
-[1.7.7 Dragonflight Alpha]: https://github.com/Snakybo/Clicked/releases/tag/1.7.7-df-alpha
 [1.7.7]: https://github.com/Snakybo/Clicked/releases/tag/1.7.7
 [1.7.6]: https://github.com/Snakybo/Clicked/releases/tag/1.7.6
 [1.7.5]: https://github.com/Snakybo/Clicked/releases/tag/1.7.5
@@ -1046,6 +1049,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#109]: https://github.com/Snakybo/Clicked/issues/109
 [#108]: https://github.com/Snakybo/Clicked/issues/108
 [#105]: https://github.com/Snakybo/Clicked/issues/105
 [#104]: https://github.com/Snakybo/Clicked/issues/104

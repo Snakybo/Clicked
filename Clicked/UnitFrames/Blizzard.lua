@@ -26,14 +26,18 @@ if Addon:IsGameVersionAtleast("CLASSIC") then
 	table.insert(unitFrames[""], "PetFrame")
 	table.insert(unitFrames[""], "TargetFrame")
 	table.insert(unitFrames[""], "TargetFrameToT")
-	table.insert(unitFrames[""], "PartyMemberFrame1")
-	table.insert(unitFrames[""], "PartyMemberFrame1PetFrame")
-	table.insert(unitFrames[""], "PartyMemberFrame2")
-	table.insert(unitFrames[""], "PartyMemberFrame2PetFrame")
-	table.insert(unitFrames[""], "PartyMemberFrame3")
-	table.insert(unitFrames[""], "PartyMemberFrame3PetFrame")
-	table.insert(unitFrames[""], "PartyMemberFrame4")
-	table.insert(unitFrames[""], "PartyMemberFrame4PetFrame")
+
+	if not Addon:IsGameVersionAtleast("RETAIL") then
+		table.insert(unitFrames[""], "PartyMemberFrame1")
+		table.insert(unitFrames[""], "PartyMemberFrame1PetFrame")
+		table.insert(unitFrames[""], "PartyMemberFrame2")
+		table.insert(unitFrames[""], "PartyMemberFrame2PetFrame")
+		table.insert(unitFrames[""], "PartyMemberFrame3")
+		table.insert(unitFrames[""], "PartyMemberFrame3PetFrame")
+		table.insert(unitFrames[""], "PartyMemberFrame4")
+		table.insert(unitFrames[""], "PartyMemberFrame4PetFrame")
+	end
+
 	table.insert(unitFrames[""], "Boss1TargetFrame")
 	table.insert(unitFrames[""], "Boss2TargetFrame")
 	table.insert(unitFrames[""], "Boss3TargetFrame")
@@ -54,6 +58,8 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame1")
 	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame2")
 	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame3")
+
+	print(Addon:GetPrefixedAndFormattedString("Party frame integration is not available in Dragonflight"))
 end
 
 -- Local support functions
