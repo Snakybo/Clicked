@@ -44,19 +44,9 @@ local function GetBasicinfoString()
 		end
 
 		do
-			local talents = {}
-
-			for tier = 1, MAX_TALENT_TIERS do
-				for column = 1, NUM_TALENT_COLUMNS do
-					local _, _, _, selected, _, _, _, _, _, _, known = GetTalentInfo(tier, column, 1)
-
-					if selected or known then
-						table.insert(talents, tier .. "/" .. column)
-					end
-				end
-			end
-
-			table.insert(lines, "Talents: " .. table.concat(talents, " "))
+			LoadAddOn('Blizzard_ClassTalentUI')
+			ClassTalentFrame.TalentsTab:UpdateTreeInfo()
+			table.insert(lines, "Talents: " .. ClassTalentFrame.TalentsTab:GetLoadoutExportString())
 		end
 	end
 
