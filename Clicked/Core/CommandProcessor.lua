@@ -155,8 +155,10 @@ function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 end
 
 function Addon:UpdateMacroFrameHandlerPressType()
-	local value = not Addon.db.profile.options.onKeyDown
-	macroFrameHandler:SetAttribute("pressAndHoldAction", value)
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		local value = not Addon.db.profile.options.onKeyDown
+		macroFrameHandler:SetAttribute("pressAndHoldAction", value)
+	end
 end
 
 ---@param commands Command[]
