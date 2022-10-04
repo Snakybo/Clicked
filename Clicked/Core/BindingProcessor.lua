@@ -347,7 +347,7 @@ local function ProcessBuckets()
 	--- @param keybind string
 	--- @param bindings Binding[]
 	--- @param interactionType number
-	--- @return Command
+	--- @return Command?
 	local function Process(keybind, bindings, interactionType)
 		if #bindings == 0 then
 			return nil
@@ -388,12 +388,18 @@ local function ProcessBuckets()
 
 	for keybind, bindings in pairs(hovercastBucket) do
 		local command = Process(keybind, bindings, Addon.InteractionType.HOVERCAST)
-		table.insert(commands, command)
+
+		if command ~= nil then
+			table.insert(commands, command)
+		end
 	end
 
 	for keybind, bindings in pairs(regularBucket) do
 		local command = Process(keybind, bindings, Addon.InteractionType.REGULAR)
-		table.insert(commands, command)
+
+		if command ~= nil then
+			table.insert(commands, command)
+		end
 	end
 
 	Addon:StatusOutput_HandleCommandsGenerated(commands)
