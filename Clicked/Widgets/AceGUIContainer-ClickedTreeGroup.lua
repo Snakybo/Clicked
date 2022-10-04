@@ -537,8 +537,6 @@ local function Button_OnEnter(frame)
 	self:Fire("OnButtonEnter", frame.uniquevalue, frame)
 
 	if self.enabletooltips and frame.title ~= nil and frame.binding ~= nil then
-		local tooltip = AceGUI.tooltip
-
 		--- @type Binding
 		local binding = frame.binding
 		local text = Addon:GetBindingNameAndIcon(binding)
@@ -571,11 +569,7 @@ local function Button_OnEnter(frame)
 			text = text .. string.format(" (%s)", binding.identifier)
 		end
 
-		tooltip:SetOwner(frame, "ANCHOR_NONE")
-		tooltip:ClearAllPoints()
-		tooltip:SetPoint("RIGHT", frame, "LEFT")
-		tooltip:SetText(text or "", 1, 0.82, 0, 1, true)
-		tooltip:Show()
+		Addon:ShowTooltip(frame, text, nil, "RIGHT", "LEFT")
 	end
 end
 
@@ -589,8 +583,7 @@ local function Button_OnLeave(frame)
 	self:Fire("OnButtonLeave", frame.uniquevalue, frame)
 
 	if self.enabletooltips and frame.title ~= nil then
-		local tooltip = AceGUI.tooltip
-		tooltip:Hide()
+		Addon:HideTooltip(frame)
 	end
 end
 
@@ -606,8 +599,7 @@ local function Button_OnDragStart(frame)
 	frame.isMoving = true
 
 	if self.enabletooltips then
-		local tooltip = AceGUI.tooltip
-		tooltip:Hide()
+		Addon:HideTooltip(frame)
 	end
 
 	self:RefreshTree()

@@ -76,29 +76,15 @@ local function EditBox_OnTextChanged(frame)
 end
 
 local function EditBox_OnEnter(frame)
-	frame.hovered = true
+	local text = L["Prefix your search with k: to search for a specific key only, for example:"]
+	text = text .. "\n- " .. L["k:Q will only show bindings bound to Q"]
+	text = text .. "\n- " .. L["k:ALT-A will only show bindings bound to ALT-A"]
 
-	C_Timer.After(0.3, function()
-		if not frame.hovered then
-			return
-		end
-
-		local tooltip = AceGUI.tooltip
-		local text = L["Search Filters"] .. "\n|cffffffff" .. L["Prefix your search with k: to search for a specific key only, for example:"] .. "\n- " .. L["k:Q will only show bindings bound to Q"] .. "\n- " .. L["k:ALT-A will only show bindings bound to ALT-A"] .. "|r"
-
-		tooltip:SetOwner(frame, "ANCHOR_NONE")
-		tooltip:ClearAllPoints()
-		tooltip:SetPoint("BOTTOMLEFT", frame, "TOPLEFT")
-		tooltip:SetText(text, true)
-		tooltip:Show()
-	end)
+	Addon:ShowTooltip(frame, L["Search Filters"], text)
 end
 
 local function EditBox_OnLeave(frame)
-	frame.hovered = false
-
-	local tooltip = AceGUI.tooltip
-	tooltip:Hide()
+	Addon:HideTooltip(frame)
 end
 
 --[[-----------------------------------------------------------------------------

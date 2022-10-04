@@ -16,9 +16,15 @@
 
 --- @class ClickedInternal
 local _, Addon = ...
+local AceGUI = LibStub("AceGUI-3.0")
 
 --- @type Localization
 local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
+Addon.TOOLTIP_SHOW_DELAY = 0.3
+
+--- @type Ticker?
+local tooltipTimer = nil
 
 local KEYBIND_ORDER_LIST = {
 	"BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "MOUSEWHEELUP", "MOUSEWHEELDOWN",
@@ -867,6 +873,47 @@ function Addon:IterateShapeshiftForms(specId)
 		return ipairs(shapeshiftForms[specId])
 	end
 end
+
+--- Show a tooltip on the specified frame after a short delay.
+---
+--- @param frame table
+--- @param text string
+--- @param subText string?
+--- @param anchorPoint? string
+--- @param anchorRelativePoint? string
+function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoint)
+	if tooltipHoverTarget ~= nil then
+		return
+	end
+
+	anchorPoint = anchorPoint or "BOTTOMLEFT"
+	anchorRelativePoint = anchorRelativePoint or "TOPLEFT"
+
+	tooltipTimer = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
+		local tooltip = AceGUI.tooltip
+
+		if subText ~= nil then
+			text = text .. "\n|cffffffff" .. subText .. "|r"
+		end
+
+		tooltip:SetOwner(frame, "ANCHOR_NONE")
+		tooltip:ClearAllPoints()
+		tooltip:SetPoint(anchorPoint, frame, anchorRelativePoint)
+		tooltip:SetText(text, true)
+		tooltip:Show()
+	end)
+end
+
+--- Hide the tooltip shown on the specified frame.
+---
+--- @param frame table
+function Addon:HideTooltip(frame)
+	if tooltipTimer ~= nil then
+		tooltipTimer:Cancel()
+		AceGUI.tooltip:Hide()
+	end
+end
+
 
 --- Check if an item set bonus is active.
 ---

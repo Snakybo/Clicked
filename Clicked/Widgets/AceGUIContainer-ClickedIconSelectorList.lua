@@ -2,6 +2,9 @@
 ScrollFrame Container
 Plain container that scrolls its content and doesn't grow in height.
 -------------------------------------------------------------------------------]]
+--- @class ClickedInternal
+local _, Addon = ...
+
 local Type, Version = "ClickedIconSelectorList", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -34,18 +37,11 @@ local function LoadIconsOverTime(frame)
 		local button = next.button
 
 		button:SetCallback("OnEnter", function()
-			local tooltip = AceGUI.tooltip
-
-			tooltip:SetOwner(button.frame, "ANCHOR_NONE")
-			tooltip:ClearAllPoints()
-			tooltip:SetPoint("RIGHT", button.frame, "LEFT")
-			tooltip:SetText(next.icon .. "\n" .. next.id, 1, 0.82, 0, 1)
-			tooltip:Show()
+			Addon:ShowTooltip(button.frame, next.icon .. "\n" .. next.id)
 		end)
 
 		button:SetCallback("OnLeave", function()
-			local tooltip = AceGUI.tooltip
-			tooltip:Hide()
+			Addon:HideTooltip(button.frame)
 		end)
 
 		button:SetCallback("OnClick", function()

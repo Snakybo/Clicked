@@ -223,35 +223,13 @@ end
 --- @param widget table
 --- @param text string
 --- @param subText string|nil
-local function ShowTooltip(widget, text, subText)
-	local tooltip = AceGUI.tooltip
-
-	if subText ~= nil then
-		text = text .. "\n|cffffffff" .. subText .. "|r"
-	end
-
-	tooltip:SetOwner(widget.frame, "ANCHOR_NONE")
-	tooltip:ClearAllPoints()
-	tooltip:SetPoint("BOTTOMLEFT", widget.frame, "TOPLEFT")
-	tooltip:SetText(text, true)
-	tooltip:Show()
-end
-
-local function HideTooltip()
-	local tooltip = AceGUI.tooltip
-	tooltip:Hide()
-end
-
---- @param widget table
---- @param text string
---- @param subText string|nil
 local function RegisterTooltip(widget, text, subText)
 	local function OnEnter()
-		ShowTooltip(widget, text, subText)
+		Addon:ShowTooltip(widget.frame, text, subText)
 	end
 
 	local function OnLeave()
-		HideTooltip()
+		Addon:HideTooltip(widget.frame)
 	end
 
 	widget:SetCallback("OnEnter", OnEnter)
@@ -892,20 +870,28 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 		-- spell id
 		if id ~= nil then
+			--- @type Ticker?
+			local ticker
+
 			local function OnEnter(widget)
-				GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
+				ticker = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
+					GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
 
-				if mode == Addon.BindingTypes.SPELL then
-					GameTooltip:SetSpellByID(id)
-				elseif mode == Addon.BindingTypes.ITEM then
-					GameTooltip:SetItemByID(id)
-				end
+					if mode == Addon.BindingTypes.SPELL then
+						GameTooltip:SetSpellByID(id)
+					elseif mode == Addon.BindingTypes.ITEM then
+						GameTooltip:SetItemByID(id)
+					end
 
-				GameTooltip:Show()
+					GameTooltip:Show()
+				end)
 			end
 
 			local function OnLeave()
-				GameTooltip:Hide()
+				if ticker ~= nil then
+					ticker:Cancel()
+					GameTooltip:Hide()
+				end
 			end
 
 			local icon
