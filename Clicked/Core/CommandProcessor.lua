@@ -128,6 +128,7 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 
+	Addon:UpdateMacroFrameHandlerPressType()
 	Clicked:RegisterFrameClicks(macroFrameHandler, false)
 end
 
@@ -151,6 +152,11 @@ function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 
 	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)
 	Addon:ApplyAttributesToFrame(macroFrameHandler)
+end
+
+function Addon:UpdateMacroFrameHandlerPressType()
+	local value = not Addon.db.profile.options.onKeyDown
+	macroFrameHandler:SetAttribute("pressAndHoldAction", value)
 end
 
 ---@param commands Command[]

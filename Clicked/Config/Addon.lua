@@ -59,6 +59,8 @@ function Addon:GeneralOptions_Initialize()
 				set = function(_, val)
 					Addon.db.profile.options.onKeyDown = val
 
+					Addon:UpdateMacroFrameHandlerPressType()
+
 					for _, frame in Clicked:IterateClickCastFrames() do
 						Clicked:RegisterFrameClicks(frame, true)
 					end
