@@ -21,6 +21,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add tooltip explaining search filters to search box.
 * Add small delay before showing tooltips.
 
+### Fixed
+
+* Fix text color not always being set correctly in the binding list
+
 ### Changed
 
 * Removed covenant selected load option
