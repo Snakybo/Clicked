@@ -39,8 +39,8 @@ local function GetBasicinfoString()
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		do
-			local id = GetSpecializationInfo(GetSpecialization())
-			table.insert(lines, "Specialization: " .. id)
+			local id, name = GetSpecializationInfo(GetSpecialization())
+			table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
 		end
 
 		do
