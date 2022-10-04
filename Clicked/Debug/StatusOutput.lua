@@ -60,7 +60,12 @@ local function GetBasicinfoString()
 		end
 	end
 
-	table.insert(lines, "Mode: " .. (Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
+	table.insert(lines, "Press Mode: " .. (Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		table.insert(lines, "Autogen: " .. (Addon.db.profile.options.bindUnassignedModifiers and "True" or "False"))
+	end
+
 	table.insert(lines, "")
 
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
