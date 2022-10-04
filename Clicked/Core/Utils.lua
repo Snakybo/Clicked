@@ -882,8 +882,8 @@ end
 --- @param anchorPoint? string
 --- @param anchorRelativePoint? string
 function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoint)
-	if tooltipHoverTarget ~= nil then
-		return
+	if tooltipTimer ~= nil then
+		tooltipTimer:Cancel()
 	end
 
 	anchorPoint = anchorPoint or "BOTTOMLEFT"
@@ -905,9 +905,7 @@ function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoin
 end
 
 --- Hide the tooltip shown on the specified frame.
----
---- @param frame table
-function Addon:HideTooltip(frame)
+function Addon:HideTooltip()
 	if tooltipTimer ~= nil then
 		tooltipTimer:Cancel()
 		AceGUI.tooltip:Hide()

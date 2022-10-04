@@ -83,8 +83,8 @@ local function EditBox_OnEnter(frame)
 	Addon:ShowTooltip(frame, L["Search Filters"], text)
 end
 
-local function EditBox_OnLeave(frame)
-	Addon:HideTooltip(frame)
+local function EditBox_OnLeave()
+	Addon:HideTooltip()
 end
 
 --[[-----------------------------------------------------------------------------

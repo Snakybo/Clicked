@@ -582,7 +582,7 @@ local function Button_OnLeave(frame)
 	self:Fire("OnButtonLeave", frame.uniquevalue, frame)
 
 	if self.enabletooltips and frame.title ~= nil then
-		Addon:HideTooltip(frame)
+		Addon:HideTooltip()
 	end
 end
 
@@ -598,7 +598,7 @@ local function Button_OnDragStart(frame)
 	frame.isMoving = true
 
 	if self.enabletooltips then
-		Addon:HideTooltip(frame)
+		Addon:HideTooltip()
 	end
 
 	self:RefreshTree()

@@ -41,7 +41,7 @@ local function LoadIconsOverTime(frame)
 		end)
 
 		button:SetCallback("OnLeave", function()
-			Addon:HideTooltip(button.frame)
+			Addon:HideTooltip()
 		end)
 
 		button:SetCallback("OnClick", function()

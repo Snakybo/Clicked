@@ -229,7 +229,7 @@ local function RegisterTooltip(widget, text, subText)
 	end
 
 	local function OnLeave()
-		Addon:HideTooltip(widget.frame)
+		Addon:HideTooltip()
 	end
 
 	widget:SetCallback("OnEnter", OnEnter)
