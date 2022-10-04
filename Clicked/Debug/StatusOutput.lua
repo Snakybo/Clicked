@@ -88,7 +88,7 @@ local function GetParsedDataString()
 		table.insert(lines, "Action: " .. command.action)
 		table.insert(lines, "Identifier: " .. command.suffix)
 
-		if command.data ~= nil then
+		if type(command.data) == "string" then
 			local split = { strsplit("\n", command.data) }
 
 			if #split > 0 then
@@ -98,6 +98,8 @@ local function GetParsedDataString()
 			for _, line in ipairs(split) do
 				table.insert(lines, line)
 			end
+		elseif type(command.data) == "boolean" then
+			table.insert(lines, "Combat: " .. tostring(command.data))
 		end
 	end
 
