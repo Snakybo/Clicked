@@ -429,7 +429,7 @@ local function GenerateBuckets(bindings)
 	for _, binding in ipairs(bindings) do
 		local keys = { binding.keybind }
 
-		if Addon:IsUnmodifiedKeybind(keys[1]) then
+		if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(keys[1]) then
 			local withModifiers = Addon:GetUnusedModifierKeyKeybinds(keys[1], bindings)
 
 			for i = 1, #withModifiers do
