@@ -2331,16 +2331,35 @@ local function DrawBinding(container)
 
 	-- keybinding button
 	do
+		local function HandleAutomaticBinds(frame)
+			local tooltipText = L["Click and press a key to bind, or ESC to clear the binding."]
+
+			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(binding.keybind) then
+				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Clicked:GetActiveBindings())
+				frame:SetMarker(#automaticBindings > 0)
+
+				tooltipText = tooltipText .. "\n\n" .. L["Also bound to:"]
+
+				for _, keybind in ipairs(automaticBindings) do
+					tooltipText = tooltipText .. "\n- " .. keybind
+				end
+			end
+
+			RegisterTooltip(frame, tooltipText)
+		end
+
 		local function OnKeyChanged(frame, event, value)
 			Addon:EnsureSupportedTargetModes(binding.targets, value, binding.type)
 			Addon:GUI_Serialize(frame, event, value)
+
+			HandleAutomaticBinds(frame)
 		end
 
 		local widget = Addon:GUI_KeybindingButton(nil, binding, "keybind")
 		widget:SetCallback("OnKeyChanged", OnKeyChanged)
 		widget:SetFullWidth(true)
 
-		RegisterTooltip(widget, L["Click and press a key to bind, or ESC to clear the binding."])
+		HandleAutomaticBinds(widget)
 
 		container:AddChild(widget)
 	end

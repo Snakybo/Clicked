@@ -506,6 +506,13 @@ function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
 end
 
+--- Get all active bindings.
+---
+--- @return Binding[]
+function Clicked:GetActiveBindings()
+	return activeBindings
+end
+
 --- Get all bindings that, when activated at this moment, will affect the specified unit. This builds a full profile and the resulting table contains all
 --- bindings that meet the criteria.
 ---

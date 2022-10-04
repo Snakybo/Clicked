@@ -11,6 +11,23 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 local IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown, IsMetaKeyDown = IsShiftKeyDown, IsControlKeyDown, IsAltKeyDown, IsMetaKeyDown
 
 --[[-----------------------------------------------------------------------------
+Support functions
+-------------------------------------------------------------------------------]]
+local function UpdateText(frame)
+	local key = frame.key
+	local hasMarker = frame.hasMarker
+	local button = frame.button
+
+	if (key or "") == "" then
+		button:SetText(NOT_BOUND)
+		button:SetNormalFontObject("GameFontNormal")
+	else
+		button:SetText(hasMarker and (key .. "*") or key)
+		button:SetNormalFontObject("GameFontHighlight")
+	end
+end
+
+--[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
 local function Keybinding_OnClick(frame, button)
@@ -92,19 +109,51 @@ local function Keybinding_OnMouseDown(frame, button)
 end
 
 --[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+
+local methods = {
+	["OnAcquire"] = function(self)
+		self:OriginalOnAcquire()
+		self.key = ""
+		self.hasMarker = false
+	end,
+
+	["SetKey"] = function(self, key)
+		self.key = key
+		UpdateText(self)
+	end,
+
+	["GetKey"] = function(self)
+		return self.key
+	end,
+
+	["SetMarker"] = function(self, marker)
+		self.hasMarker = marker
+		UpdateText(self)
+	end
+}
+
+--[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-	local keybinding = AceGUI:Create("Keybinding")
-	keybinding.type = Type
+	local widget = AceGUI:Create("Keybinding")
+	widget.type = Type
 
-	local button = keybinding.button
+	local button = widget.button
 	button:SetScript("OnClick", Keybinding_OnClick)
 	button:SetScript("OnKeyDown", Keybinding_OnKeyDown)
 	button:SetScript("OnMouseDown", Keybinding_OnMouseDown)
 
-	return keybinding
+	widget.OriginalOnAcquire = widget.OnAcquire
+
+	for method, func in pairs(methods) do
+		widget[method] = func
+	end
+
+	return widget
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)
