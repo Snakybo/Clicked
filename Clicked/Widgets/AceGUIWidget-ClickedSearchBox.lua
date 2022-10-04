@@ -6,6 +6,9 @@ Adds OnFocusGained and OnFocusLost callbacks.
 --- @class ClickedInternal
 local _, Addon = ...
 
+--- @type Localization
+local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+
 local Type, Version = "ClickedSearchBox", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
@@ -72,6 +75,32 @@ local function EditBox_OnTextChanged(frame)
 	end
 end
 
+local function EditBox_OnEnter(frame)
+	frame.hovered = true
+
+	C_Timer.After(0.3, function()
+		if not frame.hovered then
+			return
+		end
+
+		local tooltip = AceGUI.tooltip
+		local text = L["Search Filters"] .. "\n|cffffffff" .. L["Prefix your search with k: to search for a specific key only, for example:"] .. "\n- " .. L["k:Q will only show bindings bound to Q"] .. "\n- " .. L["k:ALT-A will only show bindings bound to ALT-A"] .. "|r"
+
+		tooltip:SetOwner(frame, "ANCHOR_NONE")
+		tooltip:ClearAllPoints()
+		tooltip:SetPoint("BOTTOMLEFT", frame, "TOPLEFT")
+		tooltip:SetText(text, true)
+		tooltip:Show()
+	end)
+end
+
+local function EditBox_OnLeave(frame)
+	frame.hovered = false
+
+	local tooltip = AceGUI.tooltip
+	tooltip:Hide()
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -122,6 +151,8 @@ local function Constructor()
 	editbox:SetScript("OnEditFocusGained", EditBox_OnFocusGained)
 	editbox:SetScript("OnEditFocusLost", EditBox_OnFocusLost)
 	editbox:SetScript("OnTextChanged", EditBox_OnTextChanged)
+	editbox:SetScript("OnEnter", EditBox_OnEnter)
+	editbox:SetScript("OnLeave", EditBox_OnLeave)
 
 	widget:SetText(widget.placeholder)
 

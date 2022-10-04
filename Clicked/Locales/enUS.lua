@@ -257,3 +257,7 @@ L["Yes"] = true
 L["Bind unassigned modifier keys automatically"] = true
 L["If enabled, modifier key combinations that aren't bound will be bound to the main key, for example, binding 'Q' will also bind 'SHIFT-Q', 'AlT-Q', and 'CTRL-Q'."] = true
 L["Also bound to:"] = true
+L["Search Filters"] = true
+L["Prefix your search with k: to search for a specific key only, for example:"] = true
+L["k:Q will only show bindings bound to Q"] = true
+L["k:ALT-A will only show bindings bound to ALT-A"] = true
