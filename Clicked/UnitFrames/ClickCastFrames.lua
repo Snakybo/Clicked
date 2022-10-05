@@ -63,7 +63,7 @@ function Addon:ProcessFrameQueue()
 		registerQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:RegisterClickCastFrame(frame.addon, frame.frame)
+			Clicked:RegisterClickCastFrame(frame.frame, frame.addon)
 		end
 	end
 
@@ -123,10 +123,10 @@ end
 --- frame `OnEnter` and `OnLeave` scripts, these can be invoked using the `clickcast_onenter` and `clickcast_onleave` attributes. These will also be used if
 --- your frame inherits from the `ClickCastUnitTemplate`.
 ---
---- @param addon string The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be an empty string.
---- @param frame table The frame to register.
+--- @param frame Frame|string Either the frame to register, or the name of the frame that can be found in the global table.
+--- @param addon string? The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
 --- @see Clicked:UnregisterClickCastFrame
-function Clicked:RegisterClickCastFrame(addon, frame)
+function Clicked:RegisterClickCastFrame(frame, addon)
 	if frame == nil then
 		return
 	end
@@ -170,22 +170,22 @@ function Clicked:RegisterClickCastFrame(addon, frame)
 	-- and thus will have to be queued until the addon actually loads.
 
 	if type(frame) == "string" then
-		if addon ~= "" and not IsAddOnLoaded(addon) then
+		if addon ~= nil and not IsAddOnLoaded(addon) then
 			TryEnqueue()
 			return
 		else
+			--- @type string
 			local name = frame
 			frame = _G[name]
 
 			if frame == nil then
-				print(Addon:GetPrefixedAndFormattedString(L["Unable to register unit frame: %s"], tostring(name)))
+				print(Addon:GetPrefixedAndFormattedString(L["Unable to register unit frame: %s"], name))
 				return
 			end
 		end
 	end
 
 	-- Skip anything that is not clickable
-
 	if frame.RegisterForClicks == nil then
 		return
 	end

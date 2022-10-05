@@ -17,51 +17,6 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-local unitFrames = {}
-
-if Addon:IsGameVersionAtleast("CLASSIC") then
-	unitFrames[""] = unitFrames[""] or {}
-
-	table.insert(unitFrames[""], "PlayerFrame")
-	table.insert(unitFrames[""], "PetFrame")
-	table.insert(unitFrames[""], "TargetFrame")
-	table.insert(unitFrames[""], "TargetFrameToT")
-
-	if not Addon:IsGameVersionAtleast("RETAIL") then
-		table.insert(unitFrames[""], "PartyMemberFrame1")
-		table.insert(unitFrames[""], "PartyMemberFrame1PetFrame")
-		table.insert(unitFrames[""], "PartyMemberFrame2")
-		table.insert(unitFrames[""], "PartyMemberFrame2PetFrame")
-		table.insert(unitFrames[""], "PartyMemberFrame3")
-		table.insert(unitFrames[""], "PartyMemberFrame3PetFrame")
-		table.insert(unitFrames[""], "PartyMemberFrame4")
-		table.insert(unitFrames[""], "PartyMemberFrame4PetFrame")
-	end
-
-	table.insert(unitFrames[""], "Boss1TargetFrame")
-	table.insert(unitFrames[""], "Boss2TargetFrame")
-	table.insert(unitFrames[""], "Boss3TargetFrame")
-	table.insert(unitFrames[""], "Boss4TargetFrame")
-	table.insert(unitFrames[""], "Boss5TargetFrame")
-end
-
-if Addon:IsGameVersionAtleast("BC") then
-	unitFrames[""] = unitFrames[""] or {}
-
-	table.insert(unitFrames[""], "FocusFrame")
-	table.insert(unitFrames[""], "FocusFrameToT")
-end
-
-if Addon:IsGameVersionAtleast("RETAIL") then
-	unitFrames["Blizzard_ArenaUI"] = unitFrames["Blizzard_ArenaUI"] or {}
-
-	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame1")
-	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame2")
-	table.insert(unitFrames["Blizzard_ArenaUI"], "ArenaEnemyFrame3")
-
-	print(Addon:GetPrefixedAndFormattedString("Party frame integration is not available in Dragonflight"))
-end
-
 -- Local support functions
 
 --- @param name string
@@ -71,7 +26,7 @@ local function HookCompactUnitFramePart(name, part, index)
 	local frame = _G[name .. part .. index]
 
 	if frame ~= nil then
-		Clicked:RegisterClickCastFrame("", frame)
+		Clicked:RegisterClickCastFrame(frame)
 	end
 end
 
@@ -98,16 +53,53 @@ local function HookCompactUnitFrame(frame)
 		HookCompactUnitFramePart(name, "CenterStatusIcon", i)
 	end
 
-	Clicked:RegisterClickCastFrame("", frame)
+	Clicked:RegisterClickCastFrame(frame)
 end
 
 -- Private addon API
 
 function Addon:RegisterBlizzardUnitFrames()
-	for addon, names in pairs(unitFrames) do
-		for _, name in ipairs(names) do
-			Clicked:RegisterClickCastFrame(addon, name)
+	if Addon:IsGameVersionAtleast("CLASSIC") then
+		Clicked:RegisterClickCastFrame("PlayerFrame")
+		Clicked:RegisterClickCastFrame("PetFrame")
+		Clicked:RegisterClickCastFrame("TargetFrame")
+		Clicked:RegisterClickCastFrame("TargetFrameToT")
+
+		Clicked:RegisterClickCastFrame("Boss1TargetFrame")
+		Clicked:RegisterClickCastFrame("Boss2TargetFrame")
+		Clicked:RegisterClickCastFrame("Boss3TargetFrame")
+		Clicked:RegisterClickCastFrame("Boss4TargetFrame")
+		Clicked:RegisterClickCastFrame("Boss5TargetFrame")
+
+		if not Addon:IsGameVersionAtleast("RETAIL") then
+			Clicked:RegisterClickCastFrame("PartyMemberFrame1")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame1PetFrame")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame2")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame2PetFrame")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame3")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame3PetFrame")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame4")
+			Clicked:RegisterClickCastFrame("PartyMemberFrame4PetFrame")
 		end
+
+		HookCompactUnitFrame(_G["CompactPartyFrameMember1"])
+	end
+
+	if Addon:IsGameVersionAtleast("BC") then
+		Clicked:RegisterClickCastFrame("FocusFrame")
+		Clicked:RegisterClickCastFrame("FocusFrameToT")
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		Clicked:RegisterClickCastFrame("ArenaEnemyFrame1", "Blizzard_ArenaUI")
+		Clicked:RegisterClickCastFrame("ArenaEnemyFrame2", "Blizzard_ArenaUI")
+		Clicked:RegisterClickCastFrame("ArenaEnemyFrame3", "Blizzard_ArenaUI")
+
+		-- This fixes click-casting for these frames but there are still errors popping up due to them not having a name.
+		-- for memberFrame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+		-- 	Clicked:RegisterClickCastFrame(nil, memberFrame)
+		-- 	Clicked:RegisterClickCastFrame(nil, memberFrame.PetFrame)
+		-- end
 	end
 
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", HookCompactUnitFrame)
