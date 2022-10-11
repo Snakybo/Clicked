@@ -202,8 +202,10 @@ local function GetAvailableTabs(binding)
 	end
 
 	table.insert(items, "load_conditions")
-	table.insert(items, "macro_conditions")
 
+	if type ~= Addon.BindingTypes.MACRO then
+		table.insert(items, "macro_conditions")
+	end
 
 	if type == Addon.BindingTypes.SPELL or
 	   type == Addon.BindingTypes.ITEM or

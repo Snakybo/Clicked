@@ -28,6 +28,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 * Removed covenant selected load option
+* Hide macro conditions panel from custom macros
 
 ### Known issues
 
