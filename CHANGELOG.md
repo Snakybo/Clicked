@@ -12,7 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.0.1 Dragonflight
+* Add support for WoW 10.0.0 Dragonflight
 * Add support for the Dracthyr race [#104]
 * Add support for the Evoker class [#104]
 * Add support for the new talent tree system [#105]
