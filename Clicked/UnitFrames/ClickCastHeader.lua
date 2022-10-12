@@ -171,13 +171,16 @@ function Addon:UpdateClickCastHeaderBlacklist()
 		"blacklist = table.wipe(blacklist)"
 	}
 
-	for frame, blacklisted in pairs(blacklist) do
+	for group, blacklisted in pairs(blacklist) do
 		if blacklisted then
-			local line = [[
-				blacklist["%s"] = true
-			]]
+			for _, frameName in ipairs(Addon:GetBlacklistGroupItems(group)) do
+				local line = [[
+					blacklist["%s"] = true
+				]]
 
-			table.insert(data, string.format(line, frame))
+				local lua = string.format(line, frameName)
+				table.insert(data, lua)
+			end
 		end
 	end
 

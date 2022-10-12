@@ -19,6 +19,15 @@ local _, Addon = ...
 
 -- Local support functions
 
+--- @param parent Frame
+--- @param name string
+local function HookCompactUnitFramePart(parent, name)
+	local frame = _G[name]
+
+	Addon:SetBlacklistGroup(frame, parent:GetName())
+	Clicked:RegisterClickCastFrame(frame)
+end
+
 --- @param frame table
 local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
@@ -36,12 +45,12 @@ local function HookCompactUnitFrame(frame)
 	end
 
 	for i = 1, 3 do
-		Clicked:RegisterClickCastFrame(name .. "Buff" .. i)
-		Clicked:RegisterClickCastFrame(name .. "Debuff" .. i)
-		Clicked:RegisterClickCastFrame(name .. "DispelDebuff" .. i)
+		HookCompactUnitFramePart(frame, name .. "Buff" .. i)
+		HookCompactUnitFramePart(frame, name .. "Debuff" .. i)
+		HookCompactUnitFramePart(frame, name .. "DispelDebuff" .. i)
 	end
 
-	Clicked:RegisterClickCastFrame(name .. "CenterStatusIcon")
+	HookCompactUnitFramePart(frame, name .. "CenterStatusIcon")
 	Clicked:RegisterClickCastFrame(frame)
 end
 

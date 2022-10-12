@@ -49,13 +49,7 @@ local UNIT_FRAME_ADDON_MAPPING = {
 		name = "Blizzard",
 		"Boss%dTargetFrame",
 		"CompactRaidFrame%d",
-		"CompactRaidFrame%dBuff%d",
-		"CompactRaidFrame%dDebuff%d",
-		"CompactRaidFrame%dDispellDebuff%d",
 		"CompactPartyFrameMember%d",
-		"CompactPartyFrameMember%dBuff%d",
-		"CompactPartyFrameMember%dDebuff%d",
-		"CompactPartyFrameMember%dDispellDebuff%d",
 		"FocusFrame",
 		"FocusFrameToT",
 		"PetFrame",
@@ -118,7 +112,28 @@ local function SetSelectedItem(name, enabled)
 
 	if enabled then
 		args[name] = {
-			name = GetUnitFrameSource(name) .. ":" .. name,
+			name = function()
+				local source = GetUnitFrameSource(name)
+				local numChildren = #Addon:GetBlacklistGroupItems(name) - 1
+				local result = source .. ": " .. name
+
+				if numChildren > 0 then
+					result = result .. " |cff808080(plus " .. numChildren .. " children)|r"
+				end
+
+				return result
+			end,
+			desc = function()
+				local result = {}
+
+				for _, frame in ipairs(Addon:GetBlacklistGroupItems(name)) do
+					table.insert(result, "- " .. frame)
+				end
+
+				table.sort(result)
+
+				return table.concat(result, "\n")
+			end,
 			type = "toggle",
 			width = "full",
 			order = 3,
@@ -144,6 +159,47 @@ end
 
 -- Private addon API
 
+--- Set the name of the blacklist group the frame belongs to.
+---
+--- @param frame Frame
+--- @return string?
+function Addon:SetBlacklistGroup(frame, group)
+	frame:SetAttribute("clicked-blacklist-group", group)
+end
+
+--- Get the name of the blacklist group the frame belongs to.
+---
+--- @param frame Frame
+--- @return string?
+function Addon:GetBlacklistGroup(frame)
+	local group = frame:GetAttribute("clicked-blacklist-group")
+
+	if group ~= nil then
+		return group
+	end
+
+	if frame.GetName then
+		return frame:GetName()
+	end
+
+	return nil
+end
+
+--- Get the names of all frames within a blacklist group
+--- @param group any
+--- @return string[]
+function Addon:GetBlacklistGroupItems(group)
+	local result = {}
+
+	for _, frame in Clicked:IterateClickCastFrames() do
+		if Addon:GetBlacklistGroup(frame) == group then
+			table.insert(result, frame:GetName())
+		end
+	end
+
+	return result
+end
+
 function Addon:BlacklistOptions_Initialize()
 	config = {
 		type = "group",
@@ -166,7 +222,13 @@ function Addon:BlacklistOptions_Initialize()
 						result[source] = "s|" .. source
 
 						for _, frame in ipairs(frames) do
-							result[frame] = frame
+							local numChildren = #Addon:GetBlacklistGroupItems(frame) - 1
+
+							if numChildren > 0 then
+								result[frame] = frame .. " |cff808080(plus " .. numChildren .. " children)|r"
+							else
+								result[frame] = frame
+							end
 						end
 					end
 
@@ -235,22 +297,22 @@ function Addon:BlacklistOptions_Refresh()
 	end
 end
 
---- @param frame table
+--- @param frame Frame
 function Addon:BlacklistOptions_RegisterFrame(frame)
-	local name = frame.GetName and frame:GetName()
+	local group = Addon:GetBlacklistGroup(frame)
 
-	if name ~= nil then
-		SetSelectedItem(name, Addon.db.profile.blacklist[name])
-		SetDropdownItem(name, not Addon.db.profile.blacklist[name])
+	if group ~= nil then
+		SetSelectedItem(group, Addon.db.profile.blacklist[group])
+		SetDropdownItem(group, not Addon.db.profile.blacklist[group])
 	end
 end
 
 --- @param frame table
 function Addon:BlacklistOptions_UnregisterFrame(frame)
-	local name = frame.GetName and frame:GetName()
+	local group = Addon:GetBlacklistGroup(frame)
 
-	if name ~= nil then
-		SetSelectedItem(name, false)
-		SetDropdownItem(name, false)
+	if group ~= nil then
+		SetSelectedItem(group, false)
+		SetDropdownItem(group, false)
 	end
 end

@@ -35,7 +35,7 @@
 --- @field public options Profile.Options
 --- @field public groups Group[]
 --- @field public bindings Binding[]
---- @field public blacklist string[]
+--- @field public blacklist table<string,boolean>
 --- @field public nextGroupId integer
 --- @field public nextBindingId integer
 
