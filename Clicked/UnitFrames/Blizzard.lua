@@ -19,17 +19,6 @@ local _, Addon = ...
 
 -- Local support functions
 
---- @param name string
---- @param part string
---- @param index string
-local function HookCompactUnitFramePart(name, part, index)
-	local frame = _G[name .. part .. index]
-
-	if frame ~= nil then
-		Clicked:RegisterClickCastFrame(frame)
-	end
-end
-
 --- @param frame table
 local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
@@ -47,12 +36,12 @@ local function HookCompactUnitFrame(frame)
 	end
 
 	for i = 1, 3 do
-		HookCompactUnitFramePart(name, "Buff", i)
-		HookCompactUnitFramePart(name, "Debuff", i)
-		HookCompactUnitFramePart(name, "DispelDebuff", i)
-		HookCompactUnitFramePart(name, "CenterStatusIcon", i)
+		Clicked:RegisterClickCastFrame(name .. "Buff" .. i)
+		Clicked:RegisterClickCastFrame(name .. "Debuff" .. i)
+		Clicked:RegisterClickCastFrame(name .. "DispelDebuff" .. i)
 	end
 
+	Clicked:RegisterClickCastFrame(name .. "CenterStatusIcon")
 	Clicked:RegisterClickCastFrame(frame)
 end
 

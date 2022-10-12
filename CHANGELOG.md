@@ -24,6 +24,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix text color not always being set correctly in the binding list
+* Fix compact unit frame center status icon not being registered for click-casting
 
 ### Changed
 
