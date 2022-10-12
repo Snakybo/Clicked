@@ -58,8 +58,6 @@ local UNIT_FRAME_ADDON_MAPPING = {
 		"CompactPartyFrameMember%dDispellDebuff%d",
 		"FocusFrame",
 		"FocusFrameToT",
-		"PartyMemberFrame%d",
-		"PartyMemberFrame%dPetFrame",
 		"PetFrame",
 		"PlayerFrame",
 		"TargetFrame",

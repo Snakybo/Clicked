@@ -63,6 +63,7 @@ function Addon:RegisterClickCastHeader()
 
 		local keybinds = control:GetAttribute("clicked-keybinds")
 		local identifiers = control:GetAttribute("clicked-identifiers")
+		local button = self:GetAttribute("clicked-sidecar") or self
 
 		if strlen(keybinds) > 0 then
 			keybinds = table.new(strsplit("\001", keybinds))
@@ -72,7 +73,7 @@ function Addon:RegisterClickCastHeader()
 				local keybind = keybinds[i]
 				local identifier = identifiers[i]
 
-				self:SetBindingClick(true, keybind, self, identifier)
+				self:SetBindingClick(true, keybind, button, identifier)
 			end
 		end
 	]])

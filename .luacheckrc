@@ -125,6 +125,7 @@ read_globals = {
 	"NUM_TALENT_COLUMNS",
 	"NORMAL_FONT_COLOR",
 	"PanelTemplates_TabResize",
+	"PartyFrame",
 	"PlaySound",
 	"RegisterAttributeDriver",
 	"RegisterStateDriver",

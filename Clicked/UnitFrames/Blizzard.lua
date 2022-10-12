@@ -84,11 +84,17 @@ function Addon:RegisterBlizzardUnitFrames()
 		Clicked:RegisterClickCastFrame("ArenaEnemyFrame2", "Blizzard_ArenaUI")
 		Clicked:RegisterClickCastFrame("ArenaEnemyFrame3", "Blizzard_ArenaUI")
 
-		-- This fixes click-casting for these frames but there are still errors popping up due to them not having a name.
-		-- for memberFrame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-		-- 	Clicked:RegisterClickCastFrame(nil, memberFrame)
-		-- 	Clicked:RegisterClickCastFrame(nil, memberFrame.PetFrame)
-		-- end
+		local partyFrameIndex = 1
+
+		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+			Clicked:RegisterClickCastFrame(frame)
+			Clicked:RegisterClickCastFrame(frame.PetFrame)
+
+			Clicked:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
+			Clicked:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
+
+			partyFrameIndex = partyFrameIndex + 1
+		end
 	end
 
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", HookCompactUnitFrame)

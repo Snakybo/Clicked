@@ -138,9 +138,11 @@ local function GetRegisteredClickCastFrames()
 	for _, clickCastFrame in Clicked:IterateClickCastFrames() do
 		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
 			local name = clickCastFrame:GetName()
-			local blacklisted = Addon:IsFrameBlacklisted(clickCastFrame)
 
-			table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
+			if name ~= nil then
+				local blacklisted = Addon:IsFrameBlacklisted(clickCastFrame)
+				table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
+			end
 		end
 	end
 
@@ -148,6 +150,25 @@ local function GetRegisteredClickCastFrames()
 
 	if #lines > 0 then
 		table.insert(lines, 1, "----- Registered unit frames -----")
+	end
+
+	return table.concat(lines, "\n")
+end
+
+--- @return string
+local function GetRegisteredClickCastSidecars()
+	local lines = {}
+
+	for _, sidecar in Clicked:IterateSidecars() do
+		local targetFrameName = sidecar:GetAttribute("clicked-name")
+
+		table.insert(lines, sidecar:GetName() .. (targetFrameName and " (for " .. targetFrameName .. ")" or ""))
+	end
+
+	table.sort(lines)
+
+	if #lines > 0 then
+		table.insert(lines, 1, "----- Registered sidecars -----")
 	end
 
 	return table.concat(lines, "\n")
@@ -172,6 +193,7 @@ local function UpdateStatusOutputText()
 	table.insert(text, GetBasicinfoString())
 	table.insert(text, GetParsedDataString())
 	table.insert(text, GetRegisteredClickCastFrames())
+	table.insert(text, GetRegisteredClickCastSidecars())
 	table.insert(text, GetSerializedProfileString())
 
 	editbox:SetText(table.concat(text, "\n\n"))

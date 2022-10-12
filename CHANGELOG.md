@@ -31,10 +31,6 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Removed covenant selected load option
 * Hide macro conditions panel from custom macros
 
-### Known issues
-
-* Party frame integration is not functional [#109]
-
 ## [1.7.7] - 2022-09-02
 
 ### Fixed

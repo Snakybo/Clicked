@@ -25,6 +25,7 @@ local registerQueue = {}
 local unregisterQueue = {}
 local registerClicksQueue = {}
 local cachedAttributes = {}
+local sidecars = {}
 
 -- Local support functions
 
@@ -86,7 +87,7 @@ function Addon:UpdateClickCastFrames(newAtributes)
 	cachedAttributes = newAtributes
 end
 
---- @param frame table
+--- @param frame Frame
 --- @return boolean
 function Addon:IsFrameBlacklisted(frame)
 	if frame == nil then
@@ -123,7 +124,7 @@ end
 --- frame `OnEnter` and `OnLeave` scripts, these can be invoked using the `clickcast_onenter` and `clickcast_onleave` attributes. These will also be used if
 --- your frame inherits from the `ClickCastUnitTemplate`.
 ---
---- @param frame Frame|string Either the frame to register, or the name of the frame that can be found in the global table.
+--- @param frame Button|string Either the frame to register, or the name of the frame that can be found in the global table.
 --- @param addon string? The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
 --- @see Clicked:UnregisterClickCastFrame
 function Clicked:RegisterClickCastFrame(frame, addon)
@@ -190,6 +191,10 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 		return
 	end
 
+	if frame:GetName() == nil then
+		Clicked:CreateSidecar(frame, nil)
+	end
+
 	Clicked:RegisterFrameClicks(frame, true)
 	UpdateClickCastFrame(frame, cachedAttributes)
 
@@ -200,7 +205,7 @@ end
 
 --- Unregister a registered click-cast enabled frame. See the documentation of `RegisterClickCastFrame` for more information.
 ---
---- @param frame table The frame to unregister
+--- @param frame Button The frame to unregister
 --- @see Clicked#RegisterClickCastFrame
 function Clicked:UnregisterClickCastFrame(frame)
 	if frame == nil then
@@ -247,6 +252,8 @@ function Clicked:UnregisterClickCastFrame(frame)
 	Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 	Addon.ClickCastHeader:UnwrapScript(frame, "OnLeave")
 
+	-- TODO: Unregister sidecar?
+
 	table.remove(frames, index)
 
 	Addon:BlacklistOptions_UnregisterFrame(frame)
@@ -256,7 +263,7 @@ end
 --- the frame. Because Clicked supports both on-down and on-up casting, if your addon provides built-in click behaviour, you may have to add in support for
 --- this too.
 ---
---- @param frame table The frame to register for clicks and scrollwheel events
+--- @param frame Button The frame to register for clicks and scrollwheel events
 --- @param isUnitFrame boolean Whether the frame is an unit frame
 function Clicked:RegisterFrameClicks(frame, isUnitFrame)
 	if frame == nil or frame.RegisterForClicks == nil then
@@ -281,11 +288,52 @@ function Clicked:RegisterFrameClicks(frame, isUnitFrame)
 	frame:EnableMouseWheel(true)
 end
 
+--- Create a clickable sidecar, primarily for unamed frames such as the party frames.
+---
+--- @param frame Button The frame to create a sidecar for
+--- @param name string? The human-readable name of the frame, since these frames are generally unamed, a custom name needs to be supploed
+--- @return Button sidecar
+function Clicked:CreateSidecar(frame, name)
+	local sidecar = frame:GetAttribute("clicked-sidecar")
+
+	if sidecar == nil then
+		local frameName = "ClickedSidecar" .. tostring(#sidecars + 1)
+
+		sidecar = CreateFrame("Button", frameName, frame, "SecureActionButtonTemplate")
+		sidecar:SetAttribute("useparent*", true)
+
+		frame:SetAttribute("clicked-sidecar", frameName)
+		frame:SetAttribute("clicked-name", name)
+
+		table.insert(sidecars, sidecar)
+	else
+		sidecar = _G[sidecar]
+	end
+
+	if name ~= nil then
+		sidecar:SetAttribute("clicked-name", name)
+	end
+
+	return sidecar
+end
+
 --- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
 ---
 --- @return function iterator
---- @return table t
+--- @return Button t
 --- @return number i
 function Clicked:IterateClickCastFrames()
 	return ipairs(frames)
+end
+
+--- Iterate through all registered click-cast sidecars. This function can be used in a `for in` loop.
+---
+--- A sidecar is a custom overlay frame used when a registered frame does not have a name. A name is required for
+--- unit frame casting.
+---
+--- @return function iterator
+--- @return Button t
+--- @return number i
+function Clicked:IterateSidecars()
+	return ipairs(sidecars)
 end
