@@ -50,10 +50,10 @@ local shapeshiftForms = {
 	-- Protection Paladin
 	-- Retribution Paladin
 	-- Initial Paladin
-	[65] = { 32223, 465, 317920, 183435 }, -- Crusader Aura, Devotion Aura, Concentration Aura, Retribution Aura
-	[66] = { 32223, 465, 317920, 183435 }, -- Crusader Aura, Devotion Aura, Concentration Aura, Retribution Aura
-	[70] = { 32223, 465, 317920, 183435 }, -- Crusader Aura, Devotion Aura, Concentration Aura, Retribution Aura
-	[1451] = { 32223, 465, 317920, 183435 }, -- Crusader Aura, Devotion Aura, Concentration Aura, Retribution Aura
+	[65] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
+	[66] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
+	[70] = { 32223, 183435 }, -- Crusader Aura, Retribution Aura
+	[1451] = { },
 
 	-- Beast Mastery Hunter
 	-- Marksmanship Hunter
