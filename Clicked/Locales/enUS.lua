@@ -261,3 +261,6 @@ L["Search Filters"] = true
 L["Prefix your search with k: to search for a specific key only, for example:"] = true
 L["k:Q will only show bindings bound to Q"] = true
 L["k:ALT-A will only show bindings bound to ALT-A"] = true
+L["Nothing"] = true
+L["Everything"] = true
+L["Mixed..."] = true

@@ -720,13 +720,13 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			end
 
 			if #selected == 0 then
-				text = "Nothing"
+				text = L["Nothing"]
 			elseif #selected == 1 then
 				text = selected[1]
 			elseif #selected == #items then
-				text = "Everything"
+				text = L["Everything"]
 			else
-				text = "Mixed..."
+				text = L["Mixed..."]
 			end
 
 			widget:SetText(string.format("<text=%s>", text))
