@@ -20,6 +20,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * Creating a binding for 'Q' can automatically also bind 'SHIFT-Q', 'ALT-Q', etc.
 * Add tooltip explaining search filters to search box.
 * Add small delay before showing tooltips.
+* Add stance macro condition for Warrior
 * Simplify frame blacklist dropdown
 
 ### Fixed

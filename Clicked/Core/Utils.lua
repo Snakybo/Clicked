@@ -41,10 +41,10 @@ local shapeshiftForms = {
 	-- Fury Warrior
 	-- Protection Warrior
 	-- Initial Warrior
-	[71] = {},
-	[72] = {},
-	[73] = {},
-	[1446] = {},
+	[71] = { 386164 }, -- Battle Stance
+	[72] = { 386196 }, -- Beserker Stance
+	[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
+	[1446] = { },
 
 	-- Holy Paladin
 	-- Protection Paladin
