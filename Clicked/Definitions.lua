@@ -121,6 +121,9 @@
 --- @field public single number|string
 --- @field public multiple number[]|string[]
 
+--- @class Binding.NegatableTriStateLoadOption : Binding.TriStateLoadOption
+--- @field public negated boolean
+
 --- @class Binding.NegatableStringLoadOption
 --- @field public selected boolean
 --- @field public negated boolean
@@ -142,7 +145,7 @@
 --- @field public flyable string
 --- @field public swimming string
 --- @field public channeling Action.NegatableValueString
---- @field public forms string
+--- @field public forms Action.NegatableValueString
 --- @field public unit string
 --- @field public hostility string
 --- @field public vitals string

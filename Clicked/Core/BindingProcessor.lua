@@ -172,8 +172,8 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		table.insert(flags, "exists")
 	end
 
-	if #action.forms > 0 then
-		table.insert(flags, "form:" .. action.forms)
+	if #action.forms.value > 0 then
+		ParseNegatableStringCondition(action.forms, "form", "noform")
 	end
 
 	return table.concat(flags, ",")
@@ -223,7 +223,11 @@ local function ConstructAction(binding, target)
 
 	do
 		local forms = Addon:GetAvailableShapeshiftForms(binding)
-		action.forms = table.concat(forms, "/")
+
+		action.forms = {
+			negated = binding.load.form.negated,
+			value = table.concat(forms, "/")
+		}
 	end
 
 	if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then

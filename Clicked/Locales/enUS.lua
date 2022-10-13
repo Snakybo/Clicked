@@ -264,3 +264,4 @@ L["k:ALT-A will only show bindings bound to ALT-A"] = true
 L["Nothing"] = true
 L["Everything"] = true
 L["Mixed..."] = true
+L["Invert"] = true

@@ -40,12 +40,16 @@ local function GetNegatableLoadOptionTemplate()
 	return GetLoadOptionTemplate(true)
 end
 
---- @return Binding.NegatableStringLoadOption
-local function GetNegatableStringLoadOptionTemplate()
+--- @param default number|string
+--- @return Binding.NegatableTriStateLoadOption
+local function GetNegatableTriStateLoadOptionTemplate(default)
 	local template = {
-		selected = false,
+		selected = 0,
 		negated = false,
-		value = ""
+		single = default,
+		multiple = {
+			default
+		}
 	}
 
 	return template
@@ -60,6 +64,17 @@ local function GetTriStateLoadOptionTemplate(default)
 		multiple = {
 			default
 		}
+	}
+
+	return template
+end
+
+--- @return Binding.NegatableStringLoadOption
+local function GetNegatableStringLoadOptionTemplate()
+	local template = {
+		selected = false,
+		negated = false,
+		value = ""
 	}
 
 	return template
@@ -258,7 +273,7 @@ function Addon:GetNewBindingTemplate()
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
 			playerInGroup = GetLoadOptionTemplate(""),
-			form = GetTriStateLoadOptionTemplate(1),
+			form = GetNegatableTriStateLoadOptionTemplate(1),
 			pet = GetNegatableLoadOptionTemplate(),
 			stealth = GetNegatableLoadOptionTemplate(),
 			mounted = GetNegatableLoadOptionTemplate(),
@@ -1060,6 +1075,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 	if string.sub(from, 1, 3) == "1.7" then
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.covenant = nil
+			binding.load.form.negated = false
 		end
 
 		profile.options.bindUnassignedModifiers = true

@@ -1580,7 +1580,7 @@ end
 -- Binding macro conditions page and components
 
 --- @param container table
---- @param form Binding.TriStateLoadOption
+--- @param form Binding.NegatableTriStateLoadOption
 --- @param specIds integer[]
 local function DrawMacroInStance(container, form, specIds)
 	local label = L["Stance"]
@@ -1601,6 +1601,18 @@ local function DrawMacroInStance(container, form, specIds)
 
 	local items, order = Addon:GetLocalizedForms(specIds)
 	DrawTristateLoadOption(container, label, items, order, form)
+
+	-- invert toggle
+	if form.selected ~= 0 then
+		local spacer = Addon:GUI_Label("")
+		spacer:SetRelativeWidth(0.5)
+
+		local widget = Addon:GUI_CheckBox(L["Invert"], form, "negated")
+		widget:SetRelativeWidth(0.5)
+
+		container:AddChild(spacer)
+		container:AddChild(widget)
+	end
 end
 
 --- @param container table
