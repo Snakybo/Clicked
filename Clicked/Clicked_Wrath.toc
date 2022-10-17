@@ -17,6 +17,7 @@ Widgets\Widgets.xml
 Templates\Clicked.xml
 
 # Core systems
+Core\Init.lua
 Core\Clicked.lua
 Core\Database.lua
 Core\AttributeHandler.lua
