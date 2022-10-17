@@ -22,6 +22,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add small delay before showing tooltips
 * Add the ability to invert stance selection, changing the macro from `form` to `noform`
 * Add stance macro condition for Warrior
+* Add stance/form macro conditional for Classic [#68] [#69] (by [yannlugrin](https://github.com/yannlugrin))
 * Simplify frame blacklist dropdown
 
 ### Fixed
@@ -1065,6 +1066,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#74]: https://github.com/Snakybo/Clicked/pull/74
 [#71]: https://github.com/Snakybo/Clicked/issues/71
 [#70]: https://github.com/Snakybo/Clicked/issues/70
+[#69]: https://github.com/Snakybo/Clicked/pull/69
+[#68]: https://github.com/Snakybo/Clicked/issues/68
 [#64]: https://github.com/Snakybo/Clicked/issues/64
 [#63]: https://github.com/Snakybo/Clicked/issues/63
 [#59]: https://github.com/Snakybo/Clicked/issues/59

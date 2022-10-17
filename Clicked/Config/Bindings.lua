@@ -1616,6 +1616,37 @@ local function DrawMacroInStance(container, form, specIds)
 end
 
 --- @param container table
+--- @param form Binding.NegatableTriStateLoadOption
+--- @param classes string[]
+local function Classic_DrawMacroInStance(container, form, classes)
+	local label = L["Stance"]
+
+	if classes == nil then
+		classes = {}
+		classes[1] = select(2, UnitClass("player"))
+	end
+
+	if #classes == 1 and classes[1] == "DRUID" then
+		label = L["Form"]
+	end
+
+	local items, order = Addon:Classic_GetLocalizedForms(classes)
+	DrawTristateLoadOption(container, label, items, order, form)
+
+	-- invert toggle
+	if form.selected ~= 0 then
+		local spacer = Addon:GUI_Label("")
+		spacer:SetRelativeWidth(0.5)
+
+		local widget = Addon:GUI_CheckBox(L["Invert"], form, "negated")
+		widget:SetRelativeWidth(0.5)
+
+		container:AddChild(spacer)
+		container:AddChild(widget)
+	end
+end
+
+--- @param container table
 --- @param combat Binding.LoadOption
 local function DrawMacroCombat(container, combat)
 	local items = {
@@ -1773,6 +1804,10 @@ local function DrawBindingMacroConditionsPage(container, binding)
 			local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 			DrawMacroInStance(container, load.form, specializationIds)
+		elseif Addon:IsGameVersionAtleast("CLASSIC") then
+			local classNames = GetTriStateLoadOptionValue(load.class)
+
+			Classic_DrawMacroInStance(container, load.form, classNames)
 		end
 
 		DrawMacroCombat(container, load.combat)
@@ -1830,7 +1865,7 @@ end
 
 --- @param container table
 --- @param specialization Binding.TriStateLoadOption
-local function DrawLoadSpecializationClassic(container, specialization)
+local function Classic_DrawLoadSpecialization(container, specialization)
 	local items = {
 		[1] = L["Primary Specialization"],
 		[2] = L["Secondary Specialization"]
@@ -1855,8 +1890,8 @@ end
 --- @param container table
 --- @param talent Binding.TriStateLoadOption
 --- @param classes string[]
-local function DrawLoadTalentClassic(container, talent, classes)
-	local items, order = Addon:GetLocalizedTalentsClassic(classes)
+local function Classic_DrawLoadTalent(container, talent, classes)
+	local items, order = Addon:Classic_GetLocalizedTalents(classes)
 	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
 end
 
@@ -2041,8 +2076,8 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 
-		DrawLoadSpecializationClassic(container, load.specialization)
-		DrawLoadTalentClassic(container, load.talent, classNames)
+		Classic_DrawLoadSpecialization(container, load.specialization)
+		Classic_DrawLoadTalent(container, load.talent, classNames)
 	end
 
 	DrawLoadInInstanceType(container, load.instanceType)

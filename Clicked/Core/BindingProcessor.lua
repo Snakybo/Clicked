@@ -866,21 +866,28 @@ function Addon:CanBindingLoad(binding)
 				return true
 			end
 
-			local specId = GetSpecializationInfo(GetSpecialization())
+			if Addon:IsGameVersionAtleast("RETAIL") then
+				local specId = GetSpecializationInfo(GetSpecialization())
 
-			-- specId can be nil on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
-			if specId == nil then
+				-- specId can be nil on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
+				if specId == nil then
+					return false
+				end
+
+				local forms = Addon:GetShapeshiftForms(specId)
+				return IsSpellKnown(forms[formIndex])
+			elseif Addon:IsGameVersionAtleast("CLASSIC") then
+				local class = select(2, UnitClass("player"))
+				local forms = Addon:Classic_GetShapeshiftForms(class)
+
+				for _, spellId in ipairs(forms[formIndex]) do
+					if IsSpellKnown(spellId) then
+						return true
+					end
+				end
+
 				return false
 			end
-
-			local forms = Addon:GetShapeshiftFormsForSpecId(specId)
-			local spellId = forms[formIndex]
-
-			if spellId == nil then
-				return false
-			end
-
-			return IsSpellKnown(spellId)
 		end
 
 		if not ValidateTriStateLoadOption(load.form, IsFormIndexSelected) then

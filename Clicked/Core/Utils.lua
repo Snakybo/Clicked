@@ -35,123 +35,170 @@ local KEYBIND_ORDER_LIST = {
 	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
 }
 
+local shapeshiftForms
+
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
-local shapeshiftForms = {
-	-- Arms Warrior
-	-- Fury Warrior
-	-- Protection Warrior
-	-- Initial Warrior
-	[71] = { 386164 }, -- Battle Stance
-	[72] = { 386196 }, -- Beserker Stance
-	[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-	[1446] = { },
+if Addon:IsGameVersionAtleast("RETAIL") then
+	shapeshiftForms = {
+		-- Arms Warrior
+		-- Fury Warrior
+		-- Protection Warrior
+		-- Initial Warrior
+		[71] = { 386164 }, -- Battle Stance
+		[72] = { 386196 }, -- Beserker Stance
+		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
+		[1446] = { },
 
-	-- Holy Paladin
-	-- Protection Paladin
-	-- Retribution Paladin
-	-- Initial Paladin
-	[65] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
-	[66] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
-	[70] = { 32223, 183435 }, -- Crusader Aura, Retribution Aura
-	[1451] = { },
+		-- Holy Paladin
+		-- Protection Paladin
+		-- Retribution Paladin
+		-- Initial Paladin
+		[65] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
+		[66] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
+		[70] = { 32223, 183435 }, -- Crusader Aura, Retribution Aura
+		[1451] = { },
 
-	-- Beast Mastery Hunter
-	-- Marksmanship Hunter
-	-- Survival Hunter
-	-- Initial Hunter
-	[253] = {},
-	[254] = {},
-	[255] = {},
-	[1448] = {},
+		-- Beast Mastery Hunter
+		-- Marksmanship Hunter
+		-- Survival Hunter
+		-- Initial Hunter
+		[253] = {},
+		[254] = {},
+		[255] = {},
+		[1448] = {},
 
-	-- Assassination Rogue
-	-- Outlaw Rogue
-	-- Subtlety Rogue
-	-- Initial Rogue
-	[259] = { 1784 }, -- Stealth
-	[260] = { 1784 }, -- Stealth
-	[261] = { 1784 }, -- Stealth
-	[1453] = { 1784 },  -- Stealth
+		-- Assassination Rogue
+		-- Outlaw Rogue
+		-- Subtlety Rogue
+		-- Initial Rogue
+		[259] = { 1784 }, -- Stealth
+		[260] = { 1784 }, -- Stealth
+		[261] = { 1784 }, -- Stealth
+		[1453] = { 1784 },  -- Stealth
 
-	-- Discipline Priest
-	-- Holy Priest
-	-- Shadow Priest
-	-- Initial Priest
-	[256] = {},
-	[257] = {},
-	[258] = { 232698 }, -- Shadowform
-	[1452] = {},
+		-- Discipline Priest
+		-- Holy Priest
+		-- Shadow Priest
+		-- Initial Priest
+		[256] = {},
+		[257] = {},
+		[258] = { 232698 }, -- Shadowform
+		[1452] = {},
 
-	-- Blood Death Knight
-	-- Frost Death Knight
-	-- Unholy Death Knight
-	-- Initial Death Knight
-	[250] = {},
-	[251] = {},
-	[252] = {},
-	[1455] = {},
+		-- Blood Death Knight
+		-- Frost Death Knight
+		-- Unholy Death Knight
+		-- Initial Death Knight
+		[250] = {},
+		[251] = {},
+		[252] = {},
+		[1455] = {},
 
-	-- Elemental Shaman
-	-- Enhancement Shaman
-	-- Restoration Shaman
-	-- Initial Shaman
-	[262] = {},
-	[263] = {},
-	[264] = {},
-	[1444] = {},
+		-- Elemental Shaman
+		-- Enhancement Shaman
+		-- Restoration Shaman
+		-- Initial Shaman
+		[262] = {},
+		[263] = {},
+		[264] = {},
+		[1444] = {},
 
-	-- Arcane Mage
-	-- Fire Mage
-	-- Frost Mage
-	-- Initial Mage
-	[62] = {},
-	[63] = {},
-	[64] = {},
-	[1449] = {},
+		-- Arcane Mage
+		-- Fire Mage
+		-- Frost Mage
+		-- Initial Mage
+		[62] = {},
+		[63] = {},
+		[64] = {},
+		[1449] = {},
 
-	-- Afflication Warlock
-	-- Demonology Warlock
-	-- Destruction Warlock
-	-- Initial Warlock
-	[265] = {},
-	[266] = {},
-	[267] = {},
-	[1454] = {},
+		-- Afflication Warlock
+		-- Demonology Warlock
+		-- Destruction Warlock
+		-- Initial Warlock
+		[265] = {},
+		[266] = {},
+		[267] = {},
+		[1454] = {},
 
-	-- Brewmaster Monk
-	-- Mistweaver Monk
-	-- Windwalker Monk
-	-- Initial Monk
-	[268] = {},
-	[270] = {},
-	[269] = {},
-	[1450] = {},
+		-- Brewmaster Monk
+		-- Mistweaver Monk
+		-- Windwalker Monk
+		-- Initial Monk
+		[268] = {},
+		[270] = {},
+		[269] = {},
+		[1450] = {},
 
-	-- Balance Druid
-	-- Feral Druid
-	-- Guardian Druid
-	-- Restoration Druid
-	-- Initial Druid
-	[102] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-	[103] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-	[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-	[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-	[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
+		-- Balance Druid
+		-- Feral Druid
+		-- Guardian Druid
+		-- Restoration Druid
+		-- Initial Druid
+		[102] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+		[103] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+		[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+		[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
+		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
 
-	-- Havoc Demon Hunter
-	-- Vengeance Demon Hunter
-	-- Initial Demon Hunter
-	[577] = {},
-	[581] = {},
-	[1456] = {},
+		-- Havoc Demon Hunter
+		-- Vengeance Demon Hunter
+		-- Initial Demon Hunter
+		[577] = {},
+		[581] = {},
+		[1456] = {},
 
-	-- Devastation Evoker
-	-- Preservation Evoker
-	-- Initial Evoker
-	[1467] = {},
-	[1468] = {},
-	[1465] = {}
-}
+		-- Devastation Evoker
+		-- Preservation Evoker
+		-- Initial Evoker
+		[1467] = {},
+		[1468] = {},
+		[1465] = {}
+	}
+elseif Addon:IsGameVersionAtleast("CLASSIC") then
+	shapeshiftForms = {
+		WARRIOR = {
+			{ 2457 }, -- Battle Stance
+			{ 71 }, -- Defensive Stance
+			{ 2458 } -- Beserker Stance
+		},
+		PALADIN = {
+			{ 27149 }, -- Devotion Aura
+			{ 27150 }, -- Retribution Aura
+			{ 19746 }, -- Concentration Aura
+			{ 27151 }, -- Shadow Resistance Aura
+			{ 27152 }, -- Frost Resistance Aura
+			{ 27153 }, -- Fire Resistance Aura
+			{ 32223 } -- Crusader Aura
+		},
+		HUNTER = {},
+		ROGUE = {
+			{ 1784 } -- Stealth
+		},
+		PRIEST = {
+			{ 15473 } -- Shadowform
+		},
+		SHAMAN = {},
+		MAGE = {},
+		WARLOCK = {},
+		DRUID = {
+			{ 9634, 5487 }, -- Dire Bear Form, Bear Form
+			{ 1066 }, -- Aquatic Form
+			{ 768 }, -- Cat Form
+			{ 783 }, -- Travel Form
+			{ 24858, 33891 }, -- Moonkin Form, Tree of Life Form
+			{ 40120, 33943 } -- Swift Flight Form, Flight Form
+		}
+	}
+
+	if Addon:IsGameVersionAtleast("WOTLK") then
+		shapeshiftForms["DEATHKNIGHT"] = {
+			{ 48266 }, -- Blood Presence
+			{ 48263 }, -- Frost Presence
+			{ 48265 } -- Unholy Presence
+		}
+	end
+end
 
 -- Local support functions
 
@@ -773,22 +820,84 @@ function Addon:CompareBindings(left, right)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
---- Get all available shapeshift forms the the specified spec ID.
---- Note that this does not mean _currently available_ shapeshift forms,
---- just all possible shapeshift forms.
----
---- It is important that we use this instead of `GetNumShapeshiftForms` and
---- `GetShapeshiftFormInfo` as those will dynamically change depending on what
---- the player currently knows, which can vary depending on talents or level.
----
---- To ensure that shapeshift form data does not get corrupted when switching
---- talents, we store all available shapeshift forms manually.
----
---- @param specId integer
---- @return integer[]
-function Addon:GetShapeshiftFormsForSpecId(specId)
-	local forms = shapeshiftForms[specId] or {}
-	return { unpack(forms) }
+if Addon:IsGameVersionAtleast("RETAIL") then
+	--- Get all available shapeshift forms for the specified spec ID.
+	--- Note that this does not mean _currently available_ shapeshift forms,
+	--- just all possible shapeshift forms.
+	---
+	--- It is important that we use this instead of `GetNumShapeshiftForms` and
+	--- `GetShapeshiftFormInfo` as those will dynamically change depending on what
+	--- the player currently knows, which can vary depending on talents or level.
+	---
+	--- To ensure that shapeshift form data does not get corrupted when switching
+	--- talents, we store all available shapeshift forms manually.
+	---
+	--- @param specId integer
+	--- @return integer[]
+	function Addon:GetShapeshiftForms(specId)
+		local forms = shapeshiftForms[specId] or {}
+		return { unpack(forms) }
+	end
+
+	--- Iterate through all available shapeshift forms, this function behaves
+	--- slightly differently depending on the input value.
+	---
+	--- If `specId` is not set (or is `nil`), this will return a `pairs` iterator
+	--- containing all spec IDs and shapeshift forms per spec ID.
+	---
+	--- If `specId` is set, it will return an `ipairs` iterator containing all
+	--- shapeshift forms for the specified spec ID.
+	---
+	--- @param specId integer?
+	--- @return function
+	--- @return table
+	--- @return number
+	function Addon:IterateShapeshiftForms(specId)
+		if specId == nil then
+			return pairs(shapeshiftForms)
+		else
+			return ipairs(shapeshiftForms[specId])
+		end
+	end
+elseif Addon:IsGameVersionAtleast("CLASSIC") then
+	--- Get all available shapeshift forms for the specified class name.
+	--- Note that this does not mean _currently available_ shapeshift forms,
+	--- just all possible shapeshift forms.
+	---
+	--- It is important that we use this instead of `GetNumShapeshiftForms` and
+	--- `GetShapeshiftFormInfo` as those will dynamically change depending on what
+	--- the player currently knows, which can vary depending on talents or level.
+	---
+	--- To ensure that shapeshift form data does not get corrupted when switching
+	--- talents, we store all available shapeshift forms manually.
+	---
+	--- @param class string
+	--- @return integer[]
+	function Addon:Classic_GetShapeshiftForms(class)
+		local forms = shapeshiftForms[class] or {}
+		return { unpack(forms) }
+	end
+
+	--- Iterate through all available shapeshift forms, this function behaves
+	--- slightly differently depending on the input value.
+	---
+	--- If `class` is not set (or is `nil`), this will return a `pairs` iterator
+	--- containing all class file names names and shapeshift forms per class.
+	---
+	--- If `class` is set, it will return an `ipairs` iterator containing all
+	--- shapeshift forms for the specified class file name.
+	---
+	--- @param class string?
+	--- @return function
+	--- @return table
+	--- @return number
+	function Addon:Classic_IterateShapeshiftForms(class)
+		if class == nil then
+			return pairs(shapeshiftForms)
+		else
+			return ipairs(shapeshiftForms[class])
+		end
+	end
 end
 
 ---@param binding Binding
@@ -809,7 +918,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		if select(2, UnitClass("player")) == "DRUID" then
 			local specId = GetSpecializationInfo(GetSpecialization())
-			local all = Addon:GetShapeshiftFormsForSpecId(specId)
+			local all = Addon:GetShapeshiftForms(specId)
 			local available = {}
 			local result = {}
 
@@ -853,26 +962,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	return forms
 end
 
---- Iterate through all available shapeshift forms, this function behaves
---- slightly differently depending on the input value.
----
---- If `specId` is not set (or is `nil`), this will return a `pairs` iterator
---- containing all spec IDs and shapeshift forms per spec ID.
----
---- If `specId` is set, it will return an `ipairs` iterator containing all
---- shapeshift forms for the specified spec ID.
----
---- @param specId integer
---- @return function
---- @return table
---- @return number
-function Addon:IterateShapeshiftForms(specId)
-	if specId == nil then
-		return pairs(shapeshiftForms)
-	else
-		return ipairs(shapeshiftForms[specId])
-	end
-end
+
 
 --- Show a tooltip on the specified frame after a short delay.
 ---
