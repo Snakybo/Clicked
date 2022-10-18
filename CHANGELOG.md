@@ -22,7 +22,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add small delay before showing tooltips
 * Add the ability to invert stance selection, changing the macro from `form` to `noform`
 * Add stance macro condition for Warrior
-* Add stance/form macro conditional for Classic [#68] [#69] (by [yannlugrin](https://github.com/yannlugrin))
+* Add stance/form macro conditional for Classic [#68] [#69] (by [yannlugrin])
 * Simplify frame blacklist dropdown
 
 ### Fixed
@@ -144,7 +144,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix Restoration Druid 4-Set not being detected as Incarnation: Tree of Life ([Squishes](https://github.com/Squishes))
+* Fix Restoration Druid 4-Set not being detected as Incarnation: Tree of Life (by [Squishes])
 * Fix covenant load condition not always being triggered immediately after switching covenants
 
 ## [1.6.8] - 2022-02-22
@@ -166,7 +166,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix META key not working in conjunction with other modifiers [#84] (by [tflo](https://github.com/tflo))
+* Fix META key not working in conjunction with other modifiers [#84] (by [tflo])
 * Visualize META key as CMD on Mac clients
 
 ## [1.6.6] - 2021-11-03
@@ -221,7 +221,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for 9.1
 * Add binding template for a hovercast spell [#71]
 * Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
-* Improve visualization of unloaded bindings [#74] (by [gitarrg](https://github.com/gitarrg))
+* Improve visualization of unloaded bindings [#74] (by [gitarrg])
 * Add "spell known" load condition for WeakAuras export
 * Add the ability to remove a spell rank on Classic and Burning Crusade Classic [#70]
 * Make import from spellbook only import new spells on subsequent imports [#75]
@@ -342,7 +342,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix PvP talent ordering for some specs
-* Fix a Lua error when creating a new profile [#58] (by [hythloday](https://github.com/hythloday))
+* Fix a Lua error when creating a new profile [#58] (by [hythloday])
 
 ## [1.1.0] - 2021-03-26
 
@@ -445,7 +445,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add an option to show unit-frame bindings on tooltips ([h2oboi89](by <https://github.com/h2oboi89>))
+* Add an option to show unit-frame bindings on tooltips (by [h2oboi89])
 * Add an experimental WeakAura export function for spells and items, creates an icon that shows the spell/item status
 
 ## [0.15.5] - 2021-02-15
@@ -676,7 +676,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix Lua errors on new and low level characters [#16] [#18] (by [Squishes](https://github.com/Squishes))
+* Fix Lua errors on new and low level characters [#16] [#18] (by [Squishes])
 
 ## [0.10.0] - 2020-11-03
 
@@ -1105,3 +1105,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#4]: https://github.com/Snakybo/Clicked/issues/4
 [#2]: https://github.com/Snakybo/Clicked/issues/2
 [#1]: https://github.com/Snakybo/Clicked/issues/1
+
+[Squishes]: https://github.com/Squishes
+[h2oboi89]: https://github.com/h2oboi89
+[hythloday]: https://github.com/hythloday
+[gitarrg]: https://github.com/gitarrg
+[tflo]: https://github.com/tflo
+[yannlugrin]: https://github.com/yannlugrin
