@@ -1,3 +1,4 @@
+--- @type LibTalentInfo-1.0
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
 local version = 45969
 

@@ -1,11 +1,9 @@
-local VERSION_MAJOR = "LibTalentInfo-1.0"
-local VERSION_MINOR = 9
-
 if LibStub == nil then
-	error(VERSION_MAJOR .. " requires LibStub")
+	error("LibTalentInfo-1.0 requires LibStub")
 end
 
-local LibTalentInfo = LibStub:NewLibrary(VERSION_MAJOR, VERSION_MINOR)
+--- @class LibTalentInfo-1.0
+local LibTalentInfo = LibStub:NewLibrary("LibTalentInfo-1.0", 9)
 
 --- @class TalentProvider
 --- @field public version integer

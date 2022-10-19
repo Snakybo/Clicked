@@ -14,10 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @type LibTalentInfo
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
-
---- @type LibTalentInfoClassic
 local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 
 --- @class ClickedInternal

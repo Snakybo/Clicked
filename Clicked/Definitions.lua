@@ -14,21 +14,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class Clicked
+--- @class Clicked : AceAddon
 --- @field public VERSION string
---- @field public RegisterEvent function
---- @field public UnregisterEvent function
 
---- @class ClickedInternal
---- @field SendCommMessage function
---- @field RegisterComm function
---- @field UnregisterAllComm function
+--- @class ClickedInternal : AceEvent-3.0
+--- @field L table<string,string>
 
---- @class Database
---- @field public RegisterCallback function
---- @field public UnregisterCallback function
---- @field public GetCurrentProfile function
---- @field public profile Profile
+--- @class Database : AceDB-3.0
 
 --- @class Profile
 --- @field public version string
@@ -115,7 +107,7 @@
 --- @field public value string|boolean
 
 --- @class Binding.TriStateLoadOption
---- @field public selected 0|1|2
+--- @field public selected integer
 --- @field public single number|string
 --- @field public multiple number[]|string[]
 
