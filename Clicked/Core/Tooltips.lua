@@ -140,10 +140,18 @@ local function OnTooltipSetSpell(self)
 
 	lastTooltipUpdateTime = GetTime()
 
+	local addedEmptyLine = false
+
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do
 		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
 			local text = string.format(L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
+
+			if not addedEmptyLine then
+				self:AddLine(" ", 1, 1, 1)
+				addedEmptyLine = true
+			end
+
 			self:AddLine(text, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
 		end
 	end
