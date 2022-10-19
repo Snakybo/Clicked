@@ -73,15 +73,19 @@ local function EditBox_OnTextChanged(frame)
 end
 
 local function EditBox_OnEnter(frame)
-	local text = Addon.L["Prefix your search with k: to search for a specific key only, for example:"]
-	text = text .. "\n- " .. Addon.L["k:Q will only show bindings bound to Q"]
-	text = text .. "\n- " .. Addon.L["k:ALT-A will only show bindings bound to ALT-A"]
+	local self = frame.obj
 
-	Addon:ShowTooltip(frame, Addon.L["Search Filters"], text)
+	if not Addon:IsStringNilOrEmpty(self.tooltipHeader) then
+		Addon:ShowTooltip(frame, self.tooltipHeader, self.tooltipSubtext)
+	end
 end
 
-local function EditBox_OnLeave()
-	Addon:HideTooltip()
+local function EditBox_OnLeave(frame)
+	local self = frame.obj
+
+	if not Addon:IsStringNilOrEmpty(self.tooltipHeader) then
+		Addon:HideTooltip()
+	end
 end
 
 --[[-----------------------------------------------------------------------------
@@ -91,6 +95,9 @@ Methods
 local function OnAquire(self)
 	self:OnAquireOriginal()
 	self:ClearSearchTerm()
+
+	self.tooltipHeader = nil
+	self.tooltipSubtext = nil
 end
 
 local function OnRelease(self)
@@ -119,6 +126,11 @@ local function ClearSearchTerm(self)
 	end
 end
 
+local function SetTooltipText(self, header, subtext)
+	self.tooltipHeader = header
+	self.tooltipSubtext = subtext
+end
+
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
@@ -145,6 +157,7 @@ local function Constructor()
 	widget.OnRelease = OnRelease
 	widget.SetPlaceholderText = SetPlaceholderText
 	widget.ClearSearchTerm = ClearSearchTerm
+	widget.SetTooltipText = SetTooltipText
 
 	return AceGUI:RegisterAsWidget(widget)
 end

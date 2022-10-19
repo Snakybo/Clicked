@@ -1333,6 +1333,11 @@ local function Constructor()
 	searchbar:SetPlaceholderText(Addon.L["Search..."])
 	searchbar:SetCallback("SearchTermChanged", Searchbar_OnSearchTermChanged)
 
+	local tooltipSubtext = Addon.L["Prefix your search with k: to search for a specific key only, for example:"]
+	tooltipSubtext = tooltipSubtext .. "\n- " .. Addon.L["k:Q will only show bindings bound to Q"]
+	tooltipSubtext = tooltipSubtext .. "\n- " .. Addon.L["k:ALT-A will only show bindings bound to ALT-A"]
+	searchbar:SetTooltipText(Addon.L["Search Filters"], tooltipSubtext)
+
 	searchbar.frame:SetParent(treeframe)
 	searchbar.frame:ClearAllPoints()
 	searchbar.frame:SetPoint("TOPLEFT", treeframe, 8, -4)
