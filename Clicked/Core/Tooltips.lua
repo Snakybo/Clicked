@@ -91,9 +91,9 @@ local function SortBindings(left, right)
 	return Addon:CompareBindings(left, right)
 end
 
---- @param self table
+--- @param self GameTooltip
 local function OnTooltipSetUnit(self)
-	if not IsTooltipModuleEnabled() then
+	if self:IsForbidden() or not IsTooltipModuleEnabled() then
 		return
 	end
 
@@ -126,7 +126,7 @@ local function OnTooltipSetUnit(self)
 	end
 end
 
---- @param self table
+--- @param self GameTooltip
 local function OnTooltipSetSpell(self)
 	if self:IsForbidden() then
 		return
@@ -154,13 +154,24 @@ end
 function Addon:AbilityTooltips_Initialize()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
-		GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+		-- TODO: This check can be simplified after PTR is released
+		if Addon:IsGameVersionAtleast("RETAIL") and TooltipDataProcessor ~= nil then
+			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
+		else
+			GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+		end
 	end)
 
-	GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+	-- TODO: This check can be simplified after PTR is released
+	if Addon:IsGameVersionAtleast("RETAIL") and TooltipDataProcessor ~= nil then
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, OnTooltipSetSpell)
+	else
+		GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
 
-	if ElvUISpellBookTooltip ~= nil then
-		ElvUISpellBookTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+		-- TODO: Is the ElvUISpellBookTooltip still required with the new TooltipDataProcessor?
+		if ElvUISpellBookTooltip ~= nil then
+			ElvUISpellBookTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
+		end
 	end
 end
 
