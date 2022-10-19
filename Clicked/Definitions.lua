@@ -48,8 +48,6 @@
 --- @field public hide boolean
 --- @field public minimapPos number
 
---- @alias Localization table<string,string>
-
 --- @class Binding
 --- @field public type string
 --- @field public identifier integer

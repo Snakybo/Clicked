@@ -17,9 +17,6 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local spellActionButtonTemplate = {
 	["iconSource"] = -1,
 	["color"] = {
@@ -408,7 +405,7 @@ local function PopulateTemplate(binding)
 		template.triggers[1].trigger.itemName = id
 	end
 
-	template.id = string.format("[%s] %s", L["Clicked"], name)
+	template.id = string.format("[%s] %s", Addon.L["Clicked"], name)
 
 	return {
 		d = template,

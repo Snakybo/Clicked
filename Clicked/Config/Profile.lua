@@ -24,9 +24,6 @@ local AceComm = LibStub("AceComm-3.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local importExportFrame
 local panel
 
@@ -70,19 +67,19 @@ local function OpenImportExportFrame(mode)
 	local textFieldType = "MultiLineEditBox"
 
 	if mode == "export" then
-		importExportFrame:SetTitle(L["Export Bindings"])
-		importExportFrame:SetStatusText(string.format(L["Exporting bindings from: %s"], Addon.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(Addon.L["Export Bindings"])
+		importExportFrame:SetStatusText(string.format(Addon.L["Exporting bindings from: %s"], Addon.db:GetCurrentProfile()))
 		textFieldType = "ClickedReadOnlyMultilineEditBox"
 	elseif mode == "export_full" then
-		importExportFrame:SetTitle(L["Export Full Profile"])
-		importExportFrame:SetStatusText(string.format(L["Exporting full profile: %s"], Addon.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(Addon.L["Export Full Profile"])
+		importExportFrame:SetStatusText(string.format(Addon.L["Exporting full profile: %s"], Addon.db:GetCurrentProfile()))
 		textFieldType = "ClickedReadOnlyMultilineEditBox"
 	elseif mode == "import" then
-		importExportFrame:SetTitle(L["Import Bindings"])
-		importExportFrame:SetStatusText(string.format(L["Importing bindings into: %s"], Addon.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(Addon.L["Import Bindings"])
+		importExportFrame:SetStatusText(string.format(Addon.L["Importing bindings into: %s"], Addon.db:GetCurrentProfile()))
 	elseif mode == "import_full" then
-		importExportFrame:SetTitle(L["Import Full Profile"])
-		importExportFrame:SetStatusText(string.format(L["Importing full profile into: %s"], Addon.db:GetCurrentProfile()))
+		importExportFrame:SetTitle(Addon.L["Import Full Profile"])
+		importExportFrame:SetStatusText(string.format(Addon.L["Importing full profile into: %s"], Addon.db:GetCurrentProfile()))
 	end
 
 	importExportFrame:EnableResize(false)
@@ -115,7 +112,7 @@ local function OpenImportExportFrame(mode)
 					OverwriteCurrentProfile(data, mode == "import_full")
 				end
 
-				Addon:ShowConfirmationPopup(L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."], OnConfirm)
+				Addon:ShowConfirmationPopup(Addon.L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."], OnConfirm)
 				importExportFrame:Hide()
 			else
 				textField:SetText("")
@@ -145,13 +142,13 @@ function Addon:ProfileOptions_Initialize()
 	local plugin = profileOptions.plugins["AceDBShare"]
 
 	plugin.importExportDesc = {
-		name = "\n" .. L["Import external profile data into your current profile, or export the current profile into a sharable format."],
+		name = "\n" .. Addon.L["Import external profile data into your current profile, or export the current profile into a sharable format."],
 		type = "description",
 		order = 61,
 	}
 
 	plugin.import = {
-		name = L["Import"],
+		name = Addon.L["Import"],
 		type = "execute",
 		order = 62,
 		func = function()
@@ -164,7 +161,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	plugin.export = {
-		name = L["Export"],
+		name = Addon.L["Export"],
 		type = "execute",
 		order = 63,
 		func = function()
@@ -177,13 +174,13 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	plugin.sendToDesc = {
-		name = "\n" .. L["Immediately share the current profile with another player. The target player must be on the same realm as you (or a connected realm), and allow for profile sharing."],
+		name = "\n" .. Addon.L["Immediately share the current profile with another player. The target player must be on the same realm as you (or a connected realm), and allow for profile sharing."],
 		type = "description",
 		order = 65
 	}
 
 	plugin.sendToName = {
-		name = L["Target player"],
+		name = Addon.L["Target player"],
 		type = "input",
 		order = 66,
 		disabled = function()
@@ -198,7 +195,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	plugin.sendToButton = {
-		name = L["Share"],
+		name = Addon.L["Share"],
 		type = "execute",
 		order = 67,
 		disabled = function()
@@ -218,7 +215,7 @@ function Addon:ProfileOptions_Initialize()
 					shareBusy = false
 
 					AceConfigRegistry:NotifyChange("Clicked/Profile")
-					Addon:ShowInformationPopup(string.format(L["Unable to send a message to %s. Make sure that they are online, have allowed profile sharing, and are on the same realm or a connected realm."], shareTarget))
+					Addon:ShowInformationPopup(string.format(Addon.L["Unable to send a message to %s. Make sure that they are online, have allowed profile sharing, and are on the same realm or a connected realm."], shareTarget))
 				end
 			end
 
@@ -238,7 +235,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	plugin.allowReceiveSendTo = {
-		name = L["Allow profile sharing"],
+		name = Addon.L["Allow profile sharing"],
 		type = "toggle",
 		order = 68,
 		get = function()
@@ -258,10 +255,10 @@ function Addon:ProfileOptions_Initialize()
 	plugin.sendProgressDesc = {
 		name = function()
 			if not shareAckReceived then
-				local label = L["Waiting for acknowledgement from %s"]
+				local label = Addon.L["Waiting for acknowledgement from %s"]
 				return string.format(label, shareTarget)
 			else
-				local label = L["Sending profile to %s, progress %d/%d (%d%%)"]
+				local label = Addon.L["Sending profile to %s, progress %d/%d (%d%%)"]
 
 				if shareBytesTotal > 0 then
 					local percent = math.floor((shareBytesSent / shareBytesTotal) * 100)
@@ -279,7 +276,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	AceConfig:RegisterOptionsTable("Clicked/Profile", profileOptions)
-	panel = AceConfigDialog:AddToBlizOptions("Clicked/Profile", L["Profiles"], "Clicked")
+	panel = AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
 
 	AceComm:Embed(self)
 
@@ -320,7 +317,7 @@ function Addon:OnCommReceived(_, message, _, sender)
 				OverwriteCurrentProfile(data)
 			end
 
-			Addon:ShowConfirmationPopup(string.format(L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)
+			Addon:ShowConfirmationPopup(string.format(Addon.L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)
 
 			shareEnabled = false
 		end

@@ -17,9 +17,6 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local frames = {}
 local registerQueue = {}
 local unregisterQueue = {}
@@ -180,7 +177,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			frame = _G[name]
 
 			if frame == nil then
-				print(Addon:GetPrefixedAndFormattedString(L["Unable to register unit frame: %s"], name))
+				print(Addon:GetPrefixedAndFormattedString(Addon.L["Unable to register unit frame: %s"], name))
 				return
 			end
 		end

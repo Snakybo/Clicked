@@ -20,20 +20,17 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local UNIT_FRAME_ADDON_MAPPING = {
 	["ElvUI"] = {
-		name = Addon:GetColorizedString(L["ElvUI"], "ff1784d1"),
+		name = Addon:GetColorizedString(Addon.L["ElvUI"], "ff1784d1"),
 		"ElvUF_*"
 	},
 	["Grid2"] = {
-		name = L["Grid2"],
+		name = Addon.L["Grid2"],
 		"Grid2*"
 	},
 	["Vuhdo"] = {
-		name = Addon:GetColorizedString(L["VuhDo"], "ffffe566"),
+		name = Addon:GetColorizedString(Addon.L["VuhDo"], "ffffe566"),
 		"Vd%dH%d*"
 	},
 	["Gladius"] = {
@@ -79,7 +76,7 @@ local function GetUnitFrameSource(name)
 	end
 
 	if nameSource == nil then
-		return L["Other"]
+		return Addon.L["Other"]
 	end
 end
 
@@ -203,16 +200,16 @@ end
 function Addon:BlacklistOptions_Initialize()
 	config = {
 		type = "group",
-		name = L["Frame Blacklist"],
+		name = Addon.L["Frame Blacklist"],
 		args = {
 			help = {
 				type = "description",
-				name = L["If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."],
+				name = Addon.L["If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."],
 				order = 0
 			},
 			selector = {
 				type = "select",
-				name = L["Add a unit frame"],
+				name = Addon.L["Add a unit frame"],
 				width = "full",
 				order = 1,
 				values = function()
@@ -272,7 +269,7 @@ function Addon:BlacklistOptions_Initialize()
 			},
 			selected = {
 				type = "header",
-				name = L["Selected"],
+				name = Addon.L["Selected"],
 				order = 2
 			}
 		}
@@ -283,7 +280,7 @@ function Addon:BlacklistOptions_Initialize()
 	end
 
 	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
-	panel = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", L["Frame Blacklist"], "Clicked")
+	panel = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
 end
 
 function Addon:BlacklistOptions_Open()

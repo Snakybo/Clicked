@@ -6,9 +6,6 @@ Adds OnFocusGained and OnFocusLost callbacks.
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local Type, Version = "ClickedSearchBox", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
@@ -76,11 +73,11 @@ local function EditBox_OnTextChanged(frame)
 end
 
 local function EditBox_OnEnter(frame)
-	local text = L["Prefix your search with k: to search for a specific key only, for example:"]
-	text = text .. "\n- " .. L["k:Q will only show bindings bound to Q"]
-	text = text .. "\n- " .. L["k:ALT-A will only show bindings bound to ALT-A"]
+	local text = Addon.L["Prefix your search with k: to search for a specific key only, for example:"]
+	text = text .. "\n- " .. Addon.L["k:Q will only show bindings bound to Q"]
+	text = text .. "\n- " .. Addon.L["k:ALT-A will only show bindings bound to ALT-A"]
 
-	Addon:ShowTooltip(frame, L["Search Filters"], text)
+	Addon:ShowTooltip(frame, Addon.L["Search Filters"], text)
 end
 
 local function EditBox_OnLeave()

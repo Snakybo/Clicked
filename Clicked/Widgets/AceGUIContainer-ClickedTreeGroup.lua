@@ -5,9 +5,6 @@ Container that uses a tree control to switch between groups.
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local Type, Version = "ClickedTreeGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -118,11 +115,11 @@ end
 --- @param binding Binding
 local function UpdateBindingItemVisual(item, binding)
 	item.title, item.icon = Addon:GetBindingNameAndIcon(binding)
-	item.keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or L["UNBOUND"]
+	item.keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"]
 end
 
 local function UpdateGroupItemVisual(item, group)
-	local label = L["New Group"]
+	local label = Addon.L["New Group"]
 	local icon = item.icon
 
 	if not Addon:IsStringNilOrEmpty(group.name) then
@@ -389,7 +386,7 @@ local function Button_OnClick(frame, button)
 
 		if frame.binding ~= nil then
 			table.insert(menu, {
-				text = L["Copy Data"],
+				text = Addon.L["Copy Data"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
@@ -398,7 +395,7 @@ local function Button_OnClick(frame, button)
 			})
 
 			table.insert(menu, {
-				text = L["Paste Data"],
+				text = Addon.L["Paste Data"],
 				notCheckable = true,
 				disabled = inCombat or self.bindingCopyBuffer == nil,
 				func = function()
@@ -414,7 +411,7 @@ local function Button_OnClick(frame, button)
 			})
 
 			table.insert(menu, {
-				text = L["Duplicate"],
+				text = Addon.L["Duplicate"],
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
@@ -425,7 +422,7 @@ local function Button_OnClick(frame, button)
 
 			do
 				local convertTo = {
-					text = L["Convert to"],
+					text = Addon.L["Convert to"],
 					hasArrow = true,
 					notCheckable = true,
 					menuList = {}
@@ -455,18 +452,18 @@ local function Button_OnClick(frame, button)
 
 				table.insert(menu, convertTo)
 
-				AddConvertToOption(Addon.BindingTypes.SPELL, L["Cast a spell"])
-				AddConvertToOption(Addon.BindingTypes.ITEM, L["Use an item"])
-				AddConvertToOption(Addon.BindingTypes.CANCELAURA, L["Cancel an aura"])
-				AddConvertToOption(Addon.BindingTypes.UNIT_SELECT, L["Target the unit"])
-				AddConvertToOption(Addon.BindingTypes.UNIT_MENU, L["Open the unit menu"])
-				AddConvertToOption(Addon.BindingTypes.MACRO, L["Run a macro"])
-				AddConvertToOption(Addon.BindingTypes.APPEND, L["Append a binding segment"])
+				AddConvertToOption(Addon.BindingTypes.SPELL, Addon.L["Cast a spell"])
+				AddConvertToOption(Addon.BindingTypes.ITEM, Addon.L["Use an item"])
+				AddConvertToOption(Addon.BindingTypes.CANCELAURA, Addon.L["Cancel an aura"])
+				AddConvertToOption(Addon.BindingTypes.UNIT_SELECT, Addon.L["Target the unit"])
+				AddConvertToOption(Addon.BindingTypes.UNIT_MENU, Addon.L["Open the unit menu"])
+				AddConvertToOption(Addon.BindingTypes.MACRO, Addon.L["Run a macro"])
+				AddConvertToOption(Addon.BindingTypes.APPEND, Addon.L["Append a binding segment"])
 			end
 		end
 
 		table.insert(menu, {
-			text = L["Delete"],
+			text = Addon.L["Delete"],
 			notCheckable = true,
 			disabled = inCombat,
 			func = function()
@@ -493,7 +490,7 @@ local function Button_OnClick(frame, button)
 					if frame.binding ~= nil then
 						local name = Addon:GetSimpleSpellOrItemInfo(frame.binding) or Addon:GetBindingValue(frame.binding)
 
-						msg = L["Are you sure you want to delete this binding?"] .. "\n\n"
+						msg = Addon.L["Are you sure you want to delete this binding?"] .. "\n\n"
 						msg = msg .. frame.binding.keybind .. " " .. (name or "")
 					elseif frame.group ~= nil then
 						local count = 0
@@ -504,7 +501,7 @@ local function Button_OnClick(frame, button)
 							end
 						end
 
-						msg = L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(count) .. "\n\n"
+						msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(count) .. "\n\n"
 						msg = msg .. frame.group.name
 					end
 
@@ -541,7 +538,7 @@ local function Button_OnEnter(frame)
 		local text = Addon:GetBindingNameAndIcon(binding)
 
 		text = text .. "\n\n"
-		text = text .. L["Targets"] .. "\n"
+		text = text .. Addon.L["Targets"] .. "\n"
 
 		if Addon:IsHovercastEnabled(binding) then
 			local str = Addon:GetLocalizedTargetString(binding.targets.hovercast)
@@ -550,7 +547,7 @@ local function Button_OnEnter(frame)
 				str = str .. " "
 			end
 
-			str = str .. L["Unit frame"]
+			str = str .. Addon.L["Unit frame"]
 			text = text .. "|cFFFFFFFF* " .. str .. "|r\n"
 		end
 
@@ -562,7 +559,7 @@ local function Button_OnEnter(frame)
 		end
 
 		text = text .. "\n"
-		text = text .. (Addon:CanBindingLoad(binding) and L["Loaded"] or L["Unloaded"])
+		text = text .. (Addon:CanBindingLoad(binding) and Addon.L["Loaded"] or Addon.L["Unloaded"])
 
 		if IsShiftKeyDown() then
 			text = text .. string.format(" (%s)", binding.identifier)
@@ -722,10 +719,10 @@ local function Sort_OnClick(frame)
 	PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
 
 	if self.sortMode == 1 then
-		self.sortLabel:SetText(L["ABC"])
+		self.sortLabel:SetText(Addon.L["ABC"])
 		self.sortMode = 2
 	else
-		self.sortLabel:SetText(L["Key"])
+		self.sortLabel:SetText(Addon.L["Key"])
 		self.sortMode = 1
 	end
 
@@ -747,7 +744,7 @@ function Methods:OnAcquire()
 	self.frame:SetScript("OnUpdate", FirstFrameUpdate)
 
 	self.searchbar:ClearSearchTerm()
-	self.sortLabel:SetText(L["Key"])
+	self.sortLabel:SetText(Addon.L["Key"])
 	self.sortButton:SetWidth(self.sortLabel:GetStringWidth() + 30)
 	self.sortMode = 1
 end
@@ -1333,7 +1330,7 @@ local function Constructor()
 
 	local searchbar = AceGUI:Create("ClickedSearchBox")
 	searchbar:DisableButton(true)
-	searchbar:SetPlaceholderText(L["Search..."])
+	searchbar:SetPlaceholderText(Addon.L["Search..."])
 	searchbar:SetCallback("SearchTermChanged", Searchbar_OnSearchTermChanged)
 
 	searchbar.frame:SetParent(treeframe)

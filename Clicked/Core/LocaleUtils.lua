@@ -23,9 +23,6 @@ local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 --- @type integer[]
 local allRaces = {}
 
@@ -124,20 +121,20 @@ function Addon:GetLocalizedTargetUnits()
 	local order
 
 	if Addon:IsGameVersionAtleast("CLASSIC") then
-		items[Addon.TargetUnits.DEFAULT] = L["Default"]
-		items[Addon.TargetUnits.PLAYER] = L["Player (you)"]
-		items[Addon.TargetUnits.TARGET] = L["Target"]
-		items[Addon.TargetUnits.TARGET_OF_TARGET] = L["Target of target"]
-		items[Addon.TargetUnits.MOUSEOVER] = L["Mouseover"]
-		items[Addon.TargetUnits.MOUSEOVER_TARGET] = L["Target of mouseover"]
-		items[Addon.TargetUnits.CURSOR] = L["Cursor"]
-		items[Addon.TargetUnits.PET] = L["Pet"]
-		items[Addon.TargetUnits.PET_TARGET] = L["Pet target"]
-		items[Addon.TargetUnits.PARTY_1] = L["Party %s"]:format("1")
-		items[Addon.TargetUnits.PARTY_2] = L["Party %s"]:format("2")
-		items[Addon.TargetUnits.PARTY_3] = L["Party %s"]:format("3")
-		items[Addon.TargetUnits.PARTY_4] = L["Party %s"]:format("4")
-		items[Addon.TargetUnits.PARTY_5] = L["Party %s"]:format("5")
+		items[Addon.TargetUnits.DEFAULT] = Addon.L["Default"]
+		items[Addon.TargetUnits.PLAYER] = Addon.L["Player (you)"]
+		items[Addon.TargetUnits.TARGET] = Addon.L["Target"]
+		items[Addon.TargetUnits.TARGET_OF_TARGET] = Addon.L["Target of target"]
+		items[Addon.TargetUnits.MOUSEOVER] = Addon.L["Mouseover"]
+		items[Addon.TargetUnits.MOUSEOVER_TARGET] = Addon.L["Target of mouseover"]
+		items[Addon.TargetUnits.CURSOR] = Addon.L["Cursor"]
+		items[Addon.TargetUnits.PET] = Addon.L["Pet"]
+		items[Addon.TargetUnits.PET_TARGET] = Addon.L["Pet target"]
+		items[Addon.TargetUnits.PARTY_1] = Addon.L["Party %s"]:format("1")
+		items[Addon.TargetUnits.PARTY_2] = Addon.L["Party %s"]:format("2")
+		items[Addon.TargetUnits.PARTY_3] = Addon.L["Party %s"]:format("3")
+		items[Addon.TargetUnits.PARTY_4] = Addon.L["Party %s"]:format("4")
+		items[Addon.TargetUnits.PARTY_5] = Addon.L["Party %s"]:format("5")
 
 		order = {
 			Addon.TargetUnits.DEFAULT,
@@ -158,7 +155,7 @@ function Addon:GetLocalizedTargetUnits()
 	end
 
 	if Addon:IsGameVersionAtleast("BC") then
-		items[Addon.TargetUnits.FOCUS] = L["Focus"]
+		items[Addon.TargetUnits.FOCUS] = Addon.L["Focus"]
 
 		order = {
 			Addon.TargetUnits.DEFAULT,
@@ -180,9 +177,9 @@ function Addon:GetLocalizedTargetUnits()
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		items[Addon.TargetUnits.ARENA_1] = L["Arena %s"]:format("1")
-		items[Addon.TargetUnits.ARENA_2] = L["Arena %s"]:format("2")
-		items[Addon.TargetUnits.ARENA_3] = L["Arena %s"]:format("3")
+		items[Addon.TargetUnits.ARENA_1] = Addon.L["Arena %s"]:format("1")
+		items[Addon.TargetUnits.ARENA_2] = Addon.L["Arena %s"]:format("2")
+		items[Addon.TargetUnits.ARENA_3] = Addon.L["Arena %s"]:format("3")
 
 		order = {
 			Addon.TargetUnits.DEFAULT,
@@ -215,9 +212,9 @@ end
 --- @return string[] order
 function Addon:GetLocalizedTargetHostility()
 	local items = {
-		[Addon.TargetHostility.ANY] = L["Friendly, Hostile"],
-		[Addon.TargetHostility.HELP] = L["Friendly"],
-		[Addon.TargetHostility.HARM] = L["Hostile"]
+		[Addon.TargetHostility.ANY] = Addon.L["Friendly, Hostile"],
+		[Addon.TargetHostility.HELP] = Addon.L["Friendly"],
+		[Addon.TargetHostility.HARM] = Addon.L["Hostile"]
 	}
 
 	local order = {
@@ -235,9 +232,9 @@ end
 --- @return string[] order
 function Addon:GetLocalizedTargetVitals()
 	local items = {
-		[Addon.TargetVitals.ANY] = L["Alive, Dead"],
-		[Addon.TargetVitals.ALIVE] = L["Alive"],
-		[Addon.TargetVitals.DEAD] = L["Dead"]
+		[Addon.TargetVitals.ANY] = Addon.L["Alive, Dead"],
+		[Addon.TargetVitals.ALIVE] = Addon.L["Alive"],
+		[Addon.TargetVitals.DEAD] = Addon.L["Dead"]
 	}
 
 	local order = {
@@ -375,7 +372,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 1, max do
 				local key = i
 
-				items[key] = string.format("<text=%s>", L["Specialization %s"]:format(i))
+				items[key] = string.format("<text=%s>", Addon.L["Specialization %s"]:format(i))
 				table.insert(order, key)
 			end
 		end
@@ -430,7 +427,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 1, maxTalentCount do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["Talent %s"]:format(i))
+				items[key] = string.format("<text=%s>", Addon.L["Talent %s"]:format(i))
 				table.insert(order, key)
 			end
 		end
@@ -498,7 +495,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 1, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["PvP Talent %s"]:format(i))
+				items[key] = string.format("<text=%s>", Addon.L["PvP Talent %s"]:format(i))
 				table.insert(order, key)
 			end
 		end
@@ -526,11 +523,11 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 
 		if #specializations == 1 then
 			local specId = specializations[1]
-			local defaultForm = L["None"]
+			local defaultForm = Addon.L["None"]
 
 			-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
 			if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-				defaultForm = L["Humanoid Form"]
+				defaultForm = Addon.L["Humanoid Form"]
 			end
 
 			do
@@ -572,7 +569,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 0, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
+				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
 				table.insert(order, key)
 			end
 		end
@@ -628,7 +625,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 				for index = 1, max do
 					local key = #order + 1
 
-					items[key] = string.format("<text=%s>", L["Talent %s/%s"]:format(tab, index))
+					items[key] = string.format("<text=%s>", Addon.L["Talent %s/%s"]:format(tab, index))
 					table.insert(order, key)
 				end
 			end
@@ -657,10 +654,10 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 
 		if #classes == 1 then
 			local className = classes[1]
-			local defaultForm = L["None"]
+			local defaultForm = Addon.L["None"]
 
 			if className == "DRUID" then
-				defaultForm = L["Humanoid Form"]
+				defaultForm = Addon.L["Humanoid Form"]
 			end
 
 			do
@@ -712,7 +709,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 			for i = 0, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", L["Stance %s"]:format(i))
+				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
 				table.insert(order, key)
 			end
 		end

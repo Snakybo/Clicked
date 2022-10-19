@@ -15,15 +15,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceGUI = LibStub("AceGUI-3.0")
-
---- @type LibTalentInfo
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 --- @class ClickedInternal
 local _, Addon = ...
-
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 local ITEM_TEMPLATE_GROUP = "GROUP"
 local ITEM_TEMPLATE_SPELL = "CAST_SPELL"
@@ -157,16 +152,16 @@ local function CreateLoadOptionTooltip(type, selected)
 
 	if type == "LoadOption" then
 		options = {
-			["false"] = L["Off"],
-			["true"] = L["On"]
+			["false"] = Addon.L["Off"],
+			["true"] = Addon.L["On"]
 		}
 
 		order = { "false", "true" }
 	elseif type == "TriStateLoadOption" then
 		options = {
-			["0"] = L["Off"],
-			["1"] = L["Single"],
-			["2"] = L["Multiple"]
+			["0"] = Addon.L["Off"],
+			["1"] = Addon.L["Single"],
+			["2"] = Addon.L["Multiple"]
 		}
 
 		order = { "0", "1", "2" }
@@ -518,7 +513,7 @@ local function DrawIconPicker(container, data, key)
 	do
 		local widget = AceGUI:Create("ClickedSearchBox")
 		widget:DisableButton(true)
-		widget:SetPlaceholderText(L["Search..."])
+		widget:SetPlaceholderText(Addon.L["Search..."])
 		widget:SetRelativeWidth(0.75)
 		searchBox = widget
 
@@ -530,7 +525,7 @@ local function DrawIconPicker(container, data, key)
 			tree:Redraw()
 		end
 
-		local widget = Addon:GUI_Button(L["Cancel"], OnClick)
+		local widget = Addon:GUI_Button(Addon.L["Cancel"], OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -720,13 +715,13 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			end
 
 			if #selected == 0 then
-				text = L["Nothing"]
+				text = Addon.L["Nothing"]
 			elseif #selected == 1 then
 				text = selected[1]
 			elseif #selected == #items then
-				text = L["Everything"]
+				text = Addon.L["Everything"]
 			else
-				text = L["Mixed..."]
+				text = Addon.L["Mixed..."]
 			end
 
 			widget:SetText(string.format("<text=%s>", text))
@@ -762,13 +757,13 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 	if mode == Addon.BindingTypes.SPELL then
 		valueKey = "spellValue"
-		headerText = L["Target Spell"]
+		headerText = Addon.L["Target Spell"]
 	elseif mode == Addon.BindingTypes.ITEM then
 		valueKey = "itemValue"
-		headerText = L["Target Item"]
+		headerText = Addon.L["Target Item"]
 	elseif mode == Addon.BindingTypes.CANCELAURA then
 		valueKey = "auraName"
-		headerText = L["Target Aura"]
+		headerText = Addon.L["Target Aura"]
 	end
 
 	-- target spell or item
@@ -860,11 +855,11 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			end
 
 			if mode == Addon.BindingTypes.SPELL then
-				RegisterTooltip(widget, L["Target Spell"], L["Enter the spell name or spell ID."])
+				RegisterTooltip(widget, Addon.L["Target Spell"], Addon.L["Enter the spell name or spell ID."])
 			elseif mode == Addon.BindingTypes.ITEM then
-				RegisterTooltip(widget, L["Target Item"], L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
+				RegisterTooltip(widget, Addon.L["Target Item"], Addon.L["Enter an item name, item ID, or equipment slot number."] .. "\n\n" .. Addon.L["If the input field is empty you can also shift-click an item from your bags to auto-fill."])
 			elseif mode == Addon.BindingTypes.CANCELAURA then
-				RegisterTooltip(widget, L["Target Aura"], L["Enter the aura name or spell ID."])
+				RegisterTooltip(widget, Addon.L["Target Aura"], Addon.L["Enter the aura name or spell ID."])
 			end
 
 			group:AddChild(widget)
@@ -935,7 +930,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					end
 				end
 
-				local widget = Addon:GUI_Button(L["Pick from spellbook"], OnClick)
+				local widget = Addon:GUI_Button(Addon.L["Pick from spellbook"], OnClick)
 
 				if hasRank then
 					widget:SetRelativeWidth(0.65)
@@ -943,10 +938,10 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					widget:SetFullWidth(true)
 				end
 
-				local tooltip = L["Click on a spell book entry to select it."]
+				local tooltip = Addon.L["Click on a spell book entry to select it."]
 
 				if not Addon:IsGameVersionAtleast("RETAIL") then
-					tooltip = tooltip .. "\n" .. L["Right click to use the max rank."]
+					tooltip = tooltip .. "\n" .. Addon.L["Right click to use the max rank."]
 				end
 
 				RegisterTooltip(widget, tooltip)
@@ -964,7 +959,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						Clicked:ReloadActiveBindings()
 					end
 
-					local widget = Addon:GUI_Button(L["Remove rank"], OnClick)
+					local widget = Addon:GUI_Button(Addon.L["Remove rank"], OnClick)
 					widget:SetRelativeWidth(0.35)
 
 					group:AddChild(widget)
@@ -980,7 +975,7 @@ end
 local function DrawMacroSelection(container, targets, action)
 	-- macro name and icon
 	do
-		local group = Addon:GUI_InlineGroup(L["Macro Name and Icon (optional)"])
+		local group = Addon:GUI_InlineGroup(Addon.L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
@@ -1006,7 +1001,7 @@ local function DrawMacroSelection(container, targets, action)
 				tree:Redraw()
 			end
 
-			local widget = Addon:GUI_Button(L["Select"], OpenIconPicker)
+			local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -1015,12 +1010,12 @@ local function DrawMacroSelection(container, targets, action)
 
 	-- macro text
 	do
-		local group = Addon:GUI_InlineGroup(L["Macro Text"])
+		local group = Addon:GUI_InlineGroup(Addon.L["Macro Text"])
 		container:AddChild(group)
 
 		-- help text
 		if targets.hovercastEnabled and not targets.regularEnabled then
-			local widget = Addon:GUI_Label(L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
+			local widget = Addon:GUI_Label(Addon.L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 			group:AddChild(widget)
 		end
@@ -1041,7 +1036,7 @@ end
 local function DrawAppendSelection(container, action)
 	-- macro name and icon
 	do
-		local group = Addon:GUI_InlineGroup(L["Macro Name and Icon (optional)"])
+		local group = Addon:GUI_InlineGroup(Addon.L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
@@ -1067,7 +1062,7 @@ local function DrawAppendSelection(container, action)
 				tree:Redraw()
 			end
 
-			local widget = Addon:GUI_Button(L["Select"], OpenIconPicker)
+			local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -1076,7 +1071,7 @@ local function DrawAppendSelection(container, action)
 
 	-- macro text
 	do
-		local group = Addon:GUI_InlineGroup(L["Macro Text"])
+		local group = Addon:GUI_InlineGroup(Addon.L["Macro Text"])
 		container:AddChild(group)
 
 		-- macro text field
@@ -1116,7 +1111,7 @@ local function DrawActionGroupOptions(container, keybind)
 		return left.identifier < right.identifier
 	end
 
-	local group = Addon:GUI_InlineGroup(L["Action Groups"])
+	local group = Addon:GUI_InlineGroup(Addon.L["Action Groups"])
 
 	local groups = { }
 	local order = {}
@@ -1146,7 +1141,7 @@ local function DrawActionGroupOptions(container, keybind)
 		local bindings = groups[id]
 
 		local header = AceGUI:Create("Label")
-		header:SetText(string.format(L["Group %d"], id))
+		header:SetText(string.format(Addon.L["Group %d"], id))
 		header:SetFontObject(GameFontHighlight)
 
 		group:AddChild(header)
@@ -1300,23 +1295,23 @@ local function DrawSharedOptions(container, binding)
 		group:AddChild(widget)
 	end
 
-	local group = Addon:GUI_InlineGroup(L["Shared Options"])
+	local group = Addon:GUI_InlineGroup(Addon.L["Shared Options"])
 	container:AddChild(group)
 
-	CreateCheckbox(group, L["Interrupt current cast"], L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
+	CreateCheckbox(group, Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
 
 	if binding.type ~= Addon.BindingTypes.CANCELAURA then
-		CreateCheckbox(group, L["Start auto attacks"], L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
-		CreateCheckbox(group, L["Start pet attacks"], L["Allow this binding to start pet attacks."], "startPetAttack")
-		CreateCheckbox(group, L["Override queued spell"], L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
-		CreateCheckbox(group, L["Target on cast"], L["Targets the unit you are casting on."], "targetUnitAfterCast")
+		CreateCheckbox(group, Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
+		CreateCheckbox(group, Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")
+		CreateCheckbox(group, Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
+		CreateCheckbox(group, Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
 	end
 end
 
 --- @param container table
 --- @param binding Binding
 local function DrawIntegrationsOptions(container, binding)
-	local group = Addon:GUI_InlineGroup(L["External Integrations"])
+	local group = Addon:GUI_InlineGroup(Addon.L["External Integrations"])
 	local hasAnyChildren = false
 
 	-- weakauras export
@@ -1328,7 +1323,7 @@ local function DrawIntegrationsOptions(container, binding)
 		local widget = AceGUI:Create("InteractiveLabel")
 		widget:SetImage([[Interface\AddOns\WeakAuras\Media\Textures\icon]])
 		widget:SetImageSize(16, 16)
-		widget:SetText(string.format("%s (%s)", L["Create WeakAura"], L["Beta"]))
+		widget:SetText(string.format("%s (%s)", Addon.L["Create WeakAura"], Addon.L["Beta"]))
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetFullWidth(true)
 		widget:SetDisabled(not Addon:HasBindingValue(binding))
@@ -1360,8 +1355,8 @@ local function DrawBindingActionPage(container, binding)
 		DrawMacroSelection(container, binding.targets, binding.action)
 	elseif type == APPEND then
 		local msg = {
-			L["This mode will directly append the macro text onto an automatically generated command generated by other bindings using the specified keybind. Generally, this means that it will be the last section of a '/cast' command."],
-			L["With this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/cast Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'."]
+			Addon.L["This mode will directly append the macro text onto an automatically generated command generated by other bindings using the specified keybind. Generally, this means that it will be the last section of a '/cast' command."],
+			Addon.L["With this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/cast Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'."]
 		}
 
 		local group = Addon:GUI_InlineGroup(nil)
@@ -1438,13 +1433,13 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 			unit = "_NONE_"
 		}
 
-		items["_NONE_"] = L["<No one>"]
+		items["_NONE_"] = Addon.L["<No one>"]
 		table.insert(order, "_NONE_")
 	else
 		target = targets[index]
 
 		if #targets > 1 then
-			items["_DELETE_"] = L["<Remove this target>"]
+			items["_DELETE_"] = Addon.L["<Remove this target>"]
 			table.insert(order, "_DELETE_")
 		end
 	end
@@ -1485,7 +1480,7 @@ end
 --- @param binding Binding
 local function DrawBindingTargetPage(container, binding)
 	if Addon:IsRestrictedKeybind(binding.keybind) then
-		local widget = Addon:GUI_Label(L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
+		local widget = Addon:GUI_Label(Addon.L["The left and right mouse button can only activate when hovering over unit frames."] .. "\n", "medium")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -1499,7 +1494,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.hovercastEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(L["Unit Frame Target"], binding.targets, "hovercastEnabled")
+			local widget = Addon:GUI_ToggleHeading(Addon.L["Unit Frame Target"], binding.targets, "hovercastEnabled")
 			container:AddChild(widget)
 		end
 
@@ -1513,13 +1508,13 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(L["Macro Targets"], binding.targets, "regularEnabled")
+			local widget = Addon:GUI_ToggleHeading(Addon.L["Macro Targets"], binding.targets, "regularEnabled")
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
 
 		if isMacro then
-			local group = Addon:GUI_InlineGroup(L["On this target"])
+			local group = Addon:GUI_InlineGroup(Addon.L["On this target"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
@@ -1540,7 +1535,7 @@ local function DrawBindingTargetPage(container, binding)
 					Clicked:ReloadActiveBindings()
 				end
 
-				local label = i == 1 and L["On this target"] or enabled and L["Or"] or L["Or (inactive)"]
+				local label = i == 1 and Addon.L["On this target"] or enabled and Addon.L["Or"] or Addon.L["Or (inactive)"]
 				local group = Addon:GUI_ReorderableInlineGroup(label)
 				group:SetMoveUpButton(i > 1)
 				group:SetMoveDownButton(i < #regular)
@@ -1549,7 +1544,7 @@ local function DrawBindingTargetPage(container, binding)
 				container:AddChild(group)
 
 				if not binding.targets.hovercastEnabled and target.unit == Addon.TargetUnits.MOUSEOVER and Addon:IsMouseButton(binding.keybind) then
-					local widget = Addon:GUI_Label(L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
+					local widget = Addon:GUI_Label(Addon.L["Bindings using a mouse button and the Mouseover target will not activate when hovering over a unit frame, enable the Unit Frame Target to enable unit frame clicks."] .. "\n")
 					widget:SetFullWidth(true)
 
 					group:AddChild(widget)
@@ -1568,7 +1563,7 @@ local function DrawBindingTargetPage(container, binding)
 
 			-- new target
 			do
-				local group = Addon:GUI_InlineGroup(enabled and L["Or"] or L["Or (inactive)"])
+				local group = Addon:GUI_InlineGroup(enabled and Addon.L["Or"] or Addon.L["Or (inactive)"])
 				container:AddChild(group)
 
 				DrawTargetSelectionUnit(group, regular, enabled, 0)
@@ -1583,7 +1578,7 @@ end
 --- @param form Binding.NegatableTriStateLoadOption
 --- @param specIds integer[]
 local function DrawMacroInStance(container, form, specIds)
-	local label = L["Stance"]
+	local label = Addon.L["Stance"]
 
 	if specIds == nil then
 		specIds = {}
@@ -1595,7 +1590,7 @@ local function DrawMacroInStance(container, form, specIds)
 
 		-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
 		if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-			label = L["Form"]
+			label = Addon.L["Form"]
 		end
 	end
 
@@ -1607,7 +1602,7 @@ local function DrawMacroInStance(container, form, specIds)
 		local spacer = Addon:GUI_Label("")
 		spacer:SetRelativeWidth(0.5)
 
-		local widget = Addon:GUI_CheckBox(L["Invert"], form, "negated")
+		local widget = Addon:GUI_CheckBox(Addon.L["Invert"], form, "negated")
 		widget:SetRelativeWidth(0.5)
 
 		container:AddChild(spacer)
@@ -1619,7 +1614,7 @@ end
 --- @param form Binding.NegatableTriStateLoadOption
 --- @param classes string[]
 local function Classic_DrawMacroInStance(container, form, classes)
-	local label = L["Stance"]
+	local label = Addon.L["Stance"]
 
 	if classes == nil then
 		classes = {}
@@ -1627,7 +1622,7 @@ local function Classic_DrawMacroInStance(container, form, classes)
 	end
 
 	if #classes == 1 and classes[1] == "DRUID" then
-		label = L["Form"]
+		label = Addon.L["Form"]
 	end
 
 	local items, order = Addon:Classic_GetLocalizedForms(classes)
@@ -1638,7 +1633,7 @@ local function Classic_DrawMacroInStance(container, form, classes)
 		local spacer = Addon:GUI_Label("")
 		spacer:SetRelativeWidth(0.5)
 
-		local widget = Addon:GUI_CheckBox(L["Invert"], form, "negated")
+		local widget = Addon:GUI_CheckBox(Addon.L["Invert"], form, "negated")
 		widget:SetRelativeWidth(0.5)
 
 		container:AddChild(spacer)
@@ -1650,8 +1645,8 @@ end
 --- @param combat Binding.LoadOption
 local function DrawMacroCombat(container, combat)
 	local items = {
-		[true] = L["In combat"],
-		[false] = L["Not in combat"]
+		[true] = Addon.L["In combat"],
+		[false] = Addon.L["Not in combat"]
 	}
 
 	local order = {
@@ -1659,15 +1654,15 @@ local function DrawMacroCombat(container, combat)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Combat"], items, order, combat)
+	DrawDropdownLoadOption(container, Addon.L["Combat"], items, order, combat)
 end
 
 --- @param container table
 --- @param pet Binding.LoadOption
 local function DrawMacroPet(container, pet)
 	local items = {
-		[true] = L["Pet exists"],
-		[false] = L["No pet"],
+		[true] = Addon.L["Pet exists"],
+		[false] = Addon.L["No pet"],
 	}
 
 	local order = {
@@ -1675,15 +1670,15 @@ local function DrawMacroPet(container, pet)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Pet"], items, order, pet)
+	DrawDropdownLoadOption(container, Addon.L["Pet"], items, order, pet)
 end
 
 --- @param container table
 --- @param stealth Binding.LoadOption
 local function DrawMacroStealth(container, stealth)
 	local items = {
-		[true] = L["In Stealth"],
-		[false] = L["Not in Stealth"],
+		[true] = Addon.L["In Stealth"],
+		[false] = Addon.L["Not in Stealth"],
 	}
 
 	local order = {
@@ -1691,15 +1686,15 @@ local function DrawMacroStealth(container, stealth)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Stealth"], items, order, stealth)
+	DrawDropdownLoadOption(container, Addon.L["Stealth"], items, order, stealth)
 end
 
 --- @param container table
 --- @param mounted Binding.LoadOption
 local function DrawMacroMounted(container, mounted)
 	local items = {
-		[true] = L["Mounted"],
-		[false] = L["Not mounted"],
+		[true] = Addon.L["Mounted"],
+		[false] = Addon.L["Not mounted"],
 	}
 
 	local order = {
@@ -1707,15 +1702,15 @@ local function DrawMacroMounted(container, mounted)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Mounted"], items, order, mounted)
+	DrawDropdownLoadOption(container, Addon.L["Mounted"], items, order, mounted)
 end
 
 --- @param container table
 --- @param flying Binding.LoadOption
 local function DrawMacroFlying(container, flying)
 	local items = {
-		[true] = L["Flying"],
-		[false] = L["Not flying"],
+		[true] = Addon.L["Flying"],
+		[false] = Addon.L["Not flying"],
 	}
 
 	local order = {
@@ -1723,15 +1718,15 @@ local function DrawMacroFlying(container, flying)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Flying"], items, order, flying)
+	DrawDropdownLoadOption(container, Addon.L["Flying"], items, order, flying)
 end
 
 --- @param container table
 --- @param flyable Binding.LoadOption
 local function DrawMacroFlyable(container, flyable)
 	local items = {
-		[true] = L["Flyable"],
-		[false] = L["Not flyable"],
+		[true] = Addon.L["Flyable"],
+		[false] = Addon.L["Not flyable"],
 	}
 
 	local order = {
@@ -1739,15 +1734,15 @@ local function DrawMacroFlyable(container, flyable)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Flyable"], items, order, flyable)
+	DrawDropdownLoadOption(container, Addon.L["Flyable"], items, order, flyable)
 end
 
 --- @param container table
 --- @param outdoors Binding.LoadOption
 local function DrawMacroOutdoors(container, outdoors)
 	local items = {
-		[true] = L["Outdoors"],
-		[false] = L["Indoors"],
+		[true] = Addon.L["Outdoors"],
+		[false] = Addon.L["Indoors"],
 	}
 
 	local order = {
@@ -1755,15 +1750,15 @@ local function DrawMacroOutdoors(container, outdoors)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Outdoors"], items, order, outdoors)
+	DrawDropdownLoadOption(container, Addon.L["Outdoors"], items, order, outdoors)
 end
 
 --- @param container table
 --- @param swimming Binding.LoadOption
 local function DrawMacroSwimming(container, swimming)
 	local items = {
-		[true] = L["Swimming"],
-		[false] = L["Not swimming"],
+		[true] = Addon.L["Swimming"],
+		[false] = Addon.L["Not swimming"],
 	}
 
 	local order = {
@@ -1771,15 +1766,15 @@ local function DrawMacroSwimming(container, swimming)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["Swimming"], items, order, swimming)
+	DrawDropdownLoadOption(container, Addon.L["Swimming"], items, order, swimming)
 end
 
 --- @param container table
 --- @param channeling Binding.NegatableStringLoadOption
 local function DrawMacroChanneling(container, channeling)
 	local items = {
-		[false] = L["Channeling"],
-		[true] = L["Not channeling"]
+		[false] = Addon.L["Channeling"],
+		[true] = Addon.L["Not channeling"]
 	}
 
 	local order = {
@@ -1787,7 +1782,7 @@ local function DrawMacroChanneling(container, channeling)
 		true
 	}
 
-	DrawNegatableStringLoadOption(container, L["Channeling"], items, order, channeling)
+	DrawNegatableStringLoadOption(container, Addon.L["Channeling"], items, order, channeling)
 end
 
 --- @param container table
@@ -1832,12 +1827,12 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = Addon:GUI_CheckBox(L["Never load"] , load, "never")
+		local widget = Addon:GUI_CheckBox(Addon.L["Never load"] , load, "never")
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
 
-		RegisterTooltip(widget, L["Never load"], CreateLoadOptionTooltip("LoadOption", load.never))
+		RegisterTooltip(widget, Addon.L["Never load"], CreateLoadOptionTooltip("LoadOption", load.never))
 	end
 end
 
@@ -1845,14 +1840,14 @@ end
 --- @param class Binding.TriStateLoadOption
 local function DrawLoadClass(container, class)
 	local items, order = Addon:GetLocalizedClasses()
-	DrawTristateLoadOption(container, L["Class"], items, order, class)
+	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
 end
 
 --- @param container table
 --- @param race Binding.TriStateLoadOption
 local function DrawLoadRace(container, race)
 	local items, order = Addon:GetLocalizedRaces()
-	DrawTristateLoadOption(container, L["Race"], items, order, race)
+	DrawTristateLoadOption(container, Addon.L["Race"], items, order, race)
 end
 
 --- @param container table
@@ -1860,15 +1855,15 @@ end
 --- @param classNames string[]
 local function DrawLoadSpecialization(container, specialization, classNames)
 	local items, order = Addon:GetLocalizedSpecializations(classNames)
-	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
+	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
 --- @param container table
 --- @param specialization Binding.TriStateLoadOption
 local function Classic_DrawLoadSpecialization(container, specialization)
 	local items = {
-		[1] = L["Primary Specialization"],
-		[2] = L["Secondary Specialization"]
+		[1] = Addon.L["Primary Specialization"],
+		[2] = Addon.L["Secondary Specialization"]
 	}
 
 	local order = {
@@ -1876,7 +1871,7 @@ local function Classic_DrawLoadSpecialization(container, specialization)
 		2
 	}
 
-	DrawTristateLoadOption(container, L["Talent specialization"], items, order, specialization)
+	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
 --- @param container table
@@ -1884,7 +1879,7 @@ end
 --- @param specIds integer[]
 local function DrawLoadTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedTalents(specIds)
-	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
+	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
 end
 
 --- @param container table
@@ -1892,7 +1887,7 @@ end
 --- @param classes string[]
 local function Classic_DrawLoadTalent(container, talent, classes)
 	local items, order = Addon:Classic_GetLocalizedTalents(classes)
-	DrawTristateLoadOption(container, L["Talent selected"], items, order, talent)
+	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
 end
 
 --- @param container table
@@ -1900,15 +1895,15 @@ end
 --- @param specIds integer[]
 local function DrawLoadPvPTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedPvPTalents(specIds)
-	DrawTristateLoadOption(container, L["PvP talent selected"], items, order, talent)
+	DrawTristateLoadOption(container, Addon.L["PvP talent selected"], items, order, talent)
 end
 
 --- @param container table
 --- @param warMode Binding.LoadOption
 local function DrawLoadWarMode(container, warMode)
 	local items = {
-		[true] = L["War Mode enabled"],
-		[false] = L["War Mode disabled"]
+		[true] = Addon.L["War Mode enabled"],
+		[false] = Addon.L["War Mode disabled"]
 	}
 
 	local order = {
@@ -1916,29 +1911,29 @@ local function DrawLoadWarMode(container, warMode)
 		false
 	}
 
-	DrawDropdownLoadOption(container, L["War Mode"], items, order, warMode)
+	DrawDropdownLoadOption(container, Addon.L["War Mode"], items, order, warMode)
 end
 
 --- @param container table
 --- @param playerNameRealm Binding.LoadOption
 local function DrawLoadPlayerNameRealm(container, playerNameRealm)
-	DrawEditFieldLoadOption(container, L["Player Name-Realm"], playerNameRealm)
+	DrawEditFieldLoadOption(container, Addon.L["Player Name-Realm"], playerNameRealm)
 end
 
 --- @param container table
 --- @param spellKnown Binding.LoadOption
 local function DrawLoadSpellKnown(container, spellKnown)
-	DrawEditFieldLoadOption(container, L["Spell known"], spellKnown)
+	DrawEditFieldLoadOption(container, Addon.L["Spell known"], spellKnown)
 end
 
 --- @param container table
 --- @param inGroup Binding.LoadOption
 local function DrawLoadInGroup(container, inGroup)
 	local items = {
-		IN_GROUP_PARTY_OR_RAID = L["In a party or raid group"],
-		IN_GROUP_PARTY = L["In a party"],
-		IN_GROUP_RAID = L["In a raid group"],
-		IN_GROUP_SOLO = L["Not in a group"]
+		IN_GROUP_PARTY_OR_RAID = Addon.L["In a party or raid group"],
+		IN_GROUP_PARTY = Addon.L["In a party"],
+		IN_GROUP_RAID = Addon.L["In a raid group"],
+		IN_GROUP_SOLO = Addon.L["Not in a group"]
 	}
 
 	local order = {
@@ -1948,13 +1943,13 @@ local function DrawLoadInGroup(container, inGroup)
 		"IN_GROUP_SOLO"
 	}
 
-	DrawDropdownLoadOption(container, L["In group"], items, order, inGroup)
+	DrawDropdownLoadOption(container, Addon.L["In group"], items, order, inGroup)
 end
 
 --- @param container table
 --- @param playerInGroup Binding.LoadOption
 local function DrawLoadPlayerInGroup(container, playerInGroup)
-	DrawEditFieldLoadOption(container, L["Player in group"], playerInGroup)
+	DrawEditFieldLoadOption(container, Addon.L["Player in group"], playerInGroup)
 end
 
 --- @param container table
@@ -1964,18 +1959,18 @@ local function DrawLoadInInstanceType(container, instanceType)
 	local order
 
 	if Addon:IsGameVersionAtleast("CLASSIC") then
-		items["NONE"] = L["No Instance"]
-		items["PARTY"] = L["Dungeon"]
-		items["RAID"] = L["Raid"]
+		items["NONE"] = Addon.L["No Instance"]
+		items["PARTY"] = Addon.L["Dungeon"]
+		items["RAID"] = Addon.L["Raid"]
 	end
 
 	if Addon:IsGameVersionAtleast("BC") then
-		items["PVP"] = L["Battleground"]
-		items["ARENA"] = L["Arena"]
+		items["PVP"] = Addon.L["Battleground"]
+		items["ARENA"] = Addon.L["Arena"]
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		items["SCENARIO"] = L["Scenario"]
+		items["SCENARIO"] = Addon.L["Scenario"]
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
@@ -2003,30 +1998,30 @@ local function DrawLoadInInstanceType(container, instanceType)
 		}
 	end
 
-	DrawTristateLoadOption(container, L["Instance type"], items, order, instanceType)
+	DrawTristateLoadOption(container, Addon.L["Instance type"], items, order, instanceType)
 end
 
 --- @param container table
 --- @param zoneName Binding.LoadOption
 local function DrawLoadZoneName(container, zoneName)
-	local _, inputField = DrawEditFieldLoadOption(container, L["Zone name(s)"], zoneName)
+	local _, inputField = DrawEditFieldLoadOption(container, Addon.L["Zone name(s)"], zoneName)
 
 	if inputField ~= nil then
 		local tips = {
-			string.format(L["Semicolon separated, use an exclamation mark (%s) to negate a zone condition, for example:"], "|r!|cffffffff"),
+			string.format(Addon.L["Semicolon separated, use an exclamation mark (%s) to negate a zone condition, for example:"], "|r!|cffffffff"),
 			"\n",
-			string.format(L["%s will be active if you're not in Oribos"], "|r!" .. L["Oribos"] .. "|cffffffff"),
-			string.format(L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. L["Durotar"] .. ";" .. L["Orgrimmar"] .. "|cffffffff")
+			string.format(Addon.L["%s will be active if you're not in Oribos"], "|r!" .. Addon.L["Oribos"] .. "|cffffffff"),
+			string.format(Addon.L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. Addon.L["Durotar"] .. ";" .. Addon.L["Orgrimmar"] .. "|cffffffff")
 		}
 
-		RegisterTooltip(inputField, L["Zone name(s)"],  table.concat(tips, "\n"))
+		RegisterTooltip(inputField, Addon.L["Zone name(s)"],  table.concat(tips, "\n"))
 	end
 end
 
 --- @param container table
 --- @param equipped Binding.LoadOption
 local function DrawLoadItemEquipped(container, equipped)
-	local _, inputField = DrawEditFieldLoadOption(container, L["Item equipped"], equipped)
+	local _, inputField = DrawEditFieldLoadOption(container, Addon.L["Item equipped"], equipped)
 
 	if inputField ~= nil then
 		local function OnTextChanged(_, _, value)
@@ -2050,7 +2045,7 @@ local function DrawLoadItemEquipped(container, equipped)
 
 		inputField:SetCallback("OnTextChanged", OnTextChanged)
 
-		RegisterTooltip(inputField, L["This will not update when in combat, so swapping weapons or shields during combat does not work."])
+		RegisterTooltip(inputField, Addon.L["This will not update when in combat, so swapping weapons or shields during combat does not work."])
 	end
 end
 
@@ -2103,9 +2098,9 @@ local function DrawBindingStatusPage(container, binding)
 			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
 
 			if interactionType == Addon.InteractionType.HOVERCAST then
-				widget:SetLabel(L["Generated hovercast macro"])
+				widget:SetLabel(Addon.L["Generated hovercast macro"])
 			else
-				widget:SetLabel(L["Generated macro"])
+				widget:SetLabel(Addon.L["Generated macro"])
 			end
 
 			widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
@@ -2147,7 +2142,7 @@ local function DrawBindingStatusPage(container, binding)
 		do
 			local widget = AceGUI:Create("Heading")
 			widget:SetFullWidth(true)
-			widget:SetText(L["%d related binding(s)"]:format(#all - 1))
+			widget:SetText(Addon.L["%d related binding(s)"]:format(#all - 1))
 
 			container:AddChild(widget)
 		end
@@ -2181,7 +2176,7 @@ end
 local function DrawGroup(container)
 	local group = GetCurrentGroup()
 
-	local parent = Addon:GUI_InlineGroup(L["Group Name and Icon"])
+	local parent = Addon:GUI_InlineGroup(Addon.L["Group Name and Icon"])
 	container:AddChild(parent)
 
 	-- name text field
@@ -2206,7 +2201,7 @@ local function DrawGroup(container)
 			tree:Redraw()
 		end
 
-		local widget = Addon:GUI_Button(L["Select"], OpenIconPicker)
+		local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
 		widget:SetRelativeWidth(0.3)
 
 		parent:AddChild(widget)
@@ -2351,7 +2346,7 @@ local function DrawItemTemplate(container, identifier, name)
 			CreateFromItemTemplate(identifier)
 		end
 
-		local widget = Addon:GUI_Button(L["Create"], OnClick)
+		local widget = Addon:GUI_Button(Addon.L["Create"], OnClick)
 		widget:SetRelativeWidth(0.2)
 
 		container:AddChild(widget)
@@ -2367,13 +2362,13 @@ local function DrawBinding(container)
 	-- keybinding button
 	do
 		local function HandleAutomaticBinds(frame)
-			local tooltipText = L["Click and press a key to bind, or ESC to clear the binding."]
+			local tooltipText = Addon.L["Click and press a key to bind, or ESC to clear the binding."]
 
 			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(binding.keybind) then
 				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Clicked:GetActiveBindings())
 				frame:SetMarker(#automaticBindings > 0)
 
-				tooltipText = tooltipText .. "\n\n" .. L["Also bound to:"]
+				tooltipText = tooltipText .. "\n\n" .. Addon.L["Also bound to:"]
 
 				for _, keybind in ipairs(automaticBindings) do
 					tooltipText = tooltipText .. "\n- " .. keybind
@@ -2431,15 +2426,15 @@ local function DrawBinding(container)
 				local text = nil
 
 				if availableTab == "action" then
-					text = L["Action"]
+					text = Addon.L["Action"]
 				elseif availableTab == "target" then
-					text = L["Targets"]
+					text = Addon.L["Targets"]
 				elseif availableTab == "load_conditions" then
-					text = L["Load conditions"]
+					text = Addon.L["Load conditions"]
 				elseif availableTab == "macro_conditions" then
-					text = L["Macro conditions"]
+					text = Addon.L["Macro conditions"]
 				elseif availableTab == "status" then
-					text = L["Status"]
+					text = Addon.L["Status"]
 				end
 
 				if text ~= nil then
@@ -2485,38 +2480,38 @@ local function DrawItemTemplateSelector(container)
 	container:AddChild(scrollFrame)
 
 	do
-		local widget = Addon:GUI_Label(L["Quick start"], "large")
+		local widget = Addon:GUI_Label(Addon.L["Quick start"], "large")
 		widget:SetFullWidth(true)
 
 		scrollFrame:AddChild(widget)
 	end
 
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_IMPORT_SPELLBOOK, L["Automatically import from spellbook"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
 
 	do
-		local widget = Addon:GUI_Label("\n" .. L["Create a new binding"], "large")
+		local widget = Addon:GUI_Label("\n" .. Addon.L["Create a new binding"], "large")
 		widget:SetFullWidth(true)
 
 		scrollFrame:AddChild(widget)
 	end
 
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, L["Group"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL, L["Cast a spell"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL_CC, L["Cast a spell on a unit frame"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_ITEM, L["Use an item"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CANCELAURA, L["Cancel an aura"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_TARGET, L["Target the unit"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MENU, L["Open the unit menu"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_GROUP, Addon.L["Group"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL, Addon.L["Cast a spell"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_SPELL_CC, Addon.L["Cast a spell on a unit frame"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_ITEM, Addon.L["Use an item"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_CANCELAURA, Addon.L["Cancel an aura"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_TARGET, Addon.L["Target the unit"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MENU, Addon.L["Open the unit menu"])
 
 	do
-		local widget = Addon:GUI_Label("\n" .. L["Advanced binding types"], "large")
+		local widget = Addon:GUI_Label("\n" .. Addon.L["Advanced binding types"], "large")
 		widget:SetFullWidth(true)
 
 		scrollFrame:AddChild(widget)
 	end
 
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MACRO, L["Run a macro"])
-	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_APPEND, L["Append a binding segment"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_MACRO, Addon.L["Run a macro"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_APPEND, Addon.L["Append a binding segment"])
 
 	scrollFrame:DoLayout()
 end
@@ -2537,7 +2532,7 @@ local function DrawHeader(container)
 			tree:SelectByValue("")
 		end
 
-		local widget = Addon:GUI_Button(L["New"], OnClick)
+		local widget = Addon:GUI_Button(Addon.L["New"], OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)
@@ -2645,7 +2640,7 @@ function Addon:BindingConfig_Open()
 		root = AceGUI:Create("ClickedFrame")
 		root:SetCallback("OnClose", OnClose)
 		root:SetCallback("OnReceiveDrag", OnReceiveDrag)
-		root:SetTitle(L["Clicked Binding Configuration"])
+		root:SetTitle(Addon.L["Clicked Binding Configuration"])
 		root:SetLayout("Flow")
 		root:SetWidth(900)
 		root:SetHeight(600)

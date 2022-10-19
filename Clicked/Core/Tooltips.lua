@@ -17,9 +17,6 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 local lastTooltipUpdateTime
 
 -- Local support functions
@@ -117,7 +114,7 @@ local function OnTooltipSetUnit(self)
 
 			if first then
 				self:AddLine(" ")
-				self:AddLine(L["Abilities"], 1, 0.85, 0)
+				self:AddLine(Addon.L["Abilities"], 1, 0.85, 0)
 				first = false
 			end
 
@@ -145,7 +142,7 @@ local function OnTooltipSetSpell(self)
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do
 		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
-			local text = string.format(L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
+			local text = string.format(Addon.L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
 
 			if not addedEmptyLine then
 				self:AddLine(" ", 1, 1, 1)

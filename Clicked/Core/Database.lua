@@ -19,9 +19,6 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
-
 -- Local support functions
 
 --- @param default string|boolean
@@ -129,7 +126,7 @@ function Clicked:CreateGroup()
 	Addon.db.profile.nextGroupId = Addon.db.profile.nextGroupId + 1
 
 	local group = {
-		name = L["New Group"],
+		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
 		identifier = "group-" .. identifier
 	}
@@ -242,7 +239,7 @@ function Addon:GetNewBindingTemplate()
 			spellValue = "",
 			itemValue = "",
 			macroValue = "",
-			macroName = L["Run custom macro"],
+			macroName = Addon.L["Run custom macro"],
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			auraName = "",
 			executionOrder = 1,
@@ -420,7 +417,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 	end
 
 	local function FinalizeVersionUpgrade(newVersion)
-		print(Addon:GetPrefixedAndFormattedString(L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
+		print(Addon:GetPrefixedAndFormattedString(Addon.L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
 		from = newVersion
 	end
@@ -848,7 +845,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 	-- 0.17.x to 1.0.0
 	if string.sub(from, 1, 4) == "0.17" then
 		for _, binding in ipairs(profile.bindings) do
-			binding.action.macroName = L["Run custom macro"]
+			binding.action.macroName = Addon.L["Run custom macro"]
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
 			if binding.type == Addon.BindingTypes.MACRO then

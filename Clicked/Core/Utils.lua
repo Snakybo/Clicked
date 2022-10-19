@@ -14,12 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class ClickedInternal
-local _, Addon = ...
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+--- @class ClickedInternal
+local _, Addon = ...
 
 Addon.TOOLTIP_SHOW_DELAY = 0.3
 
@@ -290,11 +288,11 @@ end
 
 StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	text = "",
-	button1 = string.format(L["Keep %s"], L["Clicked"]),
+	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked"]),
 	button2 = "",
 	OnShow = function(self)
-		self.text:SetFormattedText(L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
-		self.button2:SetFormattedText(L["Keep %s"],self.data.addon)
+		self.text:SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
+		self.button2:SetFormattedText(Addon.L["Keep %s"],self.data.addon)
 	end,
 	OnAccept = function(self)
 		DisableAddOn(self.data.addon)
@@ -311,7 +309,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 
 StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	text = "",
-	button1 = L["Continue"],
+	button1 = Addon.L["Continue"],
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,
@@ -322,8 +320,8 @@ StaticPopupDialogs["CLICKED_MESSAGE"] = {
 
 StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	text = "",
-	button1 = L["Yes"],
-	button2 = L["No"],
+	button1 = Addon.L["Yes"],
+	button2 = Addon.L["No"],
 	OnShow = function(self)
 		self.text:SetText(self.data.text)
 	end,
@@ -566,7 +564,7 @@ function Addon:GetBindingNameAndIcon(binding)
 	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
 	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-		local label = binding.type == Addon.BindingTypes.SPELL and L["Cast %s"] or L["Use %s"]
+		local label = binding.type == Addon.BindingTypes.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
 
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
@@ -580,7 +578,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		end
 	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
 		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
-			name = L["Run custom macro"]
+			name = Addon.L["Run custom macro"]
 		else
 			name = binding.action.macroName
 		end
@@ -593,16 +591,16 @@ function Addon:GetBindingNameAndIcon(binding)
 		local value = Addon:GetBindingValue(binding)
 
 		if value ~= nil then
-			name = string.format(L["Cancel %s"], value)
+			name = string.format(Addon.L["Cancel %s"], value)
 		end
 
 		if IsValidIcon(spellIcon) then
 			icon = spellIcon
 		end
 	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
-		name = L["Target the unit"]
+		name = Addon.L["Target the unit"]
 	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
-		name = L["Open the unit menu"]
+		name = Addon.L["Open the unit menu"]
 	end
 
 	return name, icon
@@ -1194,7 +1192,7 @@ end
 --- Notify the user that Clicked is currently in combat lockdown mode,
 --- this will print a message to the user's chat frame with a helpful message.
 function Addon:NotifyCombatLockdown()
-	local message = Addon:GetPrefixedAndFormattedString(L["You are in combat, the binding configuration is in read-only mode."])
+	local message = Addon:GetPrefixedAndFormattedString(Addon.L["You are in combat, the binding configuration is in read-only mode."])
 	print(message)
 end
 
@@ -1213,7 +1211,7 @@ end
 --- @param message string
 --- @return string
 function Addon:AppendClickedMessagePrefix(message)
-	return Addon:GetColorizedString(L["Clicked"], "ffe31919") .. ": " .. message
+	return Addon:GetColorizedString(Addon.L["Clicked"], "ffe31919") .. ": " .. message
 end
 
 --- Run `string.format` on the specified string, and prefix the resulting string with `Clicked:`.

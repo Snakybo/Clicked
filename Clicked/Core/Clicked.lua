@@ -21,8 +21,8 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
---- @type Localization
-local L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+--- @type table<string,string>
+Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
 --- @type Clicked
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
@@ -44,13 +44,13 @@ local isInitialized = false
 local function RegisterMinimapIcon()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
 		type = "launcher",
-		label = L["Clicked"],
+		label = Addon.L["Clicked"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
 			Addon:BindingConfig_Open()
 		end,
 		OnTooltipShow = function(tooltip)
-			tooltip:AddLine(L["Clicked"])
+			tooltip:AddLine(Addon.L["Clicked"])
 		end
 	})
 
