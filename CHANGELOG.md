@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for the Dracthyr race [#104]
 * Add support for the Evoker class [#104]
 * Add support for the new talent tree system [#105]
+* Add 10.0.0 icons to icon picker [#107]
 * Add option to automatically bind unassigned modifier keys to cast a binding
   * Creating a binding for 'Q' can automatically also bind 'SHIFT-Q', 'ALT-Q', etc
 * Add tooltip explaining search filters to search box
@@ -1053,6 +1054,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 [#109]: https://github.com/Snakybo/Clicked/issues/109
 [#108]: https://github.com/Snakybo/Clicked/issues/108
+[#107]: https://github.com/Snakybo/Clicked/issues/107
 [#105]: https://github.com/Snakybo/Clicked/issues/105
 [#104]: https://github.com/Snakybo/Clicked/issues/104
 [#102]: https://github.com/Snakybo/Clicked/issues/102
