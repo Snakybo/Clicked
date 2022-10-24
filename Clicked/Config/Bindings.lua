@@ -676,13 +676,15 @@ end
 --- @param items table<T,any>
 --- @param order T[]
 --- @param data Binding.TriStateLoadOption
-local function DrawTristateLoadOption(container, title, items, order, data)
+--- @param disabled? boolean
+local function DrawTristateLoadOption(container, title, items, order, data, disabled)
 	assert(type(data) == "table", "bad argument #5, expected table but got " .. type(data))
 
 	-- enabled toggle
 	do
 		local widget = Addon:GUI_TristateCheckBox(title, data, "selected")
 		widget:SetTriState(true)
+		widget:SetDisabled(disabled)
 
 		if data.selected == 0 then
 			widget:SetRelativeWidth(1)
@@ -1838,9 +1840,10 @@ end
 
 --- @param container table
 --- @param class Binding.TriStateLoadOption
-local function DrawLoadClass(container, class)
+--- @param forced boolean
+local function DrawLoadClass(container, class, forced)
 	local items, order = Addon:GetLocalizedClasses()
-	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
+	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class, forced)
 end
 
 --- @param container table
@@ -1853,9 +1856,10 @@ end
 --- @param container table
 --- @param specialization Binding.TriStateLoadOption
 --- @param classNames string[]
-local function DrawLoadSpecialization(container, specialization, classNames)
+--- @param forced boolean
+local function DrawLoadSpecialization(container, specialization, classNames, forced)
 	local items, order = Addon:GetLocalizedSpecializations(classNames)
-	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
+	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization, forced)
 end
 
 --- @param container table
@@ -2053,10 +2057,21 @@ end
 --- @param binding Binding
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
+	local classAndSpecForced = false
+
+	-- Due to class talents being in a different order for each spec on retail we must force this to be a binding per spec unfortunately
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		if load.talent.selected ~= 0 then
+			load.class.selected = 1
+			load.specialization.selected = 1
+
+			classAndSpecForced = true
+		end
+	end
 
 	DrawLoadNeverSelection(container, load)
 	DrawLoadPlayerNameRealm(container, load.playerNameRealm)
-	DrawLoadClass(container, load.class)
+	DrawLoadClass(container, load.class, classAndSpecForced)
 	DrawLoadRace(container, load.race)
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
@@ -2064,7 +2079,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
-		DrawLoadSpecialization(container, load.specialization, classNames)
+		DrawLoadSpecialization(container, load.specialization, classNames, classAndSpecForced)
 		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
