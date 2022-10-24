@@ -135,6 +135,15 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	end
 end
 
+local function TRAIT_CONFIG_CREATED()
+	Clicked:ReloadActiveBindings()
+end
+
+local function TRAIT_CONFIG_UPDATED()
+	Clicked:ReloadActiveBindings()
+end
+
+
 local function PLAYER_FOCUS_CHANGED()
 	Addon:AbilityTooltips_Refresh()
 end
@@ -204,6 +213,8 @@ function Clicked:OnEnable()
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+		self:RegisterEvent("TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
+		self:RegisterEvent("TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	end
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
@@ -229,6 +240,8 @@ function Clicked:OnDisable()
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
+		self:UnregisterEvent("TRAIT_CONFIG_CREATED")
+		self:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 	end
 
 	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
