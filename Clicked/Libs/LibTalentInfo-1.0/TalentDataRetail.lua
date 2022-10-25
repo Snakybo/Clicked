@@ -1,5 +1,5 @@
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 46247
+local version = 46293
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -3131,8 +3131,8 @@ local talents = {
 		386937, -- [11] Anvil & Stave
 		325093, -- [12] Light Brewing
 		383714, -- [13] Training of Niuzao
-		115399, -- [14] Black Ox Brew
-		280515, -- [15] Bob and Weave
+		280515, -- [14] Bob and Weave
+		115399, -- [15] Black Ox Brew
 		121253, -- [16] Keg Smash
 		124502, -- [17] Gift of the Ox
 		119582, -- [18] Purifying Brew
@@ -3207,8 +3207,8 @@ local talents = {
 		393357, -- [87] Tranquil Spirit
 		383700, -- [88] Gai Plin's Imperial Brew
 		115176, -- [89] Zen Meditation
-		116847, -- [90] Rushing Jade Wind
-		196730, -- [91] Special Delivery
+		196730, -- [90] Special Delivery
+		116847, -- [91] Rushing Jade Wind
 		386949, -- [92] Bountiful Brew
 		386941, -- [93] Attenuation
 		386276, -- [94] Bonedust Brew
