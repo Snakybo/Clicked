@@ -770,20 +770,27 @@ end
 ---
 --- @param left Binding
 --- @param right Binding
+--- @param leftCanLoad? boolean
+--- @param rightCanLoad? boolean
 --- @return boolean
-function Addon:CompareBindings(left, right)
+function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	assert(Addon:IsBindingType(left), "bad argument #1, expected Binding but got " .. type(left))
 	assert(Addon:IsBindingType(right), "bad argument #2, expected Binding but got " .. type(right))
 
 	do
-		local leftLoad = Addon:CanBindingLoad(left)
-		local rightLoad = Addon:CanBindingLoad(right)
+		if leftCanLoad == nil then
+			leftCanLoad = Addon:CanBindingLoad(left)
+		end
 
-		if leftLoad and not rightLoad then
+		if rightCanLoad == nil then
+			rightCanLoad = Addon:CanBindingLoad(right)
+		end
+
+		if leftCanLoad and not rightCanLoad then
 			return true
 		end
 
-		if not leftLoad and rightLoad then
+		if not leftCanLoad and rightCanLoad then
 			return false
 		end
 	end

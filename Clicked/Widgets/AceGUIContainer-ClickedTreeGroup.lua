@@ -52,44 +52,23 @@ local function TreeSortAlphabetical(left, right)
 	end
 
 	if left.children ~= nil and right.children ~= nil then
-		local leftHasAnyActive = false
-		local rightHasAnyActive = false
-
-		for _, child in Clicked:IterateConfiguredBindings() do
-			if child.parent == left.group.identifier and Addon:CanBindingLoad(child) then
-				leftHasAnyActive = true
-			elseif child.parent == right.group.identifier and Addon:CanBindingLoad(child) then
-				rightHasAnyActive = true
-			end
-
-			if leftHasAnyActive and rightHasAnyActive then
-				break
-			end
-		end
-
-		if leftHasAnyActive and not rightHasAnyActive then
+		if left.canLoad and not right.canLoad then
 			return true
-		elseif not leftHasAnyActive and rightHasAnyActive then
+		elseif not left.canLoad and right.canLoad then
 			return false
 		end
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		local lLoad = Addon:CanBindingLoad(left.binding)
-		local rLoad = Addon:CanBindingLoad(right.binding)
-
-		if lLoad and not rLoad then
+		if left.canLoad and not right.canLoad then
 			return true
 		end
 
-		if not lLoad and rLoad then
+		if not left.canLoad and right.canLoad then
 			return false
 		end
 
-		local lName = Addon:GetSimpleSpellOrItemInfo(left.binding) or Addon:GetBindingValue(left.binding)
-		local rName = Addon:GetSimpleSpellOrItemInfo(right.binding) or Addon:GetBindingValue(right.binding)
-
-		return (lName or "") < (rName or "")
+		return (left.name or "") < (right.name or "")
 	end
 
 	return left.title < right.title
@@ -105,17 +84,10 @@ local function TreeSortKeybind(left, right)
 	end
 
 	if left.binding ~= nil and right.binding ~= nil then
-		return Addon:CompareBindings(left.binding, right.binding)
+		return Addon:CompareBindings(left.binding, right.binding, left.canLoad, right.canLoad)
 	end
 
 	return TreeSortAlphabetical(left, right)
-end
-
---- @param item table
---- @param binding Binding
-local function UpdateBindingItemVisual(item, binding)
-	item.title, item.icon = Addon:GetBindingNameAndIcon(binding)
-	item.keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"]
 end
 
 local function UpdateGroupItemVisual(item, group)
@@ -168,11 +140,9 @@ local function IsItemValidWithSearchQuery(item, search)
 
 	if item.binding ~= nil then
 		if prefix == nil then
-			local value = Addon:GetSimpleSpellOrItemInfo(item.binding) or Addon:GetBindingValue(item.binding)
-
-			if (type(value) == "string" and not Addon:IsStringNilOrEmpty(value)) or
-				(type(value) == "number" and value > 0) then
-				table.insert(strings, { value = value })
+			if (type(item.name) == "string" and not Addon:IsStringNilOrEmpty(item.name)) or
+				(type(item.name) == "number" and item.name > 0) then
+				table.insert(strings, { value = item.name })
 			end
 
 			if item.binding.type == Addon.BindingTypes.MACRO or item.binding.type == Addon.BindingTypes.APPEND then
@@ -488,10 +458,8 @@ local function Button_OnClick(frame, button)
 					local msg = nil
 
 					if frame.binding ~= nil then
-						local name = Addon:GetSimpleSpellOrItemInfo(frame.binding) or Addon:GetBindingValue(frame.binding)
-
 						msg = Addon.L["Are you sure you want to delete this binding?"] .. "\n\n"
-						msg = msg .. frame.binding.keybind .. " " .. (name or "")
+						msg = msg .. frame.binding.keybind .. " " .. (frame.name or "")
 					elseif frame.group ~= nil then
 						local count = 0
 
@@ -849,13 +817,17 @@ function Methods:ConstructTree()
 	end
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
+		local title, icon = Addon:GetBindingNameAndIcon(binding)
+
 		local item = {
 			value = "binding-" .. binding.identifier,
+			name = Addon:GetSimpleSpellOrItemInfo(binding) or Addon:GetBindingValue(binding),
+			title = title,
+			icon = icon,
+			keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"],
 			binding = binding,
-			icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
+			canLoad = Addon:CanBindingLoad(binding)
 		}
-
-		UpdateBindingItemVisual(item, binding)
 
 		if binding.parent == nil then
 			table.insert(self.tree, item)
@@ -863,6 +835,7 @@ function Methods:ConstructTree()
 			for _, e in ipairs(self.tree) do
 				if e.value == binding.parent then
 					item.parent = e
+					e.canLoad = e.canLoad or item.canLoad
 					table.insert(e.children, item)
 					break
 				end
@@ -871,7 +844,7 @@ function Methods:ConstructTree()
 	end
 
 	self:BuildCache()
-	self:RefreshTree()
+		self:RefreshTree()
 
 	if #self.tree > 0 and status.selected == nil then
 		self:SelectByValue(self.tree[1].value)
