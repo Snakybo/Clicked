@@ -1077,13 +1077,28 @@ function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
 		"META-" .. keybind
 	}
 
-	for _, binding in ipairs(bindings) do
+	local function ValidateKeybind(input)
+		if input == nil then
+			return
+		end
+
 		for i = 1, #result do
-			if result[i] == binding.keybind then
+			if result[i] == input then
 				table.remove(result, i)
 				break
 			end
 		end
+	end
+
+	for _, binding in ipairs(bindings) do
+		ValidateKeybind(binding.keybind)
+	end
+
+	for i = 1, GetNumBindings() do
+		local _, _, key1, key2 = GetBinding(i);
+
+		ValidateKeybind(key1)
+		ValidateKeybind(key2)
 	end
 
 	return result
