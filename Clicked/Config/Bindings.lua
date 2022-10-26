@@ -677,12 +677,13 @@ end
 --- @param order T[]
 --- @param data Binding.TriStateLoadOption
 --- @param disabled? boolean
-local function DrawTristateLoadOption(container, title, items, order, data, disabled)
+--- @param interceptFunc? fun(value:any)
+local function DrawTristateLoadOption(container, title, items, order, data, disabled, interceptFunc)
 	assert(type(data) == "table", "bad argument #5, expected table but got " .. type(data))
 
 	-- enabled toggle
 	do
-		local widget = Addon:GUI_TristateCheckBox(title, data, "selected")
+		local widget = Addon:GUI_TristateCheckBox(title, data, "selected", interceptFunc)
 		widget:SetTriState(true)
 		widget:SetDisabled(disabled)
 
@@ -1882,8 +1883,16 @@ end
 --- @param talent Binding.TriStateLoadOption
 --- @param specIds integer[]
 local function DrawLoadTalent(container, talent, specIds)
+	local function intercept(value)
+		if value then
+			local binding = GetCurrentBinding()
+			binding.load.class.selected = 1
+			binding.load.specialization.selected = 1
+		end
+	end
+
 	local items, order = Addon:GetLocalizedTalents(specIds)
-	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
+	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent, false, intercept)
 end
 
 --- @param container table
@@ -2057,17 +2066,9 @@ end
 --- @param binding Binding
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
-	local classAndSpecForced = false
 
 	-- Due to class talents being in a different order for each spec on retail we must force this to be a binding per spec unfortunately
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		if load.talent.selected ~= 0 then
-			load.class.selected = 1
-			load.specialization.selected = 1
-
-			classAndSpecForced = true
-		end
-	end
+	local classAndSpecForced = Addon:IsGameVersionAtleast("RETAIL") and load.talent.selected ~= 0
 
 	DrawLoadNeverSelection(container, load)
 	DrawLoadPlayerNameRealm(container, load.playerNameRealm)

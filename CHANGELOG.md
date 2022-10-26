@@ -12,8 +12,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-- Fix class and talent specialization options not always being force enabled on Retail
-- Fix automatically bound modifiers overriding built-in keybindings
+* Fix class and talent specialization options not always being force enabled on Retail
+* Fix forced class and specialization options not reloading bindings
+* Fix automatically bound modifiers overriding built-in keybindings
 
 ## [1.8.0] - 2022-10-25
 

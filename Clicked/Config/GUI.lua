@@ -23,7 +23,8 @@ local widgets = {}
 
 --- @param frame table
 --- @param value any
-local function OnSerialize(frame, _, value)
+--- @param interceptFunc? fun(value:any)
+local function OnSerialize(frame, _, value, interceptFunc)
 	local data = widgets[frame]
 
 	if InCombatLockdown() then
@@ -33,6 +34,10 @@ local function OnSerialize(frame, _, value)
 	end
 
 	data.ref[data.key] = value
+
+	if interceptFunc ~= nil then
+		interceptFunc(value)
+	end
 
 	Clicked:ReloadActiveBindings()
 end
@@ -153,8 +158,9 @@ end
 --- @param label string
 --- @param ref table
 --- @param key any
+--- @param interceptFunc? fun(value:any)
 --- @return table
-function Addon:GUI_TristateCheckBox(label, ref, key)
+function Addon:GUI_TristateCheckBox(label, ref, key, interceptFunc)
 	local function IndexToValue(state)
 		if state == 1 then
 			return true
@@ -177,7 +183,7 @@ function Addon:GUI_TristateCheckBox(label, ref, key)
 
 	local function OnValueChanged(frame, event, value)
 		value = ValueToIndex(value)
-		OnSerialize(frame, event, value)
+		OnSerialize(frame, event, value, interceptFunc)
 	end
 
 	local function SetValue(widget, value)
