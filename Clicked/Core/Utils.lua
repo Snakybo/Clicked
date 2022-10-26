@@ -51,10 +51,10 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		-- Protection Paladin
 		-- Retribution Paladin
 		-- Initial Paladin
-		[65] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
-		[66] = { 465, 317920 }, -- Devotion Aura, Concentration Aura
-		[70] = { 32223, 183435 }, -- Crusader Aura, Retribution Aura
-		[1451] = { },
+		[65] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[66] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[70] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[1451] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
 
 		-- Beast Mastery Hunter
 		-- Marksmanship Hunter
