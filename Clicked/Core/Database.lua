@@ -1078,5 +1078,19 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		FinalizeVersionUpgrade("1.8.0")
 	end
 
+	-- 1.8.0 to 1.8.1
+	if string.sub(from, 1, 5) == "1.8.0" then
+		for _, binding in ipairs(profile.bindings) do
+			if Addon:IsGameVersionAtleast("RETAIL") then
+				if binding.load.talent.selected ~= 0 then
+					binding.load.class.selected = 1
+					binding.load.specialization.selected = 1
+				end
+			end
+		end
+
+		FinalizeVersionUpgrade("1.8.1")
+	end
+
 	profile.version = Clicked.VERSION
 end
