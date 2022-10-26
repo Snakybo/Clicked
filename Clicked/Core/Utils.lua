@@ -1256,3 +1256,18 @@ function Addon:SanitizeKeybind(keybind)
 
 	return keybind
 end
+
+--- Check if the table contains the specified value.
+--- @generic T
+--- @param table T[]
+--- @param element T
+--- @return boolean
+function Addon:TableContains(table, element)
+	for i = 1, #table do
+		if table[i] == element then
+			return true
+		end
+	end
+
+	return false
+end

@@ -758,24 +758,18 @@ function Addon:CanBindingLoad(binding)
 
 						if node ~= nil and node.ID ~= 0 then
 							for _, entryId in ipairs(node.entryIDs) do
-								local entry = C_Traits.GetEntryInfo(configId, entryId)
-								local definition = C_Traits.GetDefinitionInfo(entry.definitionID)
+								currentIndex = currentIndex + 1
 
-								if GetSpellInfo(definition.spellID) ~= nil then
-									currentIndex = currentIndex + 1
-
-									if currentIndex == index then
-										if node.activeEntry ~= nil and node.activeEntry.entryID == entryId and node.currentRank > 0 then
-											return true
-										end
-
-										return false
-									end
+								if currentIndex == index then
+									return Addon:TableContains(node.entryIDsWithCommittedRanks, entryId) or -- it was selected by the player
+									       node.activeRank > 0 and node.ranksPurchased == 0 -- it was given for free, is there a better check for this?
 								end
 							end
 						end
 					end
 				end
+
+				return false
 			end
 
 			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then

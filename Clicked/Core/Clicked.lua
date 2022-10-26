@@ -125,7 +125,7 @@ local function ZONE_CHANGED_NEW_AREA()
 	Clicked:ReloadActiveBindings()
 end
 
-local function PLAYER_TALENT_UPDATE()
+local function CHARACTER_POINTS_CHANGED()
 	Clicked:ReloadActiveBindings()
 end
 
@@ -135,14 +135,9 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	end
 end
 
-local function TRAIT_CONFIG_CREATED()
-	Clicked:ReloadActiveBindings()
-end
-
 local function TRAIT_CONFIG_UPDATED()
 	Clicked:ReloadActiveBindings()
 end
-
 
 local function PLAYER_FOCUS_CHANGED()
 	Addon:AbilityTooltips_Refresh()
@@ -208,12 +203,14 @@ function Clicked:OnEnable()
 
 	if Addon:IsGameVersionAtleast("BC") then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
+
+		if not Addon:IsGameVersionAtleast("RETAIL") then
+			self:RegisterEvent("CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
+		end
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
-		self:RegisterEvent("TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
 		self:RegisterEvent("TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	end
 
@@ -235,12 +232,14 @@ function Clicked:OnDisable()
 
 	if Addon:IsGameVersionAtleast("BC") then
 		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
-		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
+
+		if not Addon:IsGameVersionAtleast("RETAIL") then
+			self:UnregisterEvent("CHARACTER_POINTS_CHANGED")
+		end
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
-		self:UnregisterEvent("TRAIT_CONFIG_CREATED")
 		self:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 	end
 

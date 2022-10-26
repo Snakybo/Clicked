@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix automatically bound modifiers overriding built-in keybindings
 * Fix missing Paladin stances
 * Fix missing Arms Warrior stance
+* Fix talent selected option not always behaving accurately
 
 ## [1.8.0] - 2022-10-25
 
