@@ -15,7 +15,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix class and talent specialization options not always being force enabled on Retail
 * Fix forced class and specialization options not reloading bindings
 * Fix automatically bound modifiers overriding built-in keybindings
-* Fix missing paladin stances
+* Fix missing Paladin stances
+* Fix missing Arms Warrior stance
 
 ## [1.8.0] - 2022-10-25
 
