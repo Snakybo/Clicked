@@ -28,15 +28,17 @@ local sidecars = {}
 
 --- @param frame table
 --- @param attributes table<string,string>
-local function UpdateClickCastFrame(frame, attributes)
+--- @param setup string
+--- @param clear string
+local function UpdateClickCastFrame(frame, attributes, setup, clear)
 	Addon:SetPendingFrameAttributes(frame, attributes)
 	Addon:ApplyAttributesToFrame(frame)
 
 	if Addon.ClickCastHeader ~= nil then
 		Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 		Addon.ClickCastHeader:UnwrapScript(frame, "OnLeave")
-		Addon.ClickCastHeader:WrapScript(frame, "OnEnter", Addon.ClickCastHeader:GetAttribute("setup-keybinds"))
-		Addon.ClickCastHeader:WrapScript(frame, "OnLeave", Addon.ClickCastHeader:GetAttribute("clear-keybinds"))
+		Addon.ClickCastHeader:WrapScript(frame, "OnEnter", setup)
+		Addon.ClickCastHeader:WrapScript(frame, "OnLeave", clear)
 	end
 end
 
@@ -77,8 +79,11 @@ end
 
 --- @param newAtributes table<string,string>
 function Addon:UpdateClickCastFrames(newAtributes)
+	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
+	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
+
 	for _, frame in ipairs(frames) do
-		UpdateClickCastFrame(frame, newAtributes)
+		UpdateClickCastFrame(frame, newAtributes, setup, clear)
 	end
 
 	cachedAttributes = newAtributes
@@ -193,7 +198,10 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	end
 
 	Clicked:RegisterFrameClicks(frame, true)
-	UpdateClickCastFrame(frame, cachedAttributes)
+
+	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
+	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
+	UpdateClickCastFrame(frame, cachedAttributes, setup, clear)
 
 	table.insert(frames, frame)
 

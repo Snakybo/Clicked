@@ -83,7 +83,15 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 
 	EnsureCache(frame)
 
+	if Addon:IsFrameBlacklisted(frame) then
+		return
+	end
+
 	for key, value in pairs(attributes) do
+		if frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME] then
+			key = string.gsub(key, "typerelease", "type")
+		end
+
 		-- Some unit frames use "menu" instead of "togglemenu", an easy way to make sure we use the correct variant is to look at *type2 and check whether that
 		-- is set to `menu`. If it is, we use "menu" instead.
 		if value == "togglemenu" and frame:GetAttribute("*type2") == "menu" then
@@ -103,19 +111,17 @@ function Addon:ApplyAttributesToFrame(frame)
 	local applied = frameCache[frame].applied
 	local pending = frameCache[frame].pending
 
-	frameCache[frame].applied = frameCache[frame].pending
+	frameCache[frame].applied = pending
 	frameCache[frame].pending = {}
 
 	for key in pairs(applied) do
-		frame:SetAttribute(key, nil)
+		if pending[key] == nil then
+			frame:SetAttribute(key, nil)
+		end
 	end
 
-	if not Addon:IsFrameBlacklisted(frame) then
-		for key, value in pairs(pending) do
-			if frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME] then
-				key = string.gsub(key, "typerelease", "type")
-			end
-
+	for key, value in pairs(pending) do
+		if value ~= applied[key] then
 			frame:SetAttribute(key, value)
 		end
 	end
