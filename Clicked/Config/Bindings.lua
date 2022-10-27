@@ -525,7 +525,9 @@ local function DrawIconPicker(container, data, key)
 			tree:Redraw()
 		end
 
-		local widget = Addon:GUI_Button(Addon.L["Cancel"], OnClick)
+		local widget = AceGUI:Create("Button")
+		widget:SetText(Addon.L["Cancel"])
+		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.25)
 
 		container:AddChild(widget)
@@ -558,31 +560,39 @@ end
 --- @param items table<T,string>
 --- @param order T[]
 --- @param data Binding.LoadOption
+--- @return AceGUICheckBox
+--- @return AceGUIDropdown?
 local function DrawDropdownLoadOption(container, title, items, order, data)
+	local enabledWidget
+	local dropdownWidget
+
 	-- enabled toggle
 	do
-		local widget = Addon:GUI_CheckBox(title, data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget:SetLabel(title)
 
 		if not data.selected then
-			widget:SetRelativeWidth(1)
+			enabledWidget:SetRelativeWidth(1)
 		else
-			widget:SetRelativeWidth(0.5)
+			enabledWidget:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(widget)
+		container:AddChild(enabledWidget)
 
-		RegisterTooltip(widget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
 	end
 
 	-- state
 	if data.selected then
 		do
-			local widget = Addon:GUI_Dropdown(nil, items, order, nil, data, "value")
-			widget:SetRelativeWidth(0.5)
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "value")
+			dropdownWidget:SetRelativeWidth(0.5)
 
-			container:AddChild(widget)
+			container:AddChild(dropdownWidget)
 		end
 	end
+
+	return enabledWidget, dropdownWidget
 end
 
 --- @generic T
@@ -591,29 +601,37 @@ end
 --- @param items table<T,string>
 --- @param order T[]
 --- @param data Binding.NegatableStringLoadOption
+--- @return AceGUICheckBox
+--- @return AceGUIDropdown?
+--- @return AceGUIEditBox?
 local function DrawNegatableStringLoadOption(container, title, items, order, data)
+	local enabledWidget
+	local dropdownWidget
+	local editBoxWidget
+
 	-- enabled toggle
 	do
-		local widget = Addon:GUI_CheckBox(title, data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget:SetLabel(title)
 
 		if not data.selected then
-			widget:SetRelativeWidth(1)
+			enabledWidget:SetRelativeWidth(1)
 		else
-			widget:SetRelativeWidth(0.5)
+			enabledWidget:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(widget)
+		container:AddChild(enabledWidget)
 
-		RegisterTooltip(widget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
 	end
 
 	-- state and value
 	if data.selected then
 		do
-			local widget = Addon:GUI_Dropdown(nil, items, order, nil, data, "negated")
-			widget:SetRelativeWidth(0.5)
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "negated")
+			dropdownWidget:SetRelativeWidth(0.5)
 
-			container:AddChild(widget)
+			container:AddChild(dropdownWidget)
 		end
 
 		-- whitespace
@@ -625,49 +643,52 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 		end
 
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
-			widget:SetRelativeWidth(0.5)
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value")
+			editBoxWidget:SetRelativeWidth(0.5)
 
-			container:AddChild(widget)
+			container:AddChild(editBoxWidget)
 		end
 	end
+
+	return enabledWidget, dropdownWidget, editBoxWidget
 end
 
 --- @param container table
 --- @param title string
 --- @param data Binding.LoadOption
---- @return table enabled
---- @return table inputField
+--- @return AceGUICheckBox
+--- @return AceGUIEditBox?
 local function DrawEditFieldLoadOption(container, title, data)
-	local enabled
-	local inputField
+	local enabledWidget
+	local editBoxWidget
 
 	-- selected
 	do
-		enabled = Addon:GUI_CheckBox(title, data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget:SetLabel(title)
 
 		if not data.selected then
-			enabled:SetRelativeWidth(1)
+			enabledWidget:SetRelativeWidth(1)
 		else
-			enabled:SetRelativeWidth(0.5)
+			enabledWidget:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(enabled)
+		container:AddChild(enabledWidget)
 
-		RegisterTooltip(enabled, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
 	end
 
 	if data.selected then
 		-- input
 		do
-			inputField = Addon:GUI_EditBox(nil, "OnEnterPressed", data, "value")
-			inputField:SetRelativeWidth(0.5)
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value")
+			editBoxWidget:SetRelativeWidth(0.5)
 
-			container:AddChild(inputField)
+			container:AddChild(editBoxWidget)
 		end
 	end
 
-	return enabled, inputField
+	return enabledWidget, editBoxWidget
 end
 
 --- @generic T
@@ -676,35 +697,34 @@ end
 --- @param items table<T,any>
 --- @param order T[]
 --- @param data Binding.TriStateLoadOption
---- @param disabled? boolean
---- @param interceptFunc? fun(value:any)
-local function DrawTristateLoadOption(container, title, items, order, data, disabled, interceptFunc)
+--- @return AceGUICheckBox
+--- @return AceGUIDropdown?
+local function DrawTristateLoadOption(container, title, items, order, data)
 	assert(type(data) == "table", "bad argument #5, expected table but got " .. type(data))
+
+	local enabledWidget
+	local dropdownWidget
 
 	-- enabled toggle
 	do
-		local widget = Addon:GUI_TristateCheckBox(title, data, "selected", interceptFunc)
-		widget:SetTriState(true)
-		widget:SetDisabled(disabled)
+		enabledWidget = Addon:GUI_TristateCheckBox(data, "selected")
+		enabledWidget:SetLabel(title)
+		enabledWidget:SetTriState(true)
 
 		if data.selected == 0 then
-			widget:SetRelativeWidth(1)
+			enabledWidget:SetRelativeWidth(1)
 		else
-			widget:SetRelativeWidth(0.5)
+			enabledWidget:SetRelativeWidth(0.5)
 		end
 
-		container:AddChild(widget)
+		container:AddChild(enabledWidget)
 
-		RegisterTooltip(widget, title, CreateLoadOptionTooltip("TriStateLoadOption", data.selected))
+		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("TriStateLoadOption", data.selected))
 	end
 
-	local widget
-	local itemType = "Clicked-Dropdown-Item-Toggle-Icon"
-
 	if data.selected == 1 then -- single option variant
-		widget = Addon:GUI_Dropdown(nil, items, order, itemType, data, "single")
+		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single")
 	elseif data.selected == 2 then -- multiple option variant
-		-- luacheck: ignore widget
 		local function UpdateText(widget)
 			local selected = {}
 			local text
@@ -730,23 +750,58 @@ local function DrawTristateLoadOption(container, title, items, order, data, disa
 			widget:SetText(string.format("<text=%s>", text))
 		end
 
-		widget = Addon:GUI_MultiselectDropdown(nil, items, order, itemType, data, "multiple")
-		widget.ClickedUpdateText = UpdateText
-		widget:ClickedUpdateText()
+		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple")
+		dropdownWidget.ClickedUpdateText = UpdateText
+		dropdownWidget:ClickedUpdateText()
 
-		for _, item in widget.pullout:IterateItems() do
+		for _, item in dropdownWidget.pullout:IterateItems() do
 			if item.type == itemType then
 				item:SetCallback("OnValueChanged", function()
-					 widget:ClickedUpdateText()
+					 dropdownWidget:ClickedUpdateText()
 				end)
 			end
 		end
 	end
 
-	if widget ~= nil then
-		widget:SetRelativeWidth(0.5)
-		container:AddChild(widget)
+	if dropdownWidget ~= nil then
+		dropdownWidget:SetRelativeWidth(0.5)
+		container:AddChild(dropdownWidget)
 	end
+
+	return enabledWidget, dropdownWidget
+end
+
+--- @generic T
+--- @param container table
+--- @param title string
+--- @param items table<T,any>
+--- @param order T[]
+--- @param data Binding.TriStateLoadOption
+--- @return AceGUICheckBox
+--- @return AceGUIDropdown?
+--- @return AceGUICheckBox?
+local function DrawNegatableTristateLoadOption(container, title, items, order, data)
+	local enabledWidget, dropdownWidget = DrawTristateLoadOption(container, title, items, order, data)
+	local invertWidget
+
+	if dropdownWidget ~= nil then
+		do
+			local widget = Addon:GUI_Label("")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+
+		do
+			invertWidget = Addon:GUI_CheckBox(data, "negated")
+			invertWidget:SetLabel(Addon.L["Invert"])
+			invertWidget:SetRelativeWidth(0.5)
+
+			container:AddChild(invertWidget)
+		end
+	end
+
+	return enabledWidget, dropdownWidget, invertWidget
 end
 
 -- Binding action page and components
@@ -771,7 +826,8 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 	-- target spell or item
 	do
-		local group = Addon:GUI_InlineGroup(headerText)
+		local group = Addon:GUI_InlineGroup()
+		group:SetTitle(headerText)
 		container:AddChild(group)
 
 		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
@@ -933,7 +989,9 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					end
 				end
 
-				local widget = Addon:GUI_Button(Addon.L["Pick from spellbook"], OnClick)
+				local widget = AceGUI:Create("Button")
+				widget:SetText(Addon.L["Pick from spellbook"])
+				widget:SetCallback("OnClick", OnClick)
 
 				if hasRank then
 					widget:SetRelativeWidth(0.65)
@@ -962,7 +1020,9 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						Clicked:ReloadActiveBindings()
 					end
 
-					local widget = Addon:GUI_Button(Addon.L["Remove rank"], OnClick)
+					local widget = AceGUI:Create("Button")
+					widget:SetText(Addon.L["Remove rank"])
+					widget:SetCallback("OnClick", OnClick)
 					widget:SetRelativeWidth(0.35)
 
 					group:AddChild(widget)
@@ -978,12 +1038,13 @@ end
 local function DrawMacroSelection(container, targets, action)
 	-- macro name and icon
 	do
-		local group = Addon:GUI_InlineGroup(Addon.L["Macro Name and Icon (optional)"])
+		local group = Addon:GUI_InlineGroup()
+		group:SetTitle(Addon.L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroName")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -991,7 +1052,7 @@ local function DrawMacroSelection(container, targets, action)
 
 		-- icon field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroIcon")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroIcon")
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -1004,7 +1065,9 @@ local function DrawMacroSelection(container, targets, action)
 				tree:Redraw()
 			end
 
-			local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
+			local widget = AceGUI:Create("Button")
+			widget:SetText(Addon.L["Select"])
+			widget:SetCallback("OnClick", OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -1013,7 +1076,8 @@ local function DrawMacroSelection(container, targets, action)
 
 	-- macro text
 	do
-		local group = Addon:GUI_InlineGroup(Addon.L["Macro Text"])
+		local group = Addon:GUI_InlineGroup()
+		group:SetTitle(Addon.L["Macro Text"])
 		container:AddChild(group)
 
 		-- help text
@@ -1025,7 +1089,7 @@ local function DrawMacroSelection(container, targets, action)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox(nil, "OnEnterPressed", action, "macroValue")
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1039,12 +1103,13 @@ end
 local function DrawAppendSelection(container, action)
 	-- macro name and icon
 	do
-		local group = Addon:GUI_InlineGroup(Addon.L["Macro Name and Icon (optional)"])
+		local group = Addon:GUI_InlineGroup()
+		group:SetTitle(Addon.L["Macro Name and Icon (optional)"])
 		container:AddChild(group)
 
 		-- name text field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroName")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroName")
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -1052,7 +1117,7 @@ local function DrawAppendSelection(container, action)
 
 		-- icon field
 		do
-			local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", action, "macroIcon")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroIcon")
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -1065,7 +1130,9 @@ local function DrawAppendSelection(container, action)
 				tree:Redraw()
 			end
 
-			local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
+			local widget = AceGUI:Create("Button")
+			widget:SetText(Addon.L["Select"])
+			widget:SetCallback("OnClick", OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
 
 			group:AddChild(widget)
@@ -1074,12 +1141,13 @@ local function DrawAppendSelection(container, action)
 
 	-- macro text
 	do
-		local group = Addon:GUI_InlineGroup(Addon.L["Macro Text"])
+		local group = Addon:GUI_InlineGroup()
+		group:SetTitle(Addon.L["Macro Text"])
 		container:AddChild(group)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox(nil, "OnEnterPressed", action, "macroValue")
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue")
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1114,7 +1182,8 @@ local function DrawActionGroupOptions(container, keybind)
 		return left.identifier < right.identifier
 	end
 
-	local group = Addon:GUI_InlineGroup(Addon.L["Action Groups"])
+	local group = Addon:GUI_InlineGroup()
+	group:SetTitle(Addon.L["Action Groups"])
 
 	local groups = { }
 	local order = {}
@@ -1298,7 +1367,8 @@ local function DrawSharedOptions(container, binding)
 		group:AddChild(widget)
 	end
 
-	local group = Addon:GUI_InlineGroup(Addon.L["Shared Options"])
+	local group = Addon:GUI_InlineGroup()
+	group:SetTitle(Addon.L["Shared Options"])
 	container:AddChild(group)
 
 	CreateCheckbox(group, Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
@@ -1314,7 +1384,8 @@ end
 --- @param container table
 --- @param binding Binding
 local function DrawIntegrationsOptions(container, binding)
-	local group = Addon:GUI_InlineGroup(Addon.L["External Integrations"])
+	local group = Addon:GUI_InlineGroup()
+	group:SetTitle(Addon.L["External Integrations"])
 	local hasAnyChildren = false
 
 	-- weakauras export
@@ -1362,7 +1433,7 @@ local function DrawBindingActionPage(container, binding)
 			Addon.L["With this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/cast Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'."]
 		}
 
-		local group = Addon:GUI_InlineGroup(nil)
+		local group = Addon:GUI_InlineGroup()
 		container:AddChild(group)
 
 		local widget = Addon:GUI_Label(table.concat(msg, "\n\n"), "medium")
@@ -1447,7 +1518,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 		end
 	end
 
-	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "unit")
+	local widget = Addon:GUI_Dropdown(items, order, target, "unit")
 	widget:SetFullWidth(true)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetDisabled(not enabled)
@@ -1460,7 +1531,7 @@ end
 --- @param target Binding.Target
 local function DrawTargetSelectionHostility(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetHostility()
-	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "hostility")
+	local widget = Addon:GUI_Dropdown(items, order, target, "hostility")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -1472,7 +1543,7 @@ end
 --- @param target Binding.Target
 local function DrawTargetSelectionVitals(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetVitals()
-	local widget = Addon:GUI_Dropdown(nil, items, order, nil, target, "vitals")
+	local widget = Addon:GUI_Dropdown(items, order, target, "vitals")
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -1497,7 +1568,8 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.hovercastEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(Addon.L["Unit Frame Target"], binding.targets, "hovercastEnabled")
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "hovercastEnabled")
+			widget:SetText(Addon.L["Unit Frame Target"])
 			container:AddChild(widget)
 		end
 
@@ -1511,13 +1583,15 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(Addon.L["Macro Targets"], binding.targets, "regularEnabled")
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "regularEnabled")
+			widget:SetText(Addon.L["Macro Targets"])
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
 		end
 
 		if isMacro then
-			local group = Addon:GUI_InlineGroup(Addon.L["On this target"])
+			local group = Addon:GUI_InlineGroup()
+			group:SetTitle(Addon.L["On this target"])
 			container:AddChild(group)
 
 			DrawTargetSelectionUnit(group, regular, false, 1)
@@ -1539,7 +1613,8 @@ local function DrawBindingTargetPage(container, binding)
 				end
 
 				local label = i == 1 and Addon.L["On this target"] or enabled and Addon.L["Or"] or Addon.L["Or (inactive)"]
-				local group = Addon:GUI_ReorderableInlineGroup(label)
+				local group = Addon:GUI_ReorderableInlineGroup()
+				group:SetTitle(label)
 				group:SetMoveUpButton(i > 1)
 				group:SetMoveDownButton(i < #regular)
 				group:SetCallback("OnMoveDown", OnMove)
@@ -1566,7 +1641,8 @@ local function DrawBindingTargetPage(container, binding)
 
 			-- new target
 			do
-				local group = Addon:GUI_InlineGroup(enabled and Addon.L["Or"] or Addon.L["Or (inactive)"])
+				local group = Addon:GUI_InlineGroup()
+				group:SetTitle(enabled and Addon.L["Or"] or Addon.L["Or (inactive)"])
 				container:AddChild(group)
 
 				DrawTargetSelectionUnit(group, regular, enabled, 0)
@@ -1598,19 +1674,7 @@ local function DrawMacroInStance(container, form, specIds)
 	end
 
 	local items, order = Addon:GetLocalizedForms(specIds)
-	DrawTristateLoadOption(container, label, items, order, form)
-
-	-- invert toggle
-	if form.selected ~= 0 then
-		local spacer = Addon:GUI_Label("")
-		spacer:SetRelativeWidth(0.5)
-
-		local widget = Addon:GUI_CheckBox(Addon.L["Invert"], form, "negated")
-		widget:SetRelativeWidth(0.5)
-
-		container:AddChild(spacer)
-		container:AddChild(widget)
-	end
+	DrawNegatableTristateLoadOption(container, label, items, order, form)
 end
 
 --- @param container table
@@ -1629,19 +1693,7 @@ local function Classic_DrawMacroInStance(container, form, classes)
 	end
 
 	local items, order = Addon:Classic_GetLocalizedForms(classes)
-	DrawTristateLoadOption(container, label, items, order, form)
-
-	-- invert toggle
-	if form.selected ~= 0 then
-		local spacer = Addon:GUI_Label("")
-		spacer:SetRelativeWidth(0.5)
-
-		local widget = Addon:GUI_CheckBox(Addon.L["Invert"], form, "negated")
-		widget:SetRelativeWidth(0.5)
-
-		container:AddChild(spacer)
-		container:AddChild(widget)
-	end
+	DrawNegatableStringLoadOption(container, label, items, order, form)
 end
 
 --- @param container table
@@ -1830,7 +1882,8 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = Addon:GUI_CheckBox(Addon.L["Never load"] , load, "never")
+		local widget = Addon:GUI_CheckBox(load, "never")
+		widget:SetLabel(Addon.L["Never load"])
 		widget:SetFullWidth(true)
 
 		container:AddChild(widget)
@@ -1844,7 +1897,11 @@ end
 --- @param forced boolean
 local function DrawLoadClass(container, class, forced)
 	local items, order = Addon:GetLocalizedClasses()
-	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class, forced)
+	local enabled = DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
+
+	if enabled ~= nil then
+		enabled:SetDisabled(forced)
+	end
 end
 
 --- @param container table
@@ -1860,7 +1917,11 @@ end
 --- @param forced boolean
 local function DrawLoadSpecialization(container, specialization, classNames, forced)
 	local items, order = Addon:GetLocalizedSpecializations(classNames)
-	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization, forced)
+	local enabled = DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
+
+	if enabled ~= nil then
+		enabled:SetDisabled(forced)
+	end
 end
 
 --- @param container table
@@ -1883,7 +1944,7 @@ end
 --- @param talent Binding.TriStateLoadOption
 --- @param specIds integer[]
 local function DrawLoadTalent(container, talent, specIds)
-	local function intercept(value)
+	local function OnPostValueChanged(_, value)
 		if value then
 			local binding = GetCurrentBinding()
 			binding.load.class.selected = 1
@@ -1892,7 +1953,11 @@ local function DrawLoadTalent(container, talent, specIds)
 	end
 
 	local items, order = Addon:GetLocalizedTalents(specIds)
-	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent, false, intercept)
+	local enabled = DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
+
+	if enabled ~= nil then
+		Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
+	end
 end
 
 --- @param container table
@@ -2192,12 +2257,13 @@ end
 local function DrawGroup(container)
 	local group = GetCurrentGroup()
 
-	local parent = Addon:GUI_InlineGroup(Addon.L["Group Name and Icon"])
+	local parent = Addon:GUI_InlineGroup()
+	parent:SetTitle(Addon.L["Group Name and Icon"])
 	container:AddChild(parent)
 
 	-- name text field
 	do
-		local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", group, "name")
+		local widget = Addon:GUI_EditBox("OnEnterPressed", group, "name")
 		widget:SetFullWidth(true)
 
 		parent:AddChild(widget)
@@ -2205,7 +2271,7 @@ local function DrawGroup(container)
 
 	-- icon field
 	do
-		local widget = Addon:GUI_EditBox(nil, "OnEnterPressed", group, "displayIcon")
+		local widget = Addon:GUI_EditBox("OnEnterPressed", group, "displayIcon")
 		widget:SetRelativeWidth(0.7)
 
 		parent:AddChild(widget)
@@ -2217,7 +2283,9 @@ local function DrawGroup(container)
 			tree:Redraw()
 		end
 
-		local widget = Addon:GUI_Button(Addon.L["Select"], OpenIconPicker)
+		local widget = AceGUI:Create("Button")
+		widget:SetText(Addon.L["Select"])
+		widget:SetCallback("OnClick", OpenIconPicker)
 		widget:SetRelativeWidth(0.3)
 
 		parent:AddChild(widget)
@@ -2362,7 +2430,9 @@ local function DrawItemTemplate(container, identifier, name)
 			CreateFromItemTemplate(identifier)
 		end
 
-		local widget = Addon:GUI_Button(Addon.L["Create"], OnClick)
+		local widget = AceGUI:Create("Button")
+		widget:SetText(Addon.L["Create"])
+		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.2)
 
 		container:AddChild(widget)
@@ -2394,16 +2464,13 @@ local function DrawBinding(container)
 			RegisterTooltip(frame, tooltipText)
 		end
 
-		local function OnKeyChanged(frame, event, value)
+		local function OnPostValueChanged(frame, value)
 			Addon:EnsureSupportedTargetModes(binding.targets, value, binding.type)
-			Addon:GUI_Serialize(frame, event, value)
-
 			HandleAutomaticBinds(frame)
 		end
 
-		local widget = Addon:GUI_KeybindingButton(nil, binding, "keybind")
-		widget:SetCallback("OnKeyChanged", OnKeyChanged)
-		widget:SetFullWidth(true)
+		local widget = Addon:GUI_KeybindingButton(binding, "keybind")
+		Addon:GUI_SetPostValueChanged(widget, OnPostValueChanged)
 
 		HandleAutomaticBinds(widget)
 
@@ -2417,6 +2484,7 @@ local function DrawBinding(container)
 			local scrollFrame = AceGUI:Create("ScrollFrame")
 			scrollFrame:SetLayout("Flow")
 
+			container:ReleaseChildren()
 			container:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -2478,7 +2546,9 @@ local function DrawBinding(container)
 			tab.selected = availableTabs[1]
 		end
 
-		tab.widget = Addon:GUI_TabGroup(CreateTabGroup(availableTabs), OnGroupSelected)
+		tab.widget = Addon:GUI_TabGroup()
+		tab.widget:SetTabs(CreateTabGroup(availableTabs))
+		tab.widget:SetCallback("OnGroupSelected", OnGroupSelected)
 		tab.widget:SetStatusTable(tab)
 		tab.widget:SelectTab(tab.selected)
 
@@ -2548,7 +2618,9 @@ local function DrawHeader(container)
 			tree:SelectByValue("")
 		end
 
-		local widget = Addon:GUI_Button(Addon.L["New"], OnClick)
+		local widget = AceGUI:Create("Button")
+		widget:SetText(Addon.L["New"])
+		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
 
 		line:AddChild(widget)

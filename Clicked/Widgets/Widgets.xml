@@ -5,13 +5,13 @@
 	<Script file="AceGUIContainer-ClickedReorderableInlineGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTabGroup.lua"/>
+	<Script file="AceGUIContainer-ClickedSimpleGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown-Items.lua"/>
 	<Script file="AceGUIWidget-ClickedDropDown.lua"/>
 	<Script file="AceGUIWidget-ClickedHorizontalIcon.lua"/>
 	<Script file="AceGUIWidget-ClickedKeybinding.lua"/>
 	<Script file="AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua"/>
 	<Script file="AceGUIWidget-ClickedSearchBox.lua"/>
-	<Script file="AceGUIWidget-ClickedSimpleGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>
 	<Script file="AceGUIWidget-ClickedReorderableLabel.lua"/>
 </Ui>

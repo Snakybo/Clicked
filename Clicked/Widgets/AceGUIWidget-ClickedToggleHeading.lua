@@ -1,7 +1,14 @@
 --[[-----------------------------------------------------------------------------
-InlineGroup Container
-Simple container widget that creates a visible "box" with an optional title.
+A heading with a checkbox
 -------------------------------------------------------------------------------]]
+
+--- @class ClickedToggleHeading : AceGUIWidget
+--- @field public SetText fun(text:string)
+--- @field public SetDisabled fun(disabled:boolean)
+--- @field public SetValue fun(value:boolean)
+--- @field public GetValue fun():boolean
+--- @field public ToggleChecked fun()
+
 local Type, Version = "ClickedToggleHeading", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -44,6 +51,7 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 local methods = {
+	--- @param self ClickedToggleHeading
 	["OnAcquire"] = function(self)
 		self:SetHeight(24)
 		self:SetText("")
@@ -51,8 +59,8 @@ local methods = {
 		self:SetDisabled(nil)
 	end,
 
-	-- ["OnRelease"] = nil,
-
+	--- @param self ClickedToggleHeading
+	--- @param text string
 	["SetText"] = function(self, text)
 		self.label:SetText(text)
 
@@ -63,6 +71,8 @@ local methods = {
 		end
 	end,
 
+	--- @param self ClickedToggleHeading
+	--- @param disabled boolean
 	["SetDisabled"] = function(self, disabled)
 		self.disabled = disabled
 
@@ -79,6 +89,8 @@ local methods = {
 		end
 	end,
 
+	--- @param self ClickedToggleHeading
+	--- @param value boolean
 	["SetValue"] = function(self, value)
 		local check = self.check
 
@@ -95,10 +107,13 @@ local methods = {
 		self:SetDisabled(self.disabled)
 	end,
 
+	--- @param self ClickedToggleHeading
+	--- @return boolean
 	["GetValue"] = function(self)
 		return self.checked
 	end,
 
+	--- @param self ClickedToggleHeading
 	["ToggleChecked"] = function(self)
 		self:SetValue(not self:GetValue())
 	end
@@ -160,52 +175,19 @@ local function Constructor()
 	center:SetTexCoord(0.81, 0.94, 0.5, 1)
 
 	local widget = {
-		frame     = frame,
-		label     = label,
+		frame      = frame,
+		label  = label,
 		checkbg   = checkbg,
 		check     = check,
 		highlight = highlight,
 		left      = left,
 		right     = right,
 		center    = center,
-		type      = Type
+		type       = Type
 	}
 
 	for method, func in pairs(methods) do
 		widget[method] = func
-	end
-
-	-- Respect ElvUI skinning
-	if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
-		local E = unpack(ElvUI);
-
-		if E and E.private.skins and E.private.skins.ace3Enable then
-			local S = E:GetModule("Skins")
-
-			checkbg:CreateBackdrop()
-			checkbg.backdrop:SetInside(checkbg, 4, 4)
-			checkbg.backdrop:SetFrameLevel(checkbg.backdrop:GetFrameLevel() + 1)
-
-			checkbg:SetTexture()
-			highlight:SetTexture()
-
-			hooksecurefunc(widget, "SetDisabled", S.Ace3_CheckBoxSetDisabled)
-
-			if E.private.skins.checkBoxSkin then
-				S.Ace3_CheckBoxSetDesaturated(check, check:GetDesaturation())
-				hooksecurefunc(check, "SetDesaturated", S.Ace3_CheckBoxSetDesaturated)
-
-				checkbg.backdrop:SetInside(widget.checkbg, 5, 5)
-				check:SetInside(widget.checkbg.backdrop)
-				check:SetTexture(E.Media.Textures.Melli)
-				check.SetTexture = E.noop
-			else
-				check:SetOutside(widget.checkbg.backdrop, 3, 3)
-			end
-
-			checkbg.SetTexture = E.noop
-			highlight.SetTexture = E.noop
-		end
 	end
 
 	return AceGUI:RegisterAsWidget(widget)

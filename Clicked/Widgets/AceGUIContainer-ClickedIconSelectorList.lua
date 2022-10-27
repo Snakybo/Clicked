@@ -2,6 +2,15 @@
 ScrollFrame Container
 Plain container that scrolls its content and doesn't grow in height.
 -------------------------------------------------------------------------------]]
+
+--- @class ClickedIconSelectorList : AceGUIContainer
+--- @field public SetScroll fun(value:number)
+--- @field public MoveScroll fun(value:number)
+--- @field public SetSearchHandler fun(handler)
+--- @field public SetIcons fun(icons:table<string,string>, order:string[])
+--- @field public RefreshIcons fun()
+--- @field public FixScroll fun()
+
 --- @class ClickedInternal
 local _, Addon = ...
 

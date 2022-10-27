@@ -2,6 +2,10 @@
 Reorderable inline group widget
 -------------------------------------------------------------------------------]]
 
+--- @class ClickedReorderableInlineGroup : AceGUIInlineGroup
+--- @field public SetMoveUpButton fun(enabled:boolean)
+--- @field public SetMoveDownButton fun(enabled:boolean)
+
 local Type, Version = "ClickedReorderableInlineGroup", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -58,32 +62,39 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local function OnAcquire(self)
-	self:BaseOnAcquire()
+local methods = {
+	--- @param self ClickedReorderableInlineGroup
+	["OnAcquire"] = function(self)
+		self:BaseOnAcquire()
 
-	self:SetMoveUpButton(false)
-	self:SetMoveDownButton(false)
-end
+		self:SetMoveUpButton(false)
+		self:SetMoveDownButton(false)
+	end,
 
-local function SetMoveUpButton(self, enabled)
-	if enabled then
-		self.moveUp:Show()
-	else
-		self.moveUp:Hide()
+	--- @param self ClickedReorderableInlineGroup
+	--- @param enabled boolean
+	["SetMoveUpButton"] = function(self, enabled)
+		if enabled then
+			self.moveUp:Show()
+		else
+			self.moveUp:Hide()
+		end
+
+		self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
+	end,
+
+	--- @param self ClickedReorderableInlineGroup
+	--- @param enabled boolean
+	["SetMoveDownButton"] = function(self, enabled)
+		if enabled then
+			self.moveDown:Show()
+		else
+			self.moveDown:Hide()
+		end
+
+		self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
 	end
-
-	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
-end
-
-local function SetMoveDownButton(self, enabled)
-	if enabled then
-		self.moveDown:Show()
-	else
-		self.moveDown:Hide()
-	end
-
-	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
-end
+}
 
 --[[ Constructor ]]--
 
@@ -99,11 +110,11 @@ local function Constructor()
 	widget.moveUp = CreateButton(widget, "ui_arrow_up", MoveUp_OnClick)
 	widget.moveUp:SetPoint("RIGHT", widget.moveDown, "LEFT", -2, 0)
 
-	widget.SetMoveUpButton = SetMoveUpButton
-	widget.SetMoveDownButton = SetMoveDownButton
-
 	widget.BaseOnAcquire = widget.OnAcquire
-	widget.OnAcquire = OnAcquire
+
+	for method, func in pairs(methods) do
+		widget[method] = func
+	end
 
 	return widget
 end

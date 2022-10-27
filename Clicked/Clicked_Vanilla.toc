@@ -41,5 +41,8 @@ Config\Bindings.lua
 Config\Blacklist.lua
 Debug\StatusOutput.lua
 
+# Skinning
+Skins\ElvUI.lua
+
 # Third party integrations
 Integrations\WeakAuras.lua

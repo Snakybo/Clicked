@@ -1354,25 +1354,6 @@ local function Constructor()
 	content:SetPoint("TOPLEFT", 10, -10)
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
-	-- Respect ElvUI skinning
-	if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
-		local E = unpack(ElvUI);
-
-		if E and E.private.skins and E.private.skins.ace3Enable then
-			local S = E:GetModule("Skins")
-
-			content:GetParent():SetTemplate('Transparent')
-			treeframe:SetTemplate('Transparent')
-			S:HandleScrollBar(scrollbar)
-
-			if Addon:IsGameVersionAtleast("BC") then
-				S:HandleButton(sortButton, true)
-			else
-				S:HandleButton(sortButton, true, nil, true)
-			end
-		end
-	end
-
 	local widget = {
 		frame= frame,
 		lines = {},

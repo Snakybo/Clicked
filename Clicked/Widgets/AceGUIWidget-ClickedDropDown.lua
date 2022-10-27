@@ -3,13 +3,15 @@ Clicked DropDown Widget
 Adds support for setting of icons and texts in one command using the following
 format: |icon:PATH\\TO\\ICONS|text:Some Text
 -------------------------------------------------------------------------------]]
---- @class ClickedInternal
-local _, Addon = ...
-
 local Type, Version = "ClickedDropDown", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
+--- @class ClickedInternal
+local _, Addon = ...
+
+if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+	return
+end
 
 -- exported
 local function SetText(self, text)
