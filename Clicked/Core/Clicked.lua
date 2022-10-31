@@ -223,8 +223,6 @@ function Clicked:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
-
-	Addon:Skins_ElvInitialize()
 end
 
 function Clicked:OnDisable()

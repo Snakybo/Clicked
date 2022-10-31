@@ -3,11 +3,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
-function Addon:Skins_ElvInitialize()
-	if not GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
-		return
-	end
+if GetAddOnEnableState(UnitName("player"), "ElvUI") ~= 2 then
+	return
+end
 
+local function Initialize()
 	local elv = unpack(ElvUI);
 	if elv == nil or not elv.private.skins or not elv.private.skins.ace3Enable then
 		return
@@ -72,4 +72,19 @@ function Addon:Skins_ElvInitialize()
 
 		return originalRegisterAsContainer(self, widget)
 	end
+end
+
+if ElvUI ~= nil then
+	Initialize()
+else
+	local function OnEvent(self, event, arg1)
+		if event == "ADDON_LOADED" and arg1 == "ElvUI" then
+			Initialize()
+			self:UnregisterEvent("ADDON_LOADED")
+		end
+	end
+
+	local loader = CreateFrame("Frame")
+	loader:RegisterEvent("ADDON_LOADED")
+	loader:SetScript("OnEvent", OnEvent)
 end
