@@ -1944,8 +1944,8 @@ end
 
 --- @param container table
 --- @param talent Binding.TriStateLoadOption
---- @param specIds integer[]
-local function DrawLoadTalent(container, talent, specIds)
+--- @param specId integer
+local function DrawLoadTalent(container, talent, specId)
 	local function OnPostValueChanged(_, value)
 		if value then
 			local binding = GetCurrentBinding()
@@ -1954,8 +1954,13 @@ local function DrawLoadTalent(container, talent, specIds)
 		end
 	end
 
-	local items, order = Addon:GetLocalizedTalents(specIds)
-	local enabled = DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
+	local widget = AceGUI:Create("ClickedAutoFillEditBox")
+	widget:SetValues(Addon:GetLocalizedTalents(specId))
+
+	container:AddChild(widget)
+
+	-- local items, order =
+	-- local enabled = DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
 
 	Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
 end
@@ -2146,7 +2151,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 		DrawLoadSpecialization(container, load.specialization, classNames, classAndSpecForced)
-		DrawLoadTalent(container, load.talent, specializationIds)
+		DrawLoadTalent(container, load.talent, specializationIds[1])
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then

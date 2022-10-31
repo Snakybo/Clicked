@@ -381,55 +381,30 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specializations integer[]
-	--- @return table<integer,string> items
-	--- @return integer[] order
-	function Addon:GetLocalizedTalents(specializations)
-		--- @type table<integer,string>
-		local items = {}
+	--- @param specialization integer
+	--- @return ClickedAutoFillEditBoxEntry[]
+	function Addon:GetLocalizedTalents(specialization)
+		--- @type ClickedAutoFillEditBoxEntry[]
+		local result = {}
 
-		--- @type integer[]
-		local order = {}
-
-		if specializations == nil then
-			specializations = {}
-			specializations[1] = GetSpecializationInfo(GetSpecialization())
+		if specialization == nil then
+			specialization = GetSpecializationInfo(GetSpecialization())
 		end
 
-		if #specializations == 1 then
-			local spec = specializations[1]
+		for i = 1, LibTalentInfo:GetNumTalents(specialization) do
+			local spellId = LibTalentInfo:GetTalentAt(specialization, i)
+			local name, _, texture = GetSpellInfo(spellId)
 
-			for i = 1, LibTalentInfo:GetNumTalents(spec) do
-				local spellID = LibTalentInfo:GetTalentAt(spec, i)
-				local name, _, texture = GetSpellInfo(spellID)
-
-				local key = #order + 1
-
-				if not Addon:IsStringNilOrEmpty(name) then
-					items[key] = string.format("<icon=%d><text=%s>", texture, name)
-					table.insert(order, key)
-				end
-			end
-		else
-			local maxTalentCount = 0
-
-			for _, spec in ipairs(specializations) do
-				local numTalents = LibTalentInfo:GetNumTalents(spec)
-
-				if numTalents > maxTalentCount then
-					maxTalentCount = numTalents
-				end
-			end
-
-			for i = 1, maxTalentCount do
-				local key = #order + 1
-
-				items[key] = string.format("<text=%s>", Addon.L["Talent %s"]:format(i))
-				table.insert(order, key)
+			if not Addon:IsStringNilOrEmpty(name) then
+				table.insert(result, {
+					spell = spellId,
+					text = name,
+					icon = texture
+				})
 			end
 		end
 
-		return items, order
+		return result
 	end
 
 	--- Get a localized list of all available PvP talents for the
