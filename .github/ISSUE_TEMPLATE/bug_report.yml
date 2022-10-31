@@ -21,15 +21,15 @@ body:
     label: World of Warcraft Flavor
     description: What version of World of Warcraft are are you running?
     options:
-      - Shadowlands
-      - Classic
-      - Burning Crusade Classic
+      - Dragonflight
+      - Wrath of the Lich King Classic
+      - Classic      
   validations:
     required: true
 - type: checkboxes
   id: testing
   attributes:
-    label: Testing
+    label: Tried with only Clicked enabled
     description: Did you try having Clicked as the only enabled addon and everything else disabled?
     options:
       - label: "Yes"
