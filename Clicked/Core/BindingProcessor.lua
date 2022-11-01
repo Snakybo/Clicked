@@ -898,10 +898,12 @@ function Addon:CanBindingLoad(binding)
 		local spellKnown = load.spellKnown
 
 		if spellKnown.selected then
-			local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(spellKnown.value)			
+			local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(spellKnown.value)
+
 			if name == nil or spellId == nil then
 				return false
 			end
+
 			return IsSpellKnown(spellId)
 		end
 	end

@@ -730,7 +730,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			local text
 
 			for _, item in widget.pullout:IterateItems() do
-				if item.type == itemType then
+				if item.type == "Clicked-Dropdown-Item-Toggle-Icon" then
 					if item:GetValue() then
 						table.insert(selected, item:GetText())
 					end
@@ -755,7 +755,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 		dropdownWidget:ClickedUpdateText()
 
 		for _, item in dropdownWidget.pullout:IterateItems() do
-			if item.type == itemType then
+			if item.type == "Clicked-Dropdown-Item-Toggle-Icon" then
 				item:SetCallback("OnValueChanged", function()
 					 dropdownWidget:ClickedUpdateText()
 				end)

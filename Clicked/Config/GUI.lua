@@ -297,7 +297,6 @@ function Addon:GUI_KeybindingButton(ref, key)
 	local keybind = Addon:SanitizeKeybind(ref[key])
 
 	widget:SetFullWidth(true)
-	widget:SetLabel(label)
 	widget:SetKey(keybind)
 	widget:SetCallback("OnKeyChanged", OnSerialize)
 
