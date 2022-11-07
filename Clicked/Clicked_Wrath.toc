@@ -27,6 +27,7 @@ Core\Utils.lua
 Core\LocaleUtils.lua
 Core\Serializer.lua
 Core\Tooltips.lua
+Core\Upgrader.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua

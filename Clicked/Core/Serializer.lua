@@ -26,8 +26,8 @@ local _, Addon = ...
 --- @return boolean status
 --- @return string message
 local function ValidateData(data)
-	if data.version ~= Clicked.VERSION and not Addon:IsDevelopmentBuild() then
-		return false, "Incompatible version: " .. data.version
+	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
+		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
 	end
 
 	if data.bindings == nil or data.groups == nil then

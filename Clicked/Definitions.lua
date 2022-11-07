@@ -23,7 +23,7 @@
 --- @class Database : AceDB-3.0
 
 --- @class Profile
---- @field public version string
+--- @field public version integer
 --- @field public options Profile.Options
 --- @field public groups Group[]
 --- @field public bindings Binding[]

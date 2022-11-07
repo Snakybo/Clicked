@@ -32,6 +32,7 @@ local function GetBasicinfoString()
 	local lines = {}
 
 	table.insert(lines, "Version: " .. Clicked.VERSION)
+	table.insert(lines, "Data Version: " .. Addon.DATA_VERSION)
 	table.insert(lines, "Project ID: " .. WOW_PROJECT_ID)
 	table.insert(lines, "Race: " .. select(2, UnitRace("player")))
 	table.insert(lines, "Level: " .. UnitLevel("player"))
