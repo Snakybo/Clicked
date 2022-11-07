@@ -66,6 +66,10 @@ end
 --- @param widget AceGUIWidget
 --- @param callback fun(frame, newValue, oldValue):any
 function Addon:GUI_SetPreValueChanged(widget, callback)
+	if widget == nil or widgets[widget] == nil then
+		return
+	end
+
 	widgets[widget].onPreValueChanged = callback
 end
 
@@ -73,6 +77,10 @@ end
 --- @param widget AceGUIWidget
 --- @param callback fun(frame, value)
 function Addon:GUI_SetPostValueChanged(widget, callback)
+	if widget == nil or widgets[widget] == nil then
+		return
+	end
+
 	widgets[widget].onPostValueChanged = callback
 end
 

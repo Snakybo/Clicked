@@ -1955,9 +1955,7 @@ local function DrawLoadTalent(container, talent, specIds)
 	local items, order = Addon:GetLocalizedTalents(specIds)
 	local enabled = DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
 
-	if enabled ~= nil then
-		Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
-	end
+	Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
 end
 
 --- @param container table
