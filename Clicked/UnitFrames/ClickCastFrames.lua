@@ -304,7 +304,7 @@ function Clicked:CreateSidecar(frame, name)
 	if sidecar == nil then
 		local frameName = "ClickedSidecar" .. tostring(#sidecars + 1)
 
-		sidecar = CreateFrame("Button", frameName, frame, "SecureActionButtonTemplate")
+		sidecar = CreateFrame("Button", frameName, frame, "SecureUnitButtonTemplate")
 		sidecar:SetAttribute("useparent*", true)
 
 		frame:SetAttribute("clicked-sidecar", frameName)
