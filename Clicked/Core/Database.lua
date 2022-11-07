@@ -323,7 +323,7 @@ end
 --- @return integer
 function Addon:GetNextBindingIdentifier()
 	local identifier = Addon.db.profile.nextBindingId
-	Addon.db.profile.nextBindingId = Addon.db.profile.nextBindingId + 1
+	Addon.db.profile.nextBindingId = identifier + 1
 
 	return identifier
 end
@@ -1090,6 +1090,25 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		end
 
 		FinalizeVersionUpgrade("1.8.1")
+	end
+
+	-- 1.8.1 to 1.8.2
+	if string.sub(from, 1, 5) == "1.8.1" then
+		for _, binding in ipairs(profile.bindings) do
+			if binding.identifier >= profile.nextBindingId then
+				profile.nextBindingId = binding.identifier + 1
+			end
+		end
+
+		for _, group in ipairs(profile.groups) do
+			local groupId = tonumber(string.match(group.identifier, "(%d+)"))
+
+			if groupId >= profile.nextGroupId then
+				profile.nextGroupId = groupId + 1
+			end
+		end
+
+		FinalizeVersionUpgrade("1.8.2")
 	end
 
 	profile.version = Clicked.VERSION

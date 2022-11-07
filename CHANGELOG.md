@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix the spell known load condition not correctly checking if the spell is known (by [novsirion])
+* Fix not all data being imported when importing a profile [#128]
 
 ## [1.8.1] - 2022-10-26
 
@@ -1072,6 +1073,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#128]: https://github.com/Snakybo/Clicked/issues/128
 [#109]: https://github.com/Snakybo/Clicked/issues/109
 [#108]: https://github.com/Snakybo/Clicked/issues/108
 [#107]: https://github.com/Snakybo/Clicked/issues/107

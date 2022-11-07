@@ -79,6 +79,8 @@ function Clicked:SerializeProfile(profile, printable, full)
 			version = profile.version,
 			bindings = Addon:DeepCopyTable(profile.bindings),
 			groups = Addon:DeepCopyTable(profile.groups),
+			nextGroupId = profile.nextGroupId,
+			nextBindingId = profile.nextBindingId,
 			lightweight = true
 		}
 	end
