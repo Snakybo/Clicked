@@ -10,6 +10,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for WoW 10.0.2 Dragonflight
 ### Fixed
 
 * Fix the spell known load condition not correctly checking if the spell is known (by [novsirion])
