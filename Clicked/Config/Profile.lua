@@ -25,7 +25,7 @@ local AceComm = LibStub("AceComm-3.0")
 local _, Addon = ...
 
 local importExportFrame
-local panel
+local panelId
 
 -- Share to target player
 local shareTarget = ""
@@ -123,7 +123,14 @@ local function OpenImportExportFrame(mode)
 
 	importExportFrame:SetCallback("OnClose", function(widget)
 		AceGUI:Release(widget)
-		InterfaceOptionsFrame_OpenToCategory("Clicked/Profile")
+
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			Settings.OpenToCategory(panelId)
+			Settings.OpenToCategory(panelId)
+		else
+			InterfaceOptionsFrame_OpenToCategory(panelId)
+			InterfaceOptionsFrame_OpenToCategory(panelId)
+		end
 	end)
 
 	HideUIPanel(InterfaceOptionsFrame)
@@ -276,7 +283,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	AceConfig:RegisterOptionsTable("Clicked/Profile", profileOptions)
-	panel = AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
+	_, panelId = AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
 
 	AceComm:Embed(self)
 
@@ -286,8 +293,13 @@ function Addon:ProfileOptions_Initialize()
 end
 
 function Addon:ProfileOptions_Open()
-	InterfaceOptionsFrame_OpenToCategory(panel)
-	InterfaceOptionsFrame_OpenToCategory(panel)
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		Settings.OpenToCategory(panelId)
+		Settings.OpenToCategory(panelId)
+	else
+		InterfaceOptionsFrame_OpenToCategory(panelId)
+		InterfaceOptionsFrame_OpenToCategory(panelId)
+	end
 end
 
 --- @param message string

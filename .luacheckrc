@@ -135,6 +135,7 @@ read_globals = {
 	"ReloadUI",
 	"SecureCmdOptionParse",
 	"SetDesaturation",
+	"Settings",
 	"ShowUIPanel",
 	"SpellBookFrame",
 	"SpellBookFrame_UpdateSpells",

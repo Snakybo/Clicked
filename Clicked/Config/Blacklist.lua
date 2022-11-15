@@ -57,7 +57,7 @@ local UNIT_FRAME_ADDON_MAPPING = {
 }
 
 local config
-local panel
+local panelId
 local values = {}
 
 -- Local support functions
@@ -280,12 +280,17 @@ function Addon:BlacklistOptions_Initialize()
 	end
 
 	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
-	panel = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
+	_, panelId = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
 end
 
 function Addon:BlacklistOptions_Open()
-	InterfaceOptionsFrame_OpenToCategory(panel)
-	InterfaceOptionsFrame_OpenToCategory(panel)
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		Settings.OpenToCategory(panelId)
+		Settings.OpenToCategory(panelId)
+	else
+		InterfaceOptionsFrame_OpenToCategory(panelId)
+		InterfaceOptionsFrame_OpenToCategory(panelId)
+	end
 end
 
 function Addon:BlacklistOptions_Refresh()
