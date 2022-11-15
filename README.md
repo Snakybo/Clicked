@@ -13,6 +13,7 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 ## Features
 
 * **Create keyboard and mouse button bindings for spells, items, cancelauras, and custom macros**
+* **Easily import your action bar layout**
 * **Cast spells without action bars**
 * **Cast spells by clicking on unit frames**
 * **Easily select spells from the spellbook**
