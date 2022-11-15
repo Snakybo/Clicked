@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for WoW 10.0.2 Dragonflight
+* Add the option to automatically import bindings from action bars (Default UI, ElvUI, and Bartender4) [#120]
 * Update talent data
 
 ### Fixed
@@ -1080,6 +1081,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#128]: https://github.com/Snakybo/Clicked/issues/128
+[#120]: https://github.com/Snakybo/Clicked/issues/120
 [#109]: https://github.com/Snakybo/Clicked/issues/109
 [#108]: https://github.com/Snakybo/Clicked/issues/108
 [#107]: https://github.com/Snakybo/Clicked/issues/107

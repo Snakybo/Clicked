@@ -30,6 +30,7 @@ local ITEM_TEMPLATE_CANCELAURA = "CANCELAURA"
 local ITEM_TEMPLATE_TARGET = "UNIT_TARGET"
 local ITEM_TEMPLATE_MENU = "UNIT_MENU"
 local ITEM_TEMPLATE_IMPORT_SPELLBOOK = "IMPORT_SPELLBOOK"
+local ITEM_TEMPLATE_IMPORT_ACTIONBAR = "IMPORT_ACTIONBAR"
 
 local spellbookButtons = {}
 local spellFlyOutButtons = {}
@@ -2404,6 +2405,120 @@ local function CreateFromItemTemplate(identifier)
 		end
 
 		Clicked:ReloadActiveBindings()
+	elseif identifier == ITEM_TEMPLATE_IMPORT_ACTIONBAR then
+		local group
+
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			local specialization = GetSpecialization()
+
+			group = Clicked:CreateGroup()
+			group.name = select(2, GetSpecializationInfo(specialization))
+			group.displayIcon = select(4, GetSpecializationInfo(specialization))
+		end
+
+		local function Register(key, action, id)
+			if action == nil then
+				return
+			end
+
+			local binding
+
+			if action == "spell" then
+				binding = Clicked:CreateBinding()
+				binding.type = Addon.BindingTypes.SPELL
+				binding.action.spellValue = id
+			elseif action == "item" then
+				binding = Clicked:CreateBinding()
+				binding.type = Addon.BindingTypes.ITEM
+				binding.action.itemValue = id
+			elseif action == "macro" then
+				binding = Clicked:CreateBinding()
+				binding.type = Addon.BindingTypes.MACRO
+				binding.action.macroValue = GetMacroBody(id)
+				binding.action.macroName = GetMacroInfo(id)
+				binding.action.macroIcon = select(2, GetMacroInfo(id))
+			end
+
+			if binding ~= nil then
+				if key ~= nil then
+					binding.keybind = key
+				end
+
+				if group ~= nil then
+					binding.parent = group.identifier
+				end
+
+				binding.load.class.selected = 1
+				binding.load.class.single = select(2, UnitClass("player"))
+
+				if Addon:IsGameVersionAtleast("RETAIL") then
+					binding.load.specialization.selected = 1
+					binding.load.specialization.single = GetSpecialization()
+				end
+			end
+		end
+
+		-- Primary action bar
+		for keyNumber = 1, 12 do
+			Register(GetBindingKey("ACTIONBUTTON" .. keyNumber), GetActionInfo(keyNumber))
+		end
+
+		-- Shapeshift forms
+		for form = 1, GetNumShapeshiftForms() do
+			local spell = select(4, GetShapeshiftFormInfo(form))
+			Register(GetBindingKey("SHAPESHIFTBUTTON" .. form), "spell", spell)
+		end
+
+		-- Pet buttons
+		for petAction = 1, NUM_PET_ACTION_SLOTS do
+			local spell = select(7, GetPetActionInfo(petAction))
+
+			if spell ~= nil then
+				Register(GetBindingKey("BONUSACTIONBUTTON" .. petAction), "spell", spell)
+			end
+		end
+
+		-- Bartender4 integration
+		if _G["Bartender4"] then
+			for actionBarNumber = 2, 6 do
+				for keyNumber = 1, 12 do
+					local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
+					local bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
+
+					Register(GetBindingKey(bindingKeyName), GetActionInfo(actionBarButtonId))
+				end
+			end
+		-- ElvUI integration
+		elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+			for i = 2, 6 do
+				for b = 1, 12 do
+					local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
+
+					if tonumber(btn._state_action) then
+						Register(GetBindingKey(btn.keyBoundTarget), GetActionInfo(tonumber(btn._state_action)))
+					end
+				end
+			end
+		-- Default
+		else
+			for i = 25, 36 do
+				Register(GetBindingKey("MULTIACTIONBAR3BUTTON" .. i - 24), GetActionInfo(i))
+			end
+
+			for i = 37, 48 do
+				Register(GetBindingKey("MULTIACTIONBAR4BUTTON" .. i - 36), GetActionInfo(i))
+			end
+
+			for i = 49, 60 do
+				Register(GetBindingKey("MULTIACTIONBAR2BUTTON" .. i - 48), GetActionInfo(i))
+			end
+
+			for i = 61, 72 do
+				Register(GetBindingKey("MULTIACTIONBAR1BUTTON" .. i - 60), GetActionInfo(i))
+			end
+		end
+
+		Clicked:ReloadActiveBindings()
 	end
 
 	if item ~= nil then
@@ -2571,6 +2686,7 @@ local function DrawItemTemplateSelector(container)
 	end
 
 	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
+	DrawItemTemplate(scrollFrame, ITEM_TEMPLATE_IMPORT_ACTIONBAR, Addon.L["Automatically import from action bars"])
 
 	do
 		local widget = Addon:GUI_Label("\n" .. Addon.L["Create a new binding"], "large")

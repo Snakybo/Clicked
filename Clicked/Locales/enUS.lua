@@ -87,6 +87,7 @@ L["Or"] = true
 L["Or (inactive)"] = true
 L["Quick start"] = true
 L["Automatically import from spellbook"] = true
+L["Automatically import from action bars"] = true
 L["Cast a spell"] = true
 L["Cast a spell on a unit frame"] = true
 L["Use an item"] = true
