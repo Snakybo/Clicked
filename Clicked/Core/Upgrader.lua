@@ -715,6 +715,11 @@ local function UpgradeLegacy(profile, from)
 	end
 end
 
+--- @param profile Profile
+--- @param from integer
+local function Upgrade(profile, from)
+end
+
 -- Private addon API
 
 --- Upgrade the version of the specified profile to the latest version, this process is incremental and will upgrade a profile with intermediate steps of all
@@ -776,6 +781,8 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 	if type(from) == "string" then
 		safecall(UpgradeLegacy, profile, from)
 	end
+
+	safecall(Upgrade, profile, from)
 
 	profile.version = Addon.DATA_VERSION
 end
