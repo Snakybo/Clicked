@@ -715,10 +715,10 @@ local function UpgradeLegacy(profile, from)
 	end
 end
 
---- @param profile Profile
---- @param from integer
-local function Upgrade(profile, from)
-end
+-- --- @param profile Profile
+-- --- @param from integer
+-- local function Upgrade(profile, from)
+-- end
 
 -- Private addon API
 
@@ -782,7 +782,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		safecall(UpgradeLegacy, profile, from)
 	end
 
-	safecall(Upgrade, profile, from)
+	-- safecall(Upgrade, profile, from)
 
 	profile.version = Addon.DATA_VERSION
 end
