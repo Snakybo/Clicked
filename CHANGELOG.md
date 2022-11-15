@@ -13,6 +13,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for WoW 10.0.2 Dragonflight
+* Update talent data
+
 ### Fixed
 
 * Fix the spell known load condition not correctly checking if the spell is known (by [novsirion])
