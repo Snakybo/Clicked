@@ -2409,15 +2409,45 @@ local function CreateFromItemTemplate(identifier)
 		local group
 
 		if Addon:IsGameVersionAtleast("RETAIL") then
-			local specialization = GetSpecialization()
+			local _, name, _, icon = GetSpecializationInfo(GetSpecialization())
 
-			group = Clicked:CreateGroup()
-			group.name = select(2, GetSpecializationInfo(specialization))
-			group.displayIcon = select(4, GetSpecializationInfo(specialization))
+			--- @type Group
+			for _, g in Clicked:IterateGroups() do
+				if g.name == name and g.displayIcon == icon then
+					group = g
+					break
+				end
+			end
+
+			if group == nil then
+				group = Clicked:CreateGroup()
+				group.name = name
+				group.displayIcon = icon
+			end
+		end
+
+		local function IsDuplicate(key, action, id)
+			for _, binding in Clicked:IterateConfiguredBindings() do
+				if binding.keybind == key or key == nil and binding.keybind == "" then
+					if action == "spell" and binding.action.spellValue == id then
+						return true
+					end
+
+					if action == "item" and binding.action.itemValue == id then
+						return true
+					end
+
+					if action == "macro" and binding.action.macroValue == GetMacroBody(id) then
+						return true
+					end
+				end
+			end
+
+			return false
 		end
 
 		local function Register(key, action, id)
-			if action == nil then
+			if action == nil or IsDuplicate(key, action, id) then
 				return
 			end
 
