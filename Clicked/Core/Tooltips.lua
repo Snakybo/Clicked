@@ -159,21 +159,18 @@ end
 function Addon:AbilityTooltips_Initialize()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
-		-- TODO: This check can be simplified after PTR is released
-		if Addon:IsGameVersionAtleast("RETAIL") and TooltipDataProcessor ~= nil then
+		if Addon:IsGameVersionAtleast("RETAIL") then
 			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
 		else
 			GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 		end
 	end)
 
-	-- TODO: This check can be simplified after PTR is released
-	if Addon:IsGameVersionAtleast("RETAIL") and TooltipDataProcessor ~= nil then
+	if Addon:IsGameVersionAtleast("RETAIL") then
 		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, OnTooltipSetSpell)
 	else
 		GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
 
-		-- TODO: Is the ElvUISpellBookTooltip still required with the new TooltipDataProcessor?
 		if ElvUISpellBookTooltip ~= nil then
 			ElvUISpellBookTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
 		end
