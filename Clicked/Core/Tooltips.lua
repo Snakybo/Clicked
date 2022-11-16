@@ -90,7 +90,7 @@ end
 
 --- @param self GameTooltip
 local function OnTooltipSetUnit(self)
-	if self:IsForbidden() or not IsTooltipModuleEnabled() then
+	if self:IsForbidden() or self.GetUnit == nil or not IsTooltipModuleEnabled() then
 		return
 	end
 
@@ -125,7 +125,7 @@ end
 
 --- @param self GameTooltip
 local function OnTooltipSetSpell(self)
-	if self:IsForbidden() then
+	if self:IsForbidden() or self.GetSpell == nil then
 		return
 	end
 
