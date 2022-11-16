@@ -3646,193 +3646,190 @@ local talents = {
 	},
 	-- Devastation Evoker
 	[1467] = {
-		371032, -- [0] Terror of the Skies
-		374968, -- [1] Time Spiral
-		387787, -- [2] Regenerative Magic
-		375561, -- [3] Lush Growth
-		374348, -- [4] Renewing Blaze
-		375574, -- [5] Foci of Life
-		375577, -- [6] Fire Within
-		374227, -- [7] Zephyr
-		370888, -- [8] Twin Guardian
-		387341, -- [9] Walloping Blow
-		370665, -- [10] Rescue
-		365933, -- [11] Aerial Mastery
-		374346, -- [12] Overawe
-		369909, -- [13] Protracted Talons
-		369939, -- [14] Leaping Flames
-		368432, -- [15] Unravel
-		375507, -- [16] Roar of Exhilaration
-		351338, -- [17] Quell
-		375510, -- [18] Blast Furnace
-		372048, -- [19] Oppressing Roar
-		369459, -- [20] Source of Magic
-		375544, -- [21] Tempered Scales
-		369990, -- [22] Ancient Flame
-		376930, -- [23] Attuned to the Dream
-		374251, -- [24] Cauterizing Flame
-		375406, -- [25] Obsidian Bulwark
-		363916, -- [26] Obsidian Scales
-		370897, -- [27] Permeating Chill
-		375554, -- [28] Enkindled
-		375556, -- [29] Tailwind
-		375517, -- [30] Extended Flight
-		387761, -- [31] Panacea
-		358385, -- [32] Landslide
-		369913, -- [33] Natural Convergence
-		375520, -- [34] Innate Magic
-		371806, -- [35] Recall
-		376166, -- [36] Draconic Legacy
-		370553, -- [37] Tip the Scales
-		372469, -- [38] Scarlet Adaptation
-		360995, -- [39] Verdant Embrace
-		365585, -- [40] Expunge
-		376164, -- [41] Instinctive Arcana
-		375528, -- [42] Forger of Mountains
-		368838, -- [43] Heavy Wingbeats
-		375443, -- [44] Clobbering Sweep
-		360806, -- [45] Sleep Walk
-		370886, -- [46] Bountiful Bloom
-		375542, -- [47] Exuberance
-		377082, -- [48] Dreamwalker
-		377086, -- [49] Rush of Vitality
-		370960, -- [50] Emerald Communion
-		377100, -- [51] Exhilarating Burst
-		375783, -- [52] Font of Magic
-		359816, -- [53] Dream Flight
-		369908, -- [54] Power Nexus
-		371257, -- [55] Renewing Breath
-		381921, -- [56] Ouroboros
-		376207, -- [57] Delay Harm
-		376204, -- [58] Just in Time
-		370537, -- [59] Stasis
-		368412, -- [60] Time of Need
-		376240, -- [61] Timeless Magic
-		372233, -- [62] Energy Loop
-		371270, -- [63] Punctuality
-		376236, -- [64] Resonating Sphere
-		376237, -- [65] Nozdormu's Teachings
-		385696, -- [66] Flow State
-		373861, -- [67] Temporal Anomaly
-		363534, -- [68] Rewind
-		357170, -- [69] Time Dilation
-		378196, -- [70] Golden Hour
-		372527, -- [71] Time Lord
-		371426, -- [72] Life-Giver's Flame
-		376179, -- [73] Lifeforce Mender
-		373834, -- [74] Call of Ysera
-		376210, -- [75] Erasure
-		381922, -- [76] Temporal Artificer
-		376239, -- [77] Grace Period
-		371832, -- [78] Cycle of Life
-		376138, -- [79] Empath
-		376150, -- [80] Spiritual Clarity
-		367226, -- [81] Spiritbloom
-		362874, -- [82] Temporal Compression
-		355936, -- [83] Dream Breath
-		364343, -- [84] Echo
-		366155, -- [85] Reversion
-		369297, -- [86] Essence Burst
-		375722, -- [87] Essence Attunement
-		359793, -- [88] Fluttering Seedlings
-		370062, -- [89] Field of Dreams
-		373270, -- [90] Lifebind
-		377099, -- [91] Spark of Insight
+		375528, -- [0] Forger of Mountains
+		368838, -- [1] Heavy Wingbeats
+		375443, -- [2] Clobbering Sweep
+		360806, -- [3] Sleep Walk
+		370886, -- [4] Bountiful Bloom
+		375542, -- [5] Exuberance
+		369908, -- [6] Power Nexus
+		375796, -- [7] Hoarded Power
+		369846, -- [8] Feed the Flames
+		370819, -- [9] Everburning Flame
+		370867, -- [10] Iridescence
+		369375, -- [11] Eye of Infinity
+		375777, -- [12] Causality
+		370452, -- [13] Shattering Star
+		386336, -- [14] Focusing Iris
+		386342, -- [15] Arcane Vigor
+		370839, -- [16] Power Swell
+		375757, -- [17] Eternity's Span
+		375618, -- [18] Arcane Intensity
+		359073, -- [19] Eternity Surge
+		371034, -- [20] Lay Waste
+		375722, -- [21] Essence Attunement
+		371038, -- [22] Honed Aggression
+		370455, -- [23] Charged Blast
+		370845, -- [24] Spellweaver's Dominance
+		370821, -- [25] Scintillation
+		386348, -- [26] Onyx Legacy
+		370781, -- [27] Imminent Destruction
+		375783, -- [28] Font of Magic
+		375801, -- [29] Burnout
+		370783, -- [30] Snapfire
+		368847, -- [31] Firestorm
+		386283, -- [32] Catalyze
+		375725, -- [33] Heat Wave
+		376888, -- [34] Tyranny
+		386272, -- [35] Titanic Wrath
+		375797, -- [36] Animosity
+		375087, -- [37] Dragonrage
+		371016, -- [38] Imposing Presence
+		386405, -- [39] Inner Radiance
+		375721, -- [40] Azure Essence Burst
+		357211, -- [41] Pyre
+		376872, -- [42] Ruby Essence Burst
+		370962, -- [43] Dense Energy
+		369089, -- [44] Volatility
+		365937, -- [45] Ruby Embers
+		370837, -- [46] Engulfing Blaze
+		371032, -- [47] Terror of the Skies
+		374968, -- [48] Time Spiral
+		387787, -- [49] Regenerative Magic
+		375561, -- [50] Lush Growth
+		374348, -- [51] Renewing Blaze
+		375574, -- [52] Foci of Life
+		375577, -- [53] Fire Within
+		374227, -- [54] Zephyr
+		370888, -- [55] Twin Guardian
+		387341, -- [56] Walloping Blow
+		370665, -- [57] Rescue
+		365933, -- [58] Aerial Mastery
+		374346, -- [59] Overawe
+		369909, -- [60] Protracted Talons
+		369939, -- [61] Leaping Flames
+		368432, -- [62] Unravel
+		375507, -- [63] Roar of Exhilaration
+		351338, -- [64] Quell
+		376164, -- [65] Instinctive Arcana
+		375510, -- [66] Blast Furnace
+		372048, -- [67] Oppressing Roar
+		369459, -- [68] Source of Magic
+		375544, -- [69] Inherent Resistance
+		369990, -- [70] Ancient Flame
+		376930, -- [71] Attuned to the Dream
+		374251, -- [72] Cauterizing Flame
+		375406, -- [73] Obsidian Bulwark
+		363916, -- [74] Obsidian Scales
+		370897, -- [75] Permeating Chill
+		375554, -- [76] Enkindled
+		375556, -- [77] Tailwind
+		375517, -- [78] Extended Flight
+		387761, -- [79] Panacea
+		358385, -- [80] Landslide
+		369913, -- [81] Natural Convergence
+		375520, -- [82] Innate Magic
+		371806, -- [83] Recall
+		376166, -- [84] Draconic Legacy
+		370553, -- [85] Tip the Scales
+		372469, -- [86] Scarlet Adaptation
+		360995, -- [87] Verdant Embrace
+		365585, -- [88] Expunge
 	},
 	-- Preservation Evoker
 	[1468] = {
-		371032, -- [0] Terror of the Skies
-		374968, -- [1] Time Spiral
-		387787, -- [2] Regenerative Magic
-		375561, -- [3] Lush Growth
-		374348, -- [4] Renewing Blaze
-		375574, -- [5] Foci of Life
-		375577, -- [6] Fire Within
-		374227, -- [7] Zephyr
-		370888, -- [8] Twin Guardian
-		387341, -- [9] Walloping Blow
-		370665, -- [10] Rescue
-		365933, -- [11] Aerial Mastery
-		374346, -- [12] Overawe
-		369909, -- [13] Protracted Talons
-		369939, -- [14] Leaping Flames
-		368432, -- [15] Unravel
-		375507, -- [16] Roar of Exhilaration
-		351338, -- [17] Quell
-		375510, -- [18] Blast Furnace
-		372048, -- [19] Oppressing Roar
-		369459, -- [20] Source of Magic
-		375544, -- [21] Tempered Scales
-		369990, -- [22] Ancient Flame
-		376930, -- [23] Attuned to the Dream
-		374251, -- [24] Cauterizing Flame
-		375406, -- [25] Obsidian Bulwark
-		363916, -- [26] Obsidian Scales
-		370897, -- [27] Permeating Chill
-		375554, -- [28] Enkindled
-		375556, -- [29] Tailwind
-		375517, -- [30] Extended Flight
-		387761, -- [31] Panacea
-		358385, -- [32] Landslide
-		369913, -- [33] Natural Convergence
-		375520, -- [34] Innate Magic
-		371806, -- [35] Recall
-		376166, -- [36] Draconic Legacy
-		370553, -- [37] Tip the Scales
-		372469, -- [38] Scarlet Adaptation
-		360995, -- [39] Verdant Embrace
-		365585, -- [40] Expunge
-		376164, -- [41] Instinctive Arcana
-		375528, -- [42] Forger of Mountains
-		368838, -- [43] Heavy Wingbeats
-		375443, -- [44] Clobbering Sweep
-		360806, -- [45] Sleep Walk
-		370886, -- [46] Bountiful Bloom
-		375542, -- [47] Exuberance
-		377082, -- [48] Dreamwalker
-		377086, -- [49] Rush of Vitality
-		370960, -- [50] Emerald Communion
-		377100, -- [51] Exhilarating Burst
-		375783, -- [52] Font of Magic
-		359816, -- [53] Dream Flight
-		369908, -- [54] Power Nexus
-		371257, -- [55] Renewing Breath
-		381921, -- [56] Ouroboros
-		376207, -- [57] Delay Harm
-		376204, -- [58] Just in Time
-		370537, -- [59] Stasis
-		368412, -- [60] Time of Need
-		376240, -- [61] Timeless Magic
-		372233, -- [62] Energy Loop
-		371270, -- [63] Punctuality
-		376236, -- [64] Resonating Sphere
-		376237, -- [65] Nozdormu's Teachings
-		385696, -- [66] Flow State
-		373861, -- [67] Temporal Anomaly
-		363534, -- [68] Rewind
-		357170, -- [69] Time Dilation
-		378196, -- [70] Golden Hour
-		372527, -- [71] Time Lord
-		371426, -- [72] Life-Giver's Flame
-		376179, -- [73] Lifeforce Mender
-		373834, -- [74] Call of Ysera
-		376210, -- [75] Erasure
-		381922, -- [76] Temporal Artificer
-		376239, -- [77] Grace Period
-		371832, -- [78] Cycle of Life
-		376138, -- [79] Empath
-		376150, -- [80] Spiritual Clarity
-		367226, -- [81] Spiritbloom
-		362874, -- [82] Temporal Compression
-		355936, -- [83] Dream Breath
-		364343, -- [84] Echo
-		366155, -- [85] Reversion
-		369297, -- [86] Essence Burst
-		375722, -- [87] Essence Attunement
-		359793, -- [88] Fluttering Seedlings
-		370062, -- [89] Field of Dreams
-		373270, -- [90] Lifebind
-		377099, -- [91] Spark of Insight
+		375528, -- [0] Forger of Mountains
+		368838, -- [1] Heavy Wingbeats
+		375443, -- [2] Clobbering Sweep
+		360806, -- [3] Sleep Walk
+		370886, -- [4] Bountiful Bloom
+		375542, -- [5] Exuberance
+		377082, -- [6] Dreamwalker
+		377086, -- [7] Rush of Vitality
+		370960, -- [8] Emerald Communion
+		377100, -- [9] Exhilarating Burst
+		375783, -- [10] Font of Magic
+		359816, -- [11] Dream Flight
+		369908, -- [12] Power Nexus
+		371257, -- [13] Renewing Breath
+		381921, -- [14] Ouroboros
+		376207, -- [15] Delay Harm
+		376204, -- [16] Just in Time
+		370537, -- [17] Stasis
+		368412, -- [18] Time of Need
+		376240, -- [19] Timeless Magic
+		372233, -- [20] Energy Loop
+		371270, -- [21] Punctuality
+		376236, -- [22] Resonating Sphere
+		376237, -- [23] Nozdormu's Teachings
+		385696, -- [24] Flow State
+		373861, -- [25] Temporal Anomaly
+		363534, -- [26] Rewind
+		357170, -- [27] Time Dilation
+		378196, -- [28] Golden Hour
+		372527, -- [29] Time Lord
+		371426, -- [30] Life-Giver's Flame
+		376179, -- [31] Lifeforce Mender
+		373834, -- [32] Call of Ysera
+		376210, -- [33] Erasure
+		381922, -- [34] Temporal Artificer
+		376239, -- [35] Grace Period
+		371832, -- [36] Cycle of Life
+		376138, -- [37] Empath
+		376150, -- [38] Spiritual Clarity
+		367226, -- [39] Spiritbloom
+		362874, -- [40] Temporal Compression
+		355936, -- [41] Dream Breath
+		364343, -- [42] Echo
+		366155, -- [43] Reversion
+		369297, -- [44] Essence Burst
+		375722, -- [45] Essence Attunement
+		359793, -- [46] Fluttering Seedlings
+		370062, -- [47] Field of Dreams
+		373270, -- [48] Lifebind
+		377099, -- [49] Spark of Insight
+		371032, -- [50] Terror of the Skies
+		374968, -- [51] Time Spiral
+		387787, -- [52] Regenerative Magic
+		375561, -- [53] Lush Growth
+		374348, -- [54] Renewing Blaze
+		375574, -- [55] Foci of Life
+		375577, -- [56] Fire Within
+		374227, -- [57] Zephyr
+		370888, -- [58] Twin Guardian
+		387341, -- [59] Walloping Blow
+		370665, -- [60] Rescue
+		365933, -- [61] Aerial Mastery
+		374346, -- [62] Overawe
+		369909, -- [63] Protracted Talons
+		369939, -- [64] Leaping Flames
+		368432, -- [65] Unravel
+		375507, -- [66] Roar of Exhilaration
+		351338, -- [67] Quell
+		376164, -- [68] Instinctive Arcana
+		375510, -- [69] Blast Furnace
+		372048, -- [70] Oppressing Roar
+		369459, -- [71] Source of Magic
+		375544, -- [72] Inherent Resistance
+		369990, -- [73] Ancient Flame
+		376930, -- [74] Attuned to the Dream
+		374251, -- [75] Cauterizing Flame
+		375406, -- [76] Obsidian Bulwark
+		363916, -- [77] Obsidian Scales
+		370897, -- [78] Permeating Chill
+		375554, -- [79] Enkindled
+		375556, -- [80] Tailwind
+		375517, -- [81] Extended Flight
+		387761, -- [82] Panacea
+		358385, -- [83] Landslide
+		369913, -- [84] Natural Convergence
+		375520, -- [85] Innate Magic
+		371806, -- [86] Recall
+		376166, -- [87] Draconic Legacy
+		370553, -- [88] Tip the Scales
+		372469, -- [89] Scarlet Adaptation
+		360995, -- [90] Verdant Embrace
+		365585, -- [91] Expunge
 	},
 }
 
@@ -4134,15 +4131,15 @@ local pvpTalents = {
 	},
 	-- Devastation Evoker
 	[1467] = {
-		[1] = { 5460, 5456, 5471, 5473, 5509, 5469, 5462, 5464, 5466, 5467, }, -- Obsidian Mettle, Chrono Loop, Crippling Force, Divide and Conquer, Precognition, Unburdened Flight, Scouring Flame, Time Stop, Swoop Up, Nullifying Shroud
-		[2] = { 5460, 5456, 5471, 5473, 5509, 5469, 5462, 5464, 5466, 5467, }, -- Obsidian Mettle, Chrono Loop, Crippling Force, Divide and Conquer, Precognition, Unburdened Flight, Scouring Flame, Time Stop, Swoop Up, Nullifying Shroud
-		[3] = { 5460, 5456, 5471, 5473, 5509, 5469, 5462, 5464, 5466, 5467, }, -- Obsidian Mettle, Chrono Loop, Crippling Force, Divide and Conquer, Precognition, Unburdened Flight, Scouring Flame, Time Stop, Swoop Up, Nullifying Shroud
+		[1] = { 5456, 5466, 5467, 5469, 5471, 5509, 5460, 5462, 5464, }, -- Chrono Loop, Swoop Up, Nullifying Shroud, Unburdened Flight, Crippling Force, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
+		[2] = { 5456, 5466, 5467, 5469, 5471, 5509, 5460, 5462, 5464, }, -- Chrono Loop, Swoop Up, Nullifying Shroud, Unburdened Flight, Crippling Force, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
+		[3] = { 5456, 5466, 5467, 5469, 5471, 5509, 5460, 5462, 5464, }, -- Chrono Loop, Swoop Up, Nullifying Shroud, Unburdened Flight, Crippling Force, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
 	},
 	-- Preservation Evoker
 	[1468] = {
-		[1] = { 5459, 5470, 5455, 5454, 5468, 5472, 5502, 5461, 5463, 5465, }, -- Obsidian Mettle, Unburdened Flight, Chrono Loop, Dream Projection, Nullifying Shroud, Divide and Conquer, Precognition, Scouring Flame, Time Stop, Swoop Up
-		[2] = { 5459, 5470, 5455, 5454, 5468, 5472, 5502, 5461, 5463, 5465, }, -- Obsidian Mettle, Unburdened Flight, Chrono Loop, Dream Projection, Nullifying Shroud, Divide and Conquer, Precognition, Scouring Flame, Time Stop, Swoop Up
-		[3] = { 5459, 5470, 5455, 5454, 5468, 5472, 5502, 5461, 5463, 5465, }, -- Obsidian Mettle, Unburdened Flight, Chrono Loop, Dream Projection, Nullifying Shroud, Divide and Conquer, Precognition, Scouring Flame, Time Stop, Swoop Up
+		[1] = { 5455, 5454, 5465, 5468, 5470, 5502, 5459, 5461, 5463, }, -- Chrono Loop, Dream Projection, Swoop Up, Nullifying Shroud, Unburdened Flight, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
+		[2] = { 5455, 5454, 5465, 5468, 5470, 5502, 5459, 5461, 5463, }, -- Chrono Loop, Dream Projection, Swoop Up, Nullifying Shroud, Unburdened Flight, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
+		[3] = { 5455, 5454, 5465, 5468, 5470, 5502, 5459, 5461, 5463, }, -- Chrono Loop, Dream Projection, Swoop Up, Nullifying Shroud, Unburdened Flight, Precognition, Obsidian Mettle, Scouring Flame, Time Stop
 	},
 }
 
