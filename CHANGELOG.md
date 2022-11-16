@@ -11,8 +11,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ## [Unreleased]
 
 ### Added
+
 * Update Chinese translations (by Jokey)
 * Update Evoker talent data
+
+### Fixed
+
+* Improve performance of unit tooltips
 
 ## [1.9.0] - 2022-11-15
 

@@ -18,6 +18,10 @@
 local _, Addon = ...
 
 local lastTooltipUpdateTime
+local lastTooltipUnit
+
+local lineCache = {}
+local rebuild
 
 -- Local support functions
 
@@ -88,6 +92,10 @@ local function SortBindings(left, right)
 	return Addon:CompareBindings(left, right)
 end
 
+local function OnTooltipHide()
+	rebuild = true
+end
+
 --- @param self GameTooltip
 local function OnTooltipSetUnit(self)
 	if self:IsForbidden() or self.GetUnit == nil or not IsTooltipModuleEnabled() then
@@ -95,30 +103,37 @@ local function OnTooltipSetUnit(self)
 	end
 
 	local _, unit = self:GetUnit()
-
 	if Addon:IsStringNilOrEmpty(unit) or lastTooltipUpdateTime == GetTime() then
 		return
 	end
 
+	rebuild = rebuild or unit ~= lastTooltipUnit
 	lastTooltipUpdateTime = GetTime()
+	lastTooltipUnit = unit
 
-	local bindings = Clicked:GetBindingsForUnit(unit)
-	local first = true
+	if rebuild then
+		rebuild = false
 
-	table.sort(bindings, SortBindings)
+		local bindings = Clicked:GetBindingsForUnit(unit)
+		table.sort(bindings, SortBindings)
+		table.wipe(lineCache)
 
-	for _, binding in ipairs(bindings) do
-		if IsKeybindValidForCurrentModifiers(binding.keybind) then
-			local left = Addon:GetSimpleSpellOrItemInfo(binding)
-			local right = Addon:SanitizeKeybind(binding.keybind)
+		for _, binding in ipairs(bindings) do
+			if IsKeybindValidForCurrentModifiers(binding.keybind) then
+				local left = Addon:GetSimpleSpellOrItemInfo(binding)
+				local right = Addon:SanitizeKeybind(binding.keybind)
 
-			if first then
-				self:AddLine(" ")
-				self:AddLine(Addon.L["Abilities"], 1, 0.85, 0)
-				first = false
+				table.insert(lineCache, { left = left, right = right })
 			end
+		end
+	end
 
-			self:AddDoubleLine(left, right, 1, 1, 1, 0, 1, 0)
+	if #lineCache > 0 then
+		self:AddLine(" ")
+		self:AddLine(Addon.L["Abilities"], 1, 0.85, 0)
+
+		for _, line in ipairs(lineCache) do
+			self:AddDoubleLine(line.left, line.right, 1, 1, 1, 0, 1, 0)
 		end
 	end
 end
@@ -164,6 +179,8 @@ function Addon:AbilityTooltips_Initialize()
 		else
 			GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 		end
+
+		GameTooltip:HookScript("OnHide", OnTooltipHide)
 	end)
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
@@ -186,6 +203,7 @@ function Addon:AbilityTooltips_Refresh()
 		local _, unit = GameTooltip:GetUnit()
 
 		if not Addon:IsStringNilOrEmpty(unit) then
+			rebuild = true
 			GameTooltip:SetUnit(unit)
 		end
 	end
