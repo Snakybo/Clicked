@@ -371,6 +371,7 @@ local function Button_OnClick(frame, button)
 				func = function()
 					if frame.binding ~= nil then
 						local clone = Addon:DeepCopyTable(self.bindingCopyBuffer)
+						clone.parent = frame.parent
 						clone.identifier = frame.binding.identifier
 						clone.keybind = frame.binding.keybind
 						clone.integrations = frame.binding.integrations

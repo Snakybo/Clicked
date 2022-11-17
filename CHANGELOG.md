@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add `/cancelform` option [#133] [#121]
 
+### Fixed
+
+* Fix pasting binding data sometimes hiding bindings completely
+
 ## [1.9.1] - 2022-11-16
 
 ### Added
