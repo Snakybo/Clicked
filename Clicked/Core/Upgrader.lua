@@ -1,7 +1,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-Addon.DATA_VERSION = 1
+Addon.DATA_VERSION = 2
 
 -- Local support functions
 
@@ -715,10 +715,15 @@ local function UpgradeLegacy(profile, from)
 	end
 end
 
--- --- @param profile Profile
--- --- @param from integer
--- local function Upgrade(profile, from)
--- end
+--- @param profile Profile
+--- @param from integer
+local function Upgrade(profile, from)
+	if from < 2 then
+		for _, binding in ipairs(profile.bindings) do
+			binding.action.cancelForm = false
+		end
+	end
+end
 
 -- Private addon API
 
@@ -780,9 +785,10 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 
 	if type(from) == "string" then
 		safecall(UpgradeLegacy, profile, from)
+		from = profile.version
 	end
 
-	-- safecall(Upgrade, profile, from)
+	safecall(Upgrade, profile, from)
 
 	profile.version = Addon.DATA_VERSION
 end

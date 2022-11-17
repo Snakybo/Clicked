@@ -1157,6 +1157,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		local startAutoAttack = false
 		local startPetAttack = false
 		local cancelQueuedSpell = false
+		local cancelForm = false
 
 		for _, binding in ipairs(bindings) do
 			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM or binding.type == Addon.BindingTypes.CANCELAURA then
@@ -1174,6 +1175,11 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					if not startPetAttack and binding.action.startPetAttack then
 						startPetAttack = true
 						table.insert(lines, "/petattack")
+					end
+
+					if not cancelForm and binding.action.cancelForm then
+						cancelForm = true
+						table.insert(lines, "/cancelform")
 					end
 				end
 

@@ -74,6 +74,7 @@
 --- @field public startAutoAttack boolean
 --- @field public startPetAttack boolean
 --- @field public cancelQueuedSpell boolean
+--- @field public cancelForm boolean
 --- @field public targetUnitAfterCast boolean
 
 --- @class Binding.Load

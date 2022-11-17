@@ -248,6 +248,7 @@ function Addon:GetNewBindingTemplate()
 			startAutoAttack = false,
 			startPetAttack = false,
 			cancelQueuedSpell = false,
+			cancelForm = false,
 			targetUnitAfterCast = false
 		},
 		targets = {
