@@ -1278,3 +1278,14 @@ function Addon:TableContains(table, element)
 
 	return false
 end
+
+--- Get the character at the specified index in the string.
+---
+--- @param str string
+--- @param index integer
+function Addon:CharAt(str, index)
+	assert(type(str) == "string", "bad argument #1, expected string but got " .. type(str))
+	assert(type(index) == "number", "bad argument #2, expected string but got " .. type(index))
+
+	return string.sub(str, index, index)
+end

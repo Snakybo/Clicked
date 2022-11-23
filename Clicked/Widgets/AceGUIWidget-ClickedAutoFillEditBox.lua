@@ -17,6 +17,9 @@ EditBox Widget
 --- @field public text string
 --- @field public icon string|integer
 
+--- @class ClickedInternal
+local _, Addon = ...
+
 local Type, Version = "ClickedAutoFillEditBox", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -31,41 +34,93 @@ local ATTACH_BELOW = "below"
 Support functions
 -------------------------------------------------------------------------------]]
 
-local function ScoreMatch(text1, text2)
-	local len1 = strlenutf8(text1)
-	local len2 = strlenutf8(text2)
-	local matrix = {}
-	local cost = 1
-	local min = math.min
+--- Find the longest common subsequence between two strings.
+--- @type fun(source:string, target:string):string
+local LongestCommonSubsequence
 
-	if len1 == 0 then
-		return len2
-	elseif len2 == 0 then
-		return len1
-	elseif text1 == text2 then
-		return 0
-	end
+do
+	--- Create an identity matrix.
+	---
+	--- @param source string
+	--- @param target string
+	--- @return integer[][]
+	local function CreateMatrix(source, target)
+		local matrix = {}
 
-	for i = 0, len1 do
-		matrix[i] = {}
-		matrix[i][0] = i
-	end
+		for i = 1, #source + 1 do
+			matrix[i] = {}
+			matrix[i][1] = 0
+		end
 
-	for j = 0, len2 do
-		matrix[0][j] = j
-	end
+		for j = 1, #target + 1 do
+			matrix[1][j] = 0
+		end
 
-	for i = 1, len1 do
-		for j = 1, len2 do
-			if text1:byte(i) == text2:byte(j) then
-				cost = 0
+		for i = 2, #source + 1 do
+			for j = 2, #target + 1 do
+				if Addon:CharAt(source, i - 1) == Addon:CharAt(target, j - 1) then
+					matrix[i][j] = matrix[i - 1][j - 1] + 1
+				else
+					matrix[i][j] = math.max(matrix[i][j - 1], matrix[i - 1][j])
+				end
 			end
+		end
 
-			matrix[i][j] = min(matrix[i-1][j] + 1, matrix[i][j-1] + 1, matrix[i-1][j-1] + cost)
+		return matrix
+	end
+
+	--- Find the longest common subsequence by backtracking over the specified strings.
+	---
+	--- @param matrix integer[][]
+	--- @param source string
+	--- @param target string
+	--- @param i integer
+	--- @param j integer
+	--- @return string
+	local function Backtrack(matrix, source, target, i, j)
+		if i == 1 or j == 1 then
+			return ""
+		end
+
+		if Addon:CharAt(source, i - 1) == Addon:CharAt(target, j - 1) then
+			return Backtrack(matrix, source, target, i - 1, j - 1) .. Addon:CharAt(source, i - 1)
+		end
+
+		if matrix[i][j - 1] > matrix[i - 1][j] then
+			return Backtrack(matrix, source, target, i, j - 1)
+		else
+			return Backtrack(matrix, source, target, i - 1, j)
 		end
 	end
 
-	return matrix[len1][len2]
+	--- Find the longest common subsequence between two strings.
+	---
+	--- @param source string
+	--- @param target string
+	function LongestCommonSubsequence(source, target)
+		local matrix = CreateMatrix(source, target)
+		return Backtrack(matrix, source, target, #source, #target)
+	end
+end
+
+--- comment
+---
+--- @param input string
+--- @param match string
+--- @param caseSensitive boolean
+--- @return number
+local function ScoreMatch(input, match, caseSensitive)
+	if not caseSensitive then
+		input = string.upper(input)
+		match = string.upper(match)
+	end
+
+	-- Check for a full match
+	if input == match then
+		return 0
+	end
+
+	return 1 - (#LongestCommonSubsequence(input, match) / math.min(#input, #match))
 end
 
 --- Find and sort matches of the input string.
@@ -103,8 +158,10 @@ local function FindMatches(text, values, count)
 
 	table.sort(matches, SortFunc)
 
-	for i, match in ipairs(matches) do
-		table.insert(result, match.value)
+	for _, match in ipairs(matches) do
+		if match.score <= 0.25 then
+			table.insert(result, match.value)
+		end
 
 		-- Only return the first entry if the score is 0 (we have a full match)
 		if match.score == 0 then
@@ -112,7 +169,7 @@ local function FindMatches(text, values, count)
 		end
 
 		-- Only return `count` number of matches
-		if i >= count then
+		if #result >= count then
 			break
 		end
 	end
@@ -335,6 +392,11 @@ local function Rebuild(self)
 
 	local matches = FindMatches(text, self:GetValues(), self:GetMaxVisibleValues() + 1)
 	UpdateButtons(self, matches)
+
+	if #matches == 0 then
+		HideAutoCompleteBox(self)
+		return
+	end
 
 	local buttonHeight = self.buttons[1]:GetHeight()
 	local baseHeight = 32
