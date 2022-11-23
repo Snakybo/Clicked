@@ -246,6 +246,8 @@ local function CreateButton(self)
 	button.icon = icon
 
 	button:GetFontString():SetPoint("LEFT", 28, 0)
+	button:GetFontString():SetWidth(self.autoCompleteBox:GetWidth() - 40)
+	button:GetFontString():SetJustifyH("LEFT")
 	button:GetFontString():SetHeight(14)
 
 	button:SetScript("OnClick", function()
