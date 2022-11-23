@@ -4,18 +4,16 @@ EditBox Widget
 
 --- @class ClickedAutoFillEditBox : AceGUIEditBox
 --- @field public autoCompleteBox Frame
---- @field public SetValues fun(values:ClickedAutoFillEditBoxEntry[])
---- @field public GetValues fun():ClickedAutoFillEditBoxEntry[]
+--- @field public SetValues fun(values:table[])
+--- @field public GetValues fun():table[]
 --- @field public SetMaxVisibleValues fun(count:integer)
 --- @field public GetMaxVisibleValues fun():integer
 --- @field public SetTextHighlight fun(enabled:boolean)
 --- @field public HasTextHighlight fun():boolean
 --- @field public SetSelectedIndex fun(index:integer)
 --- @field public GetSelectedIndex fun():integer
-
---- @class ClickedAutoFillEditBoxEntry
---- @field public text string
---- @field public icon string|integer
+--- @field public SetInputError fun(isInputError:boolean)
+--- @field public IsInputError fun():boolean
 
 --- @class ClickedInternal
 local _, Addon = ...
@@ -126,9 +124,9 @@ end
 --- Find and sort matches of the input string.
 ---
 --- @param text string
---- @param values ClickedAutoFillEditBoxEntry[]
+--- @param values table[]
 --- @param count integer
---- @return ClickedAutoFillEditBoxEntry[]
+--- @return table[]
 local function FindMatches(text, values, count)
 	if text == nil or text == "" or #values == 0 then
 		return {}
@@ -249,14 +247,8 @@ end
 --- Select the specified text.
 ---
 --- @param self ClickedAutoFillEditBox
---- @param button Button?
-local function Select(self, button)
-	if button == nil then
-		return
-	end
-
-	local text = button:GetText()
-
+--- @param text string
+local function Select(self, text)
 	self.editbox:SetText(text)
 	self.editbox:SetCursorPosition(strlen(text))
 
@@ -264,6 +256,19 @@ local function Select(self, button)
 	self.originalText = text
 
 	AceGUI:ClearFocus(self)
+end
+
+--- Select the specified button.
+---
+--- @param self ClickedAutoFillEditBox
+--- @param button Button?
+local function SelectButton(self, button)
+	if button == nil then
+		return
+	end
+
+	local text = button:GetText()
+	Select(self, text)
 end
 
 --- Hide the auto-complete box.
@@ -295,6 +300,7 @@ local function CreateButton(self)
 	local num = AceGUI:GetNextWidgetNum(type)
 
 	local button = CreateFrame("Button", type .. num, self.autoCompleteBox, "AutoCompleteButtonTemplate")
+	button:EnableMouse(true)
 	button.obj = self
 
 	local icon = button:CreateTexture(nil, "OVERLAY")
@@ -309,7 +315,7 @@ local function CreateButton(self)
 
 	button:SetScript("OnClick", function()
 		HideAutoCompleteBox(self)
-		Select(self, button)
+		SelectButton(self, button)
 	end)
 
 	button:SetScript("OnEnter",function()
@@ -327,7 +333,7 @@ end
 --- comment
 ---
 --- @param self ClickedAutoFillEditBox
---- @param matches ClickedAutoFillEditBoxEntry[]
+--- @param matches table[]
 local function UpdateButtons(self, matches)
 	local count = math.min(self:GetMaxVisibleValues(), #matches)
 
@@ -390,38 +396,49 @@ local function Rebuild(self)
 		return
 	end
 
-	local matches = FindMatches(text, self:GetValues(), self:GetMaxVisibleValues() + 1)
-	UpdateButtons(self, matches)
-
-	if #matches == 0 then
+	if tonumber(text) ~= nil then
 		HideAutoCompleteBox(self)
-		return
-	end
 
-	local buttonHeight = self.buttons[1]:GetHeight()
-	local baseHeight = 32
+		for _, value in ipairs(self:GetValues()) do
+			if value.spellId == tonumber(text) then
+				Select(self, value.text)
+				break
+			end
+		end
+	else
+		local matches = FindMatches(text, self:GetValues(), self:GetMaxVisibleValues() + 1)
+		UpdateButtons(self, matches)
 
-	local height = baseHeight + math.max(buttonHeight * math.min(#matches, self:GetMaxVisibleValues()), 14)
-	local attachTo = FindAttachmentPoint(self, height)
-
-	if box.attachTo ~= attachTo then
-		if attachTo == ATTACH_ABOVE then
-			box:ClearAllPoints();
-			box:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
-		elseif attachTo == ATTACH_BELOW then
-			box:ClearAllPoints();
-			box:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
+		if #matches == 0 then
+			HideAutoCompleteBox(self)
+			return
 		end
 
-		box.attachTo = attachTo
-	end
+		local buttonHeight = self.buttons[1]:GetHeight()
+		local baseHeight = 32
 
-	if not IsAutoCompleteBoxVisible(self) then
-		self.selected = 1
-	end
+		local height = baseHeight + math.max(buttonHeight * math.min(#matches, self:GetMaxVisibleValues()), 14)
+		local attachTo = FindAttachmentPoint(self, height)
 
-	box:SetHeight(height)
-	box:Show()
+		if box.attachTo ~= attachTo then
+			if attachTo == ATTACH_ABOVE then
+				box:ClearAllPoints();
+				box:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
+			elseif attachTo == ATTACH_BELOW then
+				box:ClearAllPoints();
+				box:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
+			end
+
+			box.attachTo = attachTo
+		end
+
+		if not IsAutoCompleteBoxVisible(self) then
+			self.selected = 1
+		end
+
+		box:SetHeight(height)
+		box:Show()
+	end
 end
 
 --[[-----------------------------------------------------------------------------
@@ -448,7 +465,7 @@ local function EditBox_OnEnterPressed(frame)
 
 	if IsAutoCompleteBoxVisible(self) then
 		HideAutoCompleteBox(self)
-		Select(self, GetSelectedButton(self))
+		SelectButton(self, GetSelectedButton(self))
 	end
 
 	self.BaseOnTextChanged(frame)
@@ -487,14 +504,18 @@ local methods = {
 		self.numButtons = 10
 		self.originalText = ""
 		self.highlight = true
+		self.isInputError = false
+		self.autoCompleteBox:Hide()
 
 		self:DisableButton(true)
-		Rebuild(self)
 	end,
 
 	["SetValues"] = function(self, values)
 		self.values = values
-		Rebuild(self)
+
+		if IsAutoCompleteBoxVisible(self) then
+			Rebuild(self)
+		end
 	end,
 
 	["GetValues"] = function(self)
@@ -532,6 +553,15 @@ local methods = {
 		return self.selected
 	end,
 
+	["SetInputError"] = function(self, isInputError)
+		self.isInputError = isInputError
+		self:SetText(self:GetText())
+	end,
+
+	["IsInputError"] = function(self)
+		return self.isInputError
+	end,
+
 	["ClearFocus"] = function(self)
 		if IsAutoCompleteBoxVisible(self) then
 			self:SetText(self.originalText)
@@ -547,6 +577,10 @@ local methods = {
 	["SetText"] = function(self, text, isOriginal)
 		if isOriginal then
 			self.originalText = text
+		end
+
+		if self:IsInputError() and text ~= nil then
+			text = "|cffff1a1a" .. text .. "|r"
 		end
 
 		self:BaseSetText(text)
@@ -565,6 +599,7 @@ local function Constructor()
 	widget.numButtons = 10
 	widget.originalText = ""
 	widget.highlight = true
+	widget.isInputError = false
 
 	widget.BaseOnAcquire = widget.OnAcquire
 	widget.BaseSetWidth = widget.SetWidth
@@ -582,7 +617,6 @@ local function Constructor()
 	local box = CreateFrame("Frame", nil, widget.frame, "TooltipBackdropTemplate")
 	box:SetFrameStrata("FULLSCREEN_DIALOG")
 	box:SetClampedToScreen(true)
-	box:EnableMouse(true)
 	widget.autoCompleteBox = box
 
 	local helpText = box:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")

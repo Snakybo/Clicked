@@ -1,7 +1,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-Addon.DATA_VERSION = 2
+Addon.DATA_VERSION = 3
 
 -- Local support functions
 
@@ -721,6 +721,31 @@ local function Upgrade(profile, from)
 	if from < 2 then
 		for _, binding in ipairs(profile.bindings) do
 			binding.action.cancelForm = false
+		end
+	end
+
+	if from < 3 and Addon:IsGameVersionAtleast("RETAIL") then
+		for _, binding in ipairs(profile.bindings) do
+			local talent = {
+				selected = binding.load.talent.selected > 0,
+				entries = {}
+			}
+
+			if binding.load.talent.selected == 1 then
+				talent.entries[1] = {
+					operation = "AND",
+					value = binding.load.talent.single
+				}
+			elseif binding.load.talent.selected == 2 then
+				for i = 1, #binding.load.talent.multiple do
+					table.insert(talent.entries, {
+						operation = "OR",
+						value = binding.load.talent.multiple[i]
+					})
+				end
+			end
+
+			binding.load.talent = talent
 		end
 	end
 end

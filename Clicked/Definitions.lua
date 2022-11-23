@@ -98,7 +98,7 @@
 --- @field public zoneName Binding.LoadOption
 --- @field public equipped Binding.LoadOption
 --- @field public specialization Binding.TriStateLoadOption
---- @field public talent Binding.TriStateLoadOption
+--- @field public talent Binding.TriStateLoadOption|Binding.MutliFieldLoadOption
 --- @field public pvpTalent Binding.TriStateLoadOption
 --- @field public warMode Binding.LoadOption
 --- @field public channeling Binding.NegatableStringLoadOption
@@ -114,6 +114,15 @@
 
 --- @class Binding.NegatableTriStateLoadOption : Binding.TriStateLoadOption
 --- @field public negated boolean
+
+--- @class Binding.MutliFieldLoadOption
+--- @field public selected boolean
+--- @field public entries Binding.MutliFieldLoadOptionEntry[]
+
+--- @class Binding.MutliFieldLoadOptionEntry
+--- @field public operation "AND|OR"
+--- @field public negated boolean
+--- @field public value string
 
 --- @class Binding.NegatableStringLoadOption
 --- @field public selected boolean

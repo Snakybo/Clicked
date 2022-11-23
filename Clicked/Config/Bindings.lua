@@ -805,6 +805,134 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 	return enabledWidget, dropdownWidget, invertWidget
 end
 
+local function DrawTalentSelectOption(container, title, items, data)
+	assert(type(data) == "table", "bad argument #4, expected table but got " .. type(data))
+
+	local enabledWidget
+
+	-- enabled toggle
+	do
+		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget:SetLabel(title)
+
+		if not data.selected then
+			enabledWidget:SetRelativeWidth(1)
+		else
+			enabledWidget:SetRelativeWidth(0.5)
+		end
+
+		container:AddChild(enabledWidget)
+
+		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+	end
+
+	if data.selected then
+		local function AddSpacer()
+			local widget = Addon:GUI_Label("")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		end
+
+		for i = 1, #data.entries do
+			if i > 1 then
+				AddSpacer()
+			end
+
+			do
+				local found = false
+
+				for _, item in ipairs(items) do
+					if item.text == data.entries[i].value then
+						found = true
+						break
+					end
+				end
+
+				local widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value")
+				widget:SetInputError(not found)
+				widget:SetValues(items)
+				widget:SetRelativeWidth(0.5)
+
+				container:AddChild(widget)
+			end
+
+			AddSpacer()
+
+			do
+				local function OnClick()
+					table.remove(data.entries, i)
+					Addon:BindingConfig_Redraw()
+				end
+
+				local widget = AceGUI:Create("Button")
+				widget:SetText("X")
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetRelativeWidth(0.125)
+
+				container:AddChild(widget)
+			end
+
+			do
+				local function OnClick()
+					data.entries[i].negated = not data.entries[i].negated
+					Addon:BindingConfig_Redraw()
+				end
+
+				local widget = AceGUI:Create("Button")
+				widget:SetText(data.entries[i].negated and "Not" or "")
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetRelativeWidth(0.125)
+
+				container:AddChild(widget)
+			end
+
+			if i + 1 <= #data.entries then
+				local function OnClick()
+					if data.entries[i + 1].operation == "AND" then
+						data.entries[i + 1].operation = "OR"
+					else
+						data.entries[i + 1].operation = "AND"
+					end
+
+					Addon:BindingConfig_Redraw()
+				end
+
+				local widget = AceGUI:Create("Button")
+				widget:SetText(data.entries[i + 1].operation == "AND" and "And" or "Or")
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetRelativeWidth(0.25)
+
+				container:AddChild(widget)
+			end
+		end
+
+		do
+			AddSpacer()
+
+			do
+				local function OnClick()
+					table.insert(data.entries, {
+						operation = "AND",
+						value = ""
+					})
+
+					Addon:BindingConfig_Redraw()
+				end
+
+				local widget = AceGUI:Create("Button")
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetText("Add")
+
+				widget:SetRelativeWidth(0.5)
+				container:AddChild(widget)
+			end
+		end
+	end
+
+	return enabledWidget
+end
+
 -- Binding action page and components
 
 --- @param container table
@@ -1943,7 +2071,7 @@ local function Classic_DrawLoadSpecialization(container, specialization)
 end
 
 --- @param container table
---- @param talent Binding.TriStateLoadOption
+--- @param talent Binding.MutliFieldLoadOption
 --- @param specId integer
 local function DrawLoadTalent(container, talent, specId)
 	local function OnPostValueChanged(_, value)
@@ -1954,13 +2082,8 @@ local function DrawLoadTalent(container, talent, specId)
 		end
 	end
 
-	local widget = AceGUI:Create("ClickedAutoFillEditBox")
-	widget:SetValues(Addon:GetLocalizedTalents(specId))
-
-	container:AddChild(widget)
-
-	-- local items, order =
-	-- local enabled = DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
+	local items = Addon:GetLocalizedTalents(specId)
+	local enabled = DrawTalentSelectOption(container, Addon.L["Talent selected"], items, talent)
 
 	Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
 end

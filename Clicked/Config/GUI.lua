@@ -128,6 +128,31 @@ function Addon:GUI_EditBox(callback, ref, key)
 	return widget
 end
 
+--- @param ref table
+--- @param key string
+--- @return ClickedAutoFillEditBox
+function Addon:GUI_AutoFillEditBox(ref, key)
+	local function OnCallback(frame, event, value)
+		value = Addon:TrimString(value)
+		OnSerialize(frame, event, value)
+	end
+
+	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
+	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
+
+	local widget = CreateGUI("ClickedAutoFillEditBox")
+	widget:SetText(ref[key], true)
+	widget:SetCallback("OnSelect", OnCallback)
+
+	widgets[widget] = {
+		setValueFunc = function(text) widget:SetText(text, true) end,
+		ref = ref,
+		key = key
+	}
+
+	return widget
+end
+
 --- @param callback '"OnTextChanged"'|'"OnEnterPressed"'
 --- @param ref table
 --- @param key string

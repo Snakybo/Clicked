@@ -382,9 +382,8 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- is `nil` it will return results for the player's current specialization.
 	---
 	--- @param specialization integer
-	--- @return ClickedAutoFillEditBoxEntry[]
+	--- @return table
 	function Addon:GetLocalizedTalents(specialization)
-		--- @type ClickedAutoFillEditBoxEntry[]
 		local result = {}
 
 		if specialization == nil then
@@ -392,16 +391,14 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		end
 
 		for i = 1, LibTalentInfo:GetNumTalents(specialization) do
-			local spellId = LibTalentInfo:GetTalentAt(specialization, i)
-			local name, _, texture = GetSpellInfo(spellId)
+			local info = LibTalentInfo:GetTalentAt(specialization, i)
 
-			if not Addon:IsStringNilOrEmpty(name) then
-				table.insert(result, {
-					spell = spellId,
-					text = name,
-					icon = texture
-				})
-			end
+			table.insert(result, {
+				entryId = info.entryID,
+				spellId = info.spellID,
+				text = info.name,
+				icon = info.icon
+			})
 		end
 
 		return result
@@ -428,10 +425,11 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 
 		if #specializations == 1 then
 			local spec = specializations[1]
-			local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+			local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
 
 			for i = 1, numTalents do
-				local _, name, texture = LibTalentInfo:GetPvPTalentInfo(spec, 1, i)
+				local talentId = LibTalentInfo:GetPvpTalentAt(spec, i)
+				local _, name, texture = GetPvpTalentInfoByID(talentId)
 				local key = #order + 1
 
 				items[key] = string.format("<icon=%d><text=%s>", texture, name)
@@ -446,7 +444,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 					local specs = LibTalentInfo:GetClassSpecIDs(class)
 
 					for _, spec in pairs(specs) do
-						local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+						local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
 
 						if numTalents > max then
 							max = numTalents
@@ -456,7 +454,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			-- Find specialization with the highest number of PvP talents out of the selected specializations
 			else
 				for _, spec in ipairs(specializations) do
-					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec, 1)
+					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
 
 					if numTalents > max then
 						max = numTalents

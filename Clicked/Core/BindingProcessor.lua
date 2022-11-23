@@ -16,6 +16,7 @@
 
 --- @class ClickedInternal
 local _, Addon = ...
+local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 Addon.BindingTypes = {
 	SPELL = "SPELL",
@@ -740,39 +741,79 @@ function Addon:CanBindingLoad(binding)
 
 		-- talent selected
 		do
-			local function IsTalentIndexSelected(index)
-				local configId = C_ClassTalents.GetActiveConfigID()
-				local currentIndex = 0
+			local function StripColorCodes(str)
+				str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
+				str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
+				str = string.gsub(str, "|r", "")
 
+				return str
+			end
+
+			--- @param entries Binding.MutliFieldLoadOptionEntry[]
+			--- @return boolean
+			local function IsTalentMatrixValid(entries)
+				if #entries == 0 then
+					return false
+				end
+
+				local configId = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or C_ClassTalents.GetActiveConfigID()
 				if configId == nil then
 					return false
 				end
 
-				local config = C_Traits.GetConfigInfo(configId)
+				local compounds = {{}}
 
-				for _, treeId in ipairs(config.treeIDs) do
-					local nodes = C_Traits.GetTreeNodes(treeId)
+				for _, entry in ipairs(entries) do
+					if entry.operation == "OR" then
+						table.insert(compounds, {})
+					end
 
-					for _, nodeId in ipairs(nodes) do
-						local node = C_Traits.GetNodeInfo(configId, nodeId)
+					table.insert(compounds[#compounds], {
+						negated = entry.negated,
+						value = entry.value
+					})
+				end
 
-						if node ~= nil and node.ID ~= 0 then
-							for _, entryId in ipairs(node.entryIDs) do
-								currentIndex = currentIndex + 1
+				local configInfo = C_Traits.GetConfigInfo(configId)
+				local treeId = configInfo.treeIDs[1]
+				local nodes = C_Traits.GetTreeNodes(treeId)
+				local talents = {}
 
-								if currentIndex == index then
-									return Addon:TableContains(node.entryIDsWithCommittedRanks, entryId) or -- it was selected by the player
-									       node.activeRank > 0 and node.ranksPurchased == 0 -- it was given for free, is there a better check for this?
-								end
+				for _, nodeId in ipairs(nodes) do
+					local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
+
+					if nodeInfo.ID ~= 0 and nodeInfo.currentRank > 0 then
+						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID
+						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId)
+						local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+
+						if definitionInfo ~= nil then
+							local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+							talents[name] = true
+						end
+					end
+				end
+
+				for _, compound in ipairs(compounds) do
+					local valid = true
+
+					for _, item in ipairs(compound) do
+						if #item.value > 0 then
+							if talents[item.value] and item.negated or not talents[item.value] and not item.negated then
+								valid = false
 							end
 						end
+					end
+
+					if valid then
+						return true
 					end
 				end
 
 				return false
 			end
 
-			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then
+			if load.talent.selected and not IsTalentMatrixValid(load.talent.entries) then
 				return false
 			end
 		end

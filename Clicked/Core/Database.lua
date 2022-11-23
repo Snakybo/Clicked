@@ -66,6 +66,23 @@ local function GetTriStateLoadOptionTemplate(default)
 	return template
 end
 
+--- @param default string|boolean
+--- @return Binding.MutliFieldLoadOption
+local function GetMultiFieldLoadOptionTemplate(default)
+	local template = {
+		selected = false,
+		entries = {
+			{
+				operation = "AND",
+				negated = false,
+				value = default
+			}
+		}
+	}
+
+	return template
+end
+
 --- @return Binding.NegatableStringLoadOption
 local function GetNegatableStringLoadOptionTemplate()
 	local template = {
@@ -302,6 +319,7 @@ function Addon:GetNewBindingTemplate()
 		end
 
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
+		template.load.talent = GetMultiFieldLoadOptionTemplate("")
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local specIndex = GetActiveTalentGroup()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)

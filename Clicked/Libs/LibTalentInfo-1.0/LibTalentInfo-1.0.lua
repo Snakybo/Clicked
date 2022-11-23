@@ -3,14 +3,19 @@ if LibStub == nil then
 end
 
 --- @class LibTalentInfo-1.0
-local LibTalentInfo = LibStub:NewLibrary("LibTalentInfo-1.0", 9)
+local LibTalentInfo = LibStub:NewLibrary("LibTalentInfo-1.0", 10)
 
 --- @class TalentProvider
 --- @field public version integer
 --- @field public specializations table<string,integer>
---- @field public talents table<integer,integer[]>
---- @field public pvpTalentSlotCount integer
---- @field public pvpTalents table<integer,integer[][]>
+--- @field public talents table<integer,TalentEntry[]>
+--- @field public pvpTalents table<integer,integer[]>
+
+--- @class TalentEntry
+--- @field public entryID integer
+--- @field public spellID integer
+--- @field public name string
+--- @field public icon integer
 
 if LibTalentInfo == nil then
 	return
@@ -65,11 +70,8 @@ end
 --- Get the number of available PvP talents that the specified specialization has in the specified talent slot.
 ---
 --- @param specID integer The specialization ID obtained by `GetSpecializationInfo`.
---- @param slotIndex integer
 --- @return integer
-function LibTalentInfo:GetNumPvPTalentsForSpec(specID, slotIndex)
-	assert(type(slotIndex) == "number", "bad argument #2: expected number, got " .. type(slotIndex))
-
+function LibTalentInfo:GetNumPvPTalentsForSpec(specID)
 	if talentProvider == nil then
 		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
 	end
@@ -78,14 +80,7 @@ function LibTalentInfo:GetNumPvPTalentsForSpec(specID, slotIndex)
 		return 0
 	end
 
-	if slotIndex <= 0 or slotIndex > talentProvider.pvpTalentSlotCount then
-		error("Slot index is out of range: " .. slotIndex .. ". Must be an integer between 1 and " .. talentProvider.pvpTalentSlotCount)
-	end
-
-	local slots = talentProvider.pvpTalents[specID]
-	local slotTalents = slots[slotIndex] or {}
-
-	return #slotTalents
+	return #talentProvider.pvpTalents[specID]
 end
 
 --- Get the number of talents of the specified specialization.
@@ -108,8 +103,10 @@ end
 ---
 --- @param specID integer
 --- @param index integer
---- @returns integer? spellID
+--- @returns TalentEntry?
 function LibTalentInfo:GetTalentAt(specID, index)
+	assert(type(index) == "number", "bad argument #2: expected number, got " .. type(index))
+
 	if talentProvider == nil then
 		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
 	end
@@ -124,23 +121,11 @@ end
 --- Get info for a PvP talent of the specified specialization.
 ---
 --- @param specID integer The specialization ID obtained by `GetSpecializationInfo`.
---- @param slotIndex integer The slot index of the PvP talent row, an integer between `1` and `LibTalentInfo.MAX_PVP_TALENT_SLOTS`.
---- @param talentIndex integer An integer between `1` and the number of PvP talents available for the specified specialization.
+--- @param index integer An integer between `1` and the number of PvP talents available for the specified specialization.
 --- @return integer? talentID
---- @return string? name
---- @return integer? texture
---- @return boolean? selected
---- @return boolean? available
---- @return integer? spellID
---- @return nil
---- @return integer? row
---- @return integer? column
---- @return boolean? known
---- @return boolean? grantedByAura
 --- @see LibTalentInfo#GetNumPvPTalentsForSpec
-function LibTalentInfo:GetPvPTalentInfo(specID, slotIndex, talentIndex)
-	assert(type(slotIndex) == "number", "bad argument #2: expected number, got " .. type(slotIndex))
-	assert(type(talentIndex) == "number", "bad argument #3: expected number, got " .. type(talentIndex))
+function LibTalentInfo:GetPvpTalentAt(specID, index)
+	assert(type(index) == "number", "bad argument #2: expected number, got " .. type(index))
 
 	if talentProvider == nil then
 		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
@@ -150,18 +135,5 @@ function LibTalentInfo:GetPvPTalentInfo(specID, slotIndex, talentIndex)
 		return nil
 	end
 
-	if slotIndex <= 0 or slotIndex > talentProvider.pvpTalentSlotCount then
-		error("Slot index is out of range: " .. slotIndex ". Must be an integer between 1 and " .. talentProvider.pvpTalentSlotCount)
-	end
-
-	local slots = talentProvider.pvpTalents[specID]
-	local slotTalents = slots[slotIndex] or {}
-
-	if talentIndex <= 0 or talentIndex > #slotTalents then
-		error("Talent index is out of range: " .. talentIndex .. ". Must be an integer between 1 and " .. #slotTalents)
-	end
-
-	local talentID = slotTalents[talentIndex]
-
-	return GetPvpTalentInfoByID(talentID)
+	return talentProvider.pvpTalents[specID][index]
 end
