@@ -803,7 +803,7 @@ function Addon:UpgradeDatabaseProfile(profile, from)
 		elseif IsProfileFrom_0_4() then
 			from = "0.4.0"
 		else
-			profile.version = Clicked.VERSION
+			profile.version = Addon.DATA_VERSION
 			return
 		end
 	end
