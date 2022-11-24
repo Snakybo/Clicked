@@ -16,7 +16,6 @@
 
 --- @class ClickedInternal
 local _, Addon = ...
-local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 Addon.BindingTypes = {
 	SPELL = "SPELL",
