@@ -945,7 +945,7 @@ function Addon:CanBindingLoad(binding)
 				return false
 			end
 
-			return IsSpellKnown(spellId)
+			return IsSpellKnownOrOverridesKnown(spellId)
 		end
 	end
 
