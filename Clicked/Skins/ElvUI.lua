@@ -43,6 +43,9 @@ local function Initialize()
 
 			widget.checkbg.SetTexture = elv.noop
 			widget.highlight.SetTexture = elv.noop
+		elseif widget.type == "ClickedAutoFillEditBox" then
+			widget.pullout:StripTextures()
+			widget.pullout:SetTemplate("Transparent")
 		end
 
 		return originalRegisterAsWidget(self, widget)
