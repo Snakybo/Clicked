@@ -471,7 +471,7 @@ local function EditBox_OnTabPressed(frame)
 	MoveCursor(self, IsShiftKeyDown() and -1 or 1)
 end
 
-local function EditBox_OnArrowPressed(frame)
+local function EditBox_OnArrowPressed(frame, key)
 	local self = frame.obj
 
 	if key == "UP" then
