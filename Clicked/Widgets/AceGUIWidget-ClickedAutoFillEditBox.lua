@@ -173,7 +173,10 @@ local function FindMatches(text, values, count)
 
 	for _, match in ipairs(matches) do
 		if match.score <= 0.25 then
-			table.insert(result, match.value)
+			local value = match.value
+			value.score = match.score
+
+			table.insert(result, value)
 		end
 
 		-- Only return the first entry if the score is 0 (we have a full match)
