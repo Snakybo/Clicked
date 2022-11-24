@@ -3,7 +3,7 @@ EditBox Widget
 -------------------------------------------------------------------------------]]
 
 --- @class ClickedAutoFillEditBox : AceGUIEditBox
---- @field public autoCompleteBox Frame
+--- @field public pullout Frame
 --- @field public SetValues fun(values:table[])
 --- @field public GetValues fun():table[]
 --- @field public SetMaxVisibleValues fun(count:integer)
@@ -180,8 +180,7 @@ end
 --- @param self ClickedAutoFillEditBox
 --- @return boolean
 local function IsAutoCompleteBoxVisible(self)
-	local box = self.autoCompleteBox
-	return box:IsShown()
+	return self.pullout:IsShown()
 end
 
 --- Get the index of the last visible button.
@@ -279,7 +278,9 @@ local function HideAutoCompleteBox(self)
 		return
 	end
 
-	self.autoCompleteBox:Hide()
+	self.pullout:ClearAllPoints()
+	self.pullout:Hide()
+	self.pullout.attachTo = nil
 end
 
 --- Hide the auto-complete box.
@@ -299,7 +300,7 @@ local function CreateButton(self)
 	local type = Type .. "Button"
 	local num = AceGUI:GetNextWidgetNum(type)
 
-	local button = CreateFrame("Button", type .. num, self.autoCompleteBox, "AutoCompleteButtonTemplate")
+	local button = CreateFrame("Button", type .. num, self.pullout, "AutoCompleteButtonTemplate")
 	button:EnableMouse(true)
 	button.obj = self
 
@@ -309,7 +310,7 @@ local function CreateButton(self)
 	button.icon = icon
 
 	button:GetFontString():SetPoint("LEFT", 28, 0)
-	button:GetFontString():SetWidth(self.autoCompleteBox:GetWidth() - 40)
+	button:GetFontString():SetWidth(self.pullout:GetWidth() - 40)
 	button:GetFontString():SetJustifyH("LEFT")
 	button:GetFontString():SetHeight(14)
 
@@ -344,8 +345,8 @@ local function UpdateButtons(self, matches)
 			button = CreateButton(self)
 
 			self.buttons[i] = button
-			button:SetParent(self.autoCompleteBox)
-			button:SetFrameLevel(self.autoCompleteBox:GetFrameLevel() + 1)
+			button:SetParent(self.pullout)
+			button:SetFrameLevel(self.pullout:GetFrameLevel() + 1)
 			button:ClearAllPoints()
 
 			if i == 1 then
@@ -389,7 +390,7 @@ local function Rebuild(self)
 	end
 
 	local text = self:GetText()
-	local box = self.autoCompleteBox
+	local pullout = self.pullout
 
 	if self.editbox:GetUTF8CursorPosition() > strlenutf8(text) then
 		HideAutoCompleteBox(self)
@@ -420,24 +421,24 @@ local function Rebuild(self)
 		local height = baseHeight + math.max(buttonHeight * math.min(#matches, self:GetMaxVisibleValues()), 14)
 		local attachTo = FindAttachmentPoint(self, height)
 
-		if box.attachTo ~= attachTo then
+		if pullout.attachTo ~= attachTo then
 			if attachTo == ATTACH_ABOVE then
-				box:ClearAllPoints();
-				box:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
+				pullout:ClearAllPoints();
+				pullout:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
 			elseif attachTo == ATTACH_BELOW then
-				box:ClearAllPoints();
-				box:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
+				pullout:ClearAllPoints();
+				pullout:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
 			end
 
-			box.attachTo = attachTo
+			pullout.attachTo = attachTo
 		end
 
 		if not IsAutoCompleteBoxVisible(self) then
 			self.selected = 1
 		end
 
-		box:SetHeight(height)
-		box:Show()
+		pullout:SetHeight(height)
+		pullout:Show()
 	end
 end
 
@@ -505,9 +506,18 @@ local methods = {
 		self.originalText = ""
 		self.highlight = true
 		self.isInputError = false
-		self.autoCompleteBox:Hide()
+
+		self.pullout:SetParent(UIParent)
+		self.pullout:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+		self.pullout:Hide()
 
 		self:DisableButton(true)
+	end,
+
+	["OnRelease"] = function(self)
+		self:BaseOnRelease()
+
+		HideAutoCompleteBox(self)
 	end,
 
 	["SetValues"] = function(self, values)
@@ -571,7 +581,7 @@ local methods = {
 
 	["SetWidth"] = function(self, width)
 		self:BaseSetWidth(width)
-		self.autoCompleteBox:SetWidth(width)
+		self.pullout:SetWidth(width)
 	end,
 
 	["SetText"] = function(self, text, isOriginal)
@@ -602,6 +612,7 @@ local function Constructor()
 	widget.isInputError = false
 
 	widget.BaseOnAcquire = widget.OnAcquire
+	widget.BaseOnRelease = widget.OnRelease
 	widget.BaseSetWidth = widget.SetWidth
 	widget.BaseSetText = widget.SetText
 	widget.BaseOnEnterPressed = widget.editbox:GetScript("OnEnterPressed")
@@ -614,12 +625,12 @@ local function Constructor()
 	widget.editbox:SetScript("OnArrowPressed", EditBox_OnArrowPressed)
 	widget.editbox:SetAltArrowKeyMode(false)
 
-	local box = CreateFrame("Frame", nil, widget.frame, "TooltipBackdropTemplate")
-	box:SetFrameStrata("FULLSCREEN_DIALOG")
-	box:SetClampedToScreen(true)
-	widget.autoCompleteBox = box
+	local pullout = CreateFrame("Frame", nil, UIParent, "TooltipBackdropTemplate")
+	pullout:SetFrameStrata("FULLSCREEN_DIALOG")
+	pullout:SetClampedToScreen(true)
+	widget.pullout = pullout
 
-	local helpText = box:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+	local helpText = pullout:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 	helpText:SetPoint("BOTTOMLEFT", 28, 10)
 	helpText:SetText("Press Tab")
 
