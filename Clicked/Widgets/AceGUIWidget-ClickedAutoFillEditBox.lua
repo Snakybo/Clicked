@@ -138,11 +138,12 @@ local function FindMatches(text, values, count)
 	for _, value in ipairs(values) do
 		table.insert(matches, {
 			value = value,
-			score = ScoreMatch(text, value.text)
+			score = ScoreMatch(text, value.text, false)
 		})
 	end
 
 	local function SortFunc(l, r)
+		-- Sort by scores
 		if l.score < r.score then
 			return true
 		end
@@ -151,6 +152,20 @@ local function FindMatches(text, values, count)
 			return false
 		end
 
+		-- Sort by absolute substrings
+		local u = string.upper(text)
+		local fl = string.find(string.upper(l.value.text), u)
+		local fr = string.find(string.upper(r.value.text), u)
+
+		if fl and not fr then
+			return true
+		end
+
+		if not fl and fr then
+			return false
+		end
+
+		-- Sort alphabetically
 		return l.value.text < r.value.text
 	end
 
