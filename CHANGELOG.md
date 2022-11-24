@@ -8,15 +8,24 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.10.0] - 2022-11-24
 
 ### Added
 
 * Add `/cancelform` option [#133] [#121]
+* Add new talent selection UI [#127] [#136]
+  * Add the ability to combine talent requirments (talent 1 AND talent 2 OR talent 3)
+  * Add the ability to negate talent requirements (NOT talent 1)
 
 ### Fixed
 
 * Fix pasting binding data sometimes hiding bindings completely
+* Fix minor import related issues
+* Check for overriden spells with the spell known load condition [#137]
+
+### Changed
+
+* Disable the automatic binding of unassigned modifier keys by default [#134]
 
 ## [1.9.1] - 2022-11-16
 
@@ -1016,7 +1025,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.9.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.10.0...master
+[1.10.0]: https://github.com/Snakybo/Clicked/releases/tag/1.10.0
 [1.9.1]: https://github.com/Snakybo/Clicked/releases/tag/1.9.1
 [1.9.0]: https://github.com/Snakybo/Clicked/releases/tag/1.9.0
 [1.8.1]: https://github.com/Snakybo/Clicked/releases/tag/1.8.1
@@ -1102,8 +1112,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#137]: https://github.com/Snakybo/Clicked/issues/137
+[#136]: https://github.com/Snakybo/Clicked/issues/136
+[#134]: https://github.com/Snakybo/Clicked/issues/134
 [#133]: https://github.com/Snakybo/Clicked/issues/133
 [#128]: https://github.com/Snakybo/Clicked/issues/128
+[#127]: https://github.com/Snakybo/Clicked/issues/127
 [#121]: https://github.com/Snakybo/Clicked/issues/121
 [#120]: https://github.com/Snakybo/Clicked/issues/120
 [#109]: https://github.com/Snakybo/Clicked/issues/109
