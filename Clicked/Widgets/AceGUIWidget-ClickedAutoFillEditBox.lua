@@ -142,6 +142,8 @@ local function FindMatches(text, values, count)
 		})
 	end
 
+	local findCache = {}
+
 	local function SortFunc(l, r)
 		-- Sort by scores
 		if l.score < r.score then
@@ -153,15 +155,15 @@ local function FindMatches(text, values, count)
 		end
 
 		-- Sort by absolute substrings
-		local u = string.upper(text)
-		local fl = string.find(string.upper(l.value.text), u)
-		local fr = string.find(string.upper(r.value.text), u)
+		findCache[text] = findCache[text] or string.upper(text)
+		findCache[l.value.text] = findCache[l.value.text] or string.find(string.upper(l.value.text), findCache[text])
+		findCache[r.value.text] = findCache[r.value.text] or string.find(string.upper(r.value.text), findCache[text])
 
-		if fl and not fr then
+		if findCache[l.value.text] and not findCache[r.value.text] then
 			return true
 		end
 
-		if not fl and fr then
+		if not findCache[l.value.text] and findCache[r.value.text] then
 			return false
 		end
 
