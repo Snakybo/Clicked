@@ -42,17 +42,16 @@ local shareMessage = ""
 --- @param full boolean
 local function OverwriteCurrentProfile(data, full)
 	if full then
-		--- @type Profile
-		local profile = wipe(Addon.db.profile)
-
-		for key in pairs(data) do
-			profile[key] = data[key]
-		end
-	else
-		Addon.db.profile.bindings = data.bindings
-		Addon.db.profile.groups = data.groups
+		Addon.db.profile = wipe(Addon.db.profile)
 	end
 
+	for key in pairs(data) do
+		Addon.db.profile[key] = data[key]
+	end
+
+	Addon.db.profile.lightweight = nil
+
+	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 	Clicked:ReloadDatabase()
 end
 
