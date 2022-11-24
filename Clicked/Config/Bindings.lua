@@ -2261,7 +2261,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
 
 	-- Due to class talents being in a different order for each spec on retail we must force this to be a binding per spec unfortunately
-	local classAndSpecForced = Addon:IsGameVersionAtleast("RETAIL") and load.talent.selected ~= 0
+	local classAndSpecForced = Addon:IsGameVersionAtleast("RETAIL") and load.talent.selected
 
 	DrawLoadNeverSelection(container, load)
 	DrawLoadPlayerNameRealm(container, load.playerNameRealm)
