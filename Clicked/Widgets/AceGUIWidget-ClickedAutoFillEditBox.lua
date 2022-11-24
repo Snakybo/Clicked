@@ -174,7 +174,7 @@ local function FindMatches(text, values, count)
 	table.sort(matches, SortFunc)
 
 	for _, match in ipairs(matches) do
-		if match.score <= 0.25 then
+		if match.score <= 0.5 then
 			local value = match.value
 			value.score = match.score
 
