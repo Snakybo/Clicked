@@ -1,7 +1,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-Addon.DATA_VERSION = 3
+Addon.DATA_VERSION = 2
 
 -- Local support functions
 
@@ -721,23 +721,21 @@ local function Upgrade(profile, from)
 	if from < 2 then
 		for _, binding in ipairs(profile.bindings) do
 			binding.action.cancelForm = false
-		end
-	end
 
-	if from < 3 and Addon:IsGameVersionAtleast("RETAIL") then
-		for _, binding in ipairs(profile.bindings) do
-			binding.load.talent = {
-				selected = false,
-				entries = {
-					{
-						operation = "AND",
-						value = ""
+			if Addon:IsGameVersionAtleast("RETAIL") then
+				binding.load.talent = {
+					selected = false,
+					entries = {
+						{
+							operation = "AND",
+							value = ""
+						}
 					}
 				}
-			}
-		end
 
-		Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
+				Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
+			end
+		end
 	end
 end
 
