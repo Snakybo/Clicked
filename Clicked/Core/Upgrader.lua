@@ -726,27 +726,18 @@ local function Upgrade(profile, from)
 
 	if from < 3 and Addon:IsGameVersionAtleast("RETAIL") then
 		for _, binding in ipairs(profile.bindings) do
-			local talent = {
-				selected = binding.load.talent.selected > 0,
-				entries = {}
-			}
-
-			if binding.load.talent.selected == 1 then
-				talent.entries[1] = {
-					operation = "AND",
-					value = binding.load.talent.single
+			binding.load.talent = {
+				selected = false,
+				entries = {
+					{
+						operation = "AND",
+						value = ""
+					}
 				}
-			elseif binding.load.talent.selected == 2 then
-				for i = 1, #binding.load.talent.multiple do
-					table.insert(talent.entries, {
-						operation = "OR",
-						value = binding.load.talent.multiple[i]
-					})
-				end
-			end
-
-			binding.load.talent = talent
+			}
 		end
+
+		Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
 	end
 end
 
