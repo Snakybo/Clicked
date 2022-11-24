@@ -106,7 +106,7 @@ function Clicked:GetDatabaseDefaults()
 			options = {
 				onKeyDown = false,
 				tooltips = false,
-				bindUnassignedModifiers = true,
+				bindUnassignedModifiers = false,
 				minimap = {
 					hide = false
 				}
