@@ -51,7 +51,6 @@ local function OverwriteCurrentProfile(data, full)
 
 	Addon.db.profile.lightweight = nil
 
-	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 	Clicked:ReloadDatabase()
 end
 
