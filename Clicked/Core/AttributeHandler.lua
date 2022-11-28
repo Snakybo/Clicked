@@ -102,7 +102,7 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 	end
 end
 
---- @param frame table
+--- @param frame Frame
 function Addon:ApplyAttributesToFrame(frame)
 	if frame == nil or frameCache[frame] == nil then
 		return

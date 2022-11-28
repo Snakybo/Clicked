@@ -302,8 +302,7 @@ local function SelectButton(self, button)
 		return
 	end
 
-	local text = button:GetText()
-	Select(self, text)
+	Select(self, button.obj)
 end
 
 --- Hide the auto-complete box.
@@ -394,7 +393,14 @@ local function UpdateButtons(self, matches)
 			end
 		end
 
-		button:SetText(matches[i].text)
+		button.obj = matches[i].text
+		local text = matches[i].text
+
+--@debug@
+		text = "[" .. string.format("%.2f", 1 - matches[i].score) .. "] " .. text
+--@end-debug@
+
+		button:SetText(text)
 
 		button.icon:SetTexture(matches[i].icon)
 		button.icon:SetTexCoord(0, 1, 0, 1)
