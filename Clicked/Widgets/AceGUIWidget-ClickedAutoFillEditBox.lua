@@ -37,14 +37,30 @@ Support functions
 local LongestCommonSubsequence
 
 do
+	local matrix = {}
+	local charsCache = {}
+
+	--- @param str string
+	--- @param index integer
+	--- @return string
+	local function CharAt(str, index)
+		if charsCache[str] == nil then
+			charsCache[str] = {}
+		end
+
+		if charsCache[str][index] == nil then
+			charsCache[str][index] = Addon:CharAt(str, index)
+		end
+
+		return charsCache[str][index]
+	end
+
 	--- Create an identity matrix.
 	---
 	--- @param source string
 	--- @param target string
 	--- @return integer[][]
 	local function CreateMatrix(source, target)
-		local matrix = {}
-
 		for i = 1, #source + 1 do
 			matrix[i] = {}
 			matrix[i][1] = 0
@@ -56,7 +72,7 @@ do
 
 		for i = 2, #source + 1 do
 			for j = 2, #target + 1 do
-				if Addon:CharAt(source, i - 1) == Addon:CharAt(target, j - 1) then
+				if CharAt(source, i - 1) == CharAt(target, j - 1) then
 					matrix[i][j] = matrix[i - 1][j - 1] + 1
 				else
 					matrix[i][j] = math.max(matrix[i][j - 1], matrix[i - 1][j])
@@ -80,8 +96,8 @@ do
 			return ""
 		end
 
-		if Addon:CharAt(source, i - 1) == Addon:CharAt(target, j - 1) then
-			return Backtrack(matrix, source, target, i - 1, j - 1) .. Addon:CharAt(source, i - 1)
+		if CharAt(source, i - 1) == CharAt(target, j - 1) then
+			return Backtrack(matrix, source, target, i - 1, j - 1) .. CharAt(source, i - 1)
 		end
 
 		if matrix[i][j - 1] > matrix[i - 1][j] then
