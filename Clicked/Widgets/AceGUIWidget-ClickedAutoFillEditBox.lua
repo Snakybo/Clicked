@@ -60,7 +60,7 @@ do
 	--- @param source string
 	--- @param target string
 	--- @return integer[][]
-	local function CreateMatrix(source, target)
+	local function InitializeMatrix(source, target)
 		for i = 1, #source + 1 do
 			matrix[i] = {}
 			matrix[i][1] = 0
@@ -79,31 +79,28 @@ do
 				end
 			end
 		end
-
-		return matrix
 	end
 
 	--- Find the longest common subsequence by backtracking over the specified strings.
 	---
-	--- @param matrix integer[][]
 	--- @param source string
 	--- @param target string
 	--- @param i integer
 	--- @param j integer
 	--- @return string
-	local function Backtrack(matrix, source, target, i, j)
+	local function Backtrack(source, target, i, j)
 		if i == 1 or j == 1 then
 			return ""
 		end
 
 		if CharAt(source, i - 1) == CharAt(target, j - 1) then
-			return Backtrack(matrix, source, target, i - 1, j - 1) .. CharAt(source, i - 1)
+			return Backtrack(source, target, i - 1, j - 1) .. CharAt(source, i - 1)
 		end
 
 		if matrix[i][j - 1] > matrix[i - 1][j] then
-			return Backtrack(matrix, source, target, i, j - 1)
+			return Backtrack(source, target, i, j - 1)
 		else
-			return Backtrack(matrix, source, target, i - 1, j)
+			return Backtrack(source, target, i - 1, j)
 		end
 	end
 
@@ -112,8 +109,8 @@ do
 	--- @param source string
 	--- @param target string
 	function LongestCommonSubsequence(source, target)
-		local matrix = CreateMatrix(source, target)
-		return Backtrack(matrix, source, target, #source, #target)
+		InitializeMatrix(source, target)
+		return Backtrack(source, target, #source, #target)
 	end
 end
 
