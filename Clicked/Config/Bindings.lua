@@ -2024,14 +2024,9 @@ end
 
 --- @param container table
 --- @param class Binding.TriStateLoadOption
---- @param forced boolean
-local function DrawLoadClass(container, class, forced)
+local function DrawLoadClass(container, class)
 	local items, order = Addon:GetLocalizedClasses()
-	local enabled = DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
-
-	if enabled ~= nil then
-		enabled:SetDisabled(forced)
-	end
+	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
 end
 
 --- @param container table
@@ -2044,14 +2039,9 @@ end
 --- @param container table
 --- @param specialization Binding.TriStateLoadOption
 --- @param classNames string[]
---- @param forced boolean
-local function DrawLoadSpecialization(container, specialization, classNames, forced)
+local function DrawLoadSpecialization(container, specialization, classNames)
 	local items, order = Addon:GetLocalizedSpecializations(classNames)
-	local enabled = DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
-
-	if enabled ~= nil then
-		enabled:SetDisabled(forced)
-	end
+	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
 --- @param container table
@@ -2072,20 +2062,10 @@ end
 
 --- @param container table
 --- @param talent Binding.MutliFieldLoadOption
---- @param specId integer
-local function DrawLoadTalent(container, talent, specId)
-	local function OnPostValueChanged(_, value)
-		if value then
-			local binding = GetCurrentBinding()
-			binding.load.class.selected = 1
-			binding.load.specialization.selected = 1
-		end
-	end
-
-	local items = Addon:GetLocalizedTalents(specId)
-	local enabled = DrawTalentSelectOption(container, Addon.L["Talent selected"], items, talent)
-
-	Addon:GUI_SetPostValueChanged(enabled, OnPostValueChanged)
+--- @param specializations integer[]
+local function DrawLoadTalent(container, talent, specializations)
+	local items = Addon:GetLocalizedTalents(specializations)
+	DrawTalentSelectOption(container, Addon.L["Talent selected"], items, talent)
 end
 
 --- @param container table
@@ -2260,12 +2240,9 @@ end
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
 
-	-- Due to class talents being in a different order for each spec on retail we must force this to be a binding per spec unfortunately
-	local classAndSpecForced = Addon:IsGameVersionAtleast("RETAIL") and load.talent.selected
-
 	DrawLoadNeverSelection(container, load)
 	DrawLoadPlayerNameRealm(container, load.playerNameRealm)
-	DrawLoadClass(container, load.class, classAndSpecForced)
+	DrawLoadClass(container, load.class)
 	DrawLoadRace(container, load.race)
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
@@ -2273,8 +2250,8 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
-		DrawLoadSpecialization(container, load.specialization, classNames, classAndSpecForced)
-		DrawLoadTalent(container, load.talent, specializationIds[1])
+		DrawLoadSpecialization(container, load.specialization, classNames)
+		DrawLoadTalent(container, load.talent, specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then

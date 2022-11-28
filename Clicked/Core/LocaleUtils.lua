@@ -381,24 +381,32 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specialization integer
+	--- @param specializations integer[]
 	--- @return table
-	function Addon:GetLocalizedTalents(specialization)
+	function Addon:GetLocalizedTalents(specializations)
 		local result = {}
+		local found = {}
 
-		if specialization == nil then
-			specialization = GetSpecializationInfo(GetSpecialization())
+		if specializations == nil then
+			specializations = {}
+			specializations[1] = GetSpecializationInfo(GetSpecialization())
 		end
 
-		for i = 1, LibTalentInfo:GetNumTalents(specialization) do
-			local info = LibTalentInfo:GetTalentAt(specialization, i)
+		for _, specialization in ipairs(specializations) do
+			for i = 1, LibTalentInfo:GetNumTalents(specialization) do
+				local info = LibTalentInfo:GetTalentAt(specialization, i)
 
-			table.insert(result, {
-				entryId = info.entryID,
-				spellId = info.spellID,
-				text = info.name,
-				icon = info.icon
-			})
+				if found[info.name] ~= info.icon then
+					found[info.name] = info.icon
+
+					table.insert(result, {
+						entryId = info.entryID,
+						spellId = info.spellID,
+						text = info.name,
+						icon = info.icon
+					})
+				end
+			end
 		end
 
 		return result
