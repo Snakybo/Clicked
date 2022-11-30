@@ -849,9 +849,16 @@ local function DrawTalentSelectOption(container, title, items, data)
 					end
 				end
 
-				local widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value")
-				widget:SetInputError(not found)
-				widget:SetValues(items)
+				local widget
+
+				if GetLocale() == "enUS" then
+					widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value")
+					widget:SetInputError(not found)
+					widget:SetValues(items)
+				else
+					widget = Addon:GUI_EditBox(data.entries[i], "value")
+				end
+
 				widget:SetRelativeWidth(0.5)
 
 				container:AddChild(widget)

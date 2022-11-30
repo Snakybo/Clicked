@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix talent selection input on non-English locales [#146]
+
 ## [1.10.1] - 2022-11-28
 
 ### Added
@@ -1119,6 +1125,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#146]: https://github.com/Snakybo/Clicked/issues/146
 [#137]: https://github.com/Snakybo/Clicked/issues/137
 [#136]: https://github.com/Snakybo/Clicked/issues/136
 [#134]: https://github.com/Snakybo/Clicked/issues/134

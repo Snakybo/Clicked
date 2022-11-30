@@ -75,6 +75,7 @@ read_globals = {
 	"GetCVar",
 	"GetInventoryItemID",
 	"GetItemInfo",
+	"GetLocale",
 	"GetMacroBody",
 	"GetMacroInfo",
 	"GetModifiedClick",
