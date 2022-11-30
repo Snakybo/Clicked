@@ -840,18 +840,18 @@ local function DrawTalentSelectOption(container, title, items, data)
 			end
 
 			do
-				local found = false
-
-				for _, item in ipairs(items) do
-					if item.text == data.entries[i].value then
-						found = true
-						break
-					end
-				end
-
 				local widget
 
 				if GetLocale() == "enUS" then
+					local found = false
+
+					for _, item in ipairs(items) do
+						if item.text == data.entries[i].value then
+							found = true
+							break
+						end
+					end
+
 					widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value")
 					widget:SetInputError(not found)
 					widget:SetValues(items)
