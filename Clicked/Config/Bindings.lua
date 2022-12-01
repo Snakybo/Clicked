@@ -340,7 +340,7 @@ local function HijackSpellButton_UpdateButton(self)
 
 			button:SetScript("OnEnter", function(_, motion)
 				if Addon:IsGameVersionAtleast("RETAIL") then
-					parent:OnEnter(parent, motion)
+					parent:OnEnter(motion)
 				else
 					SpellButton_OnEnter(parent, motion)
 				end
@@ -348,7 +348,7 @@ local function HijackSpellButton_UpdateButton(self)
 
 			button:SetScript("OnLeave", function()
 				if Addon:IsGameVersionAtleast("RETAIL") then
-					parent:OnLeave(parent)
+					parent:OnLeave()
 				else
 					SpellButton_OnLeave(parent)
 				end

@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix talent selection input on non-English locales [#146]
+* Fix a Lua error when selecting spell from the spellbook
 
 ## [1.10.1] - 2022-11-28
 
