@@ -131,21 +131,21 @@ local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
 end
 
 local function ZONE_CHANGED_NEW_AREA()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function CHARACTER_POINTS_CHANGED()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function PLAYER_FLAGS_CHANGED(_, unit)
 	if unit == "player" then
-		Clicked:ReloadActiveBindings()
+		Addon:ReloadActiveBindingsNextFrame()
 	end
 end
 
 local function TRAIT_CONFIG_UPDATED()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function PLAYER_FOCUS_CHANGED()
@@ -153,19 +153,19 @@ local function PLAYER_FOCUS_CHANGED()
 end
 
 local function PLAYER_LEVEL_CHANGED()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function LEARNED_SPELL_IN_TAB()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function GROUP_ROSTER_UPDATE()
-	Clicked:ReloadActiveBindings()
+	Addon:ReloadActiveBindingsNextFrame()
 end
 
 local function MODIFIER_STATE_CHANGED()

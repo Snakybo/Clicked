@@ -88,6 +88,7 @@ local hovercastBucket = {}
 local regularBucket = {}
 
 local isPendingReload = false
+local reloadTicker = nil
 
 -- Local support functions
 
@@ -624,6 +625,25 @@ function Addon:ReloadActiveBindingsIfPending()
 
 	isPendingReload = false
 	Clicked:ReloadActiveBindings()
+end
+
+
+--- Reload the active bindings in the next frame, this is useful for scenarios where a reload may be triggered multiple times within a single frame.
+--- For example, when changing talents.
+function Addon:ReloadActiveBindingsNextFrame()
+	if InCombatLockdown() then
+		isPendingReload = true
+		return
+	end
+
+	if reloadTicker ~= nil then
+		return
+	end
+
+	reloadTicker = C_Timer.NewTimer(0, function()
+		reloadTicker = nil
+		Clicked:ReloadActiveBindings()
+	end)
 end
 
 --- Check if the specified binding is currently active based on the configuration

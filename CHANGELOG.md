@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix talent selection input on non-English locales [#146]
 * Fix a Lua error when selecting spell from the spellbook
+* Improve performance when switching specializations or talent loadouts
 
 ## [1.10.1] - 2022-11-28
 
