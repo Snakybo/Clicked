@@ -801,14 +801,31 @@ function Addon:CanBindingLoad(binding)
 				for _, nodeId in ipairs(nodes) do
 					local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
 
-					if nodeInfo.ID ~= 0 and nodeInfo.currentRank > 0 then
-						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID
-						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId)
-						local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+					if nodeInfo.ID ~= 0 then
+						-- check if the node was manually selected by the player, the easy way
+						local isValid = nodeInfo.currentRank > 0
 
-						if definitionInfo ~= nil then
-							local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
-							talents[name] = true
+						-- check if the node was granted to the player automatically
+						if not isValid then
+							for _, conditionId in ipairs(nodeInfo.conditionIDs) do
+								local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
+
+								if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
+									isValid = true
+									break
+								end
+							end
+						end
+
+						if isValid then
+							local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
+							local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
+							local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+
+							if definitionInfo ~= nil then
+								local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+								talents[name] = true
+							end
 						end
 					end
 				end
