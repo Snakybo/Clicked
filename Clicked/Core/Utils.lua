@@ -943,11 +943,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 					-- Incarnation: Tree of Life does not show up as a shapeshift form,
 					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
 
-					-- 9.2: Restoration Druid 4-set bonus gives them Incarnation: Tree of Life without having it talented
-					local items = { 188847, 188848, 188849, 188851, 188853  }
-					local is92RestoSetActive = specId == 105 and Addon:IsSetBonusActive(items, 4)
-
-					if IsSpellKnown(33891) or is92RestoSetActive then
+					if IsSpellKnown(33891) then
 						table.insert(result, GetNumShapeshiftForms() + 1)
 					end
 				else
