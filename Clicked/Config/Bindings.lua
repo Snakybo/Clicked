@@ -856,7 +856,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 					widget:SetInputError(not found)
 					widget:SetValues(items)
 				else
-					widget = Addon:GUI_EditBox(data.entries[i], "value")
+					widget = Addon:GUI_EditBox("OnEnterPressed", data.entries[i], "value")
 				end
 
 				widget:SetRelativeWidth(0.5)
