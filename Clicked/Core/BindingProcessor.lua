@@ -87,6 +87,9 @@ local hovercastBucket = {}
 --- @type table<string,Binding[]>
 local regularBucket = {}
 
+--- @type table<string,boolean>
+local talentCache = {}
+
 local isPendingReload = false
 local reloadTicker = nil
 
@@ -458,6 +461,16 @@ local function GenerateBuckets(bindings)
 	end
 end
 
+--- @param str string
+--- @return string
+local function StripColorCodes(str)
+	str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
+	str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
+	str = string.gsub(str, "|r", "")
+
+	return str
+end
+
 -- Public addon API
 
 --- Reload the active bindings, this should be called any time changes have been made to data of a binding, or potential load conditions change.
@@ -618,6 +631,51 @@ end
 
 -- Private addon API
 
+function Addon:UpdateTalentCache()
+	wipe(talentCache)
+
+	local configId = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or C_ClassTalents.GetActiveConfigID()
+	if configId == nil then
+		return
+	end
+
+	local configInfo = C_Traits.GetConfigInfo(configId)
+	local treeId = configInfo.treeIDs[1]
+	local nodes = C_Traits.GetTreeNodes(treeId)
+
+	for _, nodeId in ipairs(nodes) do
+		local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
+
+		if nodeInfo.ID ~= 0 then
+			-- check if the node was manually selected by the player, the easy way
+			local isValid = nodeInfo.currentRank > 0
+
+			-- check if the node was granted to the player automatically
+			if not isValid then
+				for _, conditionId in ipairs(nodeInfo.conditionIDs) do
+					local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
+
+					if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
+						isValid = true
+						break
+					end
+				end
+			end
+
+			if isValid then
+				local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
+				local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
+				local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+
+				if definitionInfo ~= nil then
+					local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+					talentCache[name] = true
+				end
+			end
+		end
+	end
+end
+
 function Addon:ReloadActiveBindingsIfPending()
 	if not isPendingReload then
 		return
@@ -760,14 +818,6 @@ function Addon:CanBindingLoad(binding)
 
 		-- talent selected
 		do
-			local function StripColorCodes(str)
-				str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
-				str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
-				str = string.gsub(str, "|r", "")
-
-				return str
-			end
-
 			--- @param entries Binding.MutliFieldLoadOptionEntry[]
 			--- @return boolean
 			local function IsTalentMatrixValid(entries)
@@ -775,8 +825,7 @@ function Addon:CanBindingLoad(binding)
 					return false
 				end
 
-				local configId = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or C_ClassTalents.GetActiveConfigID()
-				if configId == nil then
+				if next(talentCache) == nil then
 					return false
 				end
 
@@ -793,49 +842,12 @@ function Addon:CanBindingLoad(binding)
 					})
 				end
 
-				local configInfo = C_Traits.GetConfigInfo(configId)
-				local treeId = configInfo.treeIDs[1]
-				local nodes = C_Traits.GetTreeNodes(treeId)
-				local talents = {}
-
-				for _, nodeId in ipairs(nodes) do
-					local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
-
-					if nodeInfo.ID ~= 0 then
-						-- check if the node was manually selected by the player, the easy way
-						local isValid = nodeInfo.currentRank > 0
-
-						-- check if the node was granted to the player automatically
-						if not isValid then
-							for _, conditionId in ipairs(nodeInfo.conditionIDs) do
-								local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
-
-								if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
-									isValid = true
-									break
-								end
-							end
-						end
-
-						if isValid then
-							local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
-							local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
-							local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
-
-							if definitionInfo ~= nil then
-								local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
-								talents[name] = true
-							end
-						end
-					end
-				end
-
 				for _, compound in ipairs(compounds) do
 					local valid = true
 
 					for _, item in ipairs(compound) do
 						if #item.value > 0 then
-							if talents[item.value] and item.negated or not talents[item.value] and not item.negated then
+							if talentCache[item.value] and item.negated or not talentCache[item.value] and not item.negated then
 								valid = false
 							end
 						end

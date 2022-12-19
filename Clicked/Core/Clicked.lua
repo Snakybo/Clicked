@@ -119,6 +119,7 @@ local function PLAYER_ENTERING_WORLD()
 
 	Addon:ProcessFrameQueue()
 	Addon:UpdateClickCastHeaderBlacklist()
+	Addon:UpdateTalentCache()
 	Clicked:ReloadActiveBindings()
 end
 
@@ -135,6 +136,7 @@ local function ZONE_CHANGED_NEW_AREA()
 end
 
 local function CHARACTER_POINTS_CHANGED()
+	Addon:UpdateTalentCache()
 	Addon:ReloadActiveBindingsNextFrame()
 end
 
@@ -145,6 +147,7 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 end
 
 local function TRAIT_CONFIG_UPDATED()
+	Addon:UpdateTalentCache()
 	Addon:ReloadActiveBindingsNextFrame()
 end
 
