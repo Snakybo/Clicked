@@ -99,7 +99,8 @@ local talentCache = {}
 local isPendingReload = false
 local isPendingProcess = false
 
-local reloadTicker = nil
+local reloadBindingsDelayTicker = nil
+local reloadTalentCacheDelayTicker = nil
 
 -- Local support functions
 
@@ -544,9 +545,9 @@ local function ReloadBindings(delayFrame)
 	end
 
 	if type(delayFrame) == "boolean" and delayFrame then
-		if reloadTicker == nil then
-			reloadTicker = C_Timer.NewTimer(0, function()
-				reloadTicker = nil
+		if reloadBindingsDelayTicker == nil then
+			reloadBindingsDelayTicker = C_Timer.NewTimer(0, function()
+				reloadBindingsDelayTicker = nil
 				Clicked:ReloadBindings()
 			end)
 		end
@@ -778,7 +779,22 @@ end
 
 -- Private addon API
 
-function Addon:UpdateTalentCache()
+--- @param delay boolean?
+--- @vararg any
+function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
+	if delay then
+		if reloadTalentCacheDelayTicker == nil then
+			local args = { ... }
+
+			reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, function()
+				reloadTalentCacheDelayTicker = nil
+				Addon:UpdateTalentCacheAndReloadBindings(false, unpack(args))
+			end)
+		end
+
+		return
+	end
+
 	wipe(talentCache)
 
 	local configId = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or C_ClassTalents.GetActiveConfigID()
@@ -821,6 +837,8 @@ function Addon:UpdateTalentCache()
 			end
 		end
 	end
+
+	Clicked:ReloadBindings(...)
 end
 
 function Addon:ReloadBindingsIfPending()

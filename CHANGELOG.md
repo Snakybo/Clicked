@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * New binding reload and status logic, improving performance significantly
 
+### Fixed
+
+* Fix talent load options not always being in the correct state after switching spec or talent loadout
+
 ## [1.10.3] - 2022-12-14
 
 ### Fixed
