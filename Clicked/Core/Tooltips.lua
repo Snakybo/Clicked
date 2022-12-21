@@ -146,11 +146,9 @@ local function OnTooltipSetSpell(self)
 
 	local _, spellId = self:GetSpell()
 
-	if spellId == nil or lastTooltipUpdateTime == GetTime()then
+	if spellId == nil then
 		return
 	end
-
-	lastTooltipUpdateTime = GetTime()
 
 	local addedEmptyLine = false
 
