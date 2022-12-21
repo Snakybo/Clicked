@@ -132,11 +132,13 @@ local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
 end
 
 local function ZONE_CHANGED()
-	Clicked:ReloadBindings(false, true, "ZONE_CHANGED")
+	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
+	-- Clicked:ReloadBindings(false, true, "ZONE_CHANGED")
 end
 
 local function ZONE_CHANGED_INDOORS()
-	Clicked:ReloadBindings(false, true, "ZONE_CHANGED_INDOORS")
+	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
+	-- Clicked:ReloadBindings(false, true, "ZONE_CHANGED_INDOORS")
 end
 
 local function ZONE_CHANGED_NEW_AREA()
