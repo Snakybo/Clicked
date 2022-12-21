@@ -804,6 +804,10 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 	end
 
 	local configInfo = C_Traits.GetConfigInfo(configId)
+	if configInfo == nil then
+		return
+	end
+
 	local treeId = configInfo.treeIDs[1]
 	local nodes = C_Traits.GetTreeNodes(treeId)
 
