@@ -63,7 +63,7 @@ function Addon:GeneralOptions_Initialize()
 					end
 
 					Clicked:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME], false)
-					Clicked:ReloadActiveBindings()
+					Clicked:ProcessActiveBindings()
 
 					Addon:ShowInformationPopup(Addon.L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
 				end,
@@ -92,7 +92,7 @@ function Addon:GeneralOptions_Initialize()
 				width = "full",
 				set = function (_, val)
 					Addon.db.profile.options.bindUnassignedModifiers = val
-					Clicked:ReloadActiveBindings()
+					Clicked:ProcessActiveBindings()
 				end,
 				get = function ()
 					return Addon.db.profile.options.bindUnassignedModifiers

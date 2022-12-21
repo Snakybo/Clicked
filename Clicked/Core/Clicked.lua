@@ -102,7 +102,7 @@ end
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
 
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings("PLAYER_REGEN_DISABLED")
 	Addon:AbilityTooltips_Refresh()
 end
 
@@ -110,7 +110,7 @@ local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings("PLAYER_REGEN_ENABLED")
 	Addon:AbilityTooltips_Refresh()
 end
 
@@ -120,7 +120,7 @@ local function PLAYER_ENTERING_WORLD()
 	Addon:ProcessFrameQueue()
 	Addon:UpdateClickCastHeaderBlacklist()
 	Addon:UpdateTalentCache()
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings(true)
 end
 
 local function ADDON_LOADED()
@@ -131,24 +131,46 @@ local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
 	Addon:BindingConfig_ItemInfoReceived(itemId, success)
 end
 
+local function ZONE_CHANGED()
+	Clicked:ReloadBindings(false, true, "ZONE_CHANGED")
+end
+
+local function ZONE_CHANGED_INDOORS()
+	Clicked:ReloadBindings(false, true, "ZONE_CHANGED_INDOORS")
+end
+
 local function ZONE_CHANGED_NEW_AREA()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "ZONE_CHANGED_NEW_AREA")
 end
 
 local function CHARACTER_POINTS_CHANGED()
 	Addon:UpdateTalentCache()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "CHARACTER_POINTS_CHANGED")
 end
 
 local function PLAYER_FLAGS_CHANGED(_, unit)
 	if unit == "player" then
-		Addon:ReloadActiveBindingsNextFrame()
+		Clicked:ReloadBindings(false, true, "PLAYER_FLAGS_CHANGED")
 	end
+end
+
+local function PLAYER_TALENT_UPDATE()
+	Addon:UpdateTalentCache()
+	Clicked:ReloadBindings(false, true, "PLAYER_TALENT_UPDATE")
+end
+
+local function PLAYER_PVP_TALENT_UPDATE()
+	Clicked:ReloadBindings(false, true, "PLAYER_PVP_TALENT_UPDATE")
+end
+
+local function TRAIT_CONFIG_CREATED()
+	Addon:UpdateTalentCache()
+	Clicked:ReloadBindings(false, true, "TRAIT_CONFIG_CREATED")
 end
 
 local function TRAIT_CONFIG_UPDATED()
 	Addon:UpdateTalentCache()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "TRAIT_CONFIG_UPDATED")
 end
 
 local function PLAYER_FOCUS_CHANGED()
@@ -156,19 +178,19 @@ local function PLAYER_FOCUS_CHANGED()
 end
 
 local function PLAYER_LEVEL_CHANGED()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings("PLAYER_LEVEL_CHANGED")
 end
 
 local function LEARNED_SPELL_IN_TAB()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "LEARNED_SPELL_IN_TAB")
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "PLAYER_EQUIPMENT_CHANGED")
 end
 
 local function GROUP_ROSTER_UPDATE()
-	Addon:ReloadActiveBindingsNextFrame()
+	Clicked:ReloadBindings(false, true, "GROUP_ROSTER_UPDATE")
 end
 
 local function MODIFIER_STATE_CHANGED()
@@ -216,13 +238,19 @@ function Clicked:OnEnable()
 	if Addon:IsGameVersionAtleast("BC") then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 
-		if not Addon:IsGameVersionAtleast("RETAIL") then
+		if Addon:IsBC() or Addon:IsWotLK() then
 			self:RegisterEvent("CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 		end
 	end
 
+	if Addon:IsGameVersionAtleast("WOTLK") then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
+	end
+
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+		self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
+		self:RegisterEvent("TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
 		self:RegisterEvent("TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	end
 
@@ -232,6 +260,8 @@ function Clicked:OnEnable()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
+	self:RegisterEvent("ZONE_CHANGED", ZONE_CHANGED)
+	self:RegisterEvent("ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
@@ -249,13 +279,19 @@ function Clicked:OnDisable()
 	if Addon:IsGameVersionAtleast("BC") then
 		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
 
-		if not Addon:IsGameVersionAtleast("RETAIL") then
+		if Addon:IsBC() or Addon:IsWotLK() then
 			self:UnregisterEvent("CHARACTER_POINTS_CHANGED")
 		end
 	end
 
+	if Addon:IsGameVersionAtleast("WOTLK") then
+		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
+	end
+
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
+		self:UnregisterEvent("PLAYER_PVP_TALENT_UPDATE")
+		self:UnregisterEvent("TRAIT_CONFIG_CREATED")
 		self:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 	end
 
@@ -265,6 +301,8 @@ function Clicked:OnDisable()
 	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterEvent("ADDON_LOADED")
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
+	self:UnregisterEvent("ZONE_CHANGED")
+	self:UnregisterEvent("ZONE_CHANGED_INDOORS")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	self:UnregisterEvent("UNIT_TARGET")

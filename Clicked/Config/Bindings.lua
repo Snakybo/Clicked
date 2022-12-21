@@ -208,7 +208,7 @@ local function GetAvailableTabs(binding)
 	   type == Addon.BindingTypes.MACRO or
 	   type == Addon.BindingTypes.APPEND or
 	   type == Addon.BindingTypes.CANCELAURA then
-		if Addon:CanBindingLoad(binding) then
+		if Clicked:IsBindingLoaded(binding) then
 			table.insert(items, "status")
 		end
 	end
@@ -317,7 +317,7 @@ local function OnSpellBookButtonClick(name, convertValueToId)
 		binding.action.convertValueToId = convertValueToId
 
 		HideUIPanel(SpellBookFrame)
-		Clicked:ReloadActiveBindings()
+		Clicked:ReloadBinding(binding, true)
 	end
 end
 
@@ -569,7 +569,7 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -586,7 +586,7 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	-- state
 	if data.selected then
 		do
-			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "value")
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "value", GetCurrentBinding())
 			dropdownWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(dropdownWidget)
@@ -612,7 +612,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -629,7 +629,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 	-- state and value
 	if data.selected then
 		do
-			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "negated")
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "negated", GetCurrentBinding())
 			dropdownWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(dropdownWidget)
@@ -644,7 +644,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 		end
 
 		do
-			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value")
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", GetCurrentBinding())
 			editBoxWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(editBoxWidget)
@@ -665,7 +665,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 
 	-- selected
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -682,7 +682,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 	if data.selected then
 		-- input
 		do
-			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value")
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", GetCurrentBinding())
 			editBoxWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(editBoxWidget)
@@ -708,7 +708,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_TristateCheckBox(data, "selected")
+		enabledWidget = Addon:GUI_TristateCheckBox(data, "selected", GetCurrentBinding())
 		enabledWidget:SetLabel(title)
 		enabledWidget:SetTriState(true)
 
@@ -724,7 +724,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 	end
 
 	if data.selected == 1 then -- single option variant
-		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single")
+		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single", GetCurrentBinding())
 	elseif data.selected == 2 then -- multiple option variant
 		local function UpdateText(widget)
 			local selected = {}
@@ -751,7 +751,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			widget:SetText(string.format("<text=%s>", text))
 		end
 
-		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple")
+		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple", GetCurrentBinding())
 		dropdownWidget.ClickedUpdateText = UpdateText
 		dropdownWidget:ClickedUpdateText()
 
@@ -794,7 +794,7 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 		end
 
 		do
-			invertWidget = Addon:GUI_CheckBox(data, "negated")
+			invertWidget = Addon:GUI_CheckBox(data, "negated", GetCurrentBinding())
 			invertWidget:SetLabel(Addon.L["Invert"])
 			invertWidget:SetRelativeWidth(0.5)
 
@@ -812,7 +812,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected")
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -852,11 +852,11 @@ local function DrawTalentSelectOption(container, title, items, data)
 						end
 					end
 
-					widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value")
+					widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value", GetCurrentBinding())
 					widget:SetInputError(not found)
 					widget:SetValues(items)
 				else
-					widget = Addon:GUI_EditBox("OnEnterPressed", data.entries[i], "value")
+					widget = Addon:GUI_EditBox("OnEnterPressed", data.entries[i], "value", GetCurrentBinding())
 				end
 
 				widget:SetRelativeWidth(0.5)
@@ -869,7 +869,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 			do
 				local function OnClick()
 					table.remove(data.entries, i)
-					Addon:BindingConfig_Redraw()
+					Clicked:ReloadBinding(GetCurrentBinding(), true)
 				end
 
 				local widget = AceGUI:Create("Button")
@@ -883,7 +883,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 			do
 				local function OnClick()
 					data.entries[i].negated = not data.entries[i].negated
-					Addon:BindingConfig_Redraw()
+					Clicked:ReloadBinding(GetCurrentBinding(), true)
 				end
 
 				local widget = AceGUI:Create("Button")
@@ -902,7 +902,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 						data.entries[i + 1].operation = "AND"
 					end
 
-					Addon:BindingConfig_Redraw()
+					Clicked:ReloadBinding(GetCurrentBinding(), true)
 				end
 
 				local widget = AceGUI:Create("Button")
@@ -1002,7 +1002,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				action[valueKey] = value
 				action.convertValueToId = true
 
-				Clicked:ReloadActiveBindings()
+				Clicked:ReloadBinding(GetCurrentBinding(), true)
 			end
 
 			local function OnTextChanged(_, _, value)
@@ -1034,7 +1034,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					widget:SetText(value)
 					widget:ClearFocus()
 
-					Clicked:ReloadActiveBindings()
+					Clicked:ReloadBinding(GetCurrentBinding(), true)
 				end
 			end
 
@@ -1153,7 +1153,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						action[valueKey] = Addon:GetSpellInfo(id, false)
 						action.convertValueToId = false
 
-						Clicked:ReloadActiveBindings()
+						Clicked:ReloadBinding(GetCurrentBinding(), true)
 					end
 
 					local widget = AceGUI:Create("Button")
@@ -1225,7 +1225,7 @@ local function DrawMacroSelection(container, targets, action)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue")
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", GetCurrentBinding())
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1245,7 +1245,7 @@ local function DrawAppendSelection(container, action)
 
 		-- name text field
 		do
-			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroName")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroName", GetCurrentBinding())
 			widget:SetFullWidth(true)
 
 			group:AddChild(widget)
@@ -1253,7 +1253,7 @@ local function DrawAppendSelection(container, action)
 
 		-- icon field
 		do
-			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroIcon")
+			local widget = Addon:GUI_EditBox("OnEnterPressed", action, "macroIcon", GetCurrentBinding())
 			widget:SetRelativeWidth(0.7)
 
 			group:AddChild(widget)
@@ -1283,7 +1283,7 @@ local function DrawAppendSelection(container, action)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue")
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", GetCurrentBinding())
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1379,7 +1379,7 @@ local function DrawActionGroupOptions(container, keybind)
 					end
 				end
 
-				Clicked:ReloadActiveBindings()
+				Clicked:ReloadBinding(GetCurrentBinding(), true)
 			end
 
 			local function OnMoveDown()
@@ -1390,7 +1390,7 @@ local function DrawActionGroupOptions(container, keybind)
 
 				binding.action.executionOrder = binding.action.executionOrder + 1
 
-				Clicked:ReloadActiveBindings()
+				Clicked:ReloadBinding(GetCurrentBinding(), true)
 			end
 
 			local name, icon = Addon:GetBindingNameAndIcon(binding)
@@ -1464,7 +1464,7 @@ local function DrawSharedOptions(container, binding)
 				if binding.action[key] then
 					widget:SetValue(true)
 				else
-					if Addon:CanBindingLoad(binding) and IsSharedDataSet(key) then
+					if Clicked:IsBindingLoaded(binding) and IsSharedDataSet(key) then
 						widget:SetValue(nil)
 					else
 						widget:SetValue(false)
@@ -1479,7 +1479,7 @@ local function DrawSharedOptions(container, binding)
 			end
 
 			binding.action[key] = value
-			Clicked:ReloadActiveBindings()
+			Clicked:ReloadBinding(GetCurrentBinding(), true)
 		end
 
 		widget = AceGUI:Create("CheckBox")
@@ -1493,7 +1493,7 @@ local function DrawSharedOptions(container, binding)
 		if binding.action[key] then
 			widget:SetValue(true)
 		else
-			if Addon:CanBindingLoad(binding) and IsSharedDataSet(key) then
+			if Clicked:IsBindingLoaded(binding) and IsSharedDataSet(key) then
 				widget:SetTriState(true)
 				widget:SetValue(nil)
 				isUsingShared = true
@@ -1625,7 +1625,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 				end
 			end
 
-			Clicked:ReloadActiveBindings()
+			Clicked:ReloadBinding(GetCurrentBinding(), true)
 		else
 			if index == 0 then
 				frame:SetValue("_NONE_")
@@ -1655,7 +1655,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 		end
 	end
 
-	local widget = Addon:GUI_Dropdown(items, order, target, "unit")
+	local widget = Addon:GUI_Dropdown(items, order, target, "unit", GetCurrentBinding())
 	widget:SetFullWidth(true)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetDisabled(not enabled)
@@ -1668,7 +1668,7 @@ end
 --- @param target Binding.Target
 local function DrawTargetSelectionHostility(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetHostility()
-	local widget = Addon:GUI_Dropdown(items, order, target, "hostility")
+	local widget = Addon:GUI_Dropdown(items, order, target, "hostility", GetCurrentBinding())
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -1680,7 +1680,7 @@ end
 --- @param target Binding.Target
 local function DrawTargetSelectionVitals(container, enabled, target)
 	local items, order = Addon:GetLocalizedTargetVitals()
-	local widget = Addon:GUI_Dropdown(items, order, target, "vitals")
+	local widget = Addon:GUI_Dropdown(items, order, target, "vitals", GetCurrentBinding())
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
@@ -1705,7 +1705,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.hovercastEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(binding.targets, "hovercastEnabled")
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "hovercastEnabled", GetCurrentBinding())
 			widget:SetText(Addon.L["Unit Frame Target"])
 			container:AddChild(widget)
 		end
@@ -1720,7 +1720,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(binding.targets, "regularEnabled")
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "regularEnabled", GetCurrentBinding())
 			widget:SetText(Addon.L["Macro Targets"])
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
@@ -1746,7 +1746,7 @@ local function DrawBindingTargetPage(container, binding)
 						regular[i] = temp
 					end
 
-					Clicked:ReloadActiveBindings()
+					Clicked:ReloadBinding(GetCurrentBinding(), true)
 				end
 
 				local label = i == 1 and Addon.L["On this target"] or enabled and Addon.L["Or"] or Addon.L["Or (inactive)"]
@@ -2019,7 +2019,7 @@ end
 local function DrawLoadNeverSelection(container, load)
 	-- never load toggle
 	do
-		local widget = Addon:GUI_CheckBox(load, "never")
+		local widget = Addon:GUI_CheckBox(load, "never", GetCurrentBinding())
 		widget:SetLabel(Addon.L["Never load"])
 		widget:SetFullWidth(true)
 
@@ -2232,7 +2232,7 @@ local function DrawLoadItemEquipped(container, equipped)
 				inputField:SetText(equipped.value)
 				inputField:ClearFocus()
 
-				Clicked:ReloadActiveBindings()
+				Clicked:ReloadBinding(GetCurrentBinding(), true)
 			end
 		end
 
@@ -2408,6 +2408,7 @@ end
 
 --- @param identifier string
 local function CreateFromItemTemplate(identifier)
+	--- @type Binding?
 	local item = nil
 
 	if identifier == ITEM_TEMPLATE_SPELL then
@@ -2517,7 +2518,7 @@ local function CreateFromItemTemplate(identifier)
 			end
 		end
 
-		Clicked:ReloadActiveBindings()
+		Clicked:ReloadBindings(true)
 	elseif identifier == ITEM_TEMPLATE_IMPORT_ACTIONBAR then
 		local group
 
@@ -2661,11 +2662,14 @@ local function CreateFromItemTemplate(identifier)
 			end
 		end
 
-		Clicked:ReloadActiveBindings()
+		Clicked:ReloadBindings(true)
 	end
 
 	if item ~= nil then
-		Clicked:ReloadActiveBindings()
+		if Addon:IsBindingType(item) then
+			Clicked:ReloadBinding(item, true)
+		end
+
 		tree:SelectByBindingOrGroup(item)
 	end
 end
@@ -2725,7 +2729,7 @@ local function DrawBinding(container)
 			HandleAutomaticBinds(frame)
 		end
 
-		local widget = Addon:GUI_KeybindingButton(binding, "keybind")
+		local widget = Addon:GUI_KeybindingButton(binding, "keybind", GetCurrentBinding())
 		Addon:GUI_SetPostValueChanged(widget, OnPostValueChanged)
 
 		HandleAutomaticBinds(widget)
@@ -2975,7 +2979,7 @@ function Addon:BindingConfig_Open()
 				binding.type = bindingType
 				Addon:SetBindingValue(binding, info1)
 
-				Clicked:ReloadActiveBindings()
+				Clicked:ReloadBinding(GetCurrentBinding(), true)
 				tree:SelectByBindingOrGroup(binding)
 
 				ClearCursor()

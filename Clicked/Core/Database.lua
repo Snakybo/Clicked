@@ -133,7 +133,7 @@ function Clicked:ReloadDatabase()
 	end
 
 	Addon:BlacklistOptions_Refresh()
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings(true)
 end
 
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
@@ -199,10 +199,10 @@ function Clicked:IterateGroups()
 end
 
 --- Create a new binding. This will create and return a new binding, however it will not automatically reload the active bindings, after configuring the
---- returned binding (to make it loadable), manually reload the active bindings using `ReloadActiveBindings`.
+--- returned binding (to make it loadable), manually reload the active bindings using `ReloadBindings`.
 ---
 --- @return Binding
---- @see Clicked#ReloadActiveBindings
+--- @see Clicked#ReloadBindings
 function Clicked:CreateBinding()
 	local binding = Addon:GetNewBindingTemplate()
 	table.insert(Addon.db.profile.bindings, binding)
@@ -238,7 +238,7 @@ end
 --- @param from string
 function Clicked:UpgradeDatabase(from)
 	Addon:UpgradeDatabaseProfile(Addon.db.profile, from)
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings(true)
 end
 
 --@end-debug@
@@ -356,7 +356,7 @@ function Addon:ReplaceBinding(original, replacement)
 	for index, binding in ipairs(Addon.db.profile.bindings) do
 		if binding == original then
 			Addon.db.profile.bindings[index] = replacement
-			Clicked:ReloadActiveBindings()
+			Clicked:ReloadBinding(binding, true)
 			break
 		end
 	end
@@ -373,7 +373,7 @@ function Addon:CloneBinding(original)
 	clone.integrations = {}
 
 	table.insert(Addon.db.profile.bindings, clone)
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBinding(clone, true)
 
 	return clone
 end

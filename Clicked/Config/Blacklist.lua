@@ -142,7 +142,7 @@ local function SetSelectedItem(name, enabled)
 					SetDropdownItem(name, true)
 
 					Addon:UpdateClickCastHeaderBlacklist()
-					Clicked:ReloadActiveBindings()
+					Clicked:ProcessActiveBindings()
 				end
 			end,
 			get = function()
@@ -260,7 +260,7 @@ function Addon:BlacklistOptions_Initialize()
 						SetDropdownItem(val, false)
 
 						Addon:UpdateClickCastHeaderBlacklist()
-						Clicked:ReloadActiveBindings()
+						Clicked:ProcessActiveBindings()
 					end
 				end,
 				get = function()

@@ -75,7 +75,7 @@ local function GetBasicinfoString()
 end
 
 --- @return string
-local function GetParsedDataString()
+local function GetLoadedBindings()
 	local lines = {}
 
 	for i, command in ipairs(data) do
@@ -128,6 +128,41 @@ local function GetParsedDataString()
 
 	ParseAttributes("Macro Handler Attributes", data.macroHandler)
 	ParseAttributes("Hovercast Attributes", data.hovercast)
+
+	return table.concat(lines, "\n")
+end
+
+--- @return string
+local function GetUnloadedBindings()
+	local lines = {}
+
+	for i, binding in Clicked:IterateConfiguredBindings() do
+		if not Clicked:CanBindingLoad(binding) then
+			if i > 1 then
+				table.insert(lines, "")
+			end
+
+			table.insert(lines, "----- Unloaded binding " .. binding.identifier .. " -----")
+			table.insert(lines, "Type: " .. binding.type)
+			table.insert(lines, "Keybind: " .. binding.keybind)
+
+			local value = Addon:GetBindingValue(binding)
+			if value ~= nil then
+				table.insert(lines, "Action: " .. value)
+			end
+
+			local loadState = Addon:GetCachedBindingState(binding)
+
+			if loadState ~= nil then
+				table.insert(lines, "")
+				table.insert(lines, "Load state:")
+
+				for event, state in pairs(loadState) do
+					table.insert(lines, "  " .. event .. " = " .. tostring(state))
+				end
+			end
+		end
+	end
 
 	return table.concat(lines, "\n")
 end
@@ -192,7 +227,8 @@ local function UpdateStatusOutputText()
 
 	local text = {}
 	table.insert(text, GetBasicinfoString())
-	table.insert(text, GetParsedDataString())
+	table.insert(text, GetLoadedBindings())
+	table.insert(text, GetUnloadedBindings())
 	table.insert(text, GetRegisteredClickCastFrames())
 	table.insert(text, GetRegisteredClickCastSidecars())
 	table.insert(text, GetSerializedProfileString())

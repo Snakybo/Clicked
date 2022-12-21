@@ -779,11 +779,11 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 
 	do
 		if leftCanLoad == nil then
-			leftCanLoad = Addon:CanBindingLoad(left)
+			leftCanLoad = Clicked:IsBindingLoaded(left)
 		end
 
 		if rightCanLoad == nil then
-			rightCanLoad = Addon:CanBindingLoad(right)
+			rightCanLoad = Clicked:IsBindingLoaded(right)
 		end
 
 		if leftCanLoad and not rightCanLoad then

@@ -230,12 +230,12 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 
 	local desaturate = false
 
-	if binding ~= nil and not Addon:CanBindingLoad(binding) then
+	if binding ~= nil and not Clicked:IsBindingLoaded(binding) then
 		desaturate = true
 	elseif group ~= nil then
 		desaturate = true
 		for _, child in Clicked:IterateConfiguredBindings() do
-			if child.parent == group.identifier and Addon:CanBindingLoad(child) then
+			if child.parent == group.identifier and Clicked:IsBindingLoaded(child) then
 				desaturate = false
 				break
 			end
@@ -414,7 +414,7 @@ local function Button_OnClick(frame, button)
 							frame.binding.type = type
 
 							Addon:EnsureSupportedTargetModes(frame.binding.targets, frame.binding.keybind, type)
-							Clicked:ReloadActiveBindings()
+							Clicked:ReloadBinding(frame.binding, true)
 
 							contextMenuFrame:Hide()
 						end
@@ -450,7 +450,7 @@ local function Button_OnClick(frame, button)
 						Clicked:DeleteGroup(frame.group)
 					end
 
-					Clicked:ReloadActiveBindings()
+					Clicked:ReloadBindings(true)
 				end
 
 				if IsShiftKeyDown() then
@@ -528,7 +528,7 @@ local function Button_OnEnter(frame)
 		end
 
 		text = text .. "\n"
-		text = text .. (Addon:CanBindingLoad(binding) and Addon.L["Loaded"] or Addon.L["Unloaded"])
+		text = text .. (Clicked:IsBindingLoaded(binding) and Addon.L["Loaded"] or Addon.L["Unloaded"])
 
 		if IsShiftKeyDown() then
 			text = text .. string.format(" (%s)", binding.identifier)
@@ -827,7 +827,7 @@ function Methods:ConstructTree()
 			icon = icon,
 			keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"],
 			binding = binding,
-			canLoad = Addon:CanBindingLoad(binding)
+			canLoad = Clicked:IsBindingLoaded(binding)
 		}
 
 		if binding.parent == nil then

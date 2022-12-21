@@ -81,16 +81,24 @@ Addon.InteractionType = {
 --- @type Binding[]
 local activeBindings = {}
 
+--- @type BindingStateCache
+local bindingStateCache = {}
+
 --- @type table<string,Binding[]>
 local hovercastBucket = {}
 
 --- @type table<string,Binding[]>
 local regularBucket = {}
 
+--- @type BindingReloadCauses
+local pendingReloadCauses = {}
+
 --- @type table<string,boolean>
 local talentCache = {}
 
 local isPendingReload = false
+local isPendingProcess = false
+
 local reloadTicker = nil
 
 -- Local support functions
@@ -471,28 +479,137 @@ local function StripColorCodes(str)
 	return str
 end
 
--- Public addon API
+--- @param binding Binding
+--- @param full boolean
+--- @param delayFrame boolean
+--- @vararg string
+--- @overload fun(binding:Binding, full:boolean, ...:string)
+--- @overload fun(binding:Binding, ...:string)
+local function ProcessReloadBindingArguments(binding, full, delayFrame, ...)
+	local identifier = nil
 
---- Reload the active bindings, this should be called any time changes have been made to data of a binding, or potential load conditions change.
---- If this is called during combat, it will instead be deferred until the combat finishes.
-function Clicked:ReloadActiveBindings()
+	if Addon:IsBindingType(binding) then
+		identifier = binding.identifier
+	elseif type(binding) == "number" then
+		identifier = binding
+	end
+
+	pendingReloadCauses.binding = pendingReloadCauses.binding or {}
+	pendingReloadCauses.binding[identifier] = pendingReloadCauses.binding[identifier] or {}
+	pendingReloadCauses.binding[identifier].events = pendingReloadCauses.binding[identifier].events or {}
+
+	if type(full) == "boolean" and full then
+		pendingReloadCauses.binding[identifier].full = true
+	elseif type(full) == "string" then
+		pendingReloadCauses.binding[identifier].events[full] = true
+	end
+
+	if type(delayFrame) == "string" then
+		pendingReloadCauses.binding[identifier].events[delayFrame] = true
+	end
+
+	for _, item in ipairs({ ... }) do
+		pendingReloadCauses.binding[identifier].events[item] = true
+	end
+end
+
+--- @param full boolean
+--- @param delayFrame boolean
+--- @vararg string
+--- @overload fun(full:boolean, ...:string)
+--- @overload fun(...:string)
+local function ProcessReloadArguments(full, delayFrame, ...)
+	pendingReloadCauses.events = pendingReloadCauses.events or {}
+
+	if type(full) == "boolean" and full then
+		pendingReloadCauses.full = true
+	elseif type(full) == "string" then
+		pendingReloadCauses.events[full] = true
+	end
+
+	if type(delayFrame) == "string" then
+		pendingReloadCauses.events[delayFrame] = true
+	end
+
+	for _, item in ipairs({ ... }) do
+		pendingReloadCauses.events[item] = true
+	end
+end
+
+--- @param delayFrame boolean
+local function ReloadBindings(delayFrame)
 	if InCombatLockdown() then
 		isPendingReload = true
 		return
 	end
 
+	if type(delayFrame) == "boolean" and delayFrame then
+		if reloadTicker == nil then
+			reloadTicker = C_Timer.NewTimer(0, function()
+				reloadTicker = nil
+				Clicked:ReloadBindings()
+			end)
+		end
+
+		return
+	end
+
+	isPendingReload = false
+
+	-- The pendingReloadCauses can contains three "targets":
+	--  1. a specific binding, using the `binding` property
+	--  2. all bindings, using the '*' property
+	--  3. a subset of bindings that are affected by an event using the `events` property (i.e. PLAYER_REGEN_DISABLED)
+
 	wipe(activeBindings)
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
-		if Addon:CanBindingLoad(binding) then
+		Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
+
+		if Clicked:CanBindingLoad(binding) then
 			table.insert(activeBindings, binding)
 		end
 	end
 
+	wipe(pendingReloadCauses)
+
+	Clicked:ProcessActiveBindings()
+	Addon:BindingConfig_Redraw()
+end
+
+-- Public addon API
+
+--- @param binding Binding
+--- @param full boolean
+--- @param delayFrame boolean
+--- @vararg string
+--- @overload fun(binding:Binding, full:boolean, ...:string)
+--- @overload fun(binding:Binding, ...:string)
+function Clicked:ReloadBinding(binding, full, delayFrame, ...)
+	ProcessReloadBindingArguments(binding, full, delayFrame, ...)
+	ReloadBindings(delayFrame)
+end
+
+--- @param full boolean
+--- @param delayFrame boolean
+--- @vararg string
+--- @overload fun(full:boolean, ...:string)
+--- @overload fun(...:string)
+function Clicked:ReloadBindings(full, delayFrame, ...)
+	ProcessReloadArguments(full, delayFrame, ...)
+	ReloadBindings(delayFrame)
+end
+
+function Clicked:ProcessActiveBindings()
+	if InCombatLockdown() then
+		isPendingProcess = true
+		return
+	end
+
+	isPendingProcess = false
+
 	GenerateBuckets(activeBindings)
 	ProcessBuckets()
-
-	Addon:BindingConfig_Redraw()
 end
 
 --- Evaluate the generated macro for a binding and return the target unit if there is any.
@@ -629,6 +746,36 @@ function Clicked:GetBindingsForUnit(unit)
 	return result
 end
 
+--- @param binding Binding
+--- @return boolean
+function Clicked:CanBindingLoad(binding)
+	local state = bindingStateCache[binding.identifier]
+
+	if state == nil then
+		return false
+	end
+
+	for _, value in pairs(state) do
+		if not value then
+			return false
+		end
+	end
+
+	return true
+end
+
+--- @param binding Binding
+--- @return boolean
+function Clicked:IsBindingLoaded(binding)
+	for _, active in ipairs(activeBindings) do
+		if active.identifier == binding.identifier then
+			return true
+		end
+	end
+
+	return false
+end
+
 -- Private addon API
 
 function Addon:UpdateTalentCache()
@@ -676,32 +823,20 @@ function Addon:UpdateTalentCache()
 	end
 end
 
-function Addon:ReloadActiveBindingsIfPending()
+function Addon:ReloadBindingsIfPending()
 	if not isPendingReload then
 		return
 	end
 
-	isPendingReload = false
-	Clicked:ReloadActiveBindings()
+	Clicked:ReloadBindings()
 end
 
-
---- Reload the active bindings in the next frame, this is useful for scenarios where a reload may be triggered multiple times within a single frame.
---- For example, when changing talents.
-function Addon:ReloadActiveBindingsNextFrame()
-	if InCombatLockdown() then
-		isPendingReload = true
+function Addon:ProcessActiveBindingsIfPending()
+	if not isPendingProcess then
 		return
 	end
 
-	if reloadTicker ~= nil then
-		return
-	end
-
-	reloadTicker = C_Timer.NewTimer(0, function()
-		reloadTicker = nil
-		Clicked:ReloadActiveBindings()
-	end)
+	Clicked:ProcessActiveBindings()
 end
 
 --- Check if the specified binding is currently active based on the configuration
@@ -709,115 +844,134 @@ end
 --- valid (it has a keybind and an action to perform)
 ---
 --- @param binding Binding
---- @return boolean
-function Addon:CanBindingLoad(binding)
-	---comment
-	---@param data Binding.TriStateLoadOption
-	---@param validationFunc "fun(input):boolean"
-	---@return boolean
+--- @param options table<string,boolean>
+function Addon:UpdateBindingLoadState(binding, options)
+	--- @param data Binding.LoadOption
+	--- @param validationFunc "fun(input):boolean"
+	--- @return boolean?
+	local function ValidateLoadOption(data, validationFunc)
+		if data.selected then
+			return validationFunc(data.value)
+		end
+
+		return nil
+	end
+
+	--- @param data Binding.TriStateLoadOption
+	--- @param validationFunc "fun(input):boolean"
+	--- @return boolean?
 	local function ValidateTriStateLoadOption(data, validationFunc)
 		if data.selected == 1 then
-			if not validationFunc(data.single) then
-				return false
-			end
+			return validationFunc(data.single)
 		elseif data.selected == 2 then
-			local hasAny = false
-
 			for i = 1, #data.multiple do
 				if validationFunc(data.multiple[i]) then
-					hasAny = true
-					break
+					return true
 				end
 			end
 
-			if not hasAny then
-				return false
+			return false
+		end
+
+		return nil
+	end
+
+	--- @vararg string
+	--- @return boolean
+	local function ShouldPerformStateCheck(...)
+		-- All bindings should be updated
+		if options.full then
+			return true
+		end
+
+		-- A specific binding should be updated
+		if options.binding ~= nil and options.binding[binding.identifier] ~= nil then
+			if options.binding[binding.identifier].full then
+				return true
+			end
+
+			-- A specific event should be updated
+			for cause in pairs({ ... }) do
+				if options.binding[binding.identifier].events[cause] then
+					return true
+				end
 			end
 		end
 
-		return true
-	end
+		-- A specific event should be updated
+		if options.events ~= nil then
+			for _, cause in ipairs({ ... }) do
+				if options.events[cause] then
+					return true
+				end
+			end
+		end
 
-	if binding.keybind == "" then
 		return false
 	end
 
-	do
-		local value = Addon:GetBindingValue(binding)
+	local state = bindingStateCache[binding.identifier] or {}
 
-		if value ~= nil and #tostring(value) == 0 then
-			return false
-		end
-	end
+	if ShouldPerformStateCheck() then
+		state.keybind = binding.keybind ~= ""
+		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
 
-	-- both hovercast and regular targets disabled
-	do
-		if not Addon:IsHovercastEnabled(binding) and not Addon:IsMacroCastEnabled(binding) then
-			return false
+		do
+			local value = Addon:GetBindingValue(binding)
+			state.value = value == nil or #tostring(value) > 0
 		end
 	end
 
 	local load = binding.load
 
-	-- If the "never load" toggle has been enabled, there's no point in checking other values.
-	if load.never then
-		return false
+	if ShouldPerformStateCheck() then
+		state.never = not load.never
 	end
 
 	-- player name
-	do
-		local playerNameRealm = load.playerNameRealm
-
-		if playerNameRealm.selected then
-			local value = playerNameRealm.value
-
+	if ShouldPerformStateCheck() then
+		local function IsPlayerNameRealm(value)
 			local name = UnitName("player")
 			local realm = GetRealmName()
 
-			if value ~= name and value ~= name .. "-" .. realm then
-				return false
-			end
+			return value == name or value == name .. "-" .. realm
 		end
+
+		state.playerName = ValidateLoadOption(load.playerNameRealm, IsPlayerNameRealm)
 	end
 
 	-- class
-	do
+	if ShouldPerformStateCheck() then
 		local function IsClassIndexSelected(index)
 			local _, className = UnitClass("player")
 			return className == index
 		end
 
-		if not ValidateTriStateLoadOption(load.class, IsClassIndexSelected) then
-			return false
-		end
+		state.class = ValidateTriStateLoadOption(load.class, IsClassIndexSelected)
 	end
 
 	-- race
-	do
+	if ShouldPerformStateCheck() then
 		local function IsRaceIndexSelected(index)
 			local _, raceName = UnitRace("player")
 			return raceName == index
 		end
 
-		if not ValidateTriStateLoadOption(load.race, IsRaceIndexSelected) then
-			return false
-		end
+		state.race = ValidateTriStateLoadOption(load.race, IsRaceIndexSelected)
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		-- specialization
-		do
+		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
 			local function IsSpecializationIndexSelected(index)
 				return index == GetSpecialization()
 			end
 
-			if not ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected) then
-				return false
-			end
+			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
 		end
 
 		-- talent selected
-		do
+		if ShouldPerformStateCheck("TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE") then
 			--- @param entries Binding.MutliFieldLoadOptionEntry[]
 			--- @return boolean
 			local function IsTalentMatrixValid(entries)
@@ -861,13 +1015,15 @@ function Addon:CanBindingLoad(binding)
 				return false
 			end
 
-			if load.talent.selected and not IsTalentMatrixValid(load.talent.entries) then
-				return false
+			if load.talent.selected then
+				state.talent = IsTalentMatrixValid(load.talent.entries)
+			else
+				state.talent = nil
 			end
 		end
 
 		-- pvp talent selected
-		do
+		if ShouldPerformStateCheck("PLAYER_PVP_TALENT_UPDATE") then
 			local function AppendTalentIdsFromSlot(items, slot)
 				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slot);
 
@@ -894,37 +1050,35 @@ function Addon:CanBindingLoad(binding)
 				return selected or known or grantedByAura
 			end
 
-			if not ValidateTriStateLoadOption(load.pvpTalent, IsPvPTalentIndexSelected) then
-				return false
-			end
+			state.pvpTalent = ValidateTriStateLoadOption(load.pvpTalent, IsPvPTalentIndexSelected)
 		end
 
 		-- war mode
-		do
-			local warMode = load.warMode
-
-			if warMode.selected then
-				if warMode.value == true and not C_PvP.IsWarModeDesired() then
+		if ShouldPerformStateCheck("PLAYER_FLAGS_CHANGED") then
+			local function IsWarMode(value)
+				if value == true and not C_PvP.IsWarModeDesired() then
 					return false
-				elseif warMode.value == false and C_PvP.IsWarModeDesired() then
+				elseif value == false and C_PvP.IsWarModeDesired() then
 					return false
 				end
+
+				return true
 			end
+
+			state.warMode = ValidateLoadOption(load.warMode, IsWarMode)
 		end
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		-- specialization (classic)
-		do
+		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
 			local function IsSpecializationIndexSelected(index)
 				return index == GetActiveTalentGroup()
 			end
 
-			if not ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected) then
-				return false
-			end
+			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
 		end
 
 		-- talent selected (classic)
-		do
+		if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
 			local function IsTalentIndexSelected(index)
 				local tab = math.ceil(index / MAX_NUM_TALENTS)
 				local talentIndex = (index - 1) % MAX_NUM_TALENTS + 1
@@ -933,14 +1087,12 @@ function Addon:CanBindingLoad(binding)
 				return rank and rank > 0
 			end
 
-			if not ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected) then
-				return false
-			end
+			state.talent = ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected)
 		end
 	end
 
 	-- forms
-	do
+	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
 		local function IsFormIndexSelected(index)
 			local formIndex = index - 1
 
@@ -973,51 +1125,46 @@ function Addon:CanBindingLoad(binding)
 			end
 		end
 
-		if not ValidateTriStateLoadOption(load.form, IsFormIndexSelected) then
-			return false
-		end
+		state.form = ValidateTriStateLoadOption(load.form, IsFormIndexSelected)
 	end
 
 	-- spell known
-	do
+	if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB") then
 		-- If the known spell limiter has been enabled, see if the spell is currrently
 		-- avaialble for the player. This is not limited to just spells as the name
 		-- implies, using the GetSpellInfo function on an item also returns a valid value.
 
-		local spellKnown = load.spellKnown
-
-		if spellKnown.selected then
-			local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(spellKnown.value)
-
-			if name == nil or spellId == nil then
-				return false
-			end
-
-			return IsSpellKnownOrOverridesKnown(spellId)
+		local function IsSpellKnown(value)
+			local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value)
+			return name ~= nil and spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId)
 		end
+
+		state.spellKnown = ValidateLoadOption(load.spellKnown, IsSpellKnown)
 	end
 
 	-- in group
-	do
-		local inGroup = load.inGroup
-
-		if inGroup.selected then
-			if inGroup.value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
+	if ShouldPerformStateCheck("GROUP_ROSTER_UPDATE") then
+		local function IsInGroup(value)
+			if value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
 				return false
 			else
-				if inGroup.value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				if value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
 					return false
-				elseif inGroup.value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				elseif value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
 					return false
-				elseif inGroup.value == Addon.GroupState.RAID and not IsInRaid() then
+				elseif value == Addon.GroupState.RAID and not IsInRaid() then
 					return false
 				end
+
+				return true
 			end
 		end
+
+		state.inGroup = ValidateLoadOption(load.inGroup, IsInGroup)
 	end
 
 	-- instance type
-	do
+	if ShouldPerformStateCheck("ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA") then
 		local function IsInInstanceType(type)
 			local inInstance, instanceType = IsInInstance()
 
@@ -1035,20 +1182,15 @@ function Addon:CanBindingLoad(binding)
 			end
 		end
 
-		if not ValidateTriStateLoadOption(load.instanceType, IsInInstanceType) then
-			return false
-		end
+		state.instanceType = ValidateTriStateLoadOption(load.instanceType, IsInInstanceType)
 	end
 
 	-- zone name
-	do
-		local zoneName = load.zoneName
-
-		if zoneName.selected then
+	if ShouldPerformStateCheck("ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA") then
+		local function IsInZone(value)
 			local realZone = GetRealZoneText()
-			local anyTrue = false
 
-			for zone in string.gmatch(zoneName.value, "([^;]+)") do
+			for zone in string.gmatch(value, "([^;]+)") do
 				local negate = false
 
 				if string.sub(zone, 0, 1) == "!" then
@@ -1057,26 +1199,21 @@ function Addon:CanBindingLoad(binding)
 				end
 
 				if (negate and zone ~= realZone) or (not negate and zone == realZone) then
-					anyTrue = true
-					break
+					return true
 				end
 			end
 
-			if not anyTrue then
-				return false
-			end
+			return false
 		end
+
+		state.zoneName = ValidateLoadOption(load.zoneName, IsInZone)
 	end
 
 	-- player in group
-	do
-		local playerInGroup = load.playerInGroup
-
-		if playerInGroup.selected then
-			local found = false
-
-			if playerInGroup.value == UnitName("player") then
-				found = true
+	if ShouldPerformStateCheck("GROUP_ROSTER_UPDATE") then
+		local function IsPlayerInGroup(value)
+			if value == UnitName("player") then
+				return true
 			else
 				local unit = IsInRaid() and "raid" or "party"
 				local numGroupMembers = GetNumGroupMembers()
@@ -1088,31 +1225,37 @@ function Addon:CanBindingLoad(binding)
 				for i = 1, numGroupMembers do
 					local name = UnitName(unit .. i)
 
-					if name == playerInGroup.value then
-						found = true
-						break
+					if name == value then
+						return true
 					end
 				end
 			end
 
-			if not found then
-				return false
-			end
+			return false
 		end
+
+		state.playerInGroup = ValidateLoadOption(load.playerInGroup, IsPlayerInGroup)
 	end
 
 	-- item equipped
-	do
-		local equipped = load.equipped
+	if ShouldPerformStateCheck("PLAYER_EQUIPMENT_CHANGED") then
+		local function IsItemEquipped(value)
+			return IsEquippedItem(value)
+		end
 
-		if equipped.selected then
-			if not IsEquippedItem(equipped.value) then
-				return false
-			end
+		state.equipped = ValidateLoadOption(load.equipped, IsItemEquipped)
+	end
+
+	-- Remove true values from the data
+	for key, value in pairs(state) do
+		if value then
+			state[key] = nil
 		end
 	end
 
-	return true
+	if bindingStateCache[binding.identifier] == nil then
+		bindingStateCache[binding.identifier] = state
+	end
 end
 
 --- Check if a binding is valid for the current state of the player, this will
@@ -1421,4 +1564,11 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	end
 
 	return table.concat(lines, "\n"), table.concat(macroSegments, "; ")
+end
+
+--- comment
+--- @param binding Binding
+--- @return BindingStateCache
+function Addon:GetCachedBindingState(binding)
+	return bindingStateCache[binding.identifier]
 end

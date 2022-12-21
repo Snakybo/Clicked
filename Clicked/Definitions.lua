@@ -165,3 +165,12 @@
 --- @class Keybind
 --- @field public key string
 --- @field public identifier string
+
+--- @alias BindingStateCache table<integer,table<string,boolean>>
+
+--- @class BindingReloadCause
+--- @field public full boolean
+--- @field public events table<string,boolean>
+
+--- @class BindingReloadCauses : BindingReloadCause
+--- @field public binding BindingReloadCause
