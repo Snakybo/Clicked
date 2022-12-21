@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix talent load options not always being in the correct state after switching spec or talent loadout
+* Fix Lua error related to talent information not being available sometimes
 
 ## [1.10.3] - 2022-12-14
 

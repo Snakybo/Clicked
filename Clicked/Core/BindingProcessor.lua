@@ -797,7 +797,8 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 
 	wipe(talentCache)
 
-	local configId = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or C_ClassTalents.GetActiveConfigID()
+	local currentSpecId = PlayerUtil.GetCurrentSpecID()
+	local configId = (currentSpecId and C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecId)) or C_ClassTalents.GetActiveConfigID()
 	if configId == nil then
 		return
 	end
