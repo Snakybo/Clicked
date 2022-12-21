@@ -102,16 +102,16 @@ end
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
 
-	Clicked:ReloadBindings("PLAYER_REGEN_DISABLED")
 	Addon:AbilityTooltips_Refresh()
+	Clicked:ProcessActiveBindings()
 end
 
 local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
-	Clicked:ReloadBindings("PLAYER_REGEN_ENABLED")
 	Addon:AbilityTooltips_Refresh()
+	Clicked:ProcessActiveBindings()
 end
 
 local function PLAYER_ENTERING_WORLD()
