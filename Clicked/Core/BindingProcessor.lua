@@ -799,11 +799,13 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 
 	local configId = C_ClassTalents.GetActiveConfigID()
 	if configId == nil then
+		Addon:UpdateTalentCacheAndReloadBindings(true, ...)
 		return
 	end
 
 	local configInfo = C_Traits.GetConfigInfo(configId)
 	if configInfo == nil then
+		Addon:UpdateTalentCacheAndReloadBindings(true, ...)
 		return
 	end
 
