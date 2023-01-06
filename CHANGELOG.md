@@ -1064,7 +1064,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.10.4...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.10.5...master
+[1.10.5]: https://github.com/Snakybo/Clicked/releases/tag/1.10.5
 [1.10.4]: https://github.com/Snakybo/Clicked/releases/tag/1.10.4
 [1.10.3]: https://github.com/Snakybo/Clicked/releases/tag/1.10.3
 [1.10.2]: https://github.com/Snakybo/Clicked/releases/tag/1.10.2
