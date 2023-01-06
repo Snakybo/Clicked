@@ -795,50 +795,52 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 		return
 	end
 
-	wipe(talentCache)
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		wipe(talentCache)
 
-	local configId = C_ClassTalents.GetActiveConfigID()
-	if configId == nil then
-		Addon:UpdateTalentCacheAndReloadBindings(true, ...)
-		return
-	end
+		local configId = C_ClassTalents.GetActiveConfigID()
+		if configId == nil then
+			Addon:UpdateTalentCacheAndReloadBindings(true, ...)
+			return
+		end
 
-	local configInfo = C_Traits.GetConfigInfo(configId)
-	if configInfo == nil then
-		Addon:UpdateTalentCacheAndReloadBindings(true, ...)
-		return
-	end
+		local configInfo = C_Traits.GetConfigInfo(configId)
+		if configInfo == nil then
+			Addon:UpdateTalentCacheAndReloadBindings(true, ...)
+			return
+		end
 
-	local treeId = configInfo.treeIDs[1]
-	local nodes = C_Traits.GetTreeNodes(treeId)
+		local treeId = configInfo.treeIDs[1]
+		local nodes = C_Traits.GetTreeNodes(treeId)
 
-	for _, nodeId in ipairs(nodes) do
-		local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
+		for _, nodeId in ipairs(nodes) do
+			local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
 
-		if nodeInfo.ID ~= 0 then
-			-- check if the node was manually selected by the player, the easy way
-			local isValid = nodeInfo.currentRank > 0
+			if nodeInfo.ID ~= 0 then
+				-- check if the node was manually selected by the player, the easy way
+				local isValid = nodeInfo.currentRank > 0
 
-			-- check if the node was granted to the player automatically
-			if not isValid then
-				for _, conditionId in ipairs(nodeInfo.conditionIDs) do
-					local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
+				-- check if the node was granted to the player automatically
+				if not isValid then
+					for _, conditionId in ipairs(nodeInfo.conditionIDs) do
+						local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
 
-					if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
-						isValid = true
-						break
+						if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
+							isValid = true
+							break
+						end
 					end
 				end
-			end
 
-			if isValid then
-				local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
-				local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
-				local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+				if isValid then
+					local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
+					local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
+					local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
 
-				if definitionInfo ~= nil then
-					local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
-					talentCache[name] = true
+					if definitionInfo ~= nil then
+						local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+						talentCache[name] = true
+					end
 				end
 			end
 		end
