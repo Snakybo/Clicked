@@ -1830,7 +1830,7 @@ local function Classic_DrawMacroInStance(container, form, classes)
 	end
 
 	local items, order = Addon:Classic_GetLocalizedForms(classes)
-	DrawNegatableStringLoadOption(container, label, items, order, form)
+	DrawNegatableTristateLoadOption(container, label, items, order, form)
 end
 
 --- @param container table
