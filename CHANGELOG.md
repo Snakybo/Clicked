@@ -8,6 +8,18 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.10.6] - 2023-01-26
+
+### Added
+
+* Add support for WoW 10.0.5
+* Add support for Wrath of the Lich King Classic 3.4.1
+
+### Fixed
+
+* Fix occasional Lua error when using forms [#166]
+* Fix Lua error on stance macro load option on WOTLK
+
 ## [1.10.5] - 2023-01-06
 
 ### Fixed
@@ -1064,7 +1076,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.10.5...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.10.6...master
+[1.10.6]: https://github.com/Snakybo/Clicked/releases/tag/1.10.6
 [1.10.5]: https://github.com/Snakybo/Clicked/releases/tag/1.10.5
 [1.10.4]: https://github.com/Snakybo/Clicked/releases/tag/1.10.4
 [1.10.3]: https://github.com/Snakybo/Clicked/releases/tag/1.10.3
@@ -1156,6 +1169,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#166]: https://github.com/Snakybo/Clicked/issues/166
 [#163]: https://github.com/Snakybo/Clicked/issues/163
 [#155]: https://github.com/Snakybo/Clicked/issues/155
 [#146]: https://github.com/Snakybo/Clicked/issues/146
