@@ -1136,6 +1136,11 @@ function Addon:UpdateBindingLoadState(binding, options)
 				end
 
 				local forms = Addon:GetShapeshiftForms(specId)
+
+				if formIndex > #forms then
+					return false
+				end
+
 				return IsSpellKnown(forms[formIndex])
 			elseif Addon:IsGameVersionAtleast("CLASSIC") then
 				local class = select(2, UnitClass("player"))
