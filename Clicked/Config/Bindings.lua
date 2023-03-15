@@ -1929,6 +1929,23 @@ local function DrawMacroFlyable(container, flyable)
 	DrawDropdownLoadOption(container, Addon.L["Flyable"], items, order, flyable)
 end
 
+
+--- @param container table
+--- @param advancedFlyable Binding.LoadOption
+local function DrawMacroAdvancedFlyable(container, advancedFlyable)
+	local items = {
+		[true] = Addon.L["Advanced Flyable"],
+		[false] = Addon.L["Not advanced flyable"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, Addon.L["Advanced Flyable"], items, order, advancedFlyable)
+end
+
 --- @param container table
 --- @param outdoors Binding.LoadOption
 local function DrawMacroOutdoors(container, outdoors)
@@ -2008,6 +2025,10 @@ local function DrawBindingMacroConditionsPage(container, binding)
 		if Addon:IsGameVersionAtleast("BC") then
 			DrawMacroFlying(container, load.flying)
 			DrawMacroFlyable(container, load.flyable)
+		end
+
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			DrawMacroAdvancedFlyable(container, load.advancedFlyable)
 		end
 	end
 end

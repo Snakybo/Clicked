@@ -300,6 +300,7 @@ function Addon:GetNewBindingTemplate()
 			channeling = GetNegatableStringLoadOptionTemplate(),
 			flying = GetNegatableLoadOptionTemplate(),
 			flyable = GetNegatableLoadOptionTemplate(),
+			advancedFlyable = GetNegatableLoadOptionTemplate(),
 			specialization = GetTriStateLoadOptionTemplate(1),
 			talent = GetTriStateLoadOptionTemplate(1),
 			pvpTalent = GetTriStateLoadOptionTemplate(1),

@@ -1,7 +1,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-Addon.DATA_VERSION = 2
+Addon.DATA_VERSION = 3
 
 -- Local support functions
 
@@ -735,6 +735,19 @@ local function Upgrade(profile, from)
 
 				Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
 			end
+		end
+	end
+
+	if from < 3 then
+		for _, binding in ipairs(profile.bindings) do
+			binding.load.advancedFlyable = {
+				selected = 0,
+				negated = false,
+				single = true,
+				multiple = {
+					true
+				}
+			}
 		end
 	end
 end

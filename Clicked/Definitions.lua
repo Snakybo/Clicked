@@ -94,6 +94,7 @@
 --- @field public swimming Binding.LoadOption
 --- @field public flying Binding.LoadOption
 --- @field public flyable Binding.LoadOption
+--- @field public advancedFlyable Binding.LoadOption
 --- @field public instanceType Binding.TriStateLoadOption
 --- @field public zoneName Binding.LoadOption
 --- @field public equipped Binding.LoadOption
@@ -143,6 +144,7 @@
 --- @field public outdoors string
 --- @field public flying string
 --- @field public flyable string
+--- @field public advflyable string
 --- @field public swimming string
 --- @field public channeling Action.NegatableValueString
 --- @field public forms Action.NegatableValueString

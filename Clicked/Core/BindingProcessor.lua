@@ -179,6 +179,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.swimming, "swimming")
 	ParseNegatableBooleanCondition(action.flying, "flying")
 	ParseNegatableBooleanCondition(action.flyable, "flyable")
+	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
@@ -232,6 +233,10 @@ local function ConstructAction(binding, target)
 	if Addon:IsGameVersionAtleast("BC") then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
+	end
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		AppendCondition(binding.load.advancedFlyable, "advflyable")
 	end
 
 	do
