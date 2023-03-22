@@ -741,12 +741,8 @@ local function Upgrade(profile, from)
 	if from < 3 then
 		for _, binding in ipairs(profile.bindings) do
 			binding.load.advancedFlyable = {
-				selected = 0,
-				negated = false,
-				single = true,
-				multiple = {
-					true
-				}
+				selected = false,
+				value = true
 			}
 		end
 	end
