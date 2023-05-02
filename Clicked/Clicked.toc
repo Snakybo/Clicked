@@ -1,5 +1,6 @@
 ## Interface: 100100
 ## Title: Clicked
+## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
 ## Notes: Easy keybind and macro management

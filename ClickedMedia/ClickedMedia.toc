@@ -1,5 +1,6 @@
 ## Interface: 100100
 ## Title: ClickedMedia
+## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
 ## Notes: Icon data for Clicked.
