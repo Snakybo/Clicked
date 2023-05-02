@@ -5,7 +5,7 @@
 --- @field public icon integer
 
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 48520
+local version = 49407
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -583,7 +583,7 @@ local talents = {
 		{ entryID = 114828, spellID = 404436, name = "Light of Justice", icon = 237432 },
 		{ entryID = 102494, spellID = 402912, name = "Righteous Cause", icon = 237483 },
 		{ entryID = 102493, spellID = 406064, name = "Art of War", icon = 236246 },
-		{ entryID = 102497, spellID = 31884, name = "Avenging Wrath", icon = 135875 },
+		{ entryID = 102497, spellID = 31884, name = "Avenging Wrath: Might", icon = 135875 },
 		{ entryID = 102496, spellID = 231895, name = "Crusade", icon = 135875 },
 		{ entryID = 102498, spellID = 184575, name = "Blade of Justice", icon = 1360757 },
 		{ entryID = 102499, spellID = 53385, name = "Divine Storm", icon = 236250 },
@@ -1086,6 +1086,7 @@ local talents = {
 		{ entryID = 109871, spellID = 400636, name = "Astral Communion", icon = 611423 },
 		{ entryID = 109873, spellID = 393940, name = "Starweaver", icon = 429383 },
 		{ entryID = 109872, spellID = 393954, name = "Rattle the Stars", icon = 135728 },
+		{ entryID = 115458, spellID = 406890, name = "Wild Surges", icon = 1029587 },
 		{ entryID = 109841, spellID = 202347, name = "Stellar Flare", icon = 1052602 },
 		{ entryID = 114299, spellID = 400142, name = "Gale Winds", icon = 236154 },
 		{ entryID = 114298, spellID = 400140, name = "Incessant Tempest", icon = 1029595 },
@@ -1108,6 +1109,7 @@ local talents = {
 		{ entryID = 103157, spellID = 158476, name = "Soul of the Forest", icon = 236160 },
 		{ entryID = 103158, spellID = 391947, name = "Protective Growth", icon = 136085 },
 		{ entryID = 103159, spellID = 231063, name = "Merciless Claws", icon = 134296 },
+		{ entryID = 114823, spellID = 405300, name = "Thrashing Claws", icon = 451161 },
 		{ entryID = 103160, spellID = 391709, name = "Rampant Ferocity", icon = 132139 },
 		{ entryID = 103161, spellID = 236068, name = "Moment of Clarity", icon = 1033483 },
 		{ entryID = 103162, spellID = 106951, name = "Berserk", icon = 236149 },
@@ -1688,6 +1690,7 @@ local talents = {
 		{ entryID = 100524, spellID = 231548, name = "Barbed Wrath", icon = 132127 },
 		{ entryID = 100527, spellID = 385810, name = "Dire Frenzy", icon = 236180 },
 		{ entryID = 100536, spellID = 384799, name = "Hunter's Avoidance", icon = 538536 },
+		{ entryID = 115478, spellID = 53480, name = "Roar of Sacrifice", icon = 464604 },
 		{ entryID = 100539, spellID = 53351, name = "Kill Shot", icon = 236174 },
 		{ entryID = 100614, spellID = 273887, name = "Killer Instinct", icon = 132176 },
 		{ entryID = 100613, spellID = 269737, name = "Alpha Predator", icon = 1033484 },
@@ -1737,7 +1740,7 @@ local talents = {
 		{ entryID = 100658, spellID = 191384, name = "Aspect of the Beast", icon = 575534 },
 		{ entryID = 100659, spellID = 378205, name = "Sharp Barbs", icon = 1376042 },
 		{ entryID = 100660, spellID = 378442, name = "Wild Instincts", icon = 132166 },
-		{ entryID = 100612, spellID = 378739, name = "Bloody Frenzy", icon = 132278 },
+		{ entryID = 100612, spellID = 407412, name = "Bloody Frenzy", icon = 132278 },
 		{ entryID = 100661, spellID = 267116, name = "Animal Companion", icon = 461112 },
 		{ entryID = 100662, spellID = 378209, name = "Training Expert", icon = 1036119 },
 		{ entryID = 100663, spellID = 193455, name = "Cobra Shot", icon = 461114 },
@@ -1780,6 +1783,7 @@ local talents = {
 		{ entryID = 100534, spellID = 400456, name = "Salvo", icon = 1033904 },
 		{ entryID = 100535, spellID = 384790, name = "Razor Fragments", icon = 4067366 },
 		{ entryID = 100536, spellID = 384799, name = "Hunter's Avoidance", icon = 538536 },
+		{ entryID = 115478, spellID = 53480, name = "Roar of Sacrifice", icon = 464604 },
 		{ entryID = 100538, spellID = 53351, name = "Kill Shot", icon = 236174 },
 		{ entryID = 100540, spellID = 147362, name = "Counter Shot", icon = 249170 },
 		{ entryID = 100541, spellID = 34026, name = "Kill Command", icon = 132176 },
@@ -1802,7 +1806,7 @@ local talents = {
 		{ entryID = 100591, spellID = 321287, name = "Target Practice", icon = 1604164 },
 		{ entryID = 100592, spellID = 378907, name = "Sharpshooter", icon = 132157 },
 		{ entryID = 100593, spellID = 378766, name = "Hunter's Knowledge", icon = 1412205 },
-		{ entryID = 100594, spellID = 378880, name = "Bombardment", icon = 132216 },
+		{ entryID = 100594, spellID = 405804, name = "Bombardment", icon = 132216 },
 		{ entryID = 100595, spellID = 260243, name = "Volley", icon = 132205 },
 		{ entryID = 100596, spellID = 193533, name = "Steady Focus", icon = 1412205 },
 		{ entryID = 100597, spellID = 321460, name = "Deadeye", icon = 1033497 },
@@ -1810,10 +1814,10 @@ local talents = {
 		{ entryID = 100599, spellID = 378905, name = "Windrunner's Guidance", icon = 1376042 },
 		{ entryID = 100600, spellID = 321293, name = "Crack Shot", icon = 461846 },
 		{ entryID = 100601, spellID = 378767, name = "Focused Aim", icon = 132177 },
-		{ entryID = 100603, spellID = 260393, name = "Lethal Shots", icon = 236187 },
+		{ entryID = 100603, spellID = 407404, name = "In the Rhythm", icon = 236187 },
 		{ entryID = 100602, spellID = 391559, name = "Surging Shots", icon = 461120 },
 		{ entryID = 100604, spellID = 321018, name = "Improved Steady Shot", icon = 236182 },
-		{ entryID = 100605, spellID = 190852, name = "Legacy of the Windrunners", icon = 1392555 },
+		{ entryID = 100605, spellID = 406425, name = "Legacy of the Windrunners", icon = 1392555 },
 		{ entryID = 100606, spellID = 378765, name = "Killer Accuracy", icon = 236198 },
 		{ entryID = 100607, spellID = 389449, name = "Eagletalon's True Focus", icon = 537444 },
 		{ entryID = 100609, spellID = 260404, name = "Calling the Shots", icon = 236173 },
@@ -1875,6 +1879,7 @@ local talents = {
 		{ entryID = 100532, spellID = 385737, name = "Bloody Claws", icon = 132122 },
 		{ entryID = 100533, spellID = 385718, name = "Ruthless Marauder", icon = 132295 },
 		{ entryID = 100536, spellID = 384799, name = "Hunter's Avoidance", icon = 538536 },
+		{ entryID = 115478, spellID = 53480, name = "Roar of Sacrifice", icon = 464604 },
 		{ entryID = 100537, spellID = 320976, name = "Kill Shot", icon = 236174 },
 		{ entryID = 100543, spellID = 187707, name = "Muzzle", icon = 1376045 },
 		{ entryID = 100542, spellID = 259489, name = "Kill Command", icon = 132176 },
@@ -2169,49 +2174,43 @@ local talents = {
 		{ entryID = 103787, spellID = 373310, name = "Idol of Y'Shaarj", icon = 627685 },
 		{ entryID = 103817, spellID = 373273, name = "Idol of Yogg-Saron", icon = 298654 },
 		{ entryID = 103834, spellID = 108942, name = "Phantasm", icon = 614257 },
-		{ entryID = 103803, spellID = 205385, name = "Shadow Crash", icon = 136201 },
-		{ entryID = 103815, spellID = 392507, name = "Deathspeaker", icon = 136149 },
-		{ entryID = 103681, spellID = 391399, name = "Mind Flay: Insanity", icon = 425954 },
-		{ entryID = 103682, spellID = 391090, name = "Mind Melt", icon = 237569 },
+		{ entryID = 103803, spellID = 73510, name = "Mind Spike", icon = 457655 },
+		{ entryID = 103681, spellID = 392507, name = "Deathspeaker", icon = 136149 },
+		{ entryID = 103682, spellID = 406777, name = "Whispering Shadows", icon = 136201 },
 		{ entryID = 103683, spellID = 373212, name = "Insidious Ire", icon = 425950 },
 		{ entryID = 103684, spellID = 373202, name = "Mind Devourer", icon = 135740 },
-		{ entryID = 103685, spellID = 391235, name = "Encroaching Shadows", icon = 136131 },
-		{ entryID = 103686, spellID = 391137, name = "Whispers of the Damned", icon = 237298 },
+		{ entryID = 103686, spellID = 407469, name = "Phantasmal Pathogen", icon = 136195 },
 		{ entryID = 103782, spellID = 377349, name = "Idol of C'Thun", icon = 236407 },
 		{ entryID = 103783, spellID = 373427, name = "Inescapable Torment", icon = 136130 },
 		{ entryID = 103784, spellID = 391228, name = "Maddening Touch", icon = 135978 },
-		{ entryID = 103785, spellID = 377387, name = "Puppet Master", icon = 132299 },
-		{ entryID = 103786, spellID = 391296, name = "Harnessed Shadows", icon = 332402 },
+		{ entryID = 103785, spellID = 407430, name = "Voidtouched", icon = 132886 },
+		{ entryID = 103786, spellID = 407470, name = "Mind's Eye", icon = 252997 },
+		{ entryID = 115671, spellID = 409044, name = "Distorted Reality", icon = 136160 },
 		{ entryID = 103788, spellID = 200174, name = "Mindbender", icon = 136214 },
-		{ entryID = 103789, spellID = 375767, name = "Screams of the Void", icon = 136208 },
-		{ entryID = 103791, spellID = 238558, name = "Misery", icon = 132291 },
-		{ entryID = 103790, spellID = 263346, name = "Dark Void", icon = 132851 },
+		{ entryID = 103789, spellID = 375767, name = "Screams of the Void", icon = 3154546 },
 		{ entryID = 103792, spellID = 15487, name = "Silence", icon = 458230 },
 		{ entryID = 103794, spellID = 263716, name = "Last Word", icon = 458230 },
 		{ entryID = 103793, spellID = 64044, name = "Psychic Horror", icon = 237568 },
-		{ entryID = 103795, spellID = 391242, name = "Coalescing Shadows", icon = 458969 },
-		{ entryID = 103796, spellID = 341374, name = "Damnation", icon = 236295 },
-		{ entryID = 103679, spellID = 263165, name = "Void Torrent", icon = 1386551 },
+		{ entryID = 103795, spellID = 406788, name = "Thought Harvester", icon = 136224 },
+		{ entryID = 103796, spellID = 263165, name = "Void Torrent", icon = 1386551 },
 		{ entryID = 103797, spellID = 373221, name = "Malediction", icon = 237557 },
 		{ entryID = 103798, spellID = 341240, name = "Ancient Madness", icon = 1386549 },
 		{ entryID = 103680, spellID = 391109, name = "Dark Ascension", icon = 1445237 },
 		{ entryID = 103674, spellID = 228260, name = "Void Eruption", icon = 1386548 },
-		{ entryID = 103799, spellID = 341273, name = "Unfurling Darkness", icon = 1386547 },
+		{ entryID = 103799, spellID = 375994, name = "Mental Decay", icon = 878214 },
 		{ entryID = 103801, spellID = 288733, name = "Intangibility", icon = 237563 },
 		{ entryID = 103800, spellID = 377065, name = "Mental Fortitude", icon = 1022945 },
 		{ entryID = 103802, spellID = 391095, name = "Dark Evangelism", icon = 610679 },
-		{ entryID = 103804, spellID = 375994, name = "Mental Decay", icon = 878214 },
+		{ entryID = 103804, spellID = 341273, name = "Unfurling Darkness", icon = 1386547 },
 		{ entryID = 103805, spellID = 375888, name = "Shadowy Insight", icon = 136183 },
 		{ entryID = 103806, spellID = 47585, name = "Dispersion", icon = 237563 },
-		{ entryID = 103807, spellID = 48045, name = "Mind Sear", icon = 237565 },
 		{ entryID = 103808, spellID = 335467, name = "Devouring Plague", icon = 252997 },
 		{ entryID = 103809, spellID = 341491, name = "Shadowy Apparitions", icon = 458229 },
 		{ entryID = 103811, spellID = 155271, name = "Auspicious Spirits", icon = 1022944 },
-		{ entryID = 103810, spellID = 391284, name = "Tormented Spirits", icon = 237567 },
-		{ entryID = 103812, spellID = 73510, name = "Mind Spike", icon = 457655 },
-		{ entryID = 103813, spellID = 162448, name = "Surge of Darkness", icon = 633004 },
+		{ entryID = 103812, spellID = 391399, name = "Surge of Insanity", icon = 425954 },
+		{ entryID = 103813, spellID = 205385, name = "Shadow Crash", icon = 136201 },
 		{ entryID = 103814, spellID = 199484, name = "Psychic Link", icon = 1445238 },
-		{ entryID = 103816, spellID = 391288, name = "Pain of Death", icon = 136143 },
+		{ entryID = 103816, spellID = 391151, name = "Mastermind", icon = 3163618 },
 		{ entryID = 103818, spellID = 390996, name = "Manipulation", icon = 3565723 },
 		{ entryID = 103819, spellID = 391112, name = "Shattered Perceptions", icon = 3528308 },
 		{ entryID = 103820, spellID = 108968, name = "Void Shift", icon = 537079 },
@@ -2268,6 +2267,9 @@ local talents = {
 		{ entryID = 103872, spellID = 390667, name = "Spell Warding", icon = 135976 },
 		{ entryID = 103677, spellID = 390767, name = "Blessed Recovery", icon = 135877 },
 		{ entryID = 103873, spellID = 377438, name = "Words of the Pious", icon = 1022947 },
+		{ entryID = 103810, spellID = 391284, name = "Tormented Spirits", icon = 237567 },
+		{ entryID = 115448, spellID = 238558, name = "Misery", icon = 132291 },
+		{ entryID = 115449, spellID = 391090, name = "Mind Melt", icon = 237569 },
 	},
 	-- Assassination Rogue
 	[259] = {
@@ -3041,7 +3043,7 @@ local talents = {
 		{ entryID = 91530, spellID = 387396, name = "Demonic Meteor", icon = 535592 },
 		{ entryID = 91531, spellID = 111898, name = "Grimoire: Felguard", icon = 136216 },
 		{ entryID = 91532, spellID = 387338, name = "Fel Might", icon = 1122134 },
-		{ entryID = 91533, spellID = 267170, name = "From the Shadows", icon = 1378282 },
+		{ entryID = 91533, spellID = 267170, name = "The Houndmaster's Stratagem", icon = 1378282 },
 		{ entryID = 91534, spellID = 386200, name = "Fel and Steel", icon = 132103 },
 		{ entryID = 91535, spellID = 205145, name = "Demonic Calling", icon = 460856 },
 		{ entryID = 91536, spellID = 386194, name = "Carnivorous Stalkers", icon = 1380868 },
@@ -3217,6 +3219,7 @@ local talents = {
 		{ entryID = 101514, spellID = 328670, name = "Hasty Provocation", icon = 620830 },
 		{ entryID = 101515, spellID = 122783, name = "Diffuse Magic", icon = 775460 },
 		{ entryID = 101516, spellID = 116844, name = "Ring of Peace", icon = 839107 },
+		{ entryID = 115464, spellID = 198898, name = "Song of Chi-Ji", icon = 332402 },
 		{ entryID = 101517, spellID = 157411, name = "Windwalking", icon = 611420 },
 		{ entryID = 101518, spellID = 196607, name = "Eye of the Tiger", icon = 236165 },
 		{ entryID = 101519, spellID = 388686, name = "Summon White Tiger Statue", icon = 4667418 },
@@ -3330,6 +3333,7 @@ local talents = {
 		{ entryID = 101514, spellID = 328670, name = "Hasty Provocation", icon = 620830 },
 		{ entryID = 101515, spellID = 122783, name = "Diffuse Magic", icon = 775460 },
 		{ entryID = 101516, spellID = 116844, name = "Ring of Peace", icon = 839107 },
+		{ entryID = 115464, spellID = 198898, name = "Song of Chi-Ji", icon = 332402 },
 		{ entryID = 101517, spellID = 157411, name = "Windwalking", icon = 611420 },
 		{ entryID = 101518, spellID = 196607, name = "Eye of the Tiger", icon = 236165 },
 		{ entryID = 101519, spellID = 388686, name = "Summon White Tiger Statue", icon = 4667418 },
@@ -3357,7 +3361,6 @@ local talents = {
 		{ entryID = 101356, spellID = 274909, name = "Rising Mist", icon = 1360977 },
 		{ entryID = 101358, spellID = 274586, name = "Invigorating Mists", icon = 1360980 },
 		{ entryID = 101359, spellID = 388193, name = "Faeline Stomp", icon = 3636842 },
-		{ entryID = 101360, spellID = 198898, name = "Song of Chi-Ji", icon = 332402 },
 		{ entryID = 101361, spellID = 210802, name = "Spirit of the Crane", icon = 977169 },
 		{ entryID = 101363, spellID = 197900, name = "Mist Wrap", icon = 988196 },
 		{ entryID = 101362, spellID = 196725, name = "Refreshing Jade Wind", icon = 606549 },
@@ -3386,7 +3389,7 @@ local talents = {
 		{ entryID = 101386, spellID = 337209, name = "Font of Life", icon = 237590 },
 		{ entryID = 101387, spellID = 388511, name = "Overflowing Mists", icon = 1394953 },
 		{ entryID = 101388, spellID = 343655, name = "Celestial Harmony", icon = 988195 },
-		{ entryID = 101389, spellID = 388218, name = "Calming Coalescence", icon = 606546 },
+		{ entryID = 101389, spellID = 202424, name = "Chrysalis", icon = 1381295 },
 		{ entryID = 114297, spellID = 399226, name = "Burst of Life", icon = 1381294 },
 		{ entryID = 101390, spellID = 116849, name = "Life Cocoon", icon = 627485 },
 		{ entryID = 101391, spellID = 388020, name = "Resplendent Mist", icon = 136006 },
@@ -3408,6 +3411,7 @@ local talents = {
 		{ entryID = 101408, spellID = 388023, name = "Ancient Teachings", icon = 133739 },
 		{ entryID = 101407, spellID = 388047, name = "Clouded Focus", icon = 606550 },
 		{ entryID = 101409, spellID = 387765, name = "Nourishing Chi", icon = 134125 },
+		{ entryID = 115684, spellID = 388218, name = "Calming Coalescence", icon = 606546 },
 		{ entryID = 101410, spellID = 116680, name = "Thunder Focus Tea", icon = 611418 },
 		{ entryID = 101413, spellID = 388681, name = "Elusive Mists", icon = 606550 },
 		{ entryID = 101414, spellID = 264348, name = "Tiger Tail Sweep", icon = 642414 },
@@ -3433,6 +3437,7 @@ local talents = {
 		{ entryID = 101514, spellID = 328670, name = "Hasty Provocation", icon = 620830 },
 		{ entryID = 101515, spellID = 122783, name = "Diffuse Magic", icon = 775460 },
 		{ entryID = 101516, spellID = 116844, name = "Ring of Peace", icon = 839107 },
+		{ entryID = 115464, spellID = 198898, name = "Song of Chi-Ji", icon = 332402 },
 		{ entryID = 101517, spellID = 157411, name = "Windwalking", icon = 611420 },
 		{ entryID = 101518, spellID = 196607, name = "Eye of the Tiger", icon = 236165 },
 		{ entryID = 101519, spellID = 388686, name = "Summon White Tiger Statue", icon = 4667418 },
@@ -3522,7 +3527,7 @@ local talents = {
 		{ entryID = 112929, spellID = 389693, name = "Inner Demon", icon = 1305157 },
 		{ entryID = 112931, spellID = 391429, name = "Fodder to the Flame", icon = 3591588 },
 		{ entryID = 112930, spellID = 390163, name = "Elysian Decree", icon = 3565443 },
-		{ entryID = 112932, spellID = 391275, name = "Accelerating Blade", icon = 1305159 },
+		{ entryID = 112932, spellID = 391275, name = "Accelerated Blade", icon = 1305159 },
 		{ entryID = 112933, spellID = 389977, name = "Relentless Onslaught", icon = 1354410 },
 		{ entryID = 112934, spellID = 390154, name = "Serrated Glaive", icon = 1309101 },
 		{ entryID = 112936, spellID = 389978, name = "Dancing with Fate", icon = 1108795 },
@@ -3700,10 +3705,9 @@ local talents = {
 		{ entryID = 87590, spellID = 369908, name = "Power Nexus", icon = 4630464 },
 		{ entryID = 87591, spellID = 375796, name = "Hoarded Power", icon = 4630455 },
 		{ entryID = 87637, spellID = 369846, name = "Feed the Flames", icon = 519892 },
-		{ entryID = 87636, spellID = 370819, name = "Everburning Flame", icon = 135789 },
 		{ entryID = 87638, spellID = 370867, name = "Iridescence", icon = 4630466 },
-		{ entryID = 87640, spellID = 369375, name = "Eye of Infinity", icon = 1041234 },
-		{ entryID = 87639, spellID = 375777, name = "Causality", icon = 3015741 },
+		{ entryID = 87640, spellID = 411165, name = "Eye of Infinity", icon = 4630418 },
+		{ entryID = 87639, spellID = 411164, name = "Event Horizon", icon = 631503 },
 		{ entryID = 87641, spellID = 370452, name = "Shattering Star", icon = 4622449 },
 		{ entryID = 87643, spellID = 386336, name = "Focusing Iris", icon = 610472 },
 		{ entryID = 87642, spellID = 386342, name = "Arcane Vigor", icon = 135728 },
@@ -3719,9 +3723,10 @@ local talents = {
 		{ entryID = 87653, spellID = 370821, name = "Scintillation", icon = 135730 },
 		{ entryID = 87654, spellID = 386348, name = "Onyx Legacy", icon = 134154 },
 		{ entryID = 87655, spellID = 370781, name = "Imminent Destruction", icon = 1032475 },
-		{ entryID = 87656, spellID = 375783, name = "Font of Magic", icon = 4622461 },
+		{ entryID = 87656, spellID = 411212, name = "Font of Magic", icon = 4622461 },
 		{ entryID = 87657, spellID = 375801, name = "Burnout", icon = 135827 },
-		{ entryID = 87658, spellID = 370783, name = "Snapfire", icon = 459027 },
+		{ entryID = 115026, spellID = 405659, name = "Raging Inferno", icon = 460698 },
+		{ entryID = 115025, spellID = 370783, name = "Snapfire", icon = 459027 },
 		{ entryID = 87659, spellID = 368847, name = "Firestorm", icon = 4622459 },
 		{ entryID = 87660, spellID = 386283, name = "Catalyze", icon = 135820 },
 		{ entryID = 87661, spellID = 375725, name = "Heat Wave", icon = 135822 },
@@ -3779,6 +3784,8 @@ local talents = {
 		{ entryID = 87714, spellID = 372469, name = "Scarlet Adaptation", icon = 132532 },
 		{ entryID = 87715, spellID = 360995, name = "Verdant Embrace", icon = 4622471 },
 		{ entryID = 87716, spellID = 365585, name = "Expunge", icon = 4630445 },
+		{ entryID = 87636, spellID = 370819, name = "Everburning Flame", icon = 135789 },
+		{ entryID = 115682, spellID = 375777, name = "Causality", icon = 3015741 },
 	},
 	-- Preservation Evoker
 	[1468] = {
@@ -3879,77 +3886,77 @@ local talents = {
 --- @type table<integer,integer[]>
 local pvpTalents = {
 	-- Arcane Mage
-	[62] = { 635, 3517, 5488, 5397, 637, 3529, 5491, 5492, 3531, 61, 3442, }, -- Master of Escape, Temporal Shield, Ice Wall, Arcanosphere, Mass Invisibility, Kleptomania, Ring of Fire, Precognition, Prismatic Cloak, Arcane Empowerment, Netherwind Armor
+	[62] = { 3517, 5589, 635, 637, 3529, 5601, 5491, 5488, 5397, }, -- Temporal Shield, Master Shepherd, Master of Escape, Mass Invisibility, Kleptomania, Ethereal Blink, Ring of Fire, Ice Wall, Arcanosphere
 	-- Fire Mage
-	[63] = { 648, 647, 646, 644, 53, 828, 5489, 5493, 5495, 5389, }, -- Greater Pyroblast, Flamecannon, Pyrokinesis, World in Flames, Netherwind Armor, Prismatic Cloak, Ice Wall, Precognition, Glass Cannon, Ring of Fire
+	[63] = { 5588, 5489, 644, 646, 647, 648, 5389, 5602, 5495, }, -- Master Shepherd, Ice Wall, World in Flames, Pyrokinesis, Flamecannon, Greater Pyroblast, Ring of Fire, Ethereal Blink, Glass Cannon
 	-- Frost Mage
-	[64] = { 5494, 5490, 634, 3443, 66, 3532, 5496, 5390, 5497, 632, }, -- Precognition, Ring of Fire, Ice Form, Netherwind Armor, Chilled to the Bone, Prismatic Cloak, Frost Bomb, Ice Wall, Snowdrift, Concentrated Coolness
+	[64] = { 634, 5600, 5390, 5490, 5497, 66, 5496, 632, 5581, }, -- Ice Form, Ethereal Blink, Ice Wall, Ring of Fire, Snowdrift, Icy Feet, Frost Bomb, Concentrated Coolness, Master Shepherd
 	-- Holy Paladin
-	[65] = { 5537, 5421, 5553, 5501, 859, 3618, 642, 640, 82, 85, 86, 87, 88, }, -- Vengeance Aura, Judgments of the Pure, Aura of Reckoning, Precognition, Light's Grace, Hallowed Ground, Cleanse the Weak, Divine Vision, Avenging Light, Ultimate Sacrifice, Darkest before the Dawn, Spreading the Word, Blessed Hands
+	[65] = { 86, 5553, 5421, 3618, 642, 640, 5583, 82, 85, 87, 88, }, -- Darkest before the Dawn, Aura of Reckoning, Judgments of the Pure, Hallowed Ground, Cleanse the Weak, Divine Vision, Searing Glare, Avenging Light, Ultimate Sacrifice, Spreading the Word, Blessed Hands
 	-- Protection Paladin
-	[66] = { 3474, 5554, 860, 861, 844, 90, 91, 5536, 97, 94, 93, 92, }, -- Luminescence, Aura of Reckoning, Warrior of Light, Shield of Virtue, Inquisition, Hallowed Ground, Steed of Glory, Vengeance Aura, Guarded by the Light, Guardian of the Forgotten Queen, Judgments of the Pure, Sacred Duty
+	[66] = { 3474, 861, 5582, 5554, 844, 860, 97, 94, 93, 92, 91, 90, }, -- Luminescence, Shield of Virtue, Searing Glare, Aura of Reckoning, Inquisition, Warrior of Light, Guarded by the Light, Guardian of the Forgotten Queen, Judgments of the Pure, Sacred Duty, Steed of Glory, Hallowed Ground
 	-- Retribution Paladin
-	[70] = { 5422, 756, 751, 754, 752, 753, 5535, 81, 5572, 5573, }, -- Judgments of the Pure, Aura of Reckoning, Vengeance Aura, Lawbringer, Blessing of Sanctuary, Ultimate Retribution, Hallowed Ground, Luminescence, Spreading the Word, Blessing of Spellwarding
+	[70] = { 5572, 5573, 5584, 5422, 81, 5535, 756, 754, 753, 752, }, -- Spreading the Word, Blessing of Spellwarding, Searing Glare, Judgments of the Pure, Luminescence, Hallowed Ground, Aura of Reckoning, Lawbringer, Ultimate Retribution, Blessing of Sanctuary
 	-- Arms Warrior
-	[71] = { 5372, 3522, 29, 31, 32, 5376, 33, 5547, 34, 3534, 28, }, -- Demolition, Death Sentence, Shadow of the Colossus, Storm of Destruction, War Banner, Warbringer, Sharpen Blade, Rebound, Duel, Disarm, Master and Commander
+	[71] = { 5547, 3522, 5372, 5376, 29, 31, 32, 33, 3534, 28, 34, }, -- Rebound, Death Sentence, Demolition, Warbringer, Shadow of the Colossus, Storm of Destruction, War Banner, Sharpen Blade, Disarm, Master and Commander, Duel
 	-- Fury Warrior
-	[72] = { 5373, 3735, 166, 170, 5548, 172, 25, 177, 179, 5431, 3533, 3528, }, -- Demolition, Slaughterhouse, Barbarian, Battle Trance, Rebound, Bloodrage, Death Sentence, Enduring Rage, Death Wish, Warbringer, Disarm, Master and Commander
+	[72] = { 5431, 3533, 3735, 170, 5373, 3528, 25, 166, 172, 177, 179, 5548, }, -- Warbringer, Disarm, Slaughterhouse, Battle Trance, Demolition, Master and Commander, Death Sentence, Barbarian, Bloodrage, Enduring Rage, Death Wish, Rebound
 	-- Protection Warrior
-	[73] = { 5432, 845, 833, 831, 24, 5374, 167, 168, 171, 173, 175, 178, }, -- Warbringer, Oppressor, Rebound, Dragon Charge, Disarm, Demolition, Sword and Board, Bodyguard, Morale Killer, Shield Bash, Thunderstruck, Warpath
+	[73] = { 845, 175, 173, 5374, 171, 24, 833, 831, 178, 5432, 168, }, -- Oppressor, Thunderstruck, Shield Bash, Demolition, Morale Killer, Disarm, Rebound, Dragon Charge, Warpath, Warbringer, Bodyguard
 	-- Balance Druid
-	[102] = { 182, 180, 5383, 822, 5407, 3058, 5515, 5526, 3728, 3731, 185, 184, 5503, 834, 836, }, -- Crescent Burn, Celestial Guardian, High Winds, Dying Stars, Owlkin Adept, Star Burst, Malorne's Swiftness, Reactive Resin, Protector of the Grove, Thorns, Moonkin Aura, Moon and Stars, Precognition, Deep Roots, Faerie Swarm
+	[102] = { 3731, 3728, 3058, 822, 834, 836, 5604, 5515, 5383, 5407, 180, 182, 184, 185, }, -- Thorns, Protector of the Grove, Star Burst, Dying Stars, Deep Roots, Faerie Swarm, Master Shapeshifter, Malorne's Swiftness, High Winds, Owlkin Adept, Celestial Guardian, Crescent Burn, Moon and Stars, Moonkin Aura
 	-- Feral Druid
-	[103] = { 5384, 5525, 3053, 203, 201, 820, 601, 602, 3751, 611, 612, 620, }, -- High Winds, Reactive Resin, Strength of the Wild, Freedom of the Herd, Thorns, Savage Momentum, Malorne's Swiftness, King of the Jungle, Leader of the Pack, Ferocious Wound, Fresh Wound, Wicked Claws
+	[103] = { 601, 820, 620, 612, 5593, 3053, 203, 5384, 3751, 201, 611, 602, }, -- Malorne's Swiftness, Savage Momentum, Wicked Claws, Fresh Wound, Wild Attunement, Strength of the Wild, Freedom of the Herd, High Winds, Leader of the Pack, Thorns, Ferocious Wound, King of the Jungle
 	-- Guardian Druid
-	[104] = { 52, 192, 196, 1237, 5410, 3750, 194, 193, 197, 195, 51, 842, 5524, 50, 49, }, -- Demoralizing Roar, Raging Frenzy, Overrun, Malorne's Swiftness, Grove Protection, Freedom of the Herd, Charging Bash, Sharpened Claws, Emerald Slumber, Entangling Claws, Den Mother, Alpha Challenge, Reactive Resin, Toughness, Master Shapeshifter
+	[104] = { 195, 194, 842, 3750, 49, 51, 52, 1237, 196, 197, 5410, }, -- Entangling Claws, Charging Bash, Alpha Challenge, Freedom of the Herd, Master Shapeshifter, Den Mother, Demoralizing Roar, Malorne's Swiftness, Overrun, Emerald Slumber, Grove Protection
 	-- Restoration Druid
-	[105] = { 838, 835, 59, 5504, 700, 3048, 5514, 5387, 1215, 691, 692, 697, }, -- High Winds, Focused Growth, Disentanglement, Precognition, Deep Roots, Master Shapeshifter, Malorne's Swiftness, Keeper of the Grove, Early Spring, Reactive Resin, Entangling Bark, Thorns
+	[105] = { 1215, 5514, 838, 835, 691, 692, 697, 700, 3048, 5387, 59, }, -- Early Spring, Malorne's Swiftness, High Winds, Focused Growth, Reactive Resin, Entangling Bark, Thorns, Deep Roots, Master Shapeshifter, Keeper of the Grove, Disentanglement
 	-- Blood Death Knight
-	[250] = { 841, 5425, 3441, 3511, 609, 5513, 204, 205, 206, 607, 608, }, -- Murderous Intent, Spellwarden, Decomposing Aura, Dark Simulacrum, Death Chain, Necrotic Aura, Rot and Wither, Walking Dead, Strangulate, Blood for Blood, Last Dance
+	[250] = { 5592, 841, 608, 609, 3511, 206, 205, 204, 5587, 5513, 3441, }, -- Spellwarden, Murderous Intent, Last Dance, Death Chain, Dark Simulacrum, Strangulate, Walking Dead, Rot and Wither, Bloodforged Armor, Necrotic Aura, Decomposing Aura
 	-- Frost Death Knight
-	[251] = { 5510, 3439, 701, 702, 3512, 5435, 5424, 5512, 5429, 3743, }, -- Rot and Wither, Shroud of Winter, Deathchill, Delirium, Dark Simulacrum, Bitter Chill, Spellwarden, Necrotic Aura, Strangulate, Dead of Winter
+	[251] = { 5429, 3439, 3512, 702, 701, 5510, 3743, 5591, 5586, 5435, 5512, }, -- Strangulate, Shroud of Winter, Dark Simulacrum, Delirium, Deathchill, Rot and Wither, Dead of Winter, Spellwarden, Bloodforged Armor, Bitter Chill, Necrotic Aura
 	-- Unholy Death Knight
-	[252] = { 3747, 3437, 149, 152, 5436, 5430, 5423, 5511, 40, 41, 3746, }, -- Raise Abomination, Necrotic Aura, Necrotic Wounds, Reanimation, Doomburst, Strangulate, Spellwarden, Rot and Wither, Life and Death, Dark Simulacrum, Necromancer's Bargain
+	[252] = { 5585, 3746, 149, 152, 41, 40, 5590, 5511, 5430, 5436, 3747, 3437, }, -- Bloodforged Armor, Necromancer's Bargain, Necrotic Wounds, Reanimation, Dark Simulacrum, Life and Death, Spellwarden, Rot and Wither, Strangulate, Doomburst, Raise Abomination, Necrotic Aura
 	-- Beast Mastery Hunter
-	[253] = { 825, 5441, 5444, 5534, 3612, 1214, 5418, 3599, 3730, 3600, 3604, 824, 693, }, -- Dire Beast: Basilisk, Wild Kingdom, Kindred Beasts, Diamond Ice, Roar of Sacrifice, Interlope, Tranquilizing Darts, Survival Tactics, Hunting Pack, Dragonscale Armor, Chimaeral Sting, Dire Beast: Hawk, The Beast Within
+	[253] = { 1214, 3599, 3604, 3730, 5444, 5441, 5418, 693, 5534, 824, 825, }, -- Interlope, Survival Tactics, Chimaeral Sting, Hunting Pack, Kindred Beasts, Wild Kingdom, Tranquilizing Darts, The Beast Within, Diamond Ice, Dire Beast: Hawk, Dire Beast: Basilisk
 	-- Marksmanship Hunter
-	[254] = { 5531, 5442, 5533, 3729, 660, 3614, 659, 658, 653, 651, 649, 5419, 5440, }, -- Interlope, Wild Kingdom, Diamond Ice, Hunting Pack, Sniper Shot, Roar of Sacrifice, Ranger's Finesse, Trueshot Mastery, Chimaeral Sting, Survival Tactics, Dragonscale Armor, Tranquilizing Darts, Consecutive Concussion
+	[254] = { 659, 5442, 5440, 5533, 653, 5419, 651, 658, 5531, 660, 3729, }, -- Ranger's Finesse, Wild Kingdom, Consecutive Concussion, Diamond Ice, Chimaeral Sting, Tranquilizing Darts, Survival Tactics, Trueshot Mastery, Interlope, Sniper Shot, Hunting Pack
 	-- Survival Hunter
-	[255] = { 5420, 5532, 3607, 5443, 686, 665, 664, 663, 662, 661, 3609, 3610, }, -- Tranquilizing Darts, Interlope, Survival Tactics, Wild Kingdom, Diamond Ice, Tracker's Net, Sticky Tar, Roar of Sacrifice, Mending Bandage, Hunting Pack, Chimaeral Sting, Dragonscale Armor
+	[255] = { 5443, 3609, 3607, 661, 664, 665, 662, 686, 5532, 5420, }, -- Wild Kingdom, Chimaeral Sting, Survival Tactics, Hunting Pack, Sticky Tar Bomb, Tracker's Net, Mending Bandage, Diamond Ice, Interlope, Tranquilizing Darts
 	-- Discipline Priest
-	[256] = { 100, 109, 855, 5416, 5487, 5498, 126, 5480, 123, 5475, 117, 114, 98, 111, 5483, }, -- Purified Resolve, Trinity, Thoughtsteal, Inner Light and Shadow, Catharsis, Precognition, Dark Archangel, Delivered from Evil, Archangel, Cardinal Mending, Dome of Light, Ultimate Radiance, Purification, Strength of Soul, Eternal Rest
+	[256] = { 114, 126, 123, 5416, 109, 855, 111, 5487, 5570, 5480, 98, 100, }, -- Ultimate Radiance, Dark Archangel, Archangel, Inner Light and Shadow, Trinity, Thoughtsteal, Strength of Soul, Catharsis, Phase Shift, Absolute Faith, Purification, Purified Resolve
 	-- Holy Priest
-	[257] = { 101, 108, 1927, 5479, 5499, 5485, 5478, 127, 5476, 124, 115, 5366, 5365, 112, 5482, }, -- Holy Ward, Sanctified Ground, Delivered from Evil, Purified Resolve, Precognition, Catharsis, Purification, Ray of Hope, Strength of Soul, Spirit of the Redeemer, Cardinal Mending, Divine Ascension, Thoughtsteal, Greater Heal, Eternal Rest
+	[257] = { 124, 5479, 5478, 5476, 127, 5569, 5366, 5365, 1927, 101, 108, 112, 5485, }, -- Spirit of the Redeemer, Purified Resolve, Purification, Strength of Soul, Ray of Hope, Phase Shift, Divine Ascension, Thoughtsteal, Absolute Faith, Holy Ward, Sanctified Ground, Greater Heal, Catharsis
 	-- Shadow Priest
-	[258] = { 5477, 763, 739, 5484, 5486, 5447, 5481, 5500, 5381, 113, 5474, 106, }, -- Strength of Soul, Psyfiend, Void Origins, Eternal Rest, Catharsis, Void Volley, Delivered from Evil, Precognition, Thoughtsteal, Mind Trauma, Cardinal Mending, Driven to Madness
+	[258] = { 106, 763, 5477, 5447, 5568, 113, 5486, 5381, 5481, }, -- Driven to Madness, Psyfiend, Strength of Soul, Void Volley, Phase Shift, Mind Trauma, Catharsis, Thoughtsteal, Absolute Faith
 	-- Assassination Rogue
-	[259] = { 3480, 3479, 3448, 830, 5530, 141, 5517, 147, 5408, 5405, 5550, }, -- Smoke Bomb, Death from Above, Maneuverability, Hemotoxin, Control is King, Creeping Venom, Veil of Midnight, System Shock, Thick as Thieves, Dismantle, Dagger in the Dark
+	[259] = { 3479, 5550, 141, 3448, 5405, 5530, 5408, 830, 5517, 3480, 147, }, -- Death from Above, Dagger in the Dark, Creeping Venom, Maneuverability, Dismantle, Control is King, Thick as Thieves, Hemotoxin, Veil of Midnight, Smoke Bomb, System Shock
 	-- Outlaw Rogue
-	[260] = { 5412, 5516, 5549, 135, 129, 138, 139, 145, 853, 1208, 3421, 3483, 3619, }, -- Enduring Brawler, Veil of Midnight, Dagger in the Dark, Take Your Cut, Maneuverability, Control is King, Drink Up Me Hearties, Dismantle, Boarding Party, Thick as Thieves, Turn the Tables, Smoke Bomb, Death from Above
+	[260] = { 135, 129, 1208, 3421, 853, 5516, 5549, 3483, 5412, 3619, 145, 139, 138, }, -- Take Your Cut, Maneuverability, Thick as Thieves, Turn the Tables, Boarding Party, Veil of Midnight, Dagger in the Dark, Smoke Bomb, Enduring Brawler, Death from Above, Dismantle, Drink Up Me Hearties, Control is King
 	-- Subtlety Rogue
-	[261] = { 5411, 3462, 3447, 136, 856, 846, 5409, 1209, 5406, 153, 146, 5529, }, -- Distracting Mirage, Death from Above, Maneuverability, Veil of Midnight, Silhouette, Dagger in the Dark, Thick as Thieves, Smoke Bomb, Dismantle, Shadowy Duel, Thief's Bargain, Control is King
+	[261] = { 5409, 846, 3462, 3447, 856, 5411, 5529, 153, 146, 5406, 1209, 136, }, -- Thick as Thieves, Dagger in the Dark, Death from Above, Maneuverability, Silhouette, Distracting Mirage, Control is King, Shadowy Duel, Thief's Bargain, Dismantle, Smoke Bomb, Veil of Midnight
 	-- Elemental Shaman
-	[262] = { 3488, 3062, 3621, 5415, 3620, 727, 5457, 730, 728, 3491, 3490, }, -- Skyfury Totem, Spectral Recovery, Swelling Waves, Seasoned Winds, Grounding Totem, Static Field Totem, Precognition, Traveling Storms, Control of Lava, Unleash Shield, Counterstrike Totem
+	[262] = { 5574, 5571, 3491, 3490, 3488, 727, 730, 5415, 3620, }, -- Burrow, Volcanic Surge, Unleash Shield, Counterstrike Totem, Skyfury Totem, Static Field Totem, Traveling Storms, Seasoned Winds, Grounding Totem
 	-- Enhancement Shaman
-	[263] = { 3623, 5414, 5438, 722, 3489, 3492, 721, 3487, 5527, 725, 1944, 3519, 3622, }, -- Swelling Waves, Seasoned Winds, Static Field Totem, Shamanism, Counterstrike Totem, Unleash Shield, Ride the Lightning, Skyfury Totem, Traveling Storms, Thundercharge, Ethereal Form, Spectral Recovery, Grounding Totem
+	[263] = { 5438, 5527, 5575, 5596, 3487, 721, 722, 3489, 3492, 3622, 5414, }, -- Static Field Totem, Traveling Storms, Burrow, Stormweaver, Skyfury Totem, Ride the Lightning, Shamanism, Counterstrike Totem, Unleash Shield, Grounding Totem, Seasoned Winds
 	-- Restoration Shaman
-	[264] = { 707, 708, 712, 714, 715, 5458, 5437, 5388, 5528, 3755, 3520, }, -- Skyfury Totem, Counterstrike Totem, Swelling Waves, Electrocute, Grounding Totem, Precognition, Unleash Shield, Living Tide, Traveling Storms, Cleansing Waters, Spectral Recovery
+	[264] = { 5437, 5388, 5528, 715, 5566, 5567, 714, 708, 707, 5576, 3755, }, -- Unleash Shield, Living Tide, Traveling Storms, Grounding Totem, Seasoned Winds, Static Field Totem, Electrocute, Counterstrike Totem, Skyfury Totem, Burrow, Rain Dance
 	-- Affliction Warlock
-	[265] = { 5506, 17, 5543, 5386, 18, 12, 20, 19, 5392, 16, 11, 5546, 15, 5379, }, -- Precognition, Bane of Shadows, Call Observer, Rapid Contagion, Nether Ward, Deathbolt, Casting Circle, Essence Drain, Shadow Rift, Rot and Decay, Bane of Fragility, Bonds of Fel, Gateway Mastery, Rampant Afflictions
+	[265] = { 15, 5392, 5579, 12, 5608, 5379, 5543, 5546, 5386, 16, 18, 19, }, -- Gateway Mastery, Shadow Rift, Impish Instincts, Deathbolt, Soul Rip, Rampant Afflictions, Call Observer, Bonds of Fel, Rapid Contagion, Rot and Decay, Nether Ward, Essence Drain
 	-- Demonology Warlock
-	[266] = { 5505, 162, 158, 156, 5545, 3626, 3625, 3624, 165, 3506, 3505, 5394, 5400, 1213, }, -- Precognition, Call Fel Lord, Pleasure through Pain, Call Felhunter, Bonds of Fel, Casting Circle, Essence Drain, Nether Ward, Call Observer, Gateway Mastery, Bane of Fragility, Shadow Rift, Fel Obelisk, Master Summoner
+	[266] = { 5400, 1213, 3506, 5577, 5606, 5545, 3624, 5394, 165, 162, }, -- Fel Obelisk, Master Summoner, Gateway Mastery, Impish Instincts, Soul Rip, Bonds of Fel, Nether Ward, Shadow Rift, Call Observer, Call Fel Lord
 	-- Destruction Warlock
-	[267] = { 3502, 164, 159, 157, 5401, 3508, 3509, 3510, 5393, 5544, 5507, 5382, }, -- Bane of Fragility, Bane of Havoc, Cremation, Fel Fissure, Bonds of Fel, Nether Ward, Essence Drain, Casting Circle, Shadow Rift, Call Observer, Precognition, Gateway Mastery
+	[267] = { 5401, 3508, 5580, 5607, 5382, 5544, 5393, 157, 164, }, -- Bonds of Fel, Nether Ward, Impish Instincts, Soul Rip, Gateway Mastery, Call Observer, Shadow Rift, Fel Fissure, Bane of Havoc
 	-- Brewmaster Monk
-	[268] = { 673, 5541, 5552, 5542, 765, 843, 672, 671, 670, 669, 668, 667, 1958, 5417, 666, 5538, }, -- Mighty Ox Kick, Dematerialize, Alpha Tiger, Wind Waker, Eerie Fermentation, Admonishment, Double Barrel, Incendiary Breath, Nimble Brew, Avert Harm, Guided Meditation, Hot Trub, Niuzao's Essence, Rodeo, Microbrew, Grapple Weapon
+	[268] = { 843, 5538, 5541, 765, 5552, 673, 672, 670, 669, 668, 667, 666, 1958, 5417, }, -- Admonishment, Grapple Weapon, Dematerialize, Eerie Fermentation, Alpha Tiger, Mighty Ox Kick, Double Barrel, Nimble Brew, Avert Harm, Guided Meditation, Hot Trub, Microbrew, Niuzao's Essence, Rodeo
 	-- Windwalker Monk
-	[269] = { 3734, 5540, 3745, 77, 3737, 5448, 852, 3744, 3052, 3050, 675, }, -- Alpha Tiger, Mighty Ox Kick, Turbo Fists, Ride the Wind, Wind Waker, Perpetual Paralysis, Reverse Harm, Pressure Points, Grapple Weapon, Disabling Reach, Tigereye Brew
+	[269] = { 5610, 3052, 3050, 5448, 675, 5540, 77, 3734, 3737, 852, 3744, 3745, }, -- Stormspirit Strikes, Grapple Weapon, Disabling Reach, Perpetual Paralysis, Tigereye Brew, Mighty Ox Kick, Ride the Wind, Alpha Tiger, Wind Waker, Reverse Harm, Pressure Points, Turbo Fists
 	-- Mistweaver Monk
-	[270] = { 5508, 5398, 5551, 5395, 70, 5539, 3732, 5402, 1928, 683, 682, 680, 679, 678, }, -- Precognition, Dematerialize, Alpha Tiger, Peaceweaver, Eminence, Mighty Ox Kick, Grapple Weapon, Thunderous Focus Tea, Zen Focus Tea, Healing Sphere, Refreshing Breeze, Dome of Mist, Counteract Magic, Chrysalis
+	[270] = { 5603, 5565, 3732, 5402, 683, 682, 680, 679, 5398, 70, 5551, 5539, 1928, 5395, }, -- Zen Spheres, Fae Accord, Grapple Weapon, Thunderous Focus Tea, Healing Sphere, Refreshing Breeze, Dome of Mist, Counteract Magic, Dematerialize, Eminence, Alpha Tiger, Mighty Ox Kick, Zen Focus Tea, Peaceweaver
 	-- Havoc Demon Hunter
-	[577] = { 1218, 1206, 5433, 5523, 805, 806, 809, 811, 812, 813, }, -- Unending Hatred, Cover of Darkness, Blood Moon, Sigil Mastery, Cleansed by Flame, Reverse Magic, Chaotic Imprint, Rain from Above, Detainment, Glimpse
+	[577] = { 1206, 806, 809, 5433, 811, 812, 813, 1218, 5523, 805, }, -- Cover of Darkness, Reverse Magic, Chaotic Imprint, Blood Moon, Rain from Above, Detainment, Glimpse, Unending Hatred, Sigil Mastery, Cleansed by Flame
 	-- Vengeance Demon Hunter
-	[581] = { 814, 1948, 1220, 3423, 815, 5520, 5521, 5522, 3727, 5434, 5439, 3429, 3430, 816, 819, }, -- Cleansed by Flame, Sigil Mastery, Tormentor, Demonic Trample, Everlasting Hunt, Cover of Darkness, Rain from Above, Glimpse, Unending Hatred, Blood Moon, Chaotic Imprint, Reverse Magic, Detainment, Jagged Spikes, Illidan's Grasp
+	[581] = { 3430, 5521, 1948, 5520, 3727, 1220, 814, 815, 5434, 816, 5439, 819, 5522, 3429, 3423, }, -- Detainment, Rain from Above, Sigil Mastery, Cover of Darkness, Unending Hatred, Tormentor, Cleansed by Flame, Everlasting Hunt, Blood Moon, Jagged Spikes, Chaotic Imprint, Illidan's Grasp, Glimpse, Reverse Magic, Demonic Trample
 	-- Initial Shaman
 	[1444] = { },
 	-- Initial Warrior
@@ -3977,9 +3984,9 @@ local pvpTalents = {
 	-- Initial Evoker
 	[1465] = { },
 	-- Devastation Evoker
-	[1467] = { 5464, 5462, 5456, 5460, 5509, 5471, 5469, 5467, 5466, }, -- Time Stop, Scouring Flame, Chrono Loop, Obsidian Mettle, Precognition, Crippling Force, Unburdened Flight, Nullifying Shroud, Swoop Up
+	[1467] = { 5456, 5599, 5556, 5471, 5469, 5467, 5466, 5464, 5462, 5460, }, -- Chrono Loop, Dream Catcher, Divide and Conquer, Crippling Force, Unburdened Flight, Nullifying Shroud, Swoop Up, Time Stop, Scouring Flame, Obsidian Mettle
 	-- Preservation Evoker
-	[1468] = { 5459, 5455, 5468, 5454, 5502, 5461, 5470, 5463, 5465, }, -- Obsidian Mettle, Chrono Loop, Nullifying Shroud, Dream Projection, Precognition, Scouring Flame, Unburdened Flight, Time Stop, Swoop Up
+	[1468] = { 5598, 5470, 5463, 5595, 5468, 5461, 5465, 5454, 5455, 5459, }, -- Dream Catcher, Unburdened Flight, Time Stop, Divide and Conquer, Nullifying Shroud, Scouring Flame, Swoop Up, Dream Projection, Chrono Loop, Obsidian Mettle
 }
 
 LibTalentInfo:RegisterTalentProvider({

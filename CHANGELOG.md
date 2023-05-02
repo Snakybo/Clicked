@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for AddOn compartment
 * Use in-game API to retrieve talent data
   * Make new talent selection UI available for non en-US locales
+* Update PvP talent data
 
 ## [1.11.0] - 2023-03-22
 
