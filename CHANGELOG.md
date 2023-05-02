@@ -20,6 +20,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * Make new talent selection UI available for non en-US locales
 * Update PvP talent data
 
+### Fixed
+
+* Fix talent dropdown item sometimes being unclickable
+
 ## [1.11.0] - 2023-03-22
 
 ### Added

@@ -402,6 +402,7 @@ local function UpdateButtons(self, matches)
 		button.icon:SetTexture(matches[i].icon)
 		button.icon:SetTexCoord(0, 1, 0, 1)
 
+		button:Enable()
 		button:Show()
 	end
 
