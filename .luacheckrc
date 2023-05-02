@@ -40,6 +40,7 @@ read_globals = {
 	"WeakAurasSaved",
 
 	-- WoW API globals
+	"AddonCompartmentFrame",
 	"AUTOCOMPLETE_DEFAULT_Y_OFFSET",
 	"BOOKTYPE_PROFESSION",
 	"BOOKTYPE_SPELL",

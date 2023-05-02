@@ -59,6 +59,17 @@ local function RegisterMinimapIcon()
 	LibDBIcon:Register("Clicked", iconData, Addon.db.profile.options.minimap)
 end
 
+local function RegisterAddonCompartment()
+	AddonCompartmentFrame:RegisterAddon({
+		text = Addon.L["Clicked"],
+		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
+		notCheckable = true,
+		func = function()
+			Addon:BindingConfig_Open()
+		end
+	})
+end
+
 --- Parse a chat command input and handle it appropriately.
 ---
 --- @param input string The data of the chat command, excluding the first word
@@ -214,6 +225,7 @@ function Clicked:OnInitialize()
 	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 
 	RegisterMinimapIcon()
+	RegisterAddonCompartment()
 
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()
