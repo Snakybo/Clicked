@@ -45,6 +45,7 @@ read_globals = {
 	"BOOKTYPE_SPELL",
 	"CreateFrame",
 	"DisableAddOn",
+	"C_AddOns",
 	"C_ChatInfo",
 	"C_ClassTalents",
 	"C_CreatureInfo",

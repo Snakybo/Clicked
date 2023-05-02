@@ -18,6 +18,8 @@ local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+
 --- @class ClickedInternal
 local _, Addon = ...
 
