@@ -9,7 +9,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
 
-## [Unreleased]
+## [1.11.1] - 2023-05-03
 
 ### Added
 
@@ -1100,7 +1100,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.11.0...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.11.1...master
+[1.11.1]: https://github.com/Snakybo/Clicked/releases/tag/1.11.1
 [1.11.0]: https://github.com/Snakybo/Clicked/releases/tag/1.11.0
 [1.10.6]: https://github.com/Snakybo/Clicked/releases/tag/1.10.6
 [1.10.5]: https://github.com/Snakybo/Clicked/releases/tag/1.10.5
