@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add support for WoW 10.1.0
 * Add new icons from WoW 10.1.0 to icon picker
 
 ## [1.11.0] - 2023-03-22
