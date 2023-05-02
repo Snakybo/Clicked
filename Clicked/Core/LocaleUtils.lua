@@ -26,6 +26,9 @@ local allRaces = {}
 --- @type string[]
 local allClasses = {}
 
+--- @type table<integer,TalentInfo>
+local allTalents = {}
+
 if Addon:IsGameVersionAtleast("CLASSIC") then
 	table.insert(allRaces, 1) -- Human
 	table.insert(allRaces, 2) -- Orc
@@ -75,6 +78,68 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allClasses, "MONK")
 	table.insert(allClasses, "DEMONHUNTER")
 	table.insert(allClasses, "EVOKER")
+end
+
+--- Stip color codes from a string
+---
+--- @param str string
+--- @return string
+local function StripColorCodes(str)
+	str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
+	str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
+	str = string.gsub(str, "|r", "")
+
+	return str
+end
+
+--- Attempt to retrieve cached talent data for the specified specialization.
+---
+--- @param specId integer
+--- @return TalentInfo[]?
+local function GetTalentsForSpecialization(specId)
+	if allTalents[specId] ~= nil then
+		return allTalents[specId]
+	end
+
+	C_ClassTalents.InitializeViewLoadout(specId, 70)
+	C_ClassTalents.ViewLoadout({})
+
+	local configId = Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID
+	local configInfo = C_Traits.GetConfigInfo(configId)
+
+	if configInfo == nil then
+		return nil
+	end
+
+	allTalents[specId] = {}
+
+	for _, treeId in ipairs(configInfo.treeIDs) do
+		local nodes = C_Traits.GetTreeNodes(treeId)
+
+		for _, nodeId in ipairs(nodes) do
+			local node = C_Traits.GetNodeInfo(configId, nodeId)
+
+			if node ~= nil and node.ID ~= 0 then
+				for _, talentId in ipairs(node.entryIDs) do
+					local entryInfo = C_Traits.GetEntryInfo(configId, talentId)
+					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+					local spellName = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+
+					if spellName ~= nil then
+						table.insert(allTalents[specId], {
+							entryId = talentId,
+							spellId = definitionInfo.spellID,
+							text = spellName,
+							icon = TalentButtonUtil.CalculateIconTexture(definitionInfo),
+							specId = specId
+						})
+					end
+				end
+			end
+		end
+	end
+
+	return allTalents[specId]
 end
 
 -- Private addon API
@@ -382,29 +447,28 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- is `nil` it will return results for the player's current specialization.
 	---
 	--- @param specializations integer[]
-	--- @return table
+	--- @return TalentInfo[]
 	function Addon:GetLocalizedTalents(specializations)
 		local result = {}
-		local found = {}
 
 		if specializations == nil then
 			specializations = {}
 			specializations[1] = GetSpecializationInfo(GetSpecialization())
 		end
 
+		local found = {}
+
 		for _, specialization in ipairs(specializations) do
-			for i = 1, LibTalentInfo:GetNumTalents(specialization) do
-				local info = LibTalentInfo:GetTalentAt(specialization, i)
+			local talents = GetTalentsForSpecialization(specialization)
 
-				if found[info.name] ~= info.icon then
-					found[info.name] = info.icon
+			if talents ~= nil then
+				for i = 1, #talents do
+					local talent = talents[i]
 
-					table.insert(result, {
-						entryId = info.entryID,
-						spellId = info.spellID,
-						text = info.name,
-						icon = info.icon
-					})
+					if not found[talent.text] then
+						found[talent.text] = true
+						table.insert(result, talents[i])
+					end
 				end
 			end
 		end

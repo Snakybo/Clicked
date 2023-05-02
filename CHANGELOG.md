@@ -16,6 +16,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for WoW 10.1.0
 * Add new icons from WoW 10.1.0 to icon picker
 * Add support for AddOn compartment
+* Use in-game API to retrieve talent data
+  * Make new talent selection UI available for non en-US locales
 
 ## [1.11.0] - 2023-03-22
 
