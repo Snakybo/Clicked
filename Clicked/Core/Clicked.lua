@@ -225,7 +225,10 @@ function Clicked:OnInitialize()
 	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 
 	RegisterMinimapIcon()
-	RegisterAddonCompartment()
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		RegisterAddonCompartment()
+	end
 
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()
