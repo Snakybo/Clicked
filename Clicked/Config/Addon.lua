@@ -38,13 +38,31 @@ function Addon:GeneralOptions_Initialize()
 					Addon.db.profile.options.minimap.hide = not val
 
 					if val then
-						LibDBIcon:Show("Clicked")
+						LibDBIcon:Show(Addon.L["Clicked"])
 					else
-						LibDBIcon:Hide("Clicked")
+						LibDBIcon:Hide(Addon.L["Clicked"])
 					end
 				end,
 				get = function(_)
 					return not Addon.db.profile.options.minimap.hide
+				end
+			},
+			addonCompartmentButton = {
+				name = Addon.L["Enable addon compartment button"],
+				desc = Addon.L["Enable or disable the addon compartment button."],
+				type = "toggle",
+				order = 101,
+				width = "full",
+				hidden = not Addon:IsGameVersionAtleast("RETAIL"),
+				set = function (_, val)
+					if val then
+						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
+					else
+						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked"])
+					end
+				end,
+				get = function(_)
+					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked"])
 				end
 			},
 			onKeyDown = {

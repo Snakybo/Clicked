@@ -43,7 +43,7 @@ local isInitialized = false
 
 -- Local support functions
 
-local function RegisterMinimapIcon()
+local function RegisterIcons()
 	local iconData = LibDataBroker:NewDataObject("Clicked", {
 		type = "launcher",
 		label = Addon.L["Clicked"],
@@ -56,18 +56,8 @@ local function RegisterMinimapIcon()
 		end
 	})
 
-	LibDBIcon:Register("Clicked", iconData, Addon.db.profile.options.minimap)
-end
-
-local function RegisterAddonCompartment()
-	AddonCompartmentFrame:RegisterAddon({
-		text = Addon.L["Clicked"],
-		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
-		notCheckable = true,
-		func = function()
-			Addon:BindingConfig_Open()
-		end
-	})
+	LibDBIcon:Register(Addon.L["Clicked"], iconData, Addon.db.profile.options.minimap)
+	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
 end
 
 --- Parse a chat command input and handle it appropriately.
@@ -224,11 +214,7 @@ function Clicked:OnInitialize()
 
 	Addon:UpgradeDatabaseProfile(Addon.db.profile)
 
-	RegisterMinimapIcon()
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		RegisterAddonCompartment()
-	end
+	RegisterIcons()
 
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()
