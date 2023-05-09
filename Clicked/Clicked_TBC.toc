@@ -39,6 +39,8 @@ Config\GUI.lua
 Config\Addon.lua
 Config\Profile.lua
 Config\Bindings.lua
+Config\BindingsImportFrame.lua
+Config\BindingsExportFrame.lua
 Config\Blacklist.lua
 Debug\StatusOutput.lua
 

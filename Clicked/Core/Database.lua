@@ -139,13 +139,10 @@ end
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
 --- @return Group
 function Clicked:CreateGroup()
-	local identifier = Addon.db.profile.nextGroupId
-	Addon.db.profile.nextGroupId = Addon.db.profile.nextGroupId + 1
-
 	local group = {
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
-		identifier = "group-" .. identifier
+		identifier = Addon:GetNextGroupIdentifier()
 	}
 
 	table.insert(Addon.db.profile.groups, group)
@@ -158,7 +155,7 @@ end
 function Clicked:DeleteGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
-	for i, e in ipairs(Addon.db.profile.groups) do
+	for i, e in self:IterateGroups() do
 		if e.identifier == group.identifier then
 			table.remove(Addon.db.profile.groups, i)
 			break
@@ -180,13 +177,27 @@ end
 function Clicked:GetGroupById(identifier)
 	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
 
-	for _, group in ipairs(Addon.db.profile.groups) do
+	for _, group in self:IterateGroups() do
 		if group.identifier == identifier then
 			return group
 		end
 	end
 
 	return nil
+end
+
+function Clicked:GetBindingsInGroup(identifier)
+	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
+
+	local bindings = {}
+
+	for _, binding in self:IterateConfiguredBindings() do
+		if binding.parent == identifier then
+			table.insert(bindings, binding)
+		end
+	end
+
+	return bindings
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
@@ -216,7 +227,7 @@ end
 function Clicked:DeleteBinding(binding)
 	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
 
-	for index, other in ipairs(Addon.db.profile.bindings) do
+	for index, other in self:IterateConfiguredBindings() do
 		if other == binding then
 			table.remove(Addon.db.profile.bindings, index)
 			break
@@ -348,19 +359,46 @@ function Addon:GetNextBindingIdentifier()
 	return identifier
 end
 
+--- @return string
+--- @return integer
+function Addon:GetNextGroupIdentifier()
+	local identifier = Addon.db.profile.nextGroupId
+	Addon.db.profile.nextGroupId = identifier + 1
+
+	return "group-" .. identifier, identifier
+end
+
 --- @param original Binding
 --- @param replacement Binding
 function Addon:ReplaceBinding(original, replacement)
 	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
 	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
 
-	for index, binding in ipairs(Addon.db.profile.bindings) do
+	for index, binding in self:IterateConfiguredBindings() do
 		if binding == original then
 			Addon.db.profile.bindings[index] = replacement
 			Clicked:ReloadBinding(binding, true)
 			break
 		end
 	end
+end
+
+--- @param binding Binding
+function Addon:RegisterBinding(binding)
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+
+	binding.identifier = self:GetNextBindingIdentifier()
+
+	table.insert(Addon.db.profile.bindings, binding)
+	Clicked:ReloadBinding(binding, true)
+end
+
+--- @param group Group
+function Addon:RegisterGroup(group)
+	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
+
+	group.identifier = self:GetNextGroupIdentifier()
+	table.insert(Addon.db.profile.groups, group)
 end
 
 ---@param original Binding

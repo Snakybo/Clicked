@@ -182,3 +182,14 @@
 --- @field public spellId integer
 --- @field public text string
 --- @field public icon integer
+
+--- @alias ShareType "group"|"binding
+
+--- @class ShareGroup : Group
+--- @field public bindings Binding[]
+
+--- @class ShareData
+--- @field public version integer
+--- @field public type ShareType
+--- @field public group ShareGroup?
+--- @field public binding Binding?

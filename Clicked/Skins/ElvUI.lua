@@ -46,6 +46,48 @@ local function Initialize()
 		elseif widget.type == "ClickedAutoFillEditBox" then
 			widget.pullout:StripTextures()
 			widget.pullout:SetTemplate("Transparent")
+		elseif  widget.type == "ClickedBindingImportList" then
+			local function RefreshTree(w, fromOnUpdate)
+				w.OrignalRefreshTree(w, fromOnUpdate)
+
+				if not elv.private.skins.ace3Enable then
+					return
+				end
+
+				local status = self.status or self.localstatus
+				local groupstatus = status.groups
+				local lines = self.lines
+				local buttons = self.buttons
+				local offset = status.scrollvalue
+
+				for i = offset + 1, #lines do
+					local button = buttons[i - offset]
+
+					if button then
+						if button.highlight then
+							button.highlight:SetVertexColor(1.0, 0.9, 0.0, 0.8)
+						end
+
+						if groupstatus[lines[i].identifier] then
+							button.toggle:SetNormalTexture(elv.Media.Textures.Minus)
+							button.toggle:SetPushedTexture(elv.Media.Textures.Minus)
+						else
+							button.toggle:SetNormalTexture(elv.Media.Textures.Plus)
+							button.toggle:SetPushedTexture(elv.Media.Textures.Plus)
+						end
+
+						button.toggle:SetHighlightTexture(elv.ClearTexture)
+					end
+				end
+			end
+
+			if widget.OrignalRefreshTree == nil then
+				widget.OrignalRefreshTree = widget.RefreshTree
+				widget.RefreshTree = RefreshTree
+			end
+
+			widget.treeframe:SetTemplate("Transparent")
+			skins:HandleScrollBar(widget.scrollbar)
 		end
 
 		return originalRegisterAsWidget(self, widget)

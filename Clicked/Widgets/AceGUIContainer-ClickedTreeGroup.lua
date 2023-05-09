@@ -434,6 +434,19 @@ local function Button_OnClick(frame, button)
 		end
 
 		table.insert(menu, {
+			text = Addon.L["Share"],
+			notCheckable = true,
+			disabled = inCombat,
+			func = function ()
+				if frame.group ~= nil then
+					Addon:BindingExportFrame_Open(frame.group, "group")
+				elseif frame.binding ~= nil then
+					Addon:BindingExportFrame_Open(frame.binding, "binding")
+				end
+			end
+		})
+
+		table.insert(menu, {
 			text = Addon.L["Delete"],
 			notCheckable = true,
 			disabled = inCombat,
@@ -845,7 +858,7 @@ function Methods:ConstructTree()
 	end
 
 	self:BuildCache()
-		self:RefreshTree()
+	self:RefreshTree()
 
 	if #self.tree > 0 and status.selected == nil then
 		self:SelectByValue(self.tree[1].value)

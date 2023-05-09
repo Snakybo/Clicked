@@ -2901,6 +2901,20 @@ local function DrawHeader(container)
 
 		line:AddChild(widget)
 	end
+
+	-- import button
+	do
+		local function OnClick()
+			Addon:BindingImportFrame_Open()
+		end
+
+		local widget = AceGUI:Create("Button")
+		widget:SetText(Addon.L["Import"])
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetAutoWidth(true)
+
+		line:AddChild(widget)
+	end
 end
 
 --- @param container table

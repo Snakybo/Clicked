@@ -24,7 +24,7 @@ local _, Addon = ...
 
 --- @param data Profile
 --- @return boolean status
---- @return string message
+--- @return string? message
 local function ValidateData(data)
 	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
 		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
@@ -51,7 +51,134 @@ local function SerializeTable(data, printable)
 	return LibDeflate:EncodeForWoWAddonChannel(compressed)
 end
 
+--- @param data ShareData
+local function RegisterGroup(data)
+	if data.type ~= "group" then
+		error("bad argument #1, expected group but got " .. data.type)
+	end
+
+	local bindings = data.group.bindings
+	data.group.bindings = nil
+
+	Addon:RegisterGroup(data.group)
+
+	for _, binding in ipairs(bindings) do
+		binding.parent = data.group.identifier
+		Addon:RegisterBinding(binding)
+	end
+end
+
+--- @param data ShareData
+local function RegisterBinding(data)
+	if data.type ~= "binding" then
+		error("bad argument #1, expected binding but got " .. data.type)
+	end
+
+	Addon:RegisterBinding(data.binding)
+end
+
 -- Public addon API
+
+--- Serialize the specified group, including all bindings that are part of the group, and generate a string that can be shared.
+---
+--- @param group Group
+--- @return string
+--- @see Clicked#SerializeBinding
+--- @see Clicked#Deserialize
+function Clicked:SerializeGroup(group)
+	assert(type(group == "table"), "bad argument #1, expected table but got " .. type(group))
+
+	local data = {
+		version = Addon.DATA_VERSION,
+		type = "group",
+		group = Addon:DeepCopyTable(group)
+	}
+
+	data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(group.identifier))
+
+	-- Clear user-specific data
+	for _, binding in ipairs(data.group.bindings) do
+		wipe(binding.integrations)
+	end
+
+	return SerializeTable(data, true)
+end
+
+--- Serialize the specified binding and generate a string that can be shared.
+---
+--- @param binding Binding
+--- @return string
+--- @see Clicked#SerializeGroup
+--- @see Clicked#Deserialize
+function Clicked:SerializeBinding(binding)
+	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+
+	local data = {
+		version = Addon.DATA_VERSION,
+		type = "binding",
+		binding = Addon:DeepCopyTable(binding)
+	}
+
+	-- Clear user-specific data
+	wipe(data.binding.integrations)
+	data.binding.parent = nil
+
+	return SerializeTable(data, true)
+end
+
+--- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeGroup` and `SerializeBinding`.
+---
+--- The deserialization process itself does not actually import the data, it simply makes it readable for a consumer. Use the `Clicked:Import` function to
+--- import the deserialized data.
+---
+--- @param encoded string
+--- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
+--- @return ShareData|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
+--- @see Clicked#Import
+--- @see Clicked#SerializeBinding
+--- @see Clicked#SerializeGroup
+function Clicked:Deserialize(encoded)
+	local compressed = LibDeflate:DecodeForPrint(encoded)
+
+	if compressed == nil then
+		return false, "Failed to decode"
+	end
+
+	local serialized = LibDeflate:DecompressDeflate(compressed)
+
+	if serialized == nil then
+		return false, "Failed to decompress"
+	end
+
+	local success, data = AceSerializer:Deserialize(serialized)
+
+	if not success then
+		return false, "Failed to deserialize"
+	end
+
+	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
+		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
+	end
+
+	return true, data
+end
+
+--- Import deserialized data into the addon, this is step two of `Deserialize`.
+---
+--- @param data ShareData
+--- @return boolean
+function Clicked:Import(data)
+	if data.type == "group" then
+		RegisterGroup(data)
+		return true
+	elseif data.type == "binding" then
+		RegisterBinding(data)
+		return true
+	end
+
+	print("Unknown data type: " .. data.type)
+	return false
+end
 
 --- Serialize the specified profile and generate a string that can be shared via addon communication channels, or in plaintext format. By default this function
 --- will only serialize the `bindings` and `groups` of a profile, however the `full` parameter can be specified to serialize the entire profile, including all

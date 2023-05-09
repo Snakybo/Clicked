@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add option to disable the addon compartment button to the options menu
+* Add new import and export window for individual bindings and groups [#141]
 
 ## [1.11.2] - 2023-05-07
 
@@ -1212,6 +1213,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#163]: https://github.com/Snakybo/Clicked/issues/163
 [#155]: https://github.com/Snakybo/Clicked/issues/155
 [#146]: https://github.com/Snakybo/Clicked/issues/146
+[#141]: https://github.com/Snakybo/Clicked/issues/141
 [#137]: https://github.com/Snakybo/Clicked/issues/137
 [#136]: https://github.com/Snakybo/Clicked/issues/136
 [#134]: https://github.com/Snakybo/Clicked/issues/134
