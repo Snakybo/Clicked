@@ -98,7 +98,7 @@ end
 
 --- Get the default values for a Clicked profile.
 ---
---- @return Database
+--- @return AceDB-3.0
 function Clicked:GetDatabaseDefaults()
 	local database = {
 		profile = {

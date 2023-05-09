@@ -24,6 +24,7 @@ local AceComm = LibStub("AceComm-3.0")
 --- @class ClickedInternal
 local _, Addon = ...
 
+--- @type AceGUIFrame
 local importExportFrame
 local panelId
 
@@ -60,7 +61,7 @@ local function OpenImportExportFrame(mode)
 		return
 	end
 
-	importExportFrame = AceGUI:Create("ClickedFrame")
+	importExportFrame = AceGUI:Create("ClickedFrame") --[[@as AceGUIFrame]]
 
 	local textFieldType = "MultiLineEditBox"
 
@@ -68,16 +69,12 @@ local function OpenImportExportFrame(mode)
 		importExportFrame:SetTitle(Addon.L["Export Bindings"])
 		importExportFrame:SetStatusText(string.format(Addon.L["Exporting bindings from: %s"], Addon.db:GetCurrentProfile()))
 		textFieldType = "ClickedReadOnlyMultilineEditBox"
-	elseif mode == "export_full" then
-		importExportFrame:SetTitle(Addon.L["Export Full Profile"])
-		importExportFrame:SetStatusText(string.format(Addon.L["Exporting full profile: %s"], Addon.db:GetCurrentProfile()))
-		textFieldType = "ClickedReadOnlyMultilineEditBox"
 	elseif mode == "import" then
 		importExportFrame:SetTitle(Addon.L["Import Bindings"])
 		importExportFrame:SetStatusText(string.format(Addon.L["Importing bindings into: %s"], Addon.db:GetCurrentProfile()))
 	elseif mode == "import_full" then
-		importExportFrame:SetTitle(Addon.L["Import Full Profile"])
-		importExportFrame:SetStatusText(string.format(Addon.L["Importing full profile into: %s"], Addon.db:GetCurrentProfile()))
+		importExportFrame:SetTitle("Import Full Profile")
+		importExportFrame:SetStatusText(string.format("Importing full profile into: %s", Addon.db:GetCurrentProfile()))
 	end
 
 	importExportFrame:EnableResize(false)
@@ -86,15 +83,15 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:SetLayout("flow")
 	importExportFrame.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	local textField = AceGUI:Create(textFieldType)
+	local textField = AceGUI:Create(textFieldType) --[[@as AceGUIMultiLineEditBox]]
 	textField:SetNumLines(22)
 	textField:SetFullWidth(true)
 	textField:SetLabel("")
 
 	importExportFrame:AddChild(textField)
 
-	if mode == "export" or mode == "export_full" then
-		local text = Clicked:SerializeProfile(Addon.db.profile, true, mode == "export_full")
+	if mode == "export" then
+		local text = Clicked:SerializeProfile(Addon.db.profile, true, false)
 
 		textField:SetText(text)
 		textField:SetFocus()
@@ -106,6 +103,8 @@ local function OpenImportExportFrame(mode)
 			local success, data = Clicked:DeserializeProfile(text, true)
 
 			if success then
+				--- @cast data table
+
 				local function OnConfirm()
 					OverwriteCurrentProfile(data, mode == "import_full")
 				end
@@ -158,7 +157,9 @@ function Addon:ProfileOptions_Initialize()
 		order = 62,
 		func = function()
 			if IsShiftKeyDown() then
+				--@debug@
 				OpenImportExportFrame("import_full")
+				--@end-debug@
 			else
 				OpenImportExportFrame("import")
 			end

@@ -18,9 +18,8 @@
 --- @field public VERSION string
 
 --- @class ClickedInternal : AceEvent-3.0
---- @field L table<string,string>
-
---- @class Database : AceDB-3.0
+--- @field public L table<string,string>
+--- @field public db AceDB-3.0
 
 --- @class Profile
 --- @field public version integer
