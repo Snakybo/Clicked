@@ -14,12 +14,12 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class Clicked : AceAddon
+--- @class Clicked : AceAddon, AceEvent-3.0
 --- @field public VERSION string
 
 --- @class ClickedInternal : AceEvent-3.0
 --- @field public L table<string,string>
---- @field public db AceDB-3.0
+--- @field public db AceDBObject-3.0
 
 --- @class Profile
 --- @field public version integer
@@ -41,7 +41,8 @@
 
 --- @class Binding
 --- @field public type string
---- @field public identifier integer
+--- @field public identifier string
+--- @field public scope BindingScope
 --- @field public keybind string
 --- @field public parent string
 --- @field public action Binding.Action
@@ -133,6 +134,7 @@
 --- @field public name string
 --- @field public displayIcon integer|string
 --- @field public identifier string
+--- @field public scope BindingScope
 
 --- @class Action
 --- @field public ability integer|string

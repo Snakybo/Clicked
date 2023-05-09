@@ -759,3 +759,16 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 		return items, order
 	end
 end
+
+--- @param scope BindingScope
+function Addon:GetLocalizedScope(scope)
+	if scope == Addon.BindingScope.GLOBAL then
+		return Addon.L["Global bindings"]
+	end
+
+	if scope == Addon.BindingScope.PROFILE then
+		return Addon.L["Profile specific bindings"]
+	end
+
+	error("Unknown binding scope: " .. scope)
+end

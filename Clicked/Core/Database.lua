@@ -16,8 +16,11 @@
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @class ClickedInternal
+--- @type ClickedInternal
 local _, Addon = ...
+
+local GROUP_IDENTIFIER_PREFIX = "group-"
+local BINDING_IDENTIFIER_PREFIX = "binding-"
 
 -- Local support functions
 
@@ -101,6 +104,13 @@ end
 --- @return AceDB-3.0
 function Clicked:GetDatabaseDefaults()
 	local database = {
+		global = {
+			version = nil,
+			groups = {},
+			bindings = {},
+			nextGroupId = 1,
+			nextBindingId = 1
+		},
 		profile = {
 			version = nil,
 			options = {
@@ -124,7 +134,7 @@ end
 
 --- Reload the database, this should be called after high-level profile changes have been made, such as switching the active profile, or importing a proifle.
 function Clicked:ReloadDatabase()
-	Addon:UpgradeDatabaseProfile(Addon.db.profile)
+	Addon:UpgradeDatabase()
 
 	if Addon.db.profile.options.minimap.hide then
 		LibDBIcon:Hide("Clicked")
@@ -142,11 +152,9 @@ function Clicked:CreateGroup()
 	local group = {
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
-		identifier = Addon:GetNextGroupIdentifier()
 	}
 
-	table.insert(Addon.db.profile.groups, group)
-
+	Addon:RegisterGroup(group, Addon.BindingScope.PROFILE)
 	return group
 end
 
@@ -155,25 +163,29 @@ end
 function Clicked:DeleteGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
-	for i, e in self:IterateGroups() do
+	local db = Addon:GetContainingDatabase(group)
+
+	for i, e in ipairs(db.groups) do
 		if e.identifier == group.identifier then
-			table.remove(Addon.db.profile.groups, i)
+			table.remove(db.groups, i)
 			break
 		end
 	end
 
-	for i = #Addon.db.profile.bindings, 1, -1 do
-		local binding = Addon.db.profile.bindings[i]
+	for i = #db.bindings, 1, -1 do
+		local binding = db.bindings[i]
 
 		if binding.parent == group.identifier then
-			table.remove(Addon.db.profile.bindings, i)
+			table.remove(db.bindings, i)
 		end
 	end
+
+	self:ReloadBindings(true)
 end
 
 --- Attempt to get a binding group with the specified identifier.
 --- @param identifier string
---- @return Group
+--- @return Group?
 function Clicked:GetGroupById(identifier)
 	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
 
@@ -186,6 +198,9 @@ function Clicked:GetGroupById(identifier)
 	return nil
 end
 
+--- Get a list of all bindings that are part of the specified group.
+--- @param identifier string
+--- @return Binding[]
 function Clicked:GetBindingsInGroup(identifier)
 	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
 
@@ -206,7 +221,17 @@ end
 --- @return table t
 --- @return number i
 function Clicked:IterateGroups()
-	return ipairs(Addon.db.profile.groups)
+	local result = {}
+
+	for _, binding in ipairs(Addon.db.profile.groups) do
+		table.insert(result, binding)
+	end
+
+	for _, binding in ipairs(Addon.db.global.groups) do
+		table.insert(result, binding)
+	end
+
+	return ipairs(result)
 end
 
 --- Create a new binding. This will create and return a new binding, however it will not automatically reload the active bindings, after configuring the
@@ -216,8 +241,8 @@ end
 --- @see Clicked#ReloadBindings
 function Clicked:CreateBinding()
 	local binding = Addon:GetNewBindingTemplate()
-	table.insert(Addon.db.profile.bindings, binding)
 
+	Addon:RegisterBinding(binding, Addon.BindingScope.PROFILE)
 	return binding
 end
 
@@ -225,14 +250,18 @@ end
 --- bindings.
 --- @param binding Binding The binding to delete
 function Clicked:DeleteBinding(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	for index, other in self:IterateConfiguredBindings() do
-		if other == binding then
-			table.remove(Addon.db.profile.bindings, index)
+	local db = Addon:GetContainingDatabase(binding)
+
+	for index, item in ipairs(db.bindings) do
+		if binding.identifier == item.identifier then
+			table.remove(db.bindings, index)
 			break
 		end
 	end
+
+	self:ReloadBindings(true)
 end
 
 --- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
@@ -241,14 +270,24 @@ end
 --- @return table t
 --- @return number i
 function Clicked:IterateConfiguredBindings()
-	return ipairs(Addon.db.profile.bindings)
+	local result = {}
+
+	for _, binding in ipairs(Addon.db.profile.bindings) do
+		table.insert(result, binding)
+	end
+
+	for _, binding in ipairs(Addon.db.global.bindings) do
+		table.insert(result, binding)
+	end
+
+	return ipairs(result)
 end
 
 --@debug@
 
 --- @param from string
 function Clicked:UpgradeDatabase(from)
-	Addon:UpgradeDatabaseProfile(Addon.db.profile, from)
+	Addon:UpgradeDatabase(from)
 	Clicked:ReloadBindings(true)
 end
 
@@ -260,7 +299,6 @@ end
 function Addon:GetNewBindingTemplate()
 	local template = {
 		type = Addon.BindingTypes.SPELL,
-		identifier = Addon:GetNextBindingIdentifier(),
 		keybind = "",
 		parent = nil,
 		action = {
@@ -351,28 +389,92 @@ function Addon:GetNewBindingTargetTemplate()
 	return template
 end
 
---- @return integer
-function Addon:GetNextBindingIdentifier()
-	local identifier = Addon.db.profile.nextBindingId
-	Addon.db.profile.nextBindingId = identifier + 1
-
-	return identifier
-end
-
+--- @param scope BindingScope?
 --- @return string
 --- @return integer
-function Addon:GetNextGroupIdentifier()
-	local identifier = Addon.db.profile.nextGroupId
-	Addon.db.profile.nextGroupId = identifier + 1
+function Addon:GetNextBindingIdentifier(scope)
+	scope = scope or Addon.BindingScope.PROFILE
 
-	return "group-" .. identifier, identifier
+	local identifier
+
+	if scope == Addon.BindingScope.GLOBAL then
+		identifier = Addon.db.global.nextBindingId
+		Addon.db.global.nextBindingId = identifier + 1
+	elseif scope == Addon.BindingScope.PROFILE then
+		identifier = Addon.db.profile.nextBindingId
+		Addon.db.profile.nextBindingId = identifier + 1
+	else
+		error("Unknown binding scope " .. scope)
+	end
+
+	return scope .. "-" .. BINDING_IDENTIFIER_PREFIX .. identifier, identifier
+end
+
+--- @param scope BindingScope?
+--- @return string
+--- @return integer
+function Addon:GetNextGroupIdentifier(scope)
+	scope = scope or Addon.BindingScope.PROFILE
+
+	local identifier
+
+	if scope == Addon.BindingScope.GLOBAL then
+		identifier = Addon.db.global.nextGroupId
+		Addon.db.global.nextGroupId = identifier + 1
+	elseif scope == Addon.BindingScope.PROFILE then
+		identifier = Addon.db.profile.nextGroupId
+		Addon.db.profile.nextGroupId = identifier + 1
+	else
+		error("Unknown binding scope " .. scope)
+	end
+
+	return scope .. "-" .. GROUP_IDENTIFIER_PREFIX .. identifier, identifier
+end
+
+--- Change the scope of a binding or entire group.
+--- This will re-register the binding (or group) within the target database.
+---
+---@param item Binding|Group
+---@param scope BindingScope
+function Addon:ChangeScope(item, scope)
+	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
+	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
+
+	if item.identifier == nil then
+		error("Can only change the scope of a binding or group")
+	end
+
+	if item.scope == scope then
+		return
+	end
+
+	if self:IsGroup(item) then
+		--- @cast item Group
+
+		local id = item.identifier
+		local bindings = Clicked:GetBindingsInGroup(id)
+
+		Clicked:DeleteGroup(item)
+		self:RegisterGroup(item, scope)
+
+		for _, binding in ipairs(bindings) do
+			self:RegisterBinding(binding, scope)
+			binding.parent = item.identifier
+		end
+	else
+		--- @cast item Binding
+
+		Clicked:DeleteBinding(item)
+		self:RegisterBinding(item, scope)
+		item.parent = nil
+	end
 end
 
 --- @param original Binding
 --- @param replacement Binding
 function Addon:ReplaceBinding(original, replacement)
-	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
-	assert(Addon:IsBindingType(replacement), "bad argument #2, expected Binding but got " .. type(replacement))
+	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
+	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
 
 	for index, binding in self:IterateConfiguredBindings() do
 		if binding == original then
@@ -384,35 +486,73 @@ function Addon:ReplaceBinding(original, replacement)
 end
 
 --- @param binding Binding
-function Addon:RegisterBinding(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+--- @param scope BindingScope
+function Addon:RegisterBinding(binding, scope)
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	binding.identifier = self:GetNextBindingIdentifier()
+	binding.identifier = self:GetNextBindingIdentifier(scope)
+	binding.scope = scope
 
-	table.insert(Addon.db.profile.bindings, binding)
+	if scope == Addon.BindingScope.GLOBAL then
+		table.insert(Addon.db.global.bindings, binding)
+	elseif scope == Addon.BindingScope.PROFILE then
+		table.insert(Addon.db.profile.bindings, binding)
+	else
+		error("Unknown binding scope " .. scope)
+	end
+
 	Clicked:ReloadBinding(binding, true)
 end
 
 --- @param group Group
-function Addon:RegisterGroup(group)
+--- @param scope BindingScope
+function Addon:RegisterGroup(group, scope)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
-	group.identifier = self:GetNextGroupIdentifier()
-	table.insert(Addon.db.profile.groups, group)
+	group.identifier = self:GetNextGroupIdentifier(scope)
+	group.scope = scope
+
+	if scope == Addon.BindingScope.GLOBAL then
+		table.insert(Addon.db.global.groups, group)
+	elseif scope == Addon.BindingScope.PROFILE then
+		table.insert(Addon.db.profile.groups, group)
+	else
+		error("Unknown binding scope " .. scope)
+	end
 end
 
 ---@param original Binding
 ---@return Binding
 function Addon:CloneBinding(original)
-	assert(Addon:IsBindingType(original), "bad argument #1, expected Binding but got " .. type(original))
+	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 
 	local clone = Addon:DeepCopyTable(original)
-	clone.identifier = Addon:GetNextBindingIdentifier()
 	clone.keybind = ""
 	clone.integrations = {}
 
-	table.insert(Addon.db.profile.bindings, clone)
-	Clicked:ReloadBinding(clone, true)
-
+	self:RegisterBinding(clone, Addon.BindingScope.PROFILE)
 	return clone
+end
+
+--- @param item Binding|Group
+--- @return table
+function Addon:GetContainingDatabase(item)
+	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
+
+	if item.scope == Addon.BindingScope.GLOBAL then
+		return Addon.db.global
+	elseif item.scope == Addon.BindingScope.PROFILE then
+		return Addon.db.profile
+	else
+		error("Unknown binding scope " .. item.scope)
+	end
+end
+
+--- Check if the specified string is a group identifier.
+---
+--- @param item Binding|Group
+--- @return boolean
+function Addon:IsGroup(item)
+	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
+	return string.find(item.identifier, GROUP_IDENTIFIER_PREFIX) ~= nil
 end

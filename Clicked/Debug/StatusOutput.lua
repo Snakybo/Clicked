@@ -137,29 +137,28 @@ local function GetUnloadedBindings()
 	local lines = {}
 
 	for i, binding in Clicked:IterateConfiguredBindings() do
-		if not Clicked:CanBindingLoad(binding) then
-			if i > 1 then
-				table.insert(lines, "")
-			end
+		if i > 1 then
+			table.insert(lines, "")
+		end
 
-			table.insert(lines, "----- Unloaded binding " .. binding.identifier .. " -----")
-			table.insert(lines, "Type: " .. binding.type)
-			table.insert(lines, "Keybind: " .. binding.keybind)
+		table.insert(lines, "----- Unloaded binding " .. binding.identifier .. " -----")
+		table.insert(lines, "Type: " .. binding.type)
+		table.insert(lines, "Keybind: " .. binding.keybind)
+		table.insert(lines, "Scope: " .. binding.scope)
 
-			local value = Addon:GetBindingValue(binding)
-			if value ~= nil then
-				table.insert(lines, "Action: " .. value)
-			end
+		local value = Addon:GetBindingValue(binding)
+		if value ~= nil then
+			table.insert(lines, "Action: " .. value)
+		end
 
-			local loadState = Addon:GetCachedBindingState(binding)
+		local loadState = Addon:GetCachedBindingState(binding)
 
-			if loadState ~= nil then
-				table.insert(lines, "")
-				table.insert(lines, "Load state:")
+		if loadState ~= nil then
+			table.insert(lines, "")
+			table.insert(lines, "Load state:")
 
-				for event, state in pairs(loadState) do
-					table.insert(lines, "  " .. event .. " = " .. tostring(state))
-				end
+			for event, state in pairs(loadState) do
+				table.insert(lines, "  " .. event .. " = " .. tostring(state))
 			end
 		end
 	end
@@ -214,8 +213,8 @@ end
 local function GetSerializedProfileString()
 	local lines = {}
 
-	table.insert(lines, "----- Profile -----")
-	table.insert(lines, Clicked:SerializeProfile(Addon.db.profile, true, true))
+	table.insert(lines, "----- Saved Variables -----")
+	table.insert(lines, Clicked:SerializeProfile({ global = Addon.db.global, profile = Addon.db.profile }, true, true))
 
 	return table.concat(lines, "\n")
 end

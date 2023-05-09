@@ -86,7 +86,7 @@ end
 --- @see Clicked#SerializeBinding
 --- @see Clicked#Deserialize
 function Clicked:SerializeGroup(group)
-	assert(type(group == "table"), "bad argument #1, expected table but got " .. type(group))
+	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
 	local data = {
 		version = Addon.DATA_VERSION,
@@ -111,7 +111,7 @@ end
 --- @see Clicked#SerializeGroup
 --- @see Clicked#Deserialize
 function Clicked:SerializeBinding(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	local data = {
 		version = Addon.DATA_VERSION,
@@ -190,7 +190,7 @@ end
 --- @return string
 --- @see Clicked#DeserializeProfile
 function Clicked:SerializeProfile(profile, printable, full)
-	assert(type(profile == "table"), "bad argument #1, expected table but got " .. type(profile))
+	assert(type(profile) == "table", "bad argument #1, expected table but got " .. type(profile))
 	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
 	assert(type(full == "boolean"), "bad argument #3, expected boolean but got " .. type(full))
 
@@ -210,11 +210,11 @@ function Clicked:SerializeProfile(profile, printable, full)
 			nextBindingId = profile.nextBindingId,
 			lightweight = true
 		}
-	end
 
-	-- Clear user-specific data
-	for _, binding in ipairs(data.bindings) do
-		wipe(binding.integrations)
+		-- Clear user-specific data
+		for _, binding in ipairs(data.bindings) do
+			wipe(binding.integrations)
+		end
 	end
 
 	return SerializeTable(data, printable)

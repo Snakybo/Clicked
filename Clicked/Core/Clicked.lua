@@ -22,14 +22,10 @@ local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetad
 
 --- @class ClickedInternal
 local _, Addon = ...
-
---- @type table<string,string>
-Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
+Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
 
 --- @type Clicked
-Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
-
---- The current version of Clicked.
+Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0") --[[@as Clicked]]
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 --@debug@
@@ -206,13 +202,12 @@ end
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	--- @type Database
 	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
 
-	Addon:UpgradeDatabaseProfile(Addon.db.profile)
+	Addon:UpgradeDatabase()
 
 	RegisterIcons()
 

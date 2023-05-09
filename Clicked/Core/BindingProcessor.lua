@@ -17,6 +17,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
+--- @enum BindingType
 Addon.BindingTypes = {
 	SPELL = "SPELL",
 	ITEM = "ITEM",
@@ -27,12 +28,14 @@ Addon.BindingTypes = {
 	UNIT_MENU = "UNIT_MENU"
 }
 
+--- @enum CommandType
 Addon.CommandType = {
 	TARGET = "target",
 	MENU = "menu",
 	MACRO = "macro"
 }
 
+--- @enum TargetUnits
 Addon.TargetUnits = {
 	DEFAULT = "DEFAULT",
 	PLAYER = "PLAYER",
@@ -54,18 +57,21 @@ Addon.TargetUnits = {
 	CURSOR = "CURSOR"
 }
 
+--- @enum TargetHostility
 Addon.TargetHostility = {
 	ANY = "ANY",
 	HELP = "HELP",
 	HARM = "HARM"
 }
 
+--- @enum TargetVitals
 Addon.TargetVitals = {
 	ANY = "ANY",
 	ALIVE = "ALIVE",
 	DEAD = "DEAD"
 }
 
+--- @enum GroupState
 Addon.GroupState = {
 	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
 	PARTY = "IN_GROUP_PARTY",
@@ -73,9 +79,16 @@ Addon.GroupState = {
 	SOLO = "IN_GROUP_SOLO"
 }
 
+--- @enum InteractionType
 Addon.InteractionType = {
 	REGULAR = 1,
 	HOVERCAST = 2
+}
+
+--- @enum BindingScope
+Addon.BindingScope = {
+	PROFILE = 1,
+	GLOBAL = 2
 }
 
 --- @type Binding[]
@@ -494,7 +507,7 @@ end
 local function ProcessReloadBindingArguments(binding, full, delayFrame, ...)
 	local identifier = nil
 
-	if Addon:IsBindingType(binding) then
+	if type(binding) == "table" then
 		identifier = binding.identifier
 	elseif type(binding) == "number" then
 		identifier = binding
@@ -589,8 +602,8 @@ end
 --- @param full boolean
 --- @param delayFrame boolean
 --- @vararg string
---- @overload fun(binding:Binding, full:boolean, ...:string)
---- @overload fun(binding:Binding, ...:string)
+--- @overload fun(self:Clicked, binding:Binding, full:boolean, ...:string)
+--- @overload fun(self:Clicked, binding:Binding, ...:string)
 function Clicked:ReloadBinding(binding, full, delayFrame, ...)
 	ProcessReloadBindingArguments(binding, full, delayFrame, ...)
 	ReloadBindings(delayFrame)
@@ -599,8 +612,8 @@ end
 --- @param full boolean
 --- @param delayFrame boolean
 --- @vararg string
---- @overload fun(full:boolean, ...:string)
---- @overload fun(...:string)
+--- @overload fun(self:Clicked, full:boolean, ...:string)
+--- @overload fun(self:Clicked, ...:string)
 function Clicked:ReloadBindings(full, delayFrame, ...)
 	ProcessReloadArguments(full, delayFrame, ...)
 	ReloadBindings(delayFrame)
@@ -624,7 +637,7 @@ end
 --- @return string hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
 --- @return string regularTarget The first satisfied regular unit if any, `nil` otherwise.
 function Clicked:EvaluateBindingMacro(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	local bindings = { binding }
 

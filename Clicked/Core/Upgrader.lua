@@ -1,7 +1,7 @@
 --- @class ClickedInternal
 local _, Addon = ...
 
-Addon.DATA_VERSION = 3
+Addon.DATA_VERSION = 4
 
 -- Local support functions
 
@@ -715,11 +715,11 @@ local function UpgradeLegacy(profile, from)
 	end
 end
 
---- @param profile Profile
+--- @param db table
 --- @param from integer
-local function Upgrade(profile, from)
+local function Upgrade(db, from)
 	if from < 2 then
-		for _, binding in ipairs(profile.bindings) do
+		for _, binding in ipairs(db.bindings) do
 			binding.action.cancelForm = false
 
 			if Addon:IsGameVersionAtleast("RETAIL") then
@@ -739,11 +739,27 @@ local function Upgrade(profile, from)
 	end
 
 	if from < 3 then
-		for _, binding in ipairs(profile.bindings) do
+		for _, binding in ipairs(db.bindings) do
 			binding.load.advancedFlyable = {
 				selected = false,
 				value = true
 			}
+		end
+	end
+
+	if from < 4 then
+		for _, binding in ipairs(db.bindings) do
+			binding.scope = 1
+			binding.identifier = "1-binding-" .. binding.identifier
+
+			if not Addon:IsStringNilOrEmpty(binding.parent) then
+				binding.parent = "1-" .. binding.parent
+			end
+		end
+
+		for _, group in ipairs(db.groups) do
+			group.scope = 1
+			group.identifier = "1-" .. group.identifier
 		end
 	end
 end
@@ -759,59 +775,66 @@ end
 --- For example, if the current version is `0.17` and the input profile is `0.14`, it will incrementally upgrade by going `0.14`->`0.15`->`0.16`->`0.17`.
 --- This will ensure support for even very old profiles.
 ---
---- @param profile Profile
 --- @param from string|integer
-function Addon:UpgradeDatabaseProfile(profile, from)
-	from = from or profile.version
-
+function Addon:UpgradeDatabase(from)
 	-- Don't use any constants in this function to prevent breaking the updater
 	-- when the value of a constant changes. Always use direct values that are
 	-- read from the database.
 
-	if from == nil then
-		-- Incredible hack because I accidentially removed the serialized version
-		-- number in 0.12.0. This will check for all the characteristics of a 0.12
-		-- profile to determine if it's an existing profile, or a new profile.
-		local function IsProfileFrom_0_12()
-			if profile.bindings and profile.bindings.next and profile.bindings.next > 1 then
-				return true
-			end
+	do
+		local src = from or Addon.db.global.version or Addon.DATA_VERSION
 
-			if profile.groups and profile.groups.next and profile.groups.next > 1 then
-				return true
-			end
-
-			if profile.blacklist and #profile.blacklist > 0 then
-				return true
-			end
-
-			return false
-		end
-
-		local function IsProfileFrom_0_4()
-			if profile.bindings and #profile.bindings > 0 then
-				return true
-			end
-
-			return false
-		end
-
-		if IsProfileFrom_0_12() then
-			from = "0.12.0"
-		elseif IsProfileFrom_0_4() then
-			from = "0.4.0"
-		else
-			profile.version = Addon.DATA_VERSION
-			return
-		end
+		safecall(Upgrade, Addon.db.global, src)
+		Addon.db.global.version = Addon.DATA_VERSION
 	end
 
-	if type(from) == "string" then
-		safecall(UpgradeLegacy, profile, from)
-		from = profile.version
+	do
+		local src = from or Addon.db.profile.version
+
+		if src == nil then
+			-- Incredible hack because I accidentially removed the serialized version
+			-- number in 0.12.0. This will check for all the characteristics of a 0.12
+			-- profile to determine if it's an existing profile, or a new profile.
+			local function IsProfileFrom_0_12()
+				if Addon.db.profile.bindings and Addon.db.profile.bindings.next and Addon.db.profile.bindings.next > 1 then
+					return true
+				end
+
+				if Addon.db.profile.groups and Addon.db.profile.groups.next and Addon.db.profile.groups.next > 1 then
+					return true
+				end
+
+				if Addon.db.profile.blacklist and #Addon.db.profile.blacklist > 0 then
+					return true
+				end
+
+				return false
+			end
+
+			local function IsProfileFrom_0_4()
+				if Addon.db.profile.bindings and #Addon.db.profile.bindings > 0 then
+					return true
+				end
+
+				return false
+			end
+
+			if IsProfileFrom_0_12() then
+				src = "0.12.0"
+			elseif IsProfileFrom_0_4() then
+				src = "0.4.0"
+			else
+				Addon.db.profile.version = Addon.DATA_VERSION
+				return
+			end
+		end
+
+		if type(from) == "string" then
+			safecall(UpgradeLegacy, Addon.db.profile, src)
+			src = Addon.db.profile.version
+		end
+
+		safecall(Upgrade, Addon.db.profile, src)
+		Addon.db.profile.version = Addon.DATA_VERSION
 	end
-
-	safecall(Upgrade, profile, from)
-
-	profile.version = Addon.DATA_VERSION
 end

@@ -43,6 +43,14 @@ local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "U
 Support functions
 -------------------------------------------------------------------------------]]
 local function TreeSortAlphabetical(left, right)
+	if left.scope > right.scope then
+		return true
+	end
+
+	if left.scope < right.scope then
+		return false
+	end
+
 	if left.children ~= nil and right.children == nil then
 		return true
 	end
@@ -75,6 +83,14 @@ local function TreeSortAlphabetical(left, right)
 end
 
 local function TreeSortKeybind(left, right)
+	if left.scope > right.scope then
+		return true
+	end
+
+	if left.scope < right.scope then
+		return false
+	end
+
 	if left.children ~= nil and right.children == nil then
 		return true
 	end
@@ -194,6 +210,8 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local binding = treeline.binding
 	local group = treeline.group
 
+	local isScope = treeline.type == "scope"
+
 	button.treeline = treeline
 	button.value = value
 	button.uniquevalue = uniquevalue
@@ -207,6 +225,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button:UnlockHighlight()
 		button.selected = false
 	end
+
 	button.level = level
 
 	button:SetNormalFontObject("GameFontNormal")
@@ -214,19 +233,30 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 
 	local format = "%s"
 
-	if disabled then
+	if isScope then
+		button:EnableMouse(false)
+	elseif disabled then
 		button:EnableMouse(false)
 		format = "|cff808080%s" .. FONT_COLOR_CODE_CLOSE
 	else
 		button:EnableMouse(true)
 	end
 
-	button.title:ClearAllPoints()
-	button.title:SetPoint("TOPLEFT", (icon and 28 or 0) + 8 * level, -1)
-	button.title:SetText(string.format(format, title))
+	if isScope then
+		button.title:ClearAllPoints()
+		button.title:SetPoint("LEFT", 8, -1)
+		button.title:SetText(string.format(format, title))
 
-	button.keybind:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
-	button.keybind:SetText(string.format(format, keybind))
+		button.keybind:Hide()
+	else
+		button.title:ClearAllPoints()
+		button.title:SetPoint("TOPLEFT", (icon and 28 or 0) + 8 * level, -1)
+		button.title:SetText(string.format(format, title))
+
+		button.keybind:SetPoint("BOTTOMLEFT", (icon and 28 or 0) + 8 * level, 1)
+		button.keybind:SetText(string.format(format, keybind))
+		button.keybind:Show()
+	end
 
 	local desaturate = false
 
@@ -298,8 +328,10 @@ local function addLine(self, v, tree, level, parent)
 	line.disabled = v.disabled
 	line.tree = tree
 	line.level = level
+	line.type = v.type
 	line.parent = parent
 	line.visible = v.visible
+	line.scope = v.scope
 	line.uniquevalue = GetButtonUniqueValue(line)
 	if v.children then
 		line.hasChildren = true
@@ -433,6 +465,34 @@ local function Button_OnClick(frame, button)
 			end
 		end
 
+		do
+			local changeScope = {
+				text = Addon.L["Change scope"],
+				hasArrow = true,
+				notCheckable = true,
+				menuList = {}
+			}
+
+			local function AddOption(scope, label)
+				table.insert(changeScope.menuList, {
+					text = label,
+					disabled = inCombat,
+					checked = (frame.binding or frame.group).scope == scope,
+					func = function()
+						Addon:ChangeScope(frame.binding or frame.group, scope)
+						self:ConstructTree()
+
+						contextMenuFrame:Hide()
+					end
+				})
+			end
+
+			table.insert(menu, changeScope)
+
+			AddOption(Addon.BindingScope.GLOBAL, Addon.L["Global"])
+			AddOption(Addon.BindingScope.PROFILE, Addon.L["Profile"])
+		end
+
 		table.insert(menu, {
 			text = Addon.L["Share"],
 			notCheckable = true,
@@ -462,8 +522,6 @@ local function Button_OnClick(frame, button)
 					elseif frame.group ~= nil then
 						Clicked:DeleteGroup(frame.group)
 					end
-
-					Clicked:ReloadBindings(true)
 				end
 
 				if IsShiftKeyDown() then
@@ -598,10 +656,10 @@ local function Button_OnDragStop(frame)
 
 	for _, button in ipairs(self.buttons) do
 		if button ~= frame and button:IsEnabled() and button:IsShown() and button:IsMouseOver(0, 0) then
-			if button.group ~= nil then
+			if button.group ~= nil and button.group.scope == frame.binding.scope then
 				newParent = button.group.identifier
 				break
-			elseif button.binding ~= nil then
+			elseif button.binding ~= nil and button.binding.scope == frame.binding.scope then
 				newParent = button.binding.parent
 				break
 			end
@@ -815,19 +873,45 @@ end
 
 function Methods:ConstructTree()
 	local status = self.status or self.localstatus
+	local groupstatus = status.groups
+
+	local scopes = {}
+
+	local function GetScopeList(scope)
+		return scopes["scope-" .. scope]
+	end
+
 	self.tree = {}
+
+	for _, scope in pairs(Addon.BindingScope) do
+		local item = {
+			value = "scope-" .. scope,
+			title = Addon:GetLocalizedScope(scope),
+			scope = scope,
+			type = "scope",
+			visible = true,
+			children = {}
+		}
+
+		scopes["scope-" .. scope] = item.children
+		groupstatus[item.value] = true
+
+		table.insert(self.tree, item)
+	end
 
 	for _, group in Clicked:IterateGroups() do
 		local item = {
 			value = group.identifier,
 			group = group,
 			icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
+			type = "group",
+			scope = group.scope,
 			children = {}
 		}
 
 		UpdateGroupItemVisual(item, group)
 
-		table.insert(self.tree, item)
+		table.insert(GetScopeList(group.scope), item)
 	end
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
@@ -837,16 +921,20 @@ function Methods:ConstructTree()
 			value = "binding-" .. binding.identifier,
 			name = Addon:GetSimpleSpellOrItemInfo(binding) or Addon:GetBindingValue(binding),
 			title = title,
+			type = "binding",
 			icon = icon,
 			keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"],
 			binding = binding,
+			scope = binding.scope,
 			canLoad = Clicked:IsBindingLoaded(binding)
 		}
 
+		local root = GetScopeList(binding.scope)
+
 		if binding.parent == nil then
-			table.insert(self.tree, item)
+			table.insert(root, item)
 		else
-			for _, e in ipairs(self.tree) do
+			for _, e in ipairs(root) do
 				if e.value == binding.parent then
 					item.parent = e
 					e.canLoad = e.canLoad or item.canLoad
@@ -860,8 +948,8 @@ function Methods:ConstructTree()
 	self:BuildCache()
 	self:RefreshTree()
 
-	if #self.tree > 0 and status.selected == nil then
-		self:SelectByValue(self.tree[1].value)
+	if #self.tree > 0 and #self.tree[1].children > 0 and status.selected == nil then
+		self:SelectByPath(self.tree[1].value, self.tree[1].children[1].value)
 	elseif #self.tree > 0 and status.selected ~= nil then
 		self:SelectByValue(status.selected)
 	elseif #self.tree == 0 then
@@ -873,7 +961,7 @@ function Methods:BuildLevel(tree, level, parent)
 	local groups = (self.status or self.localstatus).groups
 
 	for _, v in ipairs(tree) do
-		if v.visible then
+		if v.visible or v.type == "scope" then
 			if v.children then
 				local line = addLine(self, v, tree, level, parent)
 
@@ -1368,6 +1456,7 @@ local function Constructor()
 	content:SetPoint("TOPLEFT", 10, -10)
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
+	--- @class ClickedTreeGroup
 	local widget = {
 		frame= frame,
 		lines = {},

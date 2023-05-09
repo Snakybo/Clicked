@@ -457,7 +457,7 @@ end
 ---@param binding Binding
 ---@return boolean
 function Addon:HasBindingValue(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	local value = Addon:GetBindingValue(binding)
 	return not Addon:IsStringNilOrEmpty(tostring(value))
@@ -466,7 +466,7 @@ end
 --- @param binding Binding
 --- @param value string|integer
 function Addon:SetBindingValue(binding, value)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = value
@@ -480,7 +480,7 @@ end
 --- @param binding Binding
 --- @return string|integer
 function Addon:GetBindingValue(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		local spell = binding.action.spellValue
@@ -513,7 +513,7 @@ end
 ---@return string icon
 ---@return number id
 function Addon:GetSimpleSpellOrItemInfo(binding)
-	assert(Addon:IsBindingType(binding), "bad argument #1, expected Binding but got " .. type(binding))
+	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
 		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.spellValue, binding.action.convertValueToId)
@@ -774,8 +774,8 @@ end
 --- @param rightCanLoad? boolean
 --- @return boolean
 function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
-	assert(Addon:IsBindingType(left), "bad argument #1, expected Binding but got " .. type(left))
-	assert(Addon:IsBindingType(right), "bad argument #2, expected Binding but got " .. type(right))
+	assert(type(left) == "table", "bad argument #1, expected table but got " .. type(left))
+	assert(type(right) == "table", "bad argument #2, expected table but got " .. type(right))
 
 	do
 		if leftCanLoad == nil then
@@ -1240,14 +1240,6 @@ end
 function Addon:GetPrefixedAndFormattedString(format, ...)
 	local message = string.format(format, ...)
 	return Addon:AppendClickedMessagePrefix(message)
-end
-
---- Check if a table can be considered a valid representation of a binding type.
----
---- @param binding Binding
---- @return boolean
-function Addon:IsBindingType(binding)
-	return type(binding) == "table" and binding.identifier ~= nil and binding.type ~= nil
 end
 
 --- Sanitize the keybind to make it display properly for the current game platform (Windows, Mac)

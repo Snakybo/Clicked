@@ -2681,8 +2681,8 @@ local function CreateFromItemTemplate(identifier)
 	end
 
 	if item ~= nil then
-		if Addon:IsBindingType(item) then
-			Clicked:ReloadBinding(item, true)
+		if not Addon:IsGroup(item) then
+			Clicked:ReloadBinding(item --[[@as Binding]], true)
 		end
 
 		tree:SelectByBindingOrGroup(item)
