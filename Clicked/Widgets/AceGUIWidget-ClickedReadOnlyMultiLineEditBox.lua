@@ -55,8 +55,8 @@ function Methods:HighlightText(from, to)
 end
 
 --- @private
---- @param flag boolean
-function Methods:DisableButton(flag)
+--- @param _ boolean
+function Methods:DisableButton(_)
 	error("ClickedReadOnlyMultilineEditBox:DisableButton() - Not implemented", 2)
 end
 

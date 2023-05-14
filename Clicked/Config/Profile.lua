@@ -284,7 +284,7 @@ function Addon:ProfileOptions_Initialize()
 	}
 
 	AceConfig:RegisterOptionsTable("Clicked/Profile", profileOptions)
-	_, panelId = AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
+	panelId = select(2, AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked"))
 
 	AceComm:Embed(self)
 

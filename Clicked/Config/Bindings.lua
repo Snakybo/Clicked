@@ -541,7 +541,6 @@ local function DrawIconPicker(container, data, key)
 	end
 
 	do
-		-- luacheck: ignore container
 		local function OnIconSelected(_, _, value)
 			data[key] = value
 			Addon:BindingConfig_Redraw()
@@ -1415,9 +1414,9 @@ local function DrawActionGroupOptions(container, keybind)
 
 		group:AddChild(header)
 
-		for index, binding in ipairs(bindings) do
+		for index, current in ipairs(bindings) do
 			local function OnClick()
-				tree:SelectByBindingOrGroup(binding)
+				tree:SelectByBindingOrGroup(current)
 			end
 
 			local function OnMoveUp()
@@ -1426,13 +1425,13 @@ local function DrawActionGroupOptions(container, keybind)
 					return
 				end
 
-				if binding.action.executionOrder > 1 then
-					binding.action.executionOrder = binding.action.executionOrder - 1
+				if current.action.executionOrder > 1 then
+					current.action.executionOrder = current.action.executionOrder - 1
 				else
 					for oid, obindings in pairs(groups) do
 						if oid >= id then
 							for _, obinding in ipairs(obindings) do
-								if obinding ~= binding then
+								if obinding ~= current then
 									obinding.action.executionOrder = obinding.action.executionOrder + 1
 								end
 							end
@@ -1440,7 +1439,7 @@ local function DrawActionGroupOptions(container, keybind)
 					end
 				end
 
-				Clicked:ReloadBinding(binding, true)
+				Clicked:ReloadBinding(current, true)
 			end
 
 			local function OnMoveDown()
@@ -1449,12 +1448,12 @@ local function DrawActionGroupOptions(container, keybind)
 					return
 				end
 
-				binding.action.executionOrder = binding.action.executionOrder + 1
+				current.action.executionOrder = current.action.executionOrder + 1
 
-				Clicked:ReloadBinding(binding, true)
+				Clicked:ReloadBinding(current, true)
 			end
 
-			local name, icon = Addon:GetBindingNameAndIcon(binding)
+			local name, icon = Addon:GetBindingNameAndIcon(current)
 
 			if index > 1 then
 				--- @param b Binding
@@ -1472,7 +1471,7 @@ local function DrawActionGroupOptions(container, keybind)
 				--- @type Binding
 				local previous = bindings[index - 1]
 
-				local type = GetType(binding)
+				local type = GetType(current)
 				local previousType = GetType(previous)
 
 				if type ~= nil and previousType ~= nil and type ~= previousType then
@@ -2856,13 +2855,12 @@ local function DrawBinding(container)
 
 	-- tabs
 	do
-		-- luacheck: ignore container
-		local function OnGroupSelected(container, _, group)
+		local function OnGroupSelected(c, _, group)
 			local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 			scrollFrame:SetLayout("Flow")
 
-			container:ReleaseChildren()
-			container:AddChild(scrollFrame)
+			c:ReleaseChildren()
+			c:AddChild(scrollFrame)
 
 			if group == "action" then
 				DrawBindingActionPage(scrollFrame, binding)

@@ -276,7 +276,7 @@ function Addon:BlacklistOptions_Initialize()
 	end
 
 	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
-	_, panelId = AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
+	panelId = select(2, AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked"))
 end
 
 function Addon:BlacklistOptions_Open()
