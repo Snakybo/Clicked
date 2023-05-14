@@ -2,6 +2,10 @@
 Simple frame widget extension to add support for closing the frame on escape.
 -------------------------------------------------------------------------------]]
 
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedFrame"
+
 local Type, Version = "ClickedFrame", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -31,10 +35,19 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local function OnAquire(self)
+
+--- @class ClickedFrame : AceGUIFrame
+local Methods = {}
+
+--- @protected
+function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
 	self.frame:SetFrameStrata("HIGH")
+end
+
+function Methods:MoveToFront()
+	self.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 end
 
 --[[-----------------------------------------------------------------------------
@@ -42,6 +55,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
+	--- @class ClickedFrame
 	local widget = AceGUI:Create("Frame")
 	widget.type = Type
 
@@ -49,8 +63,12 @@ local function Constructor()
 	frame:SetScript("OnKeyDown", Frame_OnKeyDown)
 	frame:SetScript("OnReceiveDrag", Frame_OnReceiveDrag)
 
+	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
-	widget.OnAcquire = OnAquire
+
+	for method, func in pairs(Methods) do
+		widget[method] = func
+	end
 
 	return AceGUI:RegisterAsContainer(widget)
 end

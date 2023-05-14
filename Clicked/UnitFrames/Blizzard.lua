@@ -15,11 +15,11 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 -- Local support functions
 
---- @param parent Frame
+--- @param parent Button
 --- @param name string
 local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
@@ -28,7 +28,7 @@ local function HookCompactUnitFramePart(parent, name)
 	Clicked:RegisterClickCastFrame(frame)
 end
 
---- @param frame table
+--- @param frame Button
 local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
 		return

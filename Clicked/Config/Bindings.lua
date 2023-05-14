@@ -18,7 +18,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local ITEM_TEMPLATE_GROUP = "GROUP"
 local ITEM_TEMPLATE_SPELL = "CAST_SPELL"
@@ -44,37 +44,42 @@ local iconCacheOrder
 --- @type table<string|number,boolean>
 local waitingForItemInfo = {}
 
---- @type table
+--- @type ClickedFrame
 local root
 
 --- @type ClickedTreeGroup
 local tree
 
---- @type table
+--- @type AceGUITabGroupTab
 local tab
 
 -- reset on close
+--- @type boolean
 local didOpenSpellbook
+
+--- @type boolean
 local showIconPicker
 
 -- Utility functions
 
---- @return Binding
+--- @return Binding?
 local function GetCurrentBinding()
 	local item = tree:GetSelectedItem()
 
-	if item ~= nil then
+	if item ~= nil and item.type == "binding" then
+		--- @cast item ClickedTreeGroup.BindingItem
 		return item.binding
 	end
 
 	return nil
 end
 
---- @return Group
+--- @return Group?
 local function GetCurrentGroup()
 	local item = tree:GetSelectedItem()
 
-	if item ~= nil then
+	if item ~= nil and item.type == "group" then
+		--- @cast item ClickedTreeGroup.GroupItem
 		return item.group
 	end
 
@@ -91,8 +96,9 @@ local function CanEnableRegularTargetMode(binding)
 	return true
 end
 
+--- @generic T
 --- @param option Binding.TriStateLoadOption
---- @return string[]|number[]
+--- @return T[]?
 local function GetTriStateLoadOptionValue(option)
 	if option.selected == 1 then
 		return { option.single }
@@ -103,8 +109,8 @@ local function GetTriStateLoadOptionValue(option)
 	return nil
 end
 
---- @param classNames string[]
---- @param specIndices integer[]
+--- @param classNames? string[]
+--- @param specIndices? integer[]
 --- @return integer[]
 local function GetRelevantSpecializationIds(classNames, specIndices)
 	local specializationIds = {}
@@ -168,8 +174,8 @@ local function CreateLoadOptionTooltip(type, selected)
 		order = { "0", "1", "2" }
 	end
 
-	selected = tostring(selected)
-	options[selected] = "|cff00ff00" .. options[selected] .. "|r"
+	local selectedStr = tostring(selected)
+	options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
 
 	local result = ""
 
@@ -236,14 +242,13 @@ end
 
 --- @param input string|number
 --- @param mode string
---- @return string name
---- @return integer id
---- @return string subtext
+--- @return string|integer name
+--- @return integer? id
 local function GetSpellItemNameAndId(input, mode)
-	--- @type string
+	--- @type string|integer
 	local name
 
-	--- @type integer
+	--- @type integer?
 	local id
 
 	if mode == Addon.BindingTypes.SPELL then
@@ -273,10 +278,10 @@ end
 
 -- Spell book integration
 
---- @param button table
+--- @param button Button
 --- @param bookType string
 --- @return boolean
---- @return Binding
+--- @return Binding?
 local function IsSpellButtonBound(button, bookType)
 	if button == nil then
 		return false, nil
@@ -312,7 +317,7 @@ local function OnSpellBookButtonClick(name, convertValueToId)
 
 	local binding = GetCurrentBinding()
 
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding ~= nil and binding.type == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = name
 		binding.action.convertValueToId = convertValueToId
 
@@ -370,6 +375,7 @@ local function HijackSpellButton_UpdateButton(self)
 				local E = unpack(ElvUI)
 
 				if E and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
+					--- @diagnostic disable-next-line: undefined-field
 					button:StripTextures()
 
 					if E.private.skins.parchmentRemoverEnable then
@@ -503,7 +509,7 @@ local function EnsureIconCache()
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param data Binding.Action
 --- @param key string
 local function DrawIconPicker(container, data, key)
@@ -512,7 +518,7 @@ local function DrawIconPicker(container, data, key)
 	local searchBox
 
 	do
-		local widget = AceGUI:Create("ClickedSearchBox")
+		local widget = AceGUI:Create("ClickedSearchBox") --[[@as ClickedSearchBox]]
 		widget:DisableButton(true)
 		widget:SetPlaceholderText(Addon.L["Search..."])
 		widget:SetRelativeWidth(0.75)
@@ -526,7 +532,7 @@ local function DrawIconPicker(container, data, key)
 			tree:Redraw()
 		end
 
-		local widget = AceGUI:Create("Button")
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Cancel"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.25)
@@ -541,7 +547,7 @@ local function DrawIconPicker(container, data, key)
 			Addon:BindingConfig_Redraw()
 		end
 
-		local scrollFrame = AceGUI:Create("ClickedIconSelectorList")
+		local scrollFrame = AceGUI:Create("ClickedIconSelectorList") --[[@as ClickedIconSelectorList]]
 		scrollFrame:SetLayout("Flow")
 		scrollFrame:SetFullWidth(true)
 		scrollFrame:SetFullHeight(true)
@@ -556,7 +562,7 @@ end
 -- Common draw functions
 
 --- @generic T
---- @param container table
+--- @param container AceGUIContainer
 --- @param title string
 --- @param items table<T,string>
 --- @param order T[]
@@ -567,9 +573,14 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	local enabledWidget
 	local dropdownWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -586,7 +597,7 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 	-- state
 	if data.selected then
 		do
-			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "value", GetCurrentBinding())
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "value", binding)
 			dropdownWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(dropdownWidget)
@@ -597,7 +608,7 @@ local function DrawDropdownLoadOption(container, title, items, order, data)
 end
 
 --- @generic T
---- @param container table
+--- @param container AceGUIContainer
 --- @param title string
 --- @param items table<T,string>
 --- @param order T[]
@@ -610,9 +621,14 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 	local dropdownWidget
 	local editBoxWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -629,7 +645,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 	-- state and value
 	if data.selected then
 		do
-			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "negated", GetCurrentBinding())
+			dropdownWidget = Addon:GUI_Dropdown(items, order, data, "negated", binding)
 			dropdownWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(dropdownWidget)
@@ -644,7 +660,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 		end
 
 		do
-			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", GetCurrentBinding())
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", binding)
 			editBoxWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(editBoxWidget)
@@ -654,7 +670,7 @@ local function DrawNegatableStringLoadOption(container, title, items, order, dat
 	return enabledWidget, dropdownWidget, editBoxWidget
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param title string
 --- @param data Binding.LoadOption
 --- @return AceGUICheckBox
@@ -663,9 +679,14 @@ local function DrawEditFieldLoadOption(container, title, data)
 	local enabledWidget
 	local editBoxWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- selected
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -682,7 +703,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 	if data.selected then
 		-- input
 		do
-			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", GetCurrentBinding())
+			editBoxWidget = Addon:GUI_EditBox("OnEnterPressed", data, "value", binding)
 			editBoxWidget:SetRelativeWidth(0.5)
 
 			container:AddChild(editBoxWidget)
@@ -693,7 +714,7 @@ local function DrawEditFieldLoadOption(container, title, data)
 end
 
 --- @generic T
---- @param container table
+--- @param container AceGUIContainer
 --- @param title string
 --- @param items table<T,any>
 --- @param order T[]
@@ -706,9 +727,14 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 	local enabledWidget
 	local dropdownWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_TristateCheckBox(data, "selected", GetCurrentBinding())
+		enabledWidget = Addon:GUI_TristateCheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 		enabledWidget:SetTriState(true)
 
@@ -724,7 +750,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 	end
 
 	if data.selected == 1 then -- single option variant
-		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single", GetCurrentBinding())
+		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single", binding)
 	elseif data.selected == 2 then -- multiple option variant
 		local function UpdateText(widget)
 			local selected = {}
@@ -751,7 +777,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			widget:SetText(string.format("<text=%s>", text))
 		end
 
-		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple", GetCurrentBinding())
+		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple", binding)
 		dropdownWidget.ClickedUpdateText = UpdateText
 		dropdownWidget:ClickedUpdateText()
 
@@ -773,7 +799,7 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 end
 
 --- @generic T
---- @param container table
+--- @param container AceGUIContainer
 --- @param title string
 --- @param items table<T,any>
 --- @param order T[]
@@ -785,6 +811,11 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 	local enabledWidget, dropdownWidget = DrawTristateLoadOption(container, title, items, order, data)
 	local invertWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	if dropdownWidget ~= nil then
 		do
 			local widget = Addon:GUI_Label("")
@@ -794,7 +825,7 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 		end
 
 		do
-			invertWidget = Addon:GUI_CheckBox(data, "negated", GetCurrentBinding())
+			invertWidget = Addon:GUI_CheckBox(data, "negated", binding)
 			invertWidget:SetLabel(Addon.L["Invert"])
 			invertWidget:SetRelativeWidth(0.5)
 
@@ -805,14 +836,25 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 	return enabledWidget, dropdownWidget, invertWidget
 end
 
+--- @generic T
+--- @param container AceGUIContainer
+--- @param title string
+--- @param items TalentInfo[]
+--- @param data Binding.MutliFieldLoadOption
+--- @return AceGUICheckBox
 local function DrawTalentSelectOption(container, title, items, data)
 	assert(type(data) == "table", "bad argument #4, expected table but got " .. type(data))
 
 	local enabledWidget
 
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- enabled toggle
 	do
-		enabledWidget = Addon:GUI_CheckBox(data, "selected", GetCurrentBinding())
+		enabledWidget = Addon:GUI_CheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 
 		if not data.selected then
@@ -849,7 +891,7 @@ local function DrawTalentSelectOption(container, title, items, data)
 					end
 				end
 
-				local widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value", GetCurrentBinding())
+				local widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value", binding)
 				widget:SetInputError(not found)
 				widget:SetValues(items)
 
@@ -863,10 +905,10 @@ local function DrawTalentSelectOption(container, title, items, data)
 			do
 				local function OnClick()
 					table.remove(data.entries, i)
-					Clicked:ReloadBinding(GetCurrentBinding(), true)
+					Clicked:ReloadBinding(binding, true)
 				end
 
-				local widget = AceGUI:Create("Button")
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 				widget:SetText("X")
 				widget:SetCallback("OnClick", OnClick)
 				widget:SetRelativeWidth(0.125)
@@ -877,10 +919,10 @@ local function DrawTalentSelectOption(container, title, items, data)
 			do
 				local function OnClick()
 					data.entries[i].negated = not data.entries[i].negated
-					Clicked:ReloadBinding(GetCurrentBinding(), true)
+					Clicked:ReloadBinding(binding, true)
 				end
 
-				local widget = AceGUI:Create("Button")
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 				widget:SetText(data.entries[i].negated and "Not" or "")
 				widget:SetCallback("OnClick", OnClick)
 				widget:SetRelativeWidth(0.125)
@@ -896,11 +938,11 @@ local function DrawTalentSelectOption(container, title, items, data)
 						data.entries[i + 1].operation = "AND"
 					end
 
-					Clicked:ReloadBinding(GetCurrentBinding(), true)
+					Clicked:ReloadBinding(binding, true)
 				end
 
-				local widget = AceGUI:Create("Button")
-				widget:SetText(data.entries[i + 1].operation == "AND" and "And" or "Or")
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+				widget:SetText(data.entries[i + 1].operation == "AND" and Addon.L["And"] or Addon.L["Or"])
 				widget:SetCallback("OnClick", OnClick)
 				widget:SetRelativeWidth(0.25)
 
@@ -921,9 +963,9 @@ local function DrawTalentSelectOption(container, title, items, data)
 					Addon:BindingConfig_Redraw()
 				end
 
-				local widget = AceGUI:Create("Button")
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 				widget:SetCallback("OnClick", OnClick)
-				widget:SetText("Add")
+				widget:SetText(Addon.L["Add"])
 
 				widget:SetRelativeWidth(0.5)
 				container:AddChild(widget)
@@ -936,12 +978,17 @@ end
 
 -- Binding action page and components
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param action Binding.Action
 --- @param mode string
 local function DrawSpellItemAuraSelection(container, action, mode)
 	local valueKey = nil
 	local headerText = nil
+
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
 
 	if mode == Addon.BindingTypes.SPELL then
 		valueKey = "spellValue"
@@ -996,7 +1043,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				action[valueKey] = value
 				action.convertValueToId = true
 
-				Clicked:ReloadBinding(GetCurrentBinding(), true)
+				Clicked:ReloadBinding(binding, true)
 			end
 
 			local function OnTextChanged(_, _, value)
@@ -1013,7 +1060,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					linkId = tonumber(match)
 				elseif not Addon:IsStringNilOrEmpty(talentLink) then
 					local match = string.match(talentLink, "(%d+)")
-					linkId = tonumber(select(6, GetTalentInfoByID(match)))
+					linkId = tonumber(select(6, GetTalentInfoByID(match, 1)))
 				end
 
 				if linkId ~= nil and linkId > 0 then
@@ -1028,12 +1075,12 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					widget:SetText(value)
 					widget:ClearFocus()
 
-					Clicked:ReloadBinding(GetCurrentBinding(), true)
+					Clicked:ReloadBinding(binding, true)
 				end
 			end
 
-			widget = AceGUI:Create("EditBox")
-			widget:SetText(name)
+			widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
+			widget:SetText(tostring(name))
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 
@@ -1056,7 +1103,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 		-- spell id
 		if id ~= nil then
-			--- @type Ticker?
+			--- @type TickerCallback?
 			local ticker
 
 			local function OnEnter(widget)
@@ -1075,6 +1122,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 			local function OnLeave()
 				if ticker ~= nil then
+					--- @diagnostic disable-next-line: undefined-field
 					ticker:Cancel()
 					GameTooltip:Hide()
 				end
@@ -1088,7 +1136,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				icon = select(10, Addon:GetItemInfo(id))
 			end
 
-			local widget = AceGUI:Create("ClickedHorizontalIcon")
+			local widget = AceGUI:Create("ClickedHorizontalIcon") --[[@as ClickedHorizontalIcon]]
 			widget:SetLabel(tostring(id))
 			widget:SetImage(icon)
 			widget:SetImageSize(16, 16)
@@ -1119,7 +1167,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					end
 				end
 
-				local widget = AceGUI:Create("Button")
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 				widget:SetText(Addon.L["Pick from spellbook"])
 				widget:SetCallback("OnClick", OnClick)
 
@@ -1144,13 +1192,17 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			do
 				if hasRank then
 					local function OnClick()
+						if id == nil then
+							return
+						end
+
 						action[valueKey] = Addon:GetSpellInfo(id, false)
 						action.convertValueToId = false
 
-						Clicked:ReloadBinding(GetCurrentBinding(), true)
+						Clicked:ReloadBinding(binding, true)
 					end
 
-					local widget = AceGUI:Create("Button")
+					local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 					widget:SetText(Addon.L["Remove rank"])
 					widget:SetCallback("OnClick", OnClick)
 					widget:SetRelativeWidth(0.35)
@@ -1162,10 +1214,15 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 	end
 end
 
---- @param container table
---- @param targets Binding.Target[]
+--- @param container AceGUIContainer
+--- @param targets Binding.Targets
 --- @param action Binding.Action
 local function DrawMacroSelection(container, targets, action)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- macro name and icon
 	do
 		local group = Addon:GUI_InlineGroup()
@@ -1195,7 +1252,7 @@ local function DrawMacroSelection(container, targets, action)
 				tree:Redraw()
 			end
 
-			local widget = AceGUI:Create("Button")
+			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 			widget:SetText(Addon.L["Select"])
 			widget:SetCallback("OnClick", OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
@@ -1219,7 +1276,7 @@ local function DrawMacroSelection(container, targets, action)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", GetCurrentBinding())
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", binding)
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1228,9 +1285,14 @@ local function DrawMacroSelection(container, targets, action)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param action Binding.Action
 local function DrawAppendSelection(container, action)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- macro name and icon
 	do
 		local group = Addon:GUI_InlineGroup()
@@ -1260,7 +1322,7 @@ local function DrawAppendSelection(container, action)
 				tree:Redraw()
 			end
 
-			local widget = AceGUI:Create("Button")
+			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 			widget:SetText(Addon.L["Select"])
 			widget:SetCallback("OnClick", OpenIconPicker)
 			widget:SetRelativeWidth(0.3)
@@ -1277,7 +1339,7 @@ local function DrawAppendSelection(container, action)
 
 		-- macro text field
 		do
-			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", GetCurrentBinding())
+			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", binding)
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
@@ -1286,9 +1348,14 @@ local function DrawAppendSelection(container, action)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param keybind string
 local function DrawActionGroupOptions(container, keybind)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	--- @param left Binding
 	--- @param right Binding
 	--- @return boolean
@@ -1342,7 +1409,7 @@ local function DrawActionGroupOptions(container, keybind)
 	for _, id in ipairs(order) do
 		local bindings = groups[id]
 
-		local header = AceGUI:Create("Label")
+		local header = AceGUI:Create("Label") --[[@as AceGUILabel]]
 		header:SetText(string.format(Addon.L["Group %d"], id))
 		header:SetFontObject(GameFontHighlight)
 
@@ -1373,7 +1440,7 @@ local function DrawActionGroupOptions(container, keybind)
 					end
 				end
 
-				Clicked:ReloadBinding(GetCurrentBinding(), true)
+				Clicked:ReloadBinding(binding, true)
 			end
 
 			local function OnMoveDown()
@@ -1384,14 +1451,14 @@ local function DrawActionGroupOptions(container, keybind)
 
 				binding.action.executionOrder = binding.action.executionOrder + 1
 
-				Clicked:ReloadBinding(GetCurrentBinding(), true)
+				Clicked:ReloadBinding(binding, true)
 			end
 
 			local name, icon = Addon:GetBindingNameAndIcon(binding)
 
 			if index > 1 then
 				--- @param b Binding
-				--- @return string
+				--- @return string?
 				local function GetType(b)
 					if b.type == Addon.BindingTypes.SPELL or b.type == Addon.BindingTypes.ITEM then
 						return "use"
@@ -1413,7 +1480,7 @@ local function DrawActionGroupOptions(container, keybind)
 				end
 			end
 
-			local widget = AceGUI:Create("ClickedReorderableLabel")
+			local widget = AceGUI:Create("ClickedReorderableLabel") --[[@as ClickedReorderableLabel]]
 			widget:SetFontObject(GameFontHighlight)
 			widget:SetText(name)
 			widget:SetImage(icon)
@@ -1432,7 +1499,7 @@ local function DrawActionGroupOptions(container, keybind)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawSharedOptions(container, binding)
 	local function IsSharedDataSet(key)
@@ -1473,10 +1540,10 @@ local function DrawSharedOptions(container, binding)
 			end
 
 			binding.action[key] = value
-			Clicked:ReloadBinding(GetCurrentBinding(), true)
+			Clicked:ReloadBinding(binding, true)
 		end
 
-		widget = AceGUI:Create("CheckBox")
+		widget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
 		widget:SetType("checkbox")
 		widget:SetLabel(label)
 		widget:SetCallback("OnValueChanged", OnValueChanged)
@@ -1512,7 +1579,7 @@ local function DrawSharedOptions(container, binding)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawIntegrationsOptions(container, binding)
 	local group = Addon:GUI_InlineGroup()
@@ -1525,7 +1592,7 @@ local function DrawIntegrationsOptions(container, binding)
 			Addon:CreateWeakAurasIcon(binding)
 		end
 
-		local widget = AceGUI:Create("InteractiveLabel")
+		local widget = AceGUI:Create("InteractiveLabel") --[[@as AceGUIInteractiveLabel]]
 		widget:SetImage([[Interface\AddOns\WeakAuras\Media\Textures\icon]])
 		widget:SetImageSize(16, 16)
 		widget:SetText(string.format("%s (%s)", Addon.L["Create WeakAura"], Addon.L["Beta"]))
@@ -1543,7 +1610,7 @@ local function DrawIntegrationsOptions(container, binding)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingActionPage(container, binding)
 	local type = binding.type
@@ -1588,12 +1655,17 @@ end
 
 -- Binding target page and components
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param targets Binding.Target[]
 --- @param enabled boolean
 --- @param index integer
 local function DrawTargetSelectionUnit(container, targets, enabled, index)
 	local target
+
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
 
 	local function OnValueChanged(frame, _, value)
 		if not InCombatLockdown() then
@@ -1619,7 +1691,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 				end
 			end
 
-			Clicked:ReloadBinding(GetCurrentBinding(), true)
+			Clicked:ReloadBinding(binding, true)
 		else
 			if index == 0 then
 				frame:SetValue("_NONE_")
@@ -1649,7 +1721,7 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 		end
 	end
 
-	local widget = Addon:GUI_Dropdown(items, order, target, "unit", GetCurrentBinding())
+	local widget = Addon:GUI_Dropdown(items, order, target, "unit", binding)
 	widget:SetFullWidth(true)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetDisabled(not enabled)
@@ -1657,31 +1729,41 @@ local function DrawTargetSelectionUnit(container, targets, enabled, index)
 	container:AddChild(widget)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param enabled boolean
 --- @param target Binding.Target
 local function DrawTargetSelectionHostility(container, enabled, target)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	local items, order = Addon:GetLocalizedTargetHostility()
-	local widget = Addon:GUI_Dropdown(items, order, target, "hostility", GetCurrentBinding())
+	local widget = Addon:GUI_Dropdown(items, order, target, "hostility", binding)
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
 	container:AddChild(widget)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param enabled boolean
 --- @param target Binding.Target
 local function DrawTargetSelectionVitals(container, enabled, target)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	local items, order = Addon:GetLocalizedTargetVitals()
-	local widget = Addon:GUI_Dropdown(items, order, target, "vitals", GetCurrentBinding())
+	local widget = Addon:GUI_Dropdown(items, order, target, "vitals", binding)
 	widget:SetFullWidth(true)
 	widget:SetDisabled(not enabled)
 
 	container:AddChild(widget)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingTargetPage(container, binding)
 	if Addon:IsRestrictedKeybind(binding.keybind) then
@@ -1699,7 +1781,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.hovercastEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(binding.targets, "hovercastEnabled", GetCurrentBinding())
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "hovercastEnabled", binding)
 			widget:SetText(Addon.L["Unit Frame Target"])
 			container:AddChild(widget)
 		end
@@ -1714,7 +1796,7 @@ local function DrawBindingTargetPage(container, binding)
 		local enabled = binding.targets.regularEnabled
 
 		do
-			local widget = Addon:GUI_ToggleHeading(binding.targets, "regularEnabled", GetCurrentBinding())
+			local widget = Addon:GUI_ToggleHeading(binding.targets, "regularEnabled", binding)
 			widget:SetText(Addon.L["Macro Targets"])
 			widget:SetDisabled(not CanEnableRegularTargetMode(binding))
 			container:AddChild(widget)
@@ -1740,7 +1822,7 @@ local function DrawBindingTargetPage(container, binding)
 						regular[i] = temp
 					end
 
-					Clicked:ReloadBinding(GetCurrentBinding(), true)
+					Clicked:ReloadBinding(binding, true)
 				end
 
 				local label = i == 1 and Addon.L["On this target"] or enabled and Addon.L["Or"] or Addon.L["Or (inactive)"]
@@ -1784,7 +1866,7 @@ end
 
 -- Binding macro conditions page and components
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param form Binding.NegatableTriStateLoadOption
 --- @param specIds integer[]
 local function DrawMacroInStance(container, form, specIds)
@@ -1808,7 +1890,7 @@ local function DrawMacroInStance(container, form, specIds)
 	DrawNegatableTristateLoadOption(container, label, items, order, form)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param form Binding.NegatableTriStateLoadOption
 --- @param classes string[]
 local function Classic_DrawMacroInStance(container, form, classes)
@@ -1827,7 +1909,7 @@ local function Classic_DrawMacroInStance(container, form, classes)
 	DrawNegatableTristateLoadOption(container, label, items, order, form)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param combat Binding.LoadOption
 local function DrawMacroCombat(container, combat)
 	local items = {
@@ -1843,7 +1925,7 @@ local function DrawMacroCombat(container, combat)
 	DrawDropdownLoadOption(container, Addon.L["Combat"], items, order, combat)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param pet Binding.LoadOption
 local function DrawMacroPet(container, pet)
 	local items = {
@@ -1859,7 +1941,7 @@ local function DrawMacroPet(container, pet)
 	DrawDropdownLoadOption(container, Addon.L["Pet"], items, order, pet)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param stealth Binding.LoadOption
 local function DrawMacroStealth(container, stealth)
 	local items = {
@@ -1875,7 +1957,7 @@ local function DrawMacroStealth(container, stealth)
 	DrawDropdownLoadOption(container, Addon.L["Stealth"], items, order, stealth)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param mounted Binding.LoadOption
 local function DrawMacroMounted(container, mounted)
 	local items = {
@@ -1891,7 +1973,7 @@ local function DrawMacroMounted(container, mounted)
 	DrawDropdownLoadOption(container, Addon.L["Mounted"], items, order, mounted)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param flying Binding.LoadOption
 local function DrawMacroFlying(container, flying)
 	local items = {
@@ -1907,7 +1989,7 @@ local function DrawMacroFlying(container, flying)
 	DrawDropdownLoadOption(container, Addon.L["Flying"], items, order, flying)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param flyable Binding.LoadOption
 local function DrawMacroFlyable(container, flyable)
 	local items = {
@@ -1924,7 +2006,7 @@ local function DrawMacroFlyable(container, flyable)
 end
 
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param advancedFlyable Binding.LoadOption
 local function DrawMacroAdvancedFlyable(container, advancedFlyable)
 	local items = {
@@ -1940,7 +2022,7 @@ local function DrawMacroAdvancedFlyable(container, advancedFlyable)
 	DrawDropdownLoadOption(container, Addon.L["Advanced Flyable"], items, order, advancedFlyable)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param outdoors Binding.LoadOption
 local function DrawMacroOutdoors(container, outdoors)
 	local items = {
@@ -1956,7 +2038,7 @@ local function DrawMacroOutdoors(container, outdoors)
 	DrawDropdownLoadOption(container, Addon.L["Outdoors"], items, order, outdoors)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param swimming Binding.LoadOption
 local function DrawMacroSwimming(container, swimming)
 	local items = {
@@ -1972,7 +2054,7 @@ local function DrawMacroSwimming(container, swimming)
 	DrawDropdownLoadOption(container, Addon.L["Swimming"], items, order, swimming)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param channeling Binding.NegatableStringLoadOption
 local function DrawMacroChanneling(container, channeling)
 	local items = {
@@ -1988,7 +2070,7 @@ local function DrawMacroChanneling(container, channeling)
 	DrawNegatableStringLoadOption(container, Addon.L["Channeling"], items, order, channeling)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
@@ -2029,12 +2111,17 @@ end
 
 -- Binding load conditions page and components
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param load Binding.Load
 local function DrawLoadNeverSelection(container, load)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	-- never load toggle
 	do
-		local widget = Addon:GUI_CheckBox(load, "never", GetCurrentBinding())
+		local widget = Addon:GUI_CheckBox(load, "never", binding)
 		widget:SetLabel(Addon.L["Never load"])
 		widget:SetFullWidth(true)
 
@@ -2044,21 +2131,21 @@ local function DrawLoadNeverSelection(container, load)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param class Binding.TriStateLoadOption
 local function DrawLoadClass(container, class)
 	local items, order = Addon:GetLocalizedClasses()
 	DrawTristateLoadOption(container, Addon.L["Class"], items, order, class)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param race Binding.TriStateLoadOption
 local function DrawLoadRace(container, race)
 	local items, order = Addon:GetLocalizedRaces()
 	DrawTristateLoadOption(container, Addon.L["Race"], items, order, race)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param specialization Binding.TriStateLoadOption
 --- @param classNames string[]
 local function DrawLoadSpecialization(container, specialization, classNames)
@@ -2066,7 +2153,7 @@ local function DrawLoadSpecialization(container, specialization, classNames)
 	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param specialization Binding.TriStateLoadOption
 local function Classic_DrawLoadSpecialization(container, specialization)
 	local items = {
@@ -2082,7 +2169,7 @@ local function Classic_DrawLoadSpecialization(container, specialization)
 	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param talent Binding.MutliFieldLoadOption
 --- @param specializations integer[]
 local function DrawLoadTalent(container, talent, specializations)
@@ -2090,7 +2177,7 @@ local function DrawLoadTalent(container, talent, specializations)
 	DrawTalentSelectOption(container, Addon.L["Talent selected"], items, talent)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param talent Binding.TriStateLoadOption
 --- @param classes string[]
 local function Classic_DrawLoadTalent(container, talent, classes)
@@ -2098,7 +2185,7 @@ local function Classic_DrawLoadTalent(container, talent, classes)
 	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param talent Binding.TriStateLoadOption
 --- @param specIds integer[]
 local function DrawLoadPvPTalent(container, talent, specIds)
@@ -2106,7 +2193,7 @@ local function DrawLoadPvPTalent(container, talent, specIds)
 	DrawTristateLoadOption(container, Addon.L["PvP talent selected"], items, order, talent)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param warMode Binding.LoadOption
 local function DrawLoadWarMode(container, warMode)
 	local items = {
@@ -2122,19 +2209,19 @@ local function DrawLoadWarMode(container, warMode)
 	DrawDropdownLoadOption(container, Addon.L["War Mode"], items, order, warMode)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param playerNameRealm Binding.LoadOption
 local function DrawLoadPlayerNameRealm(container, playerNameRealm)
 	DrawEditFieldLoadOption(container, Addon.L["Player Name-Realm"], playerNameRealm)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param spellKnown Binding.LoadOption
 local function DrawLoadSpellKnown(container, spellKnown)
 	DrawEditFieldLoadOption(container, Addon.L["Spell known"], spellKnown)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param inGroup Binding.LoadOption
 local function DrawLoadInGroup(container, inGroup)
 	local items = {
@@ -2154,13 +2241,13 @@ local function DrawLoadInGroup(container, inGroup)
 	DrawDropdownLoadOption(container, Addon.L["In group"], items, order, inGroup)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param playerInGroup Binding.LoadOption
 local function DrawLoadPlayerInGroup(container, playerInGroup)
 	DrawEditFieldLoadOption(container, Addon.L["Player in group"], playerInGroup)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param instanceType Binding.TriStateLoadOption
 local function DrawLoadInInstanceType(container, instanceType)
 	local items = {}
@@ -2209,7 +2296,7 @@ local function DrawLoadInInstanceType(container, instanceType)
 	DrawTristateLoadOption(container, Addon.L["Instance type"], items, order, instanceType)
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param zoneName Binding.LoadOption
 local function DrawLoadZoneName(container, zoneName)
 	local _, inputField = DrawEditFieldLoadOption(container, Addon.L["Zone name(s)"], zoneName)
@@ -2226,9 +2313,14 @@ local function DrawLoadZoneName(container, zoneName)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param equipped Binding.LoadOption
 local function DrawLoadItemEquipped(container, equipped)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	local _, inputField = DrawEditFieldLoadOption(container, Addon.L["Item equipped"], equipped)
 
 	if inputField ~= nil then
@@ -2244,10 +2336,10 @@ local function DrawLoadItemEquipped(container, equipped)
 			if linkId ~= nil and linkId > 0 then
 				equipped.value = Addon:GetItemInfo(linkId)
 
-				inputField:SetText(equipped.value)
+				inputField:SetText(tostring(equipped.value))
 				inputField:ClearFocus()
 
-				Clicked:ReloadBinding(GetCurrentBinding(), true)
+				Clicked:ReloadBinding(binding, true)
 			end
 		end
 
@@ -2257,7 +2349,7 @@ local function DrawLoadItemEquipped(container, equipped)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingLoadConditionsPage(container, binding)
 	local load = binding.load
@@ -2273,14 +2365,14 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 		DrawLoadSpecialization(container, load.specialization, classNames)
-		DrawLoadTalent(container, load.talent, specializationIds)
+		DrawLoadTalent(container, load.talent --[[@as Binding.MutliFieldLoadOption]], specializationIds)
 		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 		DrawLoadWarMode(container, load.warMode)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 
 		Classic_DrawLoadSpecialization(container, load.specialization)
-		Classic_DrawLoadTalent(container, load.talent, classNames)
+		Classic_DrawLoadTalent(container, load.talent --[[@as Binding.TriStateLoadOption]], classNames)
 	end
 
 	DrawLoadInInstanceType(container, load.instanceType)
@@ -2293,7 +2385,7 @@ end
 
 -- Binding status page and components
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingStatusPage(container, binding)
 	local function DrawStatus(group, bindings, interactionType)
@@ -2303,7 +2395,7 @@ local function DrawBindingStatusPage(container, binding)
 
 		-- output of full macro
 		do
-			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox") --[[@as ClickedReadOnlyMultilineEditBox]]
 
 			if interactionType == Addon.InteractionType.HOVERCAST then
 				widget:SetLabel(Addon.L["Generated hovercast macro"])
@@ -2348,7 +2440,7 @@ local function DrawBindingStatusPage(container, binding)
 
 	if #all > 1 then
 		do
-			local widget = AceGUI:Create("Heading")
+			local widget = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
 			widget:SetFullWidth(true)
 			widget:SetText(Addon.L["%d related binding(s)"]:format(#all - 1))
 
@@ -2364,7 +2456,7 @@ local function DrawBindingStatusPage(container, binding)
 
 					local name, icon = Addon:GetBindingNameAndIcon(other)
 
-					local widget = AceGUI:Create("InteractiveLabel")
+					local widget = AceGUI:Create("InteractiveLabel") --[[@as AceGUIInteractiveLabel]]
 					widget:SetFontObject(GameFontHighlight)
 					widget:SetText(name)
 					widget:SetImage(icon)
@@ -2380,9 +2472,12 @@ end
 
 -- Group page
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawGroup(container)
 	local group = GetCurrentGroup()
+	if group == nil then
+		error("Cannot draw load option without a group")
+	end
 
 	local parent = Addon:GUI_InlineGroup()
 	parent:SetTitle(Addon.L["Group Name and Icon"])
@@ -2410,7 +2505,7 @@ local function DrawGroup(container)
 			tree:Redraw()
 		end
 
-		local widget = AceGUI:Create("Button")
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Select"])
 		widget:SetCallback("OnClick", OpenIconPicker)
 		widget:SetRelativeWidth(0.3)
@@ -2423,7 +2518,7 @@ end
 
 --- @param identifier string
 local function CreateFromItemTemplate(identifier)
-	--- @type Binding?
+	--- @type Binding|Group?
 	local item = nil
 
 	if identifier == ITEM_TEMPLATE_SPELL then
@@ -2465,14 +2560,13 @@ local function CreateFromItemTemplate(identifier)
 					return {}
 				end
 
-				--- @type Binding
 				for _, binding in Clicked:IterateConfiguredBindings() do
 					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
 						local group = Clicked:GetGroupById(binding.parent)
 
 						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
 						-- before excluding it
-						if group.name == tabName and group.displayIcon == tabIcon then
+						if group ~= nil and group.name == tabName and group.displayIcon == tabIcon then
 							return {}
 						end
 					end
@@ -2502,7 +2596,6 @@ local function CreateFromItemTemplate(identifier)
 			if next(pendingSpellIds) ~= nil then
 				local group = nil
 
-				--- @type Group
 				for _, g in Clicked:IterateGroups() do
 					if g.name == tabName and g.displayIcon == tabIcon then
 						group = g
@@ -2566,6 +2659,7 @@ local function CreateFromItemTemplate(identifier)
 						return true
 					end
 
+					--- @diagnostic disable-next-line: redundant-parameter
 					if action == "macro" and binding.action.macroValue == GetMacroBody(id) then
 						return true
 					end
@@ -2593,8 +2687,11 @@ local function CreateFromItemTemplate(identifier)
 			elseif action == "macro" then
 				binding = Clicked:CreateBinding()
 				binding.type = Addon.BindingTypes.MACRO
-				binding.action.macroValue = GetMacroBody(id)
-				binding.action.macroName = GetMacroInfo(id)
+				--- @diagnostic disable-next-line: redundant-parameter
+				binding.action.macroValue = GetMacroBody(id) --[[@as string]]
+				--- @diagnostic disable-next-line: redundant-parameter
+				binding.action.macroName = GetMacroInfo(id) --[[@as string]]
+				--- @diagnostic disable-next-line: redundant-parameter
 				binding.action.macroIcon = select(2, GetMacroInfo(id))
 			end
 
@@ -2687,9 +2784,11 @@ local function CreateFromItemTemplate(identifier)
 
 		tree:SelectByBindingOrGroup(item)
 	end
+
+	Addon:BindingConfig_Redraw()
 end
 
---- @param container table
+--- @param container AceGUIContainer
 --- @param identifier string
 --- @param name string
 local function DrawItemTemplate(container, identifier, name)
@@ -2705,7 +2804,7 @@ local function DrawItemTemplate(container, identifier, name)
 			CreateFromItemTemplate(identifier)
 		end
 
-		local widget = AceGUI:Create("Button")
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Create"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.2)
@@ -2716,9 +2815,12 @@ end
 
 -- Main binding frame
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawBinding(container)
 	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
 
 	-- keybinding button
 	do
@@ -2726,7 +2828,7 @@ local function DrawBinding(container)
 			local tooltipText = Addon.L["Click and press a key to bind, or ESC to clear the binding."]
 
 			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(binding.keybind) then
-				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Clicked:GetActiveBindings())
+				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Addon:GetActiveBindings())
 				frame:SetMarker(#automaticBindings > 0)
 
 				tooltipText = tooltipText .. "\n\n" .. Addon.L["Also bound to:"]
@@ -2744,7 +2846,7 @@ local function DrawBinding(container)
 			HandleAutomaticBinds(frame)
 		end
 
-		local widget = Addon:GUI_KeybindingButton(binding, "keybind", GetCurrentBinding())
+		local widget = Addon:GUI_KeybindingButton(binding, "keybind", binding)
 		Addon:GUI_SetPostValueChanged(widget, OnPostValueChanged)
 
 		HandleAutomaticBinds(widget)
@@ -2756,7 +2858,7 @@ local function DrawBinding(container)
 	do
 		-- luacheck: ignore container
 		local function OnGroupSelected(container, _, group)
-			local scrollFrame = AceGUI:Create("ScrollFrame")
+			local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 			scrollFrame:SetLayout("Flow")
 
 			container:ReleaseChildren()
@@ -2831,9 +2933,9 @@ local function DrawBinding(container)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawItemTemplateSelector(container)
-	local scrollFrame = AceGUI:Create("ScrollFrame")
+	local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 	scrollFrame:SetLayout("Flow")
 	scrollFrame:SetFullWidth(true)
 	scrollFrame:SetFullHeight(true)
@@ -2880,9 +2982,9 @@ end
 
 -- Main frame
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawHeader(container)
-	local line = AceGUI:Create("ClickedSimpleGroup")
+	local line = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
 	line:SetWidth(325)
 	line:SetLayout("Flow")
 
@@ -2894,7 +2996,7 @@ local function DrawHeader(container)
 			tree:SelectByValue("")
 		end
 
-		local widget = AceGUI:Create("Button")
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["New"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
@@ -2908,7 +3010,7 @@ local function DrawHeader(container)
 			Addon:BindingImportFrame_Open()
 		end
 
-		local widget = AceGUI:Create("Button")
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Import"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
@@ -2917,7 +3019,7 @@ local function DrawHeader(container)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawTreeContainer(container)
 	local binding = GetCurrentBinding()
 	local group = GetCurrentGroup()
@@ -2925,7 +3027,7 @@ local function DrawTreeContainer(container)
 	container:ReleaseChildren()
 
 	if showIconPicker then
-		local data = binding ~= nil and binding.action or group
+		local data = binding ~= nil and binding.action or group --[[@as any]]
 		local key = binding ~= nil and "macroIcon" or "displayIcon"
 
 		showIconPicker = false
@@ -2941,11 +3043,11 @@ local function DrawTreeContainer(container)
 	end
 end
 
---- @param container table
+--- @param container AceGUIContainer
 local function DrawTreeView(container)
 	-- tree view
 	do
-		tree = AceGUI:Create("ClickedTreeGroup")
+		tree = AceGUI:Create("ClickedTreeGroup") --[[@as ClickedTreeGroup]]
 		tree:SetLayout("Flow")
 		tree:SetFullWidth(true)
 		tree:SetFullHeight(true)
@@ -2998,6 +3100,7 @@ function Addon:BindingConfig_Open()
 				bindingType = Addon.BindingTypes.ITEM
 			elseif infoType == "spell" then
 				bindingType = Addon.BindingTypes.SPELL
+				--- @diagnostic disable-next-line: param-type-mismatch
 				info1 = select(3, GetSpellBookItemName(info1, info2))
 			elseif infoType == "petaction" then
 				bindingType = Addon.BindingTypes.SPELL
@@ -3008,14 +3111,14 @@ function Addon:BindingConfig_Open()
 				binding.type = bindingType
 				Addon:SetBindingValue(binding, info1)
 
-				Clicked:ReloadBinding(GetCurrentBinding(), true)
+				Clicked:ReloadBinding(binding, true)
 				tree:SelectByBindingOrGroup(binding)
 
 				ClearCursor()
 			end
 		end
 
-		root = AceGUI:Create("ClickedFrame")
+		root = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
 		root:SetCallback("OnClose", OnClose)
 		root:SetCallback("OnReceiveDrag", OnReceiveDrag)
 		root:SetTitle(Addon.L["Clicked Binding Configuration"])

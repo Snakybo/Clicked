@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local frameCache = {}
 

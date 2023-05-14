@@ -2,9 +2,13 @@
 Reorderable inline group widget
 -------------------------------------------------------------------------------]]
 
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedReorderableInlineGroup"
+
 --- @class ClickedReorderableInlineGroup : AceGUIInlineGroup
---- @field public SetMoveUpButton fun(enabled:boolean)
---- @field public SetMoveDownButton fun(enabled:boolean)
+--- @field private moveDown Button
+--- @field private moveUp Button
 
 local Type, Version = "ClickedReorderableInlineGroup", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -16,6 +20,11 @@ end
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
+
+--- @param widget any
+--- @param texture string
+--- @param callback function
+--- @return Button
 local function CreateButton(widget, texture, callback)
 	texture = [[Interface\AddOns\Clicked\Media\Textures\]] .. texture .. ".tga"
 
@@ -62,57 +71,58 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local methods = {
-	--- @param self ClickedReorderableInlineGroup
-	["OnAcquire"] = function(self)
-		self:BaseOnAcquire()
 
-		self:SetMoveUpButton(false)
-		self:SetMoveDownButton(false)
-	end,
+--- @class ClickedReorderableInlineGroup
+local Methods = {}
 
-	--- @param self ClickedReorderableInlineGroup
-	--- @param enabled boolean
-	["SetMoveUpButton"] = function(self, enabled)
-		if enabled then
-			self.moveUp:Show()
-		else
-			self.moveUp:Hide()
-		end
+--- @protected
+function Methods:OnAcquire()
+	self:BaseOnAcquire()
 
-		self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
-	end,
+	self:SetMoveUpButton(false)
+	self:SetMoveDownButton(false)
+end
 
-	--- @param self ClickedReorderableInlineGroup
-	--- @param enabled boolean
-	["SetMoveDownButton"] = function(self, enabled)
-		if enabled then
-			self.moveDown:Show()
-		else
-			self.moveDown:Hide()
-		end
-
-		self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
+--- @param self ClickedReorderableInlineGroup
+--- @param enabled boolean
+function Methods:SetMoveUpButton(enabled)
+	if enabled then
+		self.moveUp:Show()
+	else
+		self.moveUp:Hide()
 	end
-}
+
+	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
+end
+
+--- @param self ClickedReorderableInlineGroup
+--- @param enabled boolean
+function Methods:SetMoveDownButton(enabled)
+	if enabled then
+		self.moveDown:Show()
+	else
+		self.moveDown:Hide()
+	end
+
+	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
+end
 
 --[[ Constructor ]]--
 
 local function Constructor()
+	--- @class ClickedReorderableInlineGroup
 	local widget = AceGUI:Create("InlineGroup")
 	widget.type = Type
 
-	local frame = widget.frame
-
 	widget.moveDown = CreateButton(widget, "ui_arrow_down", MoveDown_OnClick)
-	widget.moveDown:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, 0)
-
+	widget.moveDown:SetPoint("TOPRIGHT", widget.frame, "TOPRIGHT", -6, 0)
 	widget.moveUp = CreateButton(widget, "ui_arrow_up", MoveUp_OnClick)
 	widget.moveUp:SetPoint("RIGHT", widget.moveDown, "LEFT", -2, 0)
 
+	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
 
-	for method, func in pairs(methods) do
+	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 

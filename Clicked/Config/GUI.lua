@@ -16,13 +16,24 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @class ClickedInternal
-local _, Addon = ...
+--- @class ClickedUIWidgetHandler
+--- @field public setValueFunc fun(self: AceGUIWidget, value: any)
+--- @field public onPreValueChanged fun(self: AceGUIWidget, value: any, previousValue: any)?
+--- @field public onPostValueChanged fun(AceGUIWidget, value: any)?
+--- @field public ref table
+--- @field public key string
 
+--- @class ClickedInternal
+local Addon = select(2, ...)
+
+--- @type { [AceGUIWidget]: ClickedUIWidgetHandler }
 local widgets = {}
+
+--- @type table<AceGUIWidget, Binding>
 local bindingMap = {}
 
---- @param frame table
+--- @param frame AceGUIWidget
+--- @param _ any
 --- @param value any
 local function OnSerialize(frame, _, value)
 	local data = widgets[frame]
@@ -50,13 +61,16 @@ local function OnSerialize(frame, _, value)
 	end
 end
 
---- @param type string
---- @return table
+--- @param type AceGUIWidgetType
+--- @return AceGUIWidget
 local function CreateGUI(type)
 	local widget = AceGUI:Create(type)
+
+	--- @diagnostic disable-next-line: invisible
 	local orgininalOnRelease = widget.OnRelease
 
-	widget.OnRelease = function(_)
+	--- @diagnostic disable-next-line: duplicate-set-field, invisible
+	widget.OnRelease = function()
 		widgets[widget] = nil
 
 		if orgininalOnRelease ~= nil then
@@ -68,8 +82,10 @@ local function CreateGUI(type)
 end
 
 --- Set a callback which is invoked prior to when the value is changed
+---
+--- @generic T
 --- @param widget AceGUIWidget
---- @param callback fun(frame, newValue, oldValue):any
+--- @param callback fun(frame: AceGUIWidget, newValue: T, oldValue: T):T
 function Addon:GUI_SetPreValueChanged(widget, callback)
 	if widget == nil or widgets[widget] == nil then
 		return
@@ -79,8 +95,10 @@ function Addon:GUI_SetPreValueChanged(widget, callback)
 end
 
 --- Set a callback which is invoked after the value is changed
+---
+--- @generic T
 --- @param widget AceGUIWidget
---- @param callback fun(frame, value)
+--- @param callback fun(frame: AceGUIWidget, value: T)
 function Addon:GUI_SetPostValueChanged(widget, callback)
 	if widget == nil or widgets[widget] == nil then
 		return
@@ -93,7 +111,7 @@ end
 --- @param fontSize? '"small"'|'"medium"'|'"large"'
 --- @return AceGUILabel
 function Addon:GUI_Label(text, fontSize)
-	local widget = CreateGUI("Label")
+	local widget = CreateGUI("Label") --[[@as AceGUILabel]]
 	widget:SetText(text)
 
 	if fontSize == "medium" then
@@ -121,7 +139,7 @@ function Addon:GUI_EditBox(callback, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("EditBox")
+	local widget = CreateGUI("EditBox") --[[@as AceGUIEditBox]]
 	widget:SetText(ref[key])
 	widget:SetCallback(callback, OnCallback)
 
@@ -148,13 +166,13 @@ function Addon:GUI_AutoFillEditBox(ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedAutoFillEditBox")
+	local widget = CreateGUI("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
 	widget:SetText(ref[key], true)
 	widget:SetCallback("OnSelect", OnCallback)
 
 	bindingMap[widget] = binding
 	widgets[widget] = {
-		setValueFunc = function(text) widget:SetText(text, true) end,
+		setValueFunc = function(_, value) widget:SetText(value, true) end,
 		ref = ref,
 		key = key
 	}
@@ -171,7 +189,7 @@ function Addon:GUI_MultilineEditBox(callback, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #2, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #3, expected string but got " .. type(key))
 
-	local widget = CreateGUI("MultiLineEditBox")
+	local widget = CreateGUI("MultiLineEditBox") --[[@as AceGUIMultiLineEditBox]]
 	widget:SetText(ref[key])
 	widget:SetCallback(callback, OnSerialize)
 
@@ -190,7 +208,7 @@ end
 --- @param binding Binding
 --- @return AceGUICheckBox
 function Addon:GUI_CheckBox(ref, key, binding)
-	local widget = CreateGUI("CheckBox")
+	local widget = CreateGUI("CheckBox") --[[@as AceGUICheckBox]]
 	widget:SetType("checkbox")
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
@@ -210,6 +228,8 @@ end
 --- @param binding Binding
 --- @return AceGUICheckBox
 function Addon:GUI_TristateCheckBox(ref, key, binding)
+	--- @param state `0`|`1`|`2`
+	--- @return boolean?
 	local function IndexToValue(state)
 		if state == 1 then
 			return true
@@ -220,12 +240,14 @@ function Addon:GUI_TristateCheckBox(ref, key, binding)
 		return false
 	end
 
+	--- @param value boolean
+	--- @return `0`|`1`|`2`
 	local function ValueToIndex(value)
 		if value == false then
 			return 0
 		elseif value == true then
 			return 1
-		elseif value == nil then
+		else
 			return 2
 		end
 	end
@@ -242,7 +264,7 @@ function Addon:GUI_TristateCheckBox(ref, key, binding)
 	assert(type(ref) == "table", "bad argument #1, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #2, expected string but got " .. type(key))
 
-	local widget = CreateGUI("CheckBox")
+	local widget = CreateGUI("CheckBox") --[[@as AceGUICheckBox]]
 	widget:SetType("checkbox")
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 	widget:SetTriState(true)
@@ -269,7 +291,7 @@ function Addon:GUI_Dropdown(items, order, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedDropDown")
+	local widget = CreateGUI("ClickedDropdown") --[[@as ClickedDropdown]]
 	widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
@@ -290,7 +312,7 @@ end
 --- @param ref table
 --- @param key string
 --- @param binding Binding
---- @return AceGUIDropdown
+--- @return ClickedDropdown
 function Addon:GUI_MultiselectDropdown(items, order, ref, key, binding)
 	local function OnValueChanged(frame, event)
 		local total = {}
@@ -307,22 +329,20 @@ function Addon:GUI_MultiselectDropdown(items, order, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedDropDown")
+	local widget = CreateGUI("ClickedDropdown") --[[@as ClickedDropdown]]
 	widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
 	widget:SetMultiselect(true)
 	widget:SetCallback("OnClosed", OnValueChanged)
 
-	local function SetValue(value, state)
-		if type(value) == "table" then
-			for item in pairs(items) do
-				widget:SetItemValue(item, false)
-			end
+	--- @generic T
+	--- @param value T[]
+	local function SetValue(value)
+		for item in pairs(items) do
+			widget:SetItemValue(item, false)
+		end
 
-			for _, saved in ipairs(value) do
-				widget:SetItemValue(saved, true)
-			end
-		else
-			widget:SetItemValue(value, state)
+		for _, saved in ipairs(value) do
+			widget:SetItemValue(saved, true)
 		end
 	end
 
@@ -346,7 +366,7 @@ function Addon:GUI_KeybindingButton(ref, key, binding)
 	assert(type(ref) == "table", "bad argument #1, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #2, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedKeybinding")
+	local widget = CreateGUI("ClickedKeybinding") --[[ @as ClickedKeybinding ]]
 	local keybind = Addon:SanitizeKeybind(ref[key])
 
 	widget:SetFullWidth(true)
@@ -363,9 +383,9 @@ function Addon:GUI_KeybindingButton(ref, key, binding)
 	return widget
 end
 
---- @return AceGUITabGroup
+--- @return ClickedTabGroup
 function Addon:GUI_TabGroup()
-	local widget = CreateGUI("ClickedTabGroup")
+	local widget = CreateGUI("ClickedTabGroup") --[[@as ClickedTabGroup]]
 	widget:SetFullWidth(true)
 	widget:SetFullHeight(true)
 	widget:SetLayout("Fill")
@@ -375,7 +395,7 @@ end
 
 --- @return AceGUIInlineGroup
 function Addon:GUI_InlineGroup()
-	local widget = AceGUI:Create("InlineGroup")
+	local widget = AceGUI:Create("InlineGroup") --[[@as AceGUIInlineGroup]]
 	widget:SetFullWidth(true)
 	widget:SetLayout("Flow")
 
@@ -384,7 +404,7 @@ end
 
 --- @return ClickedReorderableInlineGroup
 function Addon:GUI_ReorderableInlineGroup()
-	local widget = AceGUI:Create("ClickedReorderableInlineGroup")
+	local widget = AceGUI:Create("ClickedReorderableInlineGroup") --[[@as ClickedReorderableInlineGroup]]
 	widget:SetFullWidth(true)
 	widget:SetLayout("Flow")
 
@@ -399,7 +419,7 @@ function Addon:GUI_ToggleHeading(ref, key, binding)
 	assert(type(ref) == "table", "bad argument #1, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #2, expected string but got " .. type(key))
 
-	local widget = AceGUI:Create("ClickedToggleHeading")
+	local widget = AceGUI:Create("ClickedToggleHeading") --[[@as ClickedToggleHeading]]
 	widget:SetFullWidth(true)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])

@@ -1,7 +1,10 @@
+--- @diagnostic disable: duplicate-set-field
+--- @diagnostic disable: undefined-field
+
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 if GetAddOnEnableState(UnitName("player"), "ElvUI") ~= 2 then
 	return
@@ -54,10 +57,10 @@ local function Initialize()
 					return
 				end
 
-				local status = self.status or self.localstatus
+				local status = w.status or w.localstatus
 				local groupstatus = status.groups
-				local lines = self.lines
-				local buttons = self.buttons
+				local lines = w.lines
+				local buttons = w.buttons
 				local offset = status.scrollvalue
 
 				for i = offset + 1, #lines do

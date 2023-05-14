@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 --- @enum BindingType
 Addon.BindingTypes = {
@@ -94,7 +94,7 @@ Addon.BindingScope = {
 --- @type Binding[]
 local activeBindings = {}
 
---- @type BindingStateCache
+--- @type table<string,table<string,boolean?>>
 local bindingStateCache = {}
 
 --- @type table<string,Binding[]>
@@ -212,7 +212,7 @@ end
 local function ConstructAction(binding, target)
 	--- @type Action
 	local action = {
-		ability = Addon:GetBindingValue(binding),
+		ability = Addon:GetBindingValue(binding) --[[@as string|integer]],
 		type = binding.type
 	}
 
@@ -220,6 +220,7 @@ local function ConstructAction(binding, target)
 	--- @param key string
 	local function AppendCondition(condition, key)
 		if condition.selected then
+			--- @diagnostic disable-next-line: assign-type-mismatch
 			action[key] = condition.value
 		end
 	end
@@ -228,6 +229,7 @@ local function ConstructAction(binding, target)
 	--- @param key string
 	local function AppendNegatableStringCondition(condition, key)
 		if condition.selected then
+			--- @diagnostic disable-next-line: assign-type-mismatch
 			action[key] = {
 				negated = condition.negated,
 				value = condition.value
@@ -286,6 +288,7 @@ end
 --- @param interactionType number
 --- @return Action[]
 local function ConstructActions(binding, interactionType)
+	--- @type Action[]
 	local actions = {}
 
 	if Addon:IsHovercastEnabled(binding) and interactionType == Addon.InteractionType.HOVERCAST then
@@ -337,7 +340,10 @@ local function SortActions(actions, indexMap)
 		}
 
 		for _, item in ipairs(priority) do
+			--- @type string|integer
 			local l = item.left
+
+			--- @type string|integer
 			local r = item.right
 			local v = item.value
 			local c = item.comparison
@@ -389,6 +395,8 @@ local function ProcessBuckets()
 		end
 
 		local reference = bindings[1]
+
+		--- @type Command
 		local command = {
 			keybind = keybind,
 			hovercast = interactionType == Addon.InteractionType.HOVERCAST
@@ -443,8 +451,8 @@ end
 
 --- @param bindings Binding[]
 local function GenerateBuckets(bindings)
-	---@param bucket table<string,Binding>
-	---@param binding Binding
+	--- @param bucket table<string,Binding>
+	--- @param binding Binding
 	local function Insert(bucket, binding)
 		if #bucket == 0 then
 			table.insert(bucket, binding)
@@ -460,8 +468,8 @@ local function GenerateBuckets(bindings)
 	wipe(hovercastBucket)
 	wipe(regularBucket)
 
-	--- @type Binding
 	for _, binding in ipairs(bindings) do
+		--- @type string[]
 		local keys = { binding.keybind }
 
 		if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(keys[1]) then
@@ -501,16 +509,19 @@ end
 --- @param binding Binding
 --- @param full boolean
 --- @param delayFrame boolean
---- @vararg string
+--- @param ... string
 --- @overload fun(binding:Binding, full:boolean, ...:string)
 --- @overload fun(binding:Binding, ...:string)
 local function ProcessReloadBindingArguments(binding, full, delayFrame, ...)
+	--- @type string|integer
 	local identifier = nil
 
 	if type(binding) == "table" then
 		identifier = binding.identifier
 	elseif type(binding) == "number" then
 		identifier = binding
+	else
+		error("bad argument #1, expected Binding or number but got " .. type(binding))
 	end
 
 	pendingReloadCauses.binding = pendingReloadCauses.binding or {}
@@ -534,7 +545,7 @@ end
 
 --- @param full boolean
 --- @param delayFrame boolean
---- @vararg string
+--- @param ... string
 --- @overload fun(full:boolean, ...:string)
 --- @overload fun(...:string)
 local function ProcessReloadArguments(full, delayFrame, ...)
@@ -601,7 +612,7 @@ end
 --- @param binding Binding
 --- @param full boolean
 --- @param delayFrame boolean
---- @vararg string
+--- @param ... string
 --- @overload fun(self:Clicked, binding:Binding, full:boolean, ...:string)
 --- @overload fun(self:Clicked, binding:Binding, ...:string)
 function Clicked:ReloadBinding(binding, full, delayFrame, ...)
@@ -611,7 +622,7 @@ end
 
 --- @param full boolean
 --- @param delayFrame boolean
---- @vararg string
+--- @param ... string
 --- @overload fun(self:Clicked, full:boolean, ...:string)
 --- @overload fun(self:Clicked, ...:string)
 function Clicked:ReloadBindings(full, delayFrame, ...)
@@ -634,14 +645,18 @@ end
 --- Evaluate the generated macro for a binding and return the target unit if there is any.
 ---
 --- @param binding Binding The input binding, cannot be `nil` and must be a valid binding table
---- @return string hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
---- @return string regularTarget The first satisfied regular unit if any, `nil` otherwise.
+--- @return string? hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
+--- @return string? regularTarget The first satisfied regular unit if any, `nil` otherwise.
 function Clicked:EvaluateBindingMacro(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
+	--- @type Binding[]
 	local bindings = { binding }
 
+	--- @type string?
 	local hovercastTarget = nil
+
+	--- @type string?
 	local regularTarget = nil
 
 	if Addon:IsHovercastEnabled(binding) then
@@ -658,19 +673,8 @@ function Clicked:EvaluateBindingMacro(binding)
 end
 
 --- Iterate through all currently active bindings, this function can be used in a `for in` loop.
----
---- @return function iterator
---- @return table t
---- @return number i
 function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
-end
-
---- Get all active bindings.
----
---- @return Binding[]
-function Clicked:GetActiveBindings()
-	return activeBindings
 end
 
 --- Get all bindings that, when activated at this moment, will affect the specified unit. This builds a full profile and the resulting table contains all
@@ -689,7 +693,10 @@ end
 function Clicked:GetBindingsForUnit(unit)
 	assert(type(unit) == "string", "bad argument #1, expected table but got " .. type(unit))
 
+	--- @type Binding[]
 	local result = {}
+
+	--- @type table<string,boolean>
 	local units = {
 		[unit] = true
 	}
@@ -798,7 +805,7 @@ end
 -- Private addon API
 
 --- @param delay boolean?
---- @vararg any
+--- @param ... any
 function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 	if delay then
 		if reloadTalentCacheDelayTicker == nil then
@@ -891,7 +898,7 @@ end
 --- @param options table<string,boolean>
 function Addon:UpdateBindingLoadState(binding, options)
 	--- @param data Binding.LoadOption
-	--- @param validationFunc "fun(input):boolean"
+	--- @param validationFunc fun(input):boolean
 	--- @return boolean?
 	local function ValidateLoadOption(data, validationFunc)
 		if data.selected then
@@ -902,7 +909,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	--- @param data Binding.TriStateLoadOption
-	--- @param validationFunc "fun(input):boolean"
+	--- @param validationFunc fun(input):boolean
 	--- @return boolean?
 	local function ValidateTriStateLoadOption(data, validationFunc)
 		if data.selected == 1 then
@@ -920,7 +927,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 		return nil
 	end
 
-	--- @vararg string
+	--- @param ... string
 	--- @return boolean
 	local function ShouldPerformStateCheck(...)
 		-- All bindings should be updated
@@ -1016,7 +1023,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 
 		-- talent selected
 		if ShouldPerformStateCheck("TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE") then
-			--- @param entries Binding.MutliFieldLoadOptionEntry[]
+			--- @param entries Binding.MutliFieldLoadOption.Entry[]
 			--- @return boolean
 			local function IsTalentMatrixValid(entries)
 				if #entries == 0 then
@@ -1131,7 +1138,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 				return rank and rank > 0
 			end
 
-			state.talent = ValidateTriStateLoadOption(load.talent, IsTalentIndexSelected)
+			state.talent = ValidateTriStateLoadOption(load.talent --[[@as Binding.TriStateLoadOption]], IsTalentIndexSelected)
 		end
 	end
 
@@ -1320,7 +1327,7 @@ function Addon:IsBindingValidForCurrentState(binding)
 	do
 		local name, _, id = Addon:GetSimpleSpellOrItemInfo(binding)
 
-		if name == nil then
+		if name == nil or id == nil then
 			return false
 		end
 
@@ -1427,9 +1434,13 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	assert(type(bindings) == "table", "bad argument #1, expected table but got " .. type(bindings))
 	assert(type(interactionType) == "number", "bad argument #1, expected number but got " .. type(interactionType))
 
+	--- @type string[]
 	local lines = {}
 
+	--- @type string[]
 	local macroConditions = {}
+
+	--- @type string[]
 	local macroSegments = {}
 
 	-- Add all prefix shared binding options
@@ -1492,12 +1503,20 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		end
 
 		-- Parse and sort action groups
+
+		--- @type { [integer]: { prefix: string|nil }}
 		local bindingGroups = {}
 
+		--- @type table<Action,integer>
 		local actionsSequence = {}
+
+		--- @type table<integer,Action[]>
 		local actions = {}
 
+		--- @type table<integer,string[]|integer[]>
 		local macros = {}
+
+		--- @type table<integer,string[]|integer[]>
 		local appends = {}
 
 		for _, binding in ipairs(bindings) do
@@ -1559,6 +1578,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 		-- Add all commands to the macro
 		for order, group in pairs(bindingGroups) do
+			--- @type string[]
 			local localSegments = {}
 
 			-- Put any custom macros on top
@@ -1590,7 +1610,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 				-- Insert any APPEND bindings
 				for _, append in ipairs(appends[order]) do
-					command = command .. "; " .. append
+					command = command .. "; " .. tostring(append)
 				end
 
 				table.insert(lines, command)
@@ -1617,7 +1637,14 @@ end
 
 --- comment
 --- @param binding Binding
---- @return BindingStateCache
+--- @return table<string,boolean?>
 function Addon:GetCachedBindingState(binding)
 	return bindingStateCache[binding.identifier]
+end
+
+--- Get all active bindings.
+---
+--- @return Binding[]
+function Addon:GetActiveBindings()
+	return activeBindings
 end

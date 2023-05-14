@@ -2,6 +2,11 @@
 TabGroup Container
 Container that uses tabs on top to switch between groups.
 -------------------------------------------------------------------------------]]
+
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedTabGroup"
+
 local Type, Version = "ClickedTabGroup", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -13,7 +18,13 @@ end
 Support functions
 -------------------------------------------------------------------------------]]
 
-local function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
+--- @param tab any
+--- @param padding number
+--- @param absoluteSize? number
+--- @param minWidth? number
+--- @param maxWidth? number
+--- @param absoluteTextSize? number
+local function TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 
 	local buttonMiddle = tab.Middle or tab.middleTexture or _G[tabName.."Middle"];
@@ -82,34 +93,39 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local methods = {
-	["BuildTabs"] = function(self)
-		self:OriginalBuildTabs()
 
-		if not self.tablist then
-			return
-		end
+--- @class ClickedTabGroup : AceGUITabGroup
+local Methods = {}
 
-		local width = self.frame.width or self.frame:GetWidth() or 0
+--- @protected
+function Methods:BuildTabs()
+	self:BaseBuildTabs()
 
-		for _, tab in ipairs(self.tabs) do
-			local textWidth = tab:GetFontString():GetStringWidth()
-			PanelTemplates_TabResize(tab, 4, nil, nil, width, textWidth)
-		end
-	end,
-}
+	if self.tablist == nil then
+		return
+	end
+
+	local width = self.frame:GetWidth() or 0
+
+	for _, tab in ipairs(self.tabs) do
+		local textWidth = tab:GetFontString():GetStringWidth()
+		TabResize(tab, 4, nil, nil, width, textWidth)
+	end
+end
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-	local widget = AceGUI:Create("TabGroup")
+	--- @class ClickedTabGroup
+	local widget = AceGUI:Create("TabGroup") --[[@as AceGUITabGroup]]
 	widget.type = Type
 
-	widget.OriginalBuildTabs = widget.BuildTabs
+	--- @private
+	widget.BaseBuildTabs = widget.BuildTabs
 
-	for method, func in pairs(methods) do
+	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 

@@ -3,8 +3,11 @@ Clicked Keybinding Widget
 Set Keybindings in the Config UI.
 -------------------------------------------------------------------------------]]
 
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedKeybinding"
+
 --- @class ClickedKeybinding : AceGUIKeybinding
---- @field public SetMarker fun(marker:boolean)
 
 local Type, Version = "ClickedKeybinding", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -16,19 +19,6 @@ end
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
-local function UpdateText(frame)
-	local key = frame.key
-	local hasMarker = frame.hasMarker
-	local button = frame.button
-
-	if (key or "") == "" then
-		button:SetText(NOT_BOUND)
-		button:SetNormalFontObject("GameFontNormal")
-	else
-		button:SetText(hasMarker and (key .. "*") or key)
-		button:SetNormalFontObject("GameFontHighlight")
-	end
-end
 
 --[[-----------------------------------------------------------------------------
 Scripts
@@ -127,40 +117,55 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 
-local methods = {
-	--- @param self ClickedKeybinding
-	["OnAcquire"] = function(self)
-		self:BaseOnAcquire()
-		self.key = ""
-		self.hasMarker = false
-	end,
+--- @class ClickedKeybinding
+local Methods = {}
 
-	--- @param self ClickedKeybinding
-	--- @param key string
-	["SetKey"] = function(self, key)
-		self.key = key
-		UpdateText(self)
-	end,
+--- @protected
+function Methods:OnAcquire()
+	self:BaseOnAcquire()
+	self.key = ""
+	self.hasMarker = false
+end
 
-	--- @param self ClickedKeybinding
-	--- @return string
-	["GetKey"] = function(self)
-		return self.key
-	end,
+--- @param key string
+function Methods:SetKey(key)
+	self.key = key
+	self:UpdateText()
+end
 
-	--- @param self ClickedKeybinding
-	--- @param marker boolean
-	["SetMarker"] = function(self, marker)
-		self.hasMarker = marker
-		UpdateText(self)
+--- @return string
+function Methods:GetKey()
+	return self.key
+end
+
+--- @param marker boolean
+function Methods:SetMarker(marker)
+	self.hasMarker = marker
+	self:UpdateText()
+end
+
+--- @private
+function Methods:UpdateText()
+	local key = self.key
+	local hasMarker = self.hasMarker
+	local button = self.button
+
+	if (key or "") == "" then
+		button:SetText(NOT_BOUND)
+		button:SetNormalFontObject("GameFontNormal")
+	else
+		button:SetText(hasMarker and (key .. "*") or key)
+		button:SetNormalFontObject("GameFontHighlight")
 	end
-}
+end
+
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
+	--- @class ClickedKeybinding
 	local widget = AceGUI:Create("Keybinding")
 	widget.type = Type
 
@@ -170,13 +175,14 @@ local function Constructor()
 	button:SetScript("OnMouseDown", Keybinding_OnMouseDown)
 	button:SetScript("OnMouseWheel", Keybinding_OnMouseWheel)
 
+	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
 
-	for method, func in pairs(methods) do
+	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 
-	return widget
+	return AceGUI:RegisterAsWidget(widget)
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)

@@ -343,81 +343,6 @@ if not lib.loggedIn then
 	frame:RegisterEvent("PLAYER_LOGIN")
 end
 
-local function getDatabase(name)
-	return lib.objects[name].db
-end
-
-function lib:Register(name, object, db, customCompartmentIcon)
-	if not object.icon then error("Can't register LDB objects without icons set!") end
-	if lib.objects[name] then error(DBICON10.. ": Object '".. name .."' is already registered.") end
-	createButton(name, object, db, customCompartmentIcon)
-end
-
-function lib:Lock(name)
-	if not lib:IsRegistered(name) then return end
-	if lib.objects[name] then
-		lib.objects[name]:SetScript("OnDragStart", nil)
-		lib.objects[name]:SetScript("OnDragStop", nil)
-	end
-	local db = getDatabase(name)
-	if db then
-		db.lock = true
-	end
-end
-
-function lib:Unlock(name)
-	if not lib:IsRegistered(name) then return end
-	if lib.objects[name] then
-		lib.objects[name]:SetScript("OnDragStart", onDragStart)
-		lib.objects[name]:SetScript("OnDragStop", onDragStop)
-	end
-	local db = getDatabase(name)
-	if db then
-		db.lock = nil
-	end
-end
-
-function lib:Hide(name)
-	if not lib.objects[name] then return end
-	lib.objects[name]:Hide()
-end
-
-function lib:Show(name)
-	local button = lib.objects[name]
-	if button then
-		button:Show()
-		updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
-	end
-end
-
-function lib:IsRegistered(name)
-	return lib.objects[name] and true or false
-end
-
-function lib:Refresh(name, db)
-	local button = lib.objects[name]
-	if db then
-		button.db = db
-	end
-	updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
-	if not button.db or not button.db.hide then
-		button:Show()
-	else
-		button:Hide()
-	end
-	if not button.db or not button.db.lock then
-		button:SetScript("OnDragStart", onDragStart)
-		button:SetScript("OnDragStop", onDragStop)
-	else
-		button:SetScript("OnDragStart", nil)
-		button:SetScript("OnDragStop", nil)
-	end
-end
-
-function lib:GetMinimapButton(name)
-	return lib.objects[name]
-end
-
 do
 	local function OnMinimapEnter()
 		if isDraggingButton then return end
@@ -438,21 +363,98 @@ do
 	end
 	Minimap:HookScript("OnEnter", OnMinimapEnter)
 	Minimap:HookScript("OnLeave", OnMinimapLeave)
+end
 
-	function lib:ShowOnEnter(name, value)
-		local button = lib.objects[name]
-		if button then
-			if value then
-				button.showOnMouseover = true
-				button.fadeOut:Stop()
-				button:SetAlpha(0)
-			else
-				button.showOnMouseover = false
-				button.fadeOut:Stop()
-				button:SetAlpha(1)
-			end
+--------------------------------------------------------------------------------
+-- Button API
+--
+
+function lib:Register(name, object, db, customCompartmentIcon)
+	if not object.icon then error("Can't register LDB objects without icons set!") end
+	if lib:GetMinimapButton(name) then error(DBICON10.. ": Object '".. name .."' is already registered.") end
+	createButton(name, object, db, customCompartmentIcon)
+end
+
+function lib:Lock(name)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		button:SetScript("OnDragStart", nil)
+		button:SetScript("OnDragStop", nil)
+		if button.db then
+			button.db.lock = true
 		end
 	end
+end
+
+function lib:Unlock(name)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		button:SetScript("OnDragStart", onDragStart)
+		button:SetScript("OnDragStop", onDragStop)
+		if button.db then
+			button.db.lock = nil
+		end
+	end
+end
+
+function lib:Hide(name)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		button:Hide()
+	end
+end
+
+function lib:Show(name)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		button:Show()
+		updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
+	end
+end
+
+function lib:IsRegistered(name)
+	return lib.objects[name] and true or false
+end
+
+function lib:Refresh(name, db)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		if db then
+			button.db = db
+		end
+		updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
+		if not button.db or not button.db.hide then
+			button:Show()
+		else
+			button:Hide()
+		end
+		if not button.db or not button.db.lock then
+			button:SetScript("OnDragStart", onDragStart)
+			button:SetScript("OnDragStop", onDragStop)
+		else
+			button:SetScript("OnDragStart", nil)
+			button:SetScript("OnDragStop", nil)
+		end
+	end
+end
+
+function lib:ShowOnEnter(name, value)
+	local button = lib:GetMinimapButton(name)
+	if button then
+		if value then
+			button.showOnMouseover = true
+			button.fadeOut:Stop()
+			button:SetAlpha(0)
+		else
+			button.showOnMouseover = false
+			button.fadeOut:Stop()
+			button:SetAlpha(1)
+		end
+	end
+end
+
+function lib:GetMinimapButton(name)
+	return lib.objects[name]
 end
 
 function lib:GetButtonList()
@@ -477,7 +479,7 @@ function lib:SetButtonToPosition(button, position)
 end
 
 --------------------------------------------------------------------------------
--- Addon Compartment
+-- Addon Compartment API
 --
 
 function lib:IsButtonInCompartment(buttonName)
@@ -532,7 +534,7 @@ end
 --
 
 for name, button in next, lib.objects do
-	local db = getDatabase(name)
+	local db = button.db
 	if not db or not db.lock then
 		button:SetScript("OnDragStart", onDragStart)
 		button:SetScript("OnDragStop", onDragStop)
@@ -555,3 +557,9 @@ for name, button in next, lib.objects do
 	end
 end
 lib:SetButtonRadius(lib.radius) -- Upgrade to 40
+if lib.notCreated then -- Upgrade to 50
+	for name in next, lib.notCreated do
+		createButton(name, lib.notCreated[name][1], lib.notCreated[name][2])
+	end
+	lib.notCreated = nil
+end

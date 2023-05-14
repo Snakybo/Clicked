@@ -15,12 +15,18 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
+--- @type number?
 local lastTooltipUpdateTime
+
+--- @type string?
 local lastTooltipUnit
 
+--- @type { left: string, right: string }[]
 local lineCache = {}
+
+--- @type boolean
 local rebuild
 
 -- Local support functions
@@ -30,7 +36,10 @@ local rebuild
 --- @param keybind string
 --- @return boolean
 local function IsKeybindValidForCurrentModifiers(keybind)
+	--- @type string[]
 	local mods = {}
+
+	--- @type { [string]: boolean, count: integer }
 	local current = {
 		count = 0
 	}
@@ -66,7 +75,7 @@ local function IsKeybindValidForCurrentModifiers(keybind)
 	end
 
 	if #mods ~= current.count then
-		return
+		return false
 	end
 
 	for _, mod in ipairs(mods) do
@@ -102,14 +111,14 @@ local function OnTooltipSetUnit(self)
 		return
 	end
 
-	local _, unit = self:GetUnit()
+	local unit = select(2, self:GetUnit())
 	if Addon:IsStringNilOrEmpty(unit) or lastTooltipUpdateTime == GetTime() then
 		return
 	end
 
 	rebuild = rebuild or unit ~= lastTooltipUnit
 	lastTooltipUpdateTime = GetTime()
-	lastTooltipUnit = unit
+	lastTooltipUnit = unit --[[@as string?]]
 
 	if rebuild then
 		rebuild = false

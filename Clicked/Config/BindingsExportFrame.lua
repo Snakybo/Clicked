@@ -17,7 +17,7 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local frame
 
@@ -40,12 +40,15 @@ function Addon:BindingExportFrame_Open(target, type)
 		error("bad argument #2, expected group or binding but got " .. type)
 	end
 
-	frame = AceGUI:Create("ClickedTopLevelFrame") --[[@as AceGUIFrame]]
+	frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
+	frame:MoveToFront()
 
 	if type == "group" then
+		--- @cast target Group
 		frame:SetTitle(Addon.L["Export Group"])
 		frame:SetStatusText(string.format(Addon.L["Exporting '%s'"], target.name))
 	elseif type == "binding" then
+		--- @cast target Binding
 		frame:SetTitle(Addon.L["Export Binding"])
 		frame:SetStatusText(string.format(Addon.L["Exporting '%s'"], Addon:GetBindingNameAndIcon(target)))
 	end

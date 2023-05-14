@@ -15,16 +15,16 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
---- @type table
+--- @type Button
 local macroFrameHandler
 
 -- Local support functions
 
---- @param frame table
+--- @param frame Frame
 --- @param state string
 --- @param condition string
 local function CreateStateDriverAttribute(frame, state, condition)
@@ -48,7 +48,7 @@ local function EnsureMacroFrameHandler()
 		return
 	end
 
-	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
+	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate") --[[@as Button]]
 	macroFrameHandler:Hide()
 
 	-- set required data first
@@ -134,8 +134,8 @@ end
 
 -- Private addon API
 
----@param keybinds table
----@param attributes string[]
+--- @param keybinds Keybind[]
+--- @param attributes string[]
 function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 	local split = {
 		keybinds = {},
@@ -161,7 +161,7 @@ function Addon:UpdateMacroFrameHandlerPressType()
 	end
 end
 
----@param commands Command[]
+--- @param commands Command[]
 function Addon:ProcessCommands(commands)
 	if InCombatLockdown() then
 		return
@@ -169,11 +169,13 @@ function Addon:ProcessCommands(commands)
 
 	--- @type Keybind[]
 	local newClickCastFrameKeybinds = {}
+
 	--- @type table<string,string>
 	local newClickCastFrameAttributes = {}
 
 	--- @type Keybind[]
 	local newMacroFrameHandlerKeybinds = {}
+
 	--- @type table<string,string>
 	local newMacroFrameHandlerAttributes = {}
 

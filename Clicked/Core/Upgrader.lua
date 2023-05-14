@@ -1,5 +1,7 @@
+---@diagnostic disable: undefined-field, assign-type-mismatch
+
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 Addon.DATA_VERSION = 4
 
@@ -775,7 +777,7 @@ end
 --- For example, if the current version is `0.17` and the input profile is `0.14`, it will incrementally upgrade by going `0.14`->`0.15`->`0.16`->`0.17`.
 --- This will ensure support for even very old profiles.
 ---
---- @param from string|integer
+--- @param from? string|integer
 function Addon:UpgradeDatabase(from)
 	-- Don't use any constants in this function to prevent breaking the updater
 	-- when the value of a constant changes. Always use direct values that are

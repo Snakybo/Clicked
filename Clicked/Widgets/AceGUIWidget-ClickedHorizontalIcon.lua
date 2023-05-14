@@ -1,6 +1,15 @@
 --[[-----------------------------------------------------------------------------
 Icon Widget
 -------------------------------------------------------------------------------]]
+
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedHorizontalIcon"
+
+--- @class ClickedHorizontalIcon : AceGUIWidget
+--- @field private image Texture
+--- @field private label FontString
+
 local Type, Version = "ClickedHorizontalIcon", 1
 local AceGUI = LibStub("AceGUI-3.0", true)
 
@@ -27,44 +36,54 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local methods = {
-	["OnAcquire"] = function(self)
-		self:SetHeight(16)
-		self:SetWidth(110)
-		self:SetLabel()
-		self:SetImage(nil)
-		self:SetImageSize(16, 16)
-	end,
 
-	["SetLabel"] = function(self, text)
-		if text and text ~= "" then
-			self.label:Show()
-			self.label:SetText(text)
-		else
-			self.label:Hide()
-		end
-	end,
+--- @class ClickedHorizontalIcon
+local Methods = {}
 
-	["SetImage"] = function(self, path, ...)
-		local image = self.image
-		image:SetTexture(path)
+--- @protected
+function Methods:OnAcquire()
+	self:SetHeight(16)
+	self:SetWidth(110)
+	self:SetLabel()
+	self:SetImage(nil)
+	self:SetImageSize(16, 16)
+end
 
-		if image:GetTexture() then
-			local n = select("#", ...)
-
-			if n == 4 or n == 8 then
-				image:SetTexCoord(...)
-			else
-				image:SetTexCoord(0, 1, 0, 1)
-			end
-		end
-	end,
-
-	["SetImageSize"] = function(self, width, height)
-		self.image:SetWidth(width)
-		self.image:SetHeight(height)
+--- @param text? string
+function Methods:SetLabel( text)
+	if text and text ~= "" then
+		self.label:Show()
+		self.label:SetText(text)
+	else
+		self.label:Hide()
 	end
-}
+end
+
+--- @param path? string
+--- @param ... number
+function Methods:SetImage(path, ...)
+	local image = self.image
+
+	--- @diagnostic disable-next-line: param-type-mismatch
+	image:SetTexture(path)
+
+	if image:GetTexture() then
+		local n = select("#", ...)
+
+		if n == 4 or n == 8 then
+			image:SetTexCoord(...)
+		else
+			image:SetTexCoord(0, 1, 0, 1)
+		end
+	end
+end
+
+--- @param width number
+--- @param height number
+function Methods:SetImageSize(width, height)
+	self.image:SetWidth(width)
+	self.image:SetHeight(height)
+end
 
 --[[-----------------------------------------------------------------------------
 Constructor
@@ -86,7 +105,7 @@ local function Constructor()
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlight")
 	label:SetPoint("LEFT", image, "RIGHT", 5, 0)
 	label:SetJustifyH("LEFT")
-	label:SetJustifyV("CENTER")
+	label:SetJustifyV("MIDDLE")
 	label:SetHeight(18)
 
 	local widget = {
@@ -96,7 +115,7 @@ local function Constructor()
 		type = Type
 	}
 
-	for method, func in pairs(methods) do
+	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 

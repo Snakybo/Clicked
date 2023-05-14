@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+--- @meta
+
 --- @class Clicked : AceAddon, AceEvent-3.0
 --- @field public VERSION string
 
@@ -44,7 +46,7 @@
 --- @field public identifier string
 --- @field public scope BindingScope
 --- @field public keybind string
---- @field public parent string
+--- @field public parent string?
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
 --- @field public load Binding.Load
@@ -86,7 +88,7 @@
 --- @field public spellKnown Binding.LoadOption
 --- @field public inGroup Binding.LoadOption
 --- @field public playerInGroup Binding.LoadOption
---- @field public form Binding.TriStateLoadOption
+--- @field public form Binding.NegatableTriStateLoadOption
 --- @field public pet Binding.LoadOption
 --- @field public stealth Binding.LoadOption
 --- @field public mounted Binding.LoadOption
@@ -118,12 +120,12 @@
 
 --- @class Binding.MutliFieldLoadOption
 --- @field public selected boolean
---- @field public entries Binding.MutliFieldLoadOptionEntry[]
+--- @field public entries Binding.MutliFieldLoadOption.Entry[]
 
---- @class Binding.MutliFieldLoadOptionEntry
---- @field public operation "AND|OR"
+--- @class Binding.MutliFieldLoadOption.Entry
+--- @field public operation "AND"|"OR"
 --- @field public negated boolean
---- @field public value string
+--- @field public value string|boolean
 
 --- @class Binding.NegatableStringLoadOption
 --- @field public selected boolean
@@ -169,8 +171,6 @@
 --- @field public key string
 --- @field public identifier string
 
---- @alias BindingStateCache table<integer,table<string,boolean>>
-
 --- @class BindingReloadCause
 --- @field public full boolean
 --- @field public events table<string,boolean>
@@ -186,11 +186,11 @@
 
 --- @alias ShareType "group"|"binding
 
---- @class ShareGroup : Group
---- @field public bindings Binding[]
-
 --- @class ShareData
 --- @field public version integer
 --- @field public type ShareType
---- @field public group ShareGroup?
+--- @field public group ShareData.Group?
 --- @field public binding Binding?
+
+--- @class ShareData.Group : Group
+--- @field public bindings Binding[]

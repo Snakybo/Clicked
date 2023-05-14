@@ -2,8 +2,63 @@
 Clicked TreeGroup Container
 Container that uses a tree control to switch between groups.
 -------------------------------------------------------------------------------]]
+
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedTreeGroup"
+
+--- @class ClickedTreeGroup : AceGUIContainer
+--- @field private lines ClickedTreeGroup.Line[]
+--- @field private buttons ClickedTreeGroup.Button[]
+--- @field private localstatus ClickedTreeGroup.Status
+--- @field private status ClickedTreeGroup.Status?
+--- @field private tree ClickedTreeGroup.Item[]
+--- @field private treeframe Frame|BackdropTemplate
+--- @field private dragger Frame|BackdropTemplate
+--- @field private scrollbar Slider
+--- @field private searchbar ClickedSearchBox
+--- @field private sortButton Button
+--- @field private sortLabel FontString
+--- @field private sortMode `1`|`2`
+--- @field private border Texture
+
+--- @class ClickedTreeGroup.Button : Button
+--- @field public isMoving boolean
+--- @field public toggle Button
+--- @field public icon Texture
+--- @field public title FontString
+--- @field public keybind FontString
+
+--- @class ClickedTreeGroup.Item
+--- @field public value string
+--- @field public title string
+--- @field public visible boolean
+--- @field public scope BindingScope
+--- @field public type "scope"|"group"|"binding"
+--- @field public parent ClickedTreeGroup.Item?
+--- @field public children ClickedTreeGroup.Item[]?
+
+--- @class ClickedTreeGroup.GroupItem : ClickedTreeGroup.Item
+--- @field public group Group
+--- @field public canLoad boolean
+
+--- @class ClickedTreeGroup.BindingItem : ClickedTreeGroup.Item
+--- @field public name string
+--- @field public icon string|integer
+--- @field public keybind string
+--- @field public binding Binding
+--- @field public canLoad boolean
+
+--- @class ClickedTreeGroup.Status
+--- @field public groups { [string]: boolean }
+--- @field public scrollvalue number
+--- @field public selected string?
+--- @field public treewidth number?
+--- @field public treesizable boolean?
+--- @field public fullwidth number?
+
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local Type, Version = "ClickedTreeGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -13,7 +68,13 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
 end
 
 -- Recycling functions
-local new, del
+
+--- @type fun(): ClickedTreeGroup.Line
+local new
+
+--- @type fun(item: ClickedTreeGroup.Line)
+local del
+
 do
 	local pool = setmetatable({},{__mode='k'})
 	function new()
@@ -42,6 +103,10 @@ local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "U
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
+
+--- @param left ClickedTreeGroup.Item
+--- @param right ClickedTreeGroup.Item
+--- @return boolean
 local function TreeSortAlphabetical(left, right)
 	if left.scope > right.scope then
 		return true
@@ -59,29 +124,38 @@ local function TreeSortAlphabetical(left, right)
 		return false
 	end
 
-	if left.children ~= nil and right.children ~= nil then
-		if left.canLoad and not right.canLoad then
-			return true
-		elseif not left.canLoad and right.canLoad then
-			return false
-		end
-	end
+	if left.type == "group" and right.type == "group" then
+		--- @cast left ClickedTreeGroup.GroupItem
+		--- @cast right ClickedTreeGroup.GroupItem
 
-	if left.binding ~= nil and right.binding ~= nil then
-		if left.canLoad and not right.canLoad then
-			return true
+		if left.children ~= nil and right.children ~= nil then
+			if left.canLoad and not right.canLoad then
+				return true
+			elseif not left.canLoad and right.canLoad then
+				return false
+			end
 		end
+	elseif left.type == "binding" and right.type == "binding" then
+		--- @cast left ClickedTreeGroup.BindingItem
+		--- @cast right ClickedTreeGroup.BindingItem
+
+		if left.canLoad and not right.canLoad then
+				return true
+			end
 
 		if not left.canLoad and right.canLoad then
 			return false
 		end
 
-		return (left.name or "") < (right.name or "")
+		return (left.title or "") < (right.title or "")
 	end
 
 	return left.title < right.title
 end
 
+--- @param left ClickedTreeGroup.Item
+--- @param right ClickedTreeGroup.Item
+--- @return boolean
 local function TreeSortKeybind(left, right)
 	if left.scope > right.scope then
 		return true
@@ -99,13 +173,20 @@ local function TreeSortKeybind(left, right)
 		return false
 	end
 
-	if left.binding ~= nil and right.binding ~= nil then
-		return Addon:CompareBindings(left.binding, right.binding, left.canLoad, right.canLoad)
+	if left.type == "binding" and right.type == "binding" then
+		--- @cast left ClickedTreeGroup.BindingItem
+		--- @cast right ClickedTreeGroup.BindingItem
+
+		if left.binding ~= nil and right.binding ~= nil then
+			return Addon:CompareBindings(left.binding, right.binding, left.canLoad, right.canLoad)
+		end
 	end
 
 	return TreeSortAlphabetical(left, right)
 end
 
+--- @param item ClickedTreeGroup.GroupItem
+--- @param group Group
 local function UpdateGroupItemVisual(item, group)
 	local label = Addon.L["New Group"]
 	local icon = item.icon
@@ -114,7 +195,7 @@ local function UpdateGroupItemVisual(item, group)
 		label = group.name
 	end
 
-	if (type(group.displayIcon) == "string" and not Addon:IsStringNilOrEmpty(group.displayIcon)) or
+	if (type(group.displayIcon) == "string" and not Addon:IsStringNilOrEmpty(group.displayIcon --[[@as string]])) or
 	   (type(group.displayIcon) == "number" and group.displayIcon > 0) then
 		icon = group.displayIcon
 	end
@@ -126,6 +207,8 @@ local function UpdateGroupItemVisual(item, group)
 	group.displayIcon = icon
 end
 
+--- @param line ClickedTreeGroup.Line
+--- @return string
 local function GetButtonUniqueValue(line)
 	local parent = line.parent
 	if parent and parent.value then
@@ -135,6 +218,7 @@ local function GetButtonUniqueValue(line)
 	end
 end
 
+--- @param item ClickedTreeGroup.Item
 local function SetVisibleRecursive(item)
 	local current = item
 
@@ -144,6 +228,9 @@ local function SetVisibleRecursive(item)
 	end
 end
 
+--- @param item ClickedTreeGroup.Item
+--- @param search string
+--- @return boolean
 local function IsItemValidWithSearchQuery(item, search)
 	if Addon:IsStringNilOrEmpty(search) then
 		return true
@@ -154,7 +241,9 @@ local function IsItemValidWithSearchQuery(item, search)
 	local prefix = string.match(search, "(.*):")
 	local suffix = string.match(search, ":(.*)")
 
-	if item.binding ~= nil then
+	if item.type == "binding" then
+		--- @cast item ClickedTreeGroup.BindingItem
+
 		if prefix == nil then
 			if (type(item.name) == "string" and not Addon:IsStringNilOrEmpty(item.name)) or
 				(type(item.name) == "number" and item.name > 0) then
@@ -171,7 +260,9 @@ local function IsItemValidWithSearchQuery(item, search)
 				table.insert(strings, { value = item.binding.keybind, exact = true })
 			end
 		end
-	elseif item.group ~= nil then
+	elseif item.type == "group" then
+		--- @cast item ClickedTreeGroup.GroupItem
+
 		if prefix == nil then
 			table.insert(strings, { value = item.title })
 		end
@@ -197,16 +288,19 @@ local function IsItemValidWithSearchQuery(item, search)
 	return false
 end
 
+--- @param button ClickedTreeGroup.Button
+--- @param treeline ClickedTreeGroup.Line
+--- @param selected boolean
+--- @param canExpand boolean
+--- @param isExpanded boolean
 local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local toggle = button.toggle
 	local title = treeline.title or ""
 	local keybind = treeline.keybind or ""
 	local icon = treeline.icon
-	local iconCoords = treeline.iconCoords
 	local level = treeline.level
 	local value = treeline.value
 	local uniquevalue = treeline.uniquevalue
-	local disabled = treeline.disabled
 	local binding = treeline.binding
 	local group = treeline.group
 
@@ -235,9 +329,6 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 
 	if isScope then
 		button:EnableMouse(false)
-	elseif disabled then
-		button:EnableMouse(false)
-		format = "|cff808080%s" .. FONT_COLOR_CODE_CLOSE
 	else
 		button:EnableMouse(true)
 	end
@@ -293,14 +384,11 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button.icon:SetTexture(icon)
 		button.icon:SetPoint("TOPLEFT", 8 * level, 1)
 	else
+		--- @diagnostic disable-next-line: param-type-mismatch
 		button.icon:SetTexture(nil)
 	end
 
-	if iconCoords then
-		button.icon:SetTexCoord(unpack(iconCoords))
-	else
-		button.icon:SetTexCoord(0, 1, 0, 1)
-	end
+	button.icon:SetTexCoord(0, 1, 0, 1)
 
 	if canExpand then
 		if not isExpanded then
@@ -316,32 +404,6 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	end
 end
 
-local function addLine(self, v, tree, level, parent)
-	local line = new()
-	line.value = v.value
-	line.binding = v.binding
-	line.group = v.group
-	line.title = v.title
-	line.keybind = v.keybind
-	line.icon = v.icon
-	line.iconCoords = v.iconCoords
-	line.disabled = v.disabled
-	line.tree = tree
-	line.level = level
-	line.type = v.type
-	line.parent = parent
-	line.visible = v.visible
-	line.scope = v.scope
-	line.uniquevalue = GetButtonUniqueValue(line)
-	if v.children then
-		line.hasChildren = true
-	else
-		line.hasChildren = nil
-	end
-	self.lines[#self.lines+1] = line
-	return line
-end
-
 --fire an update after one frame to catch the treeframes height
 local function FirstFrameUpdate(frame)
 	local self = frame.obj
@@ -349,12 +411,14 @@ local function FirstFrameUpdate(frame)
 	self:RefreshTree(nil, true)
 end
 
+--- @param ... string
+--- @return string
 local function BuildUniqueValue(...)
 	local n = select('#', ...)
 	if n == 1 then
 		return ...
 	else
-		return (...).."\001"..BuildUniqueValue(select(2,...))
+		return (...) .. "\001" .. BuildUniqueValue(select(2, ...))
 	end
 end
 
@@ -778,6 +842,7 @@ Methods
 --- @class ClickedTreeGroup
 local Methods = {}
 
+--- @protected
 function Methods:OnAcquire()
 	self:SetTreeWidth(DEFAULT_TREE_WIDTH, DEFAULT_TREE_SIZABLE)
 	self:EnableButtonTooltips(true)
@@ -789,6 +854,7 @@ function Methods:OnAcquire()
 	self.sortMode = 1
 end
 
+--- @protected
 function Methods:OnRelease()
 	self.status = nil
 	self.tree = nil
@@ -809,13 +875,17 @@ function Methods:OnRelease()
 	self.localstatus.treesizable = DEFAULT_TREE_SIZABLE
 end
 
+--- @param enable boolean
 function Methods:EnableButtonTooltips(enable)
 	self.enabletooltips = enable
 end
 
+--- @private
+--- @return ClickedTreeGroup.Button
 function Methods:CreateButton()
 	local num = AceGUI:GetNextWidgetNum("TreeGroupButton")
-	local button = CreateFrame("Button", ("ClickedTreeButton%d"):format(num), self.treeframe, "OptionsListButtonTemplate")
+
+	local button = CreateFrame("Button", ("ClickedTreeButton%d"):format(num), self.treeframe, "OptionsListButtonTemplate") --[[@as ClickedTreeGroup.Button]]
 	button:RegisterForDrag("LeftButton")
 	button:SetMovable(true)
 	button.obj = self
@@ -852,6 +922,7 @@ function Methods:CreateButton()
 	return button
 end
 
+--- @param status table
 function Methods:SetStatusTable(status)
 	assert(type(status) == "table")
 	self.status = status
@@ -884,6 +955,7 @@ function Methods:ConstructTree()
 	self.tree = {}
 
 	for _, scope in pairs(Addon.BindingScope) do
+		--- @type ClickedTreeGroup.Item
 		local item = {
 			value = "scope-" .. scope,
 			title = Addon:GetLocalizedScope(scope),
@@ -900,6 +972,7 @@ function Methods:ConstructTree()
 	end
 
 	for _, group in Clicked:IterateGroups() do
+		--- @type ClickedTreeGroup.GroupItem
 		local item = {
 			value = group.identifier,
 			group = group,
@@ -917,9 +990,10 @@ function Methods:ConstructTree()
 	for _, binding in Clicked:IterateConfiguredBindings() do
 		local title, icon = Addon:GetBindingNameAndIcon(binding)
 
+		--- @type ClickedTreeGroup.BindingItem
 		local item = {
 			value = "binding-" .. binding.identifier,
-			name = Addon:GetSimpleSpellOrItemInfo(binding) or Addon:GetBindingValue(binding),
+			name = Addon:GetSimpleSpellOrItemInfo(binding) or tostring(Addon:GetBindingValue(binding)),
 			title = title,
 			type = "binding",
 			icon = icon,
@@ -957,24 +1031,29 @@ function Methods:ConstructTree()
 	end
 end
 
+--- @private
+--- @param tree ClickedTreeGroup.Item[]
+--- @param level integer
+--- @param parent? ClickedTreeGroup.Line
 function Methods:BuildLevel(tree, level, parent)
 	local groups = (self.status or self.localstatus).groups
 
 	for _, v in ipairs(tree) do
 		if v.visible or v.type == "scope" then
 			if v.children then
-				local line = addLine(self, v, tree, level, parent)
+				local line = self:AddLine(v, tree, level, parent)
 
 				if groups[line.uniquevalue] then
 					self:BuildLevel(v.children, level+1, line)
 				end
 			else
-				addLine(self, v, tree, level, parent)
+				self:AddLine(v, tree, level, parent)
 			end
 		end
 	end
 end
 
+--- @private
 function Methods:BuildCache()
 	if self.tree == nil then
 		return
@@ -988,12 +1067,12 @@ function Methods:BuildCache()
 
 		-- Only search for bindings and not groups
 		if next.children == nil then
-			if IsItemValidWithSearchQuery(next, self.searchbar.searchTerm) then
+			if IsItemValidWithSearchQuery(next, self.searchbar:GetSearchTerm()) then
 				SetVisibleRecursive(next)
 			end
 		else
 			if #next.children == 0 then
-				if Addon:IsStringNilOrEmpty(self.searchbar.searchTerm) then
+				if Addon:IsStringNilOrEmpty(self.searchbar:GetSearchTerm()) then
 					SetVisibleRecursive(next)
 				end
 			else
@@ -1023,7 +1102,10 @@ function Methods:BuildCache()
 	end
 end
 
-function Methods:RefreshTree(scrollToSelection,fromOnUpdate)
+--- @private
+--- @param scrollToSelection? boolean
+--- @param fromOnUpdate? boolean
+function Methods:RefreshTree(scrollToSelection, fromOnUpdate)
 	local buttons = self.buttons
 	local lines = self.lines
 
@@ -1086,11 +1168,11 @@ function Methods:RefreshTree(scrollToSelection,fromOnUpdate)
 		self.noupdate = nil
 		first, last = status.scrollvalue+1, status.scrollvalue + maxlines
 		--show selection?
-		if scrollToSelection and status.selected then
+		if scrollToSelection and status.selected ~= nil then
 			local show
-			for i,line in ipairs(lines) do	-- find the line number
-				if line.uniquevalue==status.selected then
-					show=i
+			for i,line in ipairs(lines) do
+				if line.uniquevalue == status.selected then
+					show = i
 				end
 			end
 			if not show then
@@ -1160,6 +1242,7 @@ function Methods:Redraw()
 	self:Fire("OnGroupSelected", status.selected)
 end
 
+--- @param value? string
 function Methods:SetSelected(value)
 	local status = self.status or self.localstatus
 	if status.selected ~= value then
@@ -1168,7 +1251,9 @@ function Methods:SetSelected(value)
 	end
 end
 
-function Methods:Select(uniquevalue, ...)
+--- @param uniqueValue string
+--- @param ... string
+function Methods:Select(uniqueValue, ...)
 	local status = self.status or self.localstatus
 	local groups = status.groups
 	local path = {...}
@@ -1181,19 +1266,22 @@ function Methods:Select(uniquevalue, ...)
 		end
 	end
 
-	status.selected = uniquevalue
+	status.selected = uniqueValue
 	self:RefreshTree(true)
-	self:Fire("OnGroupSelected", uniquevalue)
+	self:Fire("OnGroupSelected", uniqueValue)
 end
 
+--- @param ... string
 function Methods:SelectByPath(...)
 	self:Select(BuildUniqueValue(...), ...)
 end
 
-function Methods:SelectByValue(uniquevalue)
-	self:Select(uniquevalue, ("\001"):split(uniquevalue))
+--- @param uniqueValue string
+function Methods:SelectByValue(uniqueValue)
+	self:Select(uniqueValue, strsplit("\001", uniqueValue))
 end
 
+--- @param item Binding|Group
 function Methods:SelectByBindingOrGroup(item)
 	local open = { unpack(self.tree) }
 
@@ -1201,15 +1289,22 @@ function Methods:SelectByBindingOrGroup(item)
 		local next = open[1]
 		table.remove(open, 1)
 
-		if (next.binding == item and next.binding.parent == nil) or next.group == item then
-			self:SelectByValue(next.value)
-			break
-		elseif next.binding == item then
-			local parent = next.binding.parent
-			local value = parent .. "\001" .. next.value
+		if next.type == "binding" then
+			--- @cast next ClickedTreeGroup.BindingItem
+			if next.binding == item and next.binding.parent == nil then
+				self:SelectByPath("scope-" .. next.scope, next.value)
+				break
+			elseif next.binding == item then
+				self:SelectByPath("scope-" .. next.scope, next.binding.parent, next.value)
+				break
+			end
+		elseif next.type == "group" then
+			--- @cast next ClickedTreeGroup.GroupItem
 
-			self:SelectByValue(value)
-			break
+			if next.group == item then
+				self:SelectByPath("scope-" .. next.scope, next.value)
+				break
+			end
 		end
 
 		if next.children ~= nil then
@@ -1220,6 +1315,7 @@ function Methods:SelectByBindingOrGroup(item)
 	end
 end
 
+--- @param show boolean
 function Methods:ShowScroll(show)
 	self.showscroll = show
 
@@ -1251,42 +1347,9 @@ function Methods:ShowScroll(show)
 	end
 end
 
-function Methods:OnWidthSet(width)
-	local content = self.content
-	local treeframe = self.treeframe
-	local status = self.status or self.localstatus
-	status.fullwidth = width
-
-	local contentwidth = width - status.treewidth - 20
-	if contentwidth < 0 then
-		contentwidth = 0
-	end
-	content:SetWidth(contentwidth)
-	content.width = contentwidth
-
-	local maxtreewidth = math.min(400, width - 50)
-
-	if maxtreewidth > 100 and status.treewidth > maxtreewidth then
-		self:SetTreeWidth(maxtreewidth, status.treesizable)
-	end
-
-	if treeframe.SetResizeBounds then -- WoW 10.0
-		treeframe:SetResizeBounds(100, 1, maxtreewidth, 1600)
-	else
-		treeframe:SetMaxResize(maxtreewidth, 1600)
-	end
-end
-
-function Methods:OnHeightSet(height)
-	local content = self.content
-	local contentheight = height - 20
-	if contentheight < 0 then
-		contentheight = 0
-	end
-	content:SetHeight(contentheight)
-	content.height = contentheight
-end
-
+--- @param treewidth number
+--- @param resizable? boolean
+--- @overload fun(self:ClickedTreeGroup, resizable: boolean)
 function Methods:SetTreeWidth(treewidth, resizable)
 	if not resizable then
 		if type(treewidth) == 'number' then
@@ -1312,11 +1375,13 @@ function Methods:SetTreeWidth(treewidth, resizable)
 	end
 end
 
+--- @return number
 function Methods:GetTreeWidth()
 	local status = self.status or self.localstatus
 	return status.treewidth or DEFAULT_TREE_WIDTH
 end
 
+--- @return ClickedTreeGroup.Item?
 function Methods:GetSelectedItem()
 	local status = self.status or self.localstatus
 
@@ -1324,7 +1389,7 @@ function Methods:GetSelectedItem()
 		return nil
 	end
 
-	local path = { ("\001"):split(status.selected) }
+	local path = { strsplit("\001", status.selected) }
 	local current = self.tree
 
 	for i = 1, #path do
@@ -1346,6 +1411,90 @@ function Methods:GetSelectedItem()
 	return current
 end
 
+--- @private
+--- @param v ClickedTreeGroup.Item
+--- @param tree ClickedTreeGroup.Item[]
+--- @param level integer
+--- @param parent? ClickedTreeGroup.Line
+--- @return ClickedTreeGroup.Line
+function Methods:AddLine(v, tree, level, parent)
+	--- @class ClickedTreeGroup.Line
+	local line = new()
+	line.value = v.value
+
+	if v.type == "binding" then
+		--- @cast v ClickedTreeGroup.BindingItem
+		line.binding = v.binding
+		line.keybind = v.keybind
+	elseif v.type == "group" then
+		--- @cast v ClickedTreeGroup.GroupItem
+		line.group = v.group
+	end
+
+	line.title = v.title
+	line.icon = v.icon
+	line.tree = tree
+	line.level = level
+	line.type = v.type
+	line.parent = parent
+	line.visible = v.visible
+	line.scope = v.scope
+	line.uniquevalue = GetButtonUniqueValue(line)
+	if v.children then
+		line.hasChildren = true
+	else
+		line.hasChildren = nil
+	end
+	self.lines[#self.lines+1] = line
+	return line
+end
+
+--- @protected
+--- @param width number
+function Methods:OnWidthSet(width)
+	local content = self.content
+	local treeframe = self.treeframe
+	local status = self.status or self.localstatus
+	status.fullwidth = width
+
+	local contentwidth = width - status.treewidth - 20
+	if contentwidth < 0 then
+		contentwidth = 0
+	end
+	content:SetWidth(contentwidth)
+	content.width = contentwidth
+
+	local maxtreewidth = math.min(400, width - 50)
+
+	if maxtreewidth > 100 and status.treewidth > maxtreewidth then
+		self:SetTreeWidth(maxtreewidth, status.treesizable)
+	end
+
+	--- @diagnostic disable-next-line: undefined-field
+	if treeframe.SetResizeBounds then -- WoW 10.0
+		--- @diagnostic disable-next-line: undefined-field
+		treeframe:SetResizeBounds(100, 1, maxtreewidth, 1600)
+	else
+		treeframe:SetMaxResize(maxtreewidth, 1600)
+	end
+end
+
+--- @protected
+--- @param height number
+function Methods:OnHeightSet(height)
+	local content = self.content
+	local contentheight = height - 20
+	if contentheight < 0 then
+		contentheight = 0
+	end
+	content:SetHeight(contentheight)
+	content.height = contentheight
+end
+
+
+--- @protected
+--- @param _ number
+--- @param height number
 function Methods:LayoutFinished(_, height)
 	if self.noAutoHeight then return end
 	self:SetHeight((height or 0) + 20)
@@ -1377,11 +1526,13 @@ local function Constructor()
 	treeframe:SetPoint("BOTTOMLEFT")
 	treeframe:SetWidth(DEFAULT_TREE_WIDTH)
 	treeframe:EnableMouseWheel(true)
-	treeframe:SetBackdrop(PaneBackdrop)
-	treeframe:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-	treeframe:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	treeframe --[[@as BackdropTemplate]]:SetBackdrop(PaneBackdrop)
+	treeframe --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+	treeframe --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetResizable(true)
-	if treeframe.SetResizeBounds then -- WoW 10.0
+	--- @diagnostic disable-next-line: undefined-field
+	if treeframe.SetResizeBounds ~= nil then -- WoW 10.0
+		--- @diagnostic disable-next-line: undefined-field
 		treeframe:SetResizeBounds(100, 1, 400, 1600)
 	else
 		treeframe:SetMinResize(100, 1)
@@ -1397,12 +1548,16 @@ local function Constructor()
 	sortButton:SetPoint("TOPRIGHT", treeframe, -8, -7)
 	sortButton:SetWidth(75)
 
+	--- @type FontString?
 	local sortLabel = sortButton:GetFontString()
-	sortLabel:ClearAllPoints()
-	sortLabel:SetPoint("TOPLEFT", 15, -1)
-	sortLabel:SetPoint("BOTTOMRIGHT", -15, 1)
-	sortLabel:SetJustifyV("MIDDLE")
+	if sortLabel ~= nil then
+		sortLabel:ClearAllPoints()
+		sortLabel:SetPoint("TOPLEFT", 15, -1)
+		sortLabel:SetPoint("BOTTOMRIGHT", -15, 1)
+		sortLabel:SetJustifyV("MIDDLE")
+	end
 
+	--- @class ClickedTreeGroup.SearchBox : ClickedSearchBox
 	local searchbar = AceGUI:Create("ClickedSearchBox")
 	searchbar:DisableButton(true)
 	searchbar:SetPlaceholderText(Addon.L["Search..."])
@@ -1423,8 +1578,8 @@ local function Constructor()
 	dragger:SetWidth(8)
 	dragger:SetPoint("TOP", treeframe, "TOPRIGHT")
 	dragger:SetPoint("BOTTOM", treeframe, "BOTTOMRIGHT")
-	dragger:SetBackdrop(DraggerBackdrop)
-	dragger:SetBackdropColor(1, 1, 1, 0)
+	dragger --[[@as BackdropTemplate]]:SetBackdrop(DraggerBackdrop)
+	dragger --[[@as BackdropTemplate]]:SetBackdropColor(1, 1, 1, 0)
 	dragger:SetScript("OnEnter", Dragger_OnEnter)
 	dragger:SetScript("OnLeave", Dragger_OnLeave)
 	dragger:SetScript("OnMouseDown", Dragger_OnMouseDown)
@@ -1447,36 +1602,36 @@ local function Constructor()
 	local border = CreateFrame("Frame", nil, frame, "BackdropTemplate")
 	border:SetPoint("TOPLEFT", treeframe, "TOPRIGHT")
 	border:SetPoint("BOTTOMRIGHT")
-	border:SetBackdrop(PaneBackdrop)
-	border:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-	border:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	border --[[@as BackdropTemplate]]:SetBackdrop(PaneBackdrop)
+	border --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+	border --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
 
 	--Container Support
 	local content = CreateFrame("Frame", nil, border)
 	content:SetPoint("TOPLEFT", 10, -10)
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
-	--- @class ClickedTreeGroup
 	local widget = {
 		frame= frame,
 		lines = {},
-		buttons       = {},
-		hasChildren   = {},
-		localstatus   = { groups = { }, scrollvalue = 0 },
-		treeframe     = treeframe,
-		dragger       = dragger,
-		scrollbar     = scrollbar,
-		searchbar     = searchbar,
-		sortButton    = sortButton,
-		sortLabel     = sortLabel,
-		sortMode      = 1,
-		border        = border,
-		content       = content,
-		type          = Type
+		buttons = {},
+		localstatus = { groups = { }, scrollvalue = 0 },
+		treeframe = treeframe,
+		dragger = dragger,
+		scrollbar = scrollbar,
+		searchbar = searchbar,
+		sortButton = sortButton,
+		sortLabel = sortLabel,
+		sortMode = 1,
+		border = border,
+		content = content,
+		type = Type
 	}
+
 	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
+
 	treeframe.obj, dragger.obj, scrollbar.obj, sortButton.obj = widget, widget, widget, widget
 
 	return AceGUI:RegisterAsContainer(widget)

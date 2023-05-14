@@ -19,7 +19,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 -- Private addon API
 

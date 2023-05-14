@@ -21,11 +21,11 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
 
---- @type Clicked
-Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0") --[[@as Clicked]]
+--- @class Clicked
+Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
 Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
 
 --@debug@
@@ -48,9 +48,10 @@ local function RegisterIcons()
 			Addon:BindingConfig_Open()
 		end,
 		OnTooltipShow = function(tooltip)
+			--- @diagnostic disable-next-line: undefined-field
 			tooltip:AddLine(Addon.L["Clicked"])
 		end
-	})
+	}) --[[@as LibDBIcon.dataObject]]
 
 	LibDBIcon:Register(Addon.L["Clicked"], iconData, Addon.db.profile.options.minimap)
 	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
@@ -60,18 +61,19 @@ end
 ---
 --- @param input string The data of the chat command, excluding the first word
 local function HandleChatCommand(input)
+	--- @type string[]
 	local args = {}
-	local startpos = 1
+	local start = 1
 
 	while true do
-		local arg, next = AceConsole:GetArgs(input, 1, startpos)
+		local arg, next = AceConsole:GetArgs(input, 1, start)
 		table.insert(args, arg)
 
 		if next == 1e9 then
 			break
 		end
 
-		startpos = next
+		start = next
 	end
 
 	if #args == 0 then

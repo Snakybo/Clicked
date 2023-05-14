@@ -3,43 +3,34 @@ SearchBox Widget
 
 Adds OnFocusGained and OnFocusLost callbacks.
 -------------------------------------------------------------------------------]]
---- @class ClickedInternal
-local _, Addon = ...
 
-local Type, Version = "ClickedSearchBox", 1
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedSearchBox"
+
+--- @class ClickedSearchBox : AceGUIEditBox
+--- @field private searchTerm string
+--- @field private placeholder string
+--- @field private isPlaceholderActive boolean
+--- @field private tooltipHeader? string
+--- @field private tooltipSubtext? string
+
+--- @class ClickedInternal
+local Addon = select(2, ...)
+
+local Type, Version = "ClickedSearchBox", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
-local function ActivatePlaceholder(frame)
-	local self = frame.obj
-
-	if not self.isPlaceholderActive then
-		frame:SetText(self.placeholder)
-
-		self.searchTerm = ""
-		self.isPlaceholderActive = true
-
-		self:Fire("SearchTermChanged", self.searchTerm)
-	end
-end
-
-local function ClearPlaceholder(frame)
-	local self = frame.obj
-
-	if self.isPlaceholderActive then
-		frame:SetText("")
-		self.isPlaceholderActive = false
-	end
-end
 
 local function EditBox_OnEscapePressed(frame)
 	local self = frame.obj
 	AceGUI:ClearFocus()
 
-	ActivatePlaceholder(frame)
+	self:ActivatePlaceholder()
 	self:Fire("OnEscapePressed")
 end
 
@@ -47,16 +38,16 @@ local function EditBox_OnFocusGained(frame)
 	local self = frame.obj
 	AceGUI:SetFocus(self)
 
-	ClearPlaceholder(frame)
+	self:ClearPlaceholder()
 	self:Fire("OnFocusGained")
 end
 
 local function EditBox_OnFocusLost(frame)
 	local self = frame.obj
-	AceGUI:ClearFocus(self)
+	AceGUI:ClearFocus()
 
 	if self.searchTerm == "" then
-		ActivatePlaceholder(frame)
+		self:ActivatePlaceholder()
 	end
 
 	self:Fire("OnFocusLost")
@@ -92,22 +83,28 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 
-local function OnAquire(self)
-	self:OnAquireOriginal()
+--- @class ClickedSearchBox
+local Methods = {}
+
+--- @protected
+function Methods:OnAcquire()
+	self:BaseOnAcquire()
 	self:ClearSearchTerm()
 
 	self.tooltipHeader = nil
 	self.tooltipSubtext = nil
 end
 
-local function OnRelease(self)
-	self:OnReleaseOriginal()
+--- @protected
+function Methods:OnRelease()
+	self:BaseOnRelease()
 
 	self.isPlaceholderActive = true
 	self.placeholder = "Search..."
 end
 
-local function SetPlaceholderText(self, text)
+--- @param text string
+function Methods:SetPlaceholderText(text)
 	self.placeholder = text
 
 	if self.isPlaceholderActive then
@@ -115,7 +112,17 @@ local function SetPlaceholderText(self, text)
 	end
 end
 
-local function ClearSearchTerm(self)
+--- @return string
+function Methods:GetPlaceholderText()
+	return self.placeholder
+end
+
+--- @return string
+function Methods:GetSearchTerm()
+	return self.searchTerm
+end
+
+function Methods:ClearSearchTerm()
 	self:SetText(self.placeholder)
 
 	self.isPlaceholderActive = true
@@ -126,15 +133,38 @@ local function ClearSearchTerm(self)
 	end
 end
 
-local function SetTooltipText(self, header, subtext)
+--- @param header? string
+--- @param subtext? string
+function Methods:SetTooltipText(header, subtext)
 	self.tooltipHeader = header
 	self.tooltipSubtext = subtext
+end
+
+--- @private
+function Methods:ActivatePlaceholder()
+	if not self.isPlaceholderActive then
+		self.editbox:SetText(self.placeholder)
+
+		self.searchTerm = ""
+		self.isPlaceholderActive = true
+
+		self:Fire("SearchTermChanged", self.searchTerm)
+	end
+end
+
+--- @private
+function Methods:ClearPlaceholder()
+	if self.isPlaceholderActive then
+		self.editbox:SetText("")
+		self.isPlaceholderActive = false
+	end
 end
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
+	--- @class ClickedSearchBox
 	local widget = AceGUI:Create("EditBox")
 	widget.type = type
 	widget.searchTerm = ""
@@ -151,13 +181,15 @@ local function Constructor()
 
 	widget:SetText(widget.placeholder)
 
-	widget.OnAquireOriginal = widget.OnAquire
-	widget.OnAquire = OnAquire
-	widget.OnReleaseOriginal = widget.OnRelease
-	widget.OnRelease = OnRelease
-	widget.SetPlaceholderText = SetPlaceholderText
-	widget.ClearSearchTerm = ClearSearchTerm
-	widget.SetTooltipText = SetTooltipText
+	--- @private
+	widget.BaseOnAcquire = widget.OnAcquire
+
+	--- @private
+	widget.BaseOnRelease = widget.OnRelease
+
+	for method, func in pairs(Methods) do
+		widget[method] = func
+	end
 
 	return AceGUI:RegisterAsWidget(widget)
 end

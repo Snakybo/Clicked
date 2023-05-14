@@ -18,7 +18,7 @@ local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 --- @type integer[]
 local allRaces = {}
@@ -154,6 +154,7 @@ end
 --- @param target Binding.Target
 --- @return string
 function Addon:GetLocalizedTargetString(target)
+	--- @type string[]
 	local result = {}
 
 	if Addon:CanUnitBeHostile(target.unit) and target.hostility ~= Addon.TargetHostility.ANY then
@@ -179,7 +180,10 @@ end
 --- @return table<string,string> items
 --- @return string[] order
 function Addon:GetLocalizedTargetUnits()
+	--- @type table<string,string>
 	local items = {}
+
+	--- @type string[]
 	local order
 
 	if Addon:IsGameVersionAtleast("CLASSIC") then
@@ -273,12 +277,14 @@ end
 --- @return table<string,string> items
 --- @return string[] order
 function Addon:GetLocalizedTargetHostility()
+	--- @type table<string,string>
 	local items = {
 		[Addon.TargetHostility.ANY] = Addon.L["Friendly, Hostile"],
 		[Addon.TargetHostility.HELP] = Addon.L["Friendly"],
 		[Addon.TargetHostility.HARM] = Addon.L["Hostile"]
 	}
 
+	--- @type string[]
 	local order = {
 		Addon.TargetHostility.ANY,
 		Addon.TargetHostility.HELP,
@@ -293,12 +299,14 @@ end
 --- @return table<string,string> items
 --- @return string[] order
 function Addon:GetLocalizedTargetVitals()
+	--- @type table<string,string>
 	local items = {
 		[Addon.TargetVitals.ANY] = Addon.L["Alive, Dead"],
 		[Addon.TargetVitals.ALIVE] = Addon.L["Alive"],
 		[Addon.TargetVitals.DEAD] = Addon.L["Dead"]
 	}
 
+	--- @type string[]
 	local order = {
 		Addon.TargetVitals.ANY,
 		Addon.TargetVitals.ALIVE,
@@ -311,13 +319,16 @@ end
 --- Get a localized list of all available classes, this will
 --- return the correct value for both Retail and Classic.
 ---
---- @return table<integer,string> items
+--- @return table<ClassFile,string> items
 --- @return integer[] order
 function Addon:GetLocalizedClasses()
+	--- @type table<string,string>
 	local items = {}
+
+	--- @type string[]
 	local order = {}
 
-	--- @type table<integer,string>
+	--- @type table<ClassFile,string>
 	local classes = {}
 	FillLocalizedClassList(classes)
 
@@ -351,8 +362,10 @@ function Addon:GetLocalizedRaces()
 	for _, raceId in ipairs(allRaces) do
 		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
 
-		items[raceInfo.clientFileString] = string.format("<text=%s>", raceInfo.raceName)
-		table.insert(order, raceInfo.clientFileString)
+		if raceInfo ~= nil then
+			items[raceInfo.clientFileString] = string.format("<text=%s>", raceInfo.raceName)
+			table.insert(order, raceInfo.clientFileString)
+		end
 	end
 
 	table.sort(order)
@@ -365,7 +378,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- given class names. If the `classNames` parameter is `nil` it
 	--- will return results for the player's current class.
 	---
-	--- @param classNames string[]
+	--- @param classNames? string[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:GetLocalizedSpecializations(classNames)
@@ -399,8 +412,12 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			local function CountSpecs(specs)
 				local count = 0
 
-				for _ in pairs(specs) do
-					count = count + 1
+				for _, specId in pairs(specs) do
+					local _, name = GetSpecializationInfoByID(specId)
+
+					if not Addon:IsStringNilOrEmpty(name) then
+						count = count + 1
+					end
 				end
 
 				return count
@@ -423,6 +440,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				for i = 1, #classNames do
 					local class = classNames[i]
 					local specs = LibTalentInfo:GetClassSpecIDs(class)
+
 					local count = CountSpecs(specs)
 
 					if count > max then
@@ -446,9 +464,10 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specializations integer[]
+	--- @param specializations? integer[]
 	--- @return TalentInfo[]
 	function Addon:GetLocalizedTalents(specializations)
+		--- @type TalentInfo[]
 		local result = {}
 
 		if specializations == nil then
@@ -456,6 +475,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			specializations[1] = GetSpecializationInfo(GetSpecialization())
 		end
 
+		--- @type table<string,boolean>
 		local found = {}
 
 		for _, specialization in ipairs(specializations) do
@@ -480,7 +500,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specializations integer[]
+	--- @param specializations? integer[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:GetLocalizedPvPTalents(specializations)
@@ -501,11 +521,16 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 
 			for i = 1, numTalents do
 				local talentId = LibTalentInfo:GetPvpTalentAt(spec, i)
-				local _, name, texture = GetPvpTalentInfoByID(talentId)
-				local key = #order + 1
 
-				items[key] = string.format("<icon=%d><text=%s>", texture, name)
-				table.insert(order, key)
+				if talentId ~= nil then
+					local _, name, texture = GetPvpTalentInfoByID(talentId)
+					local key = #order + 1
+
+					items[key] = string.format("<icon=%d><text=%s>", texture, name)
+					table.insert(order, key)
+				else
+					print(Addon:GetPrefixedAndFormattedString("Error: Found unknown PvP talent ID for specialization %d at index %d", spec, i))
+				end
 			end
 		else
 			local max = 0
@@ -548,7 +573,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- Get a localized list of all available shapeshift forms for the given specialization IDs.
 	--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specializations integer[]
+	--- @param specializations? integer[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:GetLocalizedForms(specializations)
@@ -591,7 +616,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 
 			-- Find specialization with the highest number of forms
 			if #specializations == 0 then
-				for _, forms in Addon:IterateShapeshiftForms() do
+				for _, forms in Addon:IterateShapeshiftSpecs() do
 					if #forms > max then
 						max = #forms
 					end
@@ -622,7 +647,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- Get a localized list of all available talents for the given classes.
 	--- If the `classes` parameter is `nil` it will return results for the player's current class.
 	---
-	--- @param classes string[]
+	--- @param classes? string[]
 	--- @return table<string,string> items
 	--- @return integer[] order
 	function Addon:Classic_GetLocalizedTalents(classes)
@@ -679,7 +704,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- Get a localized list of all available classic shapeshift forms for the  given class names.
 	--- If the `classNames` parameter is `nil` it will return results for the player's current class.
 	---
-	--- @param classes string[]
+	--- @param classes? string[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:Classic_GetLocalizedForms(classes)
@@ -731,7 +756,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 
 			-- Find specialization with the highest number of forms
 			if #classes == 0 then
-				for _, forms in Addon:Classic_IterateShapeshiftForms() do
+				for _, forms in Addon:Classic_IterateShapeshiftClasses() do
 					if #forms > max then
 						max = #forms
 					end
@@ -739,7 +764,7 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 			-- Find specialization with the highest number of forms out of the selected specializations
 			else
 				for _, className in ipairs(classes) do
-					local forms = Addon:GetClassicShapeshiftFormsForClass(className)
+					local forms = Addon:Classic_GetShapeshiftForms(className)
 
 					if #forms > max then
 						max = #forms

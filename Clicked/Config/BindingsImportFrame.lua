@@ -17,7 +17,7 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local STATE_IMPORT = 1
 local STATE_REVIEW = 2
@@ -192,7 +192,8 @@ function Addon:BindingImportFrame_Open()
 	reviewData = nil
 	reviewImportKeybinds = true
 
-	frame = AceGUI:Create("ClickedTopLevelFrame") --[[@as AceGUIFrame]]
+	frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
+	frame:MoveToFront()
 	frame:SetTitle(Addon.L["Import Bindings"])
 	frame:SetStatusText(string.format(Addon.L["Importing bindings into: %s"], Addon.db:GetCurrentProfile()))
 	frame:EnableResize(false)

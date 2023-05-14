@@ -18,7 +18,7 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local UNIT_FRAME_ADDON_MAPPING = {
 	["ElvUI"] = {
@@ -65,8 +65,6 @@ local values = {}
 --- @param name string
 --- @return string
 local function GetUnitFrameSource(name)
-	local nameSource = nil
-
 	for source, frames in pairs(UNIT_FRAME_ADDON_MAPPING) do
 		for _, frame in ipairs(frames) do
 			if string.match(name, frame) then
@@ -75,9 +73,7 @@ local function GetUnitFrameSource(name)
 		end
 	end
 
-	if nameSource == nil then
-		return Addon.L["Other"]
-	end
+	return Addon.L["Other"]
 end
 
 --- @param name string

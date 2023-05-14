@@ -17,11 +17,11 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 Addon.TOOLTIP_SHOW_DELAY = 0.3
 
---- @type Ticker?
+--- @type TickerCallback?
 local tooltipTimer = nil
 
 local KEYBIND_ORDER_LIST = {
@@ -33,10 +33,12 @@ local KEYBIND_ORDER_LIST = {
 	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
 }
 
+--- @type { [integer]: integer[] } | { [string]: integer[][] }
 local shapeshiftForms
 
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
 if Addon:IsGameVersionAtleast("RETAIL") then
+	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
 		-- Arms Warrior
 		-- Fury Warrior
@@ -154,6 +156,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[1465] = {}
 	}
 elseif Addon:IsGameVersionAtleast("CLASSIC") then
+	--- @type { [string]: integer[][] }
 	shapeshiftForms = {
 		WARRIOR = {
 			{ 2457 }, -- Battle Stance
@@ -190,7 +193,9 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	}
 
 	if Addon:IsGameVersionAtleast("WOTLK") then
-		shapeshiftForms["DEATHKNIGHT"] = {
+		local DEATHKNIGHT = "DEATHKNIGHT"
+
+		shapeshiftForms[DEATHKNIGHT] = {
 			{ 48266 }, -- Blood Presence
 			{ 48263 }, -- Frost Presence
 			{ 48265 } -- Unholy Presence
@@ -199,16 +204,6 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 end
 
 -- Local support functions
-
-local function errorhandler(err)
-	return geterrorhandler()(err)
-end
-
-local function safecall(func, ...)
-	if func then
-		return xpcall(func, errorhandler, ...)
-	end
-end
 
 ---@param keybind string
 ---@return integer
@@ -326,10 +321,10 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 		self.text:SetText(self.data.text)
 	end,
 	OnAccept = function(self)
-		safecall(self.data.onAccept)
+		Addon:SafeCall(self.data.onAccept)
 	end,
 	OnCancel = function(self)
-		safecall(self.data.onCancel)
+		Addon:SafeCall(self.data.onCancel)
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -359,7 +354,7 @@ end
 
 --- @param message string
 --- @param onAccept function
---- @param onCancel function
+--- @param onCancel? function
 function Addon:ShowConfirmationPopup(message, onAccept, onCancel)
 	StaticPopup_Show("CLICKED_CONFIRM", "", "", {
 		text = message,
@@ -391,7 +386,7 @@ end
 
 --- @param string string
 --- @param keyword string
---- @return string
+--- @return string?
 function Addon:GetDataFromString(string, keyword)
 	if Addon:IsStringNilOrEmpty(string) or Addon:IsStringNilOrEmpty(keyword) then
 		return nil
@@ -404,7 +399,7 @@ function Addon:GetDataFromString(string, keyword)
 end
 
 --- @param unit string
---- @param addPrefix boolean
+--- @param addPrefix? boolean
 --- @return string unit
 --- @return boolean needsExistsCheck
 function Addon:GetWoWUnitFromUnit(unit, addPrefix)
@@ -454,8 +449,8 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 	return target, needsExistsCheck[unit] or false
 end
 
----@param binding Binding
----@return boolean
+--- @param binding Binding
+--- @return boolean
 function Addon:HasBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
@@ -473,12 +468,12 @@ function Addon:SetBindingValue(binding, value)
 	elseif binding.type == Addon.BindingTypes.ITEM then
 		binding.action.itemValue = value
 	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
-		binding.action.macroValue = value
+		binding.action.macroValue = value --[[@as string]]
 	end
 end
 
 --- @param binding Binding
---- @return string|integer
+--- @return string|integer?
 function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
@@ -508,10 +503,10 @@ function Addon:GetBindingValue(binding)
 	return nil
 end
 
----@param binding Binding
----@return string name
----@return string icon
----@return number id
+--- @param binding Binding
+--- @return string? name
+--- @return string|integer? icon
+--- @return number? id
 function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
@@ -574,7 +569,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		end
 
 		if IsValidIcon(spellIcon) then
-			icon = spellIcon
+			icon = spellIcon --[[@as string|integer]]
 		end
 	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
 		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
@@ -595,7 +590,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		end
 
 		if IsValidIcon(spellIcon) then
-			icon = spellIcon
+			icon = spellIcon --[[@as string|integer]]
 		end
 	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
 		name = Addon.L["Target the unit"]
@@ -622,7 +617,7 @@ end
 --- @return number subclassID
 --- @return number bindType
 --- @return number expacID
---- @return number setID
+--- @return number? setID
 --- @return boolean isCraftingReagent
 function Addon:GetItemInfo(input)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
@@ -636,6 +631,7 @@ function Addon:GetItemInfo(input)
 			input = GetInventoryItemID("player", itemId)
 
 			if input == nil then
+				--- @diagnostic disable-next-line: return-type-mismatch, missing-return-value
 				return nil
 			end
 		end
@@ -663,6 +659,7 @@ function Addon:GetSpellInfo(input, addSubText)
 	end
 
 	if addSubText and not Addon:IsGameVersionAtleast("RETAIL") then
+		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spellId)
 
 		if not self:IsStringNilOrEmpty(subtext) then
@@ -674,8 +671,9 @@ function Addon:GetSpellInfo(input, addSubText)
 end
 
 --- Get the ID for the specified item name.
+---
 --- @param name string
---- @return integer
+--- @return integer?
 function Addon:GetItemId(name)
 	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
 
@@ -685,11 +683,13 @@ function Addon:GetItemId(name)
 		return nil
 	end
 
+	--- @cast link string
 	local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 	return tonumber(id)
 end
 
 --- Get the spell ID for the specified spell name.
+---
 --- @param name string
 --- @return integer
 function Addon:GetSpellId(name)
@@ -747,7 +747,7 @@ end
 
 --- Check if a string is `nil` or has a length of `0`.
 ---
---- @param string string
+--- @param string? string
 --- @return boolean
 function Addon:IsStringNilOrEmpty(string)
 	if string == nil then
@@ -758,11 +758,13 @@ function Addon:IsStringNilOrEmpty(string)
 	return #string == 0
 end
 
----@param string string
----@return string
+--- @param string string
+--- @return string
 function Addon:TrimString(string)
 	string = string or ""
-	return string.gsub(string, "^%s*(.-)%s*$", "%1")
+
+	local result = string.gsub(string, "^%s*(.-)%s*$", "%1")
+	return result
 end
 
 --- Compare two bindings, for use in a comparison function such as `table.sort`
@@ -844,25 +846,16 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		return { unpack(forms) }
 	end
 
-	--- Iterate through all available shapeshift forms, this function behaves
-	--- slightly differently depending on the input value.
+	--- Iterate through all available shapeshift specalizations.
+	function Addon:IterateShapeshiftSpecs()
+		return pairs(shapeshiftForms)
+	end
+
+	--- Iterate through all available shapeshift forms for the specified specialization.
 	---
-	--- If `specId` is not set (or is `nil`), this will return a `pairs` iterator
-	--- containing all spec IDs and shapeshift forms per spec ID.
-	---
-	--- If `specId` is set, it will return an `ipairs` iterator containing all
-	--- shapeshift forms for the specified spec ID.
-	---
-	--- @param specId integer?
-	--- @return function
-	--- @return table
-	--- @return number
+	--- @param specId integer
 	function Addon:IterateShapeshiftForms(specId)
-		if specId == nil then
-			return pairs(shapeshiftForms)
-		else
-			return ipairs(shapeshiftForms[specId])
-		end
+		return ipairs(shapeshiftForms[specId])
 	end
 elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- Get all available shapeshift forms for the specified class name.
@@ -877,31 +870,22 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- talents, we store all available shapeshift forms manually.
 	---
 	--- @param class string
-	--- @return integer[]
+	--- @return integer[][]
 	function Addon:Classic_GetShapeshiftForms(class)
 		local forms = shapeshiftForms[class] or {}
 		return { unpack(forms) }
 	end
 
-	--- Iterate through all available shapeshift forms, this function behaves
-	--- slightly differently depending on the input value.
+	--- Iterate through all available shapeshift classes.
+	function Addon:Classic_IterateShapeshiftClasses()
+		return pairs(shapeshiftForms)
+	end
+
+	--- Iterate through all available shapeshift forms for the specified class.
 	---
-	--- If `class` is not set (or is `nil`), this will return a `pairs` iterator
-	--- containing all class file names names and shapeshift forms per class.
-	---
-	--- If `class` is set, it will return an `ipairs` iterator containing all
-	--- shapeshift forms for the specified class file name.
-	---
-	--- @param class string?
-	--- @return function
-	--- @return table
-	--- @return number
+	--- @param class string
 	function Addon:Classic_IterateShapeshiftForms(class)
-		if class == nil then
-			return pairs(shapeshiftForms)
-		else
-			return ipairs(shapeshiftForms[class])
-		end
+		return ipairs(shapeshiftForms[class])
 	end
 end
 
@@ -909,6 +893,8 @@ end
 ---@return integer[]
 function Addon:GetAvailableShapeshiftForms(binding)
 	local form = binding.load.form
+
+	--- @type integer[]
 	local forms = {}
 
 	-- Forms need to be zero-indexed
@@ -963,8 +949,6 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	return forms
 end
 
-
-
 --- Show a tooltip on the specified frame after a short delay.
 ---
 --- @param frame table
@@ -974,6 +958,7 @@ end
 --- @param anchorRelativePoint? string
 function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoint)
 	if tooltipTimer ~= nil then
+		--- @diagnostic disable-next-line: undefined-field
 		tooltipTimer:Cancel()
 	end
 
@@ -998,6 +983,7 @@ end
 --- Hide the tooltip shown on the specified frame.
 function Addon:HideTooltip()
 	if tooltipTimer ~= nil then
+		--- @diagnostic disable-next-line: undefined-field
 		tooltipTimer:Cancel()
 		AceGUI.tooltip:Hide()
 	end
@@ -1073,6 +1059,7 @@ end
 --- @param bindings Binding[]
 --- @returns string[]
 function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
+	--- @type string[]
 	local result = {
 		"CTRL-" .. keybind,
 		"ALT-" .. keybind,
@@ -1234,8 +1221,8 @@ end
 
 --- Run `string.format` on the specified string, and prefix the resulting string with `Clicked:`.
 ---
---- @param format string
---- @vararg string
+--- @param format string|number
+--- @param ... any
 --- @return string
 function Addon:GetPrefixedAndFormattedString(format, ...)
 	local message = string.format(format, ...)
@@ -1253,6 +1240,7 @@ function Addon:SanitizeKeybind(keybind)
 end
 
 --- Check if the table contains the specified value.
+---
 --- @generic T
 --- @param table T[]
 --- @param element T

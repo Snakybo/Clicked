@@ -18,7 +18,7 @@ local AceSerializer = LibStub("AceSerializer-3.0")
 local LibDeflate = LibStub("LibDeflate")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 -- Local support functions
 
@@ -42,12 +42,15 @@ end
 --- @return string
 local function SerializeTable(data, printable)
 	local serialized = AceSerializer:Serialize(data)
+	--- @diagnostic disable-next-line: undefined-field
 	local compressed = LibDeflate:CompressDeflate(serialized)
 
 	if printable then
+		--- @diagnostic disable-next-line: undefined-field
 		return LibDeflate:EncodeForPrint(compressed)
 	end
 
+	--- @diagnostic disable-next-line: undefined-field
 	return LibDeflate:EncodeForWoWAddonChannel(compressed)
 end
 
@@ -60,11 +63,11 @@ local function RegisterGroup(data)
 	local bindings = data.group.bindings
 	data.group.bindings = nil
 
-	Addon:RegisterGroup(data.group)
+	Addon:RegisterGroup(data.group, Addon.BindingScope.PROFILE)
 
 	for _, binding in ipairs(bindings) do
 		binding.parent = data.group.identifier
-		Addon:RegisterBinding(binding)
+		Addon:RegisterBinding(binding, Addon.BindingScope.PROFILE)
 	end
 end
 
@@ -74,7 +77,7 @@ local function RegisterBinding(data)
 		error("bad argument #1, expected binding but got " .. data.type)
 	end
 
-	Addon:RegisterBinding(data.binding)
+	Addon:RegisterBinding(data.binding, Addon.BindingScope.PROFILE)
 end
 
 -- Public addon API
@@ -88,10 +91,11 @@ end
 function Clicked:SerializeGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
+	--- @type ShareData
 	local data = {
 		version = Addon.DATA_VERSION,
 		type = "group",
-		group = Addon:DeepCopyTable(group)
+		group = Addon:DeepCopyTable(group) --[[@as ShareData.Group]]
 	}
 
 	data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(group.identifier))
@@ -113,6 +117,7 @@ end
 function Clicked:SerializeBinding(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
+	--- @type ShareData
 	local data = {
 		version = Addon.DATA_VERSION,
 		type = "binding",
@@ -138,12 +143,14 @@ end
 --- @see Clicked#SerializeBinding
 --- @see Clicked#SerializeGroup
 function Clicked:Deserialize(encoded)
+	--- @diagnostic disable-next-line: undefined-field
 	local compressed = LibDeflate:DecodeForPrint(encoded)
 
 	if compressed == nil then
 		return false, "Failed to decode"
 	end
 
+	--- @diagnostic disable-next-line: undefined-field
 	local serialized = LibDeflate:DecompressDeflate(compressed)
 
 	if serialized == nil then
@@ -232,8 +239,10 @@ function Clicked:DeserializeProfile(encoded, printable)
 	local compressed
 
 	if printable then
+		--- @diagnostic disable-next-line: undefined-field
 		compressed = LibDeflate:DecodeForPrint(encoded)
 	else
+		--- @diagnostic disable-next-line: undefined-field
 		compressed = LibDeflate:DecodeForWoWAddonChannel(encoded)
 	end
 
@@ -241,6 +250,7 @@ function Clicked:DeserializeProfile(encoded, printable)
 		return false, "Failed to decode", false
 	end
 
+	--- @diagnostic disable-next-line: undefined-field
 	local serialized = LibDeflate:DecompressDeflate(compressed)
 
 	if serialized == nil then

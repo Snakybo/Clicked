@@ -17,12 +17,18 @@
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
+--- @type Frame
 local driver
+
+--- @type AceGUIFrame
 local frame
+
+--- @type ClickedReadOnlyMultilineEditBox
 local editbox
 
+--- @type { hovercast: table<string,string>, macroHandler: table<string,string>, timestamp: number }
 local data
 
 -- Local support functions
@@ -253,7 +259,7 @@ end
 -- Private addon API
 
 function Addon:StatusOutput_Initialize()
-	driver = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	driver = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate") --[[@as Frame]]
 	driver:Show()
 
 	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
@@ -276,11 +282,11 @@ function Addon:StatusOutput_Open()
 		return
 	end
 
-	frame = AceGUI:Create("Frame")
+	frame = AceGUI:Create("Frame") --[[@as AceGUIFrame]]
 	frame:SetTitle("Clicked Data Dump")
 	frame:SetLayout("Fill")
 
-	editbox = AceGUI:Create("ClickedReadOnlyMultilineEditBox")
+	editbox = AceGUI:Create("ClickedReadOnlyMultilineEditBox") --[[@as ClickedReadOnlyMultilineEditBox]]
 	editbox:SetLabel("")
 	frame:AddChild(editbox)
 

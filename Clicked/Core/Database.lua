@@ -16,8 +16,8 @@
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @type ClickedInternal
-local _, Addon = ...
+--- @class ClickedInternal
+local Addon = select(2, ...)
 
 local GROUP_IDENTIFIER_PREFIX = "group-"
 local BINDING_IDENTIFIER_PREFIX = "binding-"
@@ -27,6 +27,7 @@ local BINDING_IDENTIFIER_PREFIX = "binding-"
 --- @param default string|boolean
 --- @return Binding.LoadOption
 local function GetLoadOptionTemplate(default)
+	--- @type Binding.LoadOption
 	local template = {
 		selected = false,
 		value = default
@@ -39,39 +40,35 @@ end
 local function GetNegatableLoadOptionTemplate()
 	return GetLoadOptionTemplate(true)
 end
+--- @param default number|string
+--- @return Binding.TriStateLoadOption
+local function GetTriStateLoadOptionTemplate(default)
+	--- @type Binding.TriStateLoadOption
+	local template = {
+		selected = 0,
+		single = default,
+		multiple = {
+			default
+		}
+	}
+
+	return template
+end
 
 --- @param default number|string
 --- @return Binding.NegatableTriStateLoadOption
 local function GetNegatableTriStateLoadOptionTemplate(default)
-	local template = {
-		selected = 0,
-		negated = false,
-		single = default,
-		multiple = {
-			default
-		}
-	}
+	local template = GetTriStateLoadOptionTemplate(default) --[[@as Binding.NegatableTriStateLoadOption]]
+	template.negated = false
 
 	return template
 end
 
---- @param default number|string
---- @return Binding.TriStateLoadOption
-local function GetTriStateLoadOptionTemplate(default)
-	local template = {
-		selected = 0,
-		single = default,
-		multiple = {
-			default
-		}
-	}
-
-	return template
-end
 
 --- @param default string|boolean
 --- @return Binding.MutliFieldLoadOption
 local function GetMultiFieldLoadOptionTemplate(default)
+	--- @type Binding.MutliFieldLoadOption
 	local template = {
 		selected = false,
 		entries = {
@@ -88,6 +85,7 @@ end
 
 --- @return Binding.NegatableStringLoadOption
 local function GetNegatableStringLoadOptionTemplate()
+	--- @type Binding.NegatableStringLoadOption
 	local template = {
 		selected = false,
 		negated = false,
@@ -101,8 +99,9 @@ end
 
 --- Get the default values for a Clicked profile.
 ---
---- @return AceDB-3.0
+--- @return AceDBObject-3.0
 function Clicked:GetDatabaseDefaults()
+	--- @type AceDBObject-3.0
 	local database = {
 		global = {
 			version = nil,
@@ -147,8 +146,10 @@ function Clicked:ReloadDatabase()
 end
 
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
+---
 --- @return Group
 function Clicked:CreateGroup()
+	--- @type Group
 	local group = {
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
@@ -159,6 +160,7 @@ function Clicked:CreateGroup()
 end
 
 --- Delete a binding group. If the group is not empty, it will also delete all child-bindings.
+---
 --- @param group Group
 function Clicked:DeleteGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
@@ -184,6 +186,7 @@ function Clicked:DeleteGroup(group)
 end
 
 --- Attempt to get a binding group with the specified identifier.
+---
 --- @param identifier string
 --- @return Group?
 function Clicked:GetGroupById(identifier)
@@ -199,11 +202,13 @@ function Clicked:GetGroupById(identifier)
 end
 
 --- Get a list of all bindings that are part of the specified group.
+---
 --- @param identifier string
 --- @return Binding[]
 function Clicked:GetBindingsInGroup(identifier)
 	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
 
+	--- @type Binding[]
 	local bindings = {}
 
 	for _, binding in self:IterateConfiguredBindings() do
@@ -216,11 +221,8 @@ function Clicked:GetBindingsInGroup(identifier)
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
----
---- @return function iterator
---- @return table t
---- @return number i
 function Clicked:IterateGroups()
+	--- @type Group
 	local result = {}
 
 	for _, binding in ipairs(Addon.db.profile.groups) do
@@ -248,6 +250,7 @@ end
 
 --- Delete a binding. If the binding exists it will delete it from the database, if the binding is currently loaded, it will automatically reload the active
 --- bindings.
+---
 --- @param binding Binding The binding to delete
 function Clicked:DeleteBinding(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
@@ -266,10 +269,8 @@ end
 
 --- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
 --- can be used in a `for in` loop.
---- @return function iterator
---- @return table t
---- @return number i
 function Clicked:IterateConfiguredBindings()
+	--- @type Binding[]
 	local result = {}
 
 	for _, binding in ipairs(Addon.db.profile.bindings) do
@@ -297,6 +298,7 @@ end
 
 --- @return Binding
 function Addon:GetNewBindingTemplate()
+	--- @type Binding
 	local template = {
 		type = Addon.BindingTypes.SPELL,
 		keybind = "",
@@ -332,7 +334,7 @@ function Addon:GetNewBindingTemplate()
 			never = false,
 			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
 			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(UnitName("player")),
+			playerNameRealm = GetLoadOptionTemplate(UnitName("player") --[[@as string]]),
 			combat = GetNegatableLoadOptionTemplate(),
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
@@ -380,6 +382,7 @@ end
 
 --- @return Binding.Target
 function Addon:GetNewBindingTargetTemplate()
+	--- @type Binding.Target
 	local template = {
 		unit = Addon.TargetUnits.DEFAULT,
 		hostility = Addon.TargetHostility.ANY,
@@ -389,7 +392,7 @@ function Addon:GetNewBindingTargetTemplate()
 	return template
 end
 
---- @param scope BindingScope?
+--- @param scope BindingScope
 --- @return string
 --- @return integer
 function Addon:GetNextBindingIdentifier(scope)
@@ -410,7 +413,7 @@ function Addon:GetNextBindingIdentifier(scope)
 	return scope .. "-" .. BINDING_IDENTIFIER_PREFIX .. identifier, identifier
 end
 
---- @param scope BindingScope?
+--- @param scope BindingScope
 --- @return string
 --- @return integer
 function Addon:GetNextGroupIdentifier(scope)
@@ -476,7 +479,7 @@ function Addon:ReplaceBinding(original, replacement)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
 
-	for index, binding in self:IterateConfiguredBindings() do
+	for index, binding in Clicked:IterateConfiguredBindings() do
 		if binding == original then
 			Addon.db.profile.bindings[index] = replacement
 			Clicked:ReloadBinding(binding, true)
@@ -521,8 +524,8 @@ function Addon:RegisterGroup(group, scope)
 	end
 end
 
----@param original Binding
----@return Binding
+--- @param original Binding
+--- @return Binding
 function Addon:CloneBinding(original)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 

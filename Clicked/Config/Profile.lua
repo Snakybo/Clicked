@@ -21,8 +21,8 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
 local AceComm = LibStub("AceComm-3.0")
 
---- @class ClickedInternal
-local _, Addon = ...
+--- @class ClickedInternal : AceComm-3.0
+local Addon = select(2, ...)
 
 --- @type AceGUIFrame
 local importExportFrame
@@ -55,13 +55,13 @@ local function OverwriteCurrentProfile(data, full)
 	Clicked:ReloadDatabase()
 end
 
---- @param mode "export"|"import"|"exort_full"|"import_full"
+--- @param mode "export"|"import"|"import_full"
 local function OpenImportExportFrame(mode)
 	if importExportFrame ~= nil and importExportFrame:IsVisible() then
 		return
 	end
 
-	importExportFrame = AceGUI:Create("ClickedFrame") --[[@as AceGUIFrame]]
+	importExportFrame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
 
 	local textFieldType = "MultiLineEditBox"
 
@@ -80,10 +80,10 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:EnableResize(false)
 	importExportFrame:SetWidth(600)
 	importExportFrame:SetHeight(400)
-	importExportFrame:SetLayout("flow")
-	importExportFrame.frame:SetFrameStrata("FULLSCREEN_DIALOG")
+	importExportFrame:SetLayout("Flow")
+	importExportFrame:MoveToFront()
 
-	local textField = AceGUI:Create(textFieldType) --[[@as AceGUIMultiLineEditBox]]
+	local textField = AceGUI:Create(textFieldType) --[[@as AceGUIMultiLineEditBox|ClickedReadOnlyMultilineEditBox]]
 	textField:SetNumLines(22)
 	textField:SetFullWidth(true)
 	textField:SetLabel("")
@@ -91,12 +91,16 @@ local function OpenImportExportFrame(mode)
 	importExportFrame:AddChild(textField)
 
 	if mode == "export" then
+		--- @cast textField ClickedReadOnlyMultilineEditBox
+
 		local text = Clicked:SerializeProfile(Addon.db.profile, true, false)
 
 		textField:SetText(text)
 		textField:SetFocus()
 		textField:HighlightText()
 	elseif mode == "import" or mode == "import_full" then
+		--- @cast textField AceGUIMultiLineEditBox
+
 		textField:DisableButton(true)
 		textField:SetFocus()
 		textField:SetCallback("OnTextChanged", function(_, _, text)
@@ -112,6 +116,8 @@ local function OpenImportExportFrame(mode)
 				Addon:ShowConfirmationPopup(Addon.L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."], OnConfirm)
 				importExportFrame:Hide()
 			else
+				--- @cast data string
+
 				textField:SetText("")
 				importExportFrame:SetStatusText(data)
 			end
@@ -171,11 +177,7 @@ function Addon:ProfileOptions_Initialize()
 		type = "execute",
 		order = 63,
 		func = function()
-			if IsShiftKeyDown() then
-				OpenImportExportFrame("export_full")
-			else
-				OpenImportExportFrame("export")
-			end
+			OpenImportExportFrame("export")
 		end
 	}
 
@@ -324,8 +326,10 @@ function Addon:OnCommReceived(_, message, _, sender)
 		local success, data = Clicked:DeserializeProfile(message, false)
 
 		if success then
+			--- @cast data table
+
 			local function OnConfirm()
-				OverwriteCurrentProfile(data)
+				OverwriteCurrentProfile(data, false)
 			end
 
 			Addon:ShowConfirmationPopup(string.format(Addon.L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)

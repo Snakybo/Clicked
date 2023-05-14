@@ -2,12 +2,19 @@
 A heading with a checkbox
 -------------------------------------------------------------------------------]]
 
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedToggleHeading"
+
 --- @class ClickedToggleHeading : AceGUIWidget
---- @field public SetText fun(text:string)
---- @field public SetDisabled fun(disabled:boolean)
---- @field public SetValue fun(value:boolean)
---- @field public GetValue fun():boolean
---- @field public ToggleChecked fun()
+--- @field private frame Button
+--- @field private label FontString
+--- @field private checkbg Texture
+--- @field private check Texture
+--- @field private highlight Texture
+--- @field private left Texture
+--- @field private right Texture
+--- @field private center Texture
 
 local Type, Version = "ClickedToggleHeading", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -50,74 +57,71 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local methods = {
-	--- @param self ClickedToggleHeading
-	["OnAcquire"] = function(self)
-		self:SetHeight(24)
-		self:SetText("")
-		self:SetValue(false)
-		self:SetDisabled(nil)
-	end,
 
-	--- @param self ClickedToggleHeading
-	--- @param text string
-	["SetText"] = function(self, text)
-		self.label:SetText(text)
+--- @class ClickedToggleHeading
+local Methods = {}
 
-		if text and text ~= "" then
-			self.right:Show()
-		else
-			self.right:Hide()
-		end
-	end,
+--- @protected
+function Methods:OnAcquire()
+	self:SetHeight(24)
+	self:SetText("")
+	self:SetValue(false)
+	self:SetDisabled(false)
+end
 
-	--- @param self ClickedToggleHeading
-	--- @param disabled boolean
-	["SetDisabled"] = function(self, disabled)
-		self.disabled = disabled
+--- @param text string
+function Methods:SetText(text)
+	self.label:SetText(text)
 
-		if disabled then
-			self.frame:Disable()
-			self.label:SetTextColor(0.5, 0.5, 0.5)
-
-			SetDesaturation(self.check, true)
-		else
-			self.frame:Enable()
-			self.label:SetTextColor(1, 1, 1)
-
-			SetDesaturation(self.check, false)
-		end
-	end,
-
-	--- @param self ClickedToggleHeading
-	--- @param value boolean
-	["SetValue"] = function(self, value)
-		local check = self.check
-
-		self.checked = value
-
-		if value then
-			SetDesaturation(check, false)
-			check:Show()
-		else
-			SetDesaturation(check, false)
-			check:Hide()
-		end
-
-		self:SetDisabled(self.disabled)
-	end,
-
-	--- @param self ClickedToggleHeading
-	--- @return boolean
-	["GetValue"] = function(self)
-		return self.checked
-	end,
-
-	--- @param self ClickedToggleHeading
-	["ToggleChecked"] = function(self)
-		self:SetValue(not self:GetValue())
+	if text and text ~= "" then
+		self.right:Show()
+	else
+		self.right:Hide()
 	end
-}
+end
+
+--- @param disabled boolean
+function Methods:SetDisabled(disabled)
+	self.disabled = disabled
+
+	if disabled then
+		self.frame:Disable()
+		self.label:SetTextColor(0.5, 0.5, 0.5)
+
+		SetDesaturation(self.check, true)
+	else
+		self.frame:Enable()
+		self.label:SetTextColor(1, 1, 1)
+
+		SetDesaturation(self.check, false)
+	end
+end
+
+--- @param value boolean
+function Methods:SetValue(value)
+	local check = self.check
+
+	self.checked = value
+
+	if value then
+		SetDesaturation(check, false)
+		check:Show()
+	else
+		SetDesaturation(check, false)
+		check:Hide()
+	end
+
+	self:SetDisabled(self.disabled)
+end
+
+--- @return boolean
+function Methods:GetValue()
+	return self.checked
+end
+
+function Methods:ToggleChecked()
+	self:SetValue(not self:GetValue())
+end
 
 --[[-----------------------------------------------------------------------------
 Constructor
@@ -186,7 +190,7 @@ local function Constructor()
 		type       = Type
 	}
 
-	for method, func in pairs(methods) do
+	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 

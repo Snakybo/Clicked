@@ -15,18 +15,29 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
+--- @type Button[]
 local frames = {}
+
+--- @type { frame: Button, addon: string }[]
 local registerQueue = {}
+
+--- @type Button[]
 local unregisterQueue = {}
+
+--- @type { frame: Button, addon: string }[]
 local registerClicksQueue = {}
+
+--- @type table<string,string>
 local cachedAttributes = {}
+
+--- @type Button[]
 local sidecars = {}
 
 -- Local support functions
 
---- @param frame table
+--- @param frame Button
 --- @param attributes table<string,string>
 --- @param setup string
 --- @param clear string
@@ -127,7 +138,7 @@ end
 --- your frame inherits from the `ClickCastUnitTemplate`.
 ---
 --- @param frame Button|string Either the frame to register, or the name of the frame that can be found in the global table.
---- @param addon string? The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
+--- @param addon? string The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
 --- @see Clicked:UnregisterClickCastFrame
 function Clicked:RegisterClickCastFrame(frame, addon)
 	if frame == nil then
@@ -177,8 +188,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			TryEnqueue()
 			return
 		else
-			--- @type string
-			local name = frame
+			local name = frame --[[@as string]]
 			frame = _G[name]
 
 			if frame == nil then
@@ -238,7 +248,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 		for i = 1, #unregisterQueue do
 			local element = unregisterQueue[i]
 
-			if element.frame == frame then
+			if element == frame then
 				return
 			end
 		end
@@ -299,34 +309,37 @@ end
 --- @param name string? The human-readable name of the frame, since these frames are generally unamed, a custom name needs to be supploed
 --- @return Button sidecar
 function Clicked:CreateSidecar(frame, name)
-	local sidecar = frame:GetAttribute("clicked-sidecar")
+	local sidecarId = frame:GetAttribute("clicked-sidecar")
 
-	if sidecar == nil then
+	--- @param sidecar Button
+	local function UpdateName(sidecar)
+		if name ~= nil then
+			sidecar:SetAttribute("clicked-name", name)
+		end
+	end
+
+	if sidecarId == nil then
 		local frameName = "ClickedSidecar" .. tostring(#sidecars + 1)
 
-		sidecar = CreateFrame("Button", frameName, frame, "SecureUnitButtonTemplate")
+		local sidecar = CreateFrame("Button", frameName, frame, "SecureUnitButtonTemplate") --[[@as Button]]
 		sidecar:SetAttribute("useparent*", true)
 
 		frame:SetAttribute("clicked-sidecar", frameName)
 		frame:SetAttribute("clicked-name", name)
 
 		table.insert(sidecars, sidecar)
-	else
-		sidecar = _G[sidecar]
+
+		UpdateName(sidecar)
+		return sidecar
 	end
 
-	if name ~= nil then
-		sidecar:SetAttribute("clicked-name", name)
-	end
+	local sidecar = _G[sidecarId]
+	UpdateName(sidecar)
 
 	return sidecar
 end
 
 --- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
----
---- @return function iterator
---- @return Button t
---- @return number i
 function Clicked:IterateClickCastFrames()
 	return ipairs(frames)
 end
@@ -335,10 +348,6 @@ end
 ---
 --- A sidecar is a custom overlay frame used when a registered frame does not have a name. A name is required for
 --- unit frame casting.
----
---- @return function iterator
---- @return Button t
---- @return number i
 function Clicked:IterateSidecars()
 	return ipairs(sidecars)
 end

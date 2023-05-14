@@ -15,10 +15,11 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 ---@debug@
 -- luacheck: ignore
+---@diagnostic disable-next-line: lowercase-global
 function dump(o)
 	if type(o) == 'table' then
 	   local s = '{ '
@@ -33,6 +34,24 @@ function dump(o)
 	end
  end
 ---@end-debug@
+
+--- @param err any
+--- @return function
+local function errorhandler(err)
+	return geterrorhandler()(err)
+end
+
+--- @param func? function
+--- @param ... any
+--- @return boolean status
+--- @return ...
+function Addon:SafeCall(func, ...)
+	if func ~= nil then
+		return xpcall(func, errorhandler, ...)
+	end
+
+	return false
+end
 
 --- Check if the game client is running the retail version of the API.
 ---
@@ -65,7 +84,7 @@ end
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
 --- game, but `false` on Classic.
 ---
---- @param version '"RETAIL"'|'"CLASSIC"'|'"BC"'|'"WOTLK"'
+--- @param version "RETAIL"|"CLASSIC"|"BC"|"WOTLK"
 --- @return boolean
 function Addon:IsGameVersionAtleast(version)
 	local isRetail = Addon:IsRetail()

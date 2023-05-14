@@ -1,5 +1,41 @@
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @alias AceGUIWidgetType
+--- | "ClickedBindingImportList"
+
+--- @class ClickedBindingImportList : AceGUIWidget
+--- @field private lines table
+--- @field private buttons Button[]
+--- @field private status ClickedBindingImportList.Status?
+--- @field private localstatus ClickedBindingImportList.Status
+--- @field private tree ClickedBindingImportList.Item[]
+--- @field private treeframe Frame
+--- @field private scrollbar Slider
+--- @field private showScroll boolean
+--- @field private showKeybinds boolean
+
+--- @class ClickedBindingImportList.Status
+--- @field public scrollvalue number
+--- @field public groups { [string]: boolean }
+
+--- @class ClickedBindingImportList.Button : Button
+--- @field public isMoving boolean
+--- @field public toggle Button
+--- @field public text FontString
+
+--- @class ClickedBindingImportList.Item
+--- @field public title string
+--- @field public icon string|number
+--- @field public children ClickedBindingImportList.Item[]?
+
+--- @class ClickedBindingImportList.BindingItem : ClickedTreeGroup.Item
+--- @field public binding Binding
+--- @field public keybind string
+
+--- @class ClickedBindingImportList.GroupItem : ClickedTreeGroup.Item
+--- @field public group Group
+
 --- @class ClickedInternal
-local _, Addon = ...
+local Addon = select(2, ...)
 
 local Type, Version = "ClickedBindingImportList", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -9,7 +45,12 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
 end
 
 -- Recycling functions
-local new, del
+
+--- @type fun(): ClickedBindingImportList.Line
+local new
+--- @type fun(item: ClickedBindingImportList.Line)
+local del
+
 do
 	local pool = setmetatable({},{__mode='k'})
 	function new()
@@ -97,6 +138,7 @@ local function UpdateButton(button, line, canExpand, isExpanded)
 end
 
 local function AddLine(self, v, tree, level, parent)
+	--- @class ClickedBindingImportList.Line
 	local line = new()
 	line.binding = v.binding
 	line.group = v.group
@@ -155,9 +197,10 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @class ClickedBindingImportList : AceGUIContainer
+--- @class ClickedBindingImportList
 local Methods = {}
 
+--- @private
 function Methods:OnAcquire()
 	self.frame:SetScript("OnUpdate", FirstFrameUpdate)
 
@@ -165,6 +208,7 @@ function Methods:OnAcquire()
 	self.showKeybinds = true
 end
 
+--- @private
 function Methods:OnRelease()
 	self.status = nil
 	self.tree = nil
@@ -184,7 +228,7 @@ function Methods:OnRelease()
 	self.localstatus.scrollvalue = 0
 end
 
---- @param fromOnUpdate boolean?
+--- @param fromOnUpdate? boolean
 function Methods:RefreshTree(fromOnUpdate)
 	local buttons = self.buttons
 	local lines = self.lines
@@ -286,6 +330,9 @@ function Methods:RefreshTree(fromOnUpdate)
 	end
 end
 
+--- @param tree any
+--- @param level any
+--- @param parent any
 function Methods:BuildLevel(tree, level, parent)
 	local groups = (self.status or self.localstatus).groups
 
@@ -305,7 +352,7 @@ end
 function Methods:CreateButton()
 	local type = "ClickedBindingImportButton"
 	local num = AceGUI:GetNextWidgetNum(type)
-	local button = CreateFrame("Button", string.format(type .. "%d", num), self.treeframe, "OptionsListButtonTemplate")
+	local button = CreateFrame("Button", string.format(type .. "%d", num), self.treeframe, "OptionsListButtonTemplate") --[[@as ClickedBindingImportList.Button]]
 	button.obj = self
 
 	local icon = button:CreateTexture(nil, "OVERLAY")
@@ -376,6 +423,7 @@ function Methods:SetItems(data)
 	local function CreateBindingItem(binding, parent)
 		local title, icon = Addon:GetBindingNameAndIcon(binding)
 
+		--- @type ClickedBindingImportList.BindingItem
 		local item = {
 			binding = binding,
 			title = title,
@@ -386,8 +434,10 @@ function Methods:SetItems(data)
 		table.insert(parent, item)
 	end
 
-	--- @param group ShareGroup
+	--- @param group ShareData.Group
 	local function CreateGroupItem(group)
+
+		--- @type ClickedBindingImportList.GroupItem
 		local item = {
 			group = group,
 			title = group.name,
@@ -438,9 +488,9 @@ local function Constructor()
 	treeframe:SetPoint("TOPLEFT")
 	treeframe:SetPoint("BOTTOMRIGHT")
 	treeframe:EnableMouseWheel(true)
-	treeframe:SetBackdrop(PaneBackdrop)
-	treeframe:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-	treeframe:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	treeframe --[[@as BackdropTemplate]]:SetBackdrop(PaneBackdrop)
+	treeframe --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+	treeframe --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetScript("OnUpdate", FirstFrameUpdate)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)
 
@@ -458,7 +508,6 @@ local function Constructor()
 	scrollbg:SetAllPoints(scrollbar)
 	scrollbg:SetColorTexture(0,0,0,0.4)
 
-	--- @class ClickedBindingImportList
 	local widget = {
 		frame= frame,
 		lines = {},
