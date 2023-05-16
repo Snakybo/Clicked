@@ -4,7 +4,7 @@ This document will contain a chronological list of all notable changes made to C
 
 The format of this changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). The versioning scheme used is [Semantic Versioning](https://semver.org/spec/v2.0.0.html), the notable breakpoints of what defines a major, minor, or patch version are as follows:
 
-* The MAJOR component is only used ceremonically and will likely not be incremented unless a significant rewrite happens that does not have backwards compatibility.
+* The MAJOR component is only used ceremonially and will likely not be incremented unless a significant rewrite happens that does not have backwards compatibility.
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
