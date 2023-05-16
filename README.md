@@ -13,10 +13,13 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 ## Features
 
 * **Create keyboard and mouse button bindings for spells, items, cancelauras, and custom macros**
+* **No performance impact during gameplay**
+* **Create globally available bindings, or profile specific bindings**
 * **Easily import your action bar layout**
 * **Cast spells without action bars**
 * **Cast spells by clicking on unit frames**
 * **Easily select spells from the spellbook**
+* **Easily import the entire spellbook**
 * **Configure binding target priorities**
 * **Configure binding load conditions**
 * **Configure macro conditionals**
@@ -24,7 +27,6 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 * **Configure custom macros without taking up a macro slot**
 * **Configure a unit frame blacklist**
 * **Automatically unload and unlock keybinds while in a vehicle**
-* **No performance cost during gameplay**
 
 ### Configure binding target priorities
 
@@ -39,6 +41,7 @@ A full list of all available targets:
 * **Target**
 * **Target of target**
 * **Mouseover target**
+* **Target of mouseover target**
 * **Focus target**
 * **Cursor position** will cast on your cursor's position, mainly for placable AoE abilities
 * **Pet**
@@ -74,6 +77,7 @@ A full list of all available load conditions:
 * **In group** checks if you are in the specified group type (solo, party, raid)
 * **Instance type** checks if you are in the specified instance type(s) (none, arena, battleground, dungeon, raid)
 * **Player in group** checks if the specified player is in your group
+* **Item equipped** checks if the specified item is equipped
 
 ![Binding load conditions](https://i.imgur.com/vbqRYuw.png)
 
@@ -91,6 +95,7 @@ These map directly to the macro conditionals found [here](https://wow.gamepedia.
 * **Channeling** checks if you are channeling a specific item or spell, or just in general
 * **Flying** checks if you are flying
 * **Flyable** checks if you are in an area that permits flying
+* **Advanced flyable** (or **Dragonriding**) checks if you are in an area that permits Dragonriding
 
 ### Configure multiple bindings on the same keybind
 
