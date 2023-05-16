@@ -28,6 +28,9 @@ Container that uses a tree control to switch between groups.
 --- @field public icon Texture
 --- @field public title FontString
 --- @field public keybind FontString
+--- @field public binding Binding?
+--- @field public group Group?
+--- @field public scope BindingScope
 
 --- @class ClickedTreeGroup.Item
 --- @field public value string
@@ -311,6 +314,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	button.uniquevalue = uniquevalue
 	button.binding = binding
 	button.group = group
+	button.scope = treeline.scope
 
 	if selected then
 		button:LockHighlight()
@@ -690,7 +694,7 @@ end
 local function Button_OnDragStart(frame)
 	local self = frame.obj
 
-	if frame.binding == nil then
+	if frame.binding == nil and frame.group == nil then
 		return
 	end
 
@@ -708,34 +712,58 @@ end
 local function Button_OnDragStop(frame)
 	local self = frame.obj
 
-	if frame.binding == nil then
-		return
-	end
-
 	frame:StopMovingOrSizing()
 	frame:SetUserPlaced(false)
 	frame.isMoving = false
 
-	local newParent = nil
+	--- @type string|integer?
+	local newParent = -1
+	local newScope = nil
 
 	for _, button in ipairs(self.buttons) do
 		if button ~= frame and button:IsEnabled() and button:IsShown() and button:IsMouseOver(0, 0) then
-			if button.group ~= nil and button.group.scope == frame.binding.scope then
+			if button.group ~= nil then
 				newParent = button.group.identifier
+				newScope = button.group.scope
 				break
-			elseif button.binding ~= nil and button.binding.scope == frame.binding.scope then
+			elseif button.binding ~= nil then
 				newParent = button.binding.parent
+				newScope = button.binding.scope
+				break
+			elseif button.scope ~= nil then
+				newParent = nil
+				newScope = button.scope
 				break
 			end
 		end
 	end
 
-	if newParent ~= frame.binding.parent then
-		local currentBinding = frame.binding
-		frame.binding.parent = newParent
+	local modifiedItem = nil
 
+	if frame.binding ~= nil then
+		local binding = frame.binding
+
+		if newScope ~= nil and newScope ~= binding.scope then
+			Addon:ChangeScope(binding, newScope)
+			modifiedItem = binding
+		end
+
+		if newParent ~= -1 and newParent ~= binding.parent then
+			binding.parent = newParent
+			modifiedItem = binding
+		end
+	elseif frame.group ~= nil then
+		local group = frame.group
+
+		if newScope ~= nil and newScope ~= group.scope then
+			Addon:ChangeScope(group, newScope)
+			modifiedItem = group
+		end
+	end
+
+	if modifiedItem ~= nil then
 		self:ConstructTree()
-		self:SelectByBindingOrGroup(currentBinding)
+		self:SelectByBindingOrGroup(modifiedItem)
 	else
 		self:RefreshTree()
 	end
