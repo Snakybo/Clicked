@@ -786,8 +786,10 @@ function Addon:UpgradeDatabase(from)
 	do
 		local src = from or Addon.db.global.version or Addon.DATA_VERSION
 
-		safecall(Upgrade, Addon.db.global, src)
-		Addon.db.global.version = Addon.DATA_VERSION
+		if type(src) == "number" then
+			safecall(Upgrade, Addon.db.global, src)
+			Addon.db.global.version = Addon.DATA_VERSION
+		end
 	end
 
 	do
@@ -831,7 +833,7 @@ function Addon:UpgradeDatabase(from)
 			end
 		end
 
-		if type(from) == "string" then
+		if type(src) == "string" then
 			safecall(UpgradeLegacy, Addon.db.profile, src)
 			src = Addon.db.profile.version
 		end
