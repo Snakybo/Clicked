@@ -1286,7 +1286,7 @@ function Methods:Select(uniqueValue, ...)
 	local groups = status.groups
 	local path = {...}
 
-	for i = 1, #path do
+	for i = 1, #path - 1 do
 		local group = table.concat(path, "\001", 1, i)
 
 		if string.find(group, "\001") then
