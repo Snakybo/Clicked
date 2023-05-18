@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Fixed
+
+* Fix Lua error when pressing tab on the talent selection dropdown
+
 ### Changed
 
 * Don't open the top-most group automatically when opening the binding configuration window

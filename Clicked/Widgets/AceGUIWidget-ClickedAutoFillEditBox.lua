@@ -223,7 +223,7 @@ Scripts
 local function EditBox_OnTabPressed(frame)
 	local self = frame.obj
 
-	self:MoveCursor(self, IsShiftKeyDown() and -1 or 1)
+	self:MoveCursor(IsShiftKeyDown() and -1 or 1)
 end
 
 local function EditBox_OnArrowPressed(frame, key)
