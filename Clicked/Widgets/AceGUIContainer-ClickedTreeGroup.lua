@@ -1087,44 +1087,48 @@ function Methods:BuildCache()
 		return
 	end
 
-	local open = { unpack(self.tree) }
+	do
+		local open = { unpack(self.tree) }
 
-	while #open > 0 do
-		local next = open[1]
-		table.remove(open, 1)
+		while #open > 0 do
+			local next = open[1]
+			table.remove(open, 1)
 
-		-- Only search for bindings and not groups
-		if next.children == nil then
-			if IsItemValidWithSearchQuery(next, self.searchbar:GetSearchTerm()) then
-				SetVisibleRecursive(next)
-			end
-		else
-			if #next.children == 0 then
-				if Addon:IsStringNilOrEmpty(self.searchbar:GetSearchTerm()) then
+			-- Only search for bindings and not groups
+			if next.children == nil then
+				if IsItemValidWithSearchQuery(next, self.searchbar:GetSearchTerm()) then
 					SetVisibleRecursive(next)
 				end
 			else
-				for i = 1, #next.children do
-					table.insert(open, next.children[i])
+				if #next.children == 0 then
+					if Addon:IsStringNilOrEmpty(self.searchbar:GetSearchTerm()) then
+						SetVisibleRecursive(next)
+					end
+				else
+					for i = 1, #next.children do
+						table.insert(open, next.children[i])
+					end
 				end
 			end
 		end
 	end
 
-	if self.sortMode == 1 then
-		table.sort(self.tree, TreeSortKeybind)
+	do
+		local sortFunc = self.sortMode == 1 and TreeSortKeybind or TreeSortAlphabetical
 
-		for _, item in ipairs(self.tree) do
-			if item.children ~= nil then
-				table.sort(item.children, TreeSortKeybind)
-			end
-		end
-	else
-		table.sort(self.tree, TreeSortAlphabetical)
+		--- @type ClickedTreeGroup.Item[]
+		local queue = { unpack(self.tree) }
 
-		for _, item in ipairs(self.tree) do
-			if item.children ~= nil then
-				table.sort(item.children, TreeSortAlphabetical)
+		while #queue > 0 do
+			--- @type ClickedTreeGroup.Item
+			local current = table.remove(queue, 1)
+
+			if current.children ~= nil then
+				for _, child in ipairs(current.children) do
+					table.insert(queue, child)
+				end
+
+				table.sort(current.children, sortFunc)
 			end
 		end
 	end

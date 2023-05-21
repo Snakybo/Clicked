@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix Lua error when pressing tab on the talent selection dropdown
+* Fix binding config sorting not working
 
 ### Changed
 
