@@ -3005,7 +3005,7 @@ local function DrawHeader(container)
 	-- import button
 	do
 		local function OnClick()
-			Addon:BindingImportFrame_Open()
+			Addon.ImportFrame:ImportBindingOrGroup()
 		end
 
 		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]

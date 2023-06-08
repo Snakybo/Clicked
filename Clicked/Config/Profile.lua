@@ -39,107 +39,6 @@ local shareMessage = ""
 
 -- Local support functions
 
---- @param data Profile
---- @param full boolean
-local function OverwriteCurrentProfile(data, full)
-	if full then
-		Addon.db.profile = wipe(Addon.db.profile)
-	end
-
-	for key in pairs(data) do
-		Addon.db.profile[key] = data[key]
-	end
-
-	Addon.db.profile.lightweight = nil
-
-	Clicked:ReloadDatabase()
-end
-
---- @param mode "export"|"import"|"import_full"
-local function OpenImportExportFrame(mode)
-	if importExportFrame ~= nil and importExportFrame:IsVisible() then
-		return
-	end
-
-	importExportFrame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
-
-	local textFieldType = "MultiLineEditBox"
-
-	if mode == "export" then
-		importExportFrame:SetTitle(Addon.L["Export Bindings"])
-		importExportFrame:SetStatusText(string.format(Addon.L["Exporting bindings from: %s"], Addon.db:GetCurrentProfile()))
-		textFieldType = "ClickedReadOnlyMultilineEditBox"
-	elseif mode == "import" then
-		importExportFrame:SetTitle(Addon.L["Import Bindings"])
-		importExportFrame:SetStatusText(string.format(Addon.L["Importing bindings into: %s"], Addon.db:GetCurrentProfile()))
-	elseif mode == "import_full" then
-		importExportFrame:SetTitle("Import Full Profile")
-		importExportFrame:SetStatusText(string.format("Importing full profile into: %s", Addon.db:GetCurrentProfile()))
-	end
-
-	importExportFrame:EnableResize(false)
-	importExportFrame:SetWidth(600)
-	importExportFrame:SetHeight(400)
-	importExportFrame:SetLayout("Flow")
-	importExportFrame:MoveToFront()
-
-	local textField = AceGUI:Create(textFieldType) --[[@as AceGUIMultiLineEditBox|ClickedReadOnlyMultilineEditBox]]
-	textField:SetNumLines(22)
-	textField:SetFullWidth(true)
-	textField:SetLabel("")
-
-	importExportFrame:AddChild(textField)
-
-	if mode == "export" then
-		--- @cast textField ClickedReadOnlyMultilineEditBox
-
-		local text = Clicked:SerializeProfile(Addon.db.profile, true, false)
-
-		textField:SetText(text)
-		textField:SetFocus()
-		textField:HighlightText()
-	elseif mode == "import" or mode == "import_full" then
-		--- @cast textField AceGUIMultiLineEditBox
-
-		textField:DisableButton(true)
-		textField:SetFocus()
-		textField:SetCallback("OnTextChanged", function(_, _, text)
-			local success, data = Clicked:DeserializeProfile(text, true)
-
-			if success then
-				--- @cast data table
-
-				local function OnConfirm()
-					OverwriteCurrentProfile(data, mode == "import_full")
-				end
-
-				Addon:ShowConfirmationPopup(Addon.L["Profile import successful, do you want to apply this profile? This will overwrite the current profile."], OnConfirm)
-				importExportFrame:Hide()
-			else
-				--- @cast data string
-
-				textField:SetText("")
-				importExportFrame:SetStatusText(data)
-			end
-		end)
-	end
-
-	importExportFrame:SetCallback("OnClose", function(widget)
-		AceGUI:Release(widget)
-
-		if Addon:IsGameVersionAtleast("RETAIL") then
-			Settings.OpenToCategory(panelId)
-			Settings.OpenToCategory(panelId)
-		else
-			InterfaceOptionsFrame_OpenToCategory(panelId)
-			InterfaceOptionsFrame_OpenToCategory(panelId)
-		end
-	end)
-
-	HideUIPanel(InterfaceOptionsFrame)
-	HideUIPanel(GameMenuFrame)
-end
-
 -- Private addon API
 
 function Addon:ProfileOptions_Initialize()
@@ -162,13 +61,7 @@ function Addon:ProfileOptions_Initialize()
 		type = "execute",
 		order = 62,
 		func = function()
-			if IsShiftKeyDown() then
-				--@debug@
-				OpenImportExportFrame("import_full")
-				--@end-debug@
-			else
-				OpenImportExportFrame("import")
-			end
+			Addon.ImportFrame:ImportProfile()
 		end
 	}
 
@@ -177,7 +70,7 @@ function Addon:ProfileOptions_Initialize()
 		type = "execute",
 		order = 63,
 		func = function()
-			OpenImportExportFrame("export")
+			Addon.ExportFrame:ExportProfile(Addon.db.profile)
 		end
 	}
 
@@ -323,19 +216,10 @@ function Addon:OnCommReceived(_, message, _, sender)
 
 		Addon:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", Addon.OnCommProgress, self)
 	else
-		local success, data = Clicked:DeserializeProfile(message, false)
+		local success, data = Clicked:Deserialize(message, false)
 
-		if success then
-			--- @cast data table
-
-			local function OnConfirm()
-				OverwriteCurrentProfile(data, false)
-			end
-
-			Addon:ShowConfirmationPopup(string.format(Addon.L["%s has sent you a Clicked profile, do you want to apply it? This will overwrite the current profile."], sender), OnConfirm)
-
-			shareEnabled = false
-		end
+		Addon.ImportFrame:ImportProfileFromComm(success, data, sender)
+		shareEnabled = not success
 	end
 
 	AceConfigRegistry:NotifyChange("Clicked/Profile")

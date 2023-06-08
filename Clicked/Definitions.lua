@@ -194,3 +194,9 @@
 
 --- @class ShareData.Group : Group
 --- @field public bindings Binding[]
+
+--- @class ExportProfile : Profile
+--- @field public lightweight boolean
+--- @field public type "profile"
+--- @field private options nil
+--- @field private blacklist nil

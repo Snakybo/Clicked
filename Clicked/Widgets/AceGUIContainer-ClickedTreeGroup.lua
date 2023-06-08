@@ -567,9 +567,9 @@ local function Button_OnClick(frame, button)
 			disabled = inCombat,
 			func = function ()
 				if frame.group ~= nil then
-					Addon:BindingExportFrame_Open(frame.group, "group")
+					Addon.ExportFrame:ExportGroup(frame.group)
 				elseif frame.binding ~= nil then
-					Addon:BindingExportFrame_Open(frame.binding, "binding")
+					Addon.ExportFrame:ExportBinding(frame.binding)
 				end
 			end
 		})

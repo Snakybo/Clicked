@@ -21,44 +21,26 @@ local Addon = select(2, ...)
 
 local frame
 
---- @param target Binding|Group
---- @param type "group"|"binding"
-function Addon:BindingExportFrame_Open(target, type)
+--- @param data string
+--- @param title string
+--- @param statusText string
+--- @return AceGUIFrame?
+local function OpenFrame(data, title, statusText)
 	if frame ~= nil and frame:IsVisible() then
-		return
-	end
-
-	local serialized
-
-	if type == "group" then
-		--- @cast target Group
-		serialized = Clicked:SerializeGroup(target)
-	elseif type == "binding" then
-		--- @cast target Binding
-		serialized = Clicked:SerializeBinding(target)
-	else
-		error("bad argument #2, expected group or binding but got " .. type)
+		return nil
 	end
 
 	frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
 	frame:MoveToFront()
-
-	if type == "group" then
-		--- @cast target Group
-		frame:SetTitle(Addon.L["Export Group"])
-		frame:SetStatusText(string.format(Addon.L["Exporting '%s'"], target.name))
-	elseif type == "binding" then
-		--- @cast target Binding
-		frame:SetTitle(Addon.L["Export Binding"])
-		frame:SetStatusText(string.format(Addon.L["Exporting '%s'"], Addon:GetBindingNameAndIcon(target)))
-	end
-
+	frame:SetTitle(title)
+	frame:SetStatusText(statusText)
 	frame:EnableResize(false)
 	frame:SetWidth(600)
 	frame:SetHeight(400)
 	frame:SetLayout("Flow")
 	frame:SetCallback("OnClose", function(widget)
 		AceGUI:Release(widget)
+		frame = nil
 	end)
 
 	local textField = AceGUI:Create("MultiLineEditBox") --[[@as AceGUIMultiLineEditBox]]
@@ -67,9 +49,9 @@ function Addon:BindingExportFrame_Open(target, type)
 	textField:SetNumLines(18)
 	textField:SetLabel(Addon.L["Copy and share this text"])
 	textField:DisableButton(true)
-	textField:SetText(serialized)
+	textField:SetText(data)
 	textField:SetCallback("OnTextChanged", function()
-		textField:SetText(serialized)
+		textField:SetText(data)
 		textField:SetFocus()
 		textField:HighlightText()
 	end)
@@ -77,4 +59,31 @@ function Addon:BindingExportFrame_Open(target, type)
 	textField:HighlightText()
 
 	frame:AddChild(textField)
+
+	return frame
 end
+
+-- Private addon API
+
+--- @class ExportFrame
+local ExportFrame = {}
+
+--- @param target Group
+function ExportFrame:ExportGroup(target)
+	local serialized = Clicked:SerializeGroup(target)
+	OpenFrame(serialized, Addon.L["Export Group"], string.format(Addon.L["Exporting '%s'"], target.name))
+end
+
+--- @param target Binding
+function ExportFrame:ExportBinding(target)
+	local serialized = Clicked:SerializeBinding(target)
+	OpenFrame(serialized, Addon.L["Export Binding"], string.format(Addon.L["Exporting '%s'"], Addon:GetBindingNameAndIcon(target)))
+end
+
+--- @param target Profile
+function ExportFrame:ExportProfile(target)
+	local serialized = Clicked:SerializeProfile(target, true, false)
+	OpenFrame(serialized, Addon.L["Export Profile"], string.format(Addon.L["Exporting '%s'"], Addon.db:GetCurrentProfile()))
+end
+
+Addon.ExportFrame = ExportFrame

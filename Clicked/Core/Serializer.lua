@@ -22,21 +22,6 @@ local Addon = select(2, ...)
 
 -- Local support functions
 
---- @param data Profile
---- @return boolean status
---- @return string? message
-local function ValidateData(data)
-	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
-		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
-	end
-
-	if data.bindings == nil or data.groups == nil then
-		return false, "Invalid data"
-	end
-
-	return true, nil
-end
-
 --- @param data table
 --- @param printable boolean
 --- @return string
@@ -78,6 +63,22 @@ local function RegisterBinding(data)
 	end
 
 	Addon:RegisterBinding(data.binding, Addon.BindingScope.PROFILE)
+end
+
+--- @param data ExportProfile
+local function RegisterProfile(data)
+	if not data.lightweight then
+		Addon.db.profile = wipe(Addon.db.profile)
+	end
+
+	data.lightweight = nil
+	data.type = nil
+
+	for key in pairs(data) do
+		Addon.db.profile[key] = data[key]
+	end
+
+	Clicked:ReloadDatabase()
 end
 
 -- Public addon API
@@ -131,62 +132,6 @@ function Clicked:SerializeBinding(binding)
 	return SerializeTable(data, true)
 end
 
---- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeGroup` and `SerializeBinding`.
----
---- The deserialization process itself does not actually import the data, it simply makes it readable for a consumer. Use the `Clicked:Import` function to
---- import the deserialized data.
----
---- @param encoded string
---- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
---- @return ShareData|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
---- @see Clicked#Import
---- @see Clicked#SerializeBinding
---- @see Clicked#SerializeGroup
-function Clicked:Deserialize(encoded)
-	--- @diagnostic disable-next-line: undefined-field
-	local compressed = LibDeflate:DecodeForPrint(encoded)
-
-	if compressed == nil then
-		return false, "Failed to decode"
-	end
-
-	--- @diagnostic disable-next-line: undefined-field
-	local serialized = LibDeflate:DecompressDeflate(compressed)
-
-	if serialized == nil then
-		return false, "Failed to decompress"
-	end
-
-	local success, data = AceSerializer:Deserialize(serialized)
-
-	if not success then
-		return false, "Failed to deserialize"
-	end
-
-	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
-		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
-	end
-
-	return true, data
-end
-
---- Import deserialized data into the addon, this is step two of `Deserialize`.
----
---- @param data ShareData
---- @return boolean
-function Clicked:Import(data)
-	if data.type == "group" then
-		RegisterGroup(data)
-		return true
-	elseif data.type == "binding" then
-		RegisterBinding(data)
-		return true
-	end
-
-	print("Unknown data type: " .. data.type)
-	return false
-end
-
 --- Serialize the specified profile and generate a string that can be shared via addon communication channels, or in plaintext format. By default this function
 --- will only serialize the `bindings` and `groups` of a profile, however the `full` parameter can be specified to serialize the entire profile, including all
 --- user settings.
@@ -195,7 +140,7 @@ end
 --- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
 --- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
 --- @return string
---- @see Clicked#DeserializeProfile
+--- @see Clicked#Deserialize
 function Clicked:SerializeProfile(profile, printable, full)
 	assert(type(profile) == "table", "bad argument #1, expected table but got " .. type(profile))
 	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
@@ -204,17 +149,21 @@ function Clicked:SerializeProfile(profile, printable, full)
 	local data
 
 	if full then
-		--- @type any
+		--- @type Profile
 		data = Addon:DeepCopyTable(profile)
+		data.type = "profile"
+		data.lightweight = false
 	else
 		-- Construct a lightweight version of the database, only including the version, bindings, and groups.
 		-- So any user settings are not serialized (minimap, blacklist, options, etc)
+		--- @type ExportProfile
 		data = {
 			version = profile.version,
 			bindings = Addon:DeepCopyTable(profile.bindings),
 			groups = Addon:DeepCopyTable(profile.groups),
 			nextGroupId = profile.nextGroupId,
 			nextBindingId = profile.nextBindingId,
+			type = "profile",
 			lightweight = true
 		}
 
@@ -227,15 +176,19 @@ function Clicked:SerializeProfile(profile, printable, full)
 	return SerializeTable(data, printable)
 end
 
---- Deserialize a string into a profile, this is the ingest counterpart of `SerializeProfile`.
+--- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeGroup` and `SerializeBinding`.
 ---
---- @param encoded string The encoded profile string
---- @param printable boolean Whether the input was serialized in a printable format, `false` if the profile was shared via addon communication channels.
+--- The deserialization process itself does not actually import the data, it simply makes it readable for a consumer. Use the `Clicked:Import` function to
+--- import the deserialized data.
+---
+--- @param encoded string
+--- @param printable boolean
 --- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
---- @return table|string result A `table` containing the resulting profile data, or a `string` with an error message if `status` is `false`.
---- @return boolean lightweight Whether the imported profile data is lightweight, to prevent lightweight profiles from being imported as a full profile.
---- @see Clicked#SerializeProfile
-function Clicked:DeserializeProfile(encoded, printable)
+--- @return ShareData|ExportProfile|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
+--- @see Clicked#Import
+--- @see Clicked#SerializeBinding
+--- @see Clicked#SerializeGroup
+function Clicked:Deserialize(encoded, printable)
 	local compressed
 
 	if printable then
@@ -247,30 +200,48 @@ function Clicked:DeserializeProfile(encoded, printable)
 	end
 
 	if compressed == nil then
-		return false, "Failed to decode", false
+		return false, Addon.L["Failed to decode"]
 	end
 
 	--- @diagnostic disable-next-line: undefined-field
 	local serialized = LibDeflate:DecompressDeflate(compressed)
 
 	if serialized == nil then
-		return false, "Failed to decompress", false
+		return false, Addon.L["Failed to decompress"]
 	end
 
 	local success, data = AceSerializer:Deserialize(serialized)
 
-	if success then
-		local validated, message = ValidateData(data)
-
-		if validated then
-			return true, data, false
-		end
-
-		return false, "Failed to validate data: " .. message, false
+	if not success then
+		return false, Addon.L["Failed to deserialize"]
 	end
 
-	local lightweight = data.lightweight or false
-	data.lightweight = nil
+	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
+		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
+	end
 
-	return success, data, lightweight
+	return true, data
+end
+
+--- Import deserialized data into the addon, this is step two of `Deserialize`.
+---
+--- @param data ShareData|ExportProfile
+--- @return boolean
+function Clicked:Import(data)
+	if data.type == "group" then
+		--- @cast data ShareData
+		RegisterGroup(data)
+		return true
+	elseif data.type == "binding" then
+		--- @cast data ShareData
+		RegisterBinding(data)
+		return true
+	elseif data.type == "profile" then
+		--- @cast data ExportProfile
+		RegisterProfile(data)
+		return true
+	end
+
+	print("Unknown data type: " .. data.type)
+	return false
 end

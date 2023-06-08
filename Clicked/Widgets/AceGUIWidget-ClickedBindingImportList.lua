@@ -412,7 +412,7 @@ function Methods:ShowScroll(show)
 	end
 end
 
---- @param data ShareData
+--- @param data ShareData[]
 function Methods:SetItems(data)
 	local groups = (self.status or self.localstatus).groups
 
@@ -455,10 +455,12 @@ function Methods:SetItems(data)
 		groups[group.identifier] = true
 	end
 
-	if data.type == "group" then
-		CreateGroupItem(data.group)
-	elseif data.type == "binding" then
-		CreateBindingItem(data.binding, self.tree)
+	for _, current in ipairs(data) do
+		if current.type == "group" then
+			CreateGroupItem(current.group)
+		elseif current.type == "binding" then
+			CreateBindingItem(current.binding, self.tree)
+		end
 	end
 
 	self:RefreshTree()

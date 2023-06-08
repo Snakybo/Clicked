@@ -219,8 +219,11 @@ end
 local function GetSerializedProfileString()
 	local lines = {}
 
-	table.insert(lines, "----- Saved Variables -----")
-	table.insert(lines, Clicked:SerializeProfile({ global = Addon.db.global, profile = Addon.db.profile }, true, true))
+	table.insert(lines, "----- Saved Global Variables -----")
+	table.insert(lines, Clicked:SerializeProfile(Addon.db.global, true, true))
+	table.insert(lines, "")
+	table.insert(lines, "----- Saved Profile Variables -----")
+	table.insert(lines, Clicked:SerializeProfile(Addon.db.profile, true, true))
 
 	return table.concat(lines, "\n")
 end
