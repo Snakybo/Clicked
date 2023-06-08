@@ -106,7 +106,7 @@ local function UpdateButton(button, line, canExpand, isExpanded)
 	button.text:SetPoint("TOPLEFT", (line.icon and 28 or 0) + 8 * line.level, -1)
 	button.text:SetText(line.title or "")
 
-	if line.showKeybinds then
+	if line.showKeybinds and not Addon:IsStringNilOrEmpty(line.keybind) then
 		button.keybind:SetPoint("BOTTOMLEFT", (line.icon and 28 or 0) + 8 * line.level, 1)
 		button.keybind:SetText(line.keybind or "")
 		button.keybind:Show()
@@ -428,7 +428,7 @@ function Methods:SetItems(data)
 			binding = binding,
 			title = title,
 			icon = icon,
-			keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"],
+			keybind = #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or "",
 		}
 
 		table.insert(parent, item)
