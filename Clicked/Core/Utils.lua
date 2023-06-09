@@ -667,6 +667,13 @@ function Addon:GetSpellInfo(input, addSubText)
 		end
 	end
 
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		local dragonRidingSpells = { 372608, 372610, 361584, 374990, 403216 }
+		if tContains(dragonRidingSpells, spellId) then
+			name = string.format("%s(%s)", name, "Dragonriding")
+		end
+	end
+
 	return name, rank, icon, castTime, minRange, maxRange, spellId
 end
 
