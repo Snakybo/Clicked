@@ -292,3 +292,4 @@ L["Imported Clicked profile from %s"] = true
 L["Profile specific bindings"] = true
 L["Global"] = true
 L["Global bindings"] = true
+L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu."] = true

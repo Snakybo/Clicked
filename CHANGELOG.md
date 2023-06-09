@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Use new import and export window for profile import, export, and direct player share
+* Improve warning shown when the self-cast modifier is enabled
 
 ### Fixed
 

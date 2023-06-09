@@ -255,32 +255,6 @@ local function GetKeybindIndex(keybind)
 	return index
 end
 
----@param keybind string
----@return string modifiers
----@return string key
-local function GetKeybindModifiersAndKey(keybind)
-	local modifiers = ""
-	local current = ""
-
-	for i = 1, #keybind do
-		local char = string.sub(keybind, i, i)
-
-		if char == "-" and #current > 0 then
-			if not Addon:IsStringNilOrEmpty(modifiers) then
-				modifiers = modifiers .. "-" .. current
-			else
-				modifiers = current
-			end
-
-			current = ""
-		else
-			current = current .. char
-		end
-	end
-
-	return modifiers, current
-end
-
 StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	text = "",
 	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked"]),
@@ -710,6 +684,27 @@ function Addon:GetSpellId(name)
 	return select(7, self:GetSpellInfo(name))
 end
 
+--- @param keybind string
+--- @return string[] modifiers
+--- @return string key
+function Addon:GetKeybindModifiersAndKey(keybind)
+	local modifiers = {}
+	local current = ""
+
+	for i = 1, #keybind do
+		local char = string.sub(keybind, i, i)
+
+		if char == "-" and #current > 0 then
+			table.insert(modifiers, current)
+			current = ""
+		else
+			current = current .. char
+		end
+	end
+
+	return modifiers, current
+end
+
 --- Generate an attribute identifier for a key. This will
 --- separate the keybind into two parts: a prefix, and a suffix.
 ---
@@ -737,11 +732,11 @@ end
 --- @return string prefix
 --- @return string suffix
 function Addon:CreateAttributeIdentifier(keybind, hovercast)
-	local mods, key = GetKeybindModifiersAndKey(keybind)
+	local modifiers, key = self:GetKeybindModifiersAndKey(keybind)
 	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	-- convert the parts to lowercase so it fits the attribute naming style
-	mods = string.lower(mods)
+	local mods = string.lower(table.concat(modifiers, "-"))
 	key = string.lower(key)
 
 	if buttonIndex ~= nil and hovercast then
@@ -1046,7 +1041,7 @@ function Addon:IsMouseButton(keybind)
 		return false
 	end
 
-	local _, key = GetKeybindModifiersAndKey(keybind)
+	local _, key = self:GetKeybindModifiersAndKey(keybind)
 	local buttonIndex = string.match(key, "^BUTTON(%d+)$")
 
 	return buttonIndex ~= nil
@@ -1061,8 +1056,8 @@ function Addon:IsUnmodifiedKeybind(keybind)
 		return false
 	end
 
-	local modifiers = GetKeybindModifiersAndKey(keybind)
-	return Addon:IsStringNilOrEmpty(modifiers)
+	local modifiers = self:GetKeybindModifiersAndKey(keybind)
+	return #modifiers == 0
 end
 
 --- Get a list of unused modifier key keybinds.

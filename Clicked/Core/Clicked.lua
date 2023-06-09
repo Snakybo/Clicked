@@ -89,15 +89,6 @@ local function HandleChatCommand(input)
 	end
 end
 
-local function SendSelfcastWarning()
-	local modifier = GetModifiedClick("SELFCAST")
-
-	if modifier ~= "NONE" then
-		local message = Addon:GetPrefixedAndFormattedString("The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu.", modifier)
-		print(message)
-	end
-end
-
 -- Event handlers
 
 local function PLAYER_REGEN_DISABLED()
@@ -262,10 +253,6 @@ function Clicked:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		SendSelfcastWarning()
-	end
 end
 
 function Clicked:OnDisable()
