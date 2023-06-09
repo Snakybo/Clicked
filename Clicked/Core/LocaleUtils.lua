@@ -125,7 +125,7 @@ local function GetTalentsForSpecialization(specId)
 					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 					local spellName = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
 
-					if spellName ~= nil then
+					if not Addon:IsStringNilOrEmpty(spellName) then
 						table.insert(allTalents[specId], {
 							entryId = talentId,
 							spellId = definitionInfo.spellID,

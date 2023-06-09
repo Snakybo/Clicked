@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix conflict between Dragonriding and Evoker abilities [#170] (by [nihilistzsche])
+* Fix potential Lua error in talent selection dropdown
 
 ## [1.12.1] - 2023-05-21
 
