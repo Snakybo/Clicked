@@ -14,7 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local AceGUI = LibStub("AceGUI-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
@@ -24,8 +23,6 @@ local AceComm = LibStub("AceComm-3.0")
 --- @class ClickedInternal : AceComm-3.0
 local Addon = select(2, ...)
 
---- @type AceGUIFrame
-local importExportFrame
 local panelId
 
 -- Share to target player
