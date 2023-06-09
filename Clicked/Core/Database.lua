@@ -533,7 +533,7 @@ function Addon:CloneBinding(original)
 	clone.keybind = ""
 	clone.integrations = {}
 
-	self:RegisterBinding(clone, Addon.BindingScope.PROFILE)
+	self:RegisterBinding(clone, original.scope)
 	return clone
 end
 
