@@ -164,6 +164,7 @@ read_globals = {
 	"SPELLS_PER_PAGE",
 	"TalentButtonUtil",
 	"TalentUtil",
+	"tContains",
 	"TooltipDataProcessor",
 	"UIParent",
 	"UnitClass",

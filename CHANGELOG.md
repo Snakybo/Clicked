@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Use new import and export window for profile import, export, and direct player share
 
+### Fixed
+
+* Fix conflict between Dragonriding and Evoker abilities [#170] (by [nihilistzsche])
+
 ## [1.12.1] - 2023-05-21
 
 ### Fixed
@@ -1232,6 +1236,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#170]: https://github.com/Snakybo/Clicked/pull/170
 [#169]: https://github.com/Snakybo/Clicked/issues/169
 [#166]: https://github.com/Snakybo/Clicked/issues/166
 [#163]: https://github.com/Snakybo/Clicked/issues/163
@@ -1310,3 +1315,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [tflo]: https://github.com/tflo
 [yannlugrin]: https://github.com/yannlugrin
 [novsirion]: https://github.com/novsirion
+[nihilistzsche]: https://github.com/nihilistzsche

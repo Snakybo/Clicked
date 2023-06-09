@@ -667,10 +667,15 @@ function Addon:GetSpellInfo(input, addSubText)
 		end
 	end
 
+	-- 10.0: Evokers and Dragonriding share ability names, this will ensure that the Dragonriding abilities are suffixed with (Dragonriding) so that
+	--       both spells will work.
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		local dragonRidingSpells = { 372608, 372610, 361584, 374990, 403216 }
+
 		if tContains(dragonRidingSpells, spellId) then
-			name = string.format("%s(%s)", name, "Dragonriding")
+			--- @diagnostic disable-next-line: redundant-parameter
+			local subtext = GetSpellSubtext(spellId)
+			name = string.format("%s(%s)", name, subtext)
 		end
 	end
 
