@@ -1,0 +1,5 @@
+## Interface: 100100
+## Title: TaintLess
+## Notes: Eliminates certain classes of taint errors.
+## Version: 23-05-18
+TaintLess.xml
