@@ -956,6 +956,23 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	return forms
 end
 
+--- Get the race(s) the specified binding should activate for.
+---
+--- @param binding Binding
+--- @return integer[]
+function Addon:GetBindingRaces(binding)
+	if binding.load.race.selected == 1 then
+		return { binding.load.race.single }
+	end
+
+	if binding.load.race.selected == 2 then
+		return binding.load.race.multiple
+	end
+
+	local _, raceName = UnitRace("player")
+	return { raceName }
+end
+
 --- Show a tooltip on the specified frame after a short delay.
 ---
 --- @param frame table

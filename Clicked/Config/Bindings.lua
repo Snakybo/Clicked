@@ -2024,6 +2024,11 @@ end
 --- @param container AceGUIContainer
 --- @param bonusbar Binding.NegatableStringLoadOption
 local function DrawMacroBonusBar(container, bonusbar)
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
 	local items = {
 		[false] = Addon.L["Bonus bar"],
 		[true] = Addon.L["Not bonus bar"]
@@ -2043,7 +2048,17 @@ local function DrawMacroBonusBar(container, bonusbar)
 			end
 		end
 
+		local tips = {
+			string.format(Addon.L["For Dragonriding, use bonus bar %s"], "|r5|cffffffff")
+		}
+
+		if tContains(Addon:GetBindingRaces(binding), "Dracthyr") then
+			table.insert(tips, string.format(Addon.L["For Soar, use bonus bar %s"], "|r1|cffffffff"))
+		end
+
 		inputField:SetCallback("OnTextChanged", OnTextChanged)
+
+		RegisterTooltip(inputField, Addon.L["Bonus bar"],  table.concat(tips, "\n"))
 	end
 end
 
