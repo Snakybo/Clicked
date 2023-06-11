@@ -194,6 +194,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.flyable, "flyable")
 	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
+	ParseNegatableStringCondition(action.bonusbar, "bonusbar", "nobonusbar")
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
@@ -252,6 +253,7 @@ local function ConstructAction(binding, target)
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
 		AppendCondition(binding.load.advancedFlyable, "advflyable")
+		AppendNegatableStringCondition(binding.load.bonusbar, "bonusbar")
 	end
 
 	do

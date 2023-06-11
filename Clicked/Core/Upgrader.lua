@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 4
+Addon.DATA_VERSION = 5
 
 -- Local support functions
 
@@ -762,6 +762,16 @@ local function Upgrade(db, from)
 		for _, group in ipairs(db.groups) do
 			group.scope = 1
 			group.identifier = "1-" .. group.identifier
+		end
+	end
+
+	if from < 5 then
+		for _, binding in ipairs(db.bindings) do
+			binding.load.bonusbar = {
+				selected = false,
+				negated = false,
+				value = ""
+			}
 		end
 	end
 end

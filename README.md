@@ -96,6 +96,7 @@ These map directly to the macro conditionals found [here](https://wow.gamepedia.
 * **Flying** checks if you are flying
 * **Flyable** checks if you are in an area that permits flying
 * **Advanced flyable** (or **Dragonriding**) checks if you are in an area that permits Dragonriding
+* **Bonus bar** checks if the specified bonus bar is active
 
 ### Configure multiple bindings on the same keybind
 

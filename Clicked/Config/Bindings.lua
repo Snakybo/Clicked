@@ -2022,6 +2022,32 @@ local function DrawMacroAdvancedFlyable(container, advancedFlyable)
 end
 
 --- @param container AceGUIContainer
+--- @param bonusbar Binding.NegatableStringLoadOption
+local function DrawMacroBonusBar(container, bonusbar)
+	local items = {
+		[false] = Addon.L["Bonus bar"],
+		[true] = Addon.L["Not bonus bar"]
+	}
+
+	local order = {
+		false,
+		true
+	}
+
+	local _, _, inputField = DrawNegatableStringLoadOption(container, Addon.L["Bonus bar"], items, order, bonusbar)
+
+	if inputField ~= nil then
+		local function OnTextChanged(_, _, value)
+			if tonumber(value) == nil then
+				inputField:SetText(bonusbar.value --[[@as string]])
+			end
+		end
+
+		inputField:SetCallback("OnTextChanged", OnTextChanged)
+	end
+end
+
+--- @param container AceGUIContainer
 --- @param outdoors Binding.LoadOption
 local function DrawMacroOutdoors(container, outdoors)
 	local items = {
@@ -2104,6 +2130,7 @@ local function DrawBindingMacroConditionsPage(container, binding)
 
 		if Addon:IsGameVersionAtleast("RETAIL") then
 			DrawMacroAdvancedFlyable(container, load.advancedFlyable)
+			DrawMacroBonusBar(container, load.bonusbar)
 		end
 	end
 end
