@@ -1279,6 +1279,7 @@ local function DrawMacroSelection(container, targets, action)
 			local widget = Addon:GUI_MultilineEditBox("OnEnterPressed", action, "macroValue", binding)
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
+			Addon.Media:UseMonoFont(widget)
 
 			group:AddChild(widget)
 		end
@@ -2448,6 +2449,7 @@ local function DrawBindingStatusPage(container, binding)
 			local text = Addon:GetMacroForBindings(bindings, interactionType)
 			text = LibMacroSyntaxHighlight:Colorize(text)
 
+			Addon.Media:UseMonoFont(widget)
 			widget:SetText(text)
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)

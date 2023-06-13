@@ -36,6 +36,7 @@ UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua
 
 # Configuration and UI
+Media\Media.lua
 Config\GUI.lua
 Config\Addon.lua
 Config\Profile.lua
