@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Improve warning shown when the self-cast modifier is enabled
 * Add `bonusbar` and `nobonusbar` macro conditions
   * For Dragonriding, use bonus bar 5, for Dracthyr Soar use bonus bar 1
+* Add syntax higlighting to the generated macro text
 
 ### Fixed
 

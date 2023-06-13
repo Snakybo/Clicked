@@ -16,6 +16,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
+local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -2444,7 +2445,10 @@ local function DrawBindingStatusPage(container, binding)
 				widget:SetLabel(Addon.L["Generated macro"])
 			end
 
-			widget:SetText(Addon:GetMacroForBindings(bindings, interactionType))
+			local text = Addon:GetMacroForBindings(bindings, interactionType)
+			text = LibMacroSyntaxHighlight:Colorize(text)
+
+			widget:SetText(text)
 			widget:SetFullWidth(true)
 			widget:SetNumLines(8)
 
