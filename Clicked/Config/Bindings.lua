@@ -1148,7 +1148,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 		end
 
 		if mode == Addon.BindingTypes.SPELL then
-			local hasRank = id ~= nil and string.find(name, "%((.+)%)")
+			local hasRank = not Addon:IsGameVersionAtleast("RETAIL") and id ~= nil and string.find(name, "%((.+)%)")
 
 			-- pick from spellbook button
 			do
@@ -1189,26 +1189,24 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			end
 
 			-- remove rank button
-			do
-				if hasRank then
-					local function OnClick()
-						if id == nil then
-							return
-						end
-
-						action[valueKey] = Addon:GetSpellInfo(id, false)
-						action.convertValueToId = false
-
-						Clicked:ReloadBinding(binding, true)
+			if hasRank then
+				local function OnClick()
+					if id == nil then
+						return
 					end
 
-					local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-					widget:SetText(Addon.L["Remove rank"])
-					widget:SetCallback("OnClick", OnClick)
-					widget:SetRelativeWidth(0.35)
+					action[valueKey] = Addon:GetSpellInfo(id, false)
+					action.convertValueToId = false
 
-					group:AddChild(widget)
+					Clicked:ReloadBinding(binding, true)
 				end
+
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+				widget:SetText(Addon.L["Remove rank"])
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetRelativeWidth(0.35)
+
+				group:AddChild(widget)
 			end
 		end
 	end
