@@ -149,16 +149,36 @@ function BlacklistOptions:CreateOptionsTable()
 		type = "group",
 		name = Addon.L["Frame Blacklist"],
 		args = {
-			help = {
+			help1 = {
 				type = "description",
-				name = Addon.L["If you want to exclude certain unit frames from click-cast functionality, you can tick the boxes next to each item in order to blacklist them. This will take effect immediately."],
+				name = Addon.L["The frame blacklist can be used if you want to exclude specific unit frames from click-cast functionality."],
 				order = 0
+			},
+			spacer1 = {
+				type = "description",
+				name = "",
+				order = 1
+			},
+			help2 = {
+				type = "description",
+				name = Addon.L["To add a unit frame to the blacklist, simply select it from the dropdown below. To remove a unit frame from the blacklist, uncheck the box next to the item."],
+				order = 2,
+			},
+			spacer2 = {
+				type = "description",
+				name = "",
+				order = 3
+			},
+			help3 = {
+				type = "description",
+				name = Addon.L["This will take effect immediately."],
+				order = 4,
 			},
 			selector = {
 				type = "select",
 				name = Addon.L["Add a unit frame"],
 				width = "full",
-				order = 1,
+				order = 10,
 				values = function()
 					local result = {}
 
@@ -217,7 +237,7 @@ function BlacklistOptions:CreateOptionsTable()
 			selected = {
 				type = "header",
 				name = Addon.L["Selected"],
-				order = 2
+				order = 20
 			}
 		}
 	}
@@ -293,7 +313,7 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 			end,
 			type = "toggle",
 			width = "full",
-			order = 3,
+			order = 30,
 			set = function(_, value)
 				if not value then
 					Addon.db.profile.blacklist[name] = nil
