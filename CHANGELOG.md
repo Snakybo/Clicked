@@ -18,11 +18,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * For Dragonriding, use bonus bar 5, for Dracthyr Soar use bonus bar 1
 * Add syntax higlighting to the generated macro text
 * Add monospaced font for the macro text fields to improve readability
+* Add the `/clicked options` (or `/clicked opt`) command to open the addon options
 
 ### Fixed
 
 * Fix conflict between Dragonriding and Evoker abilities [#170] (by [nihilistzsche])
 * Fix potential Lua error in talent selection dropdown
+
+### Removed
+
+* Remove the `/clicked profile` and `/clicked blacklist` commands
 
 ## [1.12.1] - 2023-05-21
 

@@ -143,8 +143,7 @@ To get started with Clicked, open the binding configuration window, either by ty
 The main slash command is `/clicked`. Additionally `/cc` works as an alias for all slash commands.
 
 * Use `/clicked` to open the binding configuration window
-* Use `/clicked profile` to quickly navigate to the profile management options
-* Use `/clicked blacklist` to quickly navigate to the unit frame blacklist options
+* Use `/clicked options` (or `opt`) to quickly navigate to user options
 * Use `/clicked dump` to generate a debugging log of the current state
 
 ## Issues and support

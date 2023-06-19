@@ -141,7 +141,7 @@ function Clicked:ReloadDatabase()
 		LibDBIcon:Show("Clicked")
 	end
 
-	Addon:BlacklistOptions_Refresh()
+	Addon.BlacklistOptions:Refresh()
 	Clicked:ReloadBindings(true)
 end
 

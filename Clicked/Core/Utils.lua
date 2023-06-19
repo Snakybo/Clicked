@@ -1035,6 +1035,18 @@ function Addon:IsSetBonusActive(setItemIds, numSetPieces)
 	return false
 end
 
+--- Open the settings menu to the specified tab.
+---
+--- @param category string|integer
+function Addon:OpenSettingsMenu(category)
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		Settings.OpenToCategory(category)
+	else
+		InterfaceOptionsFrame_OpenToCategory(category)
+		InterfaceOptionsFrame_OpenToCategory(category)
+	end
+end
+
 --- Check if the specified keybind is "restricted", a restricted keybind
 --- is not allowed to do various actions as it is required for core game
 --- input (such as left and right mouse buttons).

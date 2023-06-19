@@ -23,8 +23,6 @@ local AceComm = LibStub("AceComm-3.0")
 --- @class ClickedInternal : AceComm-3.0
 local Addon = select(2, ...)
 
-local panelId
-
 -- Share to target player
 local shareTarget = ""
 local shareEnabled = false
@@ -34,18 +32,30 @@ local shareBytesSent = 0
 local shareBytesTotal = 0
 local shareMessage = ""
 
--- Local support functions
+--- @class ProfileOptions
+local ProfileOptions = {}
 
--- Private addon API
+function ProfileOptions:Initialize()
+	AceConfig:RegisterOptionsTable("Clicked/Profile", self:CreateOptionsTable())
+	AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
 
-function Addon:ProfileOptions_Initialize()
-	local profileOptions = AceDBOptions:GetOptionsTable(Addon.db)
+	AceComm:Embed(self)
+
+	if not C_ChatInfo.IsAddonMessagePrefixRegistered("Clicked") then
+		C_ChatInfo.RegisterAddonMessagePrefix("Clicked")
+	end
+end
+
+--- @private
+--- @return AceConfig.OptionsTable
+function ProfileOptions:CreateOptionsTable()
+	local options = AceDBOptions:GetOptionsTable(Addon.db)
 
 	-- Enhance profile options page with import/export buttons
-	profileOptions.plugins = profileOptions.plugins or {}
-	profileOptions.plugins["AceDBShare"] = {}
+	options.plugins = options.plugins or {}
+	options.plugins["AceDBShare"] = {}
 
-	local plugin = profileOptions.plugins["AceDBShare"]
+	local plugin = options.plugins["AceDBShare"]
 
 	plugin.importExportDesc = {
 		name = "\n" .. Addon.L["Import external profile data into your current profile, or export the current profile into a sharable format."],
@@ -124,8 +134,8 @@ function Addon:ProfileOptions_Initialize()
 				shareMessage = Clicked:SerializeProfile(Addon.db.profile, false, false)
 				shareAckReceived = false
 
-				Addon:RegisterComm("Clicked", "OnCommReceived")
-				Addon:SendCommMessage("Clicked", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
+				self:RegisterComm("Clicked", "OnCommReceived")
+				self:SendCommMessage("Clicked", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
 			end
 
 			C_Timer.After(5, OnTimeout)
@@ -143,9 +153,9 @@ function Addon:ProfileOptions_Initialize()
 			shareEnabled = value
 
 			if value then
-				Addon:RegisterComm("Clicked", "OnCommReceived")
+				self:RegisterComm("Clicked", "OnCommReceived")
 			else
-				Addon:UnregisterAllComm()
+				self:UnregisterAllComm()
 			end
 		end
 	}
@@ -173,45 +183,29 @@ function Addon:ProfileOptions_Initialize()
 		end
 	}
 
-	AceConfig:RegisterOptionsTable("Clicked/Profile", profileOptions)
-	panelId = select(2, AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked"))
-
-	AceComm:Embed(self)
-
-	if not C_ChatInfo.IsAddonMessagePrefixRegistered("Clicked") then
-		C_ChatInfo.RegisterAddonMessagePrefix("Clicked")
-	end
+	return options
 end
 
-function Addon:ProfileOptions_Open()
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		Settings.OpenToCategory(panelId)
-		Settings.OpenToCategory(panelId)
-	else
-		InterfaceOptionsFrame_OpenToCategory(panelId)
-		InterfaceOptionsFrame_OpenToCategory(panelId)
-	end
-end
-
+--- @private
 --- @param message string
 --- @param sender string
-function Addon:OnCommReceived(_, message, _, sender)
+function ProfileOptions:OnCommReceived(_, message, _, sender)
 	if InCombatLockdown() then
 		return
 	end
 
 	if message == "ShareRequest" then
 		if shareEnabled then
-			Addon:SendCommMessage("Clicked", "ShareRequestAck", "WHISPER", sender, "NORMAL")
+			self:SendCommMessage("Clicked", "ShareRequestAck", "WHISPER", sender, "NORMAL")
 		end
 	elseif message == "ShareRequestAck" then
 		shareAckReceived = true
 
 		if not shareEnabled then
-			Addon:UnregisterAllComm()
+			self:UnregisterAllComm()
 		end
 
-		Addon:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", Addon.OnCommProgress, self)
+		self:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", self.OnCommProgress, self)
 	else
 		local success, data = Clicked:Deserialize(message, false)
 
@@ -222,9 +216,10 @@ function Addon:OnCommReceived(_, message, _, sender)
 	AceConfigRegistry:NotifyChange("Clicked/Profile")
 end
 
+--- @private
 --- @param sent number
 --- @param total number
-function Addon:OnCommProgress(sent, total)
+function ProfileOptions:OnCommProgress(sent, total)
 	shareBytesSent = sent
 	shareBytesTotal = total
 
@@ -234,3 +229,5 @@ function Addon:OnCommProgress(sent, total)
 
 	AceConfigRegistry:NotifyChange("Clicked/Profile")
 end
+
+Addon.ProfileOptions = ProfileOptions

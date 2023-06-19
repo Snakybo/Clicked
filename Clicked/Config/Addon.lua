@@ -21,10 +21,18 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
--- Private addon API
+--- @class AddonOptions
+local AddonOptions = {}
 
-function Addon:GeneralOptions_Initialize()
-	local config = {
+function AddonOptions:Initialize()
+	AceConfig:RegisterOptionsTable("Clicked", self:CreateOptionsTable())
+	AceConfigDialog:AddToBlizOptions("Clicked", Addon.L["Clicked"])
+end
+
+--- @private
+--- @return AceConfig.OptionsTable
+function AddonOptions:CreateOptionsTable()
+	return {
 		type = "group",
 		name = Addon.L["Clicked"],
 		args = {
@@ -118,7 +126,6 @@ function Addon:GeneralOptions_Initialize()
 			}
 		}
 	}
-
-	AceConfig:RegisterOptionsTable("Clicked", config)
-	AceConfigDialog:AddToBlizOptions("Clicked", Addon.L["Clicked"])
 end
+
+Addon.AddonOptions = AddonOptions

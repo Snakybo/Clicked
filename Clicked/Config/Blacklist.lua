@@ -57,106 +57,29 @@ local UNIT_FRAME_ADDON_MAPPING = {
 }
 
 local config
-local panelId
 local values = {}
 
 -- Local support functions
 
---- @param name string
---- @return string
-local function GetUnitFrameSource(name)
-	for source, frames in pairs(UNIT_FRAME_ADDON_MAPPING) do
-		for _, frame in ipairs(frames) do
-			if string.match(name, frame) then
-				return UNIT_FRAME_ADDON_MAPPING[source].name
-			end
-		end
-	end
+--- @class BlacklistOptions
+local BlacklistOptions = {}
 
-	return Addon.L["Other"]
-end
+function BlacklistOptions:Initialize()
+	config = self:CreateOptionsTable()
 
---- @param name string
---- @param enabled boolean
-local function SetDropdownItem(name, enabled)
-	local source = GetUnitFrameSource(name)
-	local index = 0
+	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
+	AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
 
-	values[source] = values[source] or {}
-
-	for i, item in ipairs(values[source]) do
-		if item == name then
-			index = i
-			break
-		end
-	end
-
-	if enabled and index == 0 then
-		table.insert(values[source], name)
-	elseif not enabled and index > 0 then
-		table.remove(values[source], index)
+	for _, frame in Clicked:IterateClickCastFrames() do
+		self:RegisterFrame(frame)
 	end
 end
-
---- @param name string
---- @param enabled boolean
-local function SetSelectedItem(name, enabled)
-	local args = config.args
-
-	if enabled then
-		args[name] = {
-			name = function()
-				local source = GetUnitFrameSource(name)
-				local numChildren = #Addon:GetBlacklistGroupItems(name) - 1
-				local result = source .. ": " .. name
-
-				if numChildren > 0 then
-					result = result .. " |cff808080(plus " .. numChildren .. " children)|r"
-				end
-
-				return result
-			end,
-			desc = function()
-				local result = {}
-
-				for _, frame in ipairs(Addon:GetBlacklistGroupItems(name)) do
-					table.insert(result, "- " .. frame)
-				end
-
-				table.sort(result)
-
-				return table.concat(result, "\n")
-			end,
-			type = "toggle",
-			width = "full",
-			order = 3,
-			set = function(_, value)
-				if not value then
-					Addon.db.profile.blacklist[name] = nil
-					args[name] = nil
-
-					SetDropdownItem(name, true)
-
-					Addon:UpdateClickCastHeaderBlacklist()
-					Clicked:ProcessActiveBindings()
-				end
-			end,
-			get = function()
-				return Addon.db.profile.blacklist[name] or false
-			end
-		}
-	else
-		args[name] = nil
-	end
-end
-
--- Private addon API
 
 --- Set the name of the blacklist group the frame belongs to.
 ---
 --- @param frame Frame
 --- @return string?
-function Addon:SetBlacklistGroup(frame, group)
+function BlacklistOptions:SetBlacklistGroup(frame, group)
 	frame:SetAttribute("clicked-blacklist-group", group)
 end
 
@@ -164,7 +87,7 @@ end
 ---
 --- @param frame Frame
 --- @return string?
-function Addon:GetBlacklistGroup(frame)
+function BlacklistOptions:GetBlacklistGroup(frame)
 	local group = frame:GetAttribute("clicked-blacklist-group")
 
 	if group ~= nil then
@@ -181,11 +104,11 @@ end
 --- Get the names of all frames within a blacklist group
 --- @param group any
 --- @return string[]
-function Addon:GetBlacklistGroupItems(group)
+function BlacklistOptions:GetBlacklistGroupItems(group)
 	local result = {}
 
 	for _, frame in Clicked:IterateClickCastFrames() do
-		if Addon:GetBlacklistGroup(frame) == group then
+		if self:GetBlacklistGroup(frame) == group then
 			table.insert(result, frame:GetName())
 		end
 	end
@@ -193,8 +116,36 @@ function Addon:GetBlacklistGroupItems(group)
 	return result
 end
 
-function Addon:BlacklistOptions_Initialize()
-	config = {
+function BlacklistOptions:Refresh()
+	for _, frame in Clicked:IterateClickCastFrames() do
+		self:RegisterFrame(frame)
+	end
+end
+
+--- @param frame Frame
+function BlacklistOptions:RegisterFrame(frame)
+	local group = self:GetBlacklistGroup(frame)
+
+	if group ~= nil then
+		self:SetSelectedItem(group, Addon.db.profile.blacklist[group])
+		self:SetDropdownItem(group, not Addon.db.profile.blacklist[group])
+	end
+end
+
+--- @param frame Frame
+function BlacklistOptions:UnregisterFrame(frame)
+	local group = self:GetBlacklistGroup(frame)
+
+	if group ~= nil then
+		self:SetSelectedItem(group, false)
+		self:SetDropdownItem(group, false)
+	end
+end
+
+--- @private
+--- @return AceConfig.OptionsTable
+function BlacklistOptions:CreateOptionsTable()
+	return {
 		type = "group",
 		name = Addon.L["Frame Blacklist"],
 		args = {
@@ -215,7 +166,7 @@ function Addon:BlacklistOptions_Initialize()
 						result[source] = "s|" .. source
 
 						for _, frame in ipairs(frames) do
-							local numChildren = #Addon:GetBlacklistGroupItems(frame) - 1
+							local numChildren = #self:GetBlacklistGroupItems(frame) - 1
 
 							if numChildren > 0 then
 								result[frame] = frame .. " |cff808080(plus " .. numChildren .. " children)|r"
@@ -252,8 +203,8 @@ function Addon:BlacklistOptions_Initialize()
 					if val ~= "_NIL_" then
 						Addon.db.profile.blacklist[val] = true
 
-						SetSelectedItem(val, true)
-						SetDropdownItem(val, false)
+						self:SetSelectedItem(val, true)
+						self:SetDropdownItem(val, false)
 
 						Addon:UpdateClickCastHeaderBlacklist()
 						Clicked:ProcessActiveBindings()
@@ -270,47 +221,97 @@ function Addon:BlacklistOptions_Initialize()
 			}
 		}
 	}
-
-	for _, frame in Clicked:IterateClickCastFrames() do
-		Addon:BlacklistOptions_RegisterFrame(frame)
-	end
-
-	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
-	panelId = select(2, AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked"))
 end
 
-function Addon:BlacklistOptions_Open()
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		Settings.OpenToCategory(panelId)
-		Settings.OpenToCategory(panelId)
+--- @private
+--- @param name string
+--- @return string
+function BlacklistOptions:GetUnitFrameSource(name)
+	for source, frames in pairs(UNIT_FRAME_ADDON_MAPPING) do
+		for _, frame in ipairs(frames) do
+			if string.match(name, frame) then
+				return UNIT_FRAME_ADDON_MAPPING[source].name
+			end
+		end
+	end
+
+	return Addon.L["Other"]
+end
+
+--- @private
+--- @param name string
+--- @param enabled boolean
+function BlacklistOptions:SetDropdownItem(name, enabled)
+	local source = self:GetUnitFrameSource(name)
+	local index = 0
+
+	values[source] = values[source] or {}
+
+	for i, item in ipairs(values[source]) do
+		if item == name then
+			index = i
+			break
+		end
+	end
+
+	if enabled and index == 0 then
+		table.insert(values[source], name)
+	elseif not enabled and index > 0 then
+		table.remove(values[source], index)
+	end
+end
+
+--- @private
+--- @param name string
+--- @param enabled boolean
+function BlacklistOptions:SetSelectedItem(name, enabled)
+	local args = config.args
+
+	if enabled then
+		args[name] = {
+			name = function()
+				local source = self:GetUnitFrameSource(name)
+				local numChildren = #self:GetBlacklistGroupItems(name) - 1
+				local result = source .. ": " .. name
+
+				if numChildren > 0 then
+					result = result .. " |cff808080(plus " .. numChildren .. " children)|r"
+				end
+
+				return result
+			end,
+			desc = function()
+				local result = {}
+
+				for _, frame in ipairs(self:GetBlacklistGroupItems(name)) do
+					table.insert(result, "- " .. frame)
+				end
+
+				table.sort(result)
+
+				return table.concat(result, "\n")
+			end,
+			type = "toggle",
+			width = "full",
+			order = 3,
+			set = function(_, value)
+				if not value then
+					Addon.db.profile.blacklist[name] = nil
+					args[name] = nil
+
+					self:SetDropdownItem(name, true)
+
+					Addon:UpdateClickCastHeaderBlacklist()
+					Clicked:ProcessActiveBindings()
+				end
+			end,
+			get = function()
+				return Addon.db.profile.blacklist[name] or false
+			end
+		}
 	else
-		InterfaceOptionsFrame_OpenToCategory(panelId)
-		InterfaceOptionsFrame_OpenToCategory(panelId)
+		args[name] = nil
 	end
 end
 
-function Addon:BlacklistOptions_Refresh()
-	for _, frame in Clicked:IterateClickCastFrames() do
-		Addon:BlacklistOptions_RegisterFrame(frame)
-	end
-end
-
---- @param frame Frame
-function Addon:BlacklistOptions_RegisterFrame(frame)
-	local group = Addon:GetBlacklistGroup(frame)
-
-	if group ~= nil then
-		SetSelectedItem(group, Addon.db.profile.blacklist[group])
-		SetDropdownItem(group, not Addon.db.profile.blacklist[group])
-	end
-end
-
---- @param frame table
-function Addon:BlacklistOptions_UnregisterFrame(frame)
-	local group = Addon:GetBlacklistGroup(frame)
-
-	if group ~= nil then
-		SetSelectedItem(group, false)
-		SetDropdownItem(group, false)
-	end
-end
+Addon.BlacklistOptions = BlacklistOptions

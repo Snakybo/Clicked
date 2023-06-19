@@ -215,7 +215,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 
 	table.insert(frames, frame)
 
-	Addon:BlacklistOptions_RegisterFrame(frame)
+	Addon.BlacklistOptions:RegisterFrame(frame)
 end
 
 --- Unregister a registered click-cast enabled frame. See the documentation of `RegisterClickCastFrame` for more information.
@@ -271,7 +271,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 
 	table.remove(frames, index)
 
-	Addon:BlacklistOptions_UnregisterFrame(frame)
+	Addon.BlacklistOptions:UnregisterFrame(frame)
 end
 
 --- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on

@@ -79,10 +79,8 @@ local function HandleChatCommand(input)
 	if #args == 0 then
 		Addon:BindingConfig_Open()
 	elseif #args == 1 then
-		if args[1] == "profile" then
-			Addon:ProfileOptions_Open()
-		elseif args[1] == "blacklist" then
-			Addon:BlacklistOptions_Open()
+		if args[1] == "opt" or args[1] == "options" then
+			Addon:OpenSettingsMenu("Clicked")
 		elseif args[1] == "dump" then
 			Addon:StatusOutput_Open()
 		end
@@ -207,9 +205,9 @@ function Clicked:OnInitialize()
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()
 
-	Addon:GeneralOptions_Initialize()
-	Addon:ProfileOptions_Initialize()
-	Addon:BlacklistOptions_Initialize()
+	Addon.AddonOptions:Initialize()
+	Addon.ProfileOptions:Initialize()
+	Addon.BlacklistOptions:Initialize()
 	Addon:BindingConfig_Initialize()
 	Addon:StatusOutput_Initialize()
 	Addon:AbilityTooltips_Initialize()

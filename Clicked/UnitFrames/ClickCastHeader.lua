@@ -173,7 +173,7 @@ function Addon:UpdateClickCastHeaderBlacklist()
 
 	for group, blacklisted in pairs(blacklist) do
 		if blacklisted then
-			for _, frameName in ipairs(Addon:GetBlacklistGroupItems(group)) do
+			for _, frameName in ipairs(Addon.BlacklistOptions:GetBlacklistGroupItems(group)) do
 				local line = [[
 					blacklist["%s"] = true
 				]]
