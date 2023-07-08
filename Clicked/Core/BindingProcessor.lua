@@ -1077,33 +1077,71 @@ function Addon:UpdateBindingLoadState(binding, options)
 
 		-- pvp talent selected
 		if ShouldPerformStateCheck("PLAYER_PVP_TALENT_UPDATE") then
-			local function AppendTalentIdsFromSlot(items, slot)
-				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slot);
+			local cache = {}
 
-				if slotInfo and slotInfo.availableTalentIDs then
+			--- @param entries Binding.MutliFieldLoadOption.Entry[]
+			--- @return boolean
+			local function IsTalentMatrixValid(entries)
+				if #entries == 0 then
+					return false
+				end
+
+				if next(cache) == nil then
+					return false
+				end
+
+				local compounds = {{}}
+
+				for _, entry in ipairs(entries) do
+					if entry.operation == "OR" then
+						table.insert(compounds, {})
+					end
+
+					table.insert(compounds[#compounds], {
+						negated = entry.negated,
+						value = entry.value
+					})
+				end
+
+				for _, compound in ipairs(compounds) do
+					local valid = true
+
+					for _, item in ipairs(compound) do
+						if #item.value > 0 then
+							if cache[item.value] and item.negated or not cache[item.value] and not item.negated then
+								valid = false
+							end
+						end
+					end
+
+					if valid then
+						return true
+					end
+				end
+
+				return false
+			end
+
+			local function PopulateCache()
+				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1);
+
+				if slotInfo ~= nil and slotInfo.availableTalentIDs then
 					for _, id in ipairs(slotInfo.availableTalentIDs) do
-						table.insert(items, id)
+						local _, name, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(id)
+
+						if selected or known or grantedByAura then
+							cache[name] = true
+						end
 					end
 				end
 			end
 
-			local function IsPvPTalentIndexSelected(talentIndex)
-				local talentIds = {}
-				AppendTalentIdsFromSlot(talentIds, 1)
-				AppendTalentIdsFromSlot(talentIds, 2)
-
-				-- talentIds can be empty on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
-				if #talentIds == 0 then
-					return false
-				end
-
-				local talentId = talentIds[talentIndex]
-				local _, _, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(talentId)
-
-				return selected or known or grantedByAura
+			if load.pvpTalent.selected then
+				PopulateCache()
+				state.pvpTalent = IsTalentMatrixValid(load.pvpTalent.entries)
+			else
+				state.pvpTalent = nil
 			end
-
-			state.pvpTalent = ValidateTriStateLoadOption(load.pvpTalent, IsPvPTalentIndexSelected)
 		end
 
 		-- war mode

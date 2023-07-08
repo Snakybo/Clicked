@@ -841,8 +841,9 @@ end
 --- @param title string
 --- @param specializations integer[]
 --- @param data Binding.MutliFieldLoadOption
+--- @param mode "talents"|"pvp_talents"
 --- @return AceGUICheckBox
-local function DrawTalentSelectOption(container, title, specializations, data)
+local function DrawTalentSelectOption(container, title, specializations, data, mode)
 	assert(type(data) == "table", "bad argument #4, expected table but got " .. type(data))
 
 	local enabledWidget
@@ -869,7 +870,13 @@ local function DrawTalentSelectOption(container, title, specializations, data)
 	end
 
 	if data.selected then
-		local talents = Addon:GetLocalizedTalents(specializations)
+		local talents
+
+		if mode == "talents" then
+			talents = Addon:GetLocalizedTalents(specializations)
+		elseif mode == "pvp_talents" then
+			talents = Addon:GetLocalizedPvPTalents(specializations)
+		end
 
 		--- @param name string
 		--- @return TalentInfo?
@@ -951,8 +958,13 @@ local function DrawTalentSelectOption(container, title, specializations, data)
 
 		do
 			local function OnClick()
-				--- @diagnostic disable-next-line: undefined-field
-				Addon.TalentFrame:OpenForTalents(binding, data, talents)
+				if mode == "talents" then
+					--- @diagnostic disable-next-line: undefined-field
+					Addon.TalentFrame:OpenForTalents(binding, data, talents)
+				elseif mode == "pvp_talents" then
+					--- @diagnostic disable-next-line: undefined-field
+					Addon.TalentFrame:OpenForPvPTalents(binding, data, talents)
+				end
 			end
 
 			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
@@ -2205,7 +2217,7 @@ end
 --- @param talent Binding.MutliFieldLoadOption
 --- @param specializations integer[]
 local function DrawLoadTalent(container, talent, specializations)
-	DrawTalentSelectOption(container, Addon.L["Talent selected"], specializations, talent)
+	DrawTalentSelectOption(container, Addon.L["Talent selected"], specializations, talent, "talents")
 end
 
 --- @param container AceGUIContainer
@@ -2217,11 +2229,10 @@ local function Classic_DrawLoadTalent(container, talent, classes)
 end
 
 --- @param container AceGUIContainer
---- @param talent Binding.TriStateLoadOption
---- @param specIds integer[]
-local function DrawLoadPvPTalent(container, talent, specIds)
-	local items, order = Addon:GetLocalizedPvPTalents(specIds)
-	DrawTristateLoadOption(container, Addon.L["PvP talent selected"], items, order, talent)
+--- @param talent Binding.MutliFieldLoadOption
+--- @param specializations integer[]
+local function DrawLoadPvPTalent(container, talent, specializations)
+	DrawTalentSelectOption(container, Addon.L["PvP talent selected"], specializations, talent, "pvp_talents")
 end
 
 --- @param container AceGUIContainer

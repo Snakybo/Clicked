@@ -355,7 +355,7 @@ function Addon:GetNewBindingTemplate()
 			advancedFlyable = GetNegatableLoadOptionTemplate(),
 			specialization = GetTriStateLoadOptionTemplate(1),
 			talent = GetTriStateLoadOptionTemplate(1),
-			pvpTalent = GetTriStateLoadOptionTemplate(1),
+			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate()
 		},
 		integrations = {

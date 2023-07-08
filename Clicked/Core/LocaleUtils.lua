@@ -26,8 +26,11 @@ local allRaces = {}
 --- @type string[]
 local allClasses = {}
 
---- @type table<integer,TalentInfo>
+--- @type table<integer,TalentInfo[]>
 local allTalents = {}
+
+--- @type table<integer,TalentInfo[]>
+local allPvpTalents = {}
 
 if Addon:IsGameVersionAtleast("CLASSIC") then
 	table.insert(allRaces, 1) -- Human
@@ -140,6 +143,44 @@ local function GetTalentsForSpecialization(specId)
 	end
 
 	return allTalents[specId]
+end
+
+--- Attempt to retrieve cached PvP talent data for the specified specialization.
+---
+--- @param specId integer
+--- @return TalentInfo[]?
+local function GetPvPTalentsForSpecialization(specId)
+	if allPvpTalents[specId] ~= nil then
+		return allPvpTalents[specId]
+	end
+
+	local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(specId)
+
+	if numTalents == 0 then
+		return nil
+	end
+
+	allPvpTalents[specId] = {}
+
+	for i = 1, numTalents do
+		local talentId = LibTalentInfo:GetPvpTalentAt(specId, i)
+
+		if talentId ~= nil then
+			local _, name, texture, _, _, spellId = GetPvpTalentInfoByID(talentId)
+
+			if not Addon:IsStringNilOrEmpty(name) then
+				table.insert(allPvpTalents[specId], {
+					entryId = talentId,
+					spellId = spellId,
+					text = name,
+					icon = texture,
+					specId = specId
+				})
+			end
+		end
+	end
+
+	return allPvpTalents[specId]
 end
 
 -- Private addon API
@@ -501,73 +542,35 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- is `nil` it will return results for the player's current specialization.
 	---
 	--- @param specializations? integer[]
-	--- @return table<integer,string> items
-	--- @return integer[] order
+	--- @return TalentInfo[]
 	function Addon:GetLocalizedPvPTalents(specializations)
-		--- @type table<integer,string>
-		local items = {}
-
-		--- @type integer[]
-		local order = {}
+		--- @type TalentInfo[]
+		local result = {}
 
 		if specializations == nil then
 			specializations = {}
 			specializations[1] = GetSpecializationInfo(GetSpecialization())
 		end
 
-		if #specializations == 1 then
-			local spec = specializations[1]
-			local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
+		--- @type table<string,boolean>
+		local found = {}
 
-			for i = 1, numTalents do
-				local talentId = LibTalentInfo:GetPvpTalentAt(spec, i)
+		for _, specialization in ipairs(specializations) do
+			local talents = GetPvPTalentsForSpecialization(specialization)
 
-				if talentId ~= nil then
-					local _, name, texture = GetPvpTalentInfoByID(talentId)
-					local key = #order + 1
+			if talents ~= nil then
+				for i = 1, #talents do
+					local talent = talents[i]
 
-					items[key] = string.format("<icon=%d><text=%s>", texture, name)
-					table.insert(order, key)
-				else
-					print(Addon:GetPrefixedAndFormattedString("Error: Found unknown PvP talent ID for specialization %d at index %d", spec, i))
-				end
-			end
-		else
-			local max = 0
-
-			-- Find specialization with the highest number of PvP talents
-			if #specializations == 0 then
-				for _, class in ipairs(allClasses) do
-					local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-					for _, spec in pairs(specs) do
-						local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
-
-						if numTalents > max then
-							max = numTalents
-						end
+					if not found[talent.text] then
+						found[talent.text] = true
+						table.insert(result, talents[i])
 					end
 				end
-			-- Find specialization with the highest number of PvP talents out of the selected specializations
-			else
-				for _, spec in ipairs(specializations) do
-					local numTalents = LibTalentInfo:GetNumPvPTalentsForSpec(spec)
-
-					if numTalents > max then
-						max = numTalents
-					end
-				end
-			end
-
-			for i = 1, max do
-				local key = #order + 1
-
-				items[key] = string.format("<text=%s>", Addon.L["PvP Talent %s"]:format(i))
-				table.insert(order, key)
 			end
 		end
 
-		return items, order
+		return result
 	end
 
 	--- Get a localized list of all available shapeshift forms for the given specialization IDs.

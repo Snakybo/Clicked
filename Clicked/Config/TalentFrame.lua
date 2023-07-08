@@ -25,8 +25,6 @@ local frame
 local scrollFrame
 local scrollFrameStatus
 
---- @type "talents"
-local currentType
 --- @type Binding
 local currentBinding
 --- @type Binding.MutliFieldLoadOption
@@ -151,12 +149,9 @@ local function BuildTalentPanel(container)
 end
 
 --- @param title string
---- @param type "talents"
 --- @param backingField Binding.MutliFieldLoadOption
 --- @param talents TalentInfo[]
-local function OpenFrame(title, type, binding, backingField, talents)
-
-	currentType = type
+local function OpenFrame(title, binding, backingField, talents)
 	currentBinding = binding
 	currentBackingField = backingField
 	currentTalents = talents
@@ -199,7 +194,20 @@ function TalentFrame:OpenForTalents(binding, backingField, talents)
 		return
 	end
 
-	OpenFrame(Addon.L["Select talents"], "talents", binding, backingField, talents)
+	OpenFrame(Addon.L["Select talents"], binding, backingField, talents)
+end
+
+--- Open the talent selection UI
+---
+--- @param binding Binding
+--- @param backingField Binding.MutliFieldLoadOption
+--- @param talents TalentInfo[]
+function TalentFrame:OpenForPvPTalents(binding, backingField, talents)
+	if frame ~= nil and frame:IsVisible() then
+		return
+	end
+
+	OpenFrame(Addon.L["Select PvP talents"], binding, backingField, talents)
 end
 
 function TalentFrame:Close()

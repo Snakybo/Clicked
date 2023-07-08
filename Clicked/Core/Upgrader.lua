@@ -730,6 +730,7 @@ local function Upgrade(db, from)
 					entries = {
 						{
 							operation = "AND",
+							negated = false,
 							value = ""
 						}
 					}
@@ -781,6 +782,19 @@ local function Upgrade(db, from)
 				if #binding.load.talent.entries > 1 and binding.load.talent.entries[1].operation == "OR" then
 					binding.load.talent.entries[1].operation = "AND"
 				end
+
+				binding.load.pvpTalent = {
+					selected = false,
+					entries = {
+						{
+							operation = "AND",
+							negated = false,
+							value = ""
+						}
+					}
+				}
+
+				Addon:ShowInformationPopup("Clicked: Binding PvP talent load options have been reset, sorry for the inconvenience.")
 			end
 		end
 	end

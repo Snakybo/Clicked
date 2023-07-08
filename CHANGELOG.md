@@ -14,7 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for WoW 10.1.5
 * Update PvP talent data
-* Add new talent selection popup
+* Add new selection UI for both talents and PvP talents
 
 ## [1.12.2] - 2023-06-22
 

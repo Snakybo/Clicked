@@ -102,7 +102,7 @@
 --- @field public equipped Binding.LoadOption
 --- @field public specialization Binding.TriStateLoadOption
 --- @field public talent Binding.TriStateLoadOption|Binding.MutliFieldLoadOption
---- @field public pvpTalent Binding.TriStateLoadOption
+--- @field public pvpTalent Binding.MutliFieldLoadOption
 --- @field public warMode Binding.LoadOption
 --- @field public channeling Binding.NegatableStringLoadOption
 --- @field public bonusbar Binding.NegatableStringLoadOption

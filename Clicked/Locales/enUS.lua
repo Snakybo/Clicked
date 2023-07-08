@@ -302,3 +302,4 @@ L["The behavior of the self-cast modifier has changed in Dragonflight, bindings 
 L["X"] = true
 L["Not"] = true
 L["Select talents"] = true
+L["Select PvP talents"] = true
