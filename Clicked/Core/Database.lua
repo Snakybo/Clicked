@@ -348,7 +348,7 @@ function Addon:GetNewBindingTemplate()
 			instanceType = GetTriStateLoadOptionTemplate("NONE"),
 			zoneName = GetLoadOptionTemplate(""),
 			equipped = GetLoadOptionTemplate(""),
-			bonusbar = GetLoadOptionTemplate(""),
+			bonusbar = GetNegatableStringLoadOptionTemplate(),
 			channeling = GetNegatableStringLoadOptionTemplate(),
 			flying = GetNegatableLoadOptionTemplate(),
 			flyable = GetNegatableLoadOptionTemplate(),
