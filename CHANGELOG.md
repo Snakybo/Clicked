@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for WoW 10.1.5
+* Add new icons from WoW 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
 
