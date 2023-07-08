@@ -15,5 +15,6 @@
 	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>
 	<Script file="AceGUIWidget-ClickedReorderableLabel.lua"/>
 	<Script file="AceGUIWidget-ClickedAutoFillEditBox.lua"/>
+	<Script file="AceGUIWidget-ClickedTalentIcon.lua"/>
 	<Script file="AceGUIWidget-ClickedBindingImportList.lua"/>
 </Ui>

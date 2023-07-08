@@ -839,10 +839,10 @@ end
 --- @generic T
 --- @param container AceGUIContainer
 --- @param title string
---- @param items TalentInfo[]
+--- @param specializations integer[]
 --- @param data Binding.MutliFieldLoadOption
 --- @return AceGUICheckBox
-local function DrawTalentSelectOption(container, title, items, data)
+local function DrawTalentSelectOption(container, title, specializations, data)
 	assert(type(data) == "table", "bad argument #4, expected table but got " .. type(data))
 
 	local enabledWidget
@@ -869,107 +869,98 @@ local function DrawTalentSelectOption(container, title, items, data)
 	end
 
 	if data.selected then
-		local function AddSpacer()
+		local talents = Addon:GetLocalizedTalents(specializations)
+
+		--- @param name string
+		--- @return TalentInfo?
+		local function GetTalentInfo(name)
+			for _, talent in ipairs(talents) do
+				if talent.text == name then
+					return talent
+				end
+			end
+
+			return nil
+		end
+
+		if #data.entries == 0 then
+			local widget = Addon:GUI_Label("")
+			widget:SetRelativeWidth(0.5)
+
+			container:AddChild(widget)
+		else
+			for i = 1, #data.entries do
+				local entry = data.entries[i]
+
+				if entry.operation == "OR" then
+					local widget = Addon:GUI_Label("")
+					widget:SetWidth(7)
+
+					container:AddChild(widget)
+				end
+
+				do
+					local talent = GetTalentInfo(entry.value)
+					local ticker
+
+					local function OnEnter(widget)
+						if talent == nil then
+							return
+						end
+
+						ticker = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
+							GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
+							GameTooltip:SetSpellByID(talent.spellId)
+							GameTooltip:Show()
+						end)
+					end
+
+					local function OnLeave()
+						if ticker ~= nil then
+							ticker:Cancel()
+							GameTooltip:Hide()
+						end
+					end
+
+					local icon = talent ~= nil and talent.icon or "Interface\\ICONS\\INV_Misc_QuestionMark"
+
+					local widget = AceGUI:Create("ClickedTalentIcon") --[[@as ClickedTalentIcon]]
+					widget:SetImage(icon)
+					widget:SetImageSize(16, 16)
+					widget:SetWidth(18)
+					widget:SetHeight(18)
+
+					if entry.negated then
+						widget:SetColor(1, 0, 0, 1)
+					end
+
+					widget:SetCallback("OnEnter", OnEnter)
+					widget:SetCallback("OnLeave", OnLeave)
+
+					container:AddChild(widget)
+				end
+			end
+		end
+
+		do
 			local widget = Addon:GUI_Label("")
 			widget:SetRelativeWidth(0.5)
 
 			container:AddChild(widget)
 		end
 
-		for i = 1, #data.entries do
-			if i > 1 then
-				AddSpacer()
-			end
-
-			do
-				local found = false
-
-				for _, item in ipairs(items) do
-					if item.text == data.entries[i].value then
-						found = true
-						break
-					end
-				end
-
-				local widget = Addon:GUI_AutoFillEditBox(data.entries[i], "value", binding)
-				widget:SetInputError(not found)
-				widget:SetValues(items)
-
-				widget:SetRelativeWidth(0.5)
-
-				container:AddChild(widget)
-			end
-
-			AddSpacer()
-
-			do
-				local function OnClick()
-					table.remove(data.entries, i)
-					Clicked:ReloadBinding(binding, true)
-				end
-
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-				widget:SetText("X")
-				widget:SetCallback("OnClick", OnClick)
-				widget:SetRelativeWidth(0.125)
-
-				container:AddChild(widget)
-			end
-
-			do
-				local function OnClick()
-					data.entries[i].negated = not data.entries[i].negated
-					Clicked:ReloadBinding(binding, true)
-				end
-
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-				widget:SetText(data.entries[i].negated and "Not" or "")
-				widget:SetCallback("OnClick", OnClick)
-				widget:SetRelativeWidth(0.125)
-
-				container:AddChild(widget)
-			end
-
-			if i + 1 <= #data.entries then
-				local function OnClick()
-					if data.entries[i + 1].operation == "AND" then
-						data.entries[i + 1].operation = "OR"
-					else
-						data.entries[i + 1].operation = "AND"
-					end
-
-					Clicked:ReloadBinding(binding, true)
-				end
-
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-				widget:SetText(data.entries[i + 1].operation == "AND" and Addon.L["And"] or Addon.L["Or"])
-				widget:SetCallback("OnClick", OnClick)
-				widget:SetRelativeWidth(0.25)
-
-				container:AddChild(widget)
-			end
-		end
-
 		do
-			AddSpacer()
-
-			do
-				local function OnClick()
-					table.insert(data.entries, {
-						operation = "AND",
-						value = ""
-					})
-
-					Addon:BindingConfig_Redraw()
-				end
-
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-				widget:SetCallback("OnClick", OnClick)
-				widget:SetText(Addon.L["Add"])
-
-				widget:SetRelativeWidth(0.5)
-				container:AddChild(widget)
+			local function OnClick()
+				--- @diagnostic disable-next-line: undefined-field
+				Addon.TalentFrame:OpenForTalents(binding, data, talents)
 			end
+
+			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			widget:SetCallback("OnClick", OnClick)
+			widget:SetText(Addon.L["Select talents"])
+
+			widget:SetRelativeWidth(0.5)
+			container:AddChild(widget)
 		end
 	end
 
@@ -2214,8 +2205,7 @@ end
 --- @param talent Binding.MutliFieldLoadOption
 --- @param specializations integer[]
 local function DrawLoadTalent(container, talent, specializations)
-	local items = Addon:GetLocalizedTalents(specializations)
-	DrawTalentSelectOption(container, Addon.L["Talent selected"], items, talent)
+	DrawTalentSelectOption(container, Addon.L["Talent selected"], specializations, talent)
 end
 
 --- @param container AceGUIContainer
@@ -3151,6 +3141,7 @@ function Addon:BindingConfig_Open()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
+			Addon.TalentFrame:Close()
 
 			if didOpenSpellbook then
 				HideUIPanel(SpellBookFrame)
@@ -3236,4 +3227,6 @@ function Addon:BindingConfig_Redraw()
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))
 	tree:ConstructTree()
+
+	Addon.TalentFrame:Redraw()
 end

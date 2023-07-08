@@ -42,6 +42,7 @@ Config\Profile.lua
 Config\Bindings.lua
 Config\ImportFrame.lua
 Config\ExportFrame.lua
+Config\TalentFrame.lua
 Config\Blacklist.lua
 Debug\StatusOutput.lua
 

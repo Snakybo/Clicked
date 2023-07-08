@@ -65,7 +65,7 @@ local function GetNegatableTriStateLoadOptionTemplate(default)
 end
 
 
---- @param default string|boolean
+--- @param default string
 --- @return Binding.MutliFieldLoadOption
 local function GetMultiFieldLoadOptionTemplate(default)
 	--- @type Binding.MutliFieldLoadOption

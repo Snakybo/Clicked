@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 5
+Addon.DATA_VERSION = 6
 
 -- Local support functions
 
@@ -772,6 +772,16 @@ local function Upgrade(db, from)
 				negated = false,
 				value = ""
 			}
+		end
+	end
+
+	if from < 6 then
+		for _, binding in ipairs(db.bindings) do
+			if Addon:IsGameVersionAtleast("RETAIL") then
+				if #binding.load.talent.entries > 1 and binding.load.talent.entries[1].operation == "OR" then
+					binding.load.talent.entries[1].operation = "AND"
+				end
+			end
 		end
 	end
 end

@@ -126,7 +126,7 @@
 --- @class Binding.MutliFieldLoadOption.Entry
 --- @field public operation "AND"|"OR"
 --- @field public negated boolean
---- @field public value string|boolean
+--- @field public value string
 
 --- @class Binding.NegatableStringLoadOption
 --- @field public selected boolean
