@@ -210,6 +210,7 @@ function TalentFrame:OpenForPvPTalents(binding, backingField, talents)
 	OpenFrame(Addon.L["Select PvP talents"], binding, backingField, talents)
 end
 
+--- Close the talent selection UI.
 function TalentFrame:Close()
 	if frame == nil or not frame:IsVisible() then
 		return
@@ -218,6 +219,7 @@ function TalentFrame:Close()
 	frame:Hide()
 end
 
+--- Redraw the talent selection UI.
 function TalentFrame:Redraw()
 	if frame == nil or not frame:IsVisible() then
 		return
@@ -233,6 +235,17 @@ function TalentFrame:Redraw()
 	scrollFrameStatus.offset = offset
 	scrollFrameStatus.scrollvalue = scrollvalue
 	scrollFrame:FixScroll()
+end
+
+--- Get the binding that is currently being modified by the talent selection UI.
+---
+--- @return Binding?
+function TalentFrame:GetTargetBinding()
+	if frame == nil or not frame:IsVisible() then
+		return nil
+	end
+
+	return currentBinding
 end
 
 Addon.TalentFrame = TalentFrame

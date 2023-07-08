@@ -2928,6 +2928,11 @@ local function DrawBinding(container)
 			scrollFrame:SetLayout("Flow")
 
 			c:ReleaseChildren()
+
+			if Addon.TalentFrame:GetTargetBinding() ~= binding or group ~= "load_conditions" then
+				Addon.TalentFrame:Close()
+			end
+
 			c:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -3091,6 +3096,10 @@ local function DrawTreeContainer(container)
 	local group = GetCurrentGroup()
 
 	container:ReleaseChildren()
+
+	if Addon.TalentFrame:GetTargetBinding() ~= binding then
+		Addon.TalentFrame:Close()
+	end
 
 	if showIconPicker then
 		local data = binding ~= nil and binding.action or group --[[@as any]]
