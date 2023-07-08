@@ -7,8 +7,7 @@ local LibTalentInfo = LibStub:NewLibrary("LibTalentInfo-1.0", 10)
 
 --- @class TalentProvider
 --- @field public version integer
---- @field public specializations table<string,integer>
---- @field public talents table<integer,TalentEntry[]>
+--- @field public specializations table<string,table<integer,integer>>
 --- @field public pvpTalents table<integer,integer[]>
 
 --- @class TalentEntry
@@ -81,41 +80,6 @@ function LibTalentInfo:GetNumPvPTalentsForSpec(specID)
 	end
 
 	return #talentProvider.pvpTalents[specID]
-end
-
---- Get the number of talents of the specified specialization.
----
---- @param specID integer
---- @returns integer? count
-function LibTalentInfo:GetNumTalents(specID)
-	if talentProvider == nil then
-		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
-	end
-
-	if specID == nil or talentProvider.talents[specID] == nil then
-		return nil
-	end
-
-	return #talentProvider.talents[specID]
-end
-
---- Get the spell ID of the talent at the specified index of the specified specialization.
----
---- @param specID integer
---- @param index integer
---- @returns TalentEntry?
-function LibTalentInfo:GetTalentAt(specID, index)
-	assert(type(index) == "number", "bad argument #2: expected number, got " .. type(index))
-
-	if talentProvider == nil then
-		error("No talent provider registered, register one first using 'RegisterTalentProvider'.")
-	end
-
-	if specID == nil or talentProvider.talents[specID] == nil then
-		return nil
-	end
-
-	return talentProvider.talents[specID][index]
 end
 
 --- Get info for a PvP talent of the specified specialization.
