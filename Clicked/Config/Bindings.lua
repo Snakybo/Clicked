@@ -2867,27 +2867,6 @@ local function DrawBinding(container)
 		error("Cannot draw load option without a binding")
 	end
 
-	-- self-cast text
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		local selfCastModifier = GetModifiedClick("SELFCAST")
-
-		if selfCastModifier ~= "NONE" then
-			local modifiers = Addon:GetKeybindModifiersAndKey(binding.keybind)
-
-			if #modifiers == 1 and modifiers[1] == selfCastModifier then
-				local box = Addon:GUI_InlineGroup()
-				box:SetFullWidth(true)
-
-				local message = string.format(Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu."], selfCastModifier)
-				local widget = Addon:GUI_Label(message, "medium")
-				widget:SetFullWidth(true)
-
-				box:AddChild(widget)
-				container:AddChild(box)
-			end
-		end
-	end
-
 	-- keybinding button
 	do
 		local function HandleAutomaticBinds(frame)
@@ -2918,6 +2897,27 @@ local function DrawBinding(container)
 		HandleAutomaticBinds(widget)
 
 		container:AddChild(widget)
+	end
+
+	-- self-cast text
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		local selfCastModifier = GetModifiedClick("SELFCAST")
+
+		if selfCastModifier ~= "NONE" then
+			local modifiers = Addon:GetKeybindModifiersAndKey(binding.keybind)
+
+			if #modifiers == 1 and modifiers[1] == selfCastModifier then
+				local box = Addon:GUI_InlineGroup()
+				box:SetFullWidth(true)
+
+				local message = string.format(Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu."], selfCastModifier)
+				local widget = Addon:GUI_Label(message, "medium")
+				widget:SetFullWidth(true)
+
+				box:AddChild(widget)
+				container:AddChild(box)
+			end
+		end
 	end
 
 	-- tabs
