@@ -17,7 +17,6 @@ EditBox Widget
 --- @field private pullout Frame
 
 --- @class ClickedAutoFillEditBox.Match : TalentInfo
---- @field public value string
 --- @field public score number
 
 --- @class ClickedAutoFillEditBox.Button : Button
@@ -145,27 +144,25 @@ end
 ---
 --- @param text string
 --- @param values TalentInfo[]
---- @param count integer
 --- @return ClickedAutoFillEditBox.Match[]
-local function FindMatches(text, values, count)
+local function FindMatches(text, values)
 	if text == nil or text == "" or #values == 0 then
 		return {}
 	end
 
 	--- @type ClickedAutoFillEditBox.Match[]
 	local matches = {}
-	--- @type ClickedAutoFillEditBox.Match[]
-	local result = {}
 
 	for _, value in ipairs(values) do
-		table.insert(matches, {
-			value = value,
-			score = ScoreMatch(text, value.text, false)
-		})
+		value.score = ScoreMatch(text, value.text, false)
+		table.insert(matches, value)
 	end
 
 	local findCache = {}
 
+	--- @param l ClickedAutoFillEditBox.Match
+	--- @param r ClickedAutoFillEditBox.Match
+	--- @return boolean
 	local function SortFunc(l, r)
 		-- Sort by scores
 		if l.score < r.score then
@@ -178,43 +175,34 @@ local function FindMatches(text, values, count)
 
 		-- Sort by absolute substrings
 		findCache[text] = findCache[text] or string.upper(text)
-		findCache[l.value.text] = findCache[l.value.text] or string.find(string.upper(l.value.text), findCache[text])
-		findCache[r.value.text] = findCache[r.value.text] or string.find(string.upper(r.value.text), findCache[text])
+		findCache[l.text] = findCache[l.text] or string.find(string.upper(l.text), findCache[text])
+		findCache[r.text] = findCache[r.text] or string.find(string.upper(r.text), findCache[text])
 
-		if findCache[l.value.text] and not findCache[r.value.text] then
+		if findCache[l.text] and not findCache[r.text] then
 			return true
 		end
 
-		if not findCache[l.value.text] and findCache[r.value.text] then
+		if not findCache[l.text] and findCache[r.text] then
 			return false
 		end
 
 		-- Sort alphabetically
-		return l.value.text < r.value.text
+		return l.text < r.text
 	end
 
 	table.sort(matches, SortFunc)
 
-	for _, match in ipairs(matches) do
-		if match.score <= 0.5 then
-			local value = match.value
-			value.score = match.score
-
-			table.insert(result, value)
-		end
-
-		-- Only return the first entry if the score is 0 (we have a full match)
-		if match.score == 0 then
-			break
-		end
-
-		-- Only return `count` number of matches
-		if #result >= count then
-			break
+	if #matches > 0 and matches[1].score == 0 then
+		matches = { matches[1] }
+	else
+		for i = #matches, 1, -1 do
+			if matches[i].score > 0.5 then
+				table.remove(matches, i)
+			end
 		end
 	end
 
-	return result
+	return matches
 end
 
 --[[-----------------------------------------------------------------------------
@@ -242,6 +230,12 @@ local function EditBox_OnEnterPressed(frame)
 	if self:IsAutoCompleteBoxVisible() then
 		self:HideAutoCompleteBox()
 		self:SelectButton(self:GetSelectedButton())
+	else
+		if strlenutf8(self:GetText()) == 0 then
+			self:Select("")
+		else
+			self:Select(self.originalText)
+		end
 	end
 
 	self.BaseOnTextChanged(frame)
@@ -253,7 +247,7 @@ local function EditBox_OnTextChanged(frame, userInput)
 	self.BaseOnTextChanged(frame)
 
 	if userInput then
-		self:Rebuild()
+		self:ShowPrediction()
 	end
 
 	self:UpdateHighlight()
@@ -262,10 +256,41 @@ end
 local function EditBox_OnEscapePressed(frame)
 	local self = frame.obj
 
-	if self:IsAutoCompleteBoxVisible() then
-		self:SetText(self.originalText)
-		self:HideAutoCompleteBox()
+	self:SetText(self.originalText)
+	AceGUI:ClearFocus()
+end
+
+local function EditBox_OnChar(frame, text)
+	local self = frame.obj
+
+	if IsLeftShiftKeyDown() and text == " " then
+		frame:SetText(self.lasttext)
+		self:ShowAll()
 	end
+end
+
+local function EditBox_OnFocusGained(frame)
+	local self = frame.obj
+
+	self.BaseOnFocusGained(frame)
+
+	if strlenutf8(self:GetText()) == 0 then
+		self:ShowAll()
+	else
+		self:ShowPrediction()
+	end
+end
+
+local function EditBox_OnFocusLost(frame)
+	local self = frame.obj
+
+	if strlenutf8(self:GetText()) == 0 then
+		self:SetText("")
+	elseif self:IsAutoCompleteBoxVisible() then
+		self:SetText(self.originalText)
+	end
+
+	self:HideAutoCompleteBox()
 end
 
 --[[-----------------------------------------------------------------------------
@@ -280,11 +305,14 @@ function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
 	self.values = {}
+	self.matches = {}
 	self.selected = 1
 	self.numButtons = 10
+	self.offset = 0
 	self.originalText = ""
 	self.highlight = true
 	self.isInputError = false
+	self.isShowingAll = false
 
 	self.pullout:SetParent(UIParent)
 	self.pullout:SetFrameLevel(self.frame:GetFrameLevel() + 1)
@@ -301,10 +329,10 @@ end
 
 --- @param values TalentInfo[]
 function Methods:SetValues(values)
-	self.values = values
+	self.values = Addon:DeepCopyTable(values)
 
 	if self:IsAutoCompleteBoxVisible() then
-		self:Rebuild()
+		self:ShowPrediction()
 	end
 end
 
@@ -316,7 +344,7 @@ end
 --- @param count integer
 function Methods:SetMaxVisibleValues(count)
 	self.numButtons = count
-	self:Rebuild()
+	self:ShowPrediction()
 end
 
 --- @return integer
@@ -337,7 +365,7 @@ end
 
 --- @param index integer
 function Methods:SetSelectedIndex(index)
-	if index <= 0 or index > self:GetLastVisibleButtonIndex() then
+	if index < self:GetFirstVisibleButtonIndex() or index > self:GetLastVisibleButtonIndex() then
 		return
 	end
 
@@ -362,10 +390,7 @@ function Methods:IsInputError()
 end
 
 function Methods:ClearFocus()
-	if self:IsAutoCompleteBoxVisible() then
-		self:SetText(self.originalText)
-		self:HideAutoCompleteBox()
-	end
+	self.editbox:ClearFocus()
 end
 
 --- @param width integer
@@ -426,17 +451,34 @@ function Methods:CreateButton()
 end
 
 --- @private
---- @param matches ClickedAutoFillEditBox.Match[]
-function Methods:UpdateButtons(matches)
+function Methods:UpdateButtons()
+	local function CreateMoreButton(index)
+		local button = self.buttons[index]
+
+		button:SetText("...")
+		button:Disable()
+
+		--- @diagnostic disable-next-line: undefined-field
+		button.icon:SetTexture(nil)
+	end
+
+	local matches = self:GetMatches()
 	local count = math.min(self:GetMaxVisibleValues(), #matches)
+	local nextButton = 1
+
+	if self:GetOffset() > 0 then
+		CreateMoreButton(1)
+		nextButton = nextButton + 1
+	end
 
 	for i = 1, count do
-		local button = self.buttons[i]
+		local button = self.buttons[nextButton]
+		local matchIndex = self:GetOffset() + i
 
 		if button == nil then
 			button = self:CreateButton()
 
-			self.buttons[i] = button
+			self.buttons[nextButton] = button
 			button:SetParent(self.pullout)
 			button:SetFrameLevel(self.pullout:GetFrameLevel() + 1)
 			button:ClearAllPoints()
@@ -445,39 +487,37 @@ function Methods:UpdateButtons(matches)
 				button:SetPoint("TOPRIGHT", 0, -10)
 				button:SetPoint("TOPLEFT", 0, -10)
 			else
-				button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, 0)
-				button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, 0)
+				button:SetPoint("TOPRIGHT", self.buttons[nextButton - 1], "BOTTOMRIGHT", 0, 0)
+				button:SetPoint("TOPLEFT", self.buttons[nextButton - 1], "BOTTOMLEFT", 0, 0)
 			end
 		end
 
-		button.obj = matches[i].text
-		local text = matches[i].text
+		button.obj = matches[matchIndex].text
+		local text = matches[matchIndex].text
 
 --@debug@
-		text = "[" .. string.format("%.2f", 1 - matches[i].score) .. "] " .. text
+		if not self.isShowingAll then
+			text = "[" .. string.format("%.2f", 1 - matches[matchIndex].score) .. "] " .. text
+		end
 --@end-debug@
 
 		button:SetText(text)
 
-		button.icon:SetTexture(matches[i].icon)
+		button.icon:SetTexture(matches[matchIndex].icon)
 		button.icon:SetTexCoord(0, 1, 0, 1)
 
 		button:Enable()
 		button:Show()
+
+		nextButton = nextButton + 1
 	end
 
 	for i = count + 1, #self.buttons do
 		self.buttons[i]:Hide()
 	end
 
-	if #matches > self:GetMaxVisibleValues() then
-		local button = self.buttons[self:GetMaxVisibleValues()]
-
-		button:SetText("...")
-		button:Disable()
-
-		--- @diagnostic disable-next-line: undefined-field
-		button.icon:SetTexture(nil)
+	if #matches > self:GetOffset() + self:GetMaxVisibleValues() then
+		CreateMoreButton(self:GetMaxVisibleValues())
 	end
 end
 
@@ -515,14 +555,13 @@ function Methods:FindAttachmentPoint(height)
 end
 
 --- @private
-function Methods:Rebuild()
+function Methods:ShowPrediction()
 	if strlenutf8(self:GetText()) == 0 then
 		self:HideAutoCompleteBox()
 		return
 	end
 
 	local text = self:GetText()
-	local pullout = self.pullout
 
 	if self.editbox:GetUTF8CursorPosition() > strlenutf8(text) then
 		self:HideAutoCompleteBox()
@@ -539,39 +578,80 @@ function Methods:Rebuild()
 			end
 		end
 	else
-		local matches = FindMatches(text, self:GetValues(), self:GetMaxVisibleValues() + 1)
-		self:UpdateButtons(matches)
+		local matches = FindMatches(text, self:GetValues())
 
-		if #matches == 0 then
-			self:HideAutoCompleteBox()
-			return
+		if #matches > 0 then
+			self.isShowingAll = false
+			self:SetMatches(matches)
+			self:ShowPullout()
+		else
+			self:ShowAll()
 		end
-
-		local buttonHeight = self.buttons[1]:GetHeight()
-		local baseHeight = 32
-
-		local height = baseHeight + math.max(buttonHeight * math.min(#matches, self:GetMaxVisibleValues()), 14)
-		local attachTo = self:FindAttachmentPoint(height)
-
-		if pullout.attachTo ~= attachTo then
-			if attachTo == ATTACH_ABOVE then
-				pullout:ClearAllPoints();
-				pullout:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
-			elseif attachTo == ATTACH_BELOW then
-				pullout:ClearAllPoints();
-				pullout:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
-			end
-
-			pullout.attachTo = attachTo
-		end
-
-		if not self:IsAutoCompleteBoxVisible() then
-			self.selected = 1
-		end
-
-		pullout:SetHeight(height)
-		pullout:Show()
 	end
+end
+
+--- @private
+function Methods:ShowAll()
+	if #self:GetValues() == 0 then
+		return
+	end
+
+	--- @type ClickedAutoFillEditBox.Match[]
+	local matches = {}
+
+	for _, value in ipairs(self:GetValues()) do
+		value.score = 0
+		table.insert(matches, value)
+	end
+
+	--- @param l ClickedAutoFillEditBox.Match
+	--- @param r ClickedAutoFillEditBox.Match
+	--- @return boolean
+	local function SortFunc(l, r)
+		return l.text < r.text
+	end
+
+	table.sort(matches, SortFunc)
+
+	self.isShowingAll = true
+	self:SetMatches(matches)
+	self:ShowPullout()
+end
+
+--- @private
+function Methods:ShowPullout()
+	local matchCount = #self:GetMatches()
+
+	if matchCount == 0 then
+		self:HideAutoCompleteBox()
+		return
+	end
+
+	local buttonHeight = self.buttons[1]:GetHeight()
+	local baseHeight = 32
+
+	local height = baseHeight + math.max(buttonHeight * math.min(matchCount, self:GetMaxVisibleValues()), 14)
+	local attachTo = self:FindAttachmentPoint(height)
+	local pullout = self.pullout
+
+	if pullout.attachTo ~= attachTo then
+		if attachTo == ATTACH_ABOVE then
+			pullout:ClearAllPoints();
+			pullout:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT")
+		elseif attachTo == ATTACH_BELOW then
+			pullout:ClearAllPoints();
+			pullout:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
+		end
+
+		pullout.attachTo = attachTo
+	end
+
+	if not self:IsAutoCompleteBoxVisible() then
+		self.selected = 1
+	end
+
+	pullout:SetHeight(height)
+	pullout:Show()
 end
 
 --- @private
@@ -604,6 +684,48 @@ function Methods:IsAutoCompleteBoxVisible()
 end
 
 --- @private
+--- @param matches ClickedAutoFillEditBox.Match[]
+function Methods:SetMatches(matches)
+	self.matches = matches
+	self:SetOffset(0)
+end
+
+--- @private
+function Methods:GetMatches()
+	return self.matches
+end
+
+--- @private
+--- @param offset integer
+function Methods:SetOffset(offset)
+	if offset < 0 then
+		offset = 0
+	elseif offset > math.max(#self:GetMatches() - self:GetMaxVisibleValues(), 0) then
+		offset = math.max(#self:GetMatches() - self:GetMaxVisibleValues(), 0)
+	end
+
+	self.offset = offset
+	self:UpdateButtons()
+end
+
+--- @private
+function Methods:GetOffset()
+	return self.offset
+end
+
+--- @private
+--- @return integer
+function Methods:GetFirstVisibleButtonIndex()
+	for i = 1, #self.buttons do
+		if self.buttons[i]:IsShown() and self.buttons[i]:IsEnabled() then
+			return i
+		end
+	end
+
+	return 0
+end
+
+--- @private
 --- @return integer
 function Methods:GetLastVisibleButtonIndex()
 	for i = #self.buttons, 1, -1 do
@@ -624,7 +746,7 @@ function Methods:GetSelectedButton()
 		return self.buttons[selected]
 	end
 
-	return self.buttons[1]
+	return self.buttons[self:GetFirstVisibleButtonIndex()]
 end
 
 --- @private
@@ -632,15 +754,14 @@ end
 function Methods:MoveCursor(direction)
 	if self:IsAutoCompleteBoxVisible() then
 		local next = self:GetSelectedIndex() + direction
-		local last = self:GetLastVisibleButtonIndex()
 
-		if next <= 0 then
-			next = last
-		elseif next > last then
-			next = 1
+		if next < self:GetFirstVisibleButtonIndex() then
+			self:SetOffset(self:GetOffset() - 1)
+		elseif next > self:GetLastVisibleButtonIndex() then
+			self:SetOffset(self:GetOffset() + 1)
+		else
+			self:SetSelectedIndex(next)
 		end
-
-		self:SetSelectedIndex(next)
 	end
 end
 
@@ -653,12 +774,15 @@ local function Constructor()
 	widget.type = Type
 
 	widget.values = {}
+	widget.matches = {}
 	widget.buttons = {}
 	widget.selected = 1
 	widget.numButtons = 10
+	widget.offset = 0
 	widget.originalText = ""
 	widget.highlight = true
 	widget.isInputError = false
+	widget.isShowingAll = false
 
 	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
@@ -669,6 +793,8 @@ local function Constructor()
 	--- @private
 	widget.BaseSetText = widget.SetText
 	--- @private
+	widget.BaseOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
+	--- @private
 	widget.BaseOnEnterPressed = widget.editbox:GetScript("OnEnterPressed")
 	--- @private
 	widget.BaseOnTextChanged = widget.editbox:GetScript("OnTextChanged")
@@ -678,6 +804,9 @@ local function Constructor()
 	widget.editbox:SetScript("OnTextChanged", EditBox_OnTextChanged)
 	widget.editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
 	widget.editbox:SetScript("OnArrowPressed", EditBox_OnArrowPressed)
+	widget.editbox:SetScript("OnChar", EditBox_OnChar)
+	widget.editbox:SetScript("OnEditFocusGained", EditBox_OnFocusGained)
+	widget.editbox:SetScript("OnEditFocusLost", EditBox_OnFocusLost)
 	widget.editbox:SetAltArrowKeyMode(false)
 
 	local pullout = CreateFrame("Frame", nil, UIParent, "TooltipBackdropTemplate") --[[@as Frame]]
@@ -688,7 +817,7 @@ local function Constructor()
 
 	local helpText = pullout:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 	helpText:SetPoint("BOTTOMLEFT", 28, 10)
-	helpText:SetText("Press Tab")
+	helpText:SetText(Addon.L["Use (shift-) tab to navigate"])
 
 	for method, func in pairs(Methods) do
 		widget[method] = func

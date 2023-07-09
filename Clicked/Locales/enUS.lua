@@ -303,3 +303,4 @@ L["X"] = true
 L["Not"] = true
 L["Select talents"] = true
 L["Select PvP talents"] = true
+L["Use (shift-) tab to navigate"] = true

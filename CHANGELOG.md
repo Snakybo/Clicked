@@ -16,6 +16,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add new icons from WoW 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
+* Improve talent selection input field
+  * Show all available talents when focusing an empty input field
+  * Show predicted talents when focusing an input field
+  * Improve behavior of escape and focus loss
+  * Add navigation through the entire talent tree using (shift-) tab or the arrow keys
+  * Add the ability to show all talents instead of only the current prediction using shift-space
 
 ## [1.12.2] - 2023-06-22
 
