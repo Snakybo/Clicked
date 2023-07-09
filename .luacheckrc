@@ -124,6 +124,7 @@ read_globals = {
 	"IsMacClient",
 	"IsMetaKeyDown",
 	"IsModifierKeyDown",
+	"IsMouseButtonDown",
 	"IsPassiveSpell",
 	"IsShiftKeyDown",
 	"IsSpellKnown",

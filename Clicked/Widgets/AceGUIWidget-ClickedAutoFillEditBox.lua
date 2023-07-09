@@ -180,7 +180,16 @@ local function EditBox_OnFocusLost(frame)
 		self:SetText(self.originalText)
 	end
 
-	self:HideAutoCompleteBox()
+	local function CloseWhenAble()
+		if not IsMouseButtonDown("LeftButton") then
+			self:HideAutoCompleteBox()
+			return
+		end
+
+		C_Timer.After(0.01, CloseWhenAble)
+	end
+
+	CloseWhenAble()
 end
 
 --[[-----------------------------------------------------------------------------
