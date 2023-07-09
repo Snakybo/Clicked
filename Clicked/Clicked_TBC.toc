@@ -25,6 +25,7 @@ Core\BindingProcessor.lua
 Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
+Core\StringUtils.lua
 Core\Serializer.lua
 Core\Tooltips.lua
 Core\Upgrader.lua

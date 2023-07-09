@@ -83,18 +83,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allClasses, "EVOKER")
 end
 
---- Stip color codes from a string
----
---- @param str string
---- @return string
-local function StripColorCodes(str)
-	str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
-	str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
-	str = string.gsub(str, "|r", "")
-
-	return str
-end
-
 --- Attempt to retrieve cached talent data for the specified specialization.
 ---
 --- @param specId integer
@@ -126,7 +114,7 @@ local function GetTalentsForSpecialization(specId)
 				for _, talentId in ipairs(node.entryIDs) do
 					local entryInfo = C_Traits.GetEntryInfo(configId, talentId)
 					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-					local spellName = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+					local spellName = Addon:StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
 
 					if not Addon:IsStringNilOrEmpty(spellName) then
 						table.insert(allTalents[specId], {
@@ -184,6 +172,18 @@ local function GetPvPTalentsForSpecialization(specId)
 end
 
 -- Private addon API
+
+--- Stip color codes from a string
+---
+--- @param str string
+--- @return string
+function Addon:StripColorCodes(str)
+	str = string.gsub(str, "|c%x%x%x%x%x%x%x%x", "")
+	str = string.gsub(str, "|c%x%x %x%x%x%x%x", "") -- the trading parts colour has a space instead of a zero for some weird reason
+	str = string.gsub(str, "|r", "")
+
+	return str
+end
 
 --- Construct a localized string with a summary of the target setting.
 ---

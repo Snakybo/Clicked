@@ -22,6 +22,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * Improve behavior of escape and focus loss
   * Add navigation through the entire talent tree using (shift-) tab or the arrow keys
   * Add the ability to show all talents instead of only the current prediction using shift-space
+  * Improve the talent prediction algorithm
 
 ## [1.12.2] - 2023-06-22
 

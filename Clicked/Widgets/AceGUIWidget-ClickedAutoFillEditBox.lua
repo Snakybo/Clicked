@@ -39,87 +39,6 @@ local ATTACH_BELOW = "below"
 Support functions
 -------------------------------------------------------------------------------]]
 
---- Find the longest common subsequence between two strings.
---- @type fun(source:string, target:string):string
-local LongestCommonSubsequence
-
-do
-	local matrix = {}
-	local charsCache = {}
-
-	--- @param str string
-	--- @param index integer
-	--- @return string
-	local function CharAt(str, index)
-		if charsCache[str] == nil then
-			charsCache[str] = {}
-		end
-
-		if charsCache[str][index] == nil then
-			charsCache[str][index] = Addon:CharAt(str, index)
-		end
-
-		return charsCache[str][index]
-	end
-
-	--- Create an identity matrix.
-	---
-	--- @param source string
-	--- @param target string
-	local function InitializeMatrix(source, target)
-		for i = 1, #source + 1 do
-			matrix[i] = {}
-			matrix[i][1] = 0
-		end
-
-		for j = 1, #target + 1 do
-			matrix[1][j] = 0
-		end
-
-		for i = 2, #source + 1 do
-			for j = 2, #target + 1 do
-				if CharAt(source, i - 1) == CharAt(target, j - 1) then
-					matrix[i][j] = matrix[i - 1][j - 1] + 1
-				else
-					matrix[i][j] = math.max(matrix[i][j - 1], matrix[i - 1][j])
-				end
-			end
-		end
-	end
-
-	--- Find the longest common subsequence by backtracking over the specified strings.
-	---
-	--- @param source string
-	--- @param target string
-	--- @param i integer
-	--- @param j integer
-	--- @return string
-	local function Backtrack(source, target, i, j)
-		if i == 1 or j == 1 then
-			return ""
-		end
-
-		if CharAt(source, i - 1) == CharAt(target, j - 1) then
-			return Backtrack(source, target, i - 1, j - 1) .. CharAt(source, i - 1)
-		end
-
-		if matrix[i][j - 1] > matrix[i - 1][j] then
-			return Backtrack(source, target, i, j - 1)
-		else
-			return Backtrack(source, target, i - 1, j)
-		end
-	end
-
-	--- Find the longest common subsequence between two strings.
-	---
-	--- @param source string
-	--- @param target string
-	function LongestCommonSubsequence(source, target)
-		InitializeMatrix(source, target)
-		return Backtrack(source, target, #source, #target)
-	end
-end
-
 --- comment
 ---
 --- @param input string
@@ -127,17 +46,7 @@ end
 --- @param caseSensitive boolean
 --- @return number
 local function ScoreMatch(input, match, caseSensitive)
-	if not caseSensitive then
-		input = string.upper(input)
-		match = string.upper(match)
-	end
-
-	-- Check for a full match
-	if input == match then
-		return 0
-	end
-
-	return 1 - (#LongestCommonSubsequence(input, match) / math.min(#input, #match))
+	return 1 - Addon.StringUtils:GetAverageDistance(input, match, caseSensitive)
 end
 
 --- Find and sort matches of the input string.
@@ -158,31 +67,16 @@ local function FindMatches(text, values)
 		table.insert(matches, value)
 	end
 
-	local findCache = {}
-
 	--- @param l ClickedAutoFillEditBox.Match
 	--- @param r ClickedAutoFillEditBox.Match
 	--- @return boolean
 	local function SortFunc(l, r)
 		-- Sort by scores
-		if l.score < r.score then
-			return true
-		end
-
 		if l.score > r.score then
-			return false
-		end
-
-		-- Sort by absolute substrings
-		findCache[text] = findCache[text] or string.upper(text)
-		findCache[l.text] = findCache[l.text] or string.find(string.upper(l.text), findCache[text])
-		findCache[r.text] = findCache[r.text] or string.find(string.upper(r.text), findCache[text])
-
-		if findCache[l.text] and not findCache[r.text] then
 			return true
 		end
 
-		if not findCache[l.text] and findCache[r.text] then
+		if l.score < r.score then
 			return false
 		end
 
@@ -192,13 +86,9 @@ local function FindMatches(text, values)
 
 	table.sort(matches, SortFunc)
 
-	if #matches > 0 and matches[1].score == 0 then
-		matches = { matches[1] }
-	else
-		for i = #matches, 1, -1 do
-			if matches[i].score > 0.5 then
-				table.remove(matches, i)
-			end
+	for i = #matches, 1, -1 do
+		if matches[i].score < 0.5 then
+			table.remove(matches, i)
 		end
 	end
 
@@ -231,7 +121,7 @@ local function EditBox_OnEnterPressed(frame)
 		self:HideAutoCompleteBox()
 		self:SelectButton(self:GetSelectedButton())
 	else
-		if strlenutf8(self:GetText()) == 0 then
+		if strlenutf8(self:GetRealText()) == 0 then
 			self:Select("")
 		else
 			self:Select(self.originalText)
@@ -274,7 +164,7 @@ local function EditBox_OnFocusGained(frame)
 
 	self.BaseOnFocusGained(frame)
 
-	if strlenutf8(self:GetText()) == 0 then
+	if strlenutf8(self:GetRealText()) == 0 then
 		self:ShowAll()
 	else
 		self:ShowPrediction()
@@ -284,7 +174,7 @@ end
 local function EditBox_OnFocusLost(frame)
 	local self = frame.obj
 
-	if strlenutf8(self:GetText()) == 0 then
+	if strlenutf8(self:GetRealText()) == 0 then
 		self:SetText("")
 	elseif self:IsAutoCompleteBoxVisible() then
 		self:SetText(self.originalText)
@@ -497,7 +387,7 @@ function Methods:UpdateButtons()
 
 --@debug@
 		if not self.isShowingAll then
-			text = "[" .. string.format("%.2f", 1 - matches[matchIndex].score) .. "] " .. text
+			text = "[" .. string.format("%.2f", matches[matchIndex].score) .. "] " .. text
 		end
 --@end-debug@
 
@@ -556,12 +446,12 @@ end
 
 --- @private
 function Methods:ShowPrediction()
-	if strlenutf8(self:GetText()) == 0 then
+	local text =  self:GetRealText()
+
+	if strlenutf8(text) == 0 then
 		self:HideAutoCompleteBox()
 		return
 	end
-
-	local text = self:GetText()
 
 	if self.editbox:GetUTF8CursorPosition() > strlenutf8(text) then
 		self:HideAutoCompleteBox()
@@ -747,6 +637,12 @@ function Methods:GetSelectedButton()
 	end
 
 	return self.buttons[self:GetFirstVisibleButtonIndex()]
+end
+
+--- @private
+--- @return string
+function Methods:GetRealText()
+	return Addon:StripColorCodes(self:GetText())
 end
 
 --- @private
