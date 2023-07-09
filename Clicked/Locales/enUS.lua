@@ -304,3 +304,7 @@ L["Not"] = true
 L["Select talents"] = true
 L["Select PvP talents"] = true
 L["Use (shift-) tab to navigate"] = true
+L["Add compound"] = true
+L["Add condition"] = true
+L["Remove compound"] = true
+L["Close"] = true

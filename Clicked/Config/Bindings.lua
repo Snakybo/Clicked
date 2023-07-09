@@ -55,11 +55,18 @@ local tree
 local tab
 
 -- reset on close
+
+--- @type Binding?
+local prevBinding
+
 --- @type boolean
 local didOpenSpellbook
 
 --- @type boolean
 local showIconPicker
+
+--- @type "talents"|"pvp_talents"?
+local showTalentPanel
 
 -- Utility functions
 
@@ -836,6 +843,181 @@ local function DrawNegatableTristateLoadOption(container, title, items, order, d
 	return enabledWidget, dropdownWidget, invertWidget
 end
 
+--- @param container AceGUIContainer
+--- @param talents TalentInfo[]
+--- @param data Binding.MutliFieldLoadOption
+local function DrawTalentSelectPanel(container, talents, data)
+	--- @param name string
+	--- @return boolean
+	local function DoesTalentExist(name)
+		for _, item in ipairs(talents) do
+			if item.text == name then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	local binding = GetCurrentBinding()
+	if binding == nil then
+		error("Cannot draw load option without a binding")
+	end
+
+	local function AddSeparator()
+		local widget = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+		widget:SetFullWidth(true)
+		widget:SetText(Addon.L["Or"])
+
+		container:AddChild(widget)
+	end
+
+	--- @param operation "AND"|"OR"
+	--- @param position integer
+	--- @param text string
+	local function AddAddButton(operation, position, text)
+		local function OnClick()
+			table.insert(data.entries, position, {
+				operation = operation,
+				value = ""
+			})
+
+			Addon:BindingConfig_Redraw()
+		end
+
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetRelativeWidth(0.5)
+		widget:SetText(text)
+
+		container:AddChild(widget)
+	end
+
+	do
+		local widget = AceGUI:Create("Label")
+		widget:SetFullWidth(true)
+
+		container:AddChild(widget)
+	end
+
+	for i = 1, #data.entries do
+		local entry = data.entries[i]
+
+		if entry.operation == "OR" then
+			AddSeparator()
+		end
+
+		do
+			local function OnClick()
+				entry.negated = not entry.negated
+				Clicked:ReloadBinding(binding, true)
+			end
+
+			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			widget:SetText(entry.negated and Addon.L["Not"] or "")
+			widget:SetCallback("OnClick", OnClick)
+			widget:SetRelativeWidth(0.2)
+
+			container:AddChild(widget)
+		end
+
+		do
+			local widget = Addon:GUI_AutoFillEditBox(entry, "value", binding)
+			widget:SetInputError(not DoesTalentExist(entry.value))
+			widget:SetValues(talents)
+
+			widget:SetRelativeWidth(0.65)
+
+			container:AddChild(widget)
+		end
+
+		do
+			local function OnClick()
+				table.remove(data.entries, i)
+
+				if #data.entries > 0 then
+					do
+						local first = data.entries[1]
+
+						if first.operation == "OR" then
+							first.operation = "AND"
+						end
+					end
+
+					do
+						local next = data.entries[i]
+
+						if next ~= nil and entry.operation == "OR" and next.operation == "AND" then
+							next.operation = "OR"
+						end
+					end
+				end
+
+				Clicked:ReloadBinding(binding, true)
+			end
+
+			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			widget:SetText(Addon.L["X"])
+			widget:SetCallback("OnClick", OnClick)
+			widget:SetDisabled(#data.entries == 1)
+			widget:SetRelativeWidth(0.14)
+
+			container:AddChild(widget)
+		end
+
+		if i == #data.entries or data.entries[i + 1].operation == "OR" then
+			AddAddButton("AND", i + 1, Addon.L["Add condition"])
+
+			do
+				local function OnClick()
+					for j = i, 1, -1 do
+						if j == 1 then
+							data.entries[1] = {
+								operation = "AND",
+								value = ""
+							}
+						else
+							local operation = data.entries[j].operation
+							table.remove(data.entries, j)
+
+							if operation == "OR" then
+								break
+							end
+						end
+					end
+
+					tree:Redraw()
+				end
+
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+				widget:SetText(Addon.L["Remove compound"])
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetDisabled(#data.entries <= 1)
+				widget:SetRelativeWidth(0.5)
+
+				container:AddChild(widget)
+			end
+		end
+	end
+
+	AddSeparator()
+	AddAddButton(#data.entries == 0 and "AND" or "OR", #data.entries + 1, Addon.L["Add compound"])
+
+	do
+		local function OnClick()
+			showTalentPanel = nil
+			tree:Redraw()
+		end
+
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		widget:SetText(Addon.L["Close"])
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetRelativeWidth(0.5)
+
+		container:AddChild(widget)
+	end
+end
+
 --- @generic T
 --- @param container AceGUIContainer
 --- @param title string
@@ -855,6 +1037,12 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 
 	-- enabled toggle
 	do
+		local function OnValueChanged(_, enabled)
+			if not enabled and showTalentPanel == mode then
+				showTalentPanel = nil
+			end
+		end
+
 		enabledWidget = Addon:GUI_CheckBox(data, "selected", binding)
 		enabledWidget:SetLabel(title)
 
@@ -867,6 +1055,7 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 		container:AddChild(enabledWidget)
 
 		RegisterTooltip(enabledWidget, title, CreateLoadOptionTooltip("LoadOption", data.selected))
+		Addon:GUI_SetPostValueChanged(enabledWidget, OnValueChanged)
 	end
 
 	if data.selected then
@@ -949,30 +1138,29 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 			end
 		end
 
-		do
-			local widget = Addon:GUI_Label("")
-			widget:SetRelativeWidth(0.5)
+		if showTalentPanel == mode then
+			DrawTalentSelectPanel(container, talents, data)
+		else
+			do
+				local widget = Addon:GUI_Label("")
+				widget:SetRelativeWidth(0.5)
 
-			container:AddChild(widget)
-		end
-
-		do
-			local function OnClick()
-				if mode == "talents" then
-					--- @diagnostic disable-next-line: undefined-field
-					Addon.TalentFrame:OpenForTalents(binding, data, talents)
-				elseif mode == "pvp_talents" then
-					--- @diagnostic disable-next-line: undefined-field
-					Addon.TalentFrame:OpenForPvPTalents(binding, data, talents)
-				end
+				container:AddChild(widget)
 			end
 
-			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-			widget:SetCallback("OnClick", OnClick)
-			widget:SetText(Addon.L["Select talents"])
+			do
+				local function OnClick()
+					showTalentPanel = mode
+					tree:Redraw()
+				end
 
-			widget:SetRelativeWidth(0.5)
-			container:AddChild(widget)
+				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetText(Addon.L["Select talents"])
+
+				widget:SetRelativeWidth(0.5)
+				container:AddChild(widget)
+			end
 		end
 	end
 
@@ -2927,12 +3115,12 @@ local function DrawBinding(container)
 			local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 			scrollFrame:SetLayout("Flow")
 
-			c:ReleaseChildren()
-
-			if Addon.TalentFrame:GetTargetBinding() ~= binding or group ~= "load_conditions" then
-				Addon.TalentFrame:Close()
+			if prevBinding ~= GetCurrentBinding() or group ~= "load_conditions" then
+				prevBinding = GetCurrentBinding()
+				showTalentPanel = nil
 			end
 
+			c:ReleaseChildren()
 			c:AddChild(scrollFrame)
 
 			if group == "action" then
@@ -3097,10 +3285,6 @@ local function DrawTreeContainer(container)
 
 	container:ReleaseChildren()
 
-	if Addon.TalentFrame:GetTargetBinding() ~= binding then
-		Addon.TalentFrame:Close()
-	end
-
 	if showIconPicker then
 		local data = binding ~= nil and binding.action or group --[[@as any]]
 		local key = binding ~= nil and "macroIcon" or "displayIcon"
@@ -3161,11 +3345,12 @@ function Addon:BindingConfig_Open()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
-			Addon.TalentFrame:Close()
 
 			if didOpenSpellbook then
 				HideUIPanel(SpellBookFrame)
 			end
+
+			showTalentPanel = nil
 		end
 
 		local function OnReceiveDrag()
@@ -3247,6 +3432,4 @@ function Addon:BindingConfig_Redraw()
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))
 	tree:ConstructTree()
-
-	Addon.TalentFrame:Redraw()
 end
