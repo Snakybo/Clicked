@@ -893,6 +893,20 @@ local function DrawTalentSelectPanel(container, talents, data)
 		container:AddChild(widget)
 	end
 
+	local function CreateTableGroup()
+		local group = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
+		--- @diagnostic disable-next-line: param-type-mismatch
+		group:SetLayout("Table")
+		group:SetFullWidth(true)
+		group:SetUserData("table", {
+			columns = { 75, 1, 50 },
+			spaceH = 1
+		})
+
+		container:AddChild(group)
+		return group
+	end
+
 	do
 		local widget = AceGUI:Create("Label")
 		widget:SetFullWidth(true)
@@ -900,11 +914,14 @@ local function DrawTalentSelectPanel(container, talents, data)
 		container:AddChild(widget)
 	end
 
+	local tableContainer = CreateTableGroup()
+
 	for i = 1, #data.entries do
 		local entry = data.entries[i]
 
 		if entry.operation == "OR" then
 			AddSeparator()
+			tableContainer = CreateTableGroup()
 		end
 
 		do
@@ -916,19 +933,17 @@ local function DrawTalentSelectPanel(container, talents, data)
 			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 			widget:SetText(entry.negated and Addon.L["Not"] or "")
 			widget:SetCallback("OnClick", OnClick)
-			widget:SetRelativeWidth(0.2)
 
-			container:AddChild(widget)
+			tableContainer:AddChild(widget)
 		end
 
 		do
 			local widget = Addon:GUI_AutoFillEditBox(entry, "value", binding)
 			widget:SetInputError(not DoesTalentExist(entry.value))
 			widget:SetValues(talents)
+			widget:SetFullWidth(true)
 
-			widget:SetRelativeWidth(0.65)
-
-			container:AddChild(widget)
+			tableContainer:AddChild(widget)
 		end
 
 		do
@@ -960,9 +975,8 @@ local function DrawTalentSelectPanel(container, talents, data)
 			widget:SetText(Addon.L["X"])
 			widget:SetCallback("OnClick", OnClick)
 			widget:SetDisabled(#data.entries == 1)
-			widget:SetRelativeWidth(0.14)
 
-			container:AddChild(widget)
+			tableContainer:AddChild(widget)
 		end
 
 		if i == #data.entries or data.entries[i + 1].operation == "OR" then

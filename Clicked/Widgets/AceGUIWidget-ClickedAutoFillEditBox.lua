@@ -293,8 +293,7 @@ function Methods:ClearFocus()
 end
 
 --- @param width integer
-function Methods:SetWidth(width)
-	self:BaseSetWidth(width)
+function Methods:OnWidthSet(width)
 	self.pullout:SetWidth(width)
 end
 
@@ -693,8 +692,6 @@ local function Constructor()
 	widget.BaseOnAcquire = widget.OnAcquire
 	--- @private
 	widget.BaseOnRelease = widget.OnRelease
-	--- @private
-	widget.BaseSetWidth = widget.SetWidth
 	--- @private
 	widget.BaseSetText = widget.SetText
 	--- @private
