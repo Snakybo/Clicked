@@ -47,7 +47,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
 		[72] = { 386196 }, -- Beserker Stance
 		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-		[1446] = { },
 
 		-- Holy Paladin
 		-- Protection Paladin
@@ -58,15 +57,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[70] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
 		[1451] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
 
-		-- Beast Mastery Hunter
-		-- Marksmanship Hunter
-		-- Survival Hunter
-		-- Initial Hunter
-		[253] = {},
-		[254] = {},
-		[255] = {},
-		[1448] = {},
-
 		-- Assassination Rogue
 		-- Outlaw Rogue
 		-- Subtlety Rogue
@@ -76,59 +66,8 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[261] = { 1784 }, -- Stealth
 		[1453] = { 1784 },  -- Stealth
 
-		-- Discipline Priest
-		-- Holy Priest
 		-- Shadow Priest
-		-- Initial Priest
-		[256] = {},
-		[257] = {},
 		[258] = { 232698 }, -- Shadowform
-		[1452] = {},
-
-		-- Blood Death Knight
-		-- Frost Death Knight
-		-- Unholy Death Knight
-		-- Initial Death Knight
-		[250] = {},
-		[251] = {},
-		[252] = {},
-		[1455] = {},
-
-		-- Elemental Shaman
-		-- Enhancement Shaman
-		-- Restoration Shaman
-		-- Initial Shaman
-		[262] = {},
-		[263] = {},
-		[264] = {},
-		[1444] = {},
-
-		-- Arcane Mage
-		-- Fire Mage
-		-- Frost Mage
-		-- Initial Mage
-		[62] = {},
-		[63] = {},
-		[64] = {},
-		[1449] = {},
-
-		-- Afflication Warlock
-		-- Demonology Warlock
-		-- Destruction Warlock
-		-- Initial Warlock
-		[265] = {},
-		[266] = {},
-		[267] = {},
-		[1454] = {},
-
-		-- Brewmaster Monk
-		-- Mistweaver Monk
-		-- Windwalker Monk
-		-- Initial Monk
-		[268] = {},
-		[270] = {},
-		[269] = {},
-		[1450] = {},
 
 		-- Balance Druid
 		-- Feral Druid
@@ -140,20 +79,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[104] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
-
-		-- Havoc Demon Hunter
-		-- Vengeance Demon Hunter
-		-- Initial Demon Hunter
-		[577] = {},
-		[581] = {},
-		[1456] = {},
-
-		-- Devastation Evoker
-		-- Preservation Evoker
-		-- Initial Evoker
-		[1467] = {},
-		[1468] = {},
-		[1465] = {}
 	}
 elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- @type { [string]: integer[][] }
@@ -862,7 +787,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	---
 	--- @param specId integer
 	function Addon:IterateShapeshiftForms(specId)
-		return ipairs(shapeshiftForms[specId])
+		return ipairs(shapeshiftForms[specId] or {})
 	end
 elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- Get all available shapeshift forms for the specified class name.
