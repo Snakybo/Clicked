@@ -573,7 +573,7 @@ function Addon:GetSpellInfo(input, addSubText)
 
 		if tContains(dragonRidingSpells, spellId) then
 			--- @diagnostic disable-next-line: redundant-parameter
-			local subtext = GetSpellSubtext(spellId)
+			local subtext = GetSpellSubtext(spellId) or "Dragonriding"
 			name = string.format("%s(%s)", name, subtext)
 		end
 	end
