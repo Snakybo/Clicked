@@ -15,6 +15,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for WoW 3.4.2
 * Add support for WoW 1.14.4
 * Add support for WoW 10.1.7
+* Add new icons from WoW 10.1.7 to icon picker
 
 ## [1.13.2] - 2023-07-12
 
