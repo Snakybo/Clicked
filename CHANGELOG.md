@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for WoW 3.4.2
 * Add support for WoW 1.14.4
+* Add support for WoW 10.1.7
 
 ## [1.13.2] - 2023-07-12
 
