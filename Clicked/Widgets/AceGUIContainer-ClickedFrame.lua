@@ -18,6 +18,10 @@ Scripts
 -------------------------------------------------------------------------------]]
 
 local function Frame_OnKeyDown(frame, key)
+	if InCombatLockdown() then
+		return
+	end
+
 	if key == "ESCAPE" then
 		frame:SetPropagateKeyboardInput(false)
 		frame:Hide()
