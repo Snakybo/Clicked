@@ -3350,8 +3350,15 @@ function Addon:BindingConfig_Initialize()
 	end
 end
 
+--- Check if the binding configuration window is open.
+---
+--- @return boolean `true` if it is currently open; `false` otherwise.
+function Addon:BindingConfig_IsOpen()
+	return root ~= nil and root:IsVisible()
+end
+
 function Addon:BindingConfig_Open()
-	if root ~= nil and root:IsVisible() then
+	if self:BindingConfig_IsOpen() then
 		return
 	end
 
@@ -3418,6 +3425,18 @@ function Addon:BindingConfig_Open()
 	Addon:BindingConfig_Redraw()
 end
 
+--- Close the binding configuration window if it's open.
+---
+--- @return boolean `true` if the window was closed; `false` otherwise.
+function Addon:BindingConfig_Close()
+	if not self:BindingConfig_IsOpen() then
+		return false
+	end
+
+	root:Hide()
+	return true
+end
+
 --- @param itemId number
 --- @param success boolean
 function Addon:BindingConfig_ItemInfoReceived(itemId, success)
@@ -3436,7 +3455,7 @@ function Addon:BindingConfig_ItemInfoReceived(itemId, success)
 end
 
 function Addon:BindingConfig_Redraw()
-	if root == nil or not root:IsVisible() then
+	if not self:BindingConfig_IsOpen() then
 		return
 	end
 

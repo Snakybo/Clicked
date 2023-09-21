@@ -308,3 +308,4 @@ L["Add compound"] = true
 L["Add condition"] = true
 L["Remove compound"] = true
 L["Close"] = true
+L["Binding configuration will open once you leave combat."] = true

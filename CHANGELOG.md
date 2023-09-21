@@ -10,6 +10,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Close the binding configuration window automatically when entering combat
+  * It will be reopened when leaving combat if it was open before
+  * Attempting to open it during combat will instead open it as soon as combat ends
+
 ### Fixed
 
 * Fix action blocked error when the binding configuration window is open [#179]

@@ -36,6 +36,7 @@ end
 
 local isPlayerInCombat = false
 local isInitialized = false
+local openConfigOnCombatExit = false
 
 -- Local support functions
 
@@ -77,7 +78,12 @@ local function HandleChatCommand(input)
 	end
 
 	if #args == 0 then
-		Addon:BindingConfig_Open()
+		if InCombatLockdown() then
+			openConfigOnCombatExit = true
+			print(Addon:AppendClickedMessagePrefix("Binding configuration will open once you leave combat."))
+		else
+			Addon:BindingConfig_Open()
+		end
 	elseif #args == 1 then
 		if args[1] == "opt" or args[1] == "options" then
 			Addon:OpenSettingsMenu("Clicked")
@@ -91,6 +97,7 @@ end
 
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
+	openConfigOnCombatExit = Addon:BindingConfig_Close()
 
 	Addon:AbilityTooltips_Refresh()
 	Clicked:ProcessActiveBindings()
@@ -102,6 +109,11 @@ local function PLAYER_REGEN_ENABLED()
 	Addon:ProcessFrameQueue()
 	Addon:AbilityTooltips_Refresh()
 	Clicked:ProcessActiveBindings()
+
+	if openConfigOnCombatExit then
+		Addon:BindingConfig_Open()
+		openConfigOnCombatExit = false
+	end
 end
 
 local function PLAYER_ENTERING_WORLD()
