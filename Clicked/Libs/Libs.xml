@@ -31,6 +31,7 @@
 	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
 	<Include file="AceComm-3.0\AceComm-3.0.xml"/>
 	<Include file="AceSerializer-3.0\AceSerializer-3.0.xml"/>
+	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibTalentInfo-1.0\LibTalentInfo-1.0.xml"/>
 	<Include file="LibTalentInfoClassic-1.0\LibTalentInfoClassic-1.0.xml"/>
 	<Include file="LibMacroSyntaxHighlight-1.0\LibMacroSyntaxHighlight.xml"/>

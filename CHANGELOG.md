@@ -19,6 +19,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix action blocked error when the binding configuration window is open [#179]
+* Fix a Lua error when LibSharedMedia-3.0 is not installed [#181]
 
 ## [1.13.3] - 2023-09-06
 
@@ -1311,6 +1312,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#181]: https://github.com/Snakybo/Clicked/issues/181
 [#179]: https://github.com/Snakybo/Clicked/issues/179
 [#172]: https://github.com/Snakybo/Clicked/issues/172
 [#170]: https://github.com/Snakybo/Clicked/pull/170
