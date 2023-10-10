@@ -15,6 +15,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Close the binding configuration window automatically when entering combat
   * It will be reopened when leaving combat if it was open before
   * Attempting to open it during combat will instead open it as soon as combat ends
+* Add support for WOTLK Classic 3.4.3
 * Update icon database for WOTLK 3.4.3
 
 ### Fixed
