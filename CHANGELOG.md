@@ -26,9 +26,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 3.4.2
-* Add support for WoW 1.14.4
-* Add support for WoW 10.1.7
+* Add support for WOTLK Classic 3.4.2
+* Add support for Classic Era 1.14.4
+* Add support for Dragonflight 10.1.7
 * Add new icons from WoW 10.1.7 to icon picker
 
 ## [1.13.2] - 2023-07-12
@@ -41,7 +41,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.1.5
+* Add support for Dragonflight 10.1.5
 * Add new icons from WoW 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
@@ -57,7 +57,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.1.5
+* Add support for Dragonflight 10.1.5
 * Add new icons from WoW 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
@@ -123,7 +123,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.1.0
+* Add support for Dragonflight 10.1.0
 * Add new icons from WoW 10.1.0 to icon picker
 * Add support for AddOn compartment
 * Use in-game API to retrieve talent data
@@ -138,7 +138,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.0.7
+* Add support for Dragonflight 10.0.7
 * Add new "Advanced Flyable" macro conditional to determine whether Dragonriding is possible
 * Add new icons from WoW 10.0.5 and 10.0.7 to icon picker
 
@@ -146,8 +146,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.0.5
-* Add support for Wrath of the Lich King Classic 3.4.1
+* Add support for Dragonflight 10.0.5
+* Add support for WOTLK Classic 3.4.1
 
 ### Fixed
 
@@ -227,7 +227,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.0.2 Dragonflight
+* Add support for Dragonflight 10.0.2
 * Add the option to automatically import bindings from action bars (Default UI, ElvUI, and Bartender4) [#120]
 * Update talent data
 
@@ -252,7 +252,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 10.0.0 Dragonflight
+* Add support for Dragonflight 10.0.0
 * Add support for the Dracthyr race [#104]
 * Add support for the Evoker class [#104]
 * Add support for the new talent tree system [#105]
@@ -300,7 +300,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for Wrath of the Lich King Classic 3.4.0
+* Add support for WOTLK Classic 3.4.0
 * Add talent selected load condtion for WOTLK
 * Add specialization selected load condition for WOTLK [#101]
 * Add improved (and hopefully more complete) icon data for all versions
@@ -333,7 +333,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Switch to single addon package release mode
 * Update Chinese translations (by Jokey)
-* Add support for WoW 9.2.7
+* Add support for Shadowlands 9.2.7
 
 ### Fixed
 
@@ -363,7 +363,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 9.2.5
+* Add support for Shadowlands 9.2.5
 * Update talent data for WoW 9.2.5
 * Update icons for WoW 9.2.5
 
@@ -371,7 +371,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW Burning Crusade Classic 2.5.4
+* Add support for TBC Classic 2.5.4
 
 ### Changed
 
@@ -392,9 +392,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 9.2.0
-* Add support for WoW Classic 1.14.2
-* Add support for WoW Burning Crusade Classic 2.5.3
+* Add support for Shadowlands 9.2.0
+* Add support for Classic Era 1.14.2
+* Add support for TBC Classic 2.5.3
 * Update talent data for WoW 9.2.0
 * Update icons for WoW 9.2.0
 * Update icons for WoW Classic 1.14.2
@@ -414,7 +414,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW 9.1.5
+* Add support for Shadowlands 9.1.5
 * Update talent data for WoW 9.1.5
 * Update icons for WoW 9.1.5
 * Update icons for Burning Crusade Classic 2.5.2
@@ -424,7 +424,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WoW Classic 1.14.0
+* Add support for Classic Era 1.14.0
 
 ### Fixed
 
@@ -434,7 +434,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for for Burning Crusade Classic 2.5.2
+* Add support for TBC Classic 2.5.2
 
 ## [1.6.3] - 2021-08-07
 
@@ -459,7 +459,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for 9.1
+* Add support for Shadowlands 9.1
 * Add binding template for a hovercast spell [#71]
 * Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
 * Improve visualization of unloaded bindings [#74] (by [gitarrg])
@@ -516,7 +516,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for TBC Classic
+* Add support for TBC Classic 2.5.1
 * Add missing instance type load option to Classic
 * Hide spellbook spell icon highlight when an active binding casts the spell
 * Add `channeling` and `nochanneling` macro options
@@ -640,7 +640,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for patch 9.0.5
+* Add support for Shadowlands 9.0.5
 
 ## [0.17.1] - 2021-02-27
 
@@ -812,7 +812,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add the ability to re-order binding targets
 * Add shared binding options, checkboxes will turn gray if they're enabled by a binding sharing the keybind
 * Add shared binding option to allow starting of auto-attacks
-* Add support for WoW Classic 1.13.6
+* Add support for Classic Era 1.13.6
 
 ### Changed
 
@@ -844,7 +844,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add the ability to close the configuration frame using Escape
-* Add support for WoW 9.0.2
+* Add support for Shadowlands 9.0.2
 * Update libraries to support newly added (PvP) talents
 
 ### Changed
@@ -1150,7 +1150,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for shift-clicking items to autofil them
 * Add ElvUI styling to the binding configuration UI
 * Add support for localization
-* Add support for WoW Classic
+* Add support for Classic Era 1.13.2
 
 ### Changed
 
