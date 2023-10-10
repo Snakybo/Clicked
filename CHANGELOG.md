@@ -15,8 +15,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Close the binding configuration window automatically when entering combat
   * It will be reopened when leaving combat if it was open before
   * Attempting to open it during combat will instead open it as soon as combat ends
-* Add support for WOTLK Classic 3.4.3
-* Update icon database for WOTLK 3.4.3
+* Add support for WotLK Classic 3.4.3
+* Update icon database for WotLK Classic 3.4.3
 
 ### Fixed
 
@@ -27,7 +27,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WOTLK Classic 3.4.2
+* Add support for WotLK Classic 3.4.2
 * Add support for Classic Era 1.14.4
 * Add support for Dragonflight 10.1.7
 * Add new icons from WoW 10.1.7 to icon picker
@@ -112,13 +112,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix Lua error when using shapeshift load condition on WOTLK
+* Fix Lua error when using shapeshift load condition on WotLK Classic
 
 ## [1.11.2] - 2023-05-07
 
 ### Fixed
 
-* Fix Lua error on WOTLK [#169]
+* Fix Lua error on WotLK Classic [#169]
 
 ## [1.11.1] - 2023-05-03
 
@@ -148,18 +148,18 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.0.5
-* Add support for WOTLK Classic 3.4.1
+* Add support for WotLK Classic 3.4.1
 
 ### Fixed
 
 * Fix occasional Lua error when using forms [#166]
-* Fix Lua error on stance macro load option on WOTLK
+* Fix Lua error on stance macro load option on WotLK Classic
 
 ## [1.10.5] - 2023-01-06
 
 ### Fixed
 
-* Fix Lua error when using the talent load condition on WOTLK [#163]
+* Fix Lua error when using the talent load condition on WotLK Classic [#163]
 
 ## [1.10.4] - 2023-01-06
 
@@ -281,8 +281,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix keybinds being active while in a vehicle on WOTLK
-* Fix WOTLK-specific features not working due to Blizzard code change
+* Fix keybinds being active while in a vehicle on WotLK Classic
+* Fix WotLK Classic specific features not working due to Blizzard code change
 * Fix empty groups not being visible with an empty search term
 
 ## [1.7.6] - 2022-08-31
@@ -301,9 +301,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add support for WOTLK Classic 3.4.0
-* Add talent selected load condtion for WOTLK
-* Add specialization selected load condition for WOTLK [#101]
+* Add support for WotLK Classic 3.4.0
+* Add talent selected load condtion for WotLK Classic
+* Add specialization selected load condition for WotLK Classic [#101]
 * Add improved (and hopefully more complete) icon data for all versions
 * Add the ability to search for icons by file ID
 
@@ -465,7 +465,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add the ability to create bindings by dragging spells/items into the Clicked window [#71]
 * Improve visualization of unloaded bindings [#74] (by [gitarrg])
 * Add "spell known" load condition for WeakAuras export
-* Add the ability to remove a spell rank on Classic and Burning Crusade Classic [#70]
+* Add the ability to remove a spell rank on Classic Era and TBC Classic [#70]
 * Make import from spellbook only import new spells on subsequent imports [#75]
 
 ## [1.5.3] - 2021-06-08
@@ -501,7 +501,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix Lua error on characters migrated from Classic
+* Fix Lua error on characters migrated from Classic Era
 
 ## [1.4.1] - 2021-05-17
 
@@ -511,14 +511,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix icon picker on Classic and Burning Crusade Classic
+* Fix icon picker on Classic Era and TBC Classic
 
 ## [1.4.0] - 2021-05-13
 
 ### Added
 
 * Add support for TBC Classic 2.5.1
-* Add missing instance type load option to Classic
+* Add missing instance type load option to Classic Era
 * Hide spellbook spell icon highlight when an active binding casts the spell
 * Add `channeling` and `nochanneling` macro options
 
@@ -528,8 +528,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Removed
 
-* Remove `Focus` binding target on Classic
-* Remove `Arena` binding targets on Classic
+* Remove `Focus` binding target on Classic Era
+* Remove `Arena` binding targets on Classic Era
 
 ## [1.3.2] - 2021-04-27
 
@@ -577,7 +577,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix Lua error on Classic [#59]
+* Fix Lua error on Classic Era [#59]
 
 ## [1.1.1] - 2021-03-29
 
@@ -595,7 +595,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix binding config occasionally resetting input field text whilst typing
-* Fix spell ranks being ignored on Classic
+* Fix spell ranks being ignored on Classic Era
 * Fix not being able to create a "Open the unit menu" binding
 
 ## [1.0.0] - 2021-03-21
@@ -668,8 +668,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix an error when logging in on Classic
-* Fix an error when enabling tooltips on Classic
+* Fix an error when logging in on Classic Era
+* Fix an error when enabling tooltips on Classic Era
 
 ## [0.16.1] - 2021-02-20
 
@@ -724,7 +724,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add arena 1-3 binding targets
-* Add spellbook spell rank support for WoW Classic
+* Add spellbook spell rank support for Classic Era
 
 ## [0.15.0] - 2021-01-12
 
@@ -758,7 +758,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix blacklisted unit frames intercepting clicks
-* Classic: Fix a Lua error on Druid characters [#41]
+* Fix a Lua error on Druid characters on Classic Era [#41]
 
 ## [0.13.3] - 2020-12-22
 
@@ -775,7 +775,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix blank binding configuration window on Classic with ElvUI installed [#39]
+* Fix blank binding configuration window on Classic Era with ElvUI installed [#39]
 
 ## [0.13.1] - 2020-12-17
 
