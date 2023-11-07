@@ -1,5 +1,5 @@
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 50355
+local version = 52068
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -102,11 +102,11 @@ local pvpTalents = {
 	-- Retribution Paladin
 	[70] = { 81, 752, 753, 754, 756, 5422, 5535, 5572, 5573, 5584, }, -- Luminescence, Blessing of Sanctuary, Ultimate Retribution, Lawbringer, Aura of Reckoning, Judgments of the Pure, Hallowed Ground, Spreading the Word, Blessing of Spellwarding, Searing Glare
 	-- Arms Warrior
-	[71] = { 28, 29, 31, 32, 33, 34, 3522, 3534, 5372, 5376, 5547, }, -- Master and Commander, Shadow of the Colossus, Storm of Destruction, War Banner, Sharpen Blade, Duel, Death Sentence, Disarm, Demolition, Warbringer, Rebound
+	[71] = { 28, 29, 31, 32, 33, 34, 3522, 3534, 5372, 5376, 5547, 5625, 5630, }, -- Master and Commander, Shadow of the Colossus, Storm of Destruction, War Banner, Sharpen Blade, Duel, Death Sentence, Disarm, Demolition, Warbringer, Rebound, Safeguard, Battlefield Commander
 	-- Fury Warrior
-	[72] = { 25, 166, 170, 172, 177, 179, 3528, 3533, 3735, 5373, 5431, 5548, }, -- Death Sentence, Barbarian, Battle Trance, Bloodrage, Enduring Rage, Death Wish, Master and Commander, Disarm, Slaughterhouse, Demolition, Warbringer, Rebound
+	[72] = { 25, 166, 170, 172, 177, 179, 3528, 3533, 3735, 5373, 5431, 5548, 5623, 5624, 5628, }, -- Death Sentence, Barbarian, Battle Trance, Bloodrage, Enduring Rage, Death Wish, Master and Commander, Disarm, Slaughterhouse, Demolition, Warbringer, Rebound, Storm of Destruction, Safeguard, Battlefield Commander
 	-- Protection Warrior
-	[73] = { 24, 168, 171, 173, 175, 178, 831, 833, 845, 5374, 5432, }, -- Disarm, Bodyguard, Morale Killer, Shield Bash, Thunderstruck, Warpath, Dragon Charge, Rebound, Oppressor, Demolition, Warbringer
+	[73] = { 24, 168, 171, 173, 175, 178, 831, 833, 845, 5374, 5432, 5626, 5627, 5629, }, -- Disarm, Bodyguard, Morale Killer, Shield Bash, Thunderstruck, Warpath, Dragon Charge, Rebound, Oppressor, Demolition, Warbringer, Safeguard, Storm of Destruction, Battlefield Commander
 	-- Balance Druid
 	[102] = { 180, 182, 184, 185, 822, 834, 836, 3058, 3728, 3731, 5383, 5407, 5515, 5604, }, -- Celestial Guardian, Crescent Burn, Moon and Stars, Moonkin Aura, Dying Stars, Deep Roots, Faerie Swarm, Star Burst, Protector of the Grove, Thorns, High Winds, Owlkin Adept, Malorne's Swiftness, Master Shapeshifter
 	-- Feral Druid
@@ -114,7 +114,7 @@ local pvpTalents = {
 	-- Guardian Druid
 	[104] = { 49, 51, 52, 194, 195, 196, 197, 842, 1237, 3750, 5410, }, -- Master Shapeshifter, Den Mother, Demoralizing Roar, Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Alpha Challenge, Malorne's Swiftness, Freedom of the Herd, Grove Protection
 	-- Restoration Druid
-	[105] = { 59, 691, 692, 697, 700, 835, 838, 1215, 3048, 5387, 5514, }, -- Disentanglement, Reactive Resin, Entangling Bark, Thorns, Deep Roots, Focused Growth, High Winds, Early Spring, Master Shapeshifter, Keeper of the Grove, Malorne's Swiftness
+	[105] = { 59, 691, 692, 697, 700, 835, 838, 1215, 5387, 5514, 5637, }, -- Disentanglement, Reactive Resin, Entangling Bark, Thorns, Deep Roots, Focused Growth, High Winds, Early Spring, Keeper of the Grove, Malorne's Swiftness, Call of the Elder Druid
 	-- Blood Death Knight
 	[250] = { 204, 205, 206, 608, 609, 841, 3441, 3511, 5513, 5587, 5592, }, -- Rot and Wither, Walking Dead, Strangulate, Last Dance, Death Chain, Murderous Intent, Decomposing Aura, Dark Simulacrum, Necrotic Aura, Bloodforged Armor, Spellwarden
 	-- Frost Death Knight
@@ -128,11 +128,11 @@ local pvpTalents = {
 	-- Survival Hunter
 	[255] = { 661, 662, 664, 665, 686, 3607, 3609, 5420, 5443, 5532, }, -- Hunting Pack, Mending Bandage, Sticky Tar Bomb, Tracker's Net, Diamond Ice, Survival Tactics, Chimaeral Sting, Tranquilizing Darts, Wild Kingdom, Interlope
 	-- Discipline Priest
-	[256] = { 100, 109, 111, 114, 123, 126, 855, 5416, 5480, 5487, 5570, }, -- Purification, Trinity, Strength of Soul, Ultimate Radiance, Archangel, Dark Archangel, Thoughtsteal, Inner Light and Shadow, Absolute Faith, Catharsis, Phase Shift
+	[256] = { 100, 109, 111, 114, 123, 126, 855, 5416, 5480, 5487, 5570, 5635, }, -- Purification, Trinity, Strength of Soul, Ultimate Radiance, Archangel, Dark Archangel, Thoughtsteal, Inner Light and Shadow, Absolute Faith, Catharsis, Phase Shift, Improved Mass Dispel
 	-- Holy Priest
-	[257] = { 101, 108, 112, 124, 127, 1927, 5365, 5366, 5479, 5485, 5569, 5620, }, -- Holy Ward, Sanctified Ground, Greater Heal, Spirit of the Redeemer, Ray of Hope, Absolute Faith, Thoughtsteal, Divine Ascension, Purification, Catharsis, Phase Shift, Seraphic Crescendo
+	[257] = { 101, 108, 112, 124, 127, 1927, 5365, 5366, 5479, 5485, 5569, 5620, 5634, }, -- Holy Ward, Sanctified Ground, Greater Heal, Spirit of the Redeemer, Ray of Hope, Absolute Faith, Thoughtsteal, Divine Ascension, Purification, Catharsis, Phase Shift, Seraphic Crescendo, Improved Mass Dispel
 	-- Shadow Priest
-	[258] = { 106, 113, 763, 5381, 5447, 5481, 5486, 5568, }, -- Driven to Madness, Mind Trauma, Psyfiend, Thoughtsteal, Void Volley, Absolute Faith, Catharsis, Phase Shift
+	[258] = { 106, 113, 763, 5381, 5447, 5481, 5486, 5568, 5636, }, -- Driven to Madness, Mind Trauma, Psyfiend, Thoughtsteal, Void Volley, Absolute Faith, Catharsis, Phase Shift, Improved Mass Dispel
 	-- Assassination Rogue
 	[259] = { 141, 147, 830, 3448, 3479, 3480, 5405, 5408, 5517, 5530, 5550, }, -- Creeping Venom, System Shock, Hemotoxin, Maneuverability, Death from Above, Smoke Bomb, Dismantle, Thick as Thieves, Veil of Midnight, Control is King, Dagger in the Dark
 	-- Outlaw Rogue
@@ -146,7 +146,7 @@ local pvpTalents = {
 	-- Restoration Shaman
 	[264] = { 707, 708, 714, 715, 3755, 5388, 5437, 5528, 5566, 5567, 5576, }, -- Skyfury Totem, Counterstrike Totem, Electrocute, Grounding Totem, Rain Dance, Living Tide, Unleash Shield, Traveling Storms, Seasoned Winds, Static Field Totem, Burrow
 	-- Affliction Warlock
-	[265] = { 12, 15, 16, 18, 19, 5379, 5386, 5392, 5543, 5546, 5579, 5608, }, -- Oblivion, Gateway Mastery, Rot and Decay, Nether Ward, Essence Drain, Rampant Afflictions, Rapid Contagion, Shadow Rift, Call Observer, Bonds of Fel, Impish Instincts, Soul Rip
+	[265] = { 12, 15, 16, 18, 19, 5379, 5386, 5392, 5543, 5546, 5579, 5608, }, -- Oblivion, Gateway Mastery, Rot and Decay, Nether Ward, Essence Drain, Rampant Afflictions, Jinx, Shadow Rift, Call Observer, Bonds of Fel, Impish Instincts, Soul Rip
 	-- Demonology Warlock
 	[266] = { 162, 165, 1213, 3506, 3624, 5394, 5400, 5545, 5577, 5606, }, -- Call Fel Lord, Call Observer, Master Summoner, Gateway Mastery, Nether Ward, Shadow Rift, Fel Obelisk, Bonds of Fel, Impish Instincts, Soul Rip
 	-- Destruction Warlock
@@ -156,7 +156,7 @@ local pvpTalents = {
 	-- Windwalker Monk
 	[269] = { 77, 675, 852, 3050, 3052, 3734, 3737, 3744, 3745, 5448, 5540, 5610, }, -- Ride the Wind, Tigereye Brew, Reverse Harm, Disabling Reach, Grapple Weapon, Alpha Tiger, Wind Waker, Pressure Points, Turbo Fists, Perpetual Paralysis, Mighty Ox Kick, Stormspirit Strikes
 	-- Mistweaver Monk
-	[270] = { 70, 679, 680, 682, 683, 1928, 3732, 5395, 5398, 5402, 5539, 5551, 5565, 5603, }, -- Eminence, Counteract Magic, Dome of Mist, Refreshing Breeze, Healing Sphere, Zen Focus Tea, Grapple Weapon, Peaceweaver, Dematerialize, Thunderous Focus Tea, Mighty Ox Kick, Alpha Tiger, Fae Accord, Zen Spheres
+	[270] = { 70, 679, 680, 683, 1928, 3732, 5395, 5398, 5402, 5539, 5551, 5565, 5603, }, -- Eminence, Counteract Magic, Dome of Mist, Healing Sphere, Zen Focus Tea, Grapple Weapon, Peaceweaver, Dematerialize, Thunderous Focus Tea, Mighty Ox Kick, Alpha Tiger, Fae Accord, Zen Spheres
 	-- Havoc Demon Hunter
 	[577] = { 805, 806, 809, 811, 812, 813, 1206, 1218, 5433, 5523, }, -- Cleansed by Flame, Reverse Magic, Chaotic Imprint, Rain from Above, Detainment, Glimpse, Cover of Darkness, Unending Hatred, Blood Moon, Sigil Mastery
 	-- Vengeance Demon Hunter
