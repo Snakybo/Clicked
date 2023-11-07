@@ -14,7 +14,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for Dragonflight 10.2.0
 * Add icons from Dragonflight 10.2.0 to icon picker
-* Add icons from Dragonflight 1.14.4 to icon picker
+* Add icons from WotLK Classic 3.4.3 to icon picker
+* Add icons from Classic Era 1.14.4 to icon picker
 * Update PvP talent data
 
 ### Fixed
@@ -29,7 +30,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * It will be reopened when leaving combat if it was open before
   * Attempting to open it during combat will instead open it as soon as combat ends
 * Add support for WotLK Classic 3.4.3
-* Update icon database for WotLK Classic 3.4.3
+* Add icons from WotLK Classic 3.4.3 to icon picker
 
 ### Fixed
 
