@@ -13,7 +13,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.2.0
+* Add new icons from Dragonflight 10.2.0 to icon picker
 * Update PvP talent data
+
+### Fixed
+
+* Fix icon IDs not always matching the icon file name
 
 ## [1.13.4] - 2023-10-10
 
@@ -37,7 +42,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for WotLK Classic 3.4.2
 * Add support for Classic Era 1.14.4
 * Add support for Dragonflight 10.1.7
-* Add new icons from WoW 10.1.7 to icon picker
+* Add new icons from Dragonflight 10.1.7 to icon picker
 
 ## [1.13.2] - 2023-07-12
 
@@ -50,7 +55,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.1.5
-* Add new icons from WoW 10.1.5 to icon picker
+* Add new icons from Dragonflight 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
 * Improve talent selection input field
@@ -66,7 +71,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.1.5
-* Add new icons from WoW 10.1.5 to icon picker
+* Add new icons from Dragonflight 10.1.5 to icon picker
 * Update PvP talent data
 * Add new selection UI for both talents and PvP talents
 * Improve talent selection input field
@@ -132,7 +137,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.1.0
-* Add new icons from WoW 10.1.0 to icon picker
+* Add new icons from Dragonflight 10.1.0 to icon picker
 * Add support for AddOn compartment
 * Use in-game API to retrieve talent data
   * Make new talent selection UI available for non en-US locales
@@ -148,7 +153,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for Dragonflight 10.0.7
 * Add new "Advanced Flyable" macro conditional to determine whether Dragonriding is possible
-* Add new icons from WoW 10.0.5 and 10.0.7 to icon picker
+* Add new icons from Dragonflight 10.0.5 and 10.0.7 to icon picker
 
 ## [1.10.6] - 2023-01-26
 
