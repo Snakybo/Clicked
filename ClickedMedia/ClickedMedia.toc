@@ -1,4 +1,4 @@
-## Interface: 100107
+## Interface: 100200
 ## Title: ClickedMedia
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo

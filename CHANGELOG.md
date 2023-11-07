@@ -12,6 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add support for Dragonflight 10.2.0
 * Update PvP talent data
 
 ## [1.13.4] - 2023-10-10
