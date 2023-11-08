@@ -108,7 +108,13 @@ function Clicked:GetDatabaseDefaults()
 			groups = {},
 			bindings = {},
 			nextGroupId = 1,
-			nextBindingId = 1
+			nextBindingId = 1,
+			keyVisualizer = {
+				lastKeyboardLayout = nil,
+				lastKeyboardSize = nil,
+				showOnlyLoadedBindings = true,
+				highlightEmptyKeys = false
+			}
 		},
 		profile = {
 			version = nil,

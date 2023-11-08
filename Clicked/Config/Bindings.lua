@@ -3258,8 +3258,12 @@ end
 --- @param container AceGUIContainer
 local function DrawHeader(container)
 	local line = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
-	line:SetWidth(325)
-	line:SetLayout("Flow")
+	line:SetFullWidth(true)
+	line:SetLayout("Table")
+	line:SetUserData("table", {
+		columns = { 0, 0, 1, 0 },
+		spaceH = 1
+	})
 
 	container:AddChild(line)
 
@@ -3285,6 +3289,28 @@ local function DrawHeader(container)
 
 		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Import"])
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetAutoWidth(true)
+
+		line:AddChild(widget)
+	end
+
+	-- Spacer
+	do
+		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		widget:SetText("")
+
+		line:AddChild(widget)
+	end
+
+	-- Visualize button
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		local function OnClick()
+			Addon.KeyVisualizer:Open()
+		end
+
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		widget:SetText(Addon.L["Show on keyboard"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
 
@@ -3372,6 +3398,9 @@ function Addon:BindingConfig_Open()
 			end
 
 			showTalentPanel = nil
+
+			--- @diagnostic disable-next-line: cast-local-type
+			root = nil
 		end
 
 		local function OnReceiveDrag()

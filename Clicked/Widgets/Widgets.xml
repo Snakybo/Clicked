@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AceGUIContainer-ClickedFrame.lua"/>
 	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
+	<Script file="AceGUIContainer-ClickedKeyVisualizerTreeGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedReorderableInlineGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTabGroup.lua"/>
@@ -10,6 +11,7 @@
 	<Script file="AceGUIWidget-ClickedDropdown.lua"/>
 	<Script file="AceGUIWidget-ClickedHorizontalIcon.lua"/>
 	<Script file="AceGUIWidget-ClickedKeybinding.lua"/>
+	<Script file="AceGUIWidget-ClickedKeyVisualizerButton.lua"/>
 	<Script file="AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua"/>
 	<Script file="AceGUIWidget-ClickedSearchBox.lua"/>
 	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>

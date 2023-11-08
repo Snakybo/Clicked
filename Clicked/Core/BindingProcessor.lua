@@ -606,7 +606,9 @@ local function ReloadBindings(delayFrame)
 	wipe(pendingReloadCauses)
 
 	Clicked:ProcessActiveBindings()
+
 	Addon:BindingConfig_Redraw()
+	Addon.KeyVisualizer:Redraw()
 end
 
 -- Public addon API
