@@ -57,7 +57,7 @@ In addition to the unit to cast on, you can also configure (optional) modifiers 
 * **Alive**
 * **Dead**
 
-![Binding target configuration](https://i.imgur.com/tUe36li.png)
+![Binding target configuration](.github/images/binding-target-config.png)
 
 ### Configure binding load conditions
 
@@ -80,7 +80,7 @@ A full list of all available load conditions:
 * **Player in group** checks if the specified player is in your group
 * **Item equipped** checks if the specified item is equipped
 
-![Binding load conditions](https://i.imgur.com/vbqRYuw.png)
+![Binding load conditions](.github/images/binding-load-config.png)
 
 ### Configure macro conditionals
 
@@ -103,8 +103,8 @@ These map directly to the macro conditionals found [here](https://wow.gamepedia.
 
 You can configure as many bindings on the same keybind as you want, Clicked will automatically and dynamically prioritize the spell, item, or macro to activate based on the configuration of all bindings sharing the same keybind.
 
-![Binding 1](https://i.imgur.com/PWelhhY.png)
-![Binding 2](https://i.imgur.com/oknvfvn.png)
+![Binding 1](.github/images/binding-action-config-1.png)
+![Binding 2](.github/images/binding-action-config-2.png)
 
 With the above configuration, Clicked will automatically combine the Flash of Light and Crusader Strike bindings and generate a macro:
 
@@ -122,13 +122,13 @@ Do note that while it is also possible to create custom macros to cast spells or
 
 _In the case where you feel like you need to use custom macros a lot, feel free to create a [feature request](https://github.com/Snakybo/Clicked/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=) explaining what you need them for, so that functionality can be added as a built-in option._
 
-![Custom macros](https://i.imgur.com/SK1cDgY.png)
+![Custom macros](.github/images/custom-macros.png)
 
 ### Visualize your keybinds on a virtual keyboard
 
 Clicked comes with a built-in key visualizer, which allows you to see all your configured keybinds on a virtual keyboard. This is useful for quickly seeing which keybinds you have configured, and are currently active. This includes keybinds that are not bound within Clicked, such as abilities on your action bars.
 
-![Key visualizer](https://i.imgur.com/2CAht6n.png)
+![Key visualizer](.github/images/key-visualizer.png)
 
 ## Installation
 
@@ -143,7 +143,7 @@ Download and install Clicked using any of the three available portals:
 
 To get started with Clicked, open the binding configuration window, either by typing `/clicked` in the chat frame, or by clicking on the minimap button.
 
-![Binding configuration window](https://i.imgur.com/5ON79P4.png)
+![Binding configuration window](.github/images/binding-config.png)
 
 ### Slash commands
 
