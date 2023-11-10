@@ -22,6 +22,8 @@ local Addon = select(2, ...)
 local DEFAULT_KEYBOARD_LAYOUT = Addon.KeyboardLayouts.QWERTY
 local DEFAULT_KEYBOARD_SIZE = Addon.KeyboardSizes.SIZE_80
 
+local MIN_FRAME_WIDTH = 900
+
 --- @class KeyVisualizer
 local KeyVisualizer = {}
 
@@ -155,7 +157,8 @@ local function BuildLayout(layout, size)
 	--- @diagnostic disable-next-line: undefined-field
 	local oldWidth = frame.frame:GetWidth()
 	--- @diagnostic disable-next-line: undefined-field
-	frame:SetWidth(math.max(tree:GetTreeWidth() + tree:GetContentWidth() + 54, 950))
+	local width = math.max(tree:GetTreeWidth() + tree:GetContentWidth() + 54, MIN_FRAME_WIDTH)
+	frame:SetWidth(width)
 
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
 
@@ -175,36 +178,39 @@ local function PopulateKeys()
 	--- @return string[]
 	--- @return integer|string|nil
 	local function GetBinds(key)
-		local binds = {}
+		local spellNames = {}
 		local icon = nil
-		local db = GetDb()
 
 		key = GetModifiedKey(key)
+		local db = GetDb()
 
-		local function RegisterSpell(keybind, spellId, spellIcon)
-			if keybind ~= key then
-				return
+		--- @param spellName string
+		--- @param spellIcon string|integer
+		--- @param forceIcon? boolean
+		local function Register(spellName, spellIcon, forceIcon)
+			if not Addon:IsStringNilOrEmpty(spellName) and not spellNames[spellName] then
+				spellNames[spellName] = true
+				icon = icon or spellIcon
 			end
 
-			local spellName = GetSpellInfo(spellId)
-
-			table.insert(binds, spellName)
-			icon = icon or spellIcon
+			if forceIcon then
+				icon = spellIcon
+			end
 		end
 
+		--- @param binding Binding
+		--- @param isActive boolean
 		local function RegisterBinding(binding, isActive)
 			if binding.keybind ~= key then
 				return
 			end
 
 			local spellName, spellIcon = Addon:GetBindingNameAndIcon(binding)
-			table.insert(binds, spellName)
-
-			if icon == nil or isActive then
-				icon = spellIcon
-			end
+			Register(spellName, spellIcon, isActive)
 		end
 
+		--- @param action string
+		--- @param slot integer
 		local function RegisterAction(action, slot)
 			local keybind = GetBindingKey(action)
 
@@ -212,10 +218,31 @@ local function PopulateKeys()
 				return
 			end
 
-			local _, id = GetActionInfo(slot)
-			local actionIcon = GetActionTexture(slot)
+			local type, id, subType = GetActionInfo(slot)
 
-			RegisterSpell(keybind, id, actionIcon)
+			local actionIcon = GetActionTexture(slot)
+			local name
+
+			if type == "spell" or (type == "macro" and subType == "spell") then
+				--- @diagnostic disable-next-line: param-type-mismatch
+				name = GetSpellInfo(id)
+			elseif type == "item" or (type == "macro" and subType == "item") then
+				--- @diagnostic disable-next-line: param-type-mismatch
+				name = GetItemInfo(id)
+			elseif type == "flyout" then
+				--- @diagnostic disable-next-line: param-type-mismatch
+				name = GetFlyoutInfo(id)
+			elseif type == "summonpet" then
+				local speciesId, customName = C_PetJournal.GetPetInfoByPetID(id)
+				name = customName or C_PetJournal.GetPetInfoBySpeciesID(speciesId)
+			elseif type == "summonmount" then
+				--- @diagnostic disable-next-line: param-type-mismatch
+				name = C_MountJournal.GetMountInfoByID(id)
+			end
+
+			if name ~= nil and actionIcon ~= nil then
+				Register(name, actionIcon)
+			end
 		end
 
 		if db.showOnlyLoadedBindings then
@@ -240,7 +267,8 @@ local function PopulateKeys()
 
 				if targetKey == key then
 					local formIcon, _, _, spellId = GetShapeshiftFormInfo(form)
-					RegisterSpell(key, spellId, formIcon)
+					local spellName = GetSpellInfo(spellId)
+					Register(spellName, formIcon)
 				end
 			end
 
@@ -249,8 +277,9 @@ local function PopulateKeys()
 				local targetKey = GetBindingKey("BONUSACTIONBUTTON" .. petAction)
 
 				if  targetKey == key then
-					local _, actionIcon, _, _, _, _, spellId = GetPetActionInfo(petAction)
-					RegisterSpell(key, spellId, actionIcon)
+					local name, actionIcon = GetPetActionInfo(petAction)
+					--- @diagnostic disable-next-line: param-type-mismatch
+					Register(name, actionIcon)
 				end
 			end
 
@@ -291,7 +320,12 @@ local function PopulateKeys()
 			end
 		end
 
-		return binds, icon
+		local result = {}
+		for spellName in pairs(spellNames) do
+			table.insert(result, spellName)
+		end
+
+		return result, icon
 	end
 
 	if buttonCache == nil then
@@ -306,6 +340,7 @@ local function PopulateKeys()
 
 			widget:SetIcon(icon)
 			widget:SetHighlight(GetDb().highlightEmptyKeys and #binds == 0 and not data.disabled)
+			widget:SetActionCount(#binds)
 
 			widget:SetCallback("OnEnter", function()
 				if not data.disabled then
@@ -357,8 +392,9 @@ function KeyVisualizer:Open()
 		frame:SetCallback("OnClose", OnClose)
 		frame:SetTitle(Addon.L["Clicked Key Visualizer"])
 		frame:SetLayout("Flow")
-		frame:SetWidth(950)
+		frame:SetWidth(MIN_FRAME_WIDTH)
 		frame:SetHeight(500)
+		frame:EnableResize(false)
 	end
 
 	do
@@ -477,6 +513,8 @@ function KeyVisualizer:Open()
 		tree:SetFullWidth(true)
 		tree:SetFullHeight(true)
 		tree:SetCallback("OnGroupSelected", DrawTreeContainer)
+		--- @diagnostic disable-next-line: undefined-field
+		tree:SetTreeWidth(125, false)
 		tree:SetTree(GetTreeLayout())
 		SelectLayout()
 

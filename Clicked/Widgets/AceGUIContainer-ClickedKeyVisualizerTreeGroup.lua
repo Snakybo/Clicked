@@ -16,14 +16,6 @@ Methods
 --- @class ClickedKeyVisualizerTreeGroup
 local Methods = {}
 
---- @protected
-function Methods:OnAcquire()
-	self:OriginalOnAcquire()
-
-	--- @diagnostic disable-next-line: undefined-field
-	self:SetTreeWidth(nil, false)
-end
-
 --- @return integer
 function Methods:GetContentWidth()
 	--- @diagnostic disable-next-line: undefined-field
@@ -58,7 +50,6 @@ local function Constructor()
 	local widget = AceGUI:Create("TreeGroup")
 	widget.type = Type
 
-	widget.OriginalOnAcquire = widget.OnAcquire
 	widget.OriginalLayoutFinished = widget.LayoutFinished
 
 	for method, func in pairs(Methods) do

@@ -22,15 +22,18 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
 end
 
 AceGUI:RegisterLayout("ClickedKeys", function(content, children)
+	local GRID_SIZE = 45
+	local PADDING_SIZE = 2
+
 	local totalWidth = 0
 	local totalHeight = 0
 
 	local keys = {}
 	local last = {
-		x = 0,
-		y = 0,
-		w = 0,
-		h = 0
+		relX = 0,
+		relY = 0,
+		relW = 0,
+		relH = 0
 	}
 
 	for i = 1, #children do
@@ -43,25 +46,38 @@ AceGUI:RegisterLayout("ClickedKeys", function(content, children)
 		local key = child:GetKey()
 
 		if key ~= nil then
-			local relativeTo = key.relativeTo  ~= nil and keys[key.relativeTo] or last
+			local anchor = key.relativeTo and keys[key.relativeTo] or last
 
-			local w = key.width or relativeTo.w
-			local h = key.height or relativeTo.h
-			local x = (key.x or relativeTo.x + relativeTo.w) + (key.xOffset or 0)
-			local y = (key.y or relativeTo.y) + (key.yOffset or 0)
+			-- Get the relative position from the configuration
+			local relX = key.x or anchor.relX + anchor.relW + (key.xOffset or 0)
+			local relY = key.y or anchor.relY + (key.yOffset or 0)
+			local relW = key.width or 1
+			local relH = key.height or 1
+
+			-- Apply standard padding
+			local padX = relX * PADDING_SIZE
+			local padY = relY * PADDING_SIZE
+			local padW = (relW - 1) * PADDING_SIZE
+			local padH = (relH - 1) * PADDING_SIZE
+
+			-- Convert relative position to absolute position
+			local x = Round(relX * GRID_SIZE + padX)
+			local y = Round(relY * GRID_SIZE + padY)
+			local w = Round(relW * GRID_SIZE + padW)
+			local h = Round(relH * GRID_SIZE + padH)
+
+			last = {
+				frame = frame,
+				relX = relX,
+				relY = relY,
+				relW = relW,
+				relH = relH
+			}
+			keys[key:GetId()] = last
 
 			child:SetWidth(w)
 			child:SetHeight(h)
 			frame:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
-
-			last = {
-				frame = frame,
-				x = x,
-				y = y,
-				w = w,
-				h = h
-			}
-			keys[key:GetId()] = last
 
 			if child:IsVisible() then
 				totalWidth = math.max(totalWidth, x + w)
@@ -76,14 +92,6 @@ AceGUI:RegisterLayout("ClickedKeys", function(content, children)
 
 	Addon:SafeCall(content.obj.LayoutFinished, content.obj, totalWidth, totalHeight)
 end)
-
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
-local function UpdateImageSize(image, width, height)
-	local size = math.min(width, height) - 5
-	image:SetSize(size, size)
-end
 
 --[[-----------------------------------------------------------------------------
 Scripts
@@ -108,6 +116,7 @@ function Methods:OnAcquire()
 	self:SetIcon()
 	self:SetVisible(true)
 	self:SetHighlight(false)
+	self:SetActionCount(0)
 end
 
 --- @param key? KeyButton
@@ -115,14 +124,21 @@ function Methods:SetKey(key)
 	--- @diagnostic disable-next-line: assign-type-mismatch
 	self.key = key
 	self.keyName:SetText(key ~= nil and key:GetAbbreviation() or nil)
-	self.frame:SetAlpha(key ~= nil and (key.disabled and 0.25 or 1) or 1)
+	self.frame:SetAlpha(key ~= nil and (key.disabled and 0.5 or 1) or 1)
+end
 
+function Methods:SetActionCount(count)
+	if count > 1 then
+		self.extraActionCount:SetText("+" .. (count - 1))
+		self.extraActionCount:Show()
+	else
+		self.extraActionCount:Hide()
+	end
 end
 
 --- @param icon string|integer|nil
 function Methods:SetIcon(icon)
 	self.image:SetTexture(icon)
-	UpdateImageSize(self.image, self.frame:GetWidth(), self.frame:GetHeight())
 end
 
 --- @param visible boolean
@@ -141,9 +157,9 @@ function Methods:SetHighlight(highlight)
 	self.highlight = highlight
 
 	if self.highlight then
-		self.frame:SetBackdropBorderColor(0, 1, 0, 1)
+		self.background:SetVertexColor(0, 1, 0, 1)
 	else
-		self.frame:SetBackdropBorderColor(1, 1, 1, 1)
+		self.background:SetVertexColor(1, 1, 1, 1)
 	end
 end
 
@@ -162,43 +178,55 @@ function Methods:IsHighlighted()
 	return self.highlight
 end
 
---- @protected
---- @param width integer
-function Methods:OnWidthSet(width)
-	UpdateImageSize(self.image, width, self.frame:GetHeight())
-end
-
---- @protected
---- @param height integer
-function Methods:OnHeightSet(height)
-	UpdateImageSize(self.image, self.frame:GetWidth(), height)
-end
-
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
 	local name = "ClickedKeyVisualizerButton" .. AceGUI:GetNextWidgetNum(Type)
-	local frame = CreateFrame("Button", name, UIParent, "TooltipBorderedFrameTemplate") --[[@as Button]]
+	local frame = CreateFrame("Frame", name, UIParent) --[[@as Frame]]
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", Control_OnEnter)
 	frame:SetScript("OnLeave", Control_OnLeave)
 
-	local keyName = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal") --[[@as FontString]]
-	keyName:ClearAllPoints()
-	keyName:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -6)
-	keyName:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -6)
-	keyName:SetHeight(15)
-	keyName:SetJustifyV("TOP")
+	local background = frame:CreateTexture(nil, "BACKGROUND")
+	background:SetAllPoints()
+	background:SetTexture("Interface/HUD/UIActionBar");
+	background:SetTexCoord(0.707031, 0.886719, 0.248047, 0.291992)
+	--- @diagnostic disable-next-line: undefined-field
+	background:SetTextureSliceMargins(8, 8, 8, 8)
+	--- @diagnostic disable-next-line: undefined-field
+	background:SetTextureSliceMode(Enum.UITextureSliceMode.Tiled)
 
-	local image = frame:CreateTexture(nil, "BACKGROUND")
-	image:SetPoint("CENTER", frame, "CENTER")
+	local image = frame:CreateTexture(nil, "ARTWORK")
+	image:SetPoint("CENTER")
+	image:SetSize(46, 45)
+
+	local backgroundMask = frame:CreateMaskTexture(nil, "BACKGROUND")
+	backgroundMask:SetPoint("CENTER", 0, -0.5)
+	backgroundMask:SetTexture("Interface/HUD/UIActionBarIconFrameMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE");
+	backgroundMask:SetTexCoord(0, 1, 0, 1)
+	backgroundMask:SetSize(60, 61)
+	image:AddMaskTexture(backgroundMask)
+
+	local keyName = frame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray") --[[@as FontString]]
+	keyName:ClearAllPoints()
+	keyName:SetPoint("TOP", 0, -5)
+	keyName:SetHeight(10)
+
+	local extraActionCount = frame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray") --[[@as FontString]]
+	extraActionCount:ClearAllPoints()
+	extraActionCount:SetPoint("BOTTOMRIGHT", -3, 4)
+	extraActionCount:SetHeight(10)
+	extraActionCount:SetJustifyH("RIGHT")
 
 	--- @class ClickedKeyVisualizerButton
 	local widget = {
 		type  = Type,
+		background = background,
+		backgroundMask = backgroundMask,
 		keyName  = keyName,
+		extraActionCount = extraActionCount,
 		image = image,
 		frame = frame
 	}

@@ -27,6 +27,7 @@ Additionally Clicked adds support for the binding of all mouse buttons in case y
 * **Configure custom macros without taking up a macro slot**
 * **Configure a unit frame blacklist**
 * **Automatically unload and unlock keybinds while in a vehicle**
+* **Visualize your keybinds on a virtual keyboard**
 
 ### Configure binding target priorities
 
@@ -122,6 +123,12 @@ Do note that while it is also possible to create custom macros to cast spells or
 _In the case where you feel like you need to use custom macros a lot, feel free to create a [feature request](https://github.com/Snakybo/Clicked/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=) explaining what you need them for, so that functionality can be added as a built-in option._
 
 ![Custom macros](https://i.imgur.com/SK1cDgY.png)
+
+### Visualize your keybinds on a virtual keyboard
+
+Clicked comes with a built-in key visualizer, which allows you to see all your configured keybinds on a virtual keyboard. This is useful for quickly seeing which keybinds you have configured, and are currently active. This includes keybinds that are not bound within Clicked, such as abilities on your action bars.
+
+![Key visualizer](https://i.imgur.com/2CAht6n.png)
 
 ## Installation
 

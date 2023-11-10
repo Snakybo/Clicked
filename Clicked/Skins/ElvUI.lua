@@ -91,6 +91,37 @@ local function Initialize()
 
 			widget.treeframe:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
+		elseif widget.type == "ClickedKeyVisualizerButton" then
+			widget.frame:StripTextures()
+			widget.frame:SetTemplate("Transparent")
+
+			widget.image:RemoveMaskTexture(widget.backgroundMask)
+
+			local actionbars = elv:GetModule("ActionBars")
+			local font, size, flags, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
+
+			widget.keyName:SetPoint("TOP", 0, -3)
+			widget.keyName:SetFont(font, size, flags)
+			widget.keyName:SetTextColor(color[1], color[2], color[3])
+
+			widget.extraActionCount:SetPoint("BOTTOMRIGHT", -1, 3)
+			widget.extraActionCount:SetFont(font, size, flags)
+			widget.extraActionCount:SetTextColor(color[1], color[2], color[3])
+
+			local origSetHighlight = widget.SetHighlight
+			local bbr, bbg, bbb = widget.frame:GetBackdropBorderColor()
+
+			widget.SetHighlight = function(s, highlight)
+				origSetHighlight(s, highlight)
+
+				local frame = s.frame
+
+				if highlight then
+					frame:SetBackdropBorderColor(0, 1, 0)
+				else
+					frame:SetBackdropBorderColor(bbr, bbg, bbb)
+				end
+			end
 		end
 
 		return originalRegisterAsWidget(self, widget)

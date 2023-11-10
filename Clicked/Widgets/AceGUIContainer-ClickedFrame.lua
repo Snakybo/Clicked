@@ -47,11 +47,50 @@ local Methods = {}
 function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
+	self:SetMinWidth()
+	self:SetMinHeight()
+
 	self.frame:SetFrameStrata("HIGH")
 end
 
 function Methods:MoveToFront()
 	self.frame:SetFrameStrata("FULLSCREEN_DIALOG")
+end
+
+--- @param width integer
+function Methods:SetMinWidth(width)
+	local status = self.status or self.localstatus
+	status.minWidth = width
+end
+
+--- @param width integer
+function Methods:SetMinHeight(height)
+	local status = self.status or self.localstatus
+	status.minHeight = height
+end
+
+--- @protected
+--- @param width integer
+function Methods:OnWidthSet(width)
+	local status = self.status or self.localstatus
+
+	if status.minWidth ~= nil then
+		width = math.max(width, status.minWidth)
+	end
+
+	self:BaseOnWidthSet(width)
+end
+
+--- @protected
+--- @param height integer
+function Methods:OnHeightSet(height)
+	local status = self.status or self.localstatus
+
+	if status.minHeight ~= nil then
+		height = math.max(height, status.minHeight)
+	end
+
+	self:BaseOnHeightSet(height)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -69,6 +108,12 @@ local function Constructor()
 
 	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
+
+	--- @private
+	widget.BaseOnWidthSet = widget.OnWidthSet
+
+	--- @private
+	widget.BaseOnHeightSet = widget.OnHeightSet
 
 	for method, func in pairs(Methods) do
 		widget[method] = func
