@@ -305,7 +305,11 @@ local function PopulateKeys()
 				for i = 2, 6 do
 					for b = 1, 12 do
 						local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
-						RegisterAction(btn.keyBoundTarget, btn._state_action)
+						local slot = tonumber(btn._state_action)
+
+						if slot ~= nil then
+							RegisterAction(btn.keyBoundTarget, slot)
+						end
 					end
 				end
 			-- Default
