@@ -1203,17 +1203,38 @@ end
 --- Check if the table contains the specified value.
 ---
 --- @generic T
---- @param table T[]
+--- @param tbl T[]
 --- @param element T
 --- @return boolean
-function Addon:TableContains(table, element)
-	for i = 1, #table do
-		if table[i] == element then
+function Addon:TableContains(tbl, element)
+	for i = 1, #tbl do
+		if tbl[i] == element then
 			return true
 		end
 	end
 
 	return false
+end
+
+--- Construct a table containing only the specified elements.
+---
+--- @generic T
+--- @generic U
+--- @param tbl T[]
+--- @param selector fun(item: T): U
+--- @return U[]
+function Addon:TableSelect(tbl, selector)
+	local result = {}
+
+	for i = 1, #tbl do
+		local value = selector(tbl[i])
+
+		if value ~= nil then
+			table.insert(result, value)
+		end
+	end
+
+	return result
 end
 
 --- Get the character at the specified index in the string.

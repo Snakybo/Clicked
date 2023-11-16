@@ -24,6 +24,9 @@ local DEFAULT_KEYBOARD_SIZE = Addon.KeyboardSizes.SIZE_80
 
 local MIN_FRAME_WIDTH = 900
 
+local GROUP_ALL = "all"
+local GROUP_EXT = "ext"
+
 --- @class KeyVisualizer
 local KeyVisualizer = {}
 
@@ -44,6 +47,7 @@ local showMeta = false
 local showMetaWidget
 local showShift = false
 local showShiftWidget
+local showGroup = GROUP_ALL
 
 local function GetTreeLayout()
 	local result = {}
@@ -247,15 +251,19 @@ local function PopulateKeys()
 
 		if db.showOnlyLoadedBindings then
 			for _, binding in Clicked:IterateActiveBindings() do
-				RegisterBinding(binding, true)
+				if showGroup == GROUP_ALL or binding.parent == showGroup then
+					RegisterBinding(binding, true)
+				end
 			end
 		else
 			for _, binding in Clicked:IterateConfiguredBindings() do
-				RegisterBinding(binding, Addon:TableContains(Addon:GetActiveBindings(), binding))
+				if showGroup == GROUP_ALL or binding.parent == showGroup then
+					RegisterBinding(binding, Addon:TableContains(Addon:GetActiveBindings(), binding))
+				end
 			end
 		end
 
-		do
+		if showGroup == GROUP_ALL or showGroup == GROUP_EXT then
 			-- Primary action bar
 			for keyNumber = 1, 12 do
 				RegisterAction("ACTIONBUTTON" .. keyNumber, keyNumber)
@@ -381,6 +389,7 @@ function KeyVisualizer:Open()
 			showAlt = false
 			showShift = false
 			showMeta = false
+			showGroup = GROUP_ALL
 
 			buttonCache = nil
 
@@ -403,7 +412,7 @@ function KeyVisualizer:Open()
 		--- @diagnostic disable-next-line: param-type-mismatch
 		line:SetLayout("Table")
 		line:SetUserData("table", {
-			columns = { 0, 0, 1, 75, 75, 75, 75 },
+			columns = { 0, 0, 125, 1, 75, 75, 75, 75 },
 			spaceH = 1
 		})
 
@@ -425,6 +434,38 @@ function KeyVisualizer:Open()
 			widget:SetValue(GetDb().highlightEmptyKeys)
 			widget:SetCallback("OnValueChanged", function(_, _, value)
 				GetDb().highlightEmptyKeys = value
+				SelectLayout()
+			end)
+
+			line:AddChild(widget)
+		end
+
+		do
+			--- @type table<string,string>
+			local items = {
+				[GROUP_ALL] = Addon.L["All"],
+				[GROUP_EXT] = Addon.L["External"]
+			}
+			--- @type { id: string, name: string }[]
+			local order = {}
+
+			for _, group in Clicked:IterateGroups() do
+				items[group.identifier] = string.format("<icon=%s><text=%s>", tostring(group.displayIcon), group.name)
+				table.insert(order, { id = group.identifier, name = group.name })
+			end
+
+			table.sort(order, function(a, b) return a.name < b.name end)
+
+			order = Addon:TableSelect(order, function(v) return v.id end)
+			table.insert(order, 1, GROUP_ALL)
+			table.insert(order, 2, GROUP_EXT)
+
+			local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+			widget:SetLabel(Addon.L["Only show bindings in group"])
+			widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
+			widget:SetValue(GROUP_ALL)
+			widget:SetCallback("OnValueChanged", function(_, _, value)
+				showGroup = value
 				SelectLayout()
 			end)
 

@@ -314,3 +314,6 @@ L["Show on keyboard"] = true
 L["Show only loaded bindings"] = true
 L["Highlight empty keys"] = true
 L["Show interface actions"] = true
+L["All"] = true
+L["External"] = true
+L["Only show bindings in group"] = true
