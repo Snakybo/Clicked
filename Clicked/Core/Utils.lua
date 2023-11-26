@@ -128,6 +128,24 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	end
 end
 
+--- @type string[]
+local modifierKeyCombinations = {}
+
+do
+	local modifiers = { "ALT", "CTRL", "SHIFT", "META" }
+
+	for i = 1, #modifiers do
+		local args = {}
+
+		for j = i, #modifiers do
+			local modifier = modifiers[j]
+
+			table.insert(args, modifier)
+			table.insert(modifierKeyCombinations, table.concat(args, "-"))
+		end
+	end
+end
+
 -- Local support functions
 
 ---@param keybind string
@@ -1020,25 +1038,11 @@ end
 --- @param bindings Binding[]
 --- @returns string[]
 function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
-	local modifiers = { "ALT", "CTRL", "SHIFT", "META" }
-
-	--- @type string[]
 	local combinations = {}
 
-	local function GenerateCombinations(...)
-		for i = 1, #modifiers do
-			local args = {}
-
-			for j = i, #modifiers do
-				local modifier = modifiers[j]
-
-				table.insert(args, modifier)
-				table.insert(combinations, table.concat(args, "-") .. "-" .. keybind)
-			end
-		end
+	for _, modifier in ipairs(modifierKeyCombinations) do
+		table.insert(combinations, modifier .. "-" .. keybind)
 	end
-
-	GenerateCombinations()
 
 	local function ValidateKeybind(input)
 		if input == nil then
