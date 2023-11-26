@@ -15,10 +15,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add keybind visualizer window
 * Bind all unassigned modifier key combinations when automatic binding is enabled [#184]
   * This will now include combinations such as 'ALT-SHIFT-Q', 'CTRL-ALT-SHIFT-Q', etc.
+* Improved keybind button, press 'ESCAPE' to cancel keybind mode or press the right mouse button to unassign the current keybind
 
 ### Fixed
 
 * Fix configuration window(s) not always opening
+* Hopefully fix modifier key combinations on MacOS [#90] [#182]
 
 ## [1.13.5] - 2023-11-08
 
@@ -1343,6 +1345,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#184]: https://github.com/Snakybo/Clicked/issues/184
+[#182]: https://github.com/Snakybo/Clicked/issues/182
 [#181]: https://github.com/Snakybo/Clicked/issues/181
 [#179]: https://github.com/Snakybo/Clicked/issues/179
 [#172]: https://github.com/Snakybo/Clicked/issues/172
@@ -1372,6 +1375,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#100]: https://github.com/Snakybo/Clicked/issues/100
 [#97]: https://github.com/Snakybo/Clicked/issues/97
 [#91]: https://github.com/Snakybo/Clicked/issues/91
+[#91]: https://github.com/Snakybo/Clicked/issues/90
 [#84]: https://github.com/Snakybo/Clicked/issues/84
 [#76]: https://github.com/Snakybo/Clicked/issues/76
 [#75]: https://github.com/Snakybo/Clicked/issues/75

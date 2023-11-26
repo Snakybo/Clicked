@@ -3073,7 +3073,7 @@ local function DrawBinding(container)
 	-- keybinding button
 	do
 		local function HandleAutomaticBinds(frame)
-			local tooltipText = Addon.L["Click and press a key to bind, or ESC to clear the binding."]
+			local tooltipText = Addon.L["Click and press a key to bind, or right click to unbind."]
 
 			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(binding.keybind) then
 				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Addon:GetActiveBindings())

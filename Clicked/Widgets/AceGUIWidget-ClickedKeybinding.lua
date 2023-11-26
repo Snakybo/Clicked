@@ -9,7 +9,7 @@ Set Keybindings in the Config UI.
 
 --- @class ClickedKeybinding : AceGUIKeybinding
 
-local Type, Version = "ClickedKeybinding", 2
+local Type, Version = "ClickedKeybinding", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
@@ -20,69 +20,109 @@ end
 Support functions
 -------------------------------------------------------------------------------]]
 
+local ignoreKeys = {
+	["UNKNOWN"] = true,
+	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true, ["LMETA"] = true,
+	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true, ["RMETA"] = true,
+	["SHIFT"] = true, ["CTRL"] = true, ["ALT"] = true, ["META"] = true
+}
+
+--- @param key string
+--- @return string?
+local function GenerateChord(key)
+	if ignoreKeys[key] then
+		return nil
+	end
+
+	local chord = {}
+
+	if IsAltKeyDown() then
+		table.insert(chord, "ALT")
+	end
+
+	if IsControlKeyDown() then
+		table.insert(chord, "CTRL")
+	end
+
+	if IsShiftKeyDown() then
+		table.insert(chord, "SHIFT")
+	end
+
+	if IsMetaKeyDown() then
+		table.insert(chord, "META")
+	end
+
+	table.insert(chord, key)
+
+	return table.concat(chord, "-")
+end
+
+local function EnableKeyCapture(frame)
+	local self = frame.obj
+
+	frame:EnableKeyboard(true)
+	frame:EnableMouseWheel(true)
+	frame:LockHighlight()
+
+	self.waitingForKey = true
+	self.button:SetText("...")
+end
+
+local function DisableKeyCapture(frame)
+	local self = frame.obj
+
+	frame:EnableKeyboard(false)
+	frame:EnableMouseWheel(false)
+	frame:UnlockHighlight()
+
+	self.waitingForKey = nil
+	self.lastClickTime = GetTime()
+	self:UpdateText()
+end
+
+local function SetKey(self, key)
+	self:SetKey(key)
+	self:Fire("OnKeyChanged", key)
+end
+
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
 local function Keybinding_OnClick(frame, button)
-	if button == "LeftButton" then
-		local self = frame.obj
-		local passed = GetTime() - (self.lastClickTime or 0)
+	local self = frame.obj
+	local passed = GetTime() - (self.lastClickTime or 0)
 
+	if button == "LeftButton" then
 		if not self.waitingForKey and passed > 0.01 then
-			frame:EnableKeyboard(true)
-			frame:EnableMouseWheel(true)
-			frame:LockHighlight()
-			self.waitingForKey = true
+			EnableKeyCapture(frame)
+		end
+	elseif button == "RightButton" then
+		if not self.waitingForKey and passed > 0.01 then
+			SetKey(self, "")
 		end
 	end
+
 	AceGUI:ClearFocus()
 end
-
-local ignoreKeys = {
-	["UNKNOWN"] = true,
-	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true, ["LMETA"] = true,
-	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true, ["RMETA"] = true
-}
 
 local function Keybinding_OnKeyDown(frame, key)
 	local self = frame.obj
 
 	if self.waitingForKey then
-		local keyPressed = key
-
-		if keyPressed == "ESCAPE" then
-			keyPressed = ""
-		else
-			if ignoreKeys[keyPressed] then
-				return
-			end
-
-			if IsMetaKeyDown ~= nil and IsMetaKeyDown() then
-				keyPressed = "META-" .. keyPressed
-			end
-
-			if IsShiftKeyDown() then
-				keyPressed = "SHIFT-" .. keyPressed
-			end
-
-			if IsControlKeyDown() then
-				keyPressed = "CTRL-" .. keyPressed
-			end
-
-			if IsAltKeyDown() then
-				keyPressed = "ALT-" .. keyPressed
-			end
+		if key == "ESCAPE" then
+			DisableKeyCapture(frame)
+			return
 		end
 
-		frame:EnableKeyboard(false)
-		frame:EnableMouseWheel(false)
-		frame:UnlockHighlight()
-		self.waitingForKey = nil
-		self.lastClickTime = GetTime()
+		local chord = GenerateChord(key)
 
-		if not self.disabled then
-			self:SetKey(keyPressed)
-			self:Fire("OnKeyChanged", keyPressed)
+		if chord ~= nil then
+			DisableKeyCapture(frame)
+
+			if not self.disabled then
+				self:SetKey(chord)
+				self:Fire("OnKeyChanged", chord)
+			end
 		end
 	end
 end
