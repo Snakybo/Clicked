@@ -1020,22 +1020,34 @@ end
 --- @param bindings Binding[]
 --- @returns string[]
 function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
+	local modifiers = { "ALT", "CTRL", "SHIFT", "META" }
+
 	--- @type string[]
-	local result = {
-		"CTRL-" .. keybind,
-		"ALT-" .. keybind,
-		"SHIFT-" .. keybind,
-		"META-" .. keybind
-	}
+	local combinations = {}
+
+	local function GenerateCombinations(...)
+		for i = 1, #modifiers do
+			local args = {}
+
+			for j = i, #modifiers do
+				local modifier = modifiers[j]
+
+				table.insert(args, modifier)
+				table.insert(combinations, table.concat(args, "-") .. "-" .. keybind)
+			end
+		end
+	end
+
+	GenerateCombinations()
 
 	local function ValidateKeybind(input)
 		if input == nil then
 			return
 		end
 
-		for i = 1, #result do
-			if result[i] == input then
-				table.remove(result, i)
+		for i = 1, #combinations do
+			if combinations[i] == input then
+				table.remove(combinations, i)
 				break
 			end
 		end
@@ -1052,7 +1064,7 @@ function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
 		ValidateKeybind(key2)
 	end
 
-	return result
+	return combinations
 end
 
 --- Check if the hovercast targeting mode should be enabled for a binding.

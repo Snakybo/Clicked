@@ -13,6 +13,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add keybind visualizer window
+* Bind all unassigned modifier key combinations when automatic binding is enabled [#184]
+  * This will now include combinations such as 'ALT-SHIFT-Q', 'CTRL-ALT-SHIFT-Q', etc.
 
 ### Fixed
 
@@ -1340,6 +1342,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#184]: https://github.com/Snakybo/Clicked/issues/184
 [#181]: https://github.com/Snakybo/Clicked/issues/181
 [#179]: https://github.com/Snakybo/Clicked/issues/179
 [#172]: https://github.com/Snakybo/Clicked/issues/172

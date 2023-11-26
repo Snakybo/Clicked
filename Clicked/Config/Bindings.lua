@@ -3077,12 +3077,10 @@ local function DrawBinding(container)
 
 			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(binding.keybind) then
 				local automaticBindings = Addon:GetUnusedModifierKeyKeybinds(binding.keybind, Addon:GetActiveBindings())
-				frame:SetMarker(#automaticBindings > 0)
 
-				tooltipText = tooltipText .. "\n\n" .. Addon.L["Also bound to:"]
-
-				for _, keybind in ipairs(automaticBindings) do
-					tooltipText = tooltipText .. "\n- " .. keybind
+				if #automaticBindings > 0 then
+					frame:SetMarker(true)
+					tooltipText = tooltipText .. "\n\n" .. Addon.L["Key combination also bound in combination with unassigned modifiers"]
 				end
 			end
 
