@@ -465,7 +465,7 @@ function KeyVisualizer:Open()
 			table.insert(order, 2, GROUP_EXT)
 
 			local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
-			widget:SetLabel(Addon.L["Only show bindings in group"])
+			widget:SetLabel(Addon.L["Filter bindings"])
 			widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
 			widget:SetValue(GROUP_ALL)
 			widget:SetCallback("OnValueChanged", function(_, _, value)

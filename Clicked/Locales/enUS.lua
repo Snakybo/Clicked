@@ -316,4 +316,4 @@ L["Highlight empty keys"] = true
 L["Show interface actions"] = true
 L["All"] = true
 L["External"] = true
-L["Only show bindings in group"] = true
+L["Filter bindings"] = true
