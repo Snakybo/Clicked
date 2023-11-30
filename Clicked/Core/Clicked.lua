@@ -89,7 +89,7 @@ local function HandleChatCommand(input)
 			Addon:OpenSettingsMenu("Clicked")
 		elseif args[1] == "dump" then
 			Addon:StatusOutput_Open()
-		elseif args[1] == "viz" or args[1] == "visualizer" then
+		elseif (args[1] == "viz" or args[1] == "visualizer") and not Addon:IsWotLK() then -- TODO: Remove when WOTLK supports texture slicing
 			Addon.KeyVisualizer:Open()
 		end
 	end

@@ -381,10 +381,6 @@ function KeyVisualizer:Open()
 		return
 	end
 
-	if not Addon:IsGameVersionAtleast("RETAIL") then
-		return
-	end
-
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)

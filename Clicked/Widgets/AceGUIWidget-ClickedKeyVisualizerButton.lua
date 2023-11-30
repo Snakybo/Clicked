@@ -191,23 +191,33 @@ local function Constructor()
 
 	local background = frame:CreateTexture(nil, "BACKGROUND")
 	background:SetAllPoints()
-	background:SetTexture("Interface/HUD/UIActionBar");
-	background:SetTexCoord(0.707031, 0.886719, 0.248047, 0.291992)
-	--- @diagnostic disable-next-line: undefined-field
-	background:SetTextureSliceMargins(8, 8, 8, 8)
-	--- @diagnostic disable-next-line: undefined-field
-	background:SetTextureSliceMode(Enum.UITextureSliceMode.Tiled)
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		background:SetTexture("Interface/HUD/UIActionBar");
+		background:SetTexCoord(0.707031, 0.886719, 0.248047, 0.291992)
+		background:SetTextureSliceMargins(8, 8, 8, 8)
+		background:SetTextureSliceMode(Enum.UITextureSliceMode.Tiled)
+	else
+		background:SetTexture("Interface/Buttons/ui-quickslot2")
+		background:SetTextureSliceMargins(20, 20, 20, 20)
+		background:SetTexCoord(0.2, 0.8, 0.2, 0.8)
+		background:SetTextureSliceMode(Enum.UITextureSliceMode.Tiled)
+	end
 
 	local image = frame:CreateTexture(nil, "ARTWORK")
 	image:SetPoint("CENTER")
 	image:SetSize(46, 45)
 
-	local backgroundMask = frame:CreateMaskTexture(nil, "BACKGROUND")
-	backgroundMask:SetPoint("CENTER", 0, -0.5)
-	backgroundMask:SetTexture("Interface/HUD/UIActionBarIconFrameMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE");
-	backgroundMask:SetTexCoord(0, 1, 0, 1)
-	backgroundMask:SetSize(60, 61)
-	image:AddMaskTexture(backgroundMask)
+	local backgroundMask
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		backgroundMask = frame:CreateMaskTexture(nil, "BACKGROUND")
+		backgroundMask:SetPoint("CENTER", 0, -0.5)
+		backgroundMask:SetTexture("Interface/HUD/UIActionBarIconFrameMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE");
+		backgroundMask:SetTexCoord(0, 1, 0, 1)
+		backgroundMask:SetSize(60, 61)
+		image:AddMaskTexture(backgroundMask)
+	end
 
 	local keyName = frame:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray") --[[@as FontString]]
 	keyName:ClearAllPoints()

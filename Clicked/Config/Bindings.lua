@@ -3302,7 +3302,7 @@ local function DrawHeader(container)
 	end
 
 	-- Visualize button
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if not Addon:IsWotLK() then -- TODO: Remove when WOTLK supports texture slicing
 		local function OnClick()
 			Addon.KeyVisualizer:Open()
 		end
