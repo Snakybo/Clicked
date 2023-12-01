@@ -1241,7 +1241,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.13.5...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.14.0...master
+[1.14.0]: https://github.com/Snakybo/Clicked/releases/tag/1.14.0
 [1.13.5]: https://github.com/Snakybo/Clicked/releases/tag/1.13.5
 [1.13.4]: https://github.com/Snakybo/Clicked/releases/tag/1.13.4
 [1.13.3]: https://github.com/Snakybo/Clicked/releases/tag/1.13.3
