@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
   * This will now include combinations such as 'ALT-SHIFT-Q', 'CTRL-ALT-SHIFT-Q', etc.
 * Improved keybind button, press 'ESCAPE' to cancel keybind mode or press the right mouse button to unassign the current keybind
 * Add support for Classic Era 1.15.0
+* Add icons from Classic Era 1.15.0 to icon picker
 
 ### Fixed
 
