@@ -1230,7 +1230,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	-- spell known
-	if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB") then
+	if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "RUNE_UPDATED") then
 		-- If the known spell limiter has been enabled, see if the spell is currrently
 		-- avaialble for the player. This is not limited to just spells as the name
 		-- implies, using the GetSpellInfo function on an item also returns a valid value.

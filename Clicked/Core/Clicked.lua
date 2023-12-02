@@ -202,6 +202,10 @@ local function UNIT_TARGET()
 	Addon:AbilityTooltips_Refresh()
 end
 
+local function RUNE_UPDATED()
+	Clicked:ReloadBindings(false, true, "RUNE_UPDATED")
+end
+
 -- Public addon API
 
 function Clicked:OnInitialize()
@@ -241,6 +245,10 @@ function Clicked:OnEnable()
 		if Addon:IsBC() or Addon:IsWotLK() then
 			self:RegisterEvent("CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 		end
+	end
+
+	if Addon:IsClassic() then
+		self:RegisterEvent("RUNE_UPDATED", RUNE_UPDATED)
 	end
 
 	if Addon:IsGameVersionAtleast("WOTLK") then
