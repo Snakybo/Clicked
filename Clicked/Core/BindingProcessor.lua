@@ -1230,17 +1230,26 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	-- spell known
-	if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "RUNE_UPDATED") then
-		-- If the known spell limiter has been enabled, see if the spell is currrently
-		-- avaialble for the player. This is not limited to just spells as the name
-		-- implies, using the GetSpellInfo function on an item also returns a valid value.
+	do
+		local checks = { "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB" }
 
-		local function IsSpellKnown(value)
-			local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value)
-			return name ~= nil and spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId)
+		if Addon:IsClassic() then
+			table.insert(checks, "RUNE_UPDATED")
+			table.insert(checks, "PLAYER_EQUIPMENT_CHANGED")
 		end
 
-		state.spellKnown = ValidateLoadOption(load.spellKnown, IsSpellKnown)
+		if ShouldPerformStateCheck(unpack(checks)) then
+			-- If the known spell limiter has been enabled, see if the spell is currrently
+			-- avaialble for the player. This is not limited to just spells as the name
+			-- implies, using the GetSpellInfo function on an item also returns a valid value.
+
+			local function IsSpellKnown(value)
+				local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value)
+				return name ~= nil and spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId)
+			end
+
+			state.spellKnown = ValidateLoadOption(load.spellKnown, IsSpellKnown)
+		end
 	end
 
 	-- in group
