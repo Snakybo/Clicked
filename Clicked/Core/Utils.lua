@@ -112,10 +112,14 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 			{ 1066 }, -- Aquatic Form
 			{ 768 }, -- Cat Form
 			{ 783 }, -- Travel Form
-			{ 24858, 33891 }, -- Moonkin Form, Tree of Life Form
-			{ 40120, 33943 } -- Swift Flight Form, Flight Form
+			{ 24858 }, -- Moonkin Form
 		}
 	}
+
+	if Addon:IsGameVersionAtleast("BC") then
+		table.insert(shapeshiftForms["DRUID"], { 33891 }) -- Tree of Life
+		table.insert(shapeshiftForms["DRUID"], { 40120, 33943 }) -- Swift Flight Form, Flight Form
+	end
 
 	if Addon:IsGameVersionAtleast("WOTLK") then
 		local DEATHKNIGHT = "DEATHKNIGHT"

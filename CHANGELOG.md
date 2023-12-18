@@ -8,6 +8,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.14.2] - 2023-12-19
+
+### Fixed
+
+* Fix Lua error on Classic Era when accessing macro conditions on a Druid [#186]
+* Display both Tree of Life and Moonkin Form in the Form macro condition for Druid on Classic Era
+
 ## [1.14.1] - 2023-12-03
 
 ### Added
@@ -1247,7 +1254,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.14.1...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.14.2...master
+[1.14.2]: https://github.com/Snakybo/Clicked/releases/tag/1.14.2
 [1.14.1]: https://github.com/Snakybo/Clicked/releases/tag/1.14.1
 [1.14.0]: https://github.com/Snakybo/Clicked/releases/tag/1.14.0
 [1.13.5]: https://github.com/Snakybo/Clicked/releases/tag/1.13.5
@@ -1354,6 +1362,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#186]: https://github.com/Snakybo/Clicked/issues/186
 [#184]: https://github.com/Snakybo/Clicked/issues/184
 [#182]: https://github.com/Snakybo/Clicked/issues/182
 [#181]: https://github.com/Snakybo/Clicked/issues/181
