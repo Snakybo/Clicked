@@ -138,6 +138,7 @@ read_globals = {
 	"LE_EXPANSION_WRATH_OF_THE_LICH_KING",
 	"LIGHTBLUE_FONT_COLOR",
 	"LoadAddOn",
+	"LocalizedClassList",
 	"MAX_SPELLS",
 	"MAX_NUM_TALENTS",
 	"MAX_TALENT_TABS",

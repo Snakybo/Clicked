@@ -370,8 +370,14 @@ function Addon:GetLocalizedClasses()
 	local order = {}
 
 	--- @type table<ClassFile,string>
-	local classes = {}
-	FillLocalizedClassList(classes)
+	local classes
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		classes = LocalizedClassList()
+	else
+		classes = {}
+		FillLocalizedClassList(classes)
+	end
 
 	for classId, className in pairs(classes) do
 		if classId ~= "Adventurer" then
