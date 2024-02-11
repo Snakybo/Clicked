@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Classic Era 1.15.1
+* Add icons from Classic Era 1.15.1 to icon picker
 
 ## [1.14.3] - 2024-01-17
 

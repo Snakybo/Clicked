@@ -6341,6 +6341,7 @@ local icons = {
 	[4680677] = "inv_lunarrabbitpet",
 	[4687496] = "inv_rabbitmountclassic",
 	[4777763] = "inv_magicalfishpet",
+	[5588107] = "ui_selffound",
 }
 
 --- @type integer[]
@@ -12667,6 +12668,7 @@ local order = {
 	4680677,
 	4687496,
 	4777763,
+	5588107,
 }
 
 --- @return table<integer,string>
