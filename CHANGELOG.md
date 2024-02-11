@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for Classic Era 1.15.1
 * Add icons from Classic Era 1.15.1 to icon picker
+* Onky re-process bingings when entering and leaving combat if required [#189]
 
 ## [1.14.3] - 2024-01-17
 
@@ -1377,6 +1378,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#189]: https://github.com/Snakybo/Clicked/issues/189
 [#186]: https://github.com/Snakybo/Clicked/issues/186
 [#184]: https://github.com/Snakybo/Clicked/issues/184
 [#182]: https://github.com/Snakybo/Clicked/issues/182

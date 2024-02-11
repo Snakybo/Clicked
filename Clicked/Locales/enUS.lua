@@ -317,3 +317,4 @@ L["Show interface actions"] = true
 L["All"] = true
 L["External"] = true
 L["Filter bindings"] = true
+L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."] = true

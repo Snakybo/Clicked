@@ -2127,6 +2127,17 @@ local function DrawMacroCombat(container, combat)
 	}
 
 	DrawDropdownLoadOption(container, Addon.L["Combat"], items, order, combat)
+
+	local binding = GetCurrentBinding()
+	if binding ~= nil and combat.selected and (binding.type == Addon.BindingTypes.UNIT_MENU or binding.type == Addon.BindingTypes.UNIT_SELECT) then
+		local text = Addon.L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."]
+
+		local widget = Addon:GUI_Label(text)
+		widget:SetFullWidth(true)
+		widget:SetColor(1, 0, 0)
+
+		container:AddChild(widget)
+	end
 end
 
 --- @param container AceGUIContainer
