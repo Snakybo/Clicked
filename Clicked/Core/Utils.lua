@@ -407,7 +407,13 @@ function Addon:GetBindingValue(binding)
 		local item = binding.action.itemValue
 
 		if type(item) == "number" and item < 20 then
-			item = GetInventoryItemID("player", item)
+			local equipped = GetInventoryItemID("player", item)
+
+			if equipped == nil then
+				return item
+			end
+
+			item = equipped
 		end
 
 		return self:GetItemInfo(item) or item
