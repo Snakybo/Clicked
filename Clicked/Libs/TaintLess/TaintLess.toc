@@ -1,5 +1,6 @@
-## Interface: 100100
+## Interface: 100205
 ## Title: TaintLess
 ## Notes: Eliminates certain classes of taint errors.
-## Version: 23-05-18
+## Version: 24-02-20
+## IconTexture: 134125
 TaintLess.xml
