@@ -6,7 +6,7 @@
 --
 
 local DBICON10 = "LibDBIcon-1.0"
-local DBICON10_MINOR = 50 -- Bump on changes
+local DBICON10_MINOR = 52 -- Bump on changes
 if not LibStub then error(DBICON10 .. " requires LibStub.") end
 local ldb = LibStub("LibDataBroker-1.1", true)
 if not ldb then error(DBICON10 .. " requires LibDataBroker-1.1.") end
@@ -255,15 +255,15 @@ local function createButton(name, object, db, customCompartmentIcon)
 		local overlay = button:CreateTexture(nil, "OVERLAY")
 		overlay:SetSize(50, 50)
 		overlay:SetTexture(136430) --"Interface\\Minimap\\MiniMap-TrackingBorder"
-		overlay:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0)
+		overlay:SetPoint("TOPLEFT", button, "TOPLEFT")
 		local background = button:CreateTexture(nil, "BACKGROUND")
 		background:SetSize(24, 24)
 		background:SetTexture(136467) --"Interface\\Minimap\\UI-Minimap-Background"
-		background:SetPoint("CENTER", button, "CENTER", 0, 1)
+		background:SetPoint("CENTER", button, "CENTER")
 		local icon = button:CreateTexture(nil, "ARTWORK")
 		icon:SetSize(18, 18)
 		icon:SetTexture(object.icon)
-		icon:SetPoint("CENTER", button, "CENTER", 0, 1)
+		icon:SetPoint("CENTER", button, "CENTER")
 		button.icon = icon
 	else
 		local overlay = button:CreateTexture(nil, "OVERLAY")
@@ -481,6 +481,12 @@ end
 --------------------------------------------------------------------------------
 -- Addon Compartment API
 --
+
+function lib:IsButtonCompartmentAvailable()
+	if AddonCompartmentFrame then
+		return true
+	end
+end
 
 function lib:IsButtonInCompartment(buttonName)
 	local object = lib.objects[buttonName]
