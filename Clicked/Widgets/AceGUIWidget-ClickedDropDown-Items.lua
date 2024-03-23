@@ -90,7 +90,7 @@ do
 		widget.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 18 + ICON_SIZE + ICON_MARGIN, 0)
 		widget.highlight:SetPoint("LEFT", frame, "LEFT", 5 + ICON_SIZE + ICON_MARGIN)
 
-		local icon = frame:CreateTexture("OVERLAY")
+		local icon = frame:CreateTexture(nil, "OVERLAY")
 		icon:SetWidth(ICON_SIZE)
 		icon:SetHeight(ICON_SIZE)
 		icon:SetPoint("LEFT", frame, "LEFT", 3 + widget.check:GetWidth(), 0)
