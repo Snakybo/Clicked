@@ -1424,7 +1424,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#100]: https://github.com/Snakybo/Clicked/issues/100
 [#97]: https://github.com/Snakybo/Clicked/issues/97
 [#91]: https://github.com/Snakybo/Clicked/issues/91
-[#91]: https://github.com/Snakybo/Clicked/issues/90
+[#90]: https://github.com/Snakybo/Clicked/issues/90
 [#84]: https://github.com/Snakybo/Clicked/issues/84
 [#76]: https://github.com/Snakybo/Clicked/issues/76
 [#75]: https://github.com/Snakybo/Clicked/issues/75
