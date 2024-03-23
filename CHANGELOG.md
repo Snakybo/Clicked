@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Dragonflight 10.2.6
+* Add icons from Dragonflight 10.2.6 to icon picker
 
 ### Fixed
 
