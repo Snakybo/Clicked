@@ -14,6 +14,12 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local LocalizedClassList = LocalizedClassList or function()  -- Deprecated in 10.2.5
+	local classes = {}
+	FillLocalizedClassList(classes)
+	return classes
+end
+
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 
@@ -370,14 +376,7 @@ function Addon:GetLocalizedClasses()
 	local order = {}
 
 	--- @type table<ClassFile,string>
-	local classes
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		classes = LocalizedClassList()
-	else
-		classes = {}
-		FillLocalizedClassList(classes)
-	end
+	local classes = LocalizedClassList()
 
 	for classId, className in pairs(classes) do
 		if classId ~= "Adventurer" then

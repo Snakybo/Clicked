@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -479,5 +481,5 @@ end
 
 --- @return boolean
 function Addon:IsWeakAurasIntegrationEnabled()
-	return GetAddOnEnableState(UnitName("player"), "WeakAuras") == 2 and WeakAuras ~= nil and WeakAurasSaved ~= nil
+	return GetAddOnEnableState("WeakAuras", UnitName("player")) > 0 and WeakAuras ~= nil and WeakAurasSaved ~= nil
 end

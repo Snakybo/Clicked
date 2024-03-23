@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local IsEquippedItem = C_Item.IsEquippedItem or IsEquippedItem -- Deprecated in 10.2.6
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 

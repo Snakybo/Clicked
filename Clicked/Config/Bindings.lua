@@ -14,6 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded -- Deprecated in 10.2.0
+local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn -- Deprecated in 10.2.0
+local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn -- Deprecated in 10.2.0
+local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
+
 local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
@@ -379,7 +384,7 @@ local function HijackSpellButton_UpdateButton(self)
 			end)
 
 			-- Respect ElvUI skinning
-			if GetAddOnEnableState(UnitName("player"), "ElvUI") == 2 then
+			if GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
 				local E = unpack(ElvUI)
 
 				if E and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
@@ -501,7 +506,7 @@ local function EnsureIconCache()
 
 			if not loaded then
 				if reason == "DISABLED" then
-					EnableAddOn(addon, true)
+					EnableAddOn(addon)
 					LoadAddOn(addon)
 				else
 					error("Unable to load " .. addon ": " .. reason)

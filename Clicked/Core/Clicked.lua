@@ -18,7 +18,7 @@ local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
-local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata -- Deprecated in 10.1.0
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -254,6 +254,7 @@ function Clicked:OnEnable()
 	end
 
 	if Addon:IsClassic() then
+		--- @diagnostic disable-next-line: param-type-mismatch
 		self:RegisterEvent("RUNE_UPDATED", RUNE_UPDATED)
 	end
 

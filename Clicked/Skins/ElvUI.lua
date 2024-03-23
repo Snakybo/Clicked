@@ -1,12 +1,14 @@
 --- @diagnostic disable: duplicate-set-field
 --- @diagnostic disable: undefined-field
 
+local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
+
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-if GetAddOnEnableState(UnitName("player"), "ElvUI") ~= 2 then
+if GetAddOnEnableState("ElvUI", UnitName("player")) == 0 then
 	return
 end
 

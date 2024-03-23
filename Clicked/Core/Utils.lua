@@ -14,6 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local DisableAddOn = C_AddOns.DisableAddOn or DisableAddOn -- Deprecated in 10.2.0
+local IsEquippedItem = C_Item.IsEquippedItem or IsEquippedItem -- Deprecated in 10.2.6
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo -- Deprecated in 10.2.6
+
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
