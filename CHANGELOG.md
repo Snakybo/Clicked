@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for Dragonflight 10.2.6
+
 ### Fixed
 
 * Fix error when unequipping items that are bound via slot IDs [#191]
