@@ -22,17 +22,17 @@ local Addon = select(2, ...)
 ---@diagnostic disable-next-line: lowercase-global
 function dump(o)
 	if type(o) == 'table' then
-	   local s = '{ '
-	   for k,v in pairs(o) do
-		  if type(k) ~= 'number' then k = '"'..k..'"' end
-		  -- luacheck: ignore
-		  s = s .. '['..k..'] = ' .. dump(v) .. ','
-	   end
-	   return s .. '} '
+		local s = '{ '
+		for k,v in pairs(o) do
+			if type(k) ~= 'number' then k = '"'..k..'"' end
+			-- luacheck: ignore
+			s = s .. '['..k..'] = ' .. dump(v) .. ','
+		end
+		return s .. '} '
 	else
-	   return tostring(o)
+		return tostring(o)
 	end
- end
+end
 ---@end-debug@
 
 --- @param err any

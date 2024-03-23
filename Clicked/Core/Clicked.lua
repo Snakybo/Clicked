@@ -241,6 +241,11 @@ function Clicked:OnInitialize()
 end
 
 function Clicked:OnEnable()
+	--- @debug@
+	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
+	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
+	--- @end-debug@
+
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", PLAYER_REGEN_DISABLED)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
