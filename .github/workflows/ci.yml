@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: "Run Luacheck"
       uses: nebularg/actions-luacheck@v1
@@ -22,11 +22,11 @@ jobs:
     - name: Package
       uses: BigWigsMods/packager@v2
       with:
-        args: -d
+        args: -zd
 
     - name: "Archive"
-      uses: "actions/upload-artifact@v3"
+      uses: "actions/upload-artifact@v4"
       if: success()
       with:
-        name: clicked-ci
-        path: ".release/*.zip"
+        name: Clicked
+        path: ".release/"
