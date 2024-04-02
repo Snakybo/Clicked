@@ -213,7 +213,7 @@ function BlacklistOptions:CreateOptionsTable()
 							result[current + i] = frame
 						end
 
-						current = current + #frames
+						current = current + #frames + 1
 					end
 
 					return result
