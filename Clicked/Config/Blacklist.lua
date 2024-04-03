@@ -46,11 +46,15 @@ local UNIT_FRAME_ADDON_MAPPING = {
 		name = "Blizzard",
 		"Boss%dTargetFrame",
 		"CompactRaidFrame%d",
+		"CompactArenaFrameMember%d",
+		"CompactArenaFramePet%d",
 		"CompactPartyFrameMember%d",
+		"CompactPartyFramePet%d",
 		"FocusFrame",
 		"FocusFrameToT",
 		"PetFrame",
 		"PlayerFrame",
+		"PartyMemberFrame%d",
 		"TargetFrame",
 		"TargetFrameToT"
 	}

@@ -19,6 +19,21 @@ local Addon = select(2, ...)
 
 -- Local support functions
 
+--- @param count integer
+--- @param names string|string[]
+--- @param addon string?
+local function HookUnitFrame(count, names, addon)
+	if type(names) == "string" then
+		names = {names}
+	end
+
+	for _, name in ipairs(names) do
+		for i = 1, count do
+			Clicked:RegisterClickCastFrame(string.format(name, i), addon)
+		end
+	end
+end
+
 --- @param parent Button
 --- @param name string
 local function HookCompactUnitFramePart(parent, name)
@@ -63,24 +78,11 @@ function Addon:RegisterBlizzardUnitFrames()
 		Clicked:RegisterClickCastFrame("TargetFrame")
 		Clicked:RegisterClickCastFrame("TargetFrameToT")
 
-		Clicked:RegisterClickCastFrame("Boss1TargetFrame")
-		Clicked:RegisterClickCastFrame("Boss2TargetFrame")
-		Clicked:RegisterClickCastFrame("Boss3TargetFrame")
-		Clicked:RegisterClickCastFrame("Boss4TargetFrame")
-		Clicked:RegisterClickCastFrame("Boss5TargetFrame")
+		HookUnitFrame(5, "Boss%dTargetFrame")
 
 		if not Addon:IsGameVersionAtleast("RETAIL") then
-			Clicked:RegisterClickCastFrame("PartyMemberFrame1")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame1PetFrame")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame2")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame2PetFrame")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame3")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame3PetFrame")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame4")
-			Clicked:RegisterClickCastFrame("PartyMemberFrame4PetFrame")
+			HookUnitFrame(4, {"PartyMemberFrame%d", "PartyMemberFrame%dPetFrame"})
 		end
-
-		HookCompactUnitFrame(_G["CompactPartyFrameMember1"])
 	end
 
 	if Addon:IsGameVersionAtleast("BC") then
@@ -89,9 +91,7 @@ function Addon:RegisterBlizzardUnitFrames()
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		Clicked:RegisterClickCastFrame("ArenaEnemyFrame1", "Blizzard_ArenaUI")
-		Clicked:RegisterClickCastFrame("ArenaEnemyFrame2", "Blizzard_ArenaUI")
-		Clicked:RegisterClickCastFrame("ArenaEnemyFrame3", "Blizzard_ArenaUI")
+		HookUnitFrame(3, "ArenaEnemyFrame%d", "Blizzard_ArenaUI")
 
 		local partyFrameIndex = 1
 
