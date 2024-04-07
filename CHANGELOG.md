@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for Classic Era 1.15.2
+
 ### Fixed
 
 * Fix not all frames being visible in the frame blacklist dropdown [#193]
