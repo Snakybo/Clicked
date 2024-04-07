@@ -875,6 +875,15 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 				end
 			end
 		end
+	elseif Addon:IsGameVersionAtleast("CATA") then
+		wipe(talentCache)
+
+		for tab = 1, GetNumTalentTabs() do
+			for index = 1, GetNumTalents(tab) do
+				local name, _, _, _, rank  = GetTalentInfo(tab, index)
+				talentCache[name] = rank > 0
+			end
+		end
 	end
 
 	Clicked:ReloadBindings(...)
@@ -1018,67 +1027,6 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		-- specialization
-		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
-			local function IsSpecializationIndexSelected(index)
-				return index == GetSpecialization()
-			end
-
-			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
-		end
-
-		-- talent selected
-		if ShouldPerformStateCheck("TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE") then
-			--- @param entries Binding.MutliFieldLoadOption.Entry[]
-			--- @return boolean
-			local function IsTalentMatrixValid(entries)
-				if #entries == 0 then
-					return false
-				end
-
-				if next(talentCache) == nil then
-					return false
-				end
-
-				local compounds = {{}}
-
-				for _, entry in ipairs(entries) do
-					if entry.operation == "OR" then
-						table.insert(compounds, {})
-					end
-
-					table.insert(compounds[#compounds], {
-						negated = entry.negated,
-						value = entry.value
-					})
-				end
-
-				for _, compound in ipairs(compounds) do
-					local valid = true
-
-					for _, item in ipairs(compound) do
-						if #item.value > 0 then
-							if talentCache[item.value] and item.negated or not talentCache[item.value] and not item.negated then
-								valid = false
-							end
-						end
-					end
-
-					if valid then
-						return true
-					end
-				end
-
-				return false
-			end
-
-			if load.talent.selected then
-				state.talent = IsTalentMatrixValid(load.talent.entries)
-			else
-				state.talent = nil
-			end
-		end
-
 		-- pvp talent selected
 		if ShouldPerformStateCheck("PLAYER_PVP_TALENT_UPDATE") then
 			local cache = {}
@@ -1162,27 +1110,72 @@ function Addon:UpdateBindingLoadState(binding, options)
 
 			state.warMode = ValidateLoadOption(load.warMode, IsWarMode)
 		end
-	elseif Addon:IsGameVersionAtleast("WOTLK") then
-		-- specialization (classic)
+	end
+
+	if Addon:IsGameVersionAtleast("WOTLK") then
+		-- specialization
 		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
 			local function IsSpecializationIndexSelected(index)
-				return index == GetActiveTalentGroup()
+				local retail = GetSpecialization and GetSpecialization()
+				local cata = GetPrimaryTalentTree and GetPrimaryTalentTree()
+				local wotlk = GetActiveTalentGroup and GetActiveTalentGroup()
+				local selected = retail or cata or wotlk
+				return index == selected
 			end
 
 			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
 		end
+	end
 
-		-- talent selected (classic)
-		if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
-			local function IsTalentIndexSelected(index)
-				local tab = math.ceil(index / MAX_NUM_TALENTS)
-				local talentIndex = (index - 1) % MAX_NUM_TALENTS + 1
-
-				local _, _, _, _, rank = GetTalentInfo(tab, talentIndex)
-				return rank and rank > 0
+	-- talent selected
+	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
+		--- @param entries Binding.MutliFieldLoadOption.Entry[]
+		--- @return boolean
+		local function IsTalentMatrixValid(entries)
+			if #entries == 0 then
+				return false
 			end
 
-			state.talent = ValidateTriStateLoadOption(load.talent --[[@as Binding.TriStateLoadOption]], IsTalentIndexSelected)
+			if next(talentCache) == nil then
+				return false
+			end
+
+			local compounds = {{}}
+
+			for _, entry in ipairs(entries) do
+				if entry.operation == "OR" then
+					table.insert(compounds, {})
+				end
+
+				table.insert(compounds[#compounds], {
+					negated = entry.negated,
+					value = entry.value
+				})
+			end
+
+			for _, compound in ipairs(compounds) do
+				local valid = true
+
+				for _, item in ipairs(compound) do
+					if #item.value > 0 then
+						if talentCache[item.value] and item.negated or not talentCache[item.value] and not item.negated then
+							valid = false
+						end
+					end
+				end
+
+				if valid then
+					return true
+				end
+			end
+
+			return false
+		end
+
+		if load.talent.selected then
+			state.talent = IsTalentMatrixValid(load.talent.entries)
+		else
+			state.talent = nil
 		end
 	end
 

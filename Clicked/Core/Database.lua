@@ -369,19 +369,20 @@ function Addon:GetNewBindingTemplate()
 	}
 
 	if Addon:IsGameVersionAtleast("RETAIL") then
-		--- @type number
 		local specIndex = GetSpecialization()
-
-		-- Initial spec
-		if specIndex == 5 then
-			specIndex = 1
-		end
-
+		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-		template.load.talent = GetMultiFieldLoadOptionTemplate("")
+	elseif Addon:IsGameVersionAtleast("CATA") then
+		--- @type number
+		local specIndex = GetPrimaryTalentTree()
+		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local specIndex = GetActiveTalentGroup()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
+	end
+
+	if Addon:IsGameVersionAtleast("CATA") then
+		template.load.talent = GetMultiFieldLoadOptionTemplate("")
 	end
 
 	return template

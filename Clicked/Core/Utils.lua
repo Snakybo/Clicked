@@ -589,7 +589,7 @@ function Addon:GetSpellInfo(input, addSubText)
 		addSubText = true
 	end
 
-	if addSubText and not Addon:IsGameVersionAtleast("RETAIL") then
+	if addSubText and not Addon:IsGameVersionAtleast("CATA") then
 		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spellId)
 

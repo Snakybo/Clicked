@@ -21,6 +21,7 @@ local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) retur
 
 local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
+local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
 
 --- @class ClickedInternal
@@ -126,42 +127,80 @@ end
 --- @param specIndices? integer[]
 --- @return integer[]
 local function GetRelevantSpecializationIds(classNames, specIndices)
-	local specializationIds = {}
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		local specializationIds = {}
 
-	if specIndices == nil then
-		specIndices = {}
+		if specIndices == nil then
+			specIndices = {}
 
-		if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			specIndices[1] = GetSpecialization()
-		else
-			for _, class in ipairs(classNames) do
-				local specs = LibTalentInfo:GetClassSpecIDs(class)
+			if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
+				specIndices[1] = GetSpecialization()
+			else
+				for _, class in ipairs(classNames) do
+					local specs = LibTalentInfo:GetClassSpecIDs(class)
 
-				for specIndex in pairs(specs) do
-					table.insert(specIndices, specIndex)
+					for specIndex in pairs(specs) do
+						table.insert(specIndices, specIndex)
+					end
 				end
 			end
 		end
-	end
 
-	if classNames == nil then
-		classNames = {}
-		classNames[1] = select(2, UnitClass("player"))
-	end
-
-	for i = 1, #classNames do
-		local class = classNames[i]
-		local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-		for j = 1, #specIndices do
-			local specIndex = specIndices[j]
-			local specId = specs[specIndex]
-
-			table.insert(specializationIds, specId)
+		if classNames == nil then
+			classNames = {}
+			classNames[1] = select(2, UnitClass("player"))
 		end
-	end
 
-	return specializationIds
+		for i = 1, #classNames do
+			local class = classNames[i]
+			local specs = LibTalentInfo:GetClassSpecIDs(class)
+
+			for j = 1, #specIndices do
+				local specIndex = specIndices[j]
+				local specId = specs[specIndex]
+
+				table.insert(specializationIds, specId)
+			end
+		end
+
+		return specializationIds
+	else
+		local specializationIds = {}
+
+		if specIndices == nil then
+			specIndices = {}
+			if classNames == nil or #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
+				specIndices[1] = GetPrimaryTalentTree()
+			else
+				for _, class in ipairs(classNames) do
+					local specs = LibTalentInfoClassic:GetClassSpecializations(class)
+
+					for specIndex in pairs(specs) do
+						table.insert(specIndices, specIndex)
+					end
+				end
+			end
+		end
+
+		if classNames == nil then
+			classNames = {}
+			classNames[1] = select(2, UnitClass("player"))
+		end
+
+		for i = 1, #classNames do
+			local class = classNames[i]
+			local specs = LibTalentInfoClassic:GetClassSpecializations(class)
+
+			for j = 1, #specIndices do
+				local specIndex = specIndices[j]
+				local spec = specs[specIndex]
+
+				table.insert(specializationIds, spec.id)
+			end
+		end
+
+		return specializationIds
+	end
 end
 
 --- @param type '"LoadOption"'|'"TriStateLoadOption"'
@@ -357,7 +396,7 @@ local function HijackSpellButton_UpdateButton(self)
 			button:SetID(parent:GetID())
 
 			button:SetScript("OnEnter", function(_, motion)
-				if Addon:IsGameVersionAtleast("RETAIL") then
+				if Addon:IsGameVersionAtleast("CATA") then
 					parent:OnEnter(motion)
 				else
 					SpellButton_OnEnter(parent, motion)
@@ -365,7 +404,7 @@ local function HijackSpellButton_UpdateButton(self)
 			end)
 
 			button:SetScript("OnLeave", function()
-				if Addon:IsGameVersionAtleast("RETAIL") then
+				if Addon:IsGameVersionAtleast("CATA") then
 					parent:OnLeave()
 				else
 					SpellButton_OnLeave(parent)
@@ -376,7 +415,7 @@ local function HijackSpellButton_UpdateButton(self)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if mouseButton ~= "RightButton" and (not Addon:IsGameVersionAtleast("RETAIL") and not Addon:IsStringNilOrEmpty(subName)) then
+				if mouseButton ~= "RightButton" and (not Addon:IsGameVersionAtleast("CATA") and not Addon:IsStringNilOrEmpty(subName)) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
@@ -1080,10 +1119,14 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 	if data.selected then
 		local talents
 
-		if mode == "talents" then
-			talents = Addon:GetLocalizedTalents(specializations)
-		elseif mode == "pvp_talents" then
-			talents = Addon:GetLocalizedPvPTalents(specializations)
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			if mode == "talents" then
+				talents = Addon:GetLocalizedTalents(specializations)
+			elseif mode == "pvp_talents" then
+				talents = Addon:GetLocalizedPvPTalents(specializations)
+			end
+		elseif Addon:IsGameVersionAtleast("CATA") then
+			talents = Addon:Cata_GetTalents(specializations)
 		end
 
 		--- @param name string
@@ -1125,7 +1168,13 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 
 						ticker = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
 							GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
-							GameTooltip:SetSpellByID(talent.spellId)
+
+							if talent.spellId ~= nil then
+								GameTooltip:SetSpellByID(talent.spellId)
+							else
+								GameTooltip:SetText(talent.text)
+							end
+
 							GameTooltip:Show()
 						end)
 					end
@@ -1358,7 +1407,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 		end
 
 		if mode == Addon.BindingTypes.SPELL then
-			local hasRank = not Addon:IsGameVersionAtleast("RETAIL") and id ~= nil and string.find(name, "%((.+)%)")
+			local hasRank = not Addon:IsGameVersionAtleast("CATA") and id ~= nil and string.find(name, "%((.+)%)")
 
 			-- pick from spellbook button
 			do
@@ -1389,7 +1438,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 				local tooltip = Addon.L["Click on a spell book entry to select it."]
 
-				if not Addon:IsGameVersionAtleast("RETAIL") then
+				if not Addon:IsGameVersionAtleast("CATA") then
 					tooltip = tooltip .. "\n" .. Addon.L["Right click to use the max rank."]
 				end
 
@@ -2366,8 +2415,9 @@ local function DrawBindingMacroConditionsPage(container, binding)
 
 		if Addon:IsGameVersionAtleast("RETAIL") then
 			DrawMacroAdvancedFlyable(container, load.advancedFlyable)
-			DrawMacroBonusBar(container, load.bonusbar)
 		end
+
+		DrawMacroBonusBar(container, load.bonusbar)
 	end
 end
 
@@ -2411,7 +2461,14 @@ end
 --- @param specialization Binding.TriStateLoadOption
 --- @param classNames string[]
 local function DrawLoadSpecialization(container, specialization, classNames)
-	local items, order = Addon:GetLocalizedSpecializations(classNames)
+	local items, order
+
+	if Addon:IsGameVersionAtleast("RETAIL") then
+		items, order = Addon:GetLocalizedSpecializations(classNames)
+	else
+		items, order = Addon:Cata_GetLocalizedSpecializations(classNames)
+	end
+
 	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
@@ -2619,15 +2676,18 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	DrawLoadClass(container, load.class)
 	DrawLoadRace(container, load.race)
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon:IsGameVersionAtleast("CATA") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 		DrawLoadSpecialization(container, load.specialization, classNames)
 		DrawLoadTalent(container, load.talent --[[@as Binding.MutliFieldLoadOption]], specializationIds)
-		DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
-		DrawLoadWarMode(container, load.warMode)
+
+		if Addon:IsGameVersionAtleast("RETAIL") then
+			DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
+			DrawLoadWarMode(container, load.warMode)
+		end
 	elseif Addon:IsGameVersionAtleast("WOTLK") then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 
@@ -2894,8 +2954,15 @@ local function CreateFromItemTemplate(identifier)
 	elseif identifier == ITEM_TEMPLATE_IMPORT_ACTIONBAR then
 		local group
 
-		if Addon:IsGameVersionAtleast("RETAIL") then
-			local _, name, _, icon = GetSpecializationInfo(GetSpecialization())
+		if Addon:IsGameVersionAtleast("CATA") then
+			local name, icon
+
+			if Addon:IsGameVersionAtleast("RETAIL") then
+				_, name, _, icon = GetSpecializationInfo(GetSpecialization())
+			else
+				local class = select(3, UnitClass("player"))
+				_, name, _, icon = GetSpecializationInfoForClassID(class, GetPrimaryTalentTree())
+			end
 
 			--- @type Group
 			for _, g in Clicked:IterateGroups() do
@@ -2971,9 +3038,9 @@ local function CreateFromItemTemplate(identifier)
 				binding.load.class.selected = 1
 				binding.load.class.single = select(2, UnitClass("player"))
 
-				if Addon:IsGameVersionAtleast("RETAIL") then
+				if Addon:IsGameVersionAtleast("CATA") then
 					binding.load.specialization.selected = 1
-					binding.load.specialization.single = GetSpecialization()
+					binding.load.specialization.single = GetSpecialization and GetSpecialization() or GetPrimaryTalentTree()
 				end
 			end
 		end
@@ -3375,7 +3442,7 @@ function Addon:BindingConfig_Initialize()
 		HijackSpellButton_UpdateButton(nil)
 	end)
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon:IsGameVersionAtleast("CATA") then
 		for i = 1, SPELLS_PER_PAGE do
 			local currSpellButton = _G["SpellButton" .. i];
 			hooksecurefunc(currSpellButton, "UpdateButton", HijackSpellButton_UpdateButton)

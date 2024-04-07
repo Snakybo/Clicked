@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Cataclysm Classic 4.4.0
+* Add new talent selection UI for Cataclysm Classic
 
 ## [1.14.6] - 2024-04-07
 

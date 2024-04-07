@@ -102,6 +102,8 @@ function Addon:IsGameVersionAtleast(version)
 
 	if version == "RETAIL" and isRetail then
 		return true
+	elseif version == "CATA" and isCata then
+		return true
 	elseif version == "WOTLK" and isWOTLK then
 		return true
 	elseif version == "BC" and isBC then

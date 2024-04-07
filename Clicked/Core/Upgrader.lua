@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 6
+Addon.DATA_VERSION = 7
 
 -- Local support functions
 
@@ -795,6 +795,27 @@ local function Upgrade(db, from)
 				}
 
 				Addon:ShowInformationPopup("Clicked: Binding PvP talent load options have been reset, sorry for the inconvenience.")
+			end
+		end
+	end
+
+	if from < 7 then
+		for _, binding in ipairs(db.bindings) do
+			if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.CATA then
+				binding.load.talent = {
+					selected = false,
+					entries = {
+						{
+							operation = "AND",
+							negated = false,
+							value = ""
+						}
+					}
+				}
+
+				if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CLASSIC then
+					Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
+				end
 			end
 		end
 	end

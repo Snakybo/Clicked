@@ -654,6 +654,193 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 
 		return items, order
 	end
+elseif Addon:IsGameVersionAtleast("CATA") then
+	--- Get a localized list of all available specializations for the given class names. If the `classNames` parameter is `nil` it will return results for the
+	--- player's current class.
+	---
+	--- @param classNames? string[]
+	--- @return table<integer,string> items
+	--- @return integer[] order
+	function Addon:Cata_GetLocalizedSpecializations(classNames)
+		--- @type table<integer,string>
+		local items = {}
+
+		--- @type integer[]
+		local order = {}
+
+		if classNames == nil then
+			classNames = {}
+			classNames[1] = select(2, UnitClass("player"))
+		end
+
+		if #classNames == 1 then
+			local class = classNames[1]
+			local specs = LibTalentInfoClassic:GetClassSpecializations(class)
+
+			for specIndex, spec in pairs(specs) do
+				local _, name, _, icon = GetSpecializationInfoForSpecID(spec.id)
+				local key = specIndex
+
+				if not Addon:IsStringNilOrEmpty(name) then
+					items[key] = string.format("<icon=%d><text=%s>", icon, name)
+					table.insert(order, key)
+				end
+			end
+		else
+			local max = 0
+
+			-- Find class with the most specializations out of all available classes
+			if #classNames == 0 then
+				for _, class in ipairs(allClasses) do
+					local count = LibTalentInfoClassic:GetNumSpecializationsForClass(class)
+
+					if count > max then
+						max = count
+					end
+				end
+			-- Find class with the most specializations out of the selected classes
+			else
+				for i = 1, #classNames do
+					local count = LibTalentInfoClassic:GetNumSpecializationsForClass(classNames[i])
+
+					if count > max then
+						max = count
+					end
+				end
+			end
+
+			for i = 1, max do
+				local key = i
+
+				items[key] = string.format("<text=%s>", Addon.L["Specialization %s"]:format(i))
+				table.insert(order, key)
+			end
+		end
+
+		return items, order
+	end
+
+	--- Get a localized list of all available talents for the
+	--- given specialization IDs. If the `specializations` parameter
+	--- is `nil` it will return results for the player's current specialization.
+	---
+	--- @param specializations? integer[]
+	--- @return TalentInfo[]
+	function Addon:Cata_GetTalents(specializations)
+		--- @type TalentInfo[]
+		local result = {}
+
+		if specializations == nil then
+			local class = select(2, UnitClass("player"))
+			specializations = {}
+			specializations[1] = LibTalentInfoClassic:GetClassSpecialization(class, GetPrimaryTalentTree()).id
+		end
+
+		--- @type table<string,boolean>
+		local found = {}
+
+		for _, specialization in ipairs(specializations) do
+			local count = LibTalentInfoClassic:GetNumTalentsForSpec(specialization)
+
+			for i = 1, count do
+				local id, name, texture = LibTalentInfoClassic:GetTalentInfoBySpecID(specialization, i)
+
+				if name ~= nil and not found[name] then
+					found[name] = true
+					table.insert(result, {
+						entryId = id,
+						text = name,
+						icon = texture,
+					})
+				end
+			end
+		end
+
+		return result
+	end
+
+	--- Get a localized list of all available classic shapeshift forms for the  given class names.
+	--- If the `classNames` parameter is `nil` it will return results for the player's current class.
+	---
+	--- @param classes? string[]
+	--- @return table<integer,string> items
+	--- @return integer[] order
+	function Addon:Classic_GetLocalizedForms(classes)
+		--- @type table<integer,string>
+		local items = {}
+
+		--- @type integer[]
+		local order = {}
+
+		if classes == nil then
+			classes = {}
+			classes[1] = select(2, UnitClass("player"))
+		end
+
+		if #classes == 1 then
+			local className = classes[1]
+			local defaultForm = Addon.L["None"]
+
+			if className == "DRUID" then
+				defaultForm = Addon.L["Humanoid Form"]
+			end
+
+			do
+				local key = #order + 1
+
+				items[key] = string.format("<text=%s>", defaultForm)
+				table.insert(order, key)
+			end
+
+			for _, spellIds in Addon:Classic_IterateShapeshiftForms(className) do
+				local key = #order + 1
+				local targetSpellId = spellIds[#spellIds]
+
+				-- Find first available form to set name
+				for _, spellId in ipairs(spellIds) do
+					if IsSpellKnown(spellId) then
+						targetSpellId = spellId
+						break
+					end
+				end
+
+				local name, _, icon = Addon:GetSpellInfo(targetSpellId, false)
+				items[key] = string.format("<icon=%d><text=%s>", icon, name)
+
+				table.insert(order, key)
+			end
+		else
+			local max = 0
+
+			-- Find specialization with the highest number of forms
+			if #classes == 0 then
+				for _, forms in Addon:Classic_IterateShapeshiftClasses() do
+					if #forms > max then
+						max = #forms
+					end
+				end
+			-- Find specialization with the highest number of forms out of the selected specializations
+			else
+				for _, className in ipairs(classes) do
+					local forms = Addon:Classic_GetShapeshiftForms(className)
+
+					if #forms > max then
+						max = #forms
+					end
+				end
+			end
+
+			-- start at 0 because [form:0] is no form
+			for i = 0, max do
+				local key = #order + 1
+
+				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
+				table.insert(order, key)
+			end
+		end
+
+		return items, order
+	end
 elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	--- Get a localized list of all available talents for the given classes.
 	--- If the `classes` parameter is `nil` it will return results for the player's current class.
