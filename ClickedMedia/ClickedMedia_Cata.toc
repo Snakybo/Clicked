@@ -1,4 +1,4 @@
-## Interface: 30403
+## Interface: 40400
 ## Title: ClickedMedia
 ## Author: Snakybo
 ## Version: @project-version@
@@ -6,4 +6,4 @@
 ## Dependencies: Clicked
 ## LoadOnDemand: 1
 
-MediaWOTLK.lua
+MediaCata.lua

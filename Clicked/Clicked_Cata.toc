@@ -1,4 +1,4 @@
-## Interface: 30403
+## Interface: 40400
 ## Title: Clicked
 ## Author: Snakybo
 ## Version: @project-version@
@@ -44,6 +44,8 @@ Config\Bindings.lua
 Config\ImportFrame.lua
 Config\ExportFrame.lua
 Config\Blacklist.lua
+Config\KeyLayouts.lua
+Config\KeyVisualizer.lua
 Debug\StatusOutput.lua
 
 # Skinning

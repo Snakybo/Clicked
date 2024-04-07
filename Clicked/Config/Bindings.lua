@@ -3318,18 +3318,16 @@ local function DrawHeader(container)
 	end
 
 	-- Visualize button
-	if not Addon:IsWotLK() then -- TODO: Remove when WOTLK supports texture slicing
-		local function OnClick()
-			Addon.KeyVisualizer:Open()
-		end
-
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-		widget:SetText(Addon.L["Show on keyboard"])
-		widget:SetCallback("OnClick", OnClick)
-		widget:SetAutoWidth(true)
-
-		line:AddChild(widget)
+	local function OnClick()
+		Addon.KeyVisualizer:Open()
 	end
+
+	local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+	widget:SetText(Addon.L["Show on keyboard"])
+	widget:SetCallback("OnClick", OnClick)
+	widget:SetAutoWidth(true)
+
+	line:AddChild(widget)
 end
 
 --- @param container AceGUIContainer

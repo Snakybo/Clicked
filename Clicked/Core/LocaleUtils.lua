@@ -68,9 +68,12 @@ if Addon:IsGameVersionAtleast("WOTLK") then
 	table.insert(allClasses, "DEATHKNIGHT")
 end
 
-if Addon:IsGameVersionAtleast("RETAIL") then
+if Addon:IsGameVersionAtleast("CATA") then
 	table.insert(allRaces, 9) -- Goblin
 	table.insert(allRaces, 22) -- Worgen
+end
+
+if Addon:IsGameVersionAtleast("RETAIL") then
 	table.insert(allRaces, 24) -- Pandaren
 	table.insert(allRaces, 27) -- Nightborne
 	table.insert(allRaces, 28) -- HighmountainTauren

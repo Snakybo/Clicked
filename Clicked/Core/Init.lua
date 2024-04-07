@@ -81,14 +81,22 @@ function Addon:IsWotLK()
 	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
 
+--- Check if the game client is running the Cataclysm version of the API.
+---
+--- @return boolean
+function Addon:IsCata()
+	return WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
+end
+
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
 --- game, but `false` on Classic.
 ---
---- @param version "RETAIL"|"CLASSIC"|"BC"|"WOTLK"
+--- @param version "RETAIL"|"CLASSIC"|"BC"|"WOTLK"|"CATA"
 --- @return boolean
 function Addon:IsGameVersionAtleast(version)
 	local isRetail = Addon:IsRetail()
-	local isWOTLK = isRetail or Addon:IsWotLK()
+	local isCata = isRetail or Addon:IsCata()
+	local isWOTLK = isCata or Addon:IsWotLK()
 	local isBC = isWOTLK or Addon:IsBC()
 	local isClassic = isBC or Addon:IsClassic()
 

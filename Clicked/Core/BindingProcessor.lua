@@ -610,10 +610,7 @@ local function ReloadBindings(delayFrame)
 	Clicked:ProcessActiveBindings()
 
 	Addon:BindingConfig_Redraw()
-
-	if not Addon:IsWotLK() then  -- TODO: Remove when WOTLK supports texture slicing
-		Addon.KeyVisualizer:Redraw()
-	end
+	Addon.KeyVisualizer:Redraw()
 end
 
 -- Public addon API
