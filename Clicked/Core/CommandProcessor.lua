@@ -120,11 +120,11 @@ local function EnsureMacroFrameHandler()
 		end
 	]])
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
 		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
 	end
 
@@ -158,7 +158,7 @@ function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 end
 
 function Addon:UpdateMacroFrameHandlerPressType()
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		local value = not Addon.db.profile.options.onKeyDown
 		macroFrameHandler:SetAttribute("pressAndHoldAction", value)
 	end

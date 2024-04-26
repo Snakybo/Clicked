@@ -144,7 +144,8 @@ local function Initialize()
 			widget.treeframe:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
 
-			if Addon:IsGameVersionAtleast("BC") then
+			-- TODO: Check if this is still needed
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 				skins:HandleButton(widget.sortButton, true)
 			else
 				skins:HandleButton(widget.sortButton, true, nil, true)

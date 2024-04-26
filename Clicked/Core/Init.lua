@@ -17,6 +17,23 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+--- @enum ExpansionLevel
+Addon.EXPANSION = {
+	CLASSIC = 1,
+	BC = 2,
+	WOTLK = 3,
+	CATA = 4,
+	MOP = 5,
+	WOD = 6,
+	LEGION = 7,
+	BFA = 8,
+	SL = 9,
+	DF = 10,
+}
+
+--- @type ExpansionLevel
+Addon.EXPANSION_LEVEL = nil
+
 ---@debug@
 -- luacheck: ignore
 ---@diagnostic disable-next-line: lowercase-global
@@ -56,6 +73,7 @@ end
 --- Check if the game client is running the retail version of the API.
 ---
 --- @return boolean
+--- @deprecated
 function Addon:IsRetail()
 	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 end
@@ -63,6 +81,7 @@ end
 --- Check if the game client is running the Classic version of the API.
 ---
 --- @return boolean
+--- @deprecated
 function Addon:IsClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 end
@@ -70,6 +89,7 @@ end
 --- Check if the game client is running the Burning Crusade version of the API.
 ---
 --- @return boolean
+--- @deprecated
 function Addon:IsBC()
 	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
@@ -77,6 +97,7 @@ end
 --- Check if the game client is running the Wrath of the Lich King version of the API.
 ---
 --- @return boolean
+--- @deprecated
 function Addon:IsWotLK()
 	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 end
@@ -84,8 +105,21 @@ end
 --- Check if the game client is running the Cataclysm version of the API.
 ---
 --- @return boolean
+--- @deprecated
 function Addon:IsCata()
 	return WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
+end
+
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.DF
+elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.CATA
+elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.WOTLK
+elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.BC
+elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.CLASSIC
 end
 
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
@@ -93,6 +127,7 @@ end
 ---
 --- @param version "RETAIL"|"CLASSIC"|"BC"|"WOTLK"|"CATA"
 --- @return boolean
+--- @deprecated
 function Addon:IsGameVersionAtleast(version)
 	local isRetail = Addon:IsRetail()
 	local isCata = isRetail or Addon:IsCata()

@@ -61,7 +61,7 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 101,
 				width = "full",
-				hidden = not Addon:IsGameVersionAtleast("RETAIL"),
+				hidden = Addon.EXPANSION_LEVEL < Addon.EXPANSION.DF,
 				set = function (_, val)
 					if val then
 						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])

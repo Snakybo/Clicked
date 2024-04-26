@@ -145,7 +145,7 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	elseif command.action == Addon.CommandType.MACRO then
 		local attributeType = "type"
 
-		if Addon:IsGameVersionAtleast("RETAIL") and not Addon.db.profile.options.onKeyDown then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF and not Addon.db.profile.options.onKeyDown then
 			attributeType = "typerelease"
 		end
 

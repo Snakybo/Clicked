@@ -212,6 +212,52 @@ local function RUNE_UPDATED()
 	Clicked:ReloadBindings(false, true, "RUNE_UPDATED")
 end
 
+--- @param self AceEvent-3.0
+--- @param method fun(self: AceEvent-3.0, event: WowEvent, callback: function|string)
+local function UpdateEventHooks(self, method)
+	method(self, "PLAYER_REGEN_DISABLED", PLAYER_REGEN_DISABLED)
+	method(self, "PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
+	method(self, "PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
+
+	if Addon.EXPANSION_LEVEL == Addon.EXPANSION.CLASSIC then
+		method(self, "RUNE_UPDATED", RUNE_UPDATED)
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
+		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
+	end
+
+	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.CATA then
+		method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
+		method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BFA then
+		method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+		method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
+		method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
+	end
+
+	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
+	method(self, "LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
+	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
+	method(self, "GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
+	method(self, "ADDON_LOADED", ADDON_LOADED)
+	method(self, "GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
+	method(self, "ZONE_CHANGED", ZONE_CHANGED)
+	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
+	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
+	method(self, "MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
+	method(self, "UNIT_TARGET", UNIT_TARGET)
+end
+
 -- Public addon API
 
 function Clicked:OnInitialize()
@@ -246,82 +292,11 @@ function Clicked:OnEnable()
 	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
 	---@end-debug@
 
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", PLAYER_REGEN_DISABLED)
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
-
-	if Addon:IsGameVersionAtleast("BC") then
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-
-		if Addon:IsBC() or Addon:IsWotLK() then
-			self:RegisterEvent("CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
-		end
-	end
-
-	if Addon:IsClassic() then
-		--- @diagnostic disable-next-line: param-type-mismatch
-		self:RegisterEvent("RUNE_UPDATED", RUNE_UPDATED)
-	end
-
-	if Addon:IsGameVersionAtleast("WOTLK") then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
-	end
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		self:RegisterEvent("PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
-		self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
-		self:RegisterEvent("TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
-		self:RegisterEvent("TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
-	end
-
-	self:RegisterEvent("PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
-	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
-	self:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
-	self:RegisterEvent("GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
-	self:RegisterEvent("ZONE_CHANGED", ZONE_CHANGED)
-	self:RegisterEvent("ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
-	self:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
-	self:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
+	UpdateEventHooks(self, self.RegisterEvent)
 end
 
 function Clicked:OnDisable()
-	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
-	if Addon:IsGameVersionAtleast("BC") then
-		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
-
-		if Addon:IsBC() or Addon:IsWotLK() then
-			self:UnregisterEvent("CHARACTER_POINTS_CHANGED")
-		end
-	end
-
-	if Addon:IsGameVersionAtleast("WOTLK") then
-		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
-	end
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
-		self:UnregisterEvent("PLAYER_PVP_TALENT_UPDATE")
-		self:UnregisterEvent("TRAIT_CONFIG_CREATED")
-		self:UnregisterEvent("TRAIT_CONFIG_UPDATED")
-	end
-
-	self:UnregisterEvent("PLAYER_LEVEL_CHANGED")
-	self:UnregisterEvent("LEARNED_SPELL_IN_TAB")
-	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	self:UnregisterEvent("ADDON_LOADED")
-	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
-	self:UnregisterEvent("ZONE_CHANGED")
-	self:UnregisterEvent("ZONE_CHANGED_INDOORS")
-	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:UnregisterEvent("MODIFIER_STATE_CHANGED")
-	self:UnregisterEvent("UNIT_TARGET")
+	UpdateEventHooks(self, self.UnregisterEvent)
 end
 
 -- Private addon API

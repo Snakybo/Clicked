@@ -44,36 +44,34 @@ local function GetBasicinfoString()
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		do
-			local id, name = GetSpecializationInfo(GetSpecialization())
-			table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
-		end
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		LoadAddOn('Blizzard_ClassTalentUI')
+		ClassTalentFrame.TalentsTab:UpdateTreeInfo()
+		table.insert(lines, "Talents: " .. ClassTalentFrame.TalentsTab:GetLoadoutExportString())
+	end
 
-		do
-			LoadAddOn('Blizzard_ClassTalentUI')
-			ClassTalentFrame.TalentsTab:UpdateTreeInfo()
-			table.insert(lines, "Talents: " .. ClassTalentFrame.TalentsTab:GetLoadoutExportString())
-		end
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+		local id, name = GetSpecializationInfo(GetSpecialization())
+		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
+	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+		local id, name = GetTalentTabInfo(GetPrimaryTalentTree())
+		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
 	end
 
 	table.insert(lines, "Press Mode: " .. (Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		table.insert(lines, "Autogen: " .. (Addon.db.profile.options.bindUnassignedModifiers and "True" or "False"))
-	end
+	table.insert(lines, "Autogen: " .. (Addon.db.profile.options.bindUnassignedModifiers and "True" or "False"))
 
 	table.insert(lines, "")
 
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
 	table.insert(lines, "Override Bar: " .. driver:GetAttribute("state-overridebar"))
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
 		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
 		table.insert(lines, "Vehicle UI: " .. driver:GetAttribute("state-vehicleui"))
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 		table.insert(lines, "Pet Battle: " .. driver:GetAttribute("state-petbattle"))
 	end
 
@@ -268,12 +266,12 @@ function Addon:StatusOutput_Initialize()
 	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
 		CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
 		CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
 	end
 

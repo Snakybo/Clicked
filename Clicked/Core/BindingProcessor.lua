@@ -248,14 +248,17 @@ local function ConstructAction(binding, target)
 	AppendCondition(binding.load.swimming, "swimming")
 	AppendNegatableStringCondition(binding.load.channeling, "channeling")
 
-	if Addon:IsGameVersionAtleast("BC") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		AppendCondition(binding.load.advancedFlyable, "advflyable")
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		AppendNegatableStringCondition(binding.load.bonusbar, "bonusbar")
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		AppendCondition(binding.load.advancedFlyable, "advflyable")
 	end
 
 	do
@@ -826,7 +829,7 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 		return
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		wipe(talentCache)
 
 		local configId = C_ClassTalents.GetActiveConfigID()
@@ -875,7 +878,7 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 				end
 			end
 		end
-	elseif Addon:IsGameVersionAtleast("CATA") then
+	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		wipe(talentCache)
 
 		for tab = 1, GetNumTalentTabs() do
@@ -1026,7 +1029,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 		state.race = ValidateTriStateLoadOption(load.race, IsRaceIndexSelected)
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BFA then
 		-- pvp talent selected
 		if ShouldPerformStateCheck("PLAYER_PVP_TALENT_UPDATE") then
 			local cache = {}
@@ -1112,15 +1115,15 @@ function Addon:UpdateBindingLoadState(binding, options)
 		end
 	end
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		-- specialization
 		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
 			local function IsSpecializationIndexSelected(index)
-				local retail = GetSpecialization and GetSpecialization()
-				local cata = GetPrimaryTalentTree and GetPrimaryTalentTree()
-				local wotlk = GetActiveTalentGroup and GetActiveTalentGroup()
-				local selected = retail or cata or wotlk
-				return index == selected
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+					return index == GetSpecialization()
+				else
+					return index == GetPrimaryTalentTree()
+				end
 			end
 
 			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
@@ -1189,7 +1192,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 				return true
 			end
 
-			if Addon:IsGameVersionAtleast("RETAIL") then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 				local specId = GetSpecializationInfo(GetSpecialization())
 
 				-- specId can be nil on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
@@ -1204,7 +1207,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 				end
 
 				return IsSpellKnown(forms[formIndex])
-			elseif Addon:IsGameVersionAtleast("CLASSIC") then
+			else
 				local class = select(2, UnitClass("player"))
 				local forms = Addon:Classic_GetShapeshiftForms(class)
 
@@ -1225,7 +1228,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	do
 		local checks = { "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB" }
 
-		if Addon:IsClassic() then
+		if Addon.EXPANSION_LEVEL == Addon.EXPANSION.CLASSIC then
 			table.insert(checks, "RUNE_UPDATED")
 			table.insert(checks, "PLAYER_EQUIPMENT_CHANGED")
 		end

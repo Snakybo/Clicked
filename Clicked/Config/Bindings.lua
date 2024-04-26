@@ -396,7 +396,7 @@ local function HijackSpellButton_UpdateButton(self)
 			button:SetID(parent:GetID())
 
 			button:SetScript("OnEnter", function(_, motion)
-				if Addon:IsGameVersionAtleast("CATA") then
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 					parent:OnEnter(motion)
 				else
 					SpellButton_OnEnter(parent, motion)
@@ -404,7 +404,7 @@ local function HijackSpellButton_UpdateButton(self)
 			end)
 
 			button:SetScript("OnLeave", function()
-				if Addon:IsGameVersionAtleast("CATA") then
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 					parent:OnLeave()
 				else
 					SpellButton_OnLeave(parent)
@@ -415,7 +415,7 @@ local function HijackSpellButton_UpdateButton(self)
 				local slot = SpellBook_GetSpellBookSlot(parent);
 				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
 
-				if mouseButton ~= "RightButton" and (not Addon:IsGameVersionAtleast("CATA") and not Addon:IsStringNilOrEmpty(subName)) then
+				if mouseButton ~= "RightButton" and (Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not Addon:IsStringNilOrEmpty(subName)) then
 					name = string.format("%s(%s)", name, subName)
 				end
 
@@ -1407,7 +1407,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 		end
 
 		if mode == Addon.BindingTypes.SPELL then
-			local hasRank = not Addon:IsGameVersionAtleast("CATA") and id ~= nil and string.find(name, "%((.+)%)")
+			local hasRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and id ~= nil and string.find(name, "%((.+)%)")
 
 			-- pick from spellbook button
 			do
@@ -1438,7 +1438,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 				local tooltip = Addon.L["Click on a spell book entry to select it."]
 
-				if not Addon:IsGameVersionAtleast("CATA") then
+				if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
 					tooltip = tooltip .. "\n" .. Addon.L["Right click to use the max rank."]
 				end
 
@@ -2318,17 +2318,23 @@ local function DrawMacroBonusBar(container, bonusbar)
 			end
 		end
 
-		local tips = {
-			string.format(Addon.L["For Dragonriding, use bonus bar %s"], "|r5|cffffffff")
-		}
+		local tips = nil
 
-		if tContains(Addon:GetBindingRaces(binding), "Dracthyr") then
-			table.insert(tips, string.format(Addon.L["For Soar, use bonus bar %s"], "|r1|cffffffff"))
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+			local tipList = {
+				string.format(Addon.L["For Dragonriding, use bonus bar %s"], "|r5|cffffffff")
+			}
+
+			if tContains(Addon:GetBindingRaces(binding), "Dracthyr") then
+				table.insert(tipList, string.format(Addon.L["For Soar, use bonus bar %s"], "|r1|cffffffff"))
+			end
+
+			tips = table.concat(tipList, "\n")
 		end
 
 		inputField:SetCallback("OnTextChanged", OnTextChanged)
 
-		RegisterTooltip(inputField, Addon.L["Bonus bar"],  table.concat(tips, "\n"))
+		RegisterTooltip(inputField, Addon.L["Bonus bar"],  tips)
 	end
 end
 
@@ -2388,13 +2394,13 @@ local function DrawBindingMacroConditionsPage(container, binding)
 	if binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
 		DrawMacroCombat(container, load.combat)
 	else
-		if Addon:IsGameVersionAtleast("RETAIL") then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 			local classNames = GetTriStateLoadOptionValue(load.class)
 			local specIndices = GetTriStateLoadOptionValue(load.specialization)
 			local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
 
 			DrawMacroInStance(container, load.form, specializationIds)
-		elseif Addon:IsGameVersionAtleast("CLASSIC") then
+		else
 			local classNames = GetTriStateLoadOptionValue(load.class)
 
 			Classic_DrawMacroInStance(container, load.form, classNames)
@@ -2408,16 +2414,18 @@ local function DrawBindingMacroConditionsPage(container, binding)
 		DrawMacroSwimming(container, load.swimming)
 		DrawMacroChanneling(container, load.channeling)
 
-		if Addon:IsGameVersionAtleast("BC") then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 			DrawMacroFlying(container, load.flying)
 			DrawMacroFlyable(container, load.flyable)
 		end
 
-		if Addon:IsGameVersionAtleast("RETAIL") then
-			DrawMacroAdvancedFlyable(container, load.advancedFlyable)
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+			DrawMacroBonusBar(container, load.bonusbar)
 		end
 
-		DrawMacroBonusBar(container, load.bonusbar)
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+			DrawMacroAdvancedFlyable(container, load.advancedFlyable)
+		end
 	end
 end
 
@@ -2567,47 +2575,29 @@ end
 --- @param container AceGUIContainer
 --- @param instanceType Binding.TriStateLoadOption
 local function DrawLoadInInstanceType(container, instanceType)
-	local items = {}
-	local order
+	local items = {
+		NONE = Addon.L["No Instance"],
+		PARTY = Addon.L["Dungeon"],
+		RAID = Addon.L["Raid"]
+	}
 
-	if Addon:IsGameVersionAtleast("CLASSIC") then
-		items["NONE"] = Addon.L["No Instance"]
-		items["PARTY"] = Addon.L["Dungeon"]
-		items["RAID"] = Addon.L["Raid"]
-	end
+	local order = {
+		"NONE",
+		"PARTY",
+		"RAID"
+	}
 
-	if Addon:IsGameVersionAtleast("BC") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 		items["PVP"] = Addon.L["Battleground"]
 		items["ARENA"] = Addon.L["Arena"]
+
+		table.insert(order, "PVP")
+		table.insert(order, "ARENA")
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 		items["SCENARIO"] = Addon.L["Scenario"]
-	end
-
-	if Addon:IsGameVersionAtleast("RETAIL") then
-		order = {
-			"NONE",
-			"SCENARIO",
-			"PARTY",
-			"RAID",
-			"PVP",
-			"ARENA"
-		}
-	elseif Addon:IsGameVersionAtleast("BC") then
-		order = {
-			"NONE",
-			"PARTY",
-			"RAID",
-			"PVP",
-			"ARENA"
-		}
-	elseif Addon:IsGameVersionAtleast("CLASSIC") then
-		order = {
-			"NONE",
-			"PARTY",
-			"RAID"
-		}
+		table.insert(order, 2, "SCENARIO")
 	end
 
 	DrawTristateLoadOption(container, Addon.L["Instance type"], items, order, instanceType)
@@ -2676,7 +2666,7 @@ local function DrawBindingLoadConditionsPage(container, binding)
 	DrawLoadClass(container, load.class)
 	DrawLoadRace(container, load.race)
 
-	if Addon:IsGameVersionAtleast("CATA") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		local classNames = GetTriStateLoadOptionValue(load.class)
 		local specIndices = GetTriStateLoadOptionValue(load.specialization)
 		local specializationIds = GetRelevantSpecializationIds(classNames, specIndices)
@@ -2684,15 +2674,16 @@ local function DrawBindingLoadConditionsPage(container, binding)
 		DrawLoadSpecialization(container, load.specialization, classNames)
 		DrawLoadTalent(container, load.talent --[[@as Binding.MutliFieldLoadOption]], specializationIds)
 
-		if Addon:IsGameVersionAtleast("RETAIL") then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BFA then
 			DrawLoadPvPTalent(container, load.pvpTalent, specializationIds)
 			DrawLoadWarMode(container, load.warMode)
 		end
-	elseif Addon:IsGameVersionAtleast("WOTLK") then
-		local classNames = GetTriStateLoadOptionValue(load.class)
+	-- TODO: Re-enable this once talents are supported in Classic
+	-- else
+	-- 	local classNames = GetTriStateLoadOptionValue(load.class)
 
-		Classic_DrawLoadSpecialization(container, load.specialization)
-		Classic_DrawLoadTalent(container, load.talent --[[@as Binding.TriStateLoadOption]], classNames)
+	-- 	Classic_DrawLoadSpecialization(container, load.specialization)
+	-- 	Classic_DrawLoadTalent(container, load.talent --[[@as Binding.TriStateLoadOption]], classNames)
 	end
 
 	DrawLoadInInstanceType(container, load.instanceType)
@@ -2954,10 +2945,10 @@ local function CreateFromItemTemplate(identifier)
 	elseif identifier == ITEM_TEMPLATE_IMPORT_ACTIONBAR then
 		local group
 
-		if Addon:IsGameVersionAtleast("CATA") then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 			local name, icon
 
-			if Addon:IsGameVersionAtleast("RETAIL") then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 				_, name, _, icon = GetSpecializationInfo(GetSpecialization())
 			else
 				local class = select(3, UnitClass("player"))
@@ -3038,9 +3029,12 @@ local function CreateFromItemTemplate(identifier)
 				binding.load.class.selected = 1
 				binding.load.class.single = select(2, UnitClass("player"))
 
-				if Addon:IsGameVersionAtleast("CATA") then
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 					binding.load.specialization.selected = 1
-					binding.load.specialization.single = GetSpecialization and GetSpecialization() or GetPrimaryTalentTree()
+					binding.load.specialization.single = GetSpecialization()
+				elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+					binding.load.specialization.selected = 1
+					binding.load.specialization.single = GetPrimaryTalentTree()
 				end
 			end
 		end
@@ -3184,7 +3178,7 @@ local function DrawBinding(container)
 	end
 
 	-- self-cast text
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		local selfCastModifier = GetModifiedClick("SELFCAST")
 
 		if selfCastModifier ~= "NONE" then
@@ -3442,7 +3436,7 @@ function Addon:BindingConfig_Initialize()
 		HijackSpellButton_UpdateButton(nil)
 	end)
 
-	if Addon:IsGameVersionAtleast("CATA") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		for i = 1, SPELLS_PER_PAGE do
 			local currSpellButton = _G["SpellButton" .. i];
 			hooksecurefunc(currSpellButton, "UpdateButton", HijackSpellButton_UpdateButton)

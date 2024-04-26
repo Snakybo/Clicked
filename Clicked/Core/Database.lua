@@ -360,7 +360,7 @@ function Addon:GetNewBindingTemplate()
 			flyable = GetNegatableLoadOptionTemplate(),
 			advancedFlyable = GetNegatableLoadOptionTemplate(),
 			specialization = GetTriStateLoadOptionTemplate(1),
-			talent = GetTriStateLoadOptionTemplate(1),
+			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate()
 		},
@@ -368,21 +368,14 @@ function Addon:GetNewBindingTemplate()
 		}
 	}
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 		local specIndex = GetSpecialization()
 		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-	elseif Addon:IsGameVersionAtleast("CATA") then
+	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		--- @type number
 		local specIndex = GetPrimaryTalentTree()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-	elseif Addon:IsGameVersionAtleast("WOTLK") then
-		local specIndex = GetActiveTalentGroup()
-		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-	end
-
-	if Addon:IsGameVersionAtleast("CATA") then
-		template.load.talent = GetMultiFieldLoadOptionTemplate("")
 	end
 
 	return template

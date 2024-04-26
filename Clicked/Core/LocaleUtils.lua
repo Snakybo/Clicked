@@ -38,58 +38,61 @@ local allTalents = {}
 --- @type table<integer,TalentInfo[]>
 local allPvpTalents = {}
 
-if Addon:IsGameVersionAtleast("CLASSIC") then
-	table.insert(allRaces, 1) -- Human
-	table.insert(allRaces, 2) -- Orc
-	table.insert(allRaces, 3) -- Dwarf
-	table.insert(allRaces, 4) -- NightElf
-	table.insert(allRaces, 5) -- Scourge
-	table.insert(allRaces, 6) -- Tauren
-	table.insert(allRaces, 7) -- Gnome
-	table.insert(allRaces, 8) -- Troll
+do
+	--- @param race integer
+	--- @param expansion ExpansionLevel
+	local function AddRace(race, expansion)
+		if Addon.EXPANSION_LEVEL >= expansion then
+			table.insert(allRaces, race)
+		end
+	end
 
-	table.insert(allClasses, "WARRIOR")
-	table.insert(allClasses, "PALADIN")
-	table.insert(allClasses, "HUNTER")
-	table.insert(allClasses, "ROGUE")
-	table.insert(allClasses, "PRIEST")
-	table.insert(allClasses, "SHAMAN")
-	table.insert(allClasses, "MAGE")
-	table.insert(allClasses, "WARLOCK")
-	table.insert(allClasses, "DRUID")
-end
+	--- @param class string
+	--- @param expansion ExpansionLevel
+	local function AddClass(class, expansion)
+		if Addon.EXPANSION_LEVEL >= expansion then
+			table.insert(allClasses, class)
+		end
+	end
 
-if Addon:IsGameVersionAtleast("BC") then
-	table.insert(allRaces, 10) -- BloodElf
-	table.insert(allRaces, 11) -- Draenei
-end
+	AddRace(1, Addon.EXPANSION.CLASSIC) -- Human
+	AddRace(2, Addon.EXPANSION.CLASSIC) -- Orc
+	AddRace(3, Addon.EXPANSION.CLASSIC) -- Dwarf
+	AddRace(4, Addon.EXPANSION.CLASSIC) -- NightElf
+	AddRace(5, Addon.EXPANSION.CLASSIC) -- Scourge
+	AddRace(6, Addon.EXPANSION.CLASSIC) -- Tauren
+	AddRace(7, Addon.EXPANSION.CLASSIC) -- Gnome
+	AddRace(8, Addon.EXPANSION.CLASSIC) -- Troll
+	AddRace(10, Addon.EXPANSION.BC) -- BloodElf
+	AddRace(11, Addon.EXPANSION.BC) -- Draenei
+	AddRace(9, Addon.EXPANSION.CATA) -- Goblin
+	AddRace(22, Addon.EXPANSION.CATA) -- Worgen
+	AddRace(24, Addon.EXPANSION.MOP) -- Pandaren
+	AddRace(27, Addon.EXPANSION.BFA) -- Nightborne
+	AddRace(28, Addon.EXPANSION.BFA) -- HighmountainTauren
+	AddRace(29, Addon.EXPANSION.BFA) -- VoidElf
+	AddRace(30, Addon.EXPANSION.BFA) -- LightforgedDraenei
+	AddRace(31, Addon.EXPANSION.BFA) -- HighmountainTauren
+	AddRace(32, Addon.EXPANSION.BFA) -- KulTiran
+	AddRace(34, Addon.EXPANSION.BFA) -- DarkIronDwarf
+	AddRace(35, Addon.EXPANSION.BFA) -- Vulpera
+	AddRace(36, Addon.EXPANSION.BFA) -- MagharOrc
+	AddRace(37, Addon.EXPANSION.BFA) -- Mechagnome
+	AddRace(70, Addon.EXPANSION.DF) -- Dracthyr
 
-if Addon:IsGameVersionAtleast("WOTLK") then
-	table.insert(allClasses, "DEATHKNIGHT")
-end
-
-if Addon:IsGameVersionAtleast("CATA") then
-	table.insert(allRaces, 9) -- Goblin
-	table.insert(allRaces, 22) -- Worgen
-end
-
-if Addon:IsGameVersionAtleast("RETAIL") then
-	table.insert(allRaces, 24) -- Pandaren
-	table.insert(allRaces, 27) -- Nightborne
-	table.insert(allRaces, 28) -- HighmountainTauren
-	table.insert(allRaces, 29) -- VoidElf
-	table.insert(allRaces, 30) -- LightforgedDraenei
-	table.insert(allRaces, 31) -- HighmountainTauren
-	table.insert(allRaces, 32) -- KulTiran
-	table.insert(allRaces, 34) -- DarkIronDwarf
-	table.insert(allRaces, 35) -- Vulpera
-	table.insert(allRaces, 36) -- MagharOrc
-	table.insert(allRaces, 37) -- Mechagnome
-	table.insert(allRaces, 70) -- Dracthyr
-
-	table.insert(allClasses, "MONK")
-	table.insert(allClasses, "DEMONHUNTER")
-	table.insert(allClasses, "EVOKER")
+	AddClass("WARRIOR", Addon.EXPANSION.CLASSIC)
+	AddClass("PALADIN", Addon.EXPANSION.CLASSIC)
+	AddClass("HUNTER", Addon.EXPANSION.CLASSIC)
+	AddClass("ROGUE", Addon.EXPANSION.CLASSIC)
+	AddClass("PRIEST", Addon.EXPANSION.CLASSIC)
+	AddClass("SHAMAN", Addon.EXPANSION.CLASSIC)
+	AddClass("MAGE", Addon.EXPANSION.CLASSIC)
+	AddClass("WARLOCK", Addon.EXPANSION.CLASSIC)
+	AddClass("DRUID", Addon.EXPANSION.CLASSIC)
+	AddClass("DEATHKNIGHT", Addon.EXPANSION.WOTLK)
+	AddClass("MONK", Addon.EXPANSION.MOP)
+	AddClass("DEMONHUNTER", Addon.EXPANSION.LEGION)
+	AddClass("EVOKER", Addon.EXPANSION.DF)
 end
 
 --- Attempt to retrieve cached talent data for the specified specialization.
@@ -236,87 +239,51 @@ function Addon:GetLocalizedTargetUnits()
 	--- @type string[]
 	local order
 
-	if Addon:IsGameVersionAtleast("CLASSIC") then
-		items[Addon.TargetUnits.DEFAULT] = Addon.L["Default"]
-		items[Addon.TargetUnits.PLAYER] = Addon.L["Player (you)"]
-		items[Addon.TargetUnits.TARGET] = Addon.L["Target"]
-		items[Addon.TargetUnits.TARGET_OF_TARGET] = Addon.L["Target of target"]
-		items[Addon.TargetUnits.MOUSEOVER] = Addon.L["Mouseover"]
-		items[Addon.TargetUnits.MOUSEOVER_TARGET] = Addon.L["Target of mouseover"]
-		items[Addon.TargetUnits.CURSOR] = Addon.L["Cursor"]
-		items[Addon.TargetUnits.PET] = Addon.L["Pet"]
-		items[Addon.TargetUnits.PET_TARGET] = Addon.L["Pet target"]
-		items[Addon.TargetUnits.PARTY_1] = Addon.L["Party %s"]:format("1")
-		items[Addon.TargetUnits.PARTY_2] = Addon.L["Party %s"]:format("2")
-		items[Addon.TargetUnits.PARTY_3] = Addon.L["Party %s"]:format("3")
-		items[Addon.TargetUnits.PARTY_4] = Addon.L["Party %s"]:format("4")
-		items[Addon.TargetUnits.PARTY_5] = Addon.L["Party %s"]:format("5")
+	items[Addon.TargetUnits.DEFAULT] = Addon.L["Default"]
+	items[Addon.TargetUnits.PLAYER] = Addon.L["Player (you)"]
+	items[Addon.TargetUnits.TARGET] = Addon.L["Target"]
+	items[Addon.TargetUnits.TARGET_OF_TARGET] = Addon.L["Target of target"]
+	items[Addon.TargetUnits.MOUSEOVER] = Addon.L["Mouseover"]
+	items[Addon.TargetUnits.MOUSEOVER_TARGET] = Addon.L["Target of mouseover"]
+	items[Addon.TargetUnits.CURSOR] = Addon.L["Cursor"]
+	items[Addon.TargetUnits.PET] = Addon.L["Pet"]
+	items[Addon.TargetUnits.PET_TARGET] = Addon.L["Pet target"]
+	items[Addon.TargetUnits.PARTY_1] = Addon.L["Party %s"]:format("1")
+	items[Addon.TargetUnits.PARTY_2] = Addon.L["Party %s"]:format("2")
+	items[Addon.TargetUnits.PARTY_3] = Addon.L["Party %s"]:format("3")
+	items[Addon.TargetUnits.PARTY_4] = Addon.L["Party %s"]:format("4")
+	items[Addon.TargetUnits.PARTY_5] = Addon.L["Party %s"]:format("5")
 
-		order = {
-			Addon.TargetUnits.DEFAULT,
-			Addon.TargetUnits.PLAYER,
-			Addon.TargetUnits.TARGET,
-			Addon.TargetUnits.TARGET_OF_TARGET,
-			Addon.TargetUnits.MOUSEOVER,
-			Addon.TargetUnits.MOUSEOVER_TARGET,
-			Addon.TargetUnits.CURSOR,
-			Addon.TargetUnits.PET,
-			Addon.TargetUnits.PET_TARGET,
-			Addon.TargetUnits.PARTY_1,
-			Addon.TargetUnits.PARTY_2,
-			Addon.TargetUnits.PARTY_3,
-			Addon.TargetUnits.PARTY_4,
-			Addon.TargetUnits.PARTY_5
-		}
-	end
+	order = {
+		Addon.TargetUnits.DEFAULT,
+		Addon.TargetUnits.PLAYER,
+		Addon.TargetUnits.TARGET,
+		Addon.TargetUnits.TARGET_OF_TARGET,
+		Addon.TargetUnits.MOUSEOVER,
+		Addon.TargetUnits.MOUSEOVER_TARGET,
+		Addon.TargetUnits.CURSOR,
+		Addon.TargetUnits.PET,
+		Addon.TargetUnits.PET_TARGET,
+		Addon.TargetUnits.PARTY_1,
+		Addon.TargetUnits.PARTY_2,
+		Addon.TargetUnits.PARTY_3,
+		Addon.TargetUnits.PARTY_4,
+		Addon.TargetUnits.PARTY_5
+	}
 
-	if Addon:IsGameVersionAtleast("BC") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 		items[Addon.TargetUnits.FOCUS] = Addon.L["Focus"]
-
-		order = {
-			Addon.TargetUnits.DEFAULT,
-			Addon.TargetUnits.PLAYER,
-			Addon.TargetUnits.TARGET,
-			Addon.TargetUnits.TARGET_OF_TARGET,
-			Addon.TargetUnits.MOUSEOVER,
-			Addon.TargetUnits.MOUSEOVER_TARGET,
-			Addon.TargetUnits.FOCUS,
-			Addon.TargetUnits.CURSOR,
-			Addon.TargetUnits.PET,
-			Addon.TargetUnits.PET_TARGET,
-			Addon.TargetUnits.PARTY_1,
-			Addon.TargetUnits.PARTY_2,
-			Addon.TargetUnits.PARTY_3,
-			Addon.TargetUnits.PARTY_4,
-			Addon.TargetUnits.PARTY_5,
-		}
+		table.insert(order, 7, Addon.TargetUnits.FOCUS)
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	-- TODO: Check if this was available in WOTLK
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		items[Addon.TargetUnits.ARENA_1] = Addon.L["Arena %s"]:format("1")
 		items[Addon.TargetUnits.ARENA_2] = Addon.L["Arena %s"]:format("2")
 		items[Addon.TargetUnits.ARENA_3] = Addon.L["Arena %s"]:format("3")
-
-		order = {
-			Addon.TargetUnits.DEFAULT,
-			Addon.TargetUnits.PLAYER,
-			Addon.TargetUnits.TARGET,
-			Addon.TargetUnits.TARGET_OF_TARGET,
-			Addon.TargetUnits.MOUSEOVER,
-			Addon.TargetUnits.MOUSEOVER_TARGET,
-			Addon.TargetUnits.FOCUS,
-			Addon.TargetUnits.CURSOR,
-			Addon.TargetUnits.PET,
-			Addon.TargetUnits.PET_TARGET,
-			Addon.TargetUnits.PARTY_1,
-			Addon.TargetUnits.PARTY_2,
-			Addon.TargetUnits.PARTY_3,
-			Addon.TargetUnits.PARTY_4,
-			Addon.TargetUnits.PARTY_5,
-			Addon.TargetUnits.ARENA_1,
-			Addon.TargetUnits.ARENA_2,
-			Addon.TargetUnits.ARENA_3
-		}
+		table.insert(order, Addon.TargetUnits.ARENA_1)
+		table.insert(order, Addon.TargetUnits.ARENA_2)
+		table.insert(order, Addon.TargetUnits.ARENA_3)
 	end
 
 	return items, order
@@ -841,7 +808,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 
 		return items, order
 	end
-elseif Addon:IsGameVersionAtleast("CLASSIC") then
+else
 	--- Get a localized list of all available talents for the given classes.
 	--- If the `classes` parameter is `nil` it will return results for the player's current class.
 	---

@@ -72,27 +72,23 @@ end
 -- Private addon API
 
 function Addon:RegisterBlizzardUnitFrames()
-	if Addon:IsGameVersionAtleast("CLASSIC") then
-		Clicked:RegisterClickCastFrame("PlayerFrame")
-		Clicked:RegisterClickCastFrame("PetFrame")
-		Clicked:RegisterClickCastFrame("TargetFrame")
-		Clicked:RegisterClickCastFrame("TargetFrameToT")
+	Clicked:RegisterClickCastFrame("PlayerFrame")
+	Clicked:RegisterClickCastFrame("PetFrame")
+	Clicked:RegisterClickCastFrame("TargetFrame")
+	Clicked:RegisterClickCastFrame("TargetFrameToT")
 
-		HookUnitFrame(5, "Boss%dTargetFrame")
+	HookUnitFrame(5, "Boss%dTargetFrame")
 
-		if not Addon:IsGameVersionAtleast("RETAIL") then
-			HookUnitFrame(4, {"PartyMemberFrame%d", "PartyMemberFrame%dPetFrame"})
-		end
-	end
-
-	if Addon:IsGameVersionAtleast("BC") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 		Clicked:RegisterClickCastFrame("FocusFrame")
 		Clicked:RegisterClickCastFrame("FocusFrameToT")
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		HookUnitFrame(3, "ArenaEnemyFrame%d", "Blizzard_ArenaUI")
+	end
 
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
@@ -104,6 +100,8 @@ function Addon:RegisterBlizzardUnitFrames()
 
 			partyFrameIndex = partyFrameIndex + 1
 		end
+	else
+		HookUnitFrame(4, {"PartyMemberFrame%d", "PartyMemberFrame%dPetFrame"})
 	end
 
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", HookCompactUnitFrame)

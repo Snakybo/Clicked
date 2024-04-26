@@ -41,7 +41,7 @@ local KEYBIND_ORDER_LIST = {
 local shapeshiftForms
 
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
-if Addon:IsGameVersionAtleast("RETAIL") then
+if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
 		-- Arms Warrior
@@ -84,7 +84,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 		[105] = { 5487, 768, 783, 197625, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
 	}
-elseif Addon:IsGameVersionAtleast("CLASSIC") then
+else
 	--- @type { [string]: integer[][] }
 	shapeshiftForms = {
 		WARRIOR = {
@@ -120,12 +120,12 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 		}
 	}
 
-	if Addon:IsGameVersionAtleast("BC") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 		table.insert(shapeshiftForms["DRUID"], { 33891 }) -- Tree of Life
 		table.insert(shapeshiftForms["DRUID"], { 40120, 33943 }) -- Swift Flight Form, Flight Form
 	end
 
-	if Addon:IsGameVersionAtleast("WOTLK") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
 		local DEATHKNIGHT = "DEATHKNIGHT"
 
 		shapeshiftForms[DEATHKNIGHT] = {
@@ -589,7 +589,7 @@ function Addon:GetSpellInfo(input, addSubText)
 		addSubText = true
 	end
 
-	if addSubText and not Addon:IsGameVersionAtleast("CATA") then
+	if addSubText and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
 		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spellId)
 
@@ -600,7 +600,7 @@ function Addon:GetSpellInfo(input, addSubText)
 
 	-- 10.0: Evokers and Dragonriding share ability names, this will ensure that the Dragonriding abilities are suffixed with (Dragonriding) so that
 	--       both spells will work.
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		local dragonRidingSpells = { 372608, 372610, 361584, 374990, 403092 }
 
 		if tContains(dragonRidingSpells, spellId) then
@@ -870,7 +870,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 		end
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		if select(2, UnitClass("player")) == "DRUID" then
 			local specId = GetSpecializationInfo(GetSpecialization())
 			local all = Addon:GetShapeshiftForms(specId)
@@ -996,7 +996,7 @@ end
 ---
 --- @param category string|integer
 function Addon:OpenSettingsMenu(category)
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		Settings.OpenToCategory(category)
 	else
 		InterfaceOptionsFrame_OpenToCategory(category)

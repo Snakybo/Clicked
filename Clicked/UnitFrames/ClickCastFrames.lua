@@ -292,7 +292,7 @@ function Clicked:RegisterFrameClicks(frame, isUnitFrame)
 		return
 	end
 
-	if Addon:IsGameVersionAtleast("RETAIL") then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		if isUnitFrame then
 			frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
 		else
