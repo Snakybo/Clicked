@@ -121,17 +121,27 @@ else
 	}
 
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
-		table.insert(shapeshiftForms["DRUID"], { 33891 }) -- Tree of Life
-		table.insert(shapeshiftForms["DRUID"], { 40120, 33943 }) -- Swift Flight Form, Flight Form
+		local DRUID = "DRUID"
+		table.insert(shapeshiftForms[DRUID], { 33891 }) -- Tree of Life
+		table.insert(shapeshiftForms[DRUID], { 40120, 33943 }) -- Swift Flight Form, Flight Form
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
 		local DEATHKNIGHT = "DEATHKNIGHT"
-
 		shapeshiftForms[DEATHKNIGHT] = {
 			{ 48266 }, -- Blood Presence
 			{ 48263 }, -- Frost Presence
 			{ 48265 } -- Unholy Presence
+		}
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+		local PALADIN = "PALADIN"
+		shapeshiftForms[PALADIN] = {
+			{ 465 }, -- Devotion Aura
+			{ 7294 }, -- Retribution Aura
+			{ 19746 }, -- Concentration Aura
+			{ 32223 } -- Crusader Aura
 		}
 	end
 end
