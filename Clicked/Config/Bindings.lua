@@ -2480,21 +2480,21 @@ local function DrawLoadSpecialization(container, specialization, classNames)
 	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
 end
 
---- @param container AceGUIContainer
---- @param specialization Binding.TriStateLoadOption
-local function Classic_DrawLoadSpecialization(container, specialization)
-	local items = {
-		[1] = Addon.L["Primary Specialization"],
-		[2] = Addon.L["Secondary Specialization"]
-	}
+-- --- @param container AceGUIContainer
+-- --- @param specialization Binding.TriStateLoadOption
+-- local function Classic_DrawLoadSpecialization(container, specialization)
+-- 	local items = {
+-- 		[1] = Addon.L["Primary Specialization"],
+-- 		[2] = Addon.L["Secondary Specialization"]
+-- 	}
 
-	local order = {
-		1,
-		2
-	}
+-- 	local order = {
+-- 		1,
+-- 		2
+-- 	}
 
-	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
-end
+-- 	DrawTristateLoadOption(container, Addon.L["Talent specialization"], items, order, specialization)
+-- end
 
 --- @param container AceGUIContainer
 --- @param talent Binding.MutliFieldLoadOption
@@ -2503,13 +2503,13 @@ local function DrawLoadTalent(container, talent, specializations)
 	DrawTalentSelectOption(container, Addon.L["Talent selected"], specializations, talent, "talents")
 end
 
---- @param container AceGUIContainer
---- @param talent Binding.TriStateLoadOption
---- @param classes string[]
-local function Classic_DrawLoadTalent(container, talent, classes)
-	local items, order = Addon:Classic_GetLocalizedTalents(classes)
-	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
-end
+-- --- @param container AceGUIContainer
+-- --- @param talent Binding.TriStateLoadOption
+-- --- @param classes string[]
+-- local function Classic_DrawLoadTalent(container, talent, classes)
+-- 	local items, order = Addon:Classic_GetLocalizedTalents(classes)
+-- 	DrawTristateLoadOption(container, Addon.L["Talent selected"], items, order, talent)
+-- end
 
 --- @param container AceGUIContainer
 --- @param talent Binding.MutliFieldLoadOption
@@ -2946,7 +2946,7 @@ local function CreateFromItemTemplate(identifier)
 		local group
 
 		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-			local name, icon
+			local _, name, icon
 
 			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 				_, name, _, icon = GetSpecializationInfo(GetSpecialization())
