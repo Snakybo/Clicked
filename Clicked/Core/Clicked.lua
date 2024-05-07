@@ -287,10 +287,10 @@ function Clicked:OnInitialize()
 end
 
 function Clicked:OnEnable()
-	---@debug@
+	--@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
 	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
-	---@end-debug@
+	--@end-debug@
 
 	UpdateEventHooks(self, self.RegisterEvent)
 end
