@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix message about using a development version showing up on non-development versions
+* Fix bindings not correctly loading after talent changes in Retail
 
 ## [1.14.7] - 2024-05-01
 

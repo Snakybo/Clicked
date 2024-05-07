@@ -1131,7 +1131,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	-- talent selected
-	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
+	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED") then
 		--- @param entries Binding.MutliFieldLoadOption.Entry[]
 		--- @return boolean
 		local function IsTalentMatrixValid(entries)
@@ -1183,7 +1183,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	-- forms
-	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE") then
+	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED") then
 		local function IsFormIndexSelected(index)
 			local formIndex = index - 1
 
@@ -1226,7 +1226,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 
 	-- spell known
 	do
-		local checks = { "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB" }
+		local checks = { "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" }
 
 		if Addon.EXPANSION_LEVEL == Addon.EXPANSION.CLASSIC then
 			table.insert(checks, "RUNE_UPDATED")
