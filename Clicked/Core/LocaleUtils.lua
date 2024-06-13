@@ -583,8 +583,11 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			end
 
 			for _, spellId in Addon:IterateShapeshiftForms(specId) do
-				local name, _, icon = Addon:GetSpellInfo(spellId)
+				local spell = Addon:GetSpellInfo(spellId)
 				local key = #order + 1
+
+				local icon = spell ~= nil and spell.iconID or nil
+				local name = spell ~= nil and spell.name or nil
 
 				items[key] = string.format("<icon=%d><text=%s>", icon, name)
 				table.insert(order, key)
@@ -771,7 +774,10 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 					end
 				end
 
-				local name, _, icon = Addon:GetSpellInfo(targetSpellId, false)
+				local spell = Addon:GetSpellInfo(targetSpellId, false)
+				local icon = spell ~= nil and spell.iconID or nil
+				local name = spell ~= nil and spell.name or nil
+
 				items[key] = string.format("<icon=%d><text=%s>", icon, name)
 
 				table.insert(order, key)
@@ -911,7 +917,10 @@ else
 					end
 				end
 
-				local name, _, icon = Addon:GetSpellInfo(targetSpellId, false)
+				local spell = Addon:GetSpellInfo(targetSpellId, false)
+				local icon = spell ~= nil and spell.iconID or nil
+				local name = spell ~= nil and spell.name or nil
+
 				items[key] = string.format("<icon=%d><text=%s>", icon, name)
 
 				table.insert(order, key)

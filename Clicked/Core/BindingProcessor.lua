@@ -414,6 +414,7 @@ local function ProcessBuckets()
 		if Addon:GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
+			command.macroName = Addon:GetMacroName(bindings, interactionType)
 		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
 
@@ -501,6 +502,9 @@ local function GenerateBuckets(bindings)
 			end
 		end
 	end
+
+	table.sort(hovercastBucket, function(a, b) return a.uid < b.uid end)
+	table.sort(regularBucket, function(a, b) return a.uid < b.uid end)
 end
 
 --- @param str string
@@ -1239,8 +1243,8 @@ function Addon:UpdateBindingLoadState(binding, options)
 			-- implies, using the GetSpellInfo function on an item also returns a valid value.
 
 			local function IsSpellKnown(value)
-				local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value)
-				return name ~= nil and spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId)
+				local spell = Addon:GetSpellInfo(value)
+				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
 			end
 
 			state.spellKnown = ValidateLoadOption(load.spellKnown, IsSpellKnown)
@@ -1454,6 +1458,13 @@ function Addon:GetInternalBindingType(binding)
 	return binding.type
 end
 
+--- @param bindings Binding[]
+--- @param interactionType number
+--- @return string
+function Addon:GetMacroName(bindings, interactionType)
+	return "clicked-" .. bindings[1].uid .. "-" .. interactionType
+end
+
 --- Construct a valid macro that correctly prioritizes all specified bindings.
 --- It will prioritize bindings in the following order:
 ---
@@ -1484,7 +1495,9 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 	assert(type(interactionType) == "number", "bad argument #1, expected number but got " .. type(interactionType))
 
 	--- @type string[]
-	local lines = {}
+	local lines = {
+		"#showtooltip"
+	}
 
 	--- @type string[]
 	local macroConditions = {}

@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 7
+Addon.DATA_VERSION = 8
 
 -- Local support functions
 
@@ -818,6 +818,15 @@ local function Upgrade(db, from)
 				end
 			end
 		end
+	end
+
+	if from < 8 then
+		for _, binding in ipairs(db.bindings) do
+			binding.uid = Addon.db.global.nextBindingUid
+			Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid + 1
+		end
+
+		Addon:ShowInformationPopup("Clicked: Due to changes to the macro system in The War Within, Clicked is now required to use macro slots.\n\nAll your existing bindings will be automatically converted into macros and will use General Macro slots.")
 	end
 end
 

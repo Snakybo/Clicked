@@ -107,6 +107,26 @@ local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "U
 Support functions
 -------------------------------------------------------------------------------]]
 
+local function EasyMenu_Initialize(_, level, menuList)
+    for index = 1, #menuList do
+        local value = menuList[index]
+
+        if value.text then
+            value.index = index;
+            UIDropDownMenu_AddButton(value, level);
+        end
+    end
+end
+
+local function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay)
+    if displayMode == "MENU" then
+        menuFrame.displayMode = displayMode;
+    end
+
+    UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList);
+    ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay);
+end
+
 --- @param left ClickedTreeGroup.Item
 --- @param right ClickedTreeGroup.Item
 --- @return boolean
@@ -620,6 +640,7 @@ local function Button_OnClick(frame, button)
 			end
 		})
 
+		-- TODO: Rewrite this to not use EasyMenu when it's propegated to all clients
 		EasyMenu(menu, contextMenuFrame, frame, 0, 0, "MENU")
 	end
 end

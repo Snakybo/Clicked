@@ -44,6 +44,7 @@
 --- @class Binding
 --- @field public type string
 --- @field public identifier string
+--- @field public uid integer
 --- @field public scope BindingScope
 --- @field public keybind string
 --- @field public parent string?
@@ -168,6 +169,7 @@
 --- @field public data any
 --- @field public prefix string
 --- @field public suffix string
+--- @field public macroName string
 
 --- @class Keybind
 --- @field public key string

@@ -294,10 +294,10 @@ end
 
 --- @param input string|number
 --- @param mode string
---- @return string|integer name
+--- @return string|integer? name
 --- @return integer? id
 local function GetSpellItemNameAndId(input, mode)
-	--- @type string|integer
+	--- @type string|integer?
 	local name
 
 	--- @type integer?
@@ -305,8 +305,10 @@ local function GetSpellItemNameAndId(input, mode)
 
 	if mode == Addon.BindingTypes.SPELL then
 		if type(input) == "number" then
+			local spell = Addon:GetSpellInfo(input)
+
 			id = input
-			name = Addon:GetSpellInfo(id)
+			name = spell ~= nil and spell.name or nil
 		else
 			name = input
 			id = Addon:GetSpellId(name)
@@ -510,8 +512,11 @@ local function HijackSpellFlyout_Toggle()
 				end)
 
 				button:SetScript("OnClick", function()
-					local name = Addon:GetSpellInfo(parent.spellID);
-					OnSpellBookButtonClick(name)
+					local spell = Addon:GetSpellInfo(parent.spellID);
+
+					if spell ~= nil then
+						OnSpellBookButtonClick(spell.name)
+					end
 				end)
 
 				spellFlyOutButtons[id] = button
@@ -1326,7 +1331,8 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					action[valueKey] = linkId
 
 					if mode == Addon.BindingTypes.SPELL then
-						value = Addon:GetSpellInfo(linkId)
+						local spell = Addon:GetSpellInfo(linkId)
+						value = spell ~= nil and spell.name or nil
 					elseif mode == Addon.BindingTypes.ITEM then
 						value = Addon:GetItemInfo(linkId)
 					end
@@ -1390,7 +1396,8 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			local icon
 
 			if mode == Addon.BindingTypes.SPELL then
-				icon = select(3, Addon:GetSpellInfo(id))
+				local spell = Addon:GetSpellInfo(id)
+				icon = spell and spell.iconID or nil
 			elseif mode == Addon.BindingTypes.ITEM then
 				icon = select(10, Addon:GetItemInfo(id))
 			end
@@ -1430,6 +1437,10 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				widget:SetText(Addon.L["Pick from spellbook"])
 				widget:SetCallback("OnClick", OnClick)
 
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+					widget:SetDisabled(true)
+				end
+
 				if hasRank then
 					widget:SetRelativeWidth(0.65)
 				else
@@ -1454,7 +1465,8 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						return
 					end
 
-					action[valueKey] = Addon:GetSpellInfo(id, false)
+					local spell = Addon:GetSpellInfo(id, false)
+					action[valueKey] = spell ~= nil and spell.name or nil
 					action.convertValueToId = false
 
 					Clicked:ReloadBinding(binding, true)
@@ -3432,11 +3444,17 @@ end
 -- Private addon API
 
 function Addon:BindingConfig_Initialize()
-	SpellBookFrame:HookScript("OnHide", function()
-		HijackSpellButton_UpdateButton(nil)
-	end)
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		-- TODO: Spellbook
+	else
+		SpellBookFrame:HookScript("OnHide", function()
+			HijackSpellButton_UpdateButton(nil)
+		end)
+	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		-- TODO: Spellbook
+	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		for i = 1, SPELLS_PER_PAGE do
 			local currSpellButton = _G["SpellButton" .. i];
 			hooksecurefunc(currSpellButton, "UpdateButton", HijackSpellButton_UpdateButton)
@@ -3561,8 +3579,12 @@ function Addon:BindingConfig_Redraw()
 		return
 	end
 
-	if not InCombatLockdown() and SpellBookFrame:IsShown() and SpellBookFrame.bookType == BOOKTYPE_SPELL then
-		SpellBookFrame_UpdateSpells()
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		-- TODO: Spellbook
+	else
+		if not InCombatLockdown() and SpellBookFrame:IsShown() and SpellBookFrame.bookType == BOOKTYPE_SPELL then
+			SpellBookFrame_UpdateSpells()
+		end
 	end
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))

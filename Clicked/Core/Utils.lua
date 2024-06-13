@@ -413,8 +413,9 @@ function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local spell = binding.action.spellValue
-		return self:GetSpellInfo(spell, binding.action.convertValueToId) or spell
+		local value = binding.action.spellValue
+		local spell = self:GetSpellInfo(value, binding.action.convertValueToId)
+		return spell ~= nil and spell.name ~= nil and spell.name or value
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
@@ -452,8 +453,12 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.spellValue, binding.action.convertValueToId)
-		return name, icon, id
+		local spell = Addon:GetSpellInfo(binding.action.spellValue, binding.action.convertValueToId)
+		if spell == nil then
+			return nil, nil, nil
+		end
+
+		return spell.name, spell.iconID, spell.spellID
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
@@ -467,8 +472,12 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	end
 
 	if binding.type == Addon.BindingTypes.CANCELAURA then
-		local name, _, icon, _, _, _, id = Addon:GetSpellInfo(binding.action.auraName)
-		return name, icon, id
+		local spell = Addon:GetSpellInfo(binding.action.auraName)
+		if spell == nil then
+			return nil, nil, nil
+		end
+
+		return spell.name, spell.iconID, spell.spellID
 	end
 
 	return nil, nil, nil
@@ -583,17 +592,32 @@ end
 
 --- @param input string|integer
 --- @param addSubText? boolean
---- @return string name
---- @return nil rank
---- @return integer icon
---- @return number castTime
---- @return number minRange
---- @return number maxRange
---- @return integer spellId
+--- @return SpellInfo?
 function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
-	local name, rank, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
+	local spell
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		spell = C_Spell.GetSpellInfo(input)
+		if spell == nil then
+			return nil
+		end
+	else
+		local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
+		if name == nil then
+			return nil
+		end
+
+		spell = {
+			name = name,
+			iconID = icon,
+			castTime = castTime,
+			minRange = minRange,
+			maxRange = maxRange,
+			spellID = spellId
+		}
+	end
 
 	if addSubText == nil then
 		addSubText = true
@@ -601,10 +625,10 @@ function Addon:GetSpellInfo(input, addSubText)
 
 	if addSubText and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
 		--- @diagnostic disable-next-line: redundant-parameter
-		local subtext = GetSpellSubtext(spellId)
+		local subtext = GetSpellSubtext(spell.spellID)
 
 		if not self:IsStringNilOrEmpty(subtext) then
-			name = string.format("%s(%s)", name, subtext)
+			spell.name = string.format("%s(%s)", spell.name, subtext)
 		end
 	end
 
@@ -613,14 +637,14 @@ function Addon:GetSpellInfo(input, addSubText)
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		local dragonRidingSpells = { 372608, 372610, 361584, 374990, 403092 }
 
-		if tContains(dragonRidingSpells, spellId) then
+		if tContains(dragonRidingSpells, spell.spellID) then
 			--- @diagnostic disable-next-line: redundant-parameter
-			local subtext = GetSpellSubtext(spellId) or "Dragonriding"
-			name = string.format("%s(%s)", name, subtext)
+			local subtext = GetSpellSubtext(spell.spellID) or "Dragonriding"
+			spell.name = string.format("%s(%s)", spell.name, subtext)
 		end
 	end
 
-	return name, rank, icon, castTime, minRange, maxRange, spellId
+	return spell
 end
 
 --- Get the ID for the specified item name.
@@ -644,11 +668,16 @@ end
 --- Get the spell ID for the specified spell name.
 ---
 --- @param name string
---- @return integer
+--- @return integer?
 function Addon:GetSpellId(name)
 	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
 
-	return select(7, self:GetSpellInfo(name))
+	local spell = self:GetSpellInfo(name)
+	if spell == nil then
+		return nil
+	end
+
+	return spell.spellID
 end
 
 --- @param keybind string
@@ -686,13 +715,13 @@ end
 ---
 --- For any keys that are _not_ mouse buttons, or the `hovercast`
 --- parameter has been set to `false`, a custom identifier will
---- be generated, generally prefixed by `clicked-mouse-` or
---- `clicked-button-` for mouse buttons and all other buttons respectively.
+--- be generated, generally prefixed by `ccmbtn-` or `ccbtn-`
+--- for mouse buttons and all other buttons respectively.
 ---
---- * `"T"` == `"", "clicked-button-t"` == `"type-clicked-button-t"`
---- * `"SHIFT-T"` == `"", "clicked-button-shiftt"` == `"type-clicked-button-shiftt"`
---- * `"BUTTON3"` == `"", "clicked-mouse-3"` == `"type-clicked-mouse-3"`
---- * `"SHIFT-BUTTON3"` == `"", "clicked-mouse-shift3"` == `"type-clicked-mouse-shift3"`
+--- * `"T"` == `"", "ccbtn-t"` == `"type-ccbtn-t"`
+--- * `"SHIFT-T"` == `"", "ccbtn-shiftt"` == `"type-ccbtn-shiftt"`
+--- * `"BUTTON3"` == `"", "ccmbtn-3"` == `"type-ccmbtn-3"`
+--- * `"SHIFT-BUTTON3"` == `"", "ccmbtn-shift3"` == `"type-ccmbtn-shift3"`
 ---
 --- @param keybind string
 --- @param hovercast boolean

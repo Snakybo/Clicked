@@ -150,7 +150,7 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 		end
 
 		CreateAttribute(register, prefix, attributeType, suffix, "macro")
-		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
+		CreateAttribute(register, prefix, "macro", suffix, command.macroName)
 	else
 		error("Unhandled action type: " .. command.action)
 	end

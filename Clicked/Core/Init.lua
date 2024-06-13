@@ -29,6 +29,7 @@ Addon.EXPANSION = {
 	BFA = 8,
 	SL = 9,
 	DF = 10,
+	TWW = 11,
 }
 
 --- @type ExpansionLevel
@@ -111,7 +112,7 @@ function Addon:IsCata()
 end
 
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.DF
+	Addon.EXPANSION_LEVEL = Addon.EXPANSION.TWW
 elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.EXPANSION.CATA
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then

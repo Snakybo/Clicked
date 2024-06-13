@@ -175,7 +175,10 @@
 		"SpellButton_OnEnter",
 		"SpellButton_OnLeave",
 		"WeakAuras",
-		"WeakAurasSaved"
+		"WeakAurasSaved",
+		"UIDropDownMenu_Initialize",
+		"ToggleDropDownMenu",
+		"UIDropDownMenu_AddButton"
 	]
 
 }

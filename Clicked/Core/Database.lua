@@ -109,6 +109,7 @@ function Clicked:GetDatabaseDefaults()
 			bindings = {},
 			nextGroupId = 1,
 			nextBindingId = 1,
+			nextBindingUid = 1,
 			keyVisualizer = {
 				lastKeyboardLayout = nil,
 				lastKeyboardSize = nil,
@@ -168,27 +169,35 @@ end
 --- Delete a binding group. If the group is not empty, it will also delete all child-bindings.
 ---
 --- @param group Group
+--- @returns boolean
 function Clicked:DeleteGroup(group)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
 	local db = Addon:GetContainingDatabase(group)
+	local deleted = false
 
 	for i, e in ipairs(db.groups) do
 		if e.identifier == group.identifier then
 			table.remove(db.groups, i)
+			deleted = true
 			break
 		end
 	end
 
-	for i = #db.bindings, 1, -1 do
-		local binding = db.bindings[i]
+	if deleted then
+		for i = #db.bindings, 1, -1 do
+			local binding = db.bindings[i]
 
-		if binding.parent == group.identifier then
-			table.remove(db.bindings, i)
+			if binding.parent == group.identifier then
+				table.remove(db.bindings, i)
+			end
 		end
+
+		self:ReloadBindings(true)
+		return true
 	end
 
-	self:ReloadBindings(true)
+	return false
 end
 
 --- Attempt to get a binding group with the specified identifier.
@@ -258,19 +267,27 @@ end
 --- bindings.
 ---
 --- @param binding Binding The binding to delete
+--- @returns boolean
 function Clicked:DeleteBinding(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	local db = Addon:GetContainingDatabase(binding)
+	local deleted = false
 
 	for index, item in ipairs(db.bindings) do
 		if binding.identifier == item.identifier then
 			table.remove(db.bindings, index)
+			deleted = true
 			break
 		end
 	end
 
-	self:ReloadBindings(true)
+	if deleted then
+		self:ReloadBindings(true)
+		return true
+	end
+
+	return false
 end
 
 --- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
@@ -414,6 +431,12 @@ function Addon:GetNextBindingIdentifier(scope)
 	return scope .. "-" .. BINDING_IDENTIFIER_PREFIX .. identifier, identifier
 end
 
+function Addon:GetNextBindingUid()
+	local uid = Addon.db.global.nextBindingUid
+	Addon.db.global.nextBindingUid = uid + 1
+	return uid
+end
+
 --- @param scope BindingScope
 --- @return string
 --- @return integer
@@ -458,19 +481,21 @@ function Addon:ChangeScope(item, scope)
 		local id = item.identifier
 		local bindings = Clicked:GetBindingsInGroup(id)
 
-		Clicked:DeleteGroup(item)
-		self:RegisterGroup(item, scope)
+		if Clicked:DeleteGroup(item) then
+			self:RegisterGroup(item, scope)
 
-		for _, binding in ipairs(bindings) do
-			self:RegisterBinding(binding, scope)
-			binding.parent = item.identifier
+			for _, binding in ipairs(bindings) do
+				self:RegisterBinding(binding, scope)
+				binding.parent = item.identifier
+			end
 		end
 	else
 		--- @cast item Binding
 
-		Clicked:DeleteBinding(item)
-		self:RegisterBinding(item, scope)
-		item.parent = nil
+		if Clicked:DeleteBinding(item) then
+			self:RegisterBinding(item, scope)
+			item.parent = nil
+		end
 	end
 end
 
@@ -495,6 +520,7 @@ function Addon:RegisterBinding(binding, scope)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	binding.identifier = self:GetNextBindingIdentifier(scope)
+	binding.uid = binding.uid or self:GetNextBindingUid()
 	binding.scope = scope
 
 	if scope == Addon.BindingScope.GLOBAL then

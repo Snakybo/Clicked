@@ -31,7 +31,8 @@ Library.TokenType = {
 	SPELL_NAME = 10,
 	SLASH_COMMAND = 11,
 	CONDITION = 12,
-	TARGET_UNIT = 13
+	TARGET_UNIT = 13,
+	SHEBANG = 14,
 }
 
 --- @type LibMacroSyntaxHighlight-1.0.ColorTable
@@ -46,7 +47,8 @@ local defaultColorTable = {
 	[Library.TokenType.SPELL_NAME] = "ffce9178",
 	[Library.TokenType.SLASH_COMMAND] = "ffdcdcaa",
 	[Library.TokenType.CONDITION] = "ff9cdcfe",
-	[Library.TokenType.TARGET_UNIT] = "ff4ec9b0"
+	[Library.TokenType.TARGET_UNIT] = "ff4ec9b0",
+	[Library.TokenType.SHEBANG] = "ffffffff",
 }
 
 local bytes = {
@@ -62,7 +64,8 @@ local bytes = {
 	["SLASH"] = string.byte("/"),
 	["NUM_0"] = string.byte("0"),
 	["NUM_9"] = string.byte("9"),
-	["AT"] = string.byte("@")
+	["AT"] = string.byte("@"),
+	["SHEBANG"] = string.byte("#")
 }
 
 local linebreaks = {
@@ -184,6 +187,15 @@ local function GetNextToken(text, position, state)
 				if byte == nil or IsSpecialByte(byte) then
 					return Library.TokenType.SPELL_NAME, position
 				end
+			end
+		end
+	elseif byte == bytes.SHEBANG and IsStartOfLine(text, position) then
+		while true do
+			position = position + 1
+			byte = string.byte(text, position)
+
+			if byte == nil or IsSpecialByte(byte) then
+				return Library.TokenType.SHEBANG, position
 			end
 		end
 	end
