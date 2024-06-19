@@ -334,7 +334,7 @@ function Addon:GetNewBindingTemplate()
 			macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
 			auraName = "",
 			executionOrder = 1,
-			convertValueToId = true,
+			spellMaxRank = false,
 			interrupt = false,
 			startAutoAttack = false,
 			startPetAttack = false,

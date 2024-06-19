@@ -413,8 +413,8 @@ function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local value = binding.action.spellValue
-		local spell = self:GetSpellInfo(value, binding.action.convertValueToId)
+		local spell = binding.action.spellValue
+		local spell = self:GetSpellInfo(value, not binding.action.spellMaxRank)
 		return spell ~= nil and spell.name ~= nil and spell.name or value
 	end
 
@@ -453,7 +453,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local spell = Addon:GetSpellInfo(binding.action.spellValue, binding.action.convertValueToId)
+		local spell = Addon:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
 		if spell == nil then
 			return nil, nil, nil
 		end
@@ -472,7 +472,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	end
 
 	if binding.type == Addon.BindingTypes.CANCELAURA then
-		local spell = Addon:GetSpellInfo(binding.action.auraName)
+		local spell = Addon:GetSpellInfo(binding.action.auraName, true)
 		if spell == nil then
 			return nil, nil, nil
 		end
@@ -591,7 +591,7 @@ function Addon:GetItemInfo(input)
 end
 
 --- @param input string|integer
---- @param addSubText? boolean
+--- @param addSubText boolean
 --- @return SpellInfo?
 function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
@@ -619,27 +619,11 @@ function Addon:GetSpellInfo(input, addSubText)
 		}
 	end
 
-	if addSubText == nil then
-		addSubText = true
-	end
-
-	if addSubText and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
+	if addSubText then
 		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spell.spellID)
 
 		if not self:IsStringNilOrEmpty(subtext) then
-			spell.name = string.format("%s(%s)", spell.name, subtext)
-		end
-	end
-
-	-- 10.0: Evokers and Dragonriding share ability names, this will ensure that the Dragonriding abilities are suffixed with (Dragonriding) so that
-	--       both spells will work.
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
-		local dragonRidingSpells = { 372608, 372610, 361584, 374990, 403092 }
-
-		if tContains(dragonRidingSpells, spell.spellID) then
-			--- @diagnostic disable-next-line: redundant-parameter
-			local subtext = GetSpellSubtext(spell.spellID) or "Dragonriding"
 			spell.name = string.format("%s(%s)", spell.name, subtext)
 		end
 	end
@@ -672,7 +656,7 @@ end
 function Addon:GetSpellId(name)
 	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
 
-	local spell = self:GetSpellInfo(name)
+	local spell = self:GetSpellInfo(name, true)
 	if spell == nil then
 		return nil
 	end

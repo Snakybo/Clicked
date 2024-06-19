@@ -8,6 +8,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [1.14.10] - 2024-06-19
+
+### Fixed
+
+* Fix a Lua error when playing Mage in Cataclysm Classic [#196] (by [Aeceon])
+
+### Changed
+
+* Spells are now always saved as IDs instead of names [#195]
+
 ## [1.14.9] - 2024-05-20
 
 ### Added
@@ -1310,7 +1320,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.14.9...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.14.10...master
+[1.14.10]: https://github.com/Snakybo/Clicked/releases/tag/1.14.10
 [1.14.9]: https://github.com/Snakybo/Clicked/releases/tag/1.14.9
 [1.14.8]: https://github.com/Snakybo/Clicked/releases/tag/1.14.8
 [1.14.7]: https://github.com/Snakybo/Clicked/releases/tag/1.14.7
@@ -1515,3 +1526,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [yannlugrin]: https://github.com/yannlugrin
 [novsirion]: https://github.com/novsirion
 [nihilistzsche]: https://github.com/nihilistzsche
+[Aeceon]: https://github.com/Aeceon

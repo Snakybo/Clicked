@@ -888,7 +888,10 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 		for tab = 1, GetNumTalentTabs() do
 			for index = 1, GetNumTalents(tab) do
 				local name, _, _, _, rank  = GetTalentInfo(tab, index)
-				talentCache[name] = rank > 0
+
+				if name ~= nil then
+					talentCache[name] = rank > 0
+				end
 			end
 		end
 	end
@@ -1243,7 +1246,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 			-- implies, using the GetSpellInfo function on an item also returns a valid value.
 
 			local function IsSpellKnown(value)
-				local spell = Addon:GetSpellInfo(value)
+				local spell = Addon:GetSpellInfo(value, true)
 				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
 			end
 
