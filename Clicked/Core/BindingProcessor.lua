@@ -873,7 +873,7 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 				if isValid then
 					local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
 					local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
-					local definitionInfo = entryInfo ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+					local definitionInfo = entryInfo ~= nil and entryInfo.definitionID ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
 
 					if definitionInfo ~= nil then
 						local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))

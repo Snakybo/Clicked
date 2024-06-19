@@ -17,6 +17,7 @@
 local DisableAddOn = C_AddOns.DisableAddOn or DisableAddOn -- Deprecated in 10.2.0
 local IsEquippedItem = C_Item.IsEquippedItem or IsEquippedItem -- Deprecated in 10.2.6
 local GetItemInfo = C_Item.GetItemInfo or GetItemInfo -- Deprecated in 10.2.6
+local GetSpellSubtext = C_Spell.GetSpellSubtext or GetSpellSubtext -- Deprecated in 11.0.0
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -413,9 +414,8 @@ function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.type == Addon.BindingTypes.SPELL then
-		local spell = binding.action.spellValue
-		local spell = self:GetSpellInfo(value, not binding.action.spellMaxRank)
-		return spell ~= nil and spell.name ~= nil and spell.name or value
+		local spell = self:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
+		return spell ~= nil and spell.name ~= nil and spell.name or binding.action.spellValue
 	end
 
 	if binding.type == Addon.BindingTypes.ITEM then
