@@ -884,7 +884,10 @@ function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
 		for tab = 1, GetNumTalentTabs() do
 			for index = 1, GetNumTalents(tab) do
 				local name, _, _, _, rank  = GetTalentInfo(tab, index)
-				talentCache[name] = rank > 0
+
+				if name ~= nil then
+					talentCache[name] = rank > 0
+				end
 			end
 		end
 	end

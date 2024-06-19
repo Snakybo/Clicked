@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix a Lua error when playing Mage in Cataclysm Classic [#196] (by [Aeceon])
+
 ## [1.14.9] - 2024-05-20
 
 ### Added
@@ -1515,3 +1521,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [yannlugrin]: https://github.com/yannlugrin
 [novsirion]: https://github.com/novsirion
 [nihilistzsche]: https://github.com/nihilistzsche
+[Aeceon]: https://github.com/Aeceon
