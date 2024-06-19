@@ -1294,7 +1294,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					value = tonumber(value) or value
 
 					if type(value) == "string" then
-						local n, newId = GetSpellItemNameAndId(value, mode, false)
+						local _, newId = GetSpellItemNameAndId(value, mode, false)
 
 						if newId ~= nil then
 							action[valueKey] = newId
