@@ -2880,7 +2880,93 @@ local function CreateFromItemTemplate(identifier)
 		item.type = Addon.BindingTypes.UNIT_MENU
 	elseif identifier == ITEM_TEMPLATE_GROUP then
 		item = Clicked:CreateGroup()
-	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK then
+	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		for spellBookTabIndex= 2, C_SpellBook.GetNumSpellBookSkillLines() do
+			local spellBookTab = C_SpellBook.GetSpellBookSkillLineInfo(spellBookTabIndex)
+			local pendingSpells = {}
+
+			local function DoesBindingExist(spellId)
+				for _, binding in Clicked:IterateConfiguredBindings() do
+					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
+						local group = Clicked:GetGroupById(binding.parent)
+
+						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
+						-- before excluding it
+						if group ~= nil and group.name == spellBookTab.name and group.displayIcon == spellBookTab.iconID then
+							return true
+						end
+					end
+				end
+
+				return false
+			end
+
+			for spellBookItemIndex = spellBookTab.itemIndexOffset + 1, spellBookTab.itemIndexOffset + spellBookTab.numSpellBookItems do
+				local spellBookItem = C_SpellBook.GetSpellBookItemInfo(spellBookItemIndex, Enum.SpellBookSpellBank.Player)
+
+				if not spellBookItem.isPassive then
+					if spellBookItem.itemType == Enum.SpellBookItemType.Spell or spellBookItem.itemType == Enum.SpellBookItemType.FutureSpell then
+						if not DoesBindingExist(spellBookItem.spellID) then
+							pendingSpells[spellBookItem.spellID] = true
+						end
+					elseif spellBookItem.itemType == Enum.SpellBookItemType.Flyout then
+						local _, _, numFlyoutSlots = GetFlyoutInfo(spellBookItem.actionID)
+
+						for flyoutIndex = 1, numFlyoutSlots do
+							local spellId = GetFlyoutSlotInfo(spellBookItem.actionID, flyoutIndex)
+
+							if not DoesBindingExist(spellId) then
+								pendingSpells[spellId] = true
+							end
+						end
+					end
+				end
+			end
+
+			if next(pendingSpells) ~= nil then
+				local group = nil
+
+				for _, g in Clicked:IterateGroups() do
+					if g.name == spellBookTab.name and g.displayIcon == spellBookTab.iconID then
+						group = g
+						break
+					end
+				end
+
+				if group == nil then
+					group = Clicked:CreateGroup()
+					group.name = spellBookTab.name
+					group.displayIcon = spellBookTab.iconID
+				end
+
+				local specIndex = nil
+
+				for i = 1, GetNumSpecializations() do
+					local id = GetSpecializationInfo(i)
+
+					if id == spellBookTab.specID then
+						specIndex = i
+						break
+					end
+				end
+
+				for spellId in pairs(pendingSpells) do
+					local binding = Clicked:CreateBinding()
+					binding.type = Addon.BindingTypes.SPELL
+					binding.parent = group.identifier
+					binding.action.spellValue = spellId
+
+					binding.load.class.selected = 1
+					binding.load.class.single = select(2, UnitClass("player"))
+
+					if specIndex ~= nil then
+						binding.load.specialization.selected = 1
+						binding.load.specialization.single = specIndex
+					end
+				end
+			end
+		end
+	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.DF then
 		for tabIndex = 2, GetNumSpellTabs() do
 			local tabName, tabIcon, offset, count = GetSpellTabInfo(tabIndex)
 			local pendingSpellIds = {}
