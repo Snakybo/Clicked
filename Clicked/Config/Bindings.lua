@@ -294,9 +294,10 @@ end
 
 --- @param input string|number
 --- @param mode string
+--- @param addSubText boolean
 --- @return string|integer name
 --- @return integer? id
-local function GetSpellItemNameAndId(input, mode)
+local function GetSpellItemNameAndId(input, mode, addSubText)
 	--- @type string|integer
 	local name
 
@@ -306,7 +307,7 @@ local function GetSpellItemNameAndId(input, mode)
 	if mode == Addon.BindingTypes.SPELL then
 		if type(input) == "number" then
 			id = input
-			name = Addon:GetSpellInfo(id)
+			name = Addon:GetSpellInfo(id, addSubText)
 		else
 			name = input
 			id = Addon:GetSpellId(name)
@@ -357,8 +358,10 @@ local function IsSpellButtonBound(button, bookType)
 	return false, nil
 end
 
-local function OnSpellBookButtonClick(name, convertValueToId)
-	if GetCurrentBinding() == nil or name == nil then
+--- @param spellId integer
+--- @param maxRank boolean
+local function OnSpellBookButtonClick(spellId, maxRank)
+	if GetCurrentBinding() == nil or spellId == nil then
 		return
 	end
 
@@ -370,8 +373,8 @@ local function OnSpellBookButtonClick(name, convertValueToId)
 	local binding = GetCurrentBinding()
 
 	if binding ~= nil and binding.type == Addon.BindingTypes.SPELL then
-		binding.action.spellValue = name
-		binding.action.convertValueToId = convertValueToId
+		binding.action.spellValue = spellId
+		binding.action.spellMaxRank = maxRank
 
 		HideUIPanel(SpellBookFrame)
 		Clicked:ReloadBinding(binding, true)
@@ -413,13 +416,10 @@ local function HijackSpellButton_UpdateButton(self)
 
 			button:SetScript("OnClick", function(_, mouseButton)
 				local slot = SpellBook_GetSpellBookSlot(parent);
-				local name, subName = GetSpellBookItemName(slot, SpellBookFrame.bookType)
+				local spellId = select(3, GetSpellBookItemName(slot, SpellBookFrame.bookType))
+				local castMaxRank = mouseButton == "RightButton" and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK
 
-				if mouseButton ~= "RightButton" and (Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not Addon:IsStringNilOrEmpty(subName)) then
-					name = string.format("%s(%s)", name, subName)
-				end
-
-				OnSpellBookButtonClick(name, mouseButton ~= "RightButton")
+				OnSpellBookButtonClick(spellId, castMaxRank)
 			end)
 
 			-- Respect ElvUI skinning
@@ -510,8 +510,8 @@ local function HijackSpellFlyout_Toggle()
 				end)
 
 				button:SetScript("OnClick", function()
-					local name = Addon:GetSpellInfo(parent.spellID);
-					OnSpellBookButtonClick(name)
+					local spellId = select(7, Addon:GetSpellInfo(parent.spellID));
+					OnSpellBookButtonClick(spellId, false)
 				end)
 
 				spellFlyOutButtons[id] = button
@@ -1266,10 +1266,10 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 		group:SetTitle(headerText)
 		container:AddChild(group)
 
-		local name, id = GetSpellItemNameAndId(action[valueKey], mode)
+		local name, id = GetSpellItemNameAndId(action[valueKey], mode, not action.spellMaxRank)
 
-		if id ~= nil and action.convertValueToId then
-			action[valueKey] = id
+		if name == nil and id ~= nil then
+			name = id
 		end
 
 		-- edit box
@@ -1292,15 +1292,21 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 				if not Addon:IsStringNilOrEmpty(value) then
 					value = tonumber(value) or value
-					local _, newId = GetSpellItemNameAndId(value, mode)
 
-					if newId ~= nil then
-						value = newId
+					if type(value) == "string" then
+						local n, newId = GetSpellItemNameAndId(value, mode, false)
+
+						if newId ~= nil then
+							action[valueKey] = newId
+							action.spellMaxRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not string.find(value, "%((.+)%)")
+						end
+					else
+						action[valueKey] = value
+						action.spellMaxRank = false
 					end
+				else
+					action[valueKey] = ""
 				end
-
-				action[valueKey] = value
-				action.convertValueToId = true
 
 				Clicked:ReloadBinding(binding, true)
 			end
@@ -1326,7 +1332,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 					action[valueKey] = linkId
 
 					if mode == Addon.BindingTypes.SPELL then
-						value = Addon:GetSpellInfo(linkId)
+						value = Addon:GetSpellInfo(linkId, true)
 					elseif mode == Addon.BindingTypes.ITEM then
 						value = Addon:GetItemInfo(linkId)
 					end
@@ -1390,7 +1396,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			local icon
 
 			if mode == Addon.BindingTypes.SPELL then
-				icon = select(3, Addon:GetSpellInfo(id))
+				icon = select(3, Addon:GetSpellInfo(id, not action.spellMaxRank))
 			elseif mode == Addon.BindingTypes.ITEM then
 				icon = select(10, Addon:GetItemInfo(id))
 			end
@@ -1454,8 +1460,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						return
 					end
 
-					action[valueKey] = Addon:GetSpellInfo(id, false)
-					action.convertValueToId = false
+					action.spellMaxRank = true
 
 					Clicked:ReloadBinding(binding, true)
 				end

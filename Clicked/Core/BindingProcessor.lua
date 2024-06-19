@@ -1242,7 +1242,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 			-- implies, using the GetSpellInfo function on an item also returns a valid value.
 
 			local function IsSpellKnown(value)
-				local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value)
+				local name, _, _, _, _, _, spellId = Addon:GetSpellInfo(value, true)
 				return name ~= nil and spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId)
 			end
 

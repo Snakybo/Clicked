@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix a Lua error when playing Mage in Cataclysm Classic [#196] (by [Aeceon])
 
+### Changed
+
+* Spells are now always saved as IDs instead of names [#195]
+
 ## [1.14.9] - 2024-05-20
 
 ### Added

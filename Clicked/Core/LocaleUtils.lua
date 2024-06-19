@@ -583,7 +583,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			end
 
 			for _, spellId in Addon:IterateShapeshiftForms(specId) do
-				local name, _, icon = Addon:GetSpellInfo(spellId)
+				local name, _, icon = Addon:GetSpellInfo(spellId, true)
 				local key = #order + 1
 
 				items[key] = string.format("<icon=%d><text=%s>", icon, name)
