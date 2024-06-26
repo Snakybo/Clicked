@@ -825,8 +825,6 @@ local function Upgrade(db, from)
 			binding.uid = Addon.db.global.nextBindingUid
 			Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid + 1
 		end
-
-		Addon:ShowInformationPopup("Clicked: Due to changes to the macro system in The War Within, Clicked is now required to use macro slots.\n\nAll your existing bindings will be automatically converted into macros and will use General Macro slots.")
 	end
 end
 

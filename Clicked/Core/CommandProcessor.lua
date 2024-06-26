@@ -135,24 +135,6 @@ local function EnsureMacroFrameHandler()
 	Clicked:RegisterFrameClicks(macroFrameHandler, false)
 end
 
-local function CreateOrUpdateMacro(name, body)
-	if GetMacroInfo(name) ~= nil then
-		EditMacro(name, name, "INV_Misc_QuestionMark", body)
-	else
-		CreateMacro(name, "INV_Misc_QuestionMark", body)
-	end
-end
-
-local function DeleteUnusedMacros(usedMacroNames)
-	for i = GetNumMacros(), 1, -1 do
-		local name = GetMacroInfo(i)
-
-		if string.find(name, "clicked-") and not tContains(usedMacroNames, name) then
-			DeleteMacro(name)
-		end
-	end
-end
-
 -- Private addon API
 
 --- @param keybinds Keybind[]
@@ -200,9 +182,6 @@ function Addon:ProcessCommands(commands)
 	--- @type table<string,string>
 	local newMacroFrameHandlerAttributes = {}
 
-	--- @type string[]
-	local usedMacroNames = {}
-
 	EnsureMacroFrameHandler()
 
 	-- Unregister all current keybinds
@@ -219,11 +198,6 @@ function Addon:ProcessCommands(commands)
 			key = command.keybind,
 			identifier = command.suffix
 		}
-
-		if command.action == Addon.CommandType.MACRO then
-			CreateOrUpdateMacro(command.macroName, command.data)
-			table.insert(usedMacroNames, command.macroName)
-		end
 
 		Addon:CreateCommandAttributes(attributes, command, command.prefix, command.suffix)
 
@@ -252,8 +226,6 @@ function Addon:ProcessCommands(commands)
 			requiresCombatProcess = true
 		end
 	end
-
-	DeleteUnusedMacros(usedMacroNames)
 
 	Addon:StatusOutput_UpdateMacroHandlerAttributes(newMacroFrameHandlerAttributes)
 	Addon:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)

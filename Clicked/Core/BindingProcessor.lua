@@ -414,7 +414,6 @@ local function ProcessBuckets()
 		if Addon:GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
-			command.macroName = Addon:GetMacroName(bindings, interactionType)
 		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
 
@@ -1461,13 +1460,6 @@ function Addon:GetInternalBindingType(binding)
 	return binding.type
 end
 
---- @param bindings Binding[]
---- @param interactionType number
---- @return string
-function Addon:GetMacroName(bindings, interactionType)
-	return "clicked-" .. bindings[1].uid .. "-" .. interactionType
-end
-
 --- Construct a valid macro that correctly prioritizes all specified bindings.
 --- It will prioritize bindings in the following order:
 ---
@@ -1499,7 +1491,6 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 	--- @type string[]
 	local lines = {
-		"#showtooltip"
 	}
 
 	--- @type string[]

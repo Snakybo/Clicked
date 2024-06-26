@@ -169,7 +169,6 @@
 --- @field public data any
 --- @field public prefix string
 --- @field public suffix string
---- @field public macroName string
 
 --- @class Keybind
 --- @field public key string
