@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for The War Within 11.0.0
+* Add Dynamic Flying macro condition
 
 ### Changed
 

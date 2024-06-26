@@ -193,6 +193,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.outdoors, "outdoors", "indoors")
 	ParseNegatableBooleanCondition(action.swimming, "swimming")
 	ParseNegatableBooleanCondition(action.flying, "flying")
+	ParseNegatableBooleanCondition(action.dynamicFlying, "bonusbar:5")
 	ParseNegatableBooleanCondition(action.flyable, "flyable")
 	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
@@ -259,6 +260,10 @@ local function ConstructAction(binding, target)
 
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 		AppendCondition(binding.load.advancedFlyable, "advflyable")
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		AppendCondition(binding.load.dynamicFlying, "dynamicFlying")
 	end
 
 	do

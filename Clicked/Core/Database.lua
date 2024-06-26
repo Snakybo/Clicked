@@ -371,6 +371,7 @@ function Addon:GetNewBindingTemplate()
 			bonusbar = GetNegatableStringLoadOptionTemplate(),
 			channeling = GetNegatableStringLoadOptionTemplate(),
 			flying = GetNegatableLoadOptionTemplate(),
+			dynamicFlying = GetNegatableLoadOptionTemplate(),
 			flyable = GetNegatableLoadOptionTemplate(),
 			advancedFlyable = GetNegatableLoadOptionTemplate(),
 			specialization = GetTriStateLoadOptionTemplate(1),

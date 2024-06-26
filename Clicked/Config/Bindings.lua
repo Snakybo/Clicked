@@ -2275,6 +2275,22 @@ local function DrawMacroFlying(container, flying)
 end
 
 --- @param container AceGUIContainer
+--- @param dynamicFlying Binding.LoadOption
+local function DrawMacroDynamicFlying(container, dynamicFlying)
+	local items = {
+		[true] = Addon.L["Dynamic flying"],
+		[false] = Addon.L["Not dynamic flying"],
+	}
+
+	local order = {
+		true,
+		false
+	}
+
+	DrawDropdownLoadOption(container, Addon.L["Dynamic Flying"], items, order, dynamicFlying)
+end
+
+--- @param container AceGUIContainer
 --- @param flyable Binding.LoadOption
 local function DrawMacroFlyable(container, flyable)
 	local items = {
@@ -2432,6 +2448,11 @@ local function DrawBindingMacroConditionsPage(container, binding)
 
 		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
 			DrawMacroFlying(container, load.flying)
+
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+				DrawMacroDynamicFlying(container, load.dynamicFlying)
+			end
+
 			DrawMacroFlyable(container, load.flyable)
 		end
 

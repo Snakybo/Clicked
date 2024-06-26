@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 9
+Addon.DATA_VERSION = 10
 
 -- Local support functions
 
@@ -857,6 +857,15 @@ local function Upgrade(db, from)
 
 		db.nextGroupId = nil
 		db.nextBindingId = nil
+	end
+
+	if from < 10 then
+		for _, binding in ipairs(db.bindings) do
+			binding.load.dynamicFlying = {
+				selected = false,
+				value = true
+			}
+		end
 	end
 end
 

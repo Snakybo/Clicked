@@ -98,6 +98,7 @@
 --- @field public outdoors Binding.LoadOption
 --- @field public swimming Binding.LoadOption
 --- @field public flying Binding.LoadOption
+--- @field public dynamicFlying Binding.LoadOption
 --- @field public flyable Binding.LoadOption
 --- @field public advancedFlyable Binding.LoadOption
 --- @field public instanceType Binding.TriStateLoadOption
@@ -148,6 +149,7 @@
 --- @field public mounted string
 --- @field public outdoors string
 --- @field public flying string
+--- @field public dynamicflying string
 --- @field public flyable string
 --- @field public advflyable string
 --- @field public swimming string
