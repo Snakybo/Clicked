@@ -177,7 +177,7 @@ local function BuildReviewTab(container)
 					group = group
 				}
 
-				groups[current.identifier] = item.group
+				groups[current.uid] = item.group
 				table.insert(items, item)
 			end
 

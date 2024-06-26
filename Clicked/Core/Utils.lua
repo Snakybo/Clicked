@@ -805,7 +805,7 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 		end
 
 		if leftValue == nil and rightValue == nil then
-			return left.identifier < right.identifier
+			return left.uid < right.uid
 		end
 
 		return tostring(leftValue) < tostring(rightValue)

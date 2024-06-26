@@ -51,7 +51,7 @@ local function RegisterGroup(data)
 	Addon:RegisterGroup(data.group, Addon.BindingScope.PROFILE)
 
 	for _, binding in ipairs(bindings) do
-		binding.parent = data.group.identifier
+		binding.parent = data.group.uid
 		Addon:RegisterBinding(binding, Addon.BindingScope.PROFILE)
 	end
 end
@@ -99,7 +99,7 @@ function Clicked:SerializeGroup(group)
 		group = Addon:DeepCopyTable(group) --[[@as ShareData.Group]]
 	}
 
-	data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(group.identifier))
+	data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(group.uid))
 
 	-- Clear user-specific data
 	for _, binding in ipairs(data.group.bindings) do

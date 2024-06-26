@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 8
+Addon.DATA_VERSION = 9
 
 -- Local support functions
 
@@ -821,10 +821,38 @@ local function Upgrade(db, from)
 	end
 
 	if from < 8 then
+		Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid or 1
+
 		for _, binding in ipairs(db.bindings) do
 			binding.uid = Addon.db.global.nextBindingUid
 			Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid + 1
 		end
+	end
+
+	if from < 9 then
+		Addon.db.global.nextUid = Addon.db.global.nextBindingUid
+		Addon.db.global.nextBindingUid = nil
+
+		local map = {}
+
+		for _, group in ipairs(db.groups) do
+			group.uid = Addon.db.global.nextUid
+			Addon.db.global.nextUid = Addon.db.global.nextUid + 1
+
+			map[group.identifier] = group.uid
+			group.identifier = nil
+		end
+
+		for _, binding in ipairs(db.bindings) do
+			if binding.parent ~= nil then
+				binding.parent = map[binding.parent]
+			end
+
+			binding.identifier = nil
+		end
+
+		db.nextGroupId = nil
+		db.nextBindingId = nil
 	end
 end
 

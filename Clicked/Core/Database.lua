@@ -19,9 +19,6 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local GROUP_IDENTIFIER_PREFIX = "group-"
-local BINDING_IDENTIFIER_PREFIX = "binding-"
-
 -- Local support functions
 
 --- @param default string|boolean
@@ -101,15 +98,12 @@ end
 ---
 --- @return AceDBObject-3.0
 function Clicked:GetDatabaseDefaults()
-	--- @type AceDBObject-3.0
 	local database = {
 		global = {
 			version = nil,
 			groups = {},
 			bindings = {},
-			nextGroupId = 1,
-			nextBindingId = 1,
-			nextBindingUid = 1,
+			nextUid = 1,
 			keyVisualizer = {
 				lastKeyboardLayout = nil,
 				lastKeyboardSize = nil,
@@ -130,8 +124,6 @@ function Clicked:GetDatabaseDefaults()
 			groups = {},
 			bindings = {},
 			blacklist = {},
-			nextGroupId = 1,
-			nextBindingId = 1
 		}
 	}
 
@@ -177,7 +169,7 @@ function Clicked:DeleteGroup(group)
 	local deleted = false
 
 	for i, e in ipairs(db.groups) do
-		if e.identifier == group.identifier then
+		if e.uid == group.uid then
 			table.remove(db.groups, i)
 			deleted = true
 			break
@@ -188,7 +180,7 @@ function Clicked:DeleteGroup(group)
 		for i = #db.bindings, 1, -1 do
 			local binding = db.bindings[i]
 
-			if binding.parent == group.identifier then
+			if binding.parent == group.uid then
 				table.remove(db.bindings, i)
 			end
 		end
@@ -202,13 +194,13 @@ end
 
 --- Attempt to get a binding group with the specified identifier.
 ---
---- @param identifier string
+--- @param identifier integer
 --- @return Group?
 function Clicked:GetGroupById(identifier)
-	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
+	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
 
 	for _, group in self:IterateGroups() do
-		if group.identifier == identifier then
+		if group.uid == identifier then
 			return group
 		end
 	end
@@ -218,10 +210,10 @@ end
 
 --- Get a list of all bindings that are part of the specified group.
 ---
---- @param identifier string
+--- @param identifier integer
 --- @return Binding[]
 function Clicked:GetBindingsInGroup(identifier)
-	assert(type(identifier) == "string", "bad argument #1, expected string but got " .. type(identifier))
+	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
 
 	--- @type Binding[]
 	local bindings = {}
@@ -275,7 +267,7 @@ function Clicked:DeleteBinding(binding)
 	local deleted = false
 
 	for index, item in ipairs(db.bindings) do
-		if binding.identifier == item.identifier then
+		if binding.uid == item.uid then
 			table.remove(db.bindings, index)
 			deleted = true
 			break
@@ -410,52 +402,10 @@ function Addon:GetNewBindingTargetTemplate()
 	return template
 end
 
---- @param scope BindingScope
---- @return string
---- @return integer
-function Addon:GetNextBindingIdentifier(scope)
-	scope = scope or Addon.BindingScope.PROFILE
-
-	local identifier
-
-	if scope == Addon.BindingScope.GLOBAL then
-		identifier = Addon.db.global.nextBindingId
-		Addon.db.global.nextBindingId = identifier + 1
-	elseif scope == Addon.BindingScope.PROFILE then
-		identifier = Addon.db.profile.nextBindingId
-		Addon.db.profile.nextBindingId = identifier + 1
-	else
-		error("Unknown binding scope " .. scope)
-	end
-
-	return scope .. "-" .. BINDING_IDENTIFIER_PREFIX .. identifier, identifier
-end
-
-function Addon:GetNextBindingUid()
-	local uid = Addon.db.global.nextBindingUid
-	Addon.db.global.nextBindingUid = uid + 1
+function Addon:GetNextUid()
+	local uid = Addon.db.global.nextUid
+	Addon.db.global.nextUid = uid + 1
 	return uid
-end
-
---- @param scope BindingScope
---- @return string
---- @return integer
-function Addon:GetNextGroupIdentifier(scope)
-	scope = scope or Addon.BindingScope.PROFILE
-
-	local identifier
-
-	if scope == Addon.BindingScope.GLOBAL then
-		identifier = Addon.db.global.nextGroupId
-		Addon.db.global.nextGroupId = identifier + 1
-	elseif scope == Addon.BindingScope.PROFILE then
-		identifier = Addon.db.profile.nextGroupId
-		Addon.db.profile.nextGroupId = identifier + 1
-	else
-		error("Unknown binding scope " .. scope)
-	end
-
-	return scope .. "-" .. GROUP_IDENTIFIER_PREFIX .. identifier, identifier
 end
 
 --- Change the scope of a binding or entire group.
@@ -467,7 +417,7 @@ function Addon:ChangeScope(item, scope)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
 
-	if item.identifier == nil then
+	if item.uid == nil then
 		error("Can only change the scope of a binding or group")
 	end
 
@@ -478,7 +428,7 @@ function Addon:ChangeScope(item, scope)
 	if self:IsGroup(item) then
 		--- @cast item Group
 
-		local id = item.identifier
+		local id = item.uid
 		local bindings = Clicked:GetBindingsInGroup(id)
 
 		if Clicked:DeleteGroup(item) then
@@ -486,7 +436,7 @@ function Addon:ChangeScope(item, scope)
 
 			for _, binding in ipairs(bindings) do
 				self:RegisterBinding(binding, scope)
-				binding.parent = item.identifier
+				binding.parent = item.uid
 			end
 		end
 	else
@@ -519,8 +469,7 @@ end
 function Addon:RegisterBinding(binding, scope)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	binding.identifier = self:GetNextBindingIdentifier(scope)
-	binding.uid = binding.uid or self:GetNextBindingUid()
+	binding.uid = binding.uid or self:GetNextUid()
 	binding.scope = scope
 
 	if scope == Addon.BindingScope.GLOBAL then
@@ -539,7 +488,7 @@ end
 function Addon:RegisterGroup(group, scope)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
-	group.identifier = self:GetNextGroupIdentifier(scope)
+	group.uid = group.uid or self:GetNextUid()
 	group.scope = scope
 
 	if scope == Addon.BindingScope.GLOBAL then
@@ -584,5 +533,6 @@ end
 --- @return boolean
 function Addon:IsGroup(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
-	return string.find(item.identifier, GROUP_IDENTIFIER_PREFIX) ~= nil
+	return string.find(item.uid, GROUP_IDENTIFIER_PREFIX) ~= nil
+	-- TODO: Fix this
 end

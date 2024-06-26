@@ -516,18 +516,18 @@ local function StripColorCodes(str)
 	return str
 end
 
---- @param binding Binding
+--- @param binding Binding|integer
 --- @param full boolean
 --- @param delayFrame boolean
 --- @param ... string
 --- @overload fun(binding:Binding, full:boolean, ...:string)
 --- @overload fun(binding:Binding, ...:string)
 local function ProcessReloadBindingArguments(binding, full, delayFrame, ...)
-	--- @type string|integer
+	--- @type integer
 	local identifier = nil
 
 	if type(binding) == "table" then
-		identifier = binding.identifier
+		identifier = binding.uid
 	elseif type(binding) == "number" then
 		identifier = binding
 	else
@@ -787,7 +787,7 @@ end
 --- @param binding Binding
 --- @return boolean
 function Clicked:CanBindingLoad(binding)
-	local state = bindingStateCache[binding.identifier]
+	local state = bindingStateCache[binding.uid]
 
 	if state == nil then
 		return false
@@ -806,7 +806,7 @@ end
 --- @return boolean
 function Clicked:IsBindingLoaded(binding)
 	for _, active in ipairs(activeBindings) do
-		if active.identifier == binding.identifier then
+		if active.uid == binding.uid then
 			return true
 		end
 	end
@@ -960,14 +960,14 @@ function Addon:UpdateBindingLoadState(binding, options)
 		end
 
 		-- A specific binding should be updated
-		if options.binding ~= nil and options.binding[binding.identifier] ~= nil then
-			if options.binding[binding.identifier].full then
+		if options.binding ~= nil and options.binding[binding.uid] ~= nil then
+			if options.binding[binding.uid].full then
 				return true
 			end
 
 			-- A specific event should be updated
 			for cause in pairs({ ... }) do
-				if options.binding[binding.identifier].events[cause] then
+				if options.binding[binding.uid].events[cause] then
 					return true
 				end
 			end
@@ -985,7 +985,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 		return false
 	end
 
-	local state = bindingStateCache[binding.identifier] or {}
+	local state = bindingStateCache[binding.uid] or {}
 
 	if ShouldPerformStateCheck() then
 		state.keybind = binding.keybind ~= ""
@@ -1364,8 +1364,8 @@ function Addon:UpdateBindingLoadState(binding, options)
 		end
 	end
 
-	if bindingStateCache[binding.identifier] == nil then
-		bindingStateCache[binding.identifier] = state
+	if bindingStateCache[binding.uid] == nil then
+		bindingStateCache[binding.uid] = state
 	end
 end
 
@@ -1695,7 +1695,7 @@ end
 --- @param binding Binding
 --- @return table<string,boolean?>
 function Addon:GetCachedBindingState(binding)
-	return bindingStateCache[binding.identifier]
+	return bindingStateCache[binding.uid]
 end
 
 --- Get all active bindings.

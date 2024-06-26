@@ -452,8 +452,8 @@ function KeyVisualizer:Open()
 			local order = {}
 
 			for _, group in Clicked:IterateGroups() do
-				items[group.identifier] = string.format("<icon=%s><text=%s>", tostring(group.displayIcon), group.name)
-				table.insert(order, { id = group.identifier, name = group.name })
+				items[group.uid] = string.format("<icon=%s><text=%s>", tostring(group.displayIcon), group.name)
+				table.insert(order, { id = group.uid, name = group.name })
 			end
 
 			table.sort(order, function(a, b) return a.name < b.name end)

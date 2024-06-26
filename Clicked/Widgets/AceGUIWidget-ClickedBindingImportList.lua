@@ -149,7 +149,7 @@ local function AddLine(self, v, tree, level, parent)
 	line.level = level
 	line.parent = parent
 	line.showKeybinds = self.showKeybinds
-	line.identifier = line.group ~= nil and line.group.identifier or line.binding.identifier
+	line.identifier = line.group ~= nil and line.group.uid or line.binding.uid
 
 	if v.children ~= nil then
 		line.hasChildren = true
@@ -452,7 +452,7 @@ function Methods:SetItems(data)
 		table.sort(item.children, TreeSortKeybind)
 		table.insert(self.tree, item)
 
-		groups[group.identifier] = true
+		groups[group.uid] = true
 	end
 
 	for _, current in ipairs(data) do

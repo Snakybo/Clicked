@@ -33,7 +33,7 @@ Container that uses a tree control to switch between groups.
 --- @field public scope BindingScope
 
 --- @class ClickedTreeGroup.Item
---- @field public value string
+--- @field public value integer
 --- @field public title string
 --- @field public visible boolean
 --- @field public scope BindingScope
@@ -380,7 +380,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	elseif group ~= nil then
 		desaturate = true
 		for _, child in Clicked:IterateConfiguredBindings() do
-			if child.parent == group.identifier and Clicked:IsBindingLoaded(child) then
+			if child.parent == group.uid and Clicked:IsBindingLoaded(child) then
 				desaturate = false
 				break
 			end
@@ -435,14 +435,14 @@ local function FirstFrameUpdate(frame)
 	self:RefreshTree(nil, true)
 end
 
---- @param ... string
+--- @param ... any
 --- @return string
 local function BuildUniqueValue(...)
 	local n = select('#', ...)
 	if n == 1 then
-		return ...
+		return tostring(...)
 	else
-		return (...) .. "\001" .. BuildUniqueValue(select(2, ...))
+		return tostring(...) .. "\001" .. BuildUniqueValue(select(2, ...))
 	end
 end
 
@@ -492,7 +492,7 @@ local function Button_OnClick(frame, button)
 					if frame.binding ~= nil then
 						local clone = Addon:DeepCopyTable(self.bindingCopyBuffer)
 						clone.parent = frame.parent
-						clone.identifier = frame.binding.identifier
+						clone.uid = frame.binding.uid
 						clone.keybind = frame.binding.keybind
 						clone.integrations = frame.binding.integrations
 
@@ -624,7 +624,7 @@ local function Button_OnClick(frame, button)
 						local count = 0
 
 						for _, e in Clicked:IterateConfiguredBindings() do
-							if e.parent == frame.group.identifier then
+							if e.parent == frame.group.uid then
 								count = count + 1
 							end
 						end
@@ -691,7 +691,7 @@ local function Button_OnEnter(frame)
 		text = text .. (Clicked:IsBindingLoaded(binding) and Addon.L["Loaded"] or Addon.L["Unloaded"])
 
 		if IsShiftKeyDown() then
-			text = text .. string.format(" (%s)", binding.identifier)
+			text = text .. string.format(" (%s)", binding.uid)
 		end
 
 		Addon:ShowTooltip(frame, text, nil, "RIGHT", "LEFT")
@@ -744,7 +744,7 @@ local function Button_OnDragStop(frame)
 	for _, button in ipairs(self.buttons) do
 		if button ~= frame and button:IsEnabled() and button:IsShown() and button:IsMouseOver(0, 0) then
 			if button.group ~= nil then
-				newParent = button.group.identifier
+				newParent = button.group.uid
 				newScope = button.group.scope
 				break
 			elseif button.binding ~= nil then
@@ -998,7 +998,7 @@ function Methods:ConstructTree()
 	local scopes = {}
 
 	local function GetScopeList(scope)
-		return scopes["scope-" .. scope]
+		return scopes[scope]
 	end
 
 	self.tree = {}
@@ -1006,7 +1006,7 @@ function Methods:ConstructTree()
 	for _, scope in pairs(Addon.BindingScope) do
 		--- @type ClickedTreeGroup.Item
 		local item = {
-			value = "scope-" .. scope,
+			value = scope,
 			title = Addon:GetLocalizedScope(scope),
 			scope = scope,
 			type = "scope",
@@ -1014,7 +1014,7 @@ function Methods:ConstructTree()
 			children = {}
 		}
 
-		scopes["scope-" .. scope] = item.children
+		scopes[scope] = item.children
 		groupstatus[item.value] = true
 
 		table.insert(self.tree, item)
@@ -1023,12 +1023,13 @@ function Methods:ConstructTree()
 	for _, group in Clicked:IterateGroups() do
 		--- @type ClickedTreeGroup.GroupItem
 		local item = {
-			value = group.identifier,
+			value = group.uid,
 			group = group,
 			icon = "Interface\\ICONS\\INV_Misc_QuestionMark",
 			type = "group",
 			scope = group.scope,
-			children = {}
+			children = {},
+			canLoad = false
 		}
 
 		UpdateGroupItemVisual(item, group)
@@ -1041,7 +1042,7 @@ function Methods:ConstructTree()
 
 		--- @type ClickedTreeGroup.BindingItem
 		local item = {
-			value = "binding-" .. binding.identifier,
+			value = binding.uid,
 			name = Addon:GetSimpleSpellOrItemInfo(binding) or tostring(Addon:GetBindingValue(binding)),
 			title = title,
 			type = "binding",
@@ -1324,7 +1325,7 @@ function Methods:Select(uniqueValue, ...)
 	self:Fire("OnGroupSelected", uniqueValue)
 end
 
---- @param ... string
+--- @param ... any
 function Methods:SelectByPath(...)
 	self:Select(BuildUniqueValue(...), ...)
 end
@@ -1345,17 +1346,17 @@ function Methods:SelectByBindingOrGroup(item)
 		if next.type == "binding" then
 			--- @cast next ClickedTreeGroup.BindingItem
 			if next.binding == item and next.binding.parent == nil then
-				self:SelectByPath("scope-" .. next.scope, next.value)
+				self:SelectByPath(next.scope, next.value)
 				break
 			elseif next.binding == item then
-				self:SelectByPath("scope-" .. next.scope, next.binding.parent, next.value)
+				self:SelectByPath(next.scope, next.binding.parent, next.value)
 				break
 			end
 		elseif next.type == "group" then
 			--- @cast next ClickedTreeGroup.GroupItem
 
 			if next.group == item then
-				self:SelectByPath("scope-" .. next.scope, next.value)
+				self:SelectByPath(next.scope, next.value)
 				break
 			end
 		end
@@ -1443,19 +1444,16 @@ function Methods:GetSelectedItem()
 	end
 
 	local path = { strsplit("\001", status.selected) }
-	local current = self.tree
+	local current = { children = self.tree }
 
 	for i = 1, #path do
-		local value = path[i]
+		local value = tonumber(path[i])
 
 		if current ~= nil then
-			for _, e in ipairs(current) do
+			for _, e in ipairs(current.children) do
 				if e.value == value then
-					if i == #path then
-						current = e
-					else
-						current = e.children
-					end
+					current = e
+					break
 				end
 			end
 		end

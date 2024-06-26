@@ -43,11 +43,10 @@
 
 --- @class Binding
 --- @field public type string
---- @field public identifier string
 --- @field public uid integer
 --- @field public scope BindingScope
 --- @field public keybind string
---- @field public parent string?
+--- @field public parent integer?
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
 --- @field public load Binding.Load
@@ -137,8 +136,8 @@
 --- @class Group
 --- @field public name string
 --- @field public displayIcon integer|string
---- @field public identifier string
 --- @field public scope BindingScope
+--- @field public uid integer
 
 --- @class Action
 --- @field public ability integer|string

@@ -1650,7 +1650,7 @@ local function DrawActionGroupOptions(container, keybind)
 			return false
 		end
 
-		return left.identifier < right.identifier
+		return left.uid < right.uid
 	end
 
 	local group = Addon:GUI_InlineGroup()
@@ -2953,7 +2953,7 @@ local function CreateFromItemTemplate(identifier)
 				for spellId in pairs(pendingSpells) do
 					local binding = Clicked:CreateBinding()
 					binding.type = Addon.BindingTypes.SPELL
-					binding.parent = group.identifier
+					binding.parent = group.uid
 					binding.action.spellValue = spellId
 
 					binding.load.class.selected = 1
@@ -3029,7 +3029,7 @@ local function CreateFromItemTemplate(identifier)
 				for spellId in pairs(pendingSpellIds) do
 					local binding = Clicked:CreateBinding()
 					binding.type = Addon.BindingTypes.SPELL
-					binding.parent = group.identifier
+					binding.parent = group.uid
 					binding.action.spellValue = spellId
 
 					binding.load.class.selected = 1
@@ -3125,7 +3125,7 @@ local function CreateFromItemTemplate(identifier)
 				end
 
 				if group ~= nil then
-					binding.parent = group.identifier
+					binding.parent = group.uid
 				end
 
 				binding.load.class.selected = 1
