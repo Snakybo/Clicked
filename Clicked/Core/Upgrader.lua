@@ -21,7 +21,6 @@ end
 --- @param from string
 local function UpgradeLegacy(profile, from)
 	local function FinalizeVersionUpgrade(newVersion)
-		print(Addon:GetPrefixedAndFormattedString(Addon.L["Upgraded profile from version %s to version %s"], from or "UNKNOWN", newVersion))
 		profile.version = newVersion
 		from = newVersion
 	end
