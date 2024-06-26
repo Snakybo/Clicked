@@ -103,7 +103,7 @@ end
 --- @param binding Binding
 --- @return boolean
 local function CanEnableRegularTargetMode(binding)
-	if Addon:IsRestrictedKeybind(binding.keybind) or binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
+	if Addon:IsRestrictedKeybind(binding.keybind) or binding.actionType == Addon.BindingTypes.UNIT_SELECT or binding.actionType == Addon.BindingTypes.UNIT_MENU then
 		return false
 	end
 
@@ -245,7 +245,7 @@ end
 --- @param binding Binding
 local function GetAvailableTabs(binding)
 	local items = {}
-	local type = binding.type
+	local type = binding.actionType
 
 	if type ~= Addon.BindingTypes.UNIT_SELECT and type ~= Addon.BindingTypes.UNIT_MENU then
 		table.insert(items, "action")
@@ -350,7 +350,7 @@ local function IsSpellButtonBound(button, bookType)
 		if spellId ~= nil then
 			--- @type Binding
 			for _, binding in Clicked:IterateActiveBindings() do
-				if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+				if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
 					return true, binding
 				end
 			end
@@ -374,7 +374,7 @@ local function OnSpellBookButtonClick(spellId, maxRank)
 
 	local binding = GetCurrentBinding()
 
-	if binding ~= nil and binding.type == Addon.BindingTypes.SPELL then
+	if binding ~= nil and binding.actionType == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = spellId
 		binding.action.spellMaxRank = maxRank
 
@@ -1634,19 +1634,19 @@ local function DrawActionGroupOptions(container, keybind)
 	--- @param right Binding
 	--- @return boolean
 	local function SortFunc(left, right)
-		if left.type == Addon.BindingTypes.MACRO and right.type ~= Addon.BindingTypes.MACRO then
+		if left.actionType == Addon.BindingTypes.MACRO and right.actionType ~= Addon.BindingTypes.MACRO then
 			return true
 		end
 
-		if left.type ~= Addon.BindingTypes.MACRO and right.type == Addon.BindingTypes.MACRO then
+		if left.actionType ~= Addon.BindingTypes.MACRO and right.actionType == Addon.BindingTypes.MACRO then
 			return false
 		end
 
-		if left.type ~= Addon.BindingTypes.APPEND and right.type == Addon.BindingTypes.APPEND then
+		if left.actionType ~= Addon.BindingTypes.APPEND and right.actionType == Addon.BindingTypes.APPEND then
 			return true
 		end
 
-		if left.type == Addon.BindingTypes.APPEND and right.type ~= Addon.BindingTypes.APPEND then
+		if left.actionType == Addon.BindingTypes.APPEND and right.actionType ~= Addon.BindingTypes.APPEND then
 			return false
 		end
 
@@ -1734,9 +1734,9 @@ local function DrawActionGroupOptions(container, keybind)
 				--- @param b Binding
 				--- @return string?
 				local function GetType(b)
-					if b.type == Addon.BindingTypes.SPELL or b.type == Addon.BindingTypes.ITEM then
+					if b.actionType == Addon.BindingTypes.SPELL or b.actionType == Addon.BindingTypes.ITEM then
 						return "use"
-					elseif b.type == Addon.BindingTypes.CANCELAURA then
+					elseif b.actionType == Addon.BindingTypes.CANCELAURA then
 						return "cancel"
 					end
 
@@ -1844,7 +1844,7 @@ local function DrawSharedOptions(container, binding)
 
 	CreateCheckbox(group, Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
 
-	if binding.type ~= Addon.BindingTypes.CANCELAURA then
+	if binding.actionType ~= Addon.BindingTypes.CANCELAURA then
 		CreateCheckbox(group, Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
 		CreateCheckbox(group, Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")
 		CreateCheckbox(group, Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
@@ -1887,7 +1887,7 @@ end
 --- @param container AceGUIContainer
 --- @param binding Binding
 local function DrawBindingActionPage(container, binding)
-	local type = binding.type
+	local type = binding.actionType
 
 	local SPELL = Addon.BindingTypes.SPELL
 	local ITEM = Addon.BindingTypes.ITEM
@@ -1896,7 +1896,7 @@ local function DrawBindingActionPage(container, binding)
 	local CANCELAURA = Addon.BindingTypes.CANCELAURA
 
 	if type == SPELL or type == ITEM or type == CANCELAURA then
-		DrawSpellItemAuraSelection(container, binding.action, binding.type)
+		DrawSpellItemAuraSelection(container, binding.action, binding.actionType)
 	elseif type == MACRO then
 		DrawMacroSelection(container, binding.targets, binding.action)
 	elseif type == APPEND then
@@ -2047,7 +2047,7 @@ local function DrawBindingTargetPage(container, binding)
 		container:AddChild(widget)
 	end
 
-	local isMacro = binding.type == Addon.BindingTypes.MACRO
+	local isMacro = binding.actionType == Addon.BindingTypes.MACRO
 
 	-- hovercast targets
 	do
@@ -2199,7 +2199,7 @@ local function DrawMacroCombat(container, combat)
 	DrawDropdownLoadOption(container, Addon.L["Combat"], items, order, combat)
 
 	local binding = GetCurrentBinding()
-	if binding ~= nil and combat.selected and (binding.type == Addon.BindingTypes.UNIT_MENU or binding.type == Addon.BindingTypes.UNIT_SELECT) then
+	if binding ~= nil and combat.selected and (binding.actionType == Addon.BindingTypes.UNIT_MENU or binding.actionType == Addon.BindingTypes.UNIT_SELECT) then
 		local text = Addon.L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."]
 
 		local widget = Addon:GUI_Label(text)
@@ -2407,7 +2407,7 @@ end
 local function DrawBindingMacroConditionsPage(container, binding)
 	local load = binding.load
 
-	if binding.type == Addon.BindingTypes.UNIT_SELECT or binding.type == Addon.BindingTypes.UNIT_MENU then
+	if binding.actionType == Addon.BindingTypes.UNIT_SELECT or binding.actionType == Addon.BindingTypes.UNIT_MENU then
 		DrawMacroCombat(container, load.combat)
 	else
 		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
@@ -2849,35 +2849,35 @@ end
 
 --- @param identifier string
 local function CreateFromItemTemplate(identifier)
-	--- @type Binding|Group?
+	--- @type DataObject?
 	local item = nil
 
 	if identifier == ITEM_TEMPLATE_SPELL then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.SPELL
+		item.actionType = Addon.BindingTypes.SPELL
 	elseif identifier == ITEM_TEMPLATE_SPELL_CC then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.SPELL
+		item.actionType = Addon.BindingTypes.SPELL
 		item.targets.hovercastEnabled = true
 		item.targets.regularEnabled = false
 	elseif identifier == ITEM_TEMPLATE_ITEM then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.ITEM
+		item.actionType = Addon.BindingTypes.ITEM
 	elseif identifier == ITEM_TEMPLATE_MACRO then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.MACRO
+		item.actionType = Addon.BindingTypes.MACRO
 	elseif identifier == ITEM_TEMPLATE_APPEND then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.APPEND
+		item.actionType = Addon.BindingTypes.APPEND
 	elseif identifier == ITEM_TEMPLATE_CANCELAURA then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.CANCELAURA
+		item.actionType = Addon.BindingTypes.CANCELAURA
 	elseif identifier == ITEM_TEMPLATE_TARGET then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.UNIT_SELECT
+		item.actionType = Addon.BindingTypes.UNIT_SELECT
 	elseif identifier == ITEM_TEMPLATE_MENU then
 		item = Clicked:CreateBinding()
-		item.type = Addon.BindingTypes.UNIT_MENU
+		item.actionType = Addon.BindingTypes.UNIT_MENU
 	elseif identifier == ITEM_TEMPLATE_GROUP then
 		item = Clicked:CreateGroup()
 	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
@@ -2887,7 +2887,7 @@ local function CreateFromItemTemplate(identifier)
 
 			local function DoesBindingExist(spellId)
 				for _, binding in Clicked:IterateConfiguredBindings() do
-					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
+					if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
 						local group = Clicked:GetGroupById(binding.parent)
 
 						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
@@ -2952,7 +2952,7 @@ local function CreateFromItemTemplate(identifier)
 
 				for spellId in pairs(pendingSpells) do
 					local binding = Clicked:CreateBinding()
-					binding.type = Addon.BindingTypes.SPELL
+					binding.actionType = Addon.BindingTypes.SPELL
 					binding.parent = group.uid
 					binding.action.spellValue = spellId
 
@@ -2978,7 +2978,7 @@ local function CreateFromItemTemplate(identifier)
 				end
 
 				for _, binding in Clicked:IterateConfiguredBindings() do
-					if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
+					if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
 						local group = Clicked:GetGroupById(binding.parent)
 
 						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
@@ -3028,7 +3028,7 @@ local function CreateFromItemTemplate(identifier)
 
 				for spellId in pairs(pendingSpellIds) do
 					local binding = Clicked:CreateBinding()
-					binding.type = Addon.BindingTypes.SPELL
+					binding.actionType = Addon.BindingTypes.SPELL
 					binding.parent = group.uid
 					binding.action.spellValue = spellId
 
@@ -3102,15 +3102,15 @@ local function CreateFromItemTemplate(identifier)
 
 			if action == "spell" then
 				binding = Clicked:CreateBinding()
-				binding.type = Addon.BindingTypes.SPELL
+				binding.actionType = Addon.BindingTypes.SPELL
 				binding.action.spellValue = id
 			elseif action == "item" then
 				binding = Clicked:CreateBinding()
-				binding.type = Addon.BindingTypes.ITEM
+				binding.actionType = Addon.BindingTypes.ITEM
 				binding.action.itemValue = id
 			elseif action == "macro" then
 				binding = Clicked:CreateBinding()
-				binding.type = Addon.BindingTypes.MACRO
+				binding.actionType = Addon.BindingTypes.MACRO
 				--- @diagnostic disable-next-line: redundant-parameter
 				binding.action.macroValue = GetMacroBody(id) --[[@as string]]
 				--- @diagnostic disable-next-line: redundant-parameter
@@ -3267,7 +3267,7 @@ local function DrawBinding(container)
 		end
 
 		local function OnPostValueChanged(frame, value)
-			Addon:EnsureSupportedTargetModes(binding.targets, value, binding.type)
+			Addon:EnsureSupportedTargetModes(binding.targets, value, binding.actionType)
 			HandleAutomaticBinds(frame)
 		end
 
@@ -3600,7 +3600,7 @@ function Addon:BindingConfig_Open()
 
 			if bindingType ~= nil then
 				local binding = Clicked:CreateBinding()
-				binding.type = bindingType
+				binding.actionType = bindingType
 				Addon:SetBindingValue(binding, info1)
 
 				Clicked:ReloadBinding(binding, true)

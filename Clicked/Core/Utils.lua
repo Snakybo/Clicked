@@ -399,11 +399,11 @@ end
 function Addon:SetBindingValue(binding, value)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding.actionType == Addon.BindingTypes.SPELL then
 		binding.action.spellValue = value
-	elseif binding.type == Addon.BindingTypes.ITEM then
+	elseif binding.actionType == Addon.BindingTypes.ITEM then
 		binding.action.itemValue = value
-	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
 		binding.action.macroValue = value --[[@as string]]
 	end
 end
@@ -413,12 +413,12 @@ end
 function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding.actionType == Addon.BindingTypes.SPELL then
 		local spell = self:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
 		return spell ~= nil and spell.name ~= nil and spell.name or binding.action.spellValue
 	end
 
-	if binding.type == Addon.BindingTypes.ITEM then
+	if binding.actionType == Addon.BindingTypes.ITEM then
 		local item = binding.action.itemValue
 
 		if type(item) == "number" and item < 20 then
@@ -434,11 +434,11 @@ function Addon:GetBindingValue(binding)
 		return self:GetItemInfo(item) or item
 	end
 
-	if binding.type == Addon.BindingTypes.CANCELAURA then
+	if binding.actionType == Addon.BindingTypes.CANCELAURA then
 		return binding.action.auraName
 	end
 
-	if binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+	if binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
 		return binding.action.macroValue
 	end
 
@@ -452,7 +452,7 @@ end
 function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding.actionType == Addon.BindingTypes.SPELL then
 		local spell = Addon:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
 		if spell == nil then
 			return nil, nil, nil
@@ -461,7 +461,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 		return spell.name, spell.iconID, spell.spellID
 	end
 
-	if binding.type == Addon.BindingTypes.ITEM then
+	if binding.actionType == Addon.BindingTypes.ITEM then
 		local name, _, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
 
 		if name == nil then
@@ -471,7 +471,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 		return name, icon, self:GetItemId(name)
 	end
 
-	if binding.type == Addon.BindingTypes.CANCELAURA then
+	if binding.actionType == Addon.BindingTypes.CANCELAURA then
 		local spell = Addon:GetSpellInfo(binding.action.auraName, true)
 		if spell == nil then
 			return nil, nil, nil
@@ -508,8 +508,8 @@ function Addon:GetBindingNameAndIcon(binding)
 	--- @type string|integer
 	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
-	if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
-		local label = binding.type == Addon.BindingTypes.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
+	if binding.actionType == Addon.BindingTypes.SPELL or binding.actionType == Addon.BindingTypes.ITEM then
+		local label = binding.actionType == Addon.BindingTypes.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
 
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
@@ -521,7 +521,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(spellIcon) then
 			icon = spellIcon --[[@as string|integer]]
 		end
-	elseif binding.type == Addon.BindingTypes.MACRO or binding.type == Addon.BindingTypes.APPEND then
+	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
 		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
 		else
@@ -531,7 +531,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(binding.action.macroIcon) then
 			icon = binding.action.macroIcon
 		end
-	elseif binding.type == Addon.BindingTypes.CANCELAURA then
+	elseif binding.actionType == Addon.BindingTypes.CANCELAURA then
 		local _, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
 
@@ -542,9 +542,9 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(spellIcon) then
 			icon = spellIcon --[[@as string|integer]]
 		end
-	elseif binding.type == Addon.BindingTypes.UNIT_SELECT then
+	elseif binding.actionType == Addon.BindingTypes.UNIT_SELECT then
 		name = Addon.L["Target the unit"]
-	elseif binding.type == Addon.BindingTypes.UNIT_MENU then
+	elseif binding.actionType == Addon.BindingTypes.UNIT_MENU then
 		name = Addon.L["Open the unit menu"]
 	end
 
@@ -1113,7 +1113,7 @@ end
 --- @param binding Binding
 --- @return boolean
 function Addon:IsHovercastEnabled(binding)
-	if binding.type == Addon.BindingTypes.CANCELAURA then
+	if binding.actionType == Addon.BindingTypes.CANCELAURA then
 		return false
 	end
 
@@ -1125,7 +1125,7 @@ end
 --- @param binding Binding
 --- @return boolean
 function Addon:IsMacroCastEnabled(binding)
-	if binding.type == Addon.BindingTypes.CANCELAURA then
+	if binding.actionType == Addon.BindingTypes.CANCELAURA then
 		return true
 	end
 

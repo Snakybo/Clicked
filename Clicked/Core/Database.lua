@@ -19,6 +19,9 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+local TYPE_BINDING = 1
+local TYPE_GROUP = 2
+
 -- Local support functions
 
 --- @param default string|boolean
@@ -150,8 +153,9 @@ end
 function Clicked:CreateGroup()
 	--- @type Group
 	local group = {
+		type = TYPE_GROUP,
 		name = Addon.L["New Group"],
-		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark",
+		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
 
 	Addon:RegisterGroup(group, Addon.BindingScope.PROFILE)
@@ -315,7 +319,8 @@ end
 function Addon:GetNewBindingTemplate()
 	--- @type Binding
 	local template = {
-		type = Addon.BindingTypes.SPELL,
+		actionType = Addon.BindingTypes.SPELL,
+		type = TYPE_BINDING,
 		keybind = "",
 		parent = nil,
 		action = {
@@ -411,7 +416,7 @@ end
 --- Change the scope of a binding or entire group.
 --- This will re-register the binding (or group) within the target database.
 ---
----@param item Binding|Group
+---@param item DataObject
 ---@param scope BindingScope
 function Addon:ChangeScope(item, scope)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
@@ -513,7 +518,7 @@ function Addon:CloneBinding(original)
 	return clone
 end
 
---- @param item Binding|Group
+--- @param item DataObject
 --- @return table
 function Addon:GetContainingDatabase(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
@@ -529,10 +534,9 @@ end
 
 --- Check if the specified string is a group identifier.
 ---
---- @param item Binding|Group
+--- @param item DataObject
 --- @return boolean
 function Addon:IsGroup(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
-	return string.find(item.uid, GROUP_IDENTIFIER_PREFIX) ~= nil
-	-- TODO: Fix this
+	return item.type == TYPE_GROUP
 end

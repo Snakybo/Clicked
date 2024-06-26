@@ -273,7 +273,7 @@ local function IsItemValidWithSearchQuery(item, search)
 				table.insert(strings, { value = item.name })
 			end
 
-			if item.binding.type == Addon.BindingTypes.MACRO or item.binding.type == Addon.BindingTypes.APPEND then
+			if item.binding.actionType == Addon.BindingTypes.MACRO or item.binding.actionType == Addon.BindingTypes.APPEND then
 				table.insert(strings, { value = item.binding.action.macroName })
 			end
 		end
@@ -520,7 +520,7 @@ local function Button_OnClick(frame, button)
 				}
 
 				local function AddConvertToOption(type, label)
-					if frame.binding.type == type then
+					if frame.binding.actionType == type then
 						return
 					end
 
@@ -531,7 +531,7 @@ local function Button_OnClick(frame, button)
 						func = function()
 							self:SelectByBindingOrGroup(frame.binding)
 
-							frame.binding.type = type
+							frame.binding.actionType = type
 
 							Addon:EnsureSupportedTargetModes(frame.binding.targets, frame.binding.keybind, type)
 							Clicked:ReloadBinding(frame.binding, true)
@@ -1335,7 +1335,7 @@ function Methods:SelectByValue(uniqueValue)
 	self:Select(uniqueValue, strsplit("\001", uniqueValue))
 end
 
---- @param item Binding|Group
+--- @param item DataObject
 function Methods:SelectByBindingOrGroup(item)
 	local open = { unpack(self.tree) }
 

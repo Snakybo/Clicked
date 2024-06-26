@@ -216,7 +216,7 @@ local function ConstructAction(binding, target)
 	--- @type Action
 	local action = {
 		ability = Addon:GetBindingValue(binding) --[[@as string|integer]],
-		type = binding.type
+		type = binding.actionType
 	}
 
 	--- @param condition Binding.LoadOption
@@ -414,20 +414,20 @@ local function ProcessBuckets()
 		if Addon:GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
-		elseif reference.type == Addon.BindingTypes.UNIT_SELECT then
+		elseif reference.actionType == Addon.BindingTypes.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
 
 			if reference.load.combat.selected then
 				command.data = reference.load.combat.value
 			end
-		elseif reference.type == Addon.BindingTypes.UNIT_MENU then
+		elseif reference.actionType == Addon.BindingTypes.UNIT_MENU then
 			command.action = Addon.CommandType.MENU
 
 			if reference.load.combat.selected then
 				command.data = reference.load.combat.value
 			end
 		else
-			error("Unhandled binding type: " .. reference.type)
+			error("Unhandled binding type: " .. reference.actionType)
 		end
 
 		return command
@@ -741,7 +741,7 @@ function Clicked:GetBindingsForUnit(unit)
 	--- @param binding Binding
 	--- @return boolean
 	local function IsBindingValidForUnit(binding)
-		if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM then
+		if binding.actionType ~= Addon.BindingTypes.SPELL and binding.actionType ~= Addon.BindingTypes.ITEM then
 			return false
 		end
 
@@ -1386,7 +1386,7 @@ function Addon:IsBindingValidForCurrentState(binding)
 			return false
 		end
 
-		if binding.type == Addon.BindingTypes.SPELL and not IsSpellKnown(id) then
+		if binding.actionType == Addon.BindingTypes.SPELL and not IsSpellKnown(id) then
 			return false
 		end
 	end
@@ -1441,23 +1441,23 @@ end
 --- @param binding Binding
 --- @return string
 function Addon:GetInternalBindingType(binding)
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding.actionType == Addon.BindingTypes.SPELL then
 		return Addon.BindingTypes.MACRO
 	end
 
-	if binding.type == Addon.BindingTypes.ITEM then
+	if binding.actionType == Addon.BindingTypes.ITEM then
 		return Addon.BindingTypes.MACRO
 	end
 
-	if binding.type == Addon.BindingTypes.APPEND then
+	if binding.actionType == Addon.BindingTypes.APPEND then
 		return Addon.BindingTypes.MACRO
 	end
 
-	if binding.type == Addon.BindingTypes.CANCELAURA then
+	if binding.actionType == Addon.BindingTypes.CANCELAURA then
 		return Addon.BindingTypes.MACRO
 	end
 
-	return binding.type
+	return binding.actionType
 end
 
 --- Construct a valid macro that correctly prioritizes all specified bindings.
@@ -1508,7 +1508,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		local cancelForm = false
 
 		for _, binding in ipairs(bindings) do
-			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM or binding.type == Addon.BindingTypes.CANCELAURA then
+			if binding.actionType == Addon.BindingTypes.SPELL or binding.actionType == Addon.BindingTypes.ITEM or binding.actionType == Addon.BindingTypes.CANCELAURA then
 				if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
 					cancelQueuedSpell = true
 					table.insert(lines, "/cancelqueuedspell")
@@ -1547,11 +1547,11 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		--- @param binding Binding
 		--- @return string|nil
 		local function GetPrefixForBinding(binding)
-			if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+			if binding.actionType == Addon.BindingTypes.SPELL or binding.actionType == Addon.BindingTypes.ITEM then
 				return "/cast "
 			end
 
-			if binding.type == Addon.BindingTypes.CANCELAURA then
+			if binding.actionType == Addon.BindingTypes.CANCELAURA then
 				return "/cancelaura "
 			end
 
@@ -1602,20 +1602,20 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 				local nextActionIndex = 1
 
 				for _, binding in ipairs(group) do
-					if binding.type == Addon.BindingTypes.SPELL or binding.type == Addon.BindingTypes.ITEM then
+					if binding.actionType == Addon.BindingTypes.SPELL or binding.actionType == Addon.BindingTypes.ITEM then
 						for _, action in ipairs(ConstructActions(binding, interactionType)) do
 							table.insert(actions[order], action)
 
 							actionsSequence[action] = nextActionIndex
 							nextActionIndex = nextActionIndex + 1
 						end
-					elseif binding.type == Addon.BindingTypes.MACRO then
+					elseif binding.actionType == Addon.BindingTypes.MACRO then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(macros[order], value)
-					elseif binding.type == Addon.BindingTypes.APPEND then
+					elseif binding.actionType == Addon.BindingTypes.APPEND then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(appends[order], value)
-					elseif binding.type == Addon.BindingTypes.CANCELAURA then
+					elseif binding.actionType == Addon.BindingTypes.CANCELAURA then
 						local target = Addon:GetNewBindingTargetTemplate()
 						target.unit = Addon.TargetUnits.DEFAULT
 						target.hostility = Addon.TargetHostility.ANY

@@ -163,7 +163,7 @@ local function OnTooltipSetSpell(self)
 
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do
-		if binding.type == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+		if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
 			local text = string.format(Addon.L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
 
 			if not addedEmptyLine then

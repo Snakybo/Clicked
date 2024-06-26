@@ -397,12 +397,12 @@ local function PopulateTemplate(binding)
 		return nil
 	end
 
-	if binding.type == Addon.BindingTypes.SPELL then
+	if binding.actionType == Addon.BindingTypes.SPELL then
 		template = Addon:DeepCopyTable(spellActionButtonTemplate)
 		template.triggers[1].trigger.realSpellName = name
 		template.triggers[1].trigger.spellName = id
 		template.load.spellknown = id
-	elseif binding.type == Addon.BindingTypes.ITEM then
+	elseif binding.actionType == Addon.BindingTypes.ITEM then
 		template = Addon:DeepCopyTable(itemActionButtonTemplate)
 		template.triggers[1].trigger.itemName = id
 	end
@@ -456,7 +456,7 @@ function Addon:CreateWeakAurasIcon(binding)
 		return false
 	end
 
-	if binding.type ~= Addon.BindingTypes.SPELL and binding.type ~= Addon.BindingTypes.ITEM then
+	if binding.actionType ~= Addon.BindingTypes.SPELL and binding.actionType ~= Addon.BindingTypes.ITEM then
 		return false
 	end
 

@@ -41,10 +41,13 @@
 --- @field public hide boolean
 --- @field public minimapPos number
 
---- @class Binding
---- @field public type string
+--- @class DataObject
 --- @field public uid integer
+--- @field public type integer
 --- @field public scope BindingScope
+
+--- @class Binding : DataObject
+--- @field public actionType string
 --- @field public keybind string
 --- @field public parent integer?
 --- @field public action Binding.Action
@@ -133,11 +136,9 @@
 --- @field public negated boolean
 --- @field public value string
 
---- @class Group
+--- @class Group : DataObject
 --- @field public name string
 --- @field public displayIcon integer|string
---- @field public scope BindingScope
---- @field public uid integer
 
 --- @class Action
 --- @field public ability integer|string

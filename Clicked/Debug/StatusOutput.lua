@@ -146,7 +146,7 @@ local function GetUnloadedBindings()
 		end
 
 		table.insert(lines, "----- Unloaded binding " .. binding.uid .. " -----")
-		table.insert(lines, "Type: " .. binding.type)
+		table.insert(lines, "Type: " .. binding.actionType)
 		table.insert(lines, "Keybind: " .. binding.keybind)
 		table.insert(lines, "Scope: " .. binding.scope)
 

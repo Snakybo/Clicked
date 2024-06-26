@@ -841,6 +841,8 @@ local function Upgrade(db, from)
 
 			map[group.identifier] = group.uid
 			group.identifier = nil
+
+			group.type = 2
 		end
 
 		for _, binding in ipairs(db.bindings) do
@@ -849,6 +851,9 @@ local function Upgrade(db, from)
 			end
 
 			binding.identifier = nil
+
+			binding.actionType = binding.type
+			binding.type = 1
 		end
 
 		db.nextGroupId = nil
