@@ -2743,15 +2743,20 @@ local function DrawBindingStatusPage(container, binding)
 
 		-- output of full macro
 		do
-			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox") --[[@as ClickedReadOnlyMultilineEditBox]]
+			local MAX_MACRO_LENGTH = 255
 
-			if interactionType == Addon.InteractionType.HOVERCAST then
-				widget:SetLabel(Addon.L["Generated hovercast macro"])
-			else
-				widget:SetLabel(Addon.L["Generated macro"])
+			local widget = AceGUI:Create("ClickedReadOnlyMultilineEditBox") --[[@as ClickedReadOnlyMultilineEditBox]]
+			local text = Addon:GetMacroForBindings(bindings, interactionType)
+			local label = interactionType == Addon.InteractionType.HOVERCAST and Addon.L["Generated hovercast macro (%d/%d)"] or Addon.L["Generated macro (%d/%d)"]
+
+			label = string.format(label, #text, MAX_MACRO_LENGTH)
+
+			if #text > MAX_MACRO_LENGTH then
+				label = Addon:GetColorizedString(label, "ffff0000")
 			end
 
-			local text = Addon:GetMacroForBindings(bindings, interactionType)
+			widget:SetLabel(label)
+
 			text = LibMacroSyntaxHighlight:Colorize(text)
 
 			Addon.Media:UseMonoFont(widget)

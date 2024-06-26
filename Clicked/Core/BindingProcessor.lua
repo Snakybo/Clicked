@@ -111,6 +111,9 @@ local pendingReloadCauses = {}
 --- @type table<string,boolean>
 local talentCache = {}
 
+--- @type table<string,boolean>
+local macroTooLongNotified = {}
+
 local isPendingReload = false
 local isPendingProcess = false
 
@@ -419,6 +422,15 @@ local function ProcessBuckets()
 		if Addon:GetInternalBindingType(reference) == Addon.BindingTypes.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
+
+			if #command.data > 255 and not macroTooLongNotified[command.data] then
+				macroTooLongNotified[command.data] = true
+
+				local message = Addon.L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."]
+				local name = Addon:GetBindingNameAndIcon(reference)
+
+				print(Addon:GetPrefixedAndFormattedString(message, name))
+			end
 		elseif reference.actionType == Addon.BindingTypes.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
 

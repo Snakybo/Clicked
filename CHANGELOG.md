@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for The War Within 11.0.0
 * Add Dynamic Flying macro condition
+* Add message when a generated macro is too long to be used
 
 ### Changed
 
