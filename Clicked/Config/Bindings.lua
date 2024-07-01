@@ -17,7 +17,6 @@
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded -- Deprecated in 10.2.0
 local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn -- Deprecated in 10.2.0
 local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn -- Deprecated in 10.2.0
-local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
 
 local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
@@ -38,9 +37,6 @@ local ITEM_TEMPLATE_TARGET = "UNIT_TARGET"
 local ITEM_TEMPLATE_MENU = "UNIT_MENU"
 local ITEM_TEMPLATE_IMPORT_SPELLBOOK = "IMPORT_SPELLBOOK"
 local ITEM_TEMPLATE_IMPORT_ACTIONBAR = "IMPORT_ACTIONBAR"
-
-local spellbookButtons = {}
-local spellFlyOutButtons = {}
 
 --- @type table<integer,string>
 local iconCache
@@ -64,9 +60,6 @@ local tab
 
 --- @type Binding?
 local prevBinding
-
---- @type boolean
-local didOpenSpellbook
 
 --- @type boolean
 local showIconPicker
@@ -329,214 +322,6 @@ local function GetSpellItemNameAndId(input, mode, addSubText)
 	end
 
 	return name, id
-end
-
--- Spell book integration
-
---- @param button Button
---- @param bookType string
---- @return boolean
---- @return Binding?
-local function IsSpellButtonBound(button, bookType)
-	if button == nil then
-		return false, nil
-	end
-
-	local slot = SpellBook_GetSpellBookSlot(button)
-
-	if slot ~= nil then
-		local _, _, spellId = GetSpellBookItemName(slot, bookType)
-
-		if spellId ~= nil then
-			--- @type Binding
-			for _, binding in Clicked:IterateActiveBindings() do
-				if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
-					return true, binding
-				end
-			end
-		end
-	end
-
-	return false, nil
-end
-
---- @param spellId integer
---- @param maxRank boolean
-local function OnSpellBookButtonClick(spellId, maxRank)
-	if GetCurrentBinding() == nil or spellId == nil then
-		return
-	end
-
-	if InCombatLockdown() then
-		Addon:NotifyCombatLockdown()
-		return
-	end
-
-	local binding = GetCurrentBinding()
-
-	if binding ~= nil and binding.actionType == Addon.BindingTypes.SPELL then
-		binding.action.spellValue = spellId
-		binding.action.spellMaxRank = maxRank
-
-		HideUIPanel(SpellBookFrame)
-		Clicked:ReloadBinding(binding, true)
-	end
-end
-
-local function HijackSpellButton_UpdateButton(self)
-	if didOpenSpellbook and not SpellBookFrame:IsShown() then
-		GameTooltip:Hide()
-		didOpenSpellbook = false
-	end
-
-	for i = 1, SPELLS_PER_PAGE do
-		local parent = _G["SpellButton" .. i]
-		local button = spellbookButtons[i]
-		local shouldUpdate = self == nil or self == parent
-
-		if button == nil then
-			button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
-
-			button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-			button:SetID(parent:GetID())
-
-			button:SetScript("OnEnter", function(_, motion)
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-					parent:OnEnter(motion)
-				else
-					SpellButton_OnEnter(parent, motion)
-				end
-			end)
-
-			button:SetScript("OnLeave", function()
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-					parent:OnLeave()
-				else
-					SpellButton_OnLeave(parent)
-				end
-			end)
-
-			button:SetScript("OnClick", function(_, mouseButton)
-				local slot = SpellBook_GetSpellBookSlot(parent);
-				local spellId = select(3, GetSpellBookItemName(slot, SpellBookFrame.bookType))
-				local castMaxRank = mouseButton == "RightButton" and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK
-
-				OnSpellBookButtonClick(spellId, castMaxRank)
-			end)
-
-			-- Respect ElvUI skinning
-			if GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
-				local E = unpack(ElvUI)
-
-				if E and E.private.skins and E.private.skins.blizzard and E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook then
-					--- @diagnostic disable-next-line: undefined-field
-					button:StripTextures()
-
-					if E.private.skins.parchmentRemoverEnable then
-						button:SetHighlightTexture("")
-					else
-						button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.3)
-					end
-				end
-			end
-
-			spellbookButtons[i] = button
-		end
-
-		if shouldUpdate then
-			local canShow = true
-
-			if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
-				canShow = false
-			else
-				local slot, slotType = SpellBook_GetSpellBookSlot(parent);
-				canShow = canShow and slot ~= nil and slot <= MAX_SPELLS
-				canShow = canShow and slotType ~= nil and slotType ~= "FLYOUT"
-				canShow = canShow and didOpenSpellbook
-				canShow = canShow and root ~= nil and root:IsVisible()
-				canShow = canShow and SpellBookFrame:IsShown()
-				canShow = canShow and parent:IsEnabled()
-				canShow = canShow and not parent.isPassive
-			end
-
-			if canShow then
-				button:Show()
-
-				local name = parent:GetName();
-
-				if name ~= nil then
-					if parent.SpellHighlightTexture ~= nil then
-						parent.SpellHighlightTexture:Hide()
-					end
-
-					if _G[name.."AutoCastable"] ~= nil then
-						_G[name.."AutoCastable"]:Hide();
-					end
-				end
-			else
-				button:Hide()
-			end
-		end
-	end
-
-	if self ~= nil and self.SpellHighlightTexture ~= nil and IsSpellButtonBound(self, SpellBookFrame.bookType) then
-		self.SpellHighlightTexture:Hide()
-	end
-end
-
-local function HijackSpellFlyout_Toggle()
-	if root == nil or not root:IsVisible() then
-		return
-	end
-
-	if SpellBookFrame:IsShown() and SpellFlyout:IsShown() then
-		local id = 1
-		local flyoutButton = _G["SpellFlyoutButton" .. id]
-
-		while flyoutButton ~= nil do
-			local parent = flyoutButton
-			local button = spellFlyOutButtons[id]
-
-			if button == nil then
-				button = CreateFrame("Button", nil, parent, "ClickedSpellbookButtonTemplate")
-
-				button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-				button:SetID(parent:GetID())
-
-				button:SetScript("OnEnter", function()
-					SpellFlyoutButton_SetTooltip(parent);
-				end)
-
-				button:SetScript("OnLeave", function()
-					GameTooltip:Hide();
-				end)
-
-				button:SetScript("OnClick", function()
-					local spell = Addon:GetSpellInfo(parent.spellID);
-
-					if spell ~= nil then
-						OnSpellBookButtonClick(spell.name)
-					end
-				end)
-
-				spellFlyOutButtons[id] = button
-			end
-
-			if parent:IsEnabled() then
-				button:Show()
-			else
-				button:Hide()
-			end
-
-			id = id + 1
-			flyoutButton = _G["SpellFlyoutButton" .. id]
-		end
-	else
-		for i = 1, #spellFlyOutButtons do
-			local button = spellFlyOutButtons[i]
-			button:Hide()
-		end
-	end
 end
 
 -- Icon picker
@@ -1279,15 +1064,10 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 		-- edit box
 		do
+			--- @type AceGUIEditBox
 			local widget = nil
 
 			local function OnEnterPressed(_, _, value)
-				if InCombatLockdown() then
-					widget:SetText(name)
-					widget:ClearFocus()
-					return
-				end
-
 				if value == name then
 					widget:ClearFocus()
 					return
@@ -1303,11 +1083,9 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 						if newId ~= nil then
 							action[valueKey] = newId
-							action.spellMaxRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not string.find(value, "%((.+)%)")
 						end
 					else
 						action[valueKey] = value
-						action.spellMaxRank = false
 					end
 				else
 					action[valueKey] = ""
@@ -1318,31 +1096,17 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 			local function OnTextChanged(_, _, value)
 				local itemLink = string.match(value, "item[%-?%d:]+")
-				local spellLink = string.match(value, "spell[%-?%d:]+")
-				local talentLink = string.match(value, "talent[%-?%d:]+")
 				local linkId = nil
 
 				if not Addon:IsStringNilOrEmpty(itemLink) then
 					local match = string.match(itemLink, "(%d+)")
 					linkId = tonumber(match)
-				elseif not Addon:IsStringNilOrEmpty(spellLink) then
-					local match = string.match(spellLink, "(%d+)")
-					linkId = tonumber(match)
-				elseif not Addon:IsStringNilOrEmpty(talentLink) then
-					local match = string.match(talentLink, "(%d+)")
-					linkId = tonumber(select(6, GetTalentInfoByID(match, 1)))
 				end
 
 				if linkId ~= nil and linkId > 0 then
 					action[valueKey] = linkId
 
-					if mode == Addon.BindingTypes.SPELL then
-						local spell = Addon:GetSpellInfo(linkId, true)
-						value = spell ~= nil and spell.name or nil
-					elseif mode == Addon.BindingTypes.ITEM then
-						value = Addon:GetItemInfo(linkId)
-					end
-
+					value = Addon:GetItemInfo(linkId)
 					widget:SetText(value)
 					widget:ClearFocus()
 
@@ -1350,10 +1114,54 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				end
 			end
 
-			widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
-			widget:SetText(tostring(name))
-			widget:SetCallback("OnEnterPressed", OnEnterPressed)
-			widget:SetCallback("OnTextChanged", OnTextChanged)
+			--- @param match ClickedAutoFillEditBox.Match?
+			local function OnSelect(_, _, _, match)
+				if match == nil then
+					action[valueKey] = ""
+					Clicked:ReloadBinding(binding, true)
+					return
+				end
+
+				if match.spellId == id then
+					widget:ClearFocus()
+					return
+				end
+
+				action[valueKey] = match.spellId
+				action.spellMaxRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not string.find(match.text, "%((.+)%)")
+
+				Clicked:ReloadBinding(binding, true)
+			end
+
+			local function CreateOptions()
+				--- @type ClickedAutoFillEditBox.Option[]
+				local result = {}
+
+				for _, spell in Addon.SpellLibrary:GetSpells() do
+					table.insert(result, {
+						prefix = spell.tabName,
+						text = spell.name,
+						icon = spell.icon,
+						spellId = spell.spellId
+					})
+				end
+
+				return result
+			end
+
+			if mode == Addon.BindingTypes.SPELL then
+				widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
+				widget:SetText(tostring(name), true)
+				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name --[[@as string]]) == nil)
+				widget:SetValues(CreateOptions())
+				widget:SetCallback("OnSelect", OnSelect)
+			else
+				widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
+				widget:DisableButton(true)
+				widget:SetText(tostring(name))
+				widget:SetCallback("OnEnterPressed", OnEnterPressed)
+				widget:SetCallback("OnTextChanged", OnTextChanged)
+			end
 
 			if id ~= nil then
 				widget:SetRelativeWidth(0.85)
@@ -1422,48 +1230,6 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 		if mode == Addon.BindingTypes.SPELL then
 			local hasRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and id ~= nil and string.find(name, "%((.+)%)")
 
-			-- pick from spellbook button
-			do
-				local function OnClick()
-					if InCombatLockdown() then
-						Addon:NotifyCombatLockdown()
-						return
-					end
-
-					didOpenSpellbook = true
-
-					if SpellBookFrame:IsShown() then
-						HijackSpellButton_UpdateButton(nil)
-					else
-						ShowUIPanel(SpellBookFrame)
-					end
-				end
-
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
-				widget:SetText(Addon.L["Pick from spellbook"])
-				widget:SetCallback("OnClick", OnClick)
-
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-					widget:SetDisabled(true)
-				end
-
-				if hasRank then
-					widget:SetRelativeWidth(0.65)
-				else
-					widget:SetFullWidth(true)
-				end
-
-				local tooltip = Addon.L["Click on a spell book entry to select it."]
-
-				if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
-					tooltip = tooltip .. "\n" .. Addon.L["Right click to use the max rank."]
-				end
-
-				RegisterTooltip(widget, tooltip)
-
-				group:AddChild(widget)
-			end
-
 			-- remove rank button
 			if hasRank then
 				local function OnClick()
@@ -1479,7 +1245,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 				widget:SetText(Addon.L["Remove rank"])
 				widget:SetCallback("OnClick", OnClick)
-				widget:SetRelativeWidth(0.35)
+				widget:SetFullWidth(true)
 
 				group:AddChild(widget)
 			end
@@ -2906,170 +2672,73 @@ local function CreateFromItemTemplate(identifier)
 		item.actionType = Addon.BindingTypes.UNIT_MENU
 	elseif identifier == ITEM_TEMPLATE_GROUP then
 		item = Clicked:CreateGroup()
-	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		for spellBookTabIndex= 2, C_SpellBook.GetNumSpellBookSkillLines() do
-			local spellBookTab = C_SpellBook.GetSpellBookSkillLineInfo(spellBookTabIndex)
-			local pendingSpells = {}
+	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK then
+		local pendingSpells = {}
+		local pendingGroups = {}
 
-			local function DoesBindingExist(spellId)
-				for _, binding in Clicked:IterateConfiguredBindings() do
-					if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
-						local group = Clicked:GetGroupById(binding.parent)
+		local groups = {}
 
-						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
-						-- before excluding it
-						if group ~= nil and group.name == spellBookTab.name and group.displayIcon == spellBookTab.iconID then
-							return true
-						end
-					end
-				end
+		--- @param spell SpellLibrary.Spell
+		local function DoesBindingExist(spell)
+			for _, binding in Clicked:IterateConfiguredBindings() do
+				if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spell.spellId and binding.parent ~= nil then
+					local group = Clicked:GetGroupById(binding.parent)
 
-				return false
-			end
-
-			for spellBookItemIndex = spellBookTab.itemIndexOffset + 1, spellBookTab.itemIndexOffset + spellBookTab.numSpellBookItems do
-				local spellBookItem = C_SpellBook.GetSpellBookItemInfo(spellBookItemIndex, Enum.SpellBookSpellBank.Player)
-
-				if not spellBookItem.isPassive then
-					if spellBookItem.itemType == Enum.SpellBookItemType.Spell or spellBookItem.itemType == Enum.SpellBookItemType.FutureSpell then
-						if not DoesBindingExist(spellBookItem.spellID) then
-							pendingSpells[spellBookItem.spellID] = true
-						end
-					elseif spellBookItem.itemType == Enum.SpellBookItemType.Flyout then
-						local _, _, numFlyoutSlots = GetFlyoutInfo(spellBookItem.actionID)
-
-						for flyoutIndex = 1, numFlyoutSlots do
-							local spellId = GetFlyoutSlotInfo(spellBookItem.actionID, flyoutIndex)
-
-							if not DoesBindingExist(spellId) then
-								pendingSpells[spellId] = true
-							end
-						end
+					-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
+					-- before excluding it
+					if group ~= nil and group.name == spell.tabName and group.displayIcon == spell.tabIcon then
+						return true
 					end
 				end
 			end
 
-			if next(pendingSpells) ~= nil then
-				local group = nil
-
-				for _, g in Clicked:IterateGroups() do
-					if g.name == spellBookTab.name and g.displayIcon == spellBookTab.iconID then
-						group = g
-						break
-					end
-				end
-
-				if group == nil then
-					group = Clicked:CreateGroup()
-					group.name = spellBookTab.name
-					group.displayIcon = spellBookTab.iconID
-				end
-
-				local specIndex = nil
-
-				for i = 1, GetNumSpecializations() do
-					local id = GetSpecializationInfo(i)
-
-					if id == spellBookTab.specID then
-						specIndex = i
-						break
-					end
-				end
-
-				for spellId in pairs(pendingSpells) do
-					local binding = Clicked:CreateBinding()
-					binding.actionType = Addon.BindingTypes.SPELL
-					binding.parent = group.uid
-					binding.action.spellValue = spellId
-
-					binding.load.class.selected = 1
-					binding.load.class.single = select(2, UnitClass("player"))
-
-					if specIndex ~= nil then
-						binding.load.specialization.selected = 1
-						binding.load.specialization.single = specIndex
-					end
-				end
-			end
+			return false
 		end
-	elseif identifier == ITEM_TEMPLATE_IMPORT_SPELLBOOK and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.DF then
-		for tabIndex = 2, GetNumSpellTabs() do
-			local tabName, tabIcon, offset, count = GetSpellTabInfo(tabIndex)
-			local pendingSpellIds = {}
-			local specIndex = nil
 
-			local function RegisterSpell(spellId)
-				if IsPassiveSpell(spellId) then
-					return {}
-				end
-
-				for _, binding in Clicked:IterateConfiguredBindings() do
-					if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId and binding.parent ~= nil then
-						local group = Clicked:GetGroupById(binding.parent)
-
-						-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
-						-- before excluding it
-						if group ~= nil and group.name == tabName and group.displayIcon == tabIcon then
-							return {}
-						end
-					end
-				end
-
-				if pendingSpellIds[spellId] == nil then
-					pendingSpellIds[spellId] = {
-						talentTier = nil,
-						talentColumn = nil,
-						pvpTalentIndex = nil
-					}
-				end
-
-				return pendingSpellIds[spellId]
-			end
-
-			-- Spellbook items
-			for spellBookItemIndex = offset + 1, offset + count do
-				local type = GetSpellBookItemInfo(spellBookItemIndex, BOOKTYPE_SPELL)
-
-				if type == "SPELL" or type == "FUTURESPELL" then
-					local _, _, spellId = GetSpellBookItemName(spellBookItemIndex, BOOKTYPE_SPELL)
-					RegisterSpell(spellId)
-				end
-			end
-
-			if next(pendingSpellIds) ~= nil then
-				local group = nil
-
-				for _, g in Clicked:IterateGroups() do
-					if g.name == tabName and g.displayIcon == tabIcon then
-						group = g
-						break
-					end
-				end
-
-				if group == nil then
-					group = Clicked:CreateGroup()
-					group.name = tabName
-					group.displayIcon = tabIcon
-				end
-
-				for spellId in pairs(pendingSpellIds) do
-					local binding = Clicked:CreateBinding()
-					binding.actionType = Addon.BindingTypes.SPELL
-					binding.parent = group.uid
-					binding.action.spellValue = spellId
-
-					binding.load.class.selected = 1
-					binding.load.class.single = select(2, UnitClass("player"))
-
-					if specIndex ~= nil then
-						binding.load.specialization.selected = 1
-						binding.load.specialization.single = specIndex
-					end
-				end
+		for _, spell in Addon.SpellLibrary:GetSpells() do
+			if not DoesBindingExist(spell) then
+				pendingSpells[spell.spellId] = true
+				pendingGroups[spell.tabName] = spell.tabIcon
 			end
 		end
 
-		Clicked:ReloadBindings(true)
+		for name, icon in pairs(pendingGroups) do
+			for _, g in Clicked:IterateGroups() do
+				if g.name == name and g.displayIcon == icon then
+					groups[name] = g.uid
+					break
+				end
+			end
+
+			if groups[name] == nil then
+				local group = Clicked:CreateGroup()
+				group.name = name
+				group.displayIcon = icon
+
+				groups[name] = group.uid
+			end
+		end
+
+		for spellId in pairs(pendingSpells) do
+			local spell = Addon.SpellLibrary:GetSpellById(spellId)
+
+			if spell ~= nil then
+				local specIndex = Addon:GetSpecIndexFromId(spell.specId)
+
+				local binding = Clicked:CreateBinding()
+				binding.actionType = Addon.BindingTypes.SPELL
+				binding.parent = groups[spell.tabName]
+				binding.action.spellValue = spellId
+
+				binding.load.class.selected = 1
+				binding.load.class.single = select(2, UnitClass("player"))
+
+				if specIndex ~= nil then
+					binding.load.specialization.selected = 1
+					binding.load.specialization.single = specIndex
+				end
+			end
+		end
 	elseif identifier == ITEM_TEMPLATE_IMPORT_ACTIONBAR then
 		local group
 
@@ -3559,30 +3228,6 @@ end
 
 -- Private addon API
 
-function Addon:BindingConfig_Initialize()
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		-- TODO: Spellbook
-	else
-		SpellBookFrame:HookScript("OnHide", function()
-			HijackSpellButton_UpdateButton(nil)
-		end)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		-- TODO: Spellbook
-	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-		for i = 1, SPELLS_PER_PAGE do
-			local currSpellButton = _G["SpellButton" .. i];
-			hooksecurefunc(currSpellButton, "UpdateButton", HijackSpellButton_UpdateButton)
-		end
-
-		hooksecurefunc(SpellFlyout, "Toggle", HijackSpellFlyout_Toggle)
-		hooksecurefunc("SpellFlyout_Toggle", HijackSpellFlyout_Toggle)
-	else
-		hooksecurefunc("SpellButton_UpdateButton", HijackSpellButton_UpdateButton)
-	end
-end
-
 --- Check if the binding configuration window is open.
 ---
 --- @return boolean `true` if it is currently open; `false` otherwise.
@@ -3599,10 +3244,6 @@ function Addon:BindingConfig_Open()
 	do
 		local function OnClose(container)
 			AceGUI:Release(container)
-
-			if didOpenSpellbook then
-				HideUIPanel(SpellBookFrame)
-			end
 
 			showTalentPanel = nil
 
@@ -3693,14 +3334,6 @@ end
 function Addon:BindingConfig_Redraw()
 	if not self:BindingConfig_IsOpen() then
 		return
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		-- TODO: Spellbook
-	else
-		if not InCombatLockdown() and SpellBookFrame:IsShown() and SpellBookFrame.bookType == BOOKTYPE_SPELL then
-			SpellBookFrame_UpdateSpells()
-		end
 	end
 
 	root:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))

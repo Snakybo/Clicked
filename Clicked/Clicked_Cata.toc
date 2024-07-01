@@ -46,6 +46,7 @@ Config\ExportFrame.lua
 Config\Blacklist.lua
 Config\KeyLayouts.lua
 Config\KeyVisualizer.lua
+Config\SpellLibrary.lua
 Debug\StatusOutput.lua
 
 # Skinning

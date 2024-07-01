@@ -278,7 +278,6 @@ function Clicked:OnInitialize()
 	Addon.AddonOptions:Initialize()
 	Addon.ProfileOptions:Initialize()
 	Addon.BlacklistOptions:Initialize()
-	Addon:BindingConfig_Initialize()
 	Addon:StatusOutput_Initialize()
 	Addon:AbilityTooltips_Initialize()
 

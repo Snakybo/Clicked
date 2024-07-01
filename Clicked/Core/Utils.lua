@@ -1015,6 +1015,26 @@ function Addon:IsSetBonusActive(setItemIds, numSetPieces)
 	return false
 end
 
+--- Get the specialization index from the specified spec ID.
+---
+--- @param specId integer
+--- @return integer?
+function Addon:GetSpecIndexFromId(specId)
+	if Addon.EXPANSION_LEVEL < Addon.EXPANSION.MOP then
+		return nil
+	end
+
+	for i = 1, GetNumSpecializations() do
+		local id = GetSpecializationInfo(i)
+
+		if id == specId then
+			return i
+		end
+	end
+
+	return nil
+end
+
 --- Open the settings menu to the specified tab.
 ---
 --- @param category string|integer

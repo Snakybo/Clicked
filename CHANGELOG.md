@@ -15,14 +15,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for The War Within 11.0.0
 * Add Dynamic Flying macro condition
 * Add message when a generated macro is too long to be used
+* Add auto-completion to the spell name input field, containing all spells in the spellbook
 
-### Changed
+### Removed
 
-* Bindings now use global macro slots due to game changes
-
-### Known issues
-
-* Spellbook integration is work in progress
+* Remove spellbook integration
 
 ## [1.14.10] - 2024-06-19
 

@@ -7,7 +7,7 @@ EditBox Widget
 --- | "ClickedAutoFillEditBox"
 
 --- @class ClickedAutoFillEditBox : AceGUIEditBox
---- @field private values TalentInfo[]
+--- @field private values ClickedAutoFillEditBox.Option[]
 --- @field private buttons Button[]
 --- @field private selected integer
 --- @field private numButtons integer
@@ -16,7 +16,14 @@ EditBox Widget
 --- @field private isInputError boolean
 --- @field private pullout Frame
 
---- @class ClickedAutoFillEditBox.Match : TalentInfo
+--- @class ClickedAutoFillEditBox.Option
+--- @field public prefix string?
+--- @field public text string
+--- @field public icon integer
+--- @field public spellId integer?
+--- @field public value any
+
+--- @class ClickedAutoFillEditBox.Match : ClickedAutoFillEditBox.Option
 --- @field public score number
 
 --- @class ClickedAutoFillEditBox.Button : Button
@@ -52,7 +59,7 @@ end
 --- Find and sort matches of the input string.
 ---
 --- @param text string
---- @param values TalentInfo[]
+--- @param values ClickedAutoFillEditBox.Option[]
 --- @return ClickedAutoFillEditBox.Match[]
 local function FindMatches(text, values)
 	if text == nil or text == "" or #values == 0 then
@@ -226,7 +233,7 @@ function Methods:OnRelease()
 	self:HideAutoCompleteBox()
 end
 
---- @param values TalentInfo[]
+--- @param values ClickedAutoFillEditBox.Option[]
 function Methods:SetValues(values)
 	self.values = Addon:DeepCopyTable(values)
 
@@ -235,7 +242,7 @@ function Methods:SetValues(values)
 	end
 end
 
---- @return TalentInfo[]
+--- @return ClickedAutoFillEditBox.Option[]
 function Methods:GetValues()
 	return self.values
 end
@@ -319,7 +326,6 @@ function Methods:CreateButton()
 
 	local button = CreateFrame("Button", type .. num, self.pullout, "AutoCompleteButtonTemplate") --[[@as ClickedAutoFillEditBox.Button]]
 	button:EnableMouse(true)
-	button.obj = self
 
 	local icon = button:CreateTexture(nil, "OVERLAY")
 	icon:SetPoint("LEFT", 12, 1)
@@ -390,8 +396,13 @@ function Methods:UpdateButtons()
 			end
 		end
 
-		button.obj = matches[matchIndex].text
+		button.obj = matches[matchIndex]
 		local text = matches[matchIndex].text
+		local prefix = matches[matchIndex].prefix
+
+		if prefix ~= nil then
+			text = text .. " (" .. prefix .. ")"
+		end
 
 --@debug@
 		if not self.isShowingAll then
@@ -470,7 +481,7 @@ function Methods:ShowPrediction()
 		self:HideAutoCompleteBox()
 
 		for _, value in ipairs(self:GetValues()) do
-			if value.spellId == tonumber(text) then
+			if value.spellId ~= nil and value.spellId == tonumber(text) then
 				self:Select(value.text)
 				break
 			end
@@ -564,12 +575,19 @@ function Methods:UpdateHighlight()
 end
 
 --- @private
---- @param text string
+--- @param text string|ClickedAutoFillEditBox.Match
 function Methods:Select(text)
+	local match = nil
+
+	if type(text) ~= "string" then
+		match = text
+		text = match.text
+	end
+
 	self.editbox:SetText(text)
 	self.editbox:SetCursorPosition(strlen(text))
 
-	self:Fire("OnSelect", text)
+	self:Fire("OnSelect", text, match)
 	self.originalText = text
 
 	AceGUI:ClearFocus()
