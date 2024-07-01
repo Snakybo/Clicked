@@ -819,18 +819,8 @@ local function Upgrade(db, from)
 		end
 	end
 
-	if from < 8 then
-		Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid or 1
-
-		for _, binding in ipairs(db.bindings) do
-			binding.uid = Addon.db.global.nextBindingUid
-			Addon.db.global.nextBindingUid = Addon.db.global.nextBindingUid + 1
-		end
-	end
-
 	if from < 9 then
-		Addon.db.global.nextUid = Addon.db.global.nextBindingUid
-		Addon.db.global.nextBindingUid = nil
+		Addon.db.global.nextUid = Addon.db.global.nextUid or 1
 
 		local map = {}
 
@@ -848,6 +838,9 @@ local function Upgrade(db, from)
 			if binding.parent ~= nil then
 				binding.parent = map[binding.parent]
 			end
+
+			binding.uid = Addon.db.global.nextUid
+			Addon.db.global.nextUid = Addon.db.global.nextUid + 1
 
 			binding.identifier = nil
 
