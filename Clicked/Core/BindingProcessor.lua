@@ -1665,7 +1665,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 				local conditions = GetMacroSegmentFromAction(action, interactionType, index == #actions[order])
 
 				if #conditions > 0 then
-					conditions = "[" .. conditions .. "] "
+					conditions = "[" .. conditions .. "]"
 				end
 
 				if not Addon:IsStringNilOrEmpty(conditions) then
@@ -1679,11 +1679,11 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 			end
 
 			if #localSegments > 0 then
-				local command = group.prefix .. table.concat(localSegments, "; ")
+				local command = group.prefix .. table.concat(localSegments, ";")
 
 				-- Insert any APPEND bindings
 				for _, append in ipairs(appends[order]) do
-					command = command .. "; " .. tostring(append)
+					command = command .. ";" .. tostring(append)
 				end
 
 				table.insert(lines, command)
@@ -1705,7 +1705,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		end
 	end
 
-	return table.concat(lines, "\n"), table.concat(macroSegments, "; ")
+	return table.concat(lines, "\n"), table.concat(macroSegments, ";")
 end
 
 --- comment
