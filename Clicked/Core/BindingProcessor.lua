@@ -771,8 +771,20 @@ function Clicked:GetBindingsForUnit(unit)
 			local hovercast = binding.targets.hovercast
 			local enabled = Addon:IsHovercastEnabled(binding)
 
-			if enabled and GetMouseFocus() ~= WorldFrame and IsTargetValid(hovercast) then
-				return true
+			if enabled and IsTargetValid(hovercast) then
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+					local focus = GetMouseFoci()
+
+					for i = 1, #focus do
+						if focus[i] == WorldFrame then
+							return false
+						end
+					end
+
+					return true
+				else
+					return GetMouseFocus() ~= WorldFrame
+				end
 			end
 		end
 
