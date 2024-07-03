@@ -2165,23 +2165,9 @@ local function DrawMacroBonusBar(container, bonusbar)
 			end
 		end
 
-		local tips = nil
-
-		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
-			local tipList = {
-				string.format(Addon.L["For Dragonriding, use bonus bar %s"], "|r5|cffffffff")
-			}
-
-			if tContains(Addon:GetBindingRaces(binding), "Dracthyr") then
-				table.insert(tipList, string.format(Addon.L["For Soar, use bonus bar %s"], "|r1|cffffffff"))
-			end
-
-			tips = table.concat(tipList, "\n")
-		end
-
 		inputField:SetCallback("OnTextChanged", OnTextChanged)
 
-		RegisterTooltip(inputField, Addon.L["Bonus bar"],  tips)
+		RegisterTooltip(inputField, Addon.L["Bonus bar"])
 	end
 end
 

@@ -93,6 +93,7 @@ read_globals = {
 	"GetMacroBody",
 	"GetMacroInfo",
 	"GetModifiedClick",
+	"GetMouseFoci",
 	"GetMouseFocus",
 	"GetNumBindings",
 	"GetNumGroupMembers",
