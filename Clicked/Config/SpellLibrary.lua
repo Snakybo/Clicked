@@ -32,7 +32,7 @@ local SpellLibrary = {}
 local function GetSpells_v2()
 	local result = {}
 
-	for i = 2, C_SpellBook.GetNumSpellBookSkillLines() do
+	for i = 1, C_SpellBook.GetNumSpellBookSkillLines() do
 		local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
 
 		for j = tab.itemIndexOffset + 1, tab.itemIndexOffset + tab.numSpellBookItems do
@@ -53,16 +53,18 @@ local function GetSpells_v2()
 
 					for k = 1, spellCount do
 						local spellId = GetFlyoutSlotInfo(spell.actionID, k)
-						local data = C_Spell.GetSpellInfo(spellId)
+						local info = Addon:GetSpellInfo(spellId, false)
 
-						result[spellId] = {
-							name = data.name,
-							spellId = spellId,
-							icon = data.iconID,
-							tabName = tab.name,
-							tabIcon = tab.iconID,
-							specId = tab.specID
-						}
+						if info ~= nil then
+							result[spellId] = {
+								name = info.name,
+								spellId = spellId,
+								icon = info.iconID,
+								tabName = tab.name,
+								tabIcon = tab.iconID,
+								specId = tab.specID
+							}
+						end
 					end
 				end
 			end
@@ -76,7 +78,7 @@ end
 local function GetSpells_v1()
 	local result = {}
 
-	for i = 2, GetNumSpellTabs() do
+	for i = 1, GetNumSpellTabs() do
 		local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(i)
 
 		for j = offset + 1, offset + count do
@@ -84,31 +86,35 @@ local function GetSpells_v1()
 
 			if not IsPassiveSpell(id) then
 				if type == "SPELL" or type == "FUTURESPELL" then
-					local name, _, icon = GetSpellInfo(id)
+					local spell = Addon:GetSpellInfo(id, false)
 
-					result[id] = {
-						name = name,
-						spellId = id,
-						icon = icon,
-						tabName = tabName,
-						tabIcon = tabIcon,
-						specId = specId
-					}
+					if spell ~= nil then
+						result[id] = {
+							name = spell.name,
+							spellId = id,
+							icon = spell.iconID,
+							tabName = tabName,
+							tabIcon = tabIcon,
+							specId = specId
+						}
+					end
 				elseif type == "FLYOUT" then
 					local _, _, spellCount = GetFlyoutInfo(id)
 
 					for k = 1, spellCount do
 						local spellId = GetFlyoutSlotInfo(id, k)
-						local data = C_Spell.GetSpellInfo(spellId)
+						local spell = Addon:GetSpellInfo(spellId, false)
 
-						result[spellId] = {
-							name = data.name,
-							spellId = spellId,
-							icon = data.icon,
-							tabName = tabName,
-							tabIcon = tabIcon,
-							specId = specId
-						}
+						if spell ~= nil then
+							result[spellId] = {
+								name = spell.name,
+								spellId = spellId,
+								icon = spell.iconID,
+								tabName = tabName,
+								tabIcon = tabIcon,
+								specId = specId
+							}
+						end
 					end
 				end
 			end
