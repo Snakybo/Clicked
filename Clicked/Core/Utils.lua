@@ -619,7 +619,7 @@ function Addon:GetSpellInfo(input, addSubText)
 		}
 	end
 
-	if addSubText then
+	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
 		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spell.spellID)
 
