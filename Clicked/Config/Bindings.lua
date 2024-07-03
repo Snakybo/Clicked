@@ -1094,6 +1094,19 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				Clicked:ReloadBinding(binding, true)
 			end
 
+			local function OnEnterPressedSpell()
+				local type, bookIndex, bookType = GetCursorInfo()
+
+				if type == "spell" then
+					local spellId = GetSpellInfo(bookIndex, bookType)
+
+					if spellId ~= nil then
+						action[valueKey] = spellId
+						Clicked:ReloadBinding(binding, true)
+					end
+				end
+			end
+
 			local function OnTextChanged(_, _, value)
 				local itemLink = string.match(value, "item[%-?%d:]+")
 				local spellLink = string.match(value, "spell[%-?%d:]+")
@@ -1187,6 +1200,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name --[[@as string]]) == nil)
 				widget:SetValues(options)
 				widget:SetCallback("OnSelect", OnSelect)
+				widget:SetCallback("OnEnterPressed", OnEnterPressedSpell)
 				widget:SetCallback("OnTextChanged", OnTextChanged)
 			else
 				widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]

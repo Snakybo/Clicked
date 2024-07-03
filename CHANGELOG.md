@@ -16,6 +16,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add Dynamic Flying macro condition
 * Add message when a generated macro is too long to be used
 * Add auto-completion to the spell name input field, containing all spells in the spellbook
+* Add the ability to drag spells from the spellbook into the spell name input field
 
 ### Removed
 
