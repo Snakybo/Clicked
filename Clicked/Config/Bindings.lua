@@ -1115,9 +1115,11 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			end
 
 			--- @param match ClickedAutoFillEditBox.Match?
-			local function OnSelect(_, _, _, match)
+			local function OnSelect(_, _, value, match)
 				if match == nil then
-					action[valueKey] = ""
+					local spellId = tonumber(value)
+
+					action[valueKey] = spellId or ""
 					Clicked:ReloadBinding(binding, true)
 					return
 				end
@@ -1137,6 +1139,9 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				--- @type ClickedAutoFillEditBox.Option[]
 				local result = {}
 
+				--- @type ClickedAutoFillEditBox.Option?
+				local selected = nil
+
 				for _, spell in Addon.SpellLibrary:GetSpells() do
 					table.insert(result, {
 						prefix = spell.tabName,
@@ -1144,16 +1149,29 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 						icon = spell.icon,
 						spellId = spell.spellId
 					})
+
+					if spell.name == name then
+						selected = result[#result]
+					end
 				end
 
-				return result
+				return selected, result
 			end
 
 			if mode == Addon.BindingTypes.SPELL then
+				local selected, options = CreateOptions()
+
 				widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
-				widget:SetText(tostring(name), true)
+
+				if selected == nil then
+					widget:SetText(tostring(name))
+				else
+					widget:Select(selected)
+				end
+
+				widget:SetStrictMode(false)
 				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name --[[@as string]]) == nil)
-				widget:SetValues(CreateOptions())
+				widget:SetValues(options)
 				widget:SetCallback("OnSelect", OnSelect)
 			else
 				widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]

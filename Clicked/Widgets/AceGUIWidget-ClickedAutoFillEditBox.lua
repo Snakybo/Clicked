@@ -10,8 +10,8 @@ EditBox Widget
 --- @field private values ClickedAutoFillEditBox.Option[]
 --- @field private buttons Button[]
 --- @field private selected integer
+--- @field private selectedOption ClickedAutoFillEditBox.Option?
 --- @field private numButtons integer
---- @field private originalText string
 --- @field private highlight boolean
 --- @field private isInputError boolean
 --- @field private pullout Frame
@@ -22,6 +22,7 @@ EditBox Widget
 --- @field public icon integer
 --- @field public spellId integer?
 --- @field public value any
+--- @field public custom boolean?
 
 --- @class ClickedAutoFillEditBox.Match : ClickedAutoFillEditBox.Option
 --- @field public score number
@@ -128,10 +129,12 @@ local function EditBox_OnEnterPressed(frame)
 		self:HideAutoCompleteBox()
 		self:SelectButton(self:GetSelectedButton())
 	else
-		if strlenutf8(self:GetRealText()) == 0 then
+		local text = self:GetRealText()
+
+		if strlenutf8(text) == 0 then
 			self:Select("")
 		else
-			self:Select(self.originalText)
+			self:Select(self.strict and self.selectedOption or text)
 		end
 	end
 
@@ -153,7 +156,7 @@ end
 local function EditBox_OnEscapePressed(frame)
 	local self = frame.obj
 
-	self:SetText(self.originalText)
+	self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
 	AceGUI:ClearFocus()
 end
 
@@ -184,7 +187,7 @@ local function EditBox_OnFocusLost(frame)
 	if strlenutf8(self:GetRealText()) == 0 then
 		self:SetText("")
 	elseif self:IsAutoCompleteBoxVisible() then
-		self:SetText(self.originalText)
+		self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
 	end
 
 	local function CloseWhenAble()
@@ -213,10 +216,11 @@ function Methods:OnAcquire()
 	self.values = {}
 	self.matches = {}
 	self.selected = 1
+	self.selectedOption = nil
 	self.numButtons = 10
 	self.offset = 0
-	self.originalText = ""
 	self.highlight = true
+	self.strict = true
 	self.isInputError = false
 	self.isShowingAll = false
 
@@ -305,17 +309,17 @@ function Methods:OnWidthSet(width)
 end
 
 --- @param text string
---- @param isOriginal? boolean
-function Methods:SetText(text, isOriginal)
-	if isOriginal then
-		self.originalText = text
-	end
-
+function Methods:SetText(text)
 	if self:IsInputError() and text ~= nil then
 		text = "|cffff1a1a" .. text .. "|r"
 	end
 
 	self:BaseSetText(text)
+end
+
+--- @param strict boolean
+function Methods:SetStrictMode(strict)
+	self.strict = strict
 end
 
 --- @private
@@ -482,12 +486,26 @@ function Methods:ShowPrediction()
 
 		for _, value in ipairs(self:GetValues()) do
 			if value.spellId ~= nil and value.spellId == tonumber(text) then
-				self:Select(value.text)
+				self:Select(value)
 				break
 			end
 		end
 	else
-		local matches = FindMatches(text, self:GetValues())
+		local options = self:GetValues()
+
+		-- if not self.strict then
+		-- 	if options[#options].custom then
+		-- 		options[#options].text = text
+		-- 	else
+		-- 		table.insert(options, {
+		-- 			text = text,
+		-- 			icon = "inv_misc_questionmark",
+		-- 			custom = true
+		-- 		})
+		-- 	end
+		-- end
+
+		local matches = FindMatches(text, options)
 
 		if #matches > 0 then
 			self.isShowingAll = false
@@ -574,21 +592,25 @@ function Methods:UpdateHighlight()
 	end
 end
 
---- @private
---- @param text string|ClickedAutoFillEditBox.Match
-function Methods:Select(text)
-	local match = nil
+--- @param value string|ClickedAutoFillEditBox.Option
+function Methods:Select(value)
+	local option = nil
+	local text
 
-	if type(text) ~= "string" then
-		match = text
-		text = match.text
+	if value == nil then
+		text = ""
+	elseif type(value) ~= "string" then
+		option = value
+		text = value.text
+	else
+		text = value
 	end
 
 	self.editbox:SetText(text)
 	self.editbox:SetCursorPosition(strlen(text))
 
-	self:Fire("OnSelect", text, match)
-	self.originalText = text
+	self:Fire("OnSelect", text, option)
+	self.selectedOption = value
 
 	AceGUI:ClearFocus()
 end
@@ -699,10 +721,11 @@ local function Constructor()
 	widget.matches = {}
 	widget.buttons = {}
 	widget.selected = 1
+	widget.selectedOption = nil
 	widget.numButtons = 10
 	widget.offset = 0
-	widget.originalText = ""
 	widget.highlight = true
+	widget.strict = true
 	widget.isInputError = false
 	widget.isShowingAll = false
 
