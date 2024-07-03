@@ -1062,6 +1062,8 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			name = id
 		end
 
+		name = tostring(name)
+
 		-- edit box
 		do
 			--- @type AceGUIEditBox
@@ -1157,7 +1159,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				end
 
 				action[valueKey] = match.spellId
-				action.spellMaxRank = Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not string.find(match.text, "%((.+)%)")
+				action.spellMaxRank = not string.find(match.text, "%((.+)%)")
 
 				Clicked:ReloadBinding(binding, true)
 			end
@@ -1191,13 +1193,13 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
 
 				if selected == nil then
-					widget:SetText(tostring(name))
+					widget:SetText(name)
 				else
 					widget:Select(selected)
 				end
 
 				widget:SetStrictMode(false)
-				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name --[[@as string]]) == nil)
+				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name) == nil or (id ~= nil and Addon.SpellLibrary:GetSpellById(id) == nil))
 				widget:SetValues(options)
 				widget:SetCallback("OnSelect", OnSelect)
 				widget:SetCallback("OnEnterPressed", OnEnterPressedSpell)
@@ -1205,7 +1207,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			else
 				widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
 				widget:DisableButton(true)
-				widget:SetText(tostring(name))
+				widget:SetText(name)
 				widget:SetCallback("OnEnterPressed", OnEnterPressed)
 				widget:SetCallback("OnTextChanged", OnTextChanged)
 			end
