@@ -1096,17 +1096,31 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 			local function OnTextChanged(_, _, value)
 				local itemLink = string.match(value, "item[%-?%d:]+")
+				local spellLink = string.match(value, "spell[%-?%d:]+")
+				local talentLink = string.match(value, "talent[%-?%d:]+")
 				local linkId = nil
 
 				if not Addon:IsStringNilOrEmpty(itemLink) then
 					local match = string.match(itemLink, "(%d+)")
 					linkId = tonumber(match)
+				elseif not Addon:IsStringNilOrEmpty(spellLink) then
+					local match = string.match(spellLink, "(%d+)")
+					linkId = tonumber(match)
+				elseif not Addon:IsStringNilOrEmpty(talentLink) then
+					local match = string.match(talentLink, "(%d+)")
+					linkId = tonumber(select(6, GetTalentInfoByID(match, 1)))
 				end
 
 				if linkId ~= nil and linkId > 0 then
 					action[valueKey] = linkId
 
-					value = Addon:GetItemInfo(linkId)
+					if mode == Addon.BindingTypes.SPELL then
+						local spell = Addon:GetSpellInfo(linkId, true)
+						value = spell ~= nil and spell.name or nil
+					elseif mode == Addon.BindingTypes.ITEM then
+						value = Addon:GetItemInfo(linkId)
+					end
+
 					widget:SetText(value)
 					widget:ClearFocus()
 
@@ -1173,6 +1187,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				widget:SetInputError(Addon.SpellLibrary:GetSpellByName(name --[[@as string]]) == nil)
 				widget:SetValues(options)
 				widget:SetCallback("OnSelect", OnSelect)
+				widget:SetCallback("OnTextChanged", OnTextChanged)
 			else
 				widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
 				widget:DisableButton(true)
