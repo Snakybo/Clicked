@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for The War Within 11.0.0
+* Add support for Classic 1.15.3
 * Add Dynamic Flying macro condition
 * Add message when a generated macro is too long to be used
 * Add auto-completion to the spell name input field, containing all spells in the spellbook
