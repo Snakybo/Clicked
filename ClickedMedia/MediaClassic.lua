@@ -6308,6 +6308,7 @@ local icons = {
 	[377273] = "inv_misc_rubysanctum4",
 	[387415] = "t_roboticon",
 	[394617] = "quest_12252_icon",
+	[413584] = "achievement_guildperk_honorablemention",
 	[442272] = "achievement_guildperk_everybodysfriend",
 	[464820] = "achievement_general_stayclassy",
 	[625999] = "classicon_druid",
@@ -6325,6 +6326,7 @@ local icons = {
 	[1126583] = "vas_factionchange",
 	[1126584] = "vas_namechange",
 	[1126585] = "vas_racechange",
+	[1500877] = "inv_misc_scrollunrolled01",
 	[1530081] = "vas_charactertransfer",
 	[2056011] = "ui_chat",
 	[2241756] = "inv_scarab_ivory",
@@ -6342,6 +6344,8 @@ local icons = {
 	[4687496] = "inv_rabbitmountclassic",
 	[4777763] = "inv_magicalfishpet",
 	[5588107] = "ui_selffound",
+	[5838262] = "inv_bracer_leather_olivescale_b_01",
+	[5838263] = "inv_shoulder_leather_olivescale_b_01",
 }
 
 --- @type integer[]
@@ -12635,6 +12639,7 @@ local order = {
 	377273,
 	387415,
 	394617,
+	413584,
 	442272,
 	464820,
 	625999,
@@ -12652,6 +12657,7 @@ local order = {
 	1126583,
 	1126584,
 	1126585,
+	1500877,
 	1530081,
 	2056011,
 	2241756,
@@ -12669,6 +12675,8 @@ local order = {
 	4687496,
 	4777763,
 	5588107,
+	5838262,
+	5838263,
 }
 
 --- @return table<integer,string>

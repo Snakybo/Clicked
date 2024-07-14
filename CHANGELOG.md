@@ -17,6 +17,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add message when a generated macro is too long to be used
 * Add auto-completion to the spell name input field, containing all spells in the spellbook
 * Add the ability to drag spells from the spellbook into the spell name input field
+* Add icons from The War Within 11.0.2 to icon picker
+* Add icons from Cataclysm Classic 4.4.0 to icon picker
+* Add icons from Classic 1.15.3 to icon picker
 
 ### Removed
 
