@@ -21,6 +21,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add icons from The War Within 11.0.2 to icon picker
 * Add icons from Cataclysm Classic 4.4.0 to icon picker
 * Add icons from Classic 1.15.3 to icon picker
+* Update PvP talent data
 
 ### Removed
 
