@@ -97,7 +97,10 @@ local function Initialize()
 			widget.frame:StripTextures()
 			widget.frame:SetTemplate("Transparent")
 
-			widget.image:RemoveMaskTexture(widget.backgroundMask)
+
+			if widget.backgroundMask ~= nil then
+				widget.image:RemoveMaskTexture(widget.backgroundMask)
+			end
 
 			local actionbars = elv:GetModule("ActionBars")
 			local font, size, flags, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])

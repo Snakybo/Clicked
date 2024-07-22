@@ -23,6 +23,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add icons from Classic 1.15.3 to icon picker
 * Update PvP talent data
 
+### Fixed
+
+* Fix a Lua error when using the keyboard visualizer with ElvUI enabled on Classic
+
 ### Removed
 
 * Remove spellbook integration
