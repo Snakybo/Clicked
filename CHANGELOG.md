@@ -26,6 +26,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a Lua error when using the keyboard visualizer with ElvUI enabled on Classic
+* Fix double 'Z' keys on the AZERTY layout in the keyboard visualizer
 
 ### Removed
 
