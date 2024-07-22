@@ -97,6 +97,9 @@ local function Initialize()
 			widget.frame:StripTextures()
 			widget.frame:SetTemplate("Transparent")
 
+			skins:HandleIcon(widget.image)
+
+			widget.image:SetSize(43, 43)
 
 			if widget.backgroundMask ~= nil then
 				widget.image:RemoveMaskTexture(widget.backgroundMask)
