@@ -31,9 +31,15 @@ local SpellLibrary = {}
 --- @return table<integer,SpellLibrary.Spell>
 local function GetSpells_v2()
 	local result = {}
+	local activeTabName, activetabIcon
 
 	for i = 1, C_SpellBook.GetNumSpellBookSkillLines() do
 		local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
+
+		if tab.specID == GetSpecializationInfo(GetSpecialization()) then
+			activeTabName = tab.name
+			activetabIcon = tab.iconID
+		end
 
 		for j = tab.itemIndexOffset + 1, tab.itemIndexOffset + tab.numSpellBookItems do
 			local spell = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
@@ -71,15 +77,45 @@ local function GetSpells_v2()
 		end
 	end
 
+	for _, talent in ipairs(Addon:GetLocalizedTalents()) do
+		if not C_Spell.IsSpellPassive(talent.spellId) then
+			result[talent.spellId] = result[talent.spellId] or {
+				name = talent.text,
+				icon = talent.icon,
+				tabName = activeTabName,
+				tabIcon = activetabIcon,
+				specId = talent.specId
+			}
+		end
+	end
+
+	for _, talent in ipairs(Addon:GetLocalizedPvPTalents()) do
+		if not C_Spell.IsSpellPassive(talent.spellId) then
+			result[talent.spellId] = result[talent.spellId] or {
+				name = talent.text,
+				icon = talent.icon,
+				tabName = activeTabName,
+				tabIcon = activetabIcon,
+				specId = talent.specId
+			}
+		end
+	end
+
 	return result
 end
 
 --- @return table<integer,SpellLibrary.Spell>
 local function GetSpells_v1()
 	local result = {}
+	local activeTabName, activetabIcon
 
 	for i = 1, GetNumSpellTabs() do
 		local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(i)
+
+		if specId == GetSpecializationInfo(GetSpecialization()) then
+			activeTabName = tabName
+			activetabIcon = tabIcon
+		end
 
 		for j = offset + 1, offset + count do
 			local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
@@ -117,6 +153,20 @@ local function GetSpells_v1()
 						end
 					end
 				end
+			end
+		end
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+		for _, talent in ipairs(Addon:Cata_GetLocalizedTalents()) do
+			if not IsPassiveSpell(talent.spellId) then
+				result[talent.spellId] = result[talent.spellId] or {
+					name = talent.text,
+					icon = talent.icon,
+					tabName = activeTabName,
+					tabIcon = activetabIcon,
+					specId = talent.specId
+				}
 			end
 		end
 	end

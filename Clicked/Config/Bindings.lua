@@ -916,7 +916,7 @@ local function DrawTalentSelectOption(container, title, specializations, data, m
 				talents = Addon:GetLocalizedPvPTalents(specializations)
 			end
 		elseif Addon:IsGameVersionAtleast("CATA") then
-			talents = Addon:Cata_GetTalents(specializations)
+			talents = Addon:Cata_GetLocalizedTalents(specializations)
 		end
 
 		--- @param name string

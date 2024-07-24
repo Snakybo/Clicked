@@ -696,7 +696,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 	---
 	--- @param specializations? integer[]
 	--- @return TalentInfo[]
-	function Addon:Cata_GetTalents(specializations)
+	function Addon:Cata_GetLocalizedTalents(specializations)
 		--- @type TalentInfo[]
 		local result = {}
 

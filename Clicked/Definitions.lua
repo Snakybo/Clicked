@@ -188,6 +188,7 @@
 --- @field public spellId integer
 --- @field public text string
 --- @field public icon integer
+--- @field public specId integer
 
 --- @alias ShareType "group"|"binding
 
