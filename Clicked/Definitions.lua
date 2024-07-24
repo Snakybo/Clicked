@@ -149,9 +149,9 @@
 --- @field public mounted string
 --- @field public outdoors string
 --- @field public flying string
---- @field public dynamicflying string
+--- @field public dynamicFlying string
 --- @field public flyable string
---- @field public advflyable string
+--- @field public advFlyable string
 --- @field public swimming string
 --- @field public channeling Action.NegatableValueString
 --- @field public forms Action.NegatableValueString

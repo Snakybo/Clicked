@@ -15,6 +15,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include talent tree in spell library
 * Include PvP talents in spell library
 
+### Fixed
+
+* Fix macro conditional sorting for `bonusbar`, `advflyable`, and dynamic flying
+
 ## [1.15.0] - 2024-07-24
 
 ### Added

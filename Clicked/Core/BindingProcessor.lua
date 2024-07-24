@@ -198,7 +198,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.flying, "flying")
 	ParseNegatableBooleanCondition(action.dynamicFlying, "bonusbar:5")
 	ParseNegatableBooleanCondition(action.flyable, "flyable")
-	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
+	ParseNegatableBooleanCondition(action.advFlyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
 	ParseNegatableStringCondition(action.bonusbar, "bonusbar", "nobonusbar")
 
@@ -344,7 +344,10 @@ local function SortActions(actions, indexMap)
 			{ left = left.outdoors, right = right.outdoors, value = true, comparison = "eq" },
 			{ left = left.swimming, right = right.swimming, value = true, comparison = "eq" },
 			{ left = left.flying, right = right.flying, value = true, comparison = "eq" },
+			{ left = left.dynamicFlying, right = right.dynamicFlying, value = true, comparison = "eq" },
 			{ left = left.flyable, right = right.flyable, value = true, comparison = "eq" },
+			{ left = left.advFlyable, right = right.advFlyable, value = true, comparison = "eq" },
+			{ left = left.bonusbar, right = right.bonusbar, value = true, comparison = "eq" },
 
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
