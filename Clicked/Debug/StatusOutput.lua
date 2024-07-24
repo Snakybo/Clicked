@@ -44,12 +44,9 @@ local function GetBasicinfoString()
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		-- TODO: Add support for TWW
-	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
-		LoadAddOn('Blizzard_ClassTalentUI')
-		ClassTalentFrame.TalentsTab:UpdateTreeInfo()
-		table.insert(lines, "Talents: " .. ClassTalentFrame.TalentsTab:GetLoadoutExportString())
+	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		local configId =  C_ClassTalents.GetActiveConfigID()
+		table.insert(lines, "Talents: " .. (configId ~= nil and C_Traits.GenerateImportString(configId) or "unknown"))
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
