@@ -19,6 +19,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix macro conditional sorting for `bonusbar`, `advflyable`, and dynamic flying
 
+### Changed
+
+* Rename Dynamic Flying to Skyriding
+
 ## [1.15.0] - 2024-07-24
 
 ### Added

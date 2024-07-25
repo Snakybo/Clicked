@@ -2093,8 +2093,8 @@ end
 --- @param dynamicFlying Binding.LoadOption
 local function DrawMacroDynamicFlying(container, dynamicFlying)
 	local items = {
-		[true] = Addon.L["Dynamic flying"],
-		[false] = Addon.L["Not dynamic flying"],
+		[true] = Addon.L["Skyriding"],
+		[false] = Addon.L["Not Skyriding"],
 	}
 
 	local order = {
@@ -2102,7 +2102,7 @@ local function DrawMacroDynamicFlying(container, dynamicFlying)
 		false
 	}
 
-	DrawDropdownLoadOption(container, Addon.L["Dynamic Flying"], items, order, dynamicFlying)
+	DrawDropdownLoadOption(container, Addon.L["Skyriding"], items, order, dynamicFlying)
 end
 
 --- @param container AceGUIContainer
