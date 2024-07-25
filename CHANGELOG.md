@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix macro conditional sorting for `bonusbar`, `advflyable`, and dynamic flying
+* Fix lua error in the key visualizer when including action bar buttons [#199]
 
 ### Changed
 
@@ -1476,6 +1477,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#199]: https://github.com/Snakybo/Clicked/issues/199
 [#193]: https://github.com/Snakybo/Clicked/issues/193
 [#191]: https://github.com/Snakybo/Clicked/issues/191
 [#189]: https://github.com/Snakybo/Clicked/issues/189

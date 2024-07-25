@@ -230,8 +230,15 @@ local function PopulateKeys()
 			local name
 
 			if type == "spell" or (type == "macro" and subType == "spell") then
-				--- @diagnostic disable-next-line: param-type-mismatch
-				name = GetSpellInfo(id)
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+					--- @diagnostic disable-next-line: param-type-mismatch
+					name =  C_Spell.GetSpellName(id)
+				else
+					 -- Deprecated in 11.0.0
+					--- @diagnostic disable-next-line: param-type-mismatch
+					name = GetSpellInfo(id)
+				end
+
 			elseif type == "item" or (type == "macro" and subType == "item") then
 				--- @diagnostic disable-next-line: param-type-mismatch
 				name = GetItemInfo(id)
