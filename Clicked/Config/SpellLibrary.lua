@@ -81,6 +81,7 @@ local function GetSpells_v2()
 		if not C_Spell.IsSpellPassive(talent.spellId) then
 			result[talent.spellId] = result[talent.spellId] or {
 				name = talent.text,
+				spellId = talent.spellId,
 				icon = talent.icon,
 				tabName = activeTabName,
 				tabIcon = activetabIcon,
@@ -93,6 +94,7 @@ local function GetSpells_v2()
 		if not C_Spell.IsSpellPassive(talent.spellId) then
 			result[talent.spellId] = result[talent.spellId] or {
 				name = talent.text,
+				spellId = talent.spellId,
 				icon = talent.icon,
 				tabName = activeTabName,
 				tabIcon = activetabIcon,
@@ -162,6 +164,7 @@ local function GetSpells_v1()
 			if not IsPassiveSpell(talent.spellId) then
 				result[talent.spellId] = result[talent.spellId] or {
 					name = talent.text,
+					spellId = talent.spellId,
 					icon = talent.icon,
 					tabName = activeTabName,
 					tabIcon = activetabIcon,
