@@ -1097,13 +1097,19 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 			end
 
 			local function OnEnterPressedSpell()
-				local type, bookIndex, bookType = GetCursorInfo()
+				local type, p2, _, p4 = GetCursorInfo()
 
-				if type == "spell" then
-					local spellId = GetSpellInfo(bookIndex, bookType)
-
-					if spellId ~= nil then
-						action[valueKey] = spellId
+				if mode == Addon.BindingTypes.ITEM then
+					if type == "item" and p2 ~= nil then
+						action[valueKey] = p2
+						Clicked:ReloadBinding(binding, true)
+					end
+				elseif mode == Addon.BindingTypes.SPELL then
+					if type == "spell" and p4 ~= nil then
+						action[valueKey] = p4
+						Clicked:ReloadBinding(binding, true)
+					elseif type == "petaction" and p2 ~= nil then
+						action[valueKey] = p2
 						Clicked:ReloadBinding(binding, true)
 					end
 				end
