@@ -87,9 +87,11 @@ local function GetSpells_v2()
 	do
 		local count = C_SpellBook.HasPetSpells()
 
-		for i = 1, count do
-			local spell = C_SpellBook.GetSpellBookItemInfo(i, Enum.SpellBookSpellBank.Pet)
-			ParseSpellBookItem(spell)
+		if count ~= nil then
+			for i = 1, count do
+				local spell = C_SpellBook.GetSpellBookItemInfo(i, Enum.SpellBookSpellBank.Pet)
+				ParseSpellBookItem(spell)
+			end
 		end
 	end
 
@@ -181,9 +183,11 @@ local function GetSpells_v1()
 	do
 		local count = HasPetSpells()
 
-		for i = 1, count do
-			local type, id = GetSpellBookItemInfo(i, BOOKTYPE_PET)
-			ParseSpellBookItem(type, id)
+		if count ~= nil then
+			for i = 1, count do
+				local type, id = GetSpellBookItemInfo(i, BOOKTYPE_PET)
+				ParseSpellBookItem(type, id)
+			end
 		end
 	end
 
