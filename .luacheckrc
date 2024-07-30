@@ -42,6 +42,7 @@ read_globals = {
 	-- WoW API globals
 	"AddonCompartmentFrame",
 	"AUTOCOMPLETE_DEFAULT_Y_OFFSET",
+	"BOOKTYPE_PET",
 	"BOOKTYPE_PROFESSION",
 	"BOOKTYPE_SPELL",
 	"CreateFrame",
@@ -125,6 +126,7 @@ read_globals = {
 	"GetTalentInfo",
 	"GetTalentInfoByID",
 	"GetTime",
+	"HasPetSpells",
 	"HideUIPanel",
 	"HIGHLIGHT_FONT_COLOR",
 	"hooksecurefunc",

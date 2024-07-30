@@ -153,6 +153,30 @@ local function EditBox_OnTextChanged(frame, userInput)
 	self:UpdateHighlight()
 end
 
+local function EditBox_OnReceiveDrag(frame)
+	local self = frame.obj
+	local type, id, info = GetCursorInfo()
+	local name
+
+	if type == "item" then
+		name = info
+	elseif type == "spell" or type == "petaction" then
+		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+			local spell = C_Spell.GetSpellInfo(id, info)
+			name = spell and spell.name
+		else
+			name = GetSpellInfo(id, info)
+		end
+	end
+
+	if name then
+		self:SetText(name)
+		self:Fire("OnEnterPressed", name)
+		ClearCursor()
+		AceGUI:ClearFocus()
+	end
+end
+
 local function EditBox_OnEscapePressed(frame)
 	local self = frame.obj
 
@@ -745,6 +769,7 @@ local function Constructor()
 	widget.editbox:SetScript("OnTabPressed", EditBox_OnTabPressed)
 	widget.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
 	widget.editbox:SetScript("OnTextChanged", EditBox_OnTextChanged)
+	widget.editbox:SetScript("OnReceiveDrag", EditBox_OnReceiveDrag)
 	widget.editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
 	widget.editbox:SetScript("OnArrowPressed", EditBox_OnArrowPressed)
 	widget.editbox:SetScript("OnChar", EditBox_OnChar)

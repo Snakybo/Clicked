@@ -178,7 +178,8 @@
 		"WeakAurasSaved",
 		"UIDropDownMenu_Initialize",
 		"ToggleDropDownMenu",
-		"UIDropDownMenu_AddButton"
+		"UIDropDownMenu_AddButton",
+		"BOOKTYPE_PET"
 	]
 
 }

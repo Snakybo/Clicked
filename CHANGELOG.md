@@ -10,6 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add pet abilities to spell autofill
+* Add drag support for pet abilities into the spell name input field
+
 ### Fixed
 
 * Fix Lua error when dragging a spell from the spellbook into the spell name input field [#203]
