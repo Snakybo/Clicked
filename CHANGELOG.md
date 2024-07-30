@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix Lua error when dragging a spell from the spellbook into the spell name input field [#203]
+* Fix dragging spells from the spellbook into the binding configuration window
 
 ## [1.15.2] - 2024-07-28
 

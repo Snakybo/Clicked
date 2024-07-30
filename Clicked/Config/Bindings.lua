@@ -3293,23 +3293,25 @@ function Addon:BindingConfig_Open()
 		end
 
 		local function OnReceiveDrag()
-			local infoType, info1, info2 = GetCursorInfo()
+			local infoType, p2, _, p4 = GetCursorInfo()
 			local bindingType = nil
+			local id = nil
 
 			if infoType == "item" then
 				bindingType = Addon.BindingTypes.ITEM
+				id = p2
 			elseif infoType == "spell" then
 				bindingType = Addon.BindingTypes.SPELL
-				--- @diagnostic disable-next-line: param-type-mismatch
-				info1 = select(3, GetSpellBookItemName(info1, info2))
+				id = p4
 			elseif infoType == "petaction" then
 				bindingType = Addon.BindingTypes.SPELL
+				id = p2
 			end
 
-			if bindingType ~= nil then
+			if bindingType ~= nil and id ~= nil then
 				local binding = Clicked:CreateBinding()
 				binding.actionType = bindingType
-				Addon:SetBindingValue(binding, info1)
+				Addon:SetBindingValue(binding, id)
 
 				Clicked:ReloadBinding(binding, true)
 				tree:SelectByBindingOrGroup(binding)
