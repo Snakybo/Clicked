@@ -55,6 +55,10 @@ do
 		end
 	end
 
+	-- Since we compare races based on the englishRaceName, we only have to register one variant of each race,
+	-- for example Pandaran has three race IDs: 24, 25, 26 for neutral, alliance and horde respectively, but we
+	-- only need to register 24 as they all have the same englishRaceName.
+
 	AddRace(1, Addon.EXPANSION.CLASSIC) -- Human
 	AddRace(2, Addon.EXPANSION.CLASSIC) -- Orc
 	AddRace(3, Addon.EXPANSION.CLASSIC) -- Dwarf
@@ -72,13 +76,14 @@ do
 	AddRace(28, Addon.EXPANSION.BFA) -- HighmountainTauren
 	AddRace(29, Addon.EXPANSION.BFA) -- VoidElf
 	AddRace(30, Addon.EXPANSION.BFA) -- LightforgedDraenei
-	AddRace(31, Addon.EXPANSION.BFA) -- HighmountainTauren
+	AddRace(31, Addon.EXPANSION.BFA) -- ZandalariTroll
 	AddRace(32, Addon.EXPANSION.BFA) -- KulTiran
 	AddRace(34, Addon.EXPANSION.BFA) -- DarkIronDwarf
 	AddRace(35, Addon.EXPANSION.BFA) -- Vulpera
 	AddRace(36, Addon.EXPANSION.BFA) -- MagharOrc
 	AddRace(37, Addon.EXPANSION.BFA) -- Mechagnome
-	AddRace(70, Addon.EXPANSION.DF) -- Dracthyr
+	AddRace(52, Addon.EXPANSION.DF) -- Dracthyr
+	AddRace(84, Addon.EXPANSION.TWW) -- EarthenDwarf
 
 	AddClass("WARRIOR", Addon.EXPANSION.CLASSIC)
 	AddClass("PALADIN", Addon.EXPANSION.CLASSIC)
