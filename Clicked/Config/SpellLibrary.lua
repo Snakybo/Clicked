@@ -127,7 +127,6 @@ end
 --- @return table<integer,SpellLibrary.Spell>
 local function GetSpells_v1()
 	local result = {}
-	local activeTabName, activetabIcon
 
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
@@ -169,11 +168,6 @@ local function GetSpells_v1()
 	for i = 1, GetNumSpellTabs() do
 		local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(i)
 
-		if specId == GetSpecializationInfo(GetSpecialization()) then
-			activeTabName = tabName
-			activetabIcon = tabIcon
-		end
-
 		for j = offset + 1, offset + count do
 			local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
 			ParseSpellBookItem(type, id, tabName, tabIcon, specId)
@@ -187,21 +181,6 @@ local function GetSpells_v1()
 			for i = 1, count do
 				local type, id = GetSpellBookItemInfo(i, BOOKTYPE_PET)
 				ParseSpellBookItem(type, id)
-			end
-		end
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-		for _, talent in ipairs(Addon:Cata_GetLocalizedTalents()) do
-			if not IsPassiveSpell(talent.spellId) then
-				result[talent.spellId] = result[talent.spellId] or {
-					name = talent.text,
-					spellId = talent.spellId,
-					icon = talent.icon,
-					tabName = activeTabName,
-					tabIcon = activetabIcon,
-					specId = talent.specId
-				}
 			end
 		end
 	end

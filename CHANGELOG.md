@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for the Earthen race
 
+### Fixed
+
+* Fix Lua error when opening the targets page on Cataclysm Classic [#209]
+
 ## [1.15.3] - 2024-07-30
 
 ### Added
@@ -1504,6 +1508,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203
 [#201]: https://github.com/Snakybo/Clicked/issues/201
 [#199]: https://github.com/Snakybo/Clicked/issues/199
