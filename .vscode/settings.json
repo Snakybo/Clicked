@@ -180,6 +180,17 @@
 		"ToggleDropDownMenu",
 		"UIDropDownMenu_AddButton",
 		"BOOKTYPE_PET"
-	]
+	],
+	"Lua.runtime.builtin": {
+		"basic": "disable",
+		"debug": "disable",
+		"io": "disable",
+		"math": "disable",
+		"os": "disable",
+		"package": "disable",
+		"string": "disable",
+		"table": "disable",
+		"utf8": "disable"
+	}
 
 }
