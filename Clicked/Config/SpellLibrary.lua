@@ -179,8 +179,12 @@ local function GetSpells_v1()
 
 		if count ~= nil then
 			for i = 1, count do
-				local type, id = GetSpellBookItemInfo(i, BOOKTYPE_PET)
-				ParseSpellBookItem(type, id)
+				local name = GetSpellBookItemName(i, BOOKTYPE_PET)
+				local id = select(7, GetSpellInfo(name))
+
+				if id ~= nil then
+					ParseSpellBookItem("PETACTION", id)
+				end
 			end
 		end
 	end

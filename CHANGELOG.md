@@ -8,7 +8,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [1.15.4]
+## [1.15.5] - 2024-08-07
+
+### Fixed
+
+* Fix Lua error when opening the targets page on Cataclysm Classic on Hunter and Warlock [#210]
+
+## [1.15.4] - 2024-08-06
 
 ### Added
 
@@ -1388,7 +1394,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.15.4...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.15.5...master
+[1.15.5]: https://github.com/Snakybo/Clicked/releases/tag/1.15.5
 [1.15.4]: https://github.com/Snakybo/Clicked/releases/tag/1.15.4
 [1.15.3]: https://github.com/Snakybo/Clicked/releases/tag/1.15.3
 [1.15.2]: https://github.com/Snakybo/Clicked/releases/tag/1.15.2
@@ -1509,6 +1516,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203
 [#201]: https://github.com/Snakybo/Clicked/issues/201
