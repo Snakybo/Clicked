@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Show icon in the selected dropdown item
 
+### Fixed
+
+* Fix potential Lua error when retrieving talents on Cataclysm Classic
+
 ## [1.15.5] - 2024-08-07
 
 ### Fixed
