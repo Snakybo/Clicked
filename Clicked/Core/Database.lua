@@ -233,15 +233,15 @@ end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
 function Clicked:IterateGroups()
-	--- @type Group
+	--- @type Group[]
 	local result = {}
 
-	for _, binding in ipairs(Addon.db.profile.groups) do
-		table.insert(result, binding)
+	for _, group in ipairs(Addon.db.profile.groups) do
+		table.insert(result, group)
 	end
 
-	for _, binding in ipairs(Addon.db.global.groups) do
-		table.insert(result, binding)
+	for _, group in ipairs(Addon.db.global.groups) do
+		table.insert(result, group)
 	end
 
 	return ipairs(result)

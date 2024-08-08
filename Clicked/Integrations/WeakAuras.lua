@@ -414,7 +414,7 @@ local function PopulateTemplate(binding)
 end
 
 --- @param binding Binding
---- @return string
+--- @return string?
 local function UpdateWeakAuraUniqueID(binding)
 	local integrations = binding.integrations
 	local target = nil

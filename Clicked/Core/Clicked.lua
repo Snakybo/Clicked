@@ -49,7 +49,7 @@ local function RegisterIcons()
 		OnTooltipShow = function(tooltip)
 			tooltip:AddLine(Addon.L["Clicked"])
 		end
-	}) --[[@as LibDBIcon.dataObject]]
+	})
 
 	LibDBIcon:Register(Addon.L["Clicked"], iconData, Addon.db.profile.options.minimap)
 	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
