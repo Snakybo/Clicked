@@ -78,16 +78,11 @@
 		"floor",
 		"strsplit",
 		"InCombatLockdown",
-		"GetAddOnEnableState",
 		"UnitName",
-		"GetItemInfo",
 		"GetNumBindings",
 		"geterrorhandler",
-		"DisableAddOn",
-		"GetSpellInfo",
 		"IsMacClient",
 		"C_Timer",
-		"IsEquippedItem",
 		"GetBinding",
 		"GetSpellSubtext",
 		"GetInventoryItemID",
@@ -99,20 +94,14 @@
 		"wipe",
 		"HideUIPanel",
 		"hooksecurefunc",
-		"GetNumSpellTabs",
-		"GetSpellBookItemName",
-		"IsAddOnLoaded",
-		"GetSpellTabInfo",
 		"GetBindingKey",
 		"GetActionInfo",
 		"GetCursorInfo",
 		"ClearCursor",
-		"LoadAddOn",
 		"GetSpellBookItemInfo",
 		"IsPassiveSpell",
 		"GetShapeshiftFormInfo",
 		"GetPetActionInfo",
-		"EnableAddOn",
 		"ShowUIPanel",
 		"GetMacroBody",
 		"GetMacroInfo",
@@ -139,12 +128,10 @@
 		"IsInRaid",
 		"C_PvP",
 		"GetNumSubgroupMembers",
-		"GetAddOnMetadata",
 		"GetModifiedClick",
 		"WOW_PROJECT_ID",
 		"WOW_PROJECT_MAINLINE",
 		"WOW_PROJECT_CLASSIC",
-		"FillLocalizedClassList",
 		"Constants",
 		"C_CreatureInfo",
 		"GetClassColor",
@@ -179,7 +166,9 @@
 		"UIDropDownMenu_Initialize",
 		"ToggleDropDownMenu",
 		"UIDropDownMenu_AddButton",
-		"BOOKTYPE_PET"
+		"BOOKTYPE_PET",
+		"GetPrimaryTalentTree",
+		"GetTalentTabInfo"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",
@@ -191,6 +180,12 @@
 		"string": "disable",
 		"table": "disable",
 		"utf8": "disable"
-	}
+	},
+	"Lua.workspace.library": [
+		"$USERPROFILE\\.vscode\\extensions\\ketho.wow-api-0.15.7\\Annotations"
+	],
+	"Lua.diagnostics.disable": [
+		"deprecated"
+	]
 
 }
