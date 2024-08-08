@@ -62,7 +62,7 @@
 --- @field public regularEnabled boolean
 
 --- @class Binding.Target
---- @field public unit string
+--- @field public unit? string
 --- @field public hostility string
 --- @field public vitals string
 
@@ -143,22 +143,23 @@
 
 --- @class Action
 --- @field public ability integer|string
---- @field public combat string
---- @field public pet string
---- @field public stealth string
---- @field public mounted string
---- @field public outdoors string
---- @field public flying string
---- @field public dynamicFlying string
---- @field public flyable string
---- @field public advFlyable string
---- @field public swimming string
---- @field public channeling Action.NegatableValueString
---- @field public forms Action.NegatableValueString
---- @field public bonusbar Action.NegatableValueString
---- @field public unit string
---- @field public hostility string
---- @field public vitals string
+--- @field public type string
+--- @field public combat? string
+--- @field public pet? string
+--- @field public stealth? string
+--- @field public mounted? string
+--- @field public outdoors? string
+--- @field public flying? string
+--- @field public dynamicFlying? string
+--- @field public flyable? string
+--- @field public advFlyable? string
+--- @field public swimming? string
+--- @field public channeling? Action.NegatableValueString
+--- @field public forms? Action.NegatableValueString
+--- @field public bonusbar? Action.NegatableValueString
+--- @field public unit? string
+--- @field public hostility? string
+--- @field public vitals? string
 
 --- @class Action.NegatableValueString
 --- @field public negated boolean
@@ -167,10 +168,10 @@
 --- @class Command
 --- @field public keybind string
 --- @field public hovercast boolean
---- @field public action string
---- @field public data any
---- @field public prefix string
---- @field public suffix string
+--- @field public action? string
+--- @field public data? any
+--- @field public prefix? string
+--- @field public suffix? string
 
 --- @class Keybind
 --- @field public key string
@@ -181,7 +182,7 @@
 --- @field public events table<string,boolean>
 
 --- @class BindingReloadCauses : BindingReloadCause
---- @field public binding BindingReloadCause
+--- @field public binding? BindingReloadCause
 
 --- @class TalentInfo
 --- @field public entryId integer

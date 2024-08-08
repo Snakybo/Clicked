@@ -32,7 +32,7 @@ local shareBytesSent = 0
 local shareBytesTotal = 0
 local shareMessage = ""
 
---- @class ProfileOptions
+--- @class ProfileOptions : AceComm-3.0
 local ProfileOptions = {}
 
 function ProfileOptions:Initialize()
@@ -52,7 +52,7 @@ function ProfileOptions:CreateOptionsTable()
 	local options = AceDBOptions:GetOptionsTable(Addon.db)
 
 	-- Enhance profile options page with import/export buttons
-	options.plugins = options.plugins or {}
+	options.plugins = options.plugins or {} --- @diagnostic disable-line: inject-field
 	options.plugins["AceDBShare"] = {}
 
 	local plugin = options.plugins["AceDBShare"]

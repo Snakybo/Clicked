@@ -274,7 +274,7 @@ function Addon:StatusOutput_Initialize()
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
 	end
 
-	driver.UpdateStatusOutputText = UpdateStatusOutputText
+	driver.UpdateStatusOutputText = UpdateStatusOutputText --- @diagnostic disable-line: inject-field
 end
 
 function Addon:StatusOutput_Open()

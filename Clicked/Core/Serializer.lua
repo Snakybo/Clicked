@@ -146,7 +146,7 @@ function Clicked:SerializeProfile(profile, printable, full)
 	local data
 
 	if full then
-		--- @type Profile
+		--- @type ExportProfile
 		data = Addon:DeepCopyTable(profile)
 		data.type = "profile"
 		data.lightweight = false
