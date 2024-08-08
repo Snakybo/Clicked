@@ -593,12 +593,12 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 	if data.selected == 1 then -- single option variant
 		dropdownWidget = Addon:GUI_Dropdown(items, order, data, "single", binding)
 	elseif data.selected == 2 then -- multiple option variant
+		--- @param widget AceGUIDropdown
 		local function UpdateText(widget)
 			local selected = {}
-			local text
 
 			for _, item in widget.pullout:IterateItems() do
-				if item.type == "Clicked-Dropdown-Item-Toggle-Icon" then
+				if item.type == "Dropdown-Item-Toggle" then
 					if item:GetValue() then
 						table.insert(selected, item:GetText())
 					end
@@ -606,26 +606,24 @@ local function DrawTristateLoadOption(container, title, items, order, data)
 			end
 
 			if #selected == 0 then
-				text = Addon.L["Nothing"]
+				widget:SetText(Addon.L["Nothing"])
 			elseif #selected == 1 then
-				text = selected[1]
+				widget:SetText(selected[1])
 			elseif #selected == #items then
-				text = Addon.L["Everything"]
+				widget:SetText(Addon.L["Everything"])
 			else
-				text = Addon.L["Mixed..."]
+				widget:SetText(Addon.L["Mixed..."])
 			end
 
-			widget:SetText(string.format("<text=%s>", text))
 		end
 
 		dropdownWidget = Addon:GUI_MultiselectDropdown(items, order, data, "multiple", binding)
-		dropdownWidget.ClickedUpdateText = UpdateText
-		dropdownWidget:ClickedUpdateText()
+		UpdateText(dropdownWidget)
 
 		for _, item in dropdownWidget.pullout:IterateItems() do
-			if item.type == "Clicked-Dropdown-Item-Toggle-Icon" then
+			if item.type == "Dropdown-Item-Toggle" then
 				item:SetCallback("OnValueChanged", function()
-					 dropdownWidget:ClickedUpdateText()
+					UpdateText(dropdownWidget)
 				end)
 			end
 		end

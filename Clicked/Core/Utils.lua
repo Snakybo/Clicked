@@ -320,18 +320,24 @@ function Addon:DeepCopyTable(original)
 	return result
 end
 
---- @param string string
---- @param keyword string
---- @return string?
-function Addon:GetDataFromString(string, keyword)
-	if Addon:IsStringNilOrEmpty(string) or Addon:IsStringNilOrEmpty(keyword) then
-		return nil
+--- @param text string?
+--- @param icon integer|string?
+--- @param iconSize integer?
+--- @return string
+function Addon:GetTextureString(text, icon, iconSize)
+	if iconSize == nil then
+		iconSize = 16
 	end
 
-	local pattern = string.format("<%s=(.-)>", keyword)
-	local match = string.match(string, pattern)
-
-	return match
+	if text == nil and icon == nil then
+		return ""
+	elseif text ~= nil and icon == nil then
+		return text
+	elseif text == nil and icon ~= nil then
+		return string.format("|T%s:%d|t", icon, iconSize)
+	else
+		return string.format("|T%s:%d|t %s", tostring(icon), iconSize, text)
+	end
 end
 
 --- @param unit string

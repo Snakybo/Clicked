@@ -291,8 +291,8 @@ function Addon:GUI_Dropdown(items, order, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedDropdown") --[[@as ClickedDropdown]]
-	widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
+	local widget = CreateGUI("Dropdown") --[[@as AceGUIDropdown]]
+	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnSerialize)
 	widget:SetValue(ref[key])
 
@@ -329,8 +329,8 @@ function Addon:GUI_MultiselectDropdown(items, order, ref, key, binding)
 	assert(type(ref) == "table", "bad argument #3, expected table but got " .. type(ref))
 	assert(type(key) == "string", "bad argument #4, expected string but got " .. type(key))
 
-	local widget = CreateGUI("ClickedDropdown") --[[@as ClickedDropdown]]
-	widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
+	local widget = CreateGUI("Dropdown") --[[@as AceGUIDropdown]]
+	widget:SetList(items, order)
 	widget:SetMultiselect(true)
 	widget:SetCallback("OnClosed", OnValueChanged)
 

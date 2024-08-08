@@ -356,9 +356,7 @@ function Addon:GetLocalizedClasses()
 	for classId, className in pairs(classes) do
 		if classId ~= "Adventurer" then
 			local _, _, _, color = GetClassColor(classId)
-			local name = string.format("|c%s%s|r", color, className)
-
-			items[classId] = string.format("<text=%s>", name)
+			items[classId] = string.format("|c%s%s|r", color, className)
 			table.insert(order, classId)
 		end
 	end
@@ -384,7 +382,7 @@ function Addon:GetLocalizedRaces()
 		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
 
 		if raceInfo ~= nil then
-			items[raceInfo.clientFileString] = string.format("<text=%s>", raceInfo.raceName)
+			items[raceInfo.clientFileString] = raceInfo.raceName
 			table.insert(order, raceInfo.clientFileString)
 		end
 	end
@@ -423,7 +421,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				local key = specIndex
 
 				if not Addon:IsStringNilOrEmpty(name) then
-					items[key] = string.format("<icon=%d><text=%s>", icon, name)
+					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
 			end
@@ -473,7 +471,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 1, max do
 				local key = i
 
-				items[key] = string.format("<text=%s>", Addon.L["Specialization %s"]:format(i))
+				items[key] = string.format(Addon.L["Specialization %s"], i)
 				table.insert(order, key)
 			end
 		end
@@ -583,7 +581,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", defaultForm)
+				items[key] = defaultForm
 				table.insert(order, key)
 			end
 
@@ -594,7 +592,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				local icon = spell ~= nil and spell.iconID or nil
 				local name = spell ~= nil and spell.name or nil
 
-				items[key] = string.format("<icon=%d><text=%s>", icon, name)
+				items[key] = Addon:GetTextureString(name, icon)
 				table.insert(order, key)
 			end
 		else
@@ -622,7 +620,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			for i = 0, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
+				items[key] = string.format(Addon.L["Stance %s"], i)
 				table.insert(order, key)
 			end
 		end
@@ -657,7 +655,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 				local key = specIndex
 
 				if not Addon:IsStringNilOrEmpty(name) then
-					items[key] = string.format("<icon=%d><text=%s>", icon, name)
+					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
 			end
@@ -687,7 +685,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 			for i = 1, max do
 				local key = i
 
-				items[key] = string.format("<text=%s>", Addon.L["Specialization %s"]:format(i))
+				items[key] = string.format(Addon.L["Specialization %s"], i)
 				table.insert(order, key)
 			end
 		end
@@ -763,7 +761,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 			do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", defaultForm)
+				items[key] = defaultForm
 				table.insert(order, key)
 			end
 
@@ -783,7 +781,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 				local icon = spell ~= nil and spell.iconID or nil
 				local name = spell ~= nil and spell.name or nil
 
-				items[key] = string.format("<icon=%d><text=%s>", icon, name)
+				items[key] = Addon:GetTextureString(name, icon)
 
 				table.insert(order, key)
 			end
@@ -812,7 +810,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 			for i = 0, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
+				items[key] = string.format(Addon.L["Stance %s"], i)
 				table.insert(order, key)
 			end
 		end
@@ -847,7 +845,7 @@ else
 					local key = #order + 1
 
 					if not Addon:IsStringNilOrEmpty(name) then
-						items[key] = string.format("<icon=%d><text=%s>", texture, name)
+						items[key] = Addon:GetTextureString(name, texture)
 						table.insert(order, key)
 					end
 				end
@@ -868,7 +866,7 @@ else
 				for index = 1, max do
 					local key = #order + 1
 
-					items[key] = string.format("<text=%s>", Addon.L["Talent %s/%s"]:format(tab, index))
+					items[key] = string.format(Addon.L["Talent %s/%s"], tab, index)
 					table.insert(order, key)
 				end
 			end
@@ -906,7 +904,7 @@ else
 			do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", defaultForm)
+				items[key] = defaultForm
 				table.insert(order, key)
 			end
 
@@ -926,7 +924,7 @@ else
 				local icon = spell ~= nil and spell.iconID or nil
 				local name = spell ~= nil and spell.name or nil
 
-				items[key] = string.format("<icon=%d><text=%s>", icon, name)
+				items[key] = Addon:GetTextureString(name, icon)
 
 				table.insert(order, key)
 			end
@@ -955,7 +953,7 @@ else
 			for i = 0, max do
 				local key = #order + 1
 
-				items[key] = string.format("<text=%s>", Addon.L["Stance %s"]:format(i))
+				items[key] = string.format(Addon.L["Stance %s"], i)
 				table.insert(order, key)
 			end
 		end

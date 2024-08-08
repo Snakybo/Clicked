@@ -7,8 +7,6 @@
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTabGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedSimpleGroup.lua"/>
-	<Script file="AceGUIWidget-ClickedDropdown-Items.lua"/>
-	<Script file="AceGUIWidget-ClickedDropdown.lua"/>
 	<Script file="AceGUIWidget-ClickedHorizontalIcon.lua"/>
 	<Script file="AceGUIWidget-ClickedKeybinding.lua"/>
 	<Script file="AceGUIWidget-ClickedKeyVisualizerButton.lua"/>

@@ -459,7 +459,7 @@ function KeyVisualizer:Open()
 			local order = {}
 
 			for _, group in Clicked:IterateGroups() do
-				items[group.uid] = string.format("<icon=%s><text=%s>", tostring(group.displayIcon), group.name)
+				items[group.uid] = Addon:GetTextureString(group.name, group.displayIcon)
 				table.insert(order, { id = group.uid, name = group.name })
 			end
 
@@ -469,9 +469,9 @@ function KeyVisualizer:Open()
 			table.insert(order, 1, GROUP_ALL)
 			table.insert(order, 2, GROUP_EXT)
 
-			local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+			local widget = AceGUI:Create("Dropdown") --[[@as AceGUIDropdown]]
 			widget:SetLabel(Addon.L["Filter bindings"])
-			widget:SetList(items, order, "Clicked-Dropdown-Item-Toggle-Icon")
+			widget:SetList(items, order)
 			widget:SetValue(GROUP_ALL)
 			widget:SetCallback("OnValueChanged", function(_, _, value)
 				showGroup = value
