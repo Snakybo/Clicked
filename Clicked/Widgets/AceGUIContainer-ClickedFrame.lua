@@ -6,6 +6,10 @@ Simple frame widget extension to add support for closing the frame on escape.
 --- @alias AceGUIWidgetType
 --- | "ClickedFrame"
 
+--- @class ClickedFrameStatus : AceGUIFrameStatus
+--- @field minWidth? integer
+--- @field minHeight? integer
+
 local Type, Version = "ClickedFrame", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -57,13 +61,13 @@ function Methods:MoveToFront()
 	self.frame:SetFrameStrata("FULLSCREEN_DIALOG")
 end
 
---- @param width integer
+--- @param width? integer
 function Methods:SetMinWidth(width)
 	local status = self.status or self.localstatus
 	status.minWidth = width
 end
 
---- @param width integer
+--- @param height? integer
 function Methods:SetMinHeight(height)
 	local status = self.status or self.localstatus
 	status.minHeight = height
@@ -98,7 +102,9 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-	--- @class ClickedFrame
+	--- @class ClickedFrame : AceGUIFrame
+	--- @field protected localstatus ClickedFrameStatus
+	--- @field protected status? ClickedFrameStatus
 	local widget = AceGUI:Create("Frame")
 	widget.type = Type
 

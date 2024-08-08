@@ -121,7 +121,7 @@ end
 
 --- @param key? KeyButton
 function Methods:SetKey(key)
-	self.key = key
+	self.key = key --- @diagnostic disable-line: inject-field
 	self.keyName:SetText(key ~= nil and key:GetAbbreviation() or nil)
 	self.frame:SetAlpha(key ~= nil and (key.disabled and 0.5 or 1) or 1)
 end

@@ -37,7 +37,7 @@ function Methods:OnAcquire()
 	self.editBox:SetText("")
 	self:SetDisabled(false)
 	self:SetWidth(200)
-	self:SetNumLines()
+	self:SetNumLines(0)
 	self:SetMaxLetters(0)
 	self.entered = nil
 end

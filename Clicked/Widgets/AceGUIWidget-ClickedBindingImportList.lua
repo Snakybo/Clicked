@@ -27,11 +27,11 @@
 --- @field public icon string|number
 --- @field public children ClickedBindingImportList.Item[]?
 
---- @class ClickedBindingImportList.BindingItem : ClickedTreeGroup.Item
+--- @class ClickedBindingImportList.BindingItem : ClickedTreeGroupItem
 --- @field public binding Binding
 --- @field public keybind string
 
---- @class ClickedBindingImportList.GroupItem : ClickedTreeGroup.Item
+--- @class ClickedBindingImportList.GroupItem : ClickedTreeGroupItem
 --- @field public group Group
 
 --- @class ClickedInternal
@@ -353,20 +353,20 @@ function Methods:CreateButton()
 	local type = "ClickedBindingImportButton"
 	local num = AceGUI:GetNextWidgetNum(type)
 	local button = CreateFrame("Button", string.format(type .. "%d", num), self.treeframe, "OptionsListButtonTemplate") --[[@as ClickedBindingImportList.Button]]
-	button.obj = self
+	button.obj = self --- @diagnostic disable-line: inject-field
 
 	local icon = button:CreateTexture(nil, "OVERLAY")
 	icon:SetWidth(26)
 	icon:SetHeight(26)
 	icon:SetPoint("TOPLEFT", 8, 0)
-	button.icon = icon
+	button.icon = icon --- @diagnostic disable-line: inject-field
 
 	button.text:SetHeight(14) -- Prevents text wrapping
 
 	local keybind = button:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 	keybind:SetHeight(14) -- Prevents text wrapping
 	keybind:SetFont("Fonts\\FRIZQT__.TTF", 10)
-	button.keybind = keybind
+	button.keybind = keybind --- @diagnostic disable-line: inject-field
 
 	button:SetHeight(28)
 
@@ -378,7 +378,7 @@ function Methods:CreateButton()
 	button:SetScript("OnDragStop", nil)
 	button:SetScript("OnHide", nil)
 
-	button.toggle.button = button
+	button.toggle.button = button --- @diagnostic disable-line: inject-field
 	button.toggle:SetScript("OnClick", Expand_OnClick)
 
 	return button
@@ -507,7 +507,7 @@ local function Constructor()
 	scrollbar:SetScript("OnValueChanged", OnScrollValueChanged)
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-	scrollbg:SetAllPoints(scrollbar)
+	scrollbg:SetAllPoints(scrollbar --[[@as ScriptRegion]])
 	scrollbg:SetColorTexture(0,0,0,0.4)
 
 	local widget = {

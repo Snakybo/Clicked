@@ -70,7 +70,7 @@ local function GetCurrentBinding()
 	local item = tree:GetSelectedItem()
 
 	if item ~= nil and item.type == "binding" then
-		--- @cast item ClickedTreeGroup.BindingItem
+		--- @cast item ClickedTreeGroupBindingItem
 		return item.binding
 	end
 
@@ -82,7 +82,7 @@ local function GetCurrentGroup()
 	local item = tree:GetSelectedItem()
 
 	if item ~= nil and item.type == "group" then
-		--- @cast item ClickedTreeGroup.GroupItem
+		--- @cast item ClickedTreeGroupGroupItem
 		return item.group
 	end
 

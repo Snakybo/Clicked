@@ -2,6 +2,10 @@
 --- @alias AceGUIWidgetType
 --- | "ClickedKeyVisualizerTreeGroup"
 
+--- @class ClickedKeyVisualizerTreeGroupStatus : AceGUITreeGroupStatus
+--- @field contentWidth? integer
+--- @field contentHeight? integer
+
 local Type, Version = "ClickedKeyVisualizerTreeGroup", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -44,6 +48,8 @@ Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
 	--- @class ClickedKeyVisualizerTreeGroup : AceGUITreeGroup
+	--- @field localstatus ClickedKeyVisualizerTreeGroupStatus
+	--- @field status? ClickedKeyVisualizerTreeGroupStatus
 	local widget = AceGUI:Create("TreeGroup")
 	widget.type = Type
 

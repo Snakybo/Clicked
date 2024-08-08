@@ -8,13 +8,13 @@ Plain container that scrolls its content and doesn't grow in height.
 --- | "ClickedIconSelectorList"
 
 --- @class ClickedIconSelectorList : AceGUIContainer
---- @field private status ClickedIconSelectorList.Status?
---- @field private localstatus ClickedIconSelectorList.Status
+--- @field private status ClickedIconSelectorListStatus?
+--- @field private localstatus ClickedIconSelectorListStatus
 --- @field private scrollframe ScrollFrame
 --- @field private buttons AceGUIIcon[]
 --- @field private icons string[]
 --- @field private order integer[]
---- @field private loadQueue ClickedIconSelectorList.LoadQueue[]
+--- @field private loadQueue ClickedIconSelectorListLoadQueue[]
 --- @field private scrollbar Slider
 --- @field private searchHandler ClickedSearchBox
 --- @field private content Frame
@@ -23,16 +23,17 @@ Plain container that scrolls its content and doesn't grow in height.
 --- @field private originalWidth number
 --- @field private type string
 
---- @class ClickedIconSelectorList.LoadQueue
+--- @class ClickedIconSelectorListLoadQueue
 --- @field private button AceGUIIcon
 --- @field private id integer
 --- @field private icon string
 
---- @class ClickedIconSelectorList.Status
+--- @class ClickedIconSelectorListStatus
 --- @field public scrollframe number?
 --- @field public contentHeight number?
 --- @field public scrollvalue number?
 --- @field public numRows number?
+--- @field public numColumns number?
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -136,7 +137,7 @@ function Methods:OnRelease()
 	self.scrollbar:Hide()
 	self.iconLoader:SetScript("OnUpdate", nil)
 	self.scrollBarShown = nil
-	self.content.height, self.content.width, self.content.original_width = nil, nil, nil
+	self.content.height, self.content.width, self.content.original_width = nil, nil, nil --- @diagnostic disable-line: inject-field
 end
 
 --- @param value number
@@ -282,7 +283,7 @@ function Methods:FixScroll()
 		self.scrollbar:Show()
 		self.scrollframe:SetPoint("BOTTOMRIGHT", -20, 0)
 		if self.originalWidth ~= 0 then
-			self.content.width = self.originalWidth - 20
+			self.content.width = self.originalWidth - 20 --- @diagnostic disable-line: inject-field
 		end
 		self:DoLayout()
 	end
@@ -324,7 +325,7 @@ end
 --- @param width integer
 function Methods:OnWidthSet(width)
 	local content = self.content
-	content.width = width - (self.scrollBarShown and 20 or 0)
+	content.width = width - (self.scrollBarShown and 20 or 0) --- @diagnostic disable-line: inject-field
 	self.originalWidth = width
 end
 
@@ -332,7 +333,7 @@ end
 --- @param height integer
 function Methods:OnHeightSet(height)
 	local content = self.content
-	content.height = height
+	content.height = height --- @diagnostic disable-line: inject-field
 end
 
 --[[-----------------------------------------------------------------------------
@@ -361,7 +362,7 @@ local function Constructor()
 	scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-	scrollbg:SetAllPoints(scrollbar)
+	scrollbg:SetAllPoints(scrollbar --[[@as ScriptRegion]])
 	scrollbg:SetColorTexture(0, 0, 0, 0.4)
 
 	--Container Support
