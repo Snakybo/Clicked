@@ -66,10 +66,8 @@ end
 local function CreateGUI(type)
 	local widget = AceGUI:Create(type)
 
-	--- @diagnostic disable-next-line: invisible
 	local orgininalOnRelease = widget.OnRelease
 
-	--- @diagnostic disable-next-line: duplicate-set-field, invisible
 	widget.OnRelease = function()
 		widgets[widget] = nil
 

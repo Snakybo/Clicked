@@ -1,6 +1,3 @@
---- @diagnostic disable: duplicate-set-field
---- @diagnostic disable: undefined-field
-
 local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
 
 local AceGUI = LibStub("AceGUI-3.0")
@@ -23,6 +20,7 @@ local function Initialize()
 
 	local skins = elv:GetModule("Skins")
 
+	--- @diagnostic disable-next-line: duplicate-set-field
 	AceGUI.RegisterAsWidget = function(self, widget)
 		if widget.type == "ClickedToggleHeading" then
 			widget.checkbg:CreateBackdrop()
@@ -135,6 +133,7 @@ local function Initialize()
 		return originalRegisterAsWidget(self, widget)
 	end
 
+	--- @diagnostic disable-next-line: duplicate-set-field
 	AceGUI.RegisterAsContainer = function(self, widget)
 		if widget.type == "ClickedSimpleGroup" then
 			-- Undo everything done by ElvUI

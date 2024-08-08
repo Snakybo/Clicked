@@ -390,7 +390,6 @@ function Methods:UpdateButtons()
 		button:SetText("...")
 		button:Disable()
 
-		--- @diagnostic disable-next-line: undefined-field
 		button.icon:SetTexture(nil)
 	end
 
@@ -465,7 +464,6 @@ function Methods:SelectButton(button)
 		return
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	self:Select(button.obj)
 end
 

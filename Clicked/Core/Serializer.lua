@@ -27,15 +27,12 @@ local Addon = select(2, ...)
 --- @return string
 local function SerializeTable(data, printable)
 	local serialized = AceSerializer:Serialize(data)
-	--- @diagnostic disable-next-line: undefined-field
 	local compressed = LibDeflate:CompressDeflate(serialized)
 
 	if printable then
-		--- @diagnostic disable-next-line: undefined-field
 		return LibDeflate:EncodeForPrint(compressed)
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	return LibDeflate:EncodeForWoWAddonChannel(compressed)
 end
 
@@ -192,10 +189,8 @@ function Clicked:Deserialize(encoded, printable)
 	local compressed
 
 	if printable then
-		--- @diagnostic disable-next-line: undefined-field
 		compressed = LibDeflate:DecodeForPrint(encoded)
 	else
-		--- @diagnostic disable-next-line: undefined-field
 		compressed = LibDeflate:DecodeForWoWAddonChannel(encoded)
 	end
 
@@ -203,7 +198,6 @@ function Clicked:Deserialize(encoded, printable)
 		return false, Addon.L["Failed to decode"]
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	local serialized = LibDeflate:DecompressDeflate(compressed)
 
 	if serialized == nil then

@@ -64,7 +64,6 @@ end
 function Methods:SetImage(path, ...)
 	local image = self.image
 
-	--- @diagnostic disable-next-line: param-type-mismatch
 	image:SetTexture(path)
 
 	if image:GetTexture() then

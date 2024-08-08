@@ -18,14 +18,12 @@ local Methods = {}
 
 --- @return integer
 function Methods:GetContentWidth()
-	--- @diagnostic disable-next-line: undefined-field
 	local status = self.status or self.localstatus
 	return status.contentWidth or 0
 end
 
 --- @return integer
 function Methods:GetContentHeight()
-	--- @diagnostic disable-next-line: undefined-field
 	local status = self.status or self.localstatus
 	return status.contentHeight or 0
 end
@@ -36,7 +34,6 @@ end
 function Methods:LayoutFinished(width, height)
 	self:OriginalLayoutFinished(width, height)
 
-	--- @diagnostic disable-next-line: undefined-field
 	local status = self.status or self.localstatus
 	status.contentWidth = width
 	status.contentHeight = height

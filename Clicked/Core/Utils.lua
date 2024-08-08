@@ -558,23 +558,23 @@ function Addon:GetBindingNameAndIcon(binding)
 end
 
 --- @param input string|integer
---- @return string itemName
---- @return string itemLink
---- @return number itemQuality
---- @return number itemLevel
---- @return number itemMinLevel
---- @return string itemType
---- @return string itemSubType
---- @return number itemStackCount
---- @return string itemEquipLoc
---- @return number itemTexture
---- @return number sellPrice
---- @return number classID
---- @return number subclassID
---- @return number bindType
---- @return number expacID
+--- @return string? itemName
+--- @return string? itemLink
+--- @return number? itemQuality
+--- @return number? itemLevel
+--- @return number? itemMinLevel
+--- @return string? itemType
+--- @return string? itemSubType
+--- @return number? itemStackCount
+--- @return string? itemEquipLoc
+--- @return number? itemTexture
+--- @return number? sellPrice
+--- @return number? classID
+--- @return number? subclassID
+--- @return number? bindType
+--- @return number? expacID
 --- @return number? setID
---- @return boolean isCraftingReagent
+--- @return boolean? isCraftingReagent
 function Addon:GetItemInfo(input)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
@@ -587,8 +587,7 @@ function Addon:GetItemInfo(input)
 			input = GetInventoryItemID("player", itemId)
 
 			if input == nil then
-				--- @diagnostic disable-next-line: return-type-mismatch, missing-return-value
-				return nil
+				return
 			end
 		end
 	end
@@ -626,7 +625,6 @@ function Addon:GetSpellInfo(input, addSubText)
 	end
 
 	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
-		--- @diagnostic disable-next-line: redundant-parameter
 		local subtext = GetSpellSubtext(spell.spellID)
 
 		if not self:IsStringNilOrEmpty(subtext) then
@@ -968,7 +966,6 @@ end
 --- @param anchorRelativePoint? string
 function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoint)
 	if tooltipTimer ~= nil then
-		--- @diagnostic disable-next-line: undefined-field
 		tooltipTimer:Cancel()
 	end
 
@@ -993,7 +990,6 @@ end
 --- Hide the tooltip shown on the specified frame.
 function Addon:HideTooltip()
 	if tooltipTimer ~= nil then
-		--- @diagnostic disable-next-line: undefined-field
 		tooltipTimer:Cancel()
 		AceGUI.tooltip:Hide()
 	end

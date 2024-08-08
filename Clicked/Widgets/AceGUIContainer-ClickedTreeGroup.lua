@@ -408,7 +408,6 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button.icon:SetTexture(icon)
 		button.icon:SetPoint("TOPLEFT", 8 * level, 1)
 	else
-		--- @diagnostic disable-next-line: param-type-mismatch
 		button.icon:SetTexture(nil)
 	end
 
@@ -1521,13 +1520,7 @@ function Methods:OnWidthSet(width)
 		self:SetTreeWidth(maxtreewidth, status.treesizable)
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
-	if treeframe.SetResizeBounds then -- WoW 10.0
-		--- @diagnostic disable-next-line: undefined-field
-		treeframe:SetResizeBounds(100, 1, maxtreewidth, 1600)
-	else
-		treeframe:SetMaxResize(maxtreewidth, 1600)
-	end
+	treeframe:SetResizeBounds(100, 1, maxtreewidth, 1600)
 end
 
 --- @protected
@@ -1581,14 +1574,7 @@ local function Constructor()
 	treeframe --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
 	treeframe --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetResizable(true)
-	--- @diagnostic disable-next-line: undefined-field
-	if treeframe.SetResizeBounds ~= nil then -- WoW 10.0
-		--- @diagnostic disable-next-line: undefined-field
-		treeframe:SetResizeBounds(100, 1, 400, 1600)
-	else
-		treeframe:SetMinResize(100, 1)
-		treeframe:SetMaxResize(400, 1600)
-	end
+	treeframe:SetResizeBounds(100, 1, 400, 1600)
 	treeframe:SetScript("OnUpdate", FirstFrameUpdate)
 	treeframe:SetScript("OnSizeChanged", Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)

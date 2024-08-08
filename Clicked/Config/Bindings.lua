@@ -727,7 +727,6 @@ local function DrawTalentSelectPanel(container, talents, data)
 
 	local function CreateTableGroup()
 		local group = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
-		--- @diagnostic disable-next-line: param-type-mismatch
 		group:SetLayout("Table")
 		group:SetFullWidth(true)
 		group:SetUserData("table", {
@@ -1254,7 +1253,6 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 			local function OnLeave()
 				if ticker ~= nil then
-					--- @diagnostic disable-next-line: undefined-field
 					ticker:Cancel()
 					GameTooltip:Hide()
 				end
@@ -2817,7 +2815,6 @@ local function CreateFromItemTemplate(identifier)
 						return true
 					end
 
-					--- @diagnostic disable-next-line: redundant-parameter
 					if action == "macro" and binding.action.macroValue == GetMacroBody(id) then
 						return true
 					end
@@ -2845,11 +2842,8 @@ local function CreateFromItemTemplate(identifier)
 			elseif action == "macro" then
 				binding = Clicked:CreateBinding()
 				binding.actionType = Addon.BindingTypes.MACRO
-				--- @diagnostic disable-next-line: redundant-parameter
-				binding.action.macroValue = GetMacroBody(id) --[[@as string]]
-				--- @diagnostic disable-next-line: redundant-parameter
-				binding.action.macroName = GetMacroInfo(id) --[[@as string]]
-				--- @diagnostic disable-next-line: redundant-parameter
+				binding.action.macroValue = GetMacroBody(id) or ""
+				binding.action.macroName = GetMacroInfo(id)
 				binding.action.macroIcon = select(2, GetMacroInfo(id))
 			end
 
@@ -3285,8 +3279,6 @@ function Addon:BindingConfig_Open()
 			AceGUI:Release(container)
 
 			showTalentPanel = nil
-
-			--- @diagnostic disable-next-line: cast-local-type
 			root = nil
 		end
 

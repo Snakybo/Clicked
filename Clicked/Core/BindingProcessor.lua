@@ -227,7 +227,6 @@ local function ConstructAction(binding, target)
 	--- @param key string
 	local function AppendCondition(condition, key)
 		if condition.selected then
-			--- @diagnostic disable-next-line: assign-type-mismatch
 			action[key] = condition.value
 		end
 	end
@@ -236,7 +235,6 @@ local function ConstructAction(binding, target)
 	--- @param key string
 	local function AppendNegatableStringCondition(condition, key)
 		if condition.selected then
-			--- @diagnostic disable-next-line: assign-type-mismatch
 			action[key] = {
 				negated = condition.negated,
 				value = condition.value

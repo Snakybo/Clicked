@@ -376,7 +376,6 @@ local function Constructor()
 
 	-- Respect ElvUI skinning
 	if GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
-		---@diagnostic disable-next-line: undefined-global
 		local E = unpack(ElvUI);
 
 		if E and E.private.skins and E.private.skins.ace3Enable then

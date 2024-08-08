@@ -281,7 +281,6 @@ function Addon:GetLocalizedTargetUnits()
 		table.insert(order, 7, Addon.TargetUnits.FOCUS)
 	end
 
-	-- TODO: Check if this was available in WOTLK
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
 		items[Addon.TargetUnits.ARENA_1] = Addon.L["Arena %s"]:format("1")
 		items[Addon.TargetUnits.ARENA_2] = Addon.L["Arena %s"]:format("2")

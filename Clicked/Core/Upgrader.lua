@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, assign-type-mismatch
+---@diagnostic disable: undefined-field, assign-type-mismatch, inject-field, missing-fields
 
 --- @class ClickedInternal
 local Addon = select(2, ...)

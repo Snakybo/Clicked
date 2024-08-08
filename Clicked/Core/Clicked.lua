@@ -49,7 +49,6 @@ local function RegisterIcons()
 			Addon:BindingConfig_Open()
 		end,
 		OnTooltipShow = function(tooltip)
-			--- @diagnostic disable-next-line: undefined-field
 			tooltip:AddLine(Addon.L["Clicked"])
 		end
 	}) --[[@as LibDBIcon.dataObject]]

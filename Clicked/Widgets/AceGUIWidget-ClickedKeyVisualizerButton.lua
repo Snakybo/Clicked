@@ -121,7 +121,6 @@ end
 
 --- @param key? KeyButton
 function Methods:SetKey(key)
-	--- @diagnostic disable-next-line: assign-type-mismatch
 	self.key = key
 	self.keyName:SetText(key ~= nil and key:GetAbbreviation() or nil)
 	self.frame:SetAlpha(key ~= nil and (key.disabled and 0.5 or 1) or 1)

@@ -160,20 +160,16 @@ local function BuildLayout(layout, size)
 		buttonCache[key:GetId()] = widget
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	local oldWidth = frame.frame:GetWidth()
-	--- @diagnostic disable-next-line: undefined-field
 	local width = math.max(tree:GetTreeWidth() + tree:GetContentWidth() + 54, MIN_FRAME_WIDTH)
 	frame:SetWidth(width)
 
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
 
 	if point == "CENTER" or point == "TOP" or point == "BOTTOM" then
-		--- @diagnostic disable-next-line: undefined-field
 		local xOffset = (frame.frame:GetWidth() - oldWidth) / 2
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	elseif point == "RIGHT" or point == "TOPRIGHT" or point == "BOTTOMRIGHT" then
-		--- @diagnostic disable-next-line: undefined-field
 		local xOffset = (frame.frame:GetWidth() - oldWidth)
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	end
@@ -240,16 +236,13 @@ local function PopulateKeys()
 				end
 
 			elseif type == "item" or (type == "macro" and subType == "item") then
-				--- @diagnostic disable-next-line: param-type-mismatch
 				name = GetItemInfo(id)
 			elseif type == "flyout" then
-				--- @diagnostic disable-next-line: param-type-mismatch
 				name = GetFlyoutInfo(id)
 			elseif type == "summonpet" then
 				local speciesId, customName = C_PetJournal.GetPetInfoByPetID(id)
 				name = customName or C_PetJournal.GetPetInfoBySpeciesID(speciesId)
 			elseif type == "summonmount" then
-				--- @diagnostic disable-next-line: param-type-mismatch
 				name = C_MountJournal.GetMountInfoByID(id)
 			end
 
@@ -295,7 +288,6 @@ local function PopulateKeys()
 
 				if  targetKey == key then
 					local name, actionIcon = GetPetActionInfo(petAction)
-					--- @diagnostic disable-next-line: param-type-mismatch
 					Register(name, actionIcon)
 				end
 			end
@@ -401,8 +393,6 @@ function KeyVisualizer:Open()
 			showGroup = GROUP_ALL
 
 			buttonCache = nil
-
-			--- @diagnostic disable-next-line: cast-local-type
 			frame = nil
 		end
 
@@ -418,7 +408,6 @@ function KeyVisualizer:Open()
 	do
 		local line = AceGUI:Create("InlineGroup") --[[@as AceGUIInlineGroup]]
 		line:SetFullWidth(true)
-		--- @diagnostic disable-next-line: param-type-mismatch
 		line:SetLayout("Table")
 		line:SetUserData("table", {
 			columns = { 0, 0, 125, 1, 75, 75, 75, 75 },
@@ -563,7 +552,6 @@ function KeyVisualizer:Open()
 		tree:SetFullWidth(true)
 		tree:SetFullHeight(true)
 		tree:SetCallback("OnGroupSelected", DrawTreeContainer)
-		--- @diagnostic disable-next-line: undefined-field
 		tree:SetTreeWidth(125, false)
 		tree:SetTree(GetTreeLayout())
 		SelectLayout()
