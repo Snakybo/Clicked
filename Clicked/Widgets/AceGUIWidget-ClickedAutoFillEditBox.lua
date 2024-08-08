@@ -22,6 +22,7 @@ EditBox Widget
 --- @field public icon integer
 --- @field public spellId integer?
 --- @field public value any
+--- @field public score number
 --- @field public custom boolean?
 
 --- @class ClickedAutoFillEditBox.Match : ClickedAutoFillEditBox.Option
@@ -423,7 +424,7 @@ function Methods:UpdateButtons()
 			end
 		end
 
-		button.obj = matches[matchIndex]
+		button.obj = matches[matchIndex] --- @diagnostic disable-line: inject-field
 		local text = matches[matchIndex].text
 		local prefix = matches[matchIndex].prefix
 
@@ -464,7 +465,7 @@ function Methods:SelectButton(button)
 		return
 	end
 
-	self:Select(button.obj)
+	self:Select(button.obj) ---@diagnostic disable-line: undefined-field
 end
 
 --- @private
@@ -475,7 +476,7 @@ function Methods:HideAutoCompleteBox()
 
 	self.pullout:ClearAllPoints()
 	self.pullout:Hide()
-	self.pullout.attachTo = nil
+	self.pullout.attachTo = nil --- @diagnostic disable-line: inject-field
 end
 
 --- @private
@@ -592,7 +593,7 @@ function Methods:ShowPullout()
 			pullout:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
 		end
 
-		pullout.attachTo = attachTo
+		pullout.attachTo = attachTo --- @diagnostic disable-line: inject-field
 	end
 
 	if not self:IsAutoCompleteBoxVisible() then

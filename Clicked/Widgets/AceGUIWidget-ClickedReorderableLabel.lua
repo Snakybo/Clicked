@@ -130,12 +130,12 @@ function Methods:SetImageSize(width, height)
 	self:UpdateAnchor()
 end
 
---- @param justifyH JustifyH
+--- @param justifyH JustifyHorizontal
 function Methods:SetJustifyH(justifyH)
 	self.label:SetJustifyH(justifyH)
 end
 
---- @param justifyV JustifyV
+--- @param justifyV JustifyVertical
 function Methods:SetJustifyV(justifyV)
 	self.label:SetJustifyV(justifyV)
 end
@@ -212,7 +212,7 @@ function Methods:UpdateAnchor()
 
 	self.resizing = true
 	frame:SetHeight(height)
-	frame.height = height
+	frame.height = height --- @diagnostic disable-line: inject-field
 	self.resizing = nil
 end
 
