@@ -34,8 +34,6 @@ Plain container that scrolls its content and doesn't grow in height.
 --- @field public scrollvalue number?
 --- @field public numRows number?
 
-local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -375,7 +373,7 @@ local function Constructor()
 	local iconLoader = CreateFrame("Frame", nil, UIParent)
 
 	-- Respect ElvUI skinning
-	if GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
+	if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
 		local E = unpack(ElvUI);
 
 		if E and E.private.skins and E.private.skins.ace3Enable then

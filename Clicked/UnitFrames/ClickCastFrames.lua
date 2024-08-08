@@ -14,8 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded -- Deprecated in 10.2.0
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -186,7 +184,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	-- and thus will have to be queued until the addon actually loads.
 
 	if type(frame) == "string" then
-		if addon ~= nil and not IsAddOnLoaded(addon) then
+		if addon ~= nil and not C_AddOns.IsAddOnLoaded(addon) then
 			TryEnqueue()
 			return
 		else

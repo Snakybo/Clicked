@@ -14,10 +14,24 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local DisableAddOn = C_AddOns.DisableAddOn or DisableAddOn -- Deprecated in 10.2.0
-local IsEquippedItem = C_Item.IsEquippedItem or IsEquippedItem -- Deprecated in 10.2.6
-local GetItemInfo = C_Item.GetItemInfo or GetItemInfo -- Deprecated in 10.2.6
 local GetSpellSubtext = C_Spell.GetSpellSubtext or GetSpellSubtext -- Deprecated in 11.0.0
+
+
+local GetSpellInfo = C_Spell.GetSpellInfo or function(input) -- Deprecated in 11.0.0
+	local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
+	if name == nil then
+		return nil
+	end
+
+	return {
+		name = name,
+		iconID = icon,
+		castTime = castTime,
+		minRange = minRange,
+		maxRange = maxRange,
+		spellID = spellId
+	}
+end
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -226,11 +240,11 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 		self.button2:SetFormattedText(Addon.L["Keep %s"],self.data.addon)
 	end,
 	OnAccept = function(self)
-		DisableAddOn(self.data.addon)
+		C_AddOns.DisableAddOn(self.data.addon)
 		ReloadUI()
 	end,
 	OnCancel = function()
-		DisableAddOn("Clicked")
+		C_AddOns.DisableAddOn("Clicked")
 		ReloadUI()
 	end,
 	timeout = 0,
@@ -592,7 +606,7 @@ function Addon:GetItemInfo(input)
 		end
 	end
 
-	return GetItemInfo(input)
+	return C_Item.GetItemInfo(input)
 end
 
 --- @param input string|integer
@@ -601,28 +615,7 @@ end
 function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
-	local spell
-
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-		spell = C_Spell.GetSpellInfo(input)
-		if spell == nil then
-			return nil
-		end
-	else
-		local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
-		if name == nil then
-			return nil
-		end
-
-		spell = {
-			name = name,
-			iconID = icon,
-			castTime = castTime,
-			minRange = minRange,
-			maxRange = maxRange,
-			spellID = spellId
-		}
-	end
+	local spell = GetSpellInfo(input)
 
 	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
 		local subtext = GetSpellSubtext(spell.spellID)
@@ -1005,7 +998,7 @@ function Addon:IsSetBonusActive(setItemIds, numSetPieces)
 	local count = 0
 
 	for _, itemId in ipairs(setItemIds) do
-		if IsEquippedItem(itemId) then
+		if C_Item.IsEquippedItem(itemId) then
 			count = count + 1
 
 			if count >= numSetPieces then
@@ -1041,12 +1034,7 @@ end
 ---
 --- @param category string|integer
 function Addon:OpenSettingsMenu(category)
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-		Settings.OpenToCategory(category)
-	else
-		InterfaceOptionsFrame_OpenToCategory(category)
-		InterfaceOptionsFrame_OpenToCategory(category)
-	end
+	Settings.OpenToCategory(category)
 end
 
 --- Check if the specified keybind is "restricted", a restricted keybind

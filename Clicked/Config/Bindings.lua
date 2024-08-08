@@ -14,10 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded -- Deprecated in 10.2.0
-local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn -- Deprecated in 10.2.0
-local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn -- Deprecated in 10.2.0
-
 local AceGUI = LibStub("AceGUI-3.0")
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
@@ -330,13 +326,13 @@ local function EnsureIconCache()
 	local addon = "ClickedMedia"
 
 	if iconCache == nil then
-		if not IsAddOnLoaded(addon) then
-			local loaded, reason = LoadAddOn(addon)
+		if not C_AddOns.IsAddOnLoaded(addon) then
+			local loaded, reason = C_AddOns.LoadAddOn(addon)
 
 			if not loaded then
 				if reason == "DISABLED" then
-					EnableAddOn(addon)
-					LoadAddOn(addon)
+					C_AddOns.EnableAddOn(addon)
+					C_AddOns.LoadAddOn(addon)
 				else
 					error("Unable to load " .. addon ": " .. reason)
 				end
