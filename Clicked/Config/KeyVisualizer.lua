@@ -14,9 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local GetItemInfo = C_Item.GetItemInfo or GetItemInfo -- Deprecated in 10.2.6
-
 local AceGUI = LibStub("AceGUI-3.0")
+
+-- Deprecated in 11.0.0
+local GetSpellName = C_Spell.GetSpellName or GetSpellInfo
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -226,17 +227,9 @@ local function PopulateKeys()
 			local name
 
 			if type == "spell" or (type == "macro" and subType == "spell") then
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-					--- @diagnostic disable-next-line: param-type-mismatch
-					name =  C_Spell.GetSpellName(id)
-				else
-					 -- Deprecated in 11.0.0
-					--- @diagnostic disable-next-line: param-type-mismatch
-					name = GetSpellInfo(id)
-				end
-
+				name = GetSpellName(id)
 			elseif type == "item" or (type == "macro" and subType == "item") then
-				name = GetItemInfo(id)
+				name = C_Item.GetItemInfo(id)
 			elseif type == "flyout" then
 				name = GetFlyoutInfo(id)
 			elseif type == "summonpet" then

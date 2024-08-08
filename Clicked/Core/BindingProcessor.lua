@@ -14,7 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local IsEquippedItem = C_Item.IsEquippedItem or IsEquippedItem -- Deprecated in 10.2.6
+-- Deprecated in 11.0.0
+local GetMouseFoci = GetMouseFoci or function() return { GetMouseFocus() } end
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -773,19 +774,15 @@ function Clicked:GetBindingsForUnit(unit)
 			local enabled = Addon:IsHovercastEnabled(binding)
 
 			if enabled and IsTargetValid(hovercast) then
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-					local focus = GetMouseFoci()
+				local focus = GetMouseFoci()
 
-					for i = 1, #focus do
-						if focus[i] == WorldFrame then
-							return false
-						end
+				for i = 1, #focus do
+					if focus[i] == WorldFrame then
+						return false
 					end
-
-					return true
-				else
-					return GetMouseFocus() ~= WorldFrame
 				end
+
+				return true
 			end
 		end
 
@@ -1381,7 +1378,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 	-- item equipped
 	if ShouldPerformStateCheck("PLAYER_EQUIPMENT_CHANGED") then
 		local function IsItemEquipped(value)
-			return IsEquippedItem(value)
+			return C_Item.IsEquippedItem(value)
 		end
 
 		state.equipped = ValidateLoadOption(load.equipped, IsItemEquipped)

@@ -14,8 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function(n, c) return GetAddOnEnableState(c, n) end  -- Deprecated in 10.2.0
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -34,7 +32,7 @@ end
 -- Private addon API
 
 function Addon:RegisterClickCastHeader()
-	if GetAddOnEnableState("Clique", UnitName("player")) > 0 then
+	if C_AddOns.GetAddOnEnableState("Clique", UnitName("player")) > 0 then
 		Addon:ShowAddonIncompatibilityPopup("Clique")
 		return
 	end

@@ -30,6 +30,9 @@ EditBox Widget
 --- @class ClickedAutoFillEditBox.Button : Button
 --- @field public icon Texture
 
+-- Deprecated in 11.0.0
+local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -160,13 +163,10 @@ local function EditBox_OnReceiveDrag(frame)
 
 	if type == "item" then
 		name = info
-	elseif type == "spell" or type == "petaction" then
-		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
-			local spell = C_Spell.GetSpellInfo(id, info)
-			name = spell and spell.name
-		else
-			name = GetSpellInfo(id, info)
-		end
+	elseif type == "spell" then
+		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
+	elseif type == "petaction" then
+		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
 	end
 
 	if name then

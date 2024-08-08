@@ -18,15 +18,13 @@ local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
-local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata -- Deprecated in 10.1.0
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
 
 --- @class Clicked
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
-Clicked.VERSION = GetAddOnMetadata("Clicked", "Version")
+Clicked.VERSION = C_AddOns.GetAddOnMetadata("Clicked", "Version")
 
 --@debug@
 if Clicked.VERSION == "@project-version@" then

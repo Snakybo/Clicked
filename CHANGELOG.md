@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix potential Lua error when retrieving talents on Cataclysm Classic
+* Fix minor UI issues in Classic Era
 
 ## [1.15.5] - 2024-08-07
 
