@@ -106,7 +106,7 @@ local function UpdateButton(button, line, canExpand, isExpanded)
 	button.text:SetPoint("TOPLEFT", (line.icon and 28 or 0) + 8 * line.level, -1)
 	button.text:SetText(line.title or "")
 
-	if line.showKeybinds and not Addon:IsStringNilOrEmpty(line.keybind) then
+	if line.showKeybinds and not Addon:IsNilOrEmpty(line.keybind) then
 		button.keybind:SetPoint("BOTTOMLEFT", (line.icon and 28 or 0) + 8 * line.level, 1)
 		button.keybind:SetText(line.keybind or "")
 		button.keybind:Show()

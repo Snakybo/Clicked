@@ -66,7 +66,7 @@ end
 local function EditBox_OnEnter(frame)
 	local self = frame.obj
 
-	if not Addon:IsStringNilOrEmpty(self.tooltipHeader) then
+	if not Addon:IsNilOrEmpty(self.tooltipHeader) then
 		Addon:ShowTooltip(frame, self.tooltipHeader, self.tooltipSubtext)
 	end
 end
@@ -74,7 +74,7 @@ end
 local function EditBox_OnLeave(frame)
 	local self = frame.obj
 
-	if not Addon:IsStringNilOrEmpty(self.tooltipHeader) then
+	if not Addon:IsNilOrEmpty(self.tooltipHeader) then
 		Addon:HideTooltip()
 	end
 end

@@ -411,7 +411,7 @@ function Addon:HasBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	local value = Addon:GetBindingValue(binding)
-	return not Addon:IsStringNilOrEmpty(tostring(value))
+	return not Addon:IsNilOrEmpty(tostring(value))
 end
 
 --- @param binding Binding
@@ -542,7 +542,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			icon = spellIcon --[[@as string|integer]]
 		end
 	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
-		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
+		if Addon:IsNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
 		else
 			name = binding.action.macroName
@@ -620,7 +620,7 @@ function Addon:GetSpellInfo(input, addSubText)
 	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
 		local subtext = GetSpellSubtext(spell.spellID)
 
-		if not self:IsStringNilOrEmpty(subtext) then
+		if not self:IsNilOrEmpty(subtext) then
 			spell.name = string.format("%s(%s)", spell.name, subtext)
 		end
 	end
@@ -729,17 +729,22 @@ function Addon:CreateAttributeIdentifier(keybind, hovercast)
 	return mods, key
 end
 
---- Check if a string is `nil` or has a length of `0`.
+--- Check if an object is `nil` or has a length of `0`.
 ---
---- @param string? string
+--- @param value? any
 --- @return boolean
-function Addon:IsStringNilOrEmpty(string)
-	if string == nil then
+function Addon:IsNilOrEmpty(value)
+	if value == nil then
 		return true
 	end
 
-	assert(type(string) == "string", "bad argument #1, expected string but got " .. type(string))
-	return #string == 0
+	if type(value) == "string" then
+		return #value == 0
+	elseif type(value) == "table" then
+		return next(value) == nil
+	end
+
+	return false
 end
 
 --- @param string string
@@ -1056,7 +1061,7 @@ end
 --- @param keybind string
 --- @return boolean
 function Addon:IsMouseButton(keybind)
-	if Addon:IsStringNilOrEmpty(keybind) then
+	if Addon:IsNilOrEmpty(keybind) then
 		return false
 	end
 
@@ -1071,7 +1076,7 @@ end
 --- @param keybind string
 --- @return boolean
 function Addon:IsUnmodifiedKeybind(keybind)
-	if Addon:IsStringNilOrEmpty(keybind) then
+	if Addon:IsNilOrEmpty(keybind) then
 		return false
 	end
 

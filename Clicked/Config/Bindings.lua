@@ -221,7 +221,7 @@ local function CreateLoadOptionTooltip(type, selected)
 	local result = ""
 
 	for _, v in ipairs(order) do
-		if not Addon:IsStringNilOrEmpty(result) then
+		if not Addon:IsNilOrEmpty(result) then
 			result = result .. " - "
 		end
 
@@ -1070,7 +1070,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 
 				value = Addon:TrimString(value)
 
-				if not Addon:IsStringNilOrEmpty(value) then
+				if not Addon:IsNilOrEmpty(value) then
 					value = tonumber(value) or value
 
 					if type(value) == "string" then
@@ -1114,13 +1114,13 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				local talentLink = string.match(value, "talent[%-?%d:]+")
 				local linkId = nil
 
-				if not Addon:IsStringNilOrEmpty(itemLink) then
+				if not Addon:IsNilOrEmpty(itemLink) then
 					local match = string.match(itemLink, "(%d+)")
 					linkId = tonumber(match)
-				elseif not Addon:IsStringNilOrEmpty(spellLink) then
+				elseif not Addon:IsNilOrEmpty(spellLink) then
 					local match = string.match(spellLink, "(%d+)")
 					linkId = tonumber(match)
-				elseif not Addon:IsStringNilOrEmpty(talentLink) then
+				elseif not Addon:IsNilOrEmpty(talentLink) then
 					local match = string.match(talentLink, "(%d+)")
 					linkId = tonumber(select(6, GetTalentInfoByID(match, 1)))
 				end
@@ -2471,7 +2471,7 @@ local function DrawLoadItemEquipped(container, equipped)
 			local itemLink = string.match(value, "item[%-?%d:]+")
 			local linkId = nil
 
-			if not Addon:IsStringNilOrEmpty(itemLink) then
+			if not Addon:IsNilOrEmpty(itemLink) then
 				local match = string.match(itemLink, "(%d+)")
 				linkId = tonumber(match)
 			end

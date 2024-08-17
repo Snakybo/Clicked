@@ -156,7 +156,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 			local key = condition.negated and negated or value
 			local macro = key
 
-			if not Addon:IsStringNilOrEmpty(condition.value) then
+			if not Addon:IsNilOrEmpty(condition.value) then
 				macro = macro .. ":" .. condition.value
 			end
 
@@ -1678,7 +1678,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					conditions = "[" .. conditions .. "]"
 				end
 
-				if not Addon:IsStringNilOrEmpty(conditions) then
+				if not Addon:IsNilOrEmpty(conditions) then
 					table.insert(macroConditions, conditions)
 					table.insert(macroSegments, conditions .. action.ability)
 					table.insert(localSegments, conditions .. action.ability)

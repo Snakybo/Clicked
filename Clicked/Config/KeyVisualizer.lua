@@ -191,7 +191,7 @@ local function PopulateKeys()
 		--- @param spellIcon string|integer
 		--- @param forceIcon? boolean
 		local function Register(spellName, spellIcon, forceIcon)
-			if not Addon:IsStringNilOrEmpty(spellName) and not spellNames[spellName] then
+			if not Addon:IsNilOrEmpty(spellName) and not spellNames[spellName] then
 				spellNames[spellName] = true
 				icon = icon or spellIcon
 			end

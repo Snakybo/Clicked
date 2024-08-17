@@ -204,11 +204,11 @@ local function UpdateGroupItemVisual(item, group)
 	local label = Addon.L["New Group"]
 	local icon = item.icon
 
-	if not Addon:IsStringNilOrEmpty(group.name) then
+	if not Addon:IsNilOrEmpty(group.name) then
 		label = group.name
 	end
 
-	if (type(group.displayIcon) == "string" and not Addon:IsStringNilOrEmpty(group.displayIcon --[[@as string]])) or
+	if (type(group.displayIcon) == "string" and not Addon:IsNilOrEmpty(group.displayIcon --[[@as string]])) or
 	   (type(group.displayIcon) == "number" and group.displayIcon > 0) then
 		icon = group.displayIcon
 	end
@@ -245,7 +245,7 @@ end
 --- @param search string
 --- @return boolean
 local function IsItemValidWithSearchQuery(item, search)
-	if Addon:IsStringNilOrEmpty(search) then
+	if Addon:IsNilOrEmpty(search) then
 		return true
 	end
 
@@ -258,7 +258,7 @@ local function IsItemValidWithSearchQuery(item, search)
 		--- @cast item ClickedTreeGroupBindingItem
 
 		if prefix == nil then
-			if (type(item.name) == "string" and not Addon:IsStringNilOrEmpty(item.name)) or
+			if (type(item.name) == "string" and not Addon:IsNilOrEmpty(item.name)) or
 				(type(item.name) == "number" and item.name > 0) then
 				table.insert(strings, { value = item.name })
 			end
@@ -1115,7 +1115,7 @@ function Methods:BuildCache()
 				end
 			else
 				if #next.children == 0 then
-					if Addon:IsStringNilOrEmpty(self.searchbar:GetSearchTerm()) then
+					if Addon:IsNilOrEmpty(self.searchbar:GetSearchTerm()) then
 						SetVisibleRecursive(next)
 					end
 				else

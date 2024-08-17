@@ -133,7 +133,7 @@ local function GetTalentsForSpecialization(specId)
 					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 					local spellName = Addon:StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
 
-					if not Addon:IsStringNilOrEmpty(spellName) then
+					if not Addon:IsNilOrEmpty(spellName) then
 						table.insert(allTalents[specId], {
 							entryId = talentId,
 							spellId = definitionInfo.spellID,
@@ -173,7 +173,7 @@ local function GetPvPTalentsForSpecialization(specId)
 		if talentId ~= nil then
 			local _, name, texture, _, _, spellId = GetPvpTalentInfoByID(talentId)
 
-			if not Addon:IsStringNilOrEmpty(name) then
+			if not Addon:IsNilOrEmpty(name) then
 				table.insert(allPvpTalents[specId], {
 					entryId = talentId,
 					spellId = spellId,
@@ -419,7 +419,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				local _, name, _, icon = GetSpecializationInfoByID(specId)
 				local key = specIndex
 
-				if not Addon:IsStringNilOrEmpty(name) then
+				if not Addon:IsNilOrEmpty(name) then
 					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
@@ -433,7 +433,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				for _, specId in pairs(specs) do
 					local _, name = GetSpecializationInfoByID(specId)
 
-					if not Addon:IsStringNilOrEmpty(name) then
+					if not Addon:IsNilOrEmpty(name) then
 						count = count + 1
 					end
 				end
@@ -653,7 +653,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 				local _, name, _, icon = GetSpecializationInfoForSpecID(spec.id)
 				local key = specIndex
 
-				if not Addon:IsStringNilOrEmpty(name) then
+				if not Addon:IsNilOrEmpty(name) then
 					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
@@ -843,7 +843,7 @@ else
 					local _, name, texture = LibTalentInfoClassic:GetTalentInfoByTab(class, tab, index)
 					local key = #order + 1
 
-					if not Addon:IsStringNilOrEmpty(name) then
+					if not Addon:IsNilOrEmpty(name) then
 						items[key] = Addon:GetTextureString(name, texture)
 						table.insert(order, key)
 					end

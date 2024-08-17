@@ -107,7 +107,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 67,
 		disabled = function()
-			if Addon:IsStringNilOrEmpty(shareTarget) then
+			if Addon:IsNilOrEmpty(shareTarget) then
 				return true
 			end
 
