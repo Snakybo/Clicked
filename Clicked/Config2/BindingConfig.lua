@@ -217,12 +217,16 @@ end
 --- @field private bindingCopyTarget? integer
 --- @field private wereBindingsReloaded? boolean
 Addon.BindingConfig.Window = {
+	PAGE_BINDING = "binding",
 	PAGE_EXPORT_STRING = "exportString",
+	PAGE_GROUP = "group",
 	PAGE_ICON_SELECT = "iconSelect",
 	PAGE_IMPORT_STRING = "importString",
 	PAGE_NEW = "new",
 	pages = {
+		binding = Addon.BindingConfig.BindingPage,
 		exportString = Addon.BindingConfig.ExportStringPage,
+		group = Addon.BindingConfig.GroupPage,
 		iconSelect = Addon.BindingConfig.IconSelectPage,
 		importString = Addon.BindingConfig.ImportStringPage,
 		new = Addon.BindingConfig.NewPage
@@ -744,10 +748,13 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		local targets = FilterTargets(selected)
 
 		if #targets > 0 then
-			-- TODO: Set page to binding/group
+			self:SetPage(targets[1].type == Clicked.DataObjectType.BINDING and self.PAGE_BINDING or self.PAGE_GROUP)
 		else
-			-- TODO: Set page to new if binding/group page is selected
-			self:SetPage(self.PAGE_NEW)
+			local page = self.pageStack[#self.pageStack].page
+
+			if page == self.PAGE_BINDING or page == self.PAGE_GROUP then
+				self:SetPage(self.PAGE_NEW)
+			end
 		end
 
 		contextMenuFrame:Hide()
@@ -1114,7 +1121,14 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 			self:SetPage(self.PAGE_NEW)
 		end
 	else
-		-- TODO: set page to binding/group with current selection
+		local page = self.pageStack[#self.pageStack].page
+
+		if page == self.PAGE_BINDING or page == self.PAGE_GROUP then
+			local selected = FindSelectedItems()
+			self.treeWidget:Select(selected, true)
+		else
+			self:ActivatePage()
+		end
 	end
 
 	self.frame:AddChild(self.treeWidget)

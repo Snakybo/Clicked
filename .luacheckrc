@@ -46,6 +46,7 @@ read_globals = {
 	"BOOKTYPE_PROFESSION",
 	"BOOKTYPE_SPELL",
 	"CreateFrame",
+	"CreateFromMixins",
 	"CreateMacro",
 	"DisableAddOn",
 	"Constants",
