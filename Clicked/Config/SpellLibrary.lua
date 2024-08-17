@@ -18,21 +18,47 @@
 local Addon = select(2, ...)
 
 --- @class SpellLibrary
-local SpellLibrary = {}
+Addon.SpellLibrary = {}
 
---- @class SpellLibrary.Spell
+--- @enum SpellLibraryResultType
+Addon.SpellLibrary.ResultType = {
+	SPELL = 0,
+	ITEM = 1,
+	MACRO = 2
+}
+
+--- @class SpellLibraryResult
+--- @field public type SpellLibraryResultType
+--- @field public key? string
+
+--- @class SpellLibrarySpellResult : SpellLibraryResult
 --- @field public name string
---- @field public spellId integer
 --- @field public icon integer
---- @field public tabName string
---- @field public tabIcon integer
---- @field public specId integer
+--- @field public spellId integer
+--- @field public tabName? string
+--- @field public tabIcon? string|integer
+--- @field public specId? integer
 
---- @return table<integer,SpellLibrary.Spell>
+--- @class SpellLibraryItemResult : SpellLibraryResult
+--- @field public name string
+--- @field public icon integer
+--- @field public itemId integer
+
+--- @class SpellLibraryMacroResult : SpellLibraryResult
+--- @field public name string
+--- @field public icon integer
+--- @field public content string
+
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells_v2()
+	--- @type table<integer, SpellLibrarySpellResult>
 	local result = {}
+
+	--- @type string?, integer?
 	local activeTabName, activetabIcon
 
+	--- @param spell SpellBookItemInfo
+	--- @param tab? SpellBookSkillLineInfo
 	local function ParseSpellBookItem(spell, tab)
 		if spell.spellID == nil then
 			return
@@ -40,7 +66,9 @@ local function GetSpells_v2()
 
 		if not spell.isPassive then
 			if spell.itemType == Enum.SpellBookItemType.Spell or spell.itemType == Enum.SpellBookItemType.FutureSpell or spell.itemType == Enum.SpellBookItemType.PetAction then
+				--- @type SpellLibrarySpellResult
 				result[spell.spellID] = {
+					type = Addon.SpellLibrary.ResultType.SPELL,
 					name = spell.name,
 					spellId = spell.spellID,
 					icon = spell.iconID,
@@ -56,7 +84,9 @@ local function GetSpells_v2()
 					local info = Addon:GetSpellInfo(spellId, false)
 
 					if info ~= nil then
+						--- @type SpellLibrarySpellResult
 						result[spellId] = {
+							type = Addon.SpellLibrary.ResultType.SPELL,
 							name = info.name,
 							spellId = spellId,
 							icon = info.iconID,
@@ -97,44 +127,59 @@ local function GetSpells_v2()
 
 	for _, talent in ipairs(Addon:GetLocalizedTalents()) do
 		if not C_Spell.IsSpellPassive(talent.spellId) then
-			result[talent.spellId] = result[talent.spellId] or {
-				name = talent.text,
-				spellId = talent.spellId,
-				icon = talent.icon,
-				tabName = activeTabName,
-				tabIcon = activetabIcon,
-				specId = talent.specId
-			}
+			if result[talent.spellId] == nil then
+				--- @type SpellLibrarySpellResult
+				result[talent.spellId] = {
+					type = Addon.SpellLibrary.ResultType.SPELL,
+					name = talent.text,
+					spellId = talent.spellId,
+					icon = talent.icon,
+					tabName = activeTabName,
+					tabIcon = activetabIcon,
+					specId = talent.specId
+				}
+			end
 		end
 	end
 
 	for _, talent in ipairs(Addon:GetLocalizedPvPTalents()) do
 		if not C_Spell.IsSpellPassive(talent.spellId) then
-			result[talent.spellId] = result[talent.spellId] or {
-				name = talent.text,
-				spellId = talent.spellId,
-				icon = talent.icon,
-				tabName = activeTabName,
-				tabIcon = activetabIcon,
-				specId = talent.specId
-			}
+			if result[talent.spellId] == nil then
+				--- @type SpellLibrarySpellResult
+				result[talent.spellId] = {
+					type = Addon.SpellLibrary.ResultType.SPELL,
+					name = talent.text,
+					spellId = talent.spellId,
+					icon = talent.icon,
+					tabName = activeTabName,
+					tabIcon = activetabIcon,
+					specId = talent.specId
+				}
+			end
 		end
 	end
 
 	return result
 end
 
---- @return table<integer,SpellLibrary.Spell>
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells_v1()
 	local result = {}
 
+	--- @param type string
+	--- @param id integer
+	--- @param tabName? string
+	--- @param tabIcon? string
+	--- @param specId? integer
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
 			if type == "SPELL" or type == "FUTURESPELL" or type == "PETACTION" then
 				local spell = Addon:GetSpellInfo(id, false)
 
 				if spell ~= nil then
+					--- @type SpellLibrarySpellResult
 					result[id] = {
+						type = Addon.SpellLibrary.ResultType.SPELL,
 						name = spell.name,
 						spellId = id,
 						icon = spell.iconID,
@@ -151,7 +196,9 @@ local function GetSpells_v1()
 					local spell = Addon:GetSpellInfo(spellId, false)
 
 					if spell ~= nil then
+						--- @type SpellLibrarySpellResult
 						result[spellId] = {
+							type = Addon.SpellLibrary.ResultType.SPELL,
 							name = spell.name,
 							spellId = spellId,
 							icon = spell.iconID,
@@ -192,7 +239,7 @@ local function GetSpells_v1()
 	return result
 end
 
---- @return table<integer,SpellLibrary.Spell>
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells()
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
 		return GetSpells_v2()
@@ -201,15 +248,21 @@ local function GetSpells()
 	end
 end
 
+-- Private addon API
+
+--- Get a spell by its spell ID from the spellbook.
+---
 --- @param spellId integer
---- @return SpellLibrary.Spell?
-function SpellLibrary:GetSpellById(spellId)
+--- @return SpellLibrarySpellResult?
+function Addon.SpellLibrary:GetSpellById(spellId)
 	return GetSpells()[spellId]
 end
 
+--- Get a spell by its name from the spellbook.
+---
 --- @param name string
---- @return SpellLibrary.Spell?
-function SpellLibrary:GetSpellByName(name)
+--- @return SpellLibrarySpellResult?
+function Addon.SpellLibrary:GetSpellByName(name)
 	for _, spell in pairs(GetSpells()) do
 		if spell.name == name then
 			return spell
@@ -219,8 +272,13 @@ function SpellLibrary:GetSpellByName(name)
 	return nil
 end
 
-function SpellLibrary:GetSpells()
-	return pairs(GetSpells())
+--- Get all castable spells in the player's spellbook.
+---
+--- This includes spells from:
+--- - The player's spellbook.
+--- - The player's pet spellbook.
+---
+--- @return table<integer, SpellLibrarySpellResult>
+function Addon.SpellLibrary:GetSpells()
+	return GetSpells()
 end
-
-Addon.SpellLibrary = SpellLibrary

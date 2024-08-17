@@ -95,7 +95,8 @@
 		"GetPrimaryTalentTree",
 		"GetTalentTabInfo",
 		"Mixin",
-		"Round"
+		"Round",
+		"HasPetSpells"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",

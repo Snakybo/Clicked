@@ -1170,7 +1170,7 @@ local function DrawSpellItemAuraSelection(container, action, mode)
 				--- @type ClickedAutoFillEditBox.Option?
 				local selected = nil
 
-				for _, spell in Addon.SpellLibrary:GetSpells() do
+				for _, spell in pairs(Addon.SpellLibrary:GetSpells()) do
 					table.insert(result, {
 						prefix = spell.tabName,
 						text = spell.name,
@@ -2711,7 +2711,7 @@ local function CreateFromItemTemplate(identifier)
 
 		local groups = {}
 
-		--- @param spell SpellLibrary.Spell
+		--- @param spell SpellLibrarySpellResult
 		local function DoesBindingExist(spell)
 			for _, binding in Clicked:IterateConfiguredBindings() do
 				if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spell.spellId and binding.parent ~= nil then
@@ -2728,7 +2728,7 @@ local function CreateFromItemTemplate(identifier)
 			return false
 		end
 
-		for _, spell in Addon.SpellLibrary:GetSpells() do
+		for _, spell in pairs(Addon.SpellLibrary:GetSpells()) do
 			if not DoesBindingExist(spell) then
 				pendingSpells[spell.spellId] = true
 				pendingGroups[spell.tabName] = spell.tabIcon
