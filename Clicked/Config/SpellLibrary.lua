@@ -115,6 +115,19 @@ local function GetSpells_v2()
 	end
 
 	do
+		local professions = { GetProfessions() }
+
+		for _, i in ipairs(professions) do
+			local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
+
+			for j = tab.itemIndexOffset + 1, tab.itemIndexOffset + tab.numSpellBookItems do
+				local spell = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
+				ParseSpellBookItem(spell, tab)
+			end
+		end
+	end
+
+	do
 		local count = C_SpellBook.HasPetSpells()
 
 		if count ~= nil then
@@ -218,6 +231,19 @@ local function GetSpells_v1()
 		for j = offset + 1, offset + count do
 			local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
 			ParseSpellBookItem(type, id, tabName, tabIcon, specId)
+		end
+	end
+
+	do
+		local professions = { GetProfessions() }
+
+		for _, i in ipairs(professions) do
+			local _, _, offset, count = GetSpellTabInfo(i)
+
+			for j = offset + 1, offset + count do
+				local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
+				ParseSpellBookItem(type, id)
+			end
 		end
 	end
 

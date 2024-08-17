@@ -107,6 +107,7 @@ read_globals = {
 	"GetNumTalentTabs",
 	"GetPetActionInfo",
 	"GetPrimaryTalentTree",
+	"GetProfessions",
 	"GetPvpTalentInfoByID",
 	"GetRealmName",
 	"GetRealZoneText",

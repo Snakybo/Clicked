@@ -10,6 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add profession abilities to spell autofill
+* Add profession abilities to spellbook import
+
 ### Fixed
 
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
