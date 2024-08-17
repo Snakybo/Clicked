@@ -70,13 +70,13 @@ local ExportFrame = {}
 
 --- @param target Group
 function ExportFrame:ExportGroup(target)
-	local serialized = Clicked:SerializeGroup(target)
+	local serialized = Clicked:SerializeDataObject(target)
 	OpenFrame(serialized, Addon.L["Export Group"], string.format(Addon.L["Exporting '%s'"], target.name))
 end
 
 --- @param target Binding
 function ExportFrame:ExportBinding(target)
-	local serialized = Clicked:SerializeBinding(target)
+	local serialized = Clicked:SerializeDataObject(target)
 	OpenFrame(serialized, Addon.L["Export Binding"], string.format(Addon.L["Exporting '%s'"], Addon:GetBindingNameAndIcon(target)))
 end
 
