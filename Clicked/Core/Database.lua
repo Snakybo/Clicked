@@ -196,16 +196,24 @@ function Clicked:DeleteGroup(group)
 	return false
 end
 
---- Attempt to get a binding group with the specified identifier.
+--- Attempt to get a binding or group with the specified identifier.
 ---
---- @param identifier integer
---- @return Group?
-function Clicked:GetGroupById(identifier)
-	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
+--- @param identifier? integer
+--- @return DataObject?
+function Clicked:GetByUid(identifier)
+	if identifier == nil then
+		return nil
+	end
 
 	for _, group in self:IterateGroups() do
 		if group.uid == identifier then
 			return group
+		end
+	end
+
+	for _, binding in self:IterateConfiguredBindings() do
+		if binding.uid == identifier then
+			return binding
 		end
 	end
 

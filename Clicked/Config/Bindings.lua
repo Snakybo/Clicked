@@ -2715,7 +2715,7 @@ local function CreateFromItemTemplate(identifier)
 		local function DoesBindingExist(spell)
 			for _, binding in Clicked:IterateConfiguredBindings() do
 				if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spell.spellId and binding.parent ~= nil then
-					local group = Clicked:GetGroupById(binding.parent)
+					local group = Clicked:GetByUid(binding.parent)
 
 					-- this spell already exists in the database, however we also want to make sure its in one of the auto-generated groups
 					-- before excluding it
