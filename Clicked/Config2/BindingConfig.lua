@@ -218,10 +218,12 @@ end
 --- @field private wereBindingsReloaded? boolean
 Addon.BindingConfig.Window = {
 	PAGE_EXPORT_STRING = "exportString",
+	PAGE_ICON_SELECT = "iconSelect",
 	PAGE_IMPORT_STRING = "importString",
 	PAGE_NEW = "new",
 	pages = {
 		exportString = Addon.BindingConfig.ExportStringPage,
+		iconSelect = Addon.BindingConfig.IconSelectPage,
 		importString = Addon.BindingConfig.ImportStringPage,
 		new = Addon.BindingConfig.NewPage
 	},
