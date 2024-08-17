@@ -217,8 +217,10 @@ end
 --- @field private bindingCopyTarget? integer
 --- @field private wereBindingsReloaded? boolean
 Addon.BindingConfig.Window = {
+	PAGE_IMPORT_STRING = "importString",
 	PAGE_NEW = "new",
 	pages = {
+		importString = Addon.BindingConfig.ImportStringPage,
 		new = Addon.BindingConfig.NewPage
 	},
 	pageStack = {},
@@ -394,6 +396,20 @@ function Addon.BindingConfig.Window:DrawHeader()
 
 		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["New"])
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetAutoWidth(true)
+
+		self.frame:AddChild(widget)
+	end
+
+	-- import button
+	do
+		local function OnClick()
+			self:SetPage(self.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.BINDING_GROUP)
+		end
+
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		widget:SetText(Addon.L["Import"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
 

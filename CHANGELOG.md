@@ -36,6 +36,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Update keybind button text whilst in keybind mode
 * Move search bar above the bindings list
+* Merge the import window into the binding window
+* Update design of the import function
 
 ### Removed
 

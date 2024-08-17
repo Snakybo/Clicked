@@ -68,7 +68,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 62,
 		func = function()
-			Addon.ImportFrame:ImportProfile()
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE)
 		end
 	}
 
@@ -209,7 +209,8 @@ function ProfileOptions:OnCommReceived(_, message, _, sender)
 	else
 		local success, data = Clicked:Deserialize(message, false)
 
-		Addon.ImportFrame:ImportProfileFromComm(success, data, sender)
+		Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE_COMM, data, sender)
+
 		shareEnabled = not success
 	end
 
