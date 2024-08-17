@@ -2929,7 +2929,7 @@ local function CreateFromItemTemplate(identifier)
 	end
 
 	if item ~= nil then
-		if not Addon:IsGroup(item) then
+		if item.type == Clicked.DataObjectType.BINDING then
 			Clicked:ReloadBinding(item --[[@as Binding]], true)
 		end
 

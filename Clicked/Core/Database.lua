@@ -19,8 +19,11 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local TYPE_BINDING = 1
-local TYPE_GROUP = 2
+--- @enum DataObjectType
+Clicked.DataObjectType = {
+	BINDING = 1,
+	GROUP = 2
+}
 
 -- Local support functions
 
@@ -153,7 +156,7 @@ end
 function Clicked:CreateGroup()
 	--- @type Group
 	local group = {
-		type = TYPE_GROUP,
+		type = Clicked.DataObjectType.GROUP,
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
@@ -328,7 +331,7 @@ function Addon:GetNewBindingTemplate()
 	--- @type Binding
 	local template = {
 		actionType = Addon.BindingTypes.SPELL,
-		type = TYPE_BINDING,
+		type = Clicked.DataObjectType.BINDING,
 		keybind = "",
 		parent = nil,
 		action = {
@@ -439,7 +442,7 @@ function Addon:ChangeScope(item, scope)
 		return
 	end
 
-	if self:IsGroup(item) then
+	if item.type == Clicked.DataObjectType.GROUP then
 		--- @cast item Group
 
 		local id = item.uid
@@ -540,13 +543,4 @@ function Addon:GetContainingDatabase(item)
 	else
 		error("Unknown binding scope " .. item.scope)
 	end
-end
-
---- Check if the specified string is a group identifier.
----
---- @param item DataObject
---- @return boolean
-function Addon:IsGroup(item)
-	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
-	return item.type == TYPE_GROUP
 end

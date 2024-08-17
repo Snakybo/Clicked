@@ -43,7 +43,7 @@
 
 --- @class DataObject
 --- @field public uid integer
---- @field public type integer
+--- @field public type DataObjectType
 --- @field public scope BindingScope
 
 --- @class Binding : DataObject
