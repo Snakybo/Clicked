@@ -38,6 +38,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Move search bar above the bindings list
 * Merge the import window into the binding window
 * Update design of the import function
+* Merge the export window into the binding window
 
 ### Removed
 

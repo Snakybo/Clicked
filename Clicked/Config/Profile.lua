@@ -77,7 +77,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 63,
 		func = function()
-			Addon.ExportFrame:ExportProfile(Addon.db.profile)
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.PROFILE, Addon.db.profile)
 		end
 	}
 

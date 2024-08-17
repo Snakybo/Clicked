@@ -217,9 +217,11 @@ end
 --- @field private bindingCopyTarget? integer
 --- @field private wereBindingsReloaded? boolean
 Addon.BindingConfig.Window = {
+	PAGE_EXPORT_STRING = "exportString",
 	PAGE_IMPORT_STRING = "importString",
 	PAGE_NEW = "new",
 	pages = {
+		exportString = Addon.BindingConfig.ExportStringPage,
 		importString = Addon.BindingConfig.ImportStringPage,
 		new = Addon.BindingConfig.NewPage
 	},
@@ -889,13 +891,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 				end
 
 				rootDescription:CreateButton(Addon.L["Share"], function()
-					if obj.type == Clicked.DataObjectType.BINDING then
-						--- @cast obj Binding
-						Addon.ExportFrame:ExportBinding(obj)
-					elseif obj.type == Clicked.DataObjectType.GROUP then
-						--- @cast obj Group
-						Addon.ExportFrame:ExportGroup(obj)
-					end
+					self:SetPage(self.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.BINDING_GROUP, obj)
 				end)
 
 				rootDescription:CreateButton(Addon.L["Delete"], function()
@@ -1046,13 +1042,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 				text = Addon.L["Share"],
 				notCheckable = true,
 				func = function ()
-					if obj.type == Clicked.DataObjectType.BINDING then
-						--- @cast obj Binding
-						Addon.ExportFrame:ExportBinding(obj)
-					elseif obj.type == Clicked.DataObjectType.GROUP then
-						--- @cast obj Group
-						Addon.ExportFrame:ExportGroup(obj)
-					end
+					self:SetPage(self.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.BINDING_GROUP, obj)
 				end
 			})
 
