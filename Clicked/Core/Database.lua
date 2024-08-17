@@ -466,11 +466,25 @@ function Addon:ChangeScope(item, scope)
 	end
 end
 
+--- Replace the contents of a binding with another binding.
+---
+--- This will replace almost all properties of the original binding with the properties of the replacement binding. Notable exceptions are:
+--- - The UID of the original binding will be preserved.
+--- - The keybind of the original binding will be preserved.
+--- - The parent of the original binding will be preserved.
+--- - The scope of the original binding will be preserved.
+---
 --- @param original Binding
 --- @param replacement Binding
-function Addon:ReplaceBinding(original, replacement)
+function Addon:ReplaceBindingContents(original, replacement)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
+
+	replacement.parent = original.parent
+	replacement.scope = original.scope
+	replacement.uid = original.uid
+	replacement.keybind = original.keybind
+	replacement.integrations = original.integrations
 
 	for index, binding in Clicked:IterateConfiguredBindings() do
 		if binding == original then
