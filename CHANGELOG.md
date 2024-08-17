@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
+* Fix overlap in binding import tree
 
 ## [1.15.6] - 2024-08-18
 

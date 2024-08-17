@@ -181,6 +181,10 @@ local function OnScrollValueChanged(frame, value)
 	self:RefreshTree()
 end
 
+local function Tree_OnSizeChanged(frame)
+	frame.obj:RefreshTree()
+end
+
 local function Tree_OnMouseWheel(frame, delta)
 	local self = frame.obj
 	if self.showScroll then
@@ -258,7 +262,7 @@ function Methods:RefreshTree(fromOnUpdate)
 	self:BuildLevel(self.tree, 1)
 
 	local numlines = #lines
-	local maxlines = (floor(((self.treeframe:GetHeight() or 0)) / 28))
+	local maxlines = math.floor(((self.treeframe:GetHeight() or 0) - 15) / 28)
 
 	if maxlines <= 0 then
 		return
@@ -490,13 +494,14 @@ local function Constructor()
 	treeframe:SetPoint("TOPLEFT")
 	treeframe:SetPoint("BOTTOMRIGHT")
 	treeframe:EnableMouseWheel(true)
-	treeframe --[[@as BackdropTemplate]]:SetBackdrop(PaneBackdrop)
-	treeframe --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-	treeframe --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	treeframe:SetBackdrop(PaneBackdrop)
+	treeframe:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+	treeframe:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetScript("OnUpdate", FirstFrameUpdate)
+	treeframe:SetScript("OnSizeChanged", Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)
 
-	local scrollbar = CreateFrame("Slider", ("AceConfigDialogTreeGroup%dScrollBar"):format(num), treeframe, "UIPanelScrollBarTemplate")
+	local scrollbar = CreateFrame("Slider", ("ClickedBindingImportList%dScrollBar"):format(num), treeframe, "UIPanelScrollBarTemplate")
 	scrollbar:SetScript("OnValueChanged", nil)
 	scrollbar:SetPoint("TOPRIGHT", -10, -26)
 	scrollbar:SetPoint("BOTTOMRIGHT", -10, 26)
