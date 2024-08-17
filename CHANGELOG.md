@@ -30,6 +30,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix overlap in binding import tree
 * Massively reduce the work needed to update the window, improving performance
 * Fix dragging bindings onto an empty space not doing anything
+* Fix duplicate binding check when importing from spellbook or action bar
 
 ### Changed
 

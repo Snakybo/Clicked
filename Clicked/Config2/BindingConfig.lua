@@ -217,7 +217,10 @@ end
 --- @field private bindingCopyTarget? integer
 --- @field private wereBindingsReloaded? boolean
 Addon.BindingConfig.Window = {
-	pages = {},
+	PAGE_NEW = "new",
+	pages = {
+		new = Addon.BindingConfig.NewPage
+	},
 	pageStack = {},
 	sortMode = "key",
 	tree = {},
@@ -383,6 +386,20 @@ end
 
 --- @private
 function Addon.BindingConfig.Window:DrawHeader()
+	-- create binding button
+	do
+		local function OnClick()
+			self:SetPage(self.PAGE_NEW)
+		end
+
+		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		widget:SetText(Addon.L["New"])
+		widget:SetCallback("OnClick", OnClick)
+		widget:SetAutoWidth(true)
+
+		self.frame:AddChild(widget)
+	end
+
 	local line = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
 	line:SetFullWidth(true)
 	line:SetLayout("Table")
@@ -710,6 +727,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 			-- TODO: Set page to binding/group
 		else
 			-- TODO: Set page to new if binding/group page is selected
+			self:SetPage(self.PAGE_NEW)
 		end
 
 		contextMenuFrame:Hide()
@@ -1085,7 +1103,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		if #objects > 0 then
 			self.treeWidget:Select(selected, true)
 		else
-			-- TODO: Set page to new
+			self:SetPage(self.PAGE_NEW)
 		end
 	else
 		-- TODO: set page to binding/group with current selection
