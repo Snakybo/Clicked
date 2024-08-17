@@ -319,3 +319,4 @@ L["External"] = true
 L["Filter bindings"] = true
 L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."] = true
 L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."] = true
+L["Press any key or ESC to cancel"] = true

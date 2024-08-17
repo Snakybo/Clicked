@@ -15,6 +15,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
 * Fix overlap in binding import tree
 
+### Changed
+
+* Update keybind button text whilst in keybind mode
+
 ## [1.15.6] - 2024-08-18
 
 ### Added

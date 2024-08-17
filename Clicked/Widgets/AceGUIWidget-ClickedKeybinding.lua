@@ -9,6 +9,9 @@ Set Keybindings in the Config UI.
 
 --- @class ClickedKeybinding : AceGUIKeybinding
 
+--- @class ClickedInternal
+local Addon = select(2, ...)
+
 local Type, Version = "ClickedKeybinding", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
@@ -65,7 +68,7 @@ local function EnableKeyCapture(frame)
 	frame:LockHighlight()
 
 	self.waitingForKey = true
-	self.button:SetText("...")
+	self.button:SetText(Addon.L["Press any key or ESC to cancel"])
 end
 
 local function DisableKeyCapture(frame)
