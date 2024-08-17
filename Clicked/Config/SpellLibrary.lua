@@ -308,3 +308,156 @@ end
 function Addon.SpellLibrary:GetSpells()
 	return GetSpells()
 end
+
+--- Get all abilities that are currently on the player's action bars.
+---
+--- This includes abilities of the following types:
+--- - Spells
+--- - Items
+--- - Macros
+---
+--- @return table<integer, SpellLibraryResult>
+function Addon.SpellLibrary:GetActionBarSpells()
+	--- @type table<integer, SpellLibraryResult>
+	local result = {}
+
+	--- @param key? string
+	--- @param type? string
+	--- @param id? integer
+	local function Register(key, type, id)
+		if type == nil or id == nil then
+			return
+		end
+
+		-- TODO: Add support for importing of summonmount, summonpet, equipmentset
+
+		if type == "spell" then
+			--- @cast id integer
+			local spell = Addon:DeepCopyTable(self:GetSpellById(id))
+
+			if spell ~= nil then
+				spell.key = key
+				table.insert(result, spell)
+			end
+		elseif type == "item" then
+			--- @cast id integer
+			--- @type SpellLibraryItemResult
+			table.insert(result, {
+				type = Addon.SpellLibrary.ResultType.ITEM,
+				key = key,
+				name = C_Item.GetItemNameByID(id),
+				icon = C_Item.GetItemIconByID(id),
+				itemId = id
+			})
+		elseif type == "macro" then
+			--- @cast id integer
+			local name, icon, content = GetMacroInfo(id)
+
+			--- @type SpellLibraryMacroResult
+			table.insert(result, {
+				type = Addon.SpellLibrary.ResultType.MACRO,
+				key = key,
+				name = name,
+				icon = icon,
+				content = content
+			})
+		end
+	end
+
+	--- @param uid string
+	--- @param slot integer
+	local function RegisterActionButton(uid, slot)
+		-- TODO: Add support for multiple keys, maybe?
+		--- @type string?
+		local key = GetBindingKey(uid)
+
+		--- @type string?, integer?
+		local type, id = GetActionInfo(slot)
+		if type == nil or id == nil then
+			return
+		end
+
+		-- Since 10.2.0 this doesn't provide the macro ID anymore, but instead returns the computed spell or item ID
+		-- TODO: Check if this is also the case on Classic
+		if type == "macro" then
+			local text = GetActionText(slot)
+			id = text ~= nil and GetMacroIndexByName(text) or nil --- @diagnostic disable-line: param-type-mismatch
+		end
+
+		Register(key, type, id)
+	end
+
+	if _G["Dominos"] then
+		for i = 1, 168 do
+			local uid = "CLICK DominosActionButton" .. i .. ":HOTKEY"
+			RegisterActionButton(uid, i)
+		end
+	elseif _G["Bartender4"] then
+		for i = 1, 180 do
+			local uid = "CLICK BT4Button" .. i .. ":Keybind"
+			RegisterActionButton(uid, i)
+		end
+	elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+		for i = 1, 180 do
+			local bar = math.ceil(i / 12)
+			local button = 1 + (i - 1) % 12
+			local frame = _G["ElvUI_Bar" .. bar .. "Button" .. button]
+
+			if frame ~= nil and _G["ElvUI_Bar" .. bar] and _G["ElvUI_Bar" .. bar].db.enabled then
+				local uid = frame.bindstring or frame.keyBoundTarget or ("CLICK " .. frame:GetName() .. ":LeftButton")
+				local action = tonumber(frame._state_action)
+
+				if action ~= nil then
+					RegisterActionButton(uid, action)
+				end
+			end
+		end
+	else
+		for i = 1, 180 do
+			local button = 1 + (i - 1) % 12
+			--- @type string
+			local uid
+
+			if i <= 24 then
+				uid = "ACTIONBUTTON" .. button
+			elseif i <= 36 then
+				uid = "MULTIACTIONBAR3BUTTON" .. button
+			elseif i <= 48 then
+				uid = "MULTIACTIONBAR4BUTTON" .. button
+			elseif i <= 60 then
+				uid = "MULTIACTIONBAR2BUTTON" .. button
+			elseif i <= 72 then
+				uid = "MULTIACTIONBAR1BUTTON" .. button
+			elseif i <= 144 then
+				uid = "ACTIONBUTTON" .. button
+			elseif i < 157 then
+				uid = "MULTIACTIONBAR5BUTTON" .. button
+			elseif i < 169 then
+				uid = "MULTIACTIONBAR6BUTTON" .. button
+			elseif i < 181 then
+				uid = "MULTIACTIONBAR7BUTTON" .. button
+			end
+
+			RegisterActionButton(uid, i)
+		end
+
+		-- Shapeshift forms
+		for i = 1, GetNumShapeshiftForms() do
+			local uid = "SHAPESHIFTBUTTON" .. i
+			local spell = select(4, GetShapeshiftFormInfo(i))
+			Register(GetBindingKey(uid), "spell", spell)
+		end
+
+		-- Pet buttons
+		for i = 1, NUM_PET_ACTION_SLOTS do
+			local uid = "BONUSACTIONBUTTON" .. i
+			local spell = select(7, GetPetActionInfo(i))
+
+			if spell ~= nil then
+				Register(GetBindingKey(uid), "spell", spell)
+			end
+		end
+	end
+
+	return result
+end

@@ -14,6 +14,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add profession abilities to spell autofill
 * Add profession abilities to spellbook import
+* Add Dominos action bars to quick start import
+* Include shapeshift-specific action bars in quick start import
+* Include all 7 action bars in quick start import, up from 4
+* Include all 15 Bartender4 action bars in quick start import, up from 6
+* Include all 15 ElvUI bars action bars in quick start import, up from 6
 
 ### Fixed
 

@@ -314,8 +314,8 @@ function Addon:ShowConfirmationPopup(message, onAccept, onCancel)
 end
 
 --- @generic T : table
---- @param original T
---- @return T
+--- @param original? T
+--- @return T?
 function Addon:DeepCopyTable(original)
 	if original == nil then
 		return nil
