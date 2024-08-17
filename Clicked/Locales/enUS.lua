@@ -325,3 +325,4 @@ L["Combat state checks for this binding require additional processing when enter
 L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."] = true
 L["Press any key or ESC to cancel"] = true
 L["%d loaded bindings"] = true
+L["+%d more"] = true

@@ -33,6 +33,8 @@ local Addon = select(2, ...)
 
 Addon.BindingConfig = Addon.BindingConfig or {}
 
+local Helpers = Addon.BindingConfig.Helpers
+
 --- @class BindingConfigBindingPage : BindingConfigPage
 --- @field public targets Binding[]
 --- @field private tabStatus { selected: string? }
@@ -82,6 +84,69 @@ function Addon.BindingConfig.BindingPage:Hide()
 end
 
 function Addon.BindingConfig.BindingPage:Redraw()
+	do
+		--- @param binding Binding
+		--- @return string
+		local function ValueSelector(binding)
+			return #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"]
+		end
+
+		local hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.targets, ValueSelector)
+
+		--- @return boolean
+		local function SupportsUnusedModifiers()
+			if hasMixedValues then
+				return false
+			end
+
+			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(self.targets[1].keybind) then
+				return #Addon:GetUnusedModifierKeyKeybinds(self.targets[1].keybind, Addon:GetActiveBindings()) > 0
+			end
+
+			return false
+		end
+
+		--- @return string
+		--- @return string?
+		local function GetTooltipText()
+			local subtext = Addon.L["Click and press a key to bind, or right click to unbind."]
+
+			if SupportsUnusedModifiers() then
+				subtext = subtext .. "\n\n" .. Addon.L["Key combination also bound in combination with unassigned modifiers"]
+			end
+
+			if mixedValueText ~= nil then
+				subtext = subtext .. "\n\n" .. mixedValueText
+			end
+
+			return Addon.L["Key"], subtext
+		end
+
+		--- @param widget ClickedKeybinding
+		--- @param key string
+		local function OnKeyChanged(widget, _, key)
+			for _, target in ipairs(self.targets) do
+				target.keybind = key
+
+				Addon:EnsureSupportedTargetModes(target.targets, key, target.actionType)
+				Clicked:ReloadBinding(target, true)
+			end
+
+			hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.targets, ValueSelector)
+			widget:SetMarker(SupportsUnusedModifiers())
+		end
+
+		local widget = AceGUI:Create("ClickedKeybinding") --[[@as ClickedKeybinding]]
+		widget:SetFullWidth(true)
+		widget:SetCallback("OnKeyChanged", OnKeyChanged)
+		widget:SetKey(hasMixedValues and Helpers.MIXED_VALUE_TEXT or Addon:SanitizeKeybind(self.targets[1].keybind))
+		widget:SetMarker(SupportsUnusedModifiers())
+
+		Helpers:RegisterTooltip(widget, GetTooltipText)
+
+		self.container:AddChild(widget)
+	end
+
 	self:CreateTabGroup()
 end
 

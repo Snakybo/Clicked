@@ -42,6 +42,7 @@ read_globals = {
 	-- WoW API globals
 	"AddonCompartmentFrame",
 	"AUTOCOMPLETE_DEFAULT_Y_OFFSET",
+	"BLUE_FONT_COLOR",
 	"BOOKTYPE_PET",
 	"BOOKTYPE_PROFESSION",
 	"BOOKTYPE_SPELL",

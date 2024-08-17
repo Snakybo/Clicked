@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add multi-selection to the bindings list, use ctrl+click and shift+click to select multiple bindings
+* Add multi-selection editing, select multiple items and edit them all at once
 * Remember last selected sorting method when closing the binding window
 * Remember last selected binding(s) when closing the binding window
 * Add profession abilities to spell autofill
