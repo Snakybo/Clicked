@@ -50,6 +50,8 @@ Config\KeyVisualizer.lua
 Config\SpellLibrary.lua
 Debug\StatusOutput.lua
 
+Config2\BindingConfig.lua
+
 # Skinning
 Skins\ElvUI.lua
 

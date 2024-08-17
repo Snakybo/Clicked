@@ -96,7 +96,8 @@
 		"GetTalentTabInfo",
 		"Mixin",
 		"Round",
-		"HasPetSpells"
+		"HasPetSpells",
+		"MenuUtil"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",

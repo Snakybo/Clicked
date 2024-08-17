@@ -571,6 +571,31 @@ function Addon:GetBindingNameAndIcon(binding)
 	return name, icon
 end
 
+--- Get the name and icon of a group for display purposes.
+---
+--- If the group does not have a name or icon, a default will be returned.
+---
+--- @param group Group
+--- @return string
+--- @return string|integer
+function Addon:GetGroupNameAndIcon(group)
+	local name = Addon.L["New Group"]
+
+	--- @type string|integer
+	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
+
+	if not Addon:IsNilOrEmpty(group.name) then
+		name = group.name
+	end
+
+	if (type(group.displayIcon) == "string" and not Addon:IsNilOrEmpty(group.displayIcon --[[@as string]])) or
+	   (type(group.displayIcon) == "number" and group.displayIcon > 0) then
+		icon = group.displayIcon
+	end
+
+	return name, icon
+end
+
 --- @param input string|integer
 --- @return string? itemName
 --- @return string? itemLink
@@ -798,19 +823,22 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 		local leftValue = Addon:GetBindingValue(left)
 		local rightValue = Addon:GetBindingValue(right)
 
-		if leftValue ~= nil and rightValue == nil then
+		local leftNil = Addon:IsNilOrEmpty(leftValue)
+		local rightNil = Addon:IsNilOrEmpty(rightValue)
+
+		if not leftNil and rightNil then
 			return true
 		end
 
-		if leftValue == nil and rightValue ~= nil then
+		if leftNil and not rightNil then
 			return false
 		end
 
-		if leftValue == nil and rightValue == nil then
+		if leftNil and rightNil then
 			return left.uid < right.uid
 		end
 
-		return tostring(leftValue) < tostring(rightValue)
+		return leftValue < rightValue
 	end
 
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
@@ -1268,6 +1296,30 @@ function Addon:SanitizeKeybind(keybind)
 	return keybind
 end
 
+--- Get the UID for the specified scope.
+---
+--- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
+---
+--- @param scope BindingScope
+--- @return integer
+function Addon:GetScopeUid(scope)
+	return -100 + scope
+end
+
+--- Convert a UID back to a scope.
+---
+--- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
+---
+--- @param uid integer
+--- @return BindingScope?
+function Addon:GetScopeFromUid(uid)
+	if uid < 0 then
+		return uid + 100
+	end
+
+	return nil
+end
+
 --- Check if the table contains the specified value.
 ---
 --- @generic T
@@ -1282,6 +1334,53 @@ function Addon:TableContains(tbl, element)
 	end
 
 	return false
+end
+
+--- Remove the specified element from the table.
+---
+--- @generic T
+--- @param tbl T[]
+--- @param element T
+--- @return boolean `true` if the element was removed; `false` otherwise.
+function Addon:TableRemoveItem(tbl, element)
+	for i = 1, #tbl do
+		if tbl[i] == element then
+			table.remove(tbl, i)
+			return true
+		end
+	end
+
+	return false
+end
+
+--- Check if the two arrays are equivalent. This will return `true` if the arrays are functionally the same, but are not necessarily in the same order.
+---
+--- @generic T
+--- @param tbl1 T[]
+--- @param tbl2 T[]
+--- @return boolean `true` if the arrays are equivalent; `false` otherwise.
+function Addon:TableEquivalent(tbl1, tbl2)
+	if #tbl1 ~= #tbl2 then
+		return false
+	end
+
+	--- @type table<any,boolean>
+	local set = {}
+
+	for i = 1, #tbl1 do
+		local element = tbl1[i]
+		set[element] = true
+	end
+
+	for i = 1, #tbl2 do
+		local element = tbl2[i]
+
+		if set[element] == nil then
+			return false
+		end
+	end
+
+	return true
 end
 
 --- Construct a table containing only the specified elements.

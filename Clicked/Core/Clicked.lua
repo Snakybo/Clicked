@@ -88,6 +88,8 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
+		elseif args[1] == "v2" then
+			Addon.BindingConfig.Window:Open()
 		end
 	end
 end

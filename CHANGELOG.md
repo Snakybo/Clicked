@@ -12,6 +12,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add multi-selection to the bindings list, use ctrl+click and shift+click to select multiple bindings
+* Remember last selected sorting method when closing the binding window
+* Remember last selected binding(s) when closing the binding window
 * Add profession abilities to spell autofill
 * Add profession abilities to spellbook import
 * Add Dominos action bars to quick start import
@@ -19,15 +22,23 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include all 7 action bars in quick start import, up from 4
 * Include all 15 Bartender4 action bars in quick start import, up from 6
 * Include all 15 ElvUI bars action bars in quick start import, up from 6
+* Add tooltips to groups
 
 ### Fixed
 
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
 * Fix overlap in binding import tree
+* Massively reduce the work needed to update the window, improving performance
+* Fix dragging bindings onto an empty space not doing anything
 
 ### Changed
 
 * Update keybind button text whilst in keybind mode
+* Move search bar above the bindings list
+
+### Removed
+
+* Remove the ability to search for macro contents
 
 ## [1.15.6] - 2024-08-18
 

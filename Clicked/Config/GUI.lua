@@ -57,6 +57,7 @@ local function OnSerialize(frame, _, value)
 	if bindingMap[frame] ~= nil then
 		Clicked:ReloadBinding(bindingMap[frame], true)
 	else
+		Addon.BindingConfig.Window:RedrawTree()
 		Addon:BindingConfig_Redraw()
 	end
 end
