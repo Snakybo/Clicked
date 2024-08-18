@@ -376,56 +376,82 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 end
 
 --- @param binding Binding
---- @return boolean
-function Addon:HasBindingValue(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
-
-	local value = Addon:GetBindingValue(binding)
-	return not Addon:IsNilOrEmpty(tostring(value))
-end
-
---- @param binding Binding
---- @param value string|integer
-function Addon:SetBindingValue(binding, value)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
-
-	if binding.actionType == Addon.BindingTypes.SPELL then
-		binding.action.spellValue = value
-	elseif binding.actionType == Addon.BindingTypes.ITEM then
-		binding.action.itemValue = value
-	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
-		binding.action.macroValue = value --[[@as string]]
-	end
-end
-
---- @param binding Binding
---- @return string|integer?
+--- @return string?
 function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.actionType == Addon.BindingTypes.SPELL then
-		local spell = self:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
-		return spell ~= nil and spell.name ~= nil and spell.name or binding.action.spellValue
+		local spell = binding.action.spellValue
+		if spell == nil then
+			return nil
+		end
+
+		--- @type string?
+		local name
+
+		if type(spell) == "number" then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+				name = C_Spell.GetSpellName(spell)
+			else
+				local data = GetSpellInfo(spell)
+				name = data ~= nil and data.name or nil
+			end
+		else
+			--- @cast spell string
+			name = spell
+		end
+
+		if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not binding.action.spellMaxRank then
+			local rank = GetSpellSubtext(spell)
+
+			if rank ~= nil then
+				name = string.format("%s(%s)", name, rank)
+			end
+		end
+
+		return name
 	end
 
 	if binding.actionType == Addon.BindingTypes.ITEM then
 		local item = binding.action.itemValue
-
-		if type(item) == "number" and item < 20 then
-			local equipped = GetInventoryItemID("player", item)
-
-			if equipped == nil then
-				return item
-			end
-
-			item = equipped
+		if item == nil then
+			return nil
 		end
 
-		return self:GetItemInfo(item) or item
+		if type(item) == "number" then
+			if item < 20 then
+				item = GetInventoryItemID("player", item) or item
+			end
+
+			return C_Item.GetItemNameByID(item)
+		end
+
+		--- @cast item string
+		return item
 	end
 
 	if binding.actionType == Addon.BindingTypes.CANCELAURA then
-		return binding.action.auraName
+		local aura = binding.action.auraName
+		if aura == nil then
+			return nil
+		end
+
+		--- @type string?
+		local name
+
+		if type(aura) == "number" then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+				name = C_Spell.GetSpellName(aura)
+			else
+				local data = GetSpellInfo(aura)
+				name = data ~= nil and data.name or nil
+			end
+		else
+			--- @cast aura string
+			name = aura
+		end
+
+		return name
 	end
 
 	if binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
@@ -522,11 +548,11 @@ function Addon:GetBindingNameAndIcon(binding)
 			icon = binding.action.macroIcon
 		end
 	elseif binding.actionType == Addon.BindingTypes.CANCELAURA then
-		local _, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
 
-		if value ~= nil then
-			name = string.format(Addon.L["Cancel %s"], value)
+		if spellName ~= nil or value ~= nil then
+			name = string.format(Addon.L["Cancel %s"], spellName or value)
 		end
 
 		if IsValidIcon(spellIcon) then

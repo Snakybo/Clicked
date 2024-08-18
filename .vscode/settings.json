@@ -97,7 +97,9 @@
 		"Mixin",
 		"Round",
 		"HasPetSpells",
-		"MenuUtil"
+		"MenuUtil",
+		"LinkUtil",
+		"ID"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",

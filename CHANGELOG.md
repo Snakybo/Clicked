@@ -24,6 +24,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include all 15 Bartender4 action bars in quick start import, up from 6
 * Include all 15 ElvUI bars action bars in quick start import, up from 6
 * Add tooltips to groups
+* Add spell ranks to spell autofill in Classic Era
 
 ### Fixed
 
@@ -32,6 +33,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Massively reduce the work needed to update the window, improving performance
 * Fix dragging bindings onto an empty space not doing anything
 * Fix duplicate binding check when importing from spellbook or action bar
+* Fix cancelaura spell input not parsing correctly [#216] [#217]
 
 ### Changed
 
@@ -1567,6 +1569,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#217]: https://github.com/Snakybo/Clicked/issues/217
+[#216]: https://github.com/Snakybo/Clicked/issues/216
 [#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203

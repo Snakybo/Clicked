@@ -1685,7 +1685,7 @@ local function DrawIntegrationsOptions(container, binding)
 		widget:SetText(string.format("%s (%s)", Addon.L["Create WeakAura"], Addon.L["Beta"]))
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetFullWidth(true)
-		widget:SetDisabled(not Addon:HasBindingValue(binding))
+		widget:SetDisabled(Addon:IsNilOrEmpty(Addon:GetBindingValue(binding)))
 
 		group:AddChild(widget)
 
@@ -3297,7 +3297,14 @@ function Addon:BindingConfig_Open()
 			if bindingType ~= nil and id ~= nil then
 				local binding = Clicked:CreateBinding()
 				binding.actionType = bindingType
-				Addon:SetBindingValue(binding, id)
+
+				if binding.actionType == Addon.BindingTypes.SPELL then
+					binding.action.spellValue = id
+				elseif binding.actionType == Addon.BindingTypes.ITEM then
+					binding.action.itemValue = id
+				elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
+					binding.action.macroValue = id --[[@as string]]
+				end
 
 				Clicked:ReloadBinding(binding, true)
 				tree:SelectByBindingOrGroup(binding)
