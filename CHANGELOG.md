@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix TOC version for The War Within 11.0.2
 * Fix potential Lua error when retrieving talents on Cataclysm Classic
+* Fix potential Lua error when importing from spellbook in Classic Era
 * Fix minor UI issues in Classic Era
 
 ## [1.15.5] - 2024-08-07

@@ -16,7 +16,7 @@
 
 local GetSpellSubtext = C_Spell.GetSpellSubtext or GetSpellSubtext -- Deprecated in 11.0.0
 
-
+--- @type fun(spellIdentifier: string|number):SpellInfo?
 local GetSpellInfo = C_Spell.GetSpellInfo or function(input) -- Deprecated in 11.0.0
 	local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
 	if name == nil then
@@ -617,7 +617,7 @@ function Addon:GetSpellInfo(input, addSubText)
 
 	local spell = GetSpellInfo(input)
 
-	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
+	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
 		local subtext = GetSpellSubtext(spell.spellID)
 
 		if not self:IsStringNilOrEmpty(subtext) then
