@@ -66,9 +66,8 @@ Addon.BindingConfig.ImportStringModes = {
 --- @field private mode BindingConfigImportStringPageMode
 --- @field private importText? string
 --- @field private reviewData? ExportProfile|ShareData
-Addon.BindingConfig.ImportStringPage = {
-	importKeybinds = true
-}
+--- @field private importKeybinds boolean
+Addon.BindingConfig.ImportStringPage = {}
 
 --- @param mode BindingConfigImportStringPageMode
 --- @param ... any
@@ -80,12 +79,14 @@ function Addon.BindingConfig.ImportStringPage:Show(mode, ...)
 		self.importText = string.format(Addon.L["Imported Clicked profile from %s"], select(2, ...))
 		self.reviewData = select(1, ...)
 	end
+
+	self.importKeybinds = true
 end
 
 function Addon.BindingConfig.ImportStringPage:Hide()
+	self.mode = nil
 	self.importText = nil
 	self.reviewData = nil
-	self.importKeybinds = true
 end
 
 function Addon.BindingConfig.ImportStringPage:Redraw()

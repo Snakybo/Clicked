@@ -573,6 +573,12 @@ function Addon.BindingConfig.Window:CreateFrame()
 		if currentPage ~= nil then
 			local page = self.pages[currentPage]
 			Addon:SafeCall(page.Hide, page)
+
+			page.controller = nil
+			page.container = nil
+			page.targets = nil
+
+			self.currentPage = nil
 		end
 
 		container:ReleaseChildren()

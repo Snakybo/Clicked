@@ -52,6 +52,7 @@ function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 end
 
 function Addon.BindingConfig.ExportStringPage:Hide()
+	self.mode = nil
 	self.target = nil
 end
 

@@ -131,20 +131,22 @@ Addon.BindingConfig.BindingPage = {
 	}
 }
 
-function Addon.BindingConfig.BindingPage:Show()
-end
-
 function Addon.BindingConfig.BindingPage:Hide()
-	local currentTabId = self.currentTab
+	local currentTab = self.currentTab
 
-	if currentTabId ~= nil then
-		local tab = self.tabs[currentTabId].implementation
-
+	if currentTab ~= nil then
+		local tab = self.tabs[currentTab].implementation
 		Addon:SafeCall(tab.Hide, tab)
 
 		tab.container = nil
 		tab.bindings = nil
+
+		self.currentTab = nil
 	end
+
+	table.wipe(self.filteredTargets)
+
+	self.tabWidget = nil
 end
 
 function Addon.BindingConfig.BindingPage:Redraw()
