@@ -320,8 +320,8 @@ function Addon.BindingConfig.BindingPage:CreateTabGroup()
 	self.tabWidget:SetFullWidth(true)
 	self.tabWidget:SetFullHeight(true)
 	self.tabWidget:SetLayout("Flow")
-	self.tabWidget:SetTabs(tabs)
 	self.tabWidget:SetStatusTable(self.tabStatus)
+	self.tabWidget:SetTabs(tabs)
 	self.tabWidget:SetCallback("OnGroupSelected", OnTabGroupSelected)
 
 	if selected ~= self.tabStatus.selected then

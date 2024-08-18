@@ -97,6 +97,18 @@ Methods
 --- @class ClickedTabGroup : AceGUITabGroup
 local Methods = {}
 
+--- @param tabs AceGUITabGroupTab[]
+function Methods:SetTabs(tabs)
+	self:BaseSetTabs(tabs)
+
+	local status = self.status or self.localstatus
+
+	for _, v in ipairs(self.tabs) do
+		--- @diagnostic disable-next-line: undefined-field
+		v:SetSelected(v.value == status.selected)
+	end
+end
+
 --- @protected
 function Methods:BuildTabs()
 	self:BaseBuildTabs()
@@ -124,6 +136,8 @@ local function Constructor()
 
 	--- @private
 	widget.BaseBuildTabs = widget.BuildTabs
+	--- @private
+	widget.BaseSetTabs = widget.SetTabs
 
 	for method, func in pairs(Methods) do
 		widget[method] = func
