@@ -23,20 +23,52 @@
 
 --- @class BindingConfigTabImpl
 --- @field public title string
+--- @field public order integer
 --- @field public implementation BindingConfigTab
---- @field public hidden? fun(binding: DataObject):boolean
+--- @field public filter? fun(bindings: Binding[]):Binding[]
 
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.BindingConfig = Addon.BindingConfig or {}
-
 local Helpers = Addon.BindingConfig.Helpers
+
+local BT_SPELL = Addon.BindingTypes.SPELL
+local BT_ITEM = Addon.BindingTypes.ITEM
+local BT_MACRO = Addon.BindingTypes.MACRO
+local BT_UNIT_SELECT = Addon.BindingTypes.UNIT_SELECT
+local BT_UNIT_MENU = Addon.BindingTypes.UNIT_MENU
+local BT_APPEND = Addon.BindingTypes.APPEND
+local BT_CANCELAURA = Addon.BindingTypes.CANCELAURA
+
+--- @param bindings Binding[]
+--- @param bindingTypes string[]
+--- @return Binding[]
+local function FilterBindingsByActionType(bindings, bindingTypes)
+	--- @type Binding[]
+	local result = {}
+
+	--- @param item Binding
+	--- @return boolean
+	local function Predicate(item)
+		return tContains(bindingTypes, item.actionType)
+	end
+
+	for _, binding in ipairs(bindings) do
+		if Predicate(binding) then
+			table.insert(result, binding)
+		end
+	end
+
+	return result
+end
+
+Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigBindingPage : BindingConfigPage
 --- @field public targets Binding[]
+--- @field private tabWidget ClickedTabGroup
 --- @field private tabStatus { selected: string? }
 --- @field private tabs { [string]: BindingConfigTabImpl }
 --- @field private currentTab? string
@@ -46,23 +78,55 @@ Addon.BindingConfig.BindingPage = {
 	tabs = {
 		action = {
 			title = "Action",
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingActionTab)
+			order = 1,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingActionTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
 		},
 		target = {
 			title = "Targets",
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingTargetTab)
+			order = 2,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingTargetTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_UNIT_SELECT, BT_UNIT_MENU }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
 		},
 		load = {
 			title = "Load conditions",
+			order = 3,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab)
 		},
 		macro ={
 			title = "Macro conditions",
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab)
+			order = 4,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_APPEND, BT_CANCELAURA }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
 		},
 		status = {
 			title = "Status",
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingStatusTab)
+			order = 5,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingStatusTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA }
+
+				--- @type Binding[]
+				local result = {}
+
+				for _, binding in ipairs(FilterBindingsByActionType(bindings, bindingTypes)) do
+					-- TODO: Maybe we can retrieve this from the tree status?
+					if Clicked:IsBindingLoaded(binding) then
+						table.insert(result, binding)
+					end
+				end
+
+				return result
+			end
 		}
 	}
 }
@@ -151,8 +215,29 @@ function Addon.BindingConfig.BindingPage:Redraw()
 end
 
 function Addon.BindingConfig.BindingPage:OnBindingReload()
+	self:UpdateTabGroup()
 end
 
+--- Update the available tabs in the tab group widget
+---
+--- @private
+function Addon.BindingConfig.BindingPage:UpdateTabGroup()
+	local tabs = self:GetAvailableTabs()
+
+	local selected = self.tabStatus.selected
+	if selected == nil or not ContainsIf(tabs, function(tab) return tab.value == self.tabStatus.selected end) then
+		selected = tabs[1].value
+	end
+
+	self.tabWidget:SetTabs(tabs)
+
+	if selected ~= self.tabStatus.selected then
+		self.tabWidget:SelectTab(selected)
+	end
+end
+
+--- Create the tab group widget.
+---
 --- @private
 function Addon.BindingConfig.BindingPage:CreateTabGroup()
 	--- @param container AceGUIContainer
@@ -191,43 +276,68 @@ function Addon.BindingConfig.BindingPage:CreateTabGroup()
 		end
 	end
 
+	local tabs = self:GetAvailableTabs()
+
+	local selected = self.tabStatus.selected
+	if selected == nil or not ContainsIf(tabs, function(tab) return tab.value == self.tabStatus.selected end) then
+		selected = tabs[1].value
+	end
+
+	self.tabWidget = AceGUI:Create("ClickedTabGroup") --[[@as ClickedTabGroup]]
+	self.tabWidget:SetFullWidth(true)
+	self.tabWidget:SetFullHeight(true)
+	self.tabWidget:SetLayout("Flow")
+	self.tabWidget:SetTabs(tabs)
+	self.tabWidget:SetStatusTable(self.tabStatus)
+	self.tabWidget:SetCallback("OnGroupSelected", OnTabGroupSelected)
+	self.tabWidget:SelectTab(selected)
+
+	self.container:AddChild(self.tabWidget)
+end
+
+--- Get all available tabs for the current targets.
+---
+--- @private
+--- @return AceGUITabGroupTab[] tabs The available tabs for use in the `AceGUITabGroup` widget.
+function Addon.BindingConfig.BindingPage:GetAvailableTabs()
 	--- @param tab BindingConfigTabImpl
 	local function IsHidden(tab)
-		if tab.hidden == nil then
+		if tab.filter == nil then
 			return false
 		end
 
-		return Addon:SafeCall(tab.hidden, tab, self.targets)
+		local _, filtered = Addon:SafeCall(tab.filter, self.targets)
+		return #filtered == 0
 	end
+
+	--- @type { [string]: integer }
+	local keys = {}
+
+	--- @type string[]
+	local order = {}
+
+	for id, tab in pairs(self.tabs) do
+		keys[id] = tab.order
+		table.insert(order, id)
+	end
+
+	table.sort(order, function(left, right)
+		return keys[left] < keys[right]
+	end)
 
 	--- @type AceGUITabGroupTab[]
 	local tabs = {}
 
-	--- @type string[]
-	local availableTabs = {}
+	for _, id in ipairs(order) do
+		local tab = self.tabs[id]
 
-	for id, tab in pairs(self.tabs) do
 		if not IsHidden(tab) then
 			table.insert(tabs, {
 				text = Addon.L[tab.title],
 				value = id
 			})
-			table.insert(availableTabs, id)
 		end
 	end
 
-	if not tContains(availableTabs, self.tabStatus.selected) then
-		self.tabStatus.selected = availableTabs[1]
-	end
-
-	local widget = AceGUI:Create("ClickedTabGroup") --[[@as ClickedTabGroup]]
-	widget:SetFullWidth(true)
-	widget:SetFullHeight(true)
-	widget:SetLayout("Flow")
-	widget:SetTabs(tabs)
-	widget:SetStatusTable(self.tabStatus)
-	widget:SetCallback("OnGroupSelected", OnTabGroupSelected)
-	widget:SelectTab(self.tabStatus.selected)
-
-	self.container:AddChild(widget)
+	return tabs
 end

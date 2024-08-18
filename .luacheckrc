@@ -51,6 +51,7 @@ read_globals = {
 	"CreateMacro",
 	"DisableAddOn",
 	"Constants",
+	"ContainsIf",
 	"CopyTable",
 	"C_AddOns",
 	"C_ChatInfo",
