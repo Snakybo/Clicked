@@ -150,3 +150,15 @@ function Addon:IsGameVersionAtleast(version)
 
 	return false
 end
+
+--- Check if the user is running a development build of the addon.
+---
+--- @return boolean
+function Addon:IsDevelopmentBuild()
+--@debug@
+	if Clicked.VERSION == "development" then
+		return true
+	end
+--@end-debug@
+	return false
+end

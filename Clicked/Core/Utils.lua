@@ -283,15 +283,6 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 
 -- Private addon API
 
-function Addon:IsDevelopmentBuild()
---@debug@
-	if Clicked.VERSION == "development" then
-		return true
-	end
---@end-debug@
-	return false
-end
-
 --- @param addon string
 function Addon:ShowAddonIncompatibilityPopup(addon)
 	StaticPopup_Show("CLICKED_INCOMPATIBLE_ADDON", "", "", { addon = addon })
