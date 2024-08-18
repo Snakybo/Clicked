@@ -34,6 +34,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix dragging bindings onto an empty space not doing anything
 * Fix duplicate binding check when importing from spellbook or action bar
 * Fix cancelaura spell input not parsing correctly [#216] [#217]
+* Fix spell autofill for flyout abilities [#212]
 
 ### Changed
 
@@ -1572,6 +1573,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 [#217]: https://github.com/Snakybo/Clicked/issues/217
 [#216]: https://github.com/Snakybo/Clicked/issues/216
+[#212]: https://github.com/Snakybo/Clicked/issues/212
 [#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203

@@ -60,22 +60,20 @@ local function GetSpells_v2()
 	--- @param spell SpellBookItemInfo
 	--- @param tab? SpellBookSkillLineInfo
 	local function ParseSpellBookItem(spell, tab)
-		if spell.spellID == nil then
-			return
-		end
-
 		if not spell.isPassive then
 			if spell.itemType == Enum.SpellBookItemType.Spell or spell.itemType == Enum.SpellBookItemType.FutureSpell or spell.itemType == Enum.SpellBookItemType.PetAction then
-				--- @type SpellLibrarySpellResult
-				result[spell.spellID] = {
-					type = Addon.SpellLibrary.ResultType.SPELL,
-					name = spell.name,
-					spellId = spell.spellID,
-					icon = spell.iconID,
-					tabName = tab and tab.name,
-					tabIcon = tab and tab.iconID,
-					specId = tab and tab.specID
-				}
+				if spell.spellID ~= nil then
+					--- @type SpellLibrarySpellResult
+					result[spell.spellID] = {
+						type = Addon.SpellLibrary.ResultType.SPELL,
+						name = spell.name,
+						spellId = spell.spellID,
+						icon = spell.iconID,
+						tabName = tab and tab.name,
+						tabIcon = tab and tab.iconID,
+						specId = tab and tab.specID
+					}
+				end
 			elseif spell.itemType == Enum.SpellBookItemType.Flyout then
 				local _, _, spellCount = GetFlyoutInfo(spell.actionID)
 
