@@ -73,6 +73,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private tabStatus { selected: string? }
 --- @field private tabs { [string]: BindingConfigTabImpl }
 --- @field private currentTab? string
+--- @field private filteredTargets { [string]: Binding[] }
 Addon.BindingConfig.BindingPage = {
 	keepTreeSelection = true,
 	tabStatus = {},
@@ -129,7 +130,8 @@ Addon.BindingConfig.BindingPage = {
 				return result
 			end
 		}
-	}
+	},
+	filteredTargets = {}
 }
 
 function Addon.BindingConfig.BindingPage:Hide()
@@ -277,6 +279,7 @@ end
 ---
 --- @private
 function Addon.BindingConfig.BindingPage:UpdateTabGroup()
+	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
 
 	local selected = self.tabStatus.selected
@@ -305,6 +308,7 @@ function Addon.BindingConfig.BindingPage:CreateTabGroup()
 		self:ActivateTabGroup(group)
 	end
 
+	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
 
 	local selected = self.tabStatus.selected
@@ -334,16 +338,6 @@ end
 --- @private
 --- @return AceGUITabGroupTab[] tabs The available tabs for use in the `AceGUITabGroup` widget.
 function Addon.BindingConfig.BindingPage:GetAvailableTabs()
-	--- @param tab BindingConfigTabImpl
-	local function IsHidden(tab)
-		if tab.filter == nil then
-			return false
-		end
-
-		local _, filtered = Addon:SafeCall(tab.filter, self.targets)
-		return #filtered == 0
-	end
-
 	--- @type { [string]: integer }
 	local keys = {}
 
@@ -364,8 +358,9 @@ function Addon.BindingConfig.BindingPage:GetAvailableTabs()
 
 	for _, id in ipairs(order) do
 		local tab = self.tabs[id]
+		local targets = self.filteredTargets[id] or self.targets
 
-		if not IsHidden(tab) then
+		if #targets > 0 then
 			table.insert(tabs, {
 				text = Addon.L[tab.title],
 				value = id
@@ -374,4 +369,18 @@ function Addon.BindingConfig.BindingPage:GetAvailableTabs()
 	end
 
 	return tabs
+end
+
+--- Filter bindings for all tabs.
+---
+--- @private
+function Addon.BindingConfig.BindingPage:FilterBindings()
+	table.wipe(self.filteredTargets)
+
+	for id, tab in pairs(self.tabs) do
+		if tab.filter ~= nil then
+			local _, filtered = Addon:SafeCall(tab.filter, self.targets)
+			self.filteredTargets[id] = filtered
+		end
+	end
 end
