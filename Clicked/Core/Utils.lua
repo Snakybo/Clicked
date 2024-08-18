@@ -313,27 +313,6 @@ function Addon:ShowConfirmationPopup(message, onAccept, onCancel)
 	})
 end
 
---- @generic T : table
---- @param original? T
---- @return T?
-function Addon:DeepCopyTable(original)
-	if original == nil then
-		return nil
-	end
-
-	local result = {}
-
-	for k, v in pairs(original) do
-		if type(v) == "table" then
-			v = Addon:DeepCopyTable(v)
-		end
-
-		result[k] = v
-	end
-
-	return result
-end
-
 --- @param text string?
 --- @param icon integer|string?
 --- @param iconSize integer?

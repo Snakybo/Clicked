@@ -98,7 +98,7 @@ function Clicked:SerializeDataObject(obj)
 		data = {
 			version = Addon.DATA_VERSION,
 			type = "binding",
-			binding = Addon:DeepCopyTable(obj)
+			binding = CopyTable(obj)
 		}
 
 		-- Clear user-specific data
@@ -110,10 +110,10 @@ function Clicked:SerializeDataObject(obj)
 		data = {
 			version = Addon.DATA_VERSION,
 			type = "group",
-			group = Addon:DeepCopyTable(obj) --[[@as ShareData.Group]]
+			group = CopyTable(obj) --[[@as ShareData.Group]]
 		}
 
-		data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(obj.uid))
+		data.group.bindings = CopyTable(Clicked:GetBindingsInGroup(obj.uid))
 
 		-- Clear user-specific data
 		for _, binding in ipairs(data.group.bindings) do
@@ -141,7 +141,7 @@ function Clicked:SerializeProfile(profile, printable, full)
 
 	if full then
 		--- @type ExportProfile
-		data = Addon:DeepCopyTable(profile)
+		data = CopyTable(profile)
 		data.type = "profile"
 		data.lightweight = false
 	else
@@ -150,8 +150,8 @@ function Clicked:SerializeProfile(profile, printable, full)
 		--- @type ExportProfile
 		data = {
 			version = profile.version,
-			bindings = Addon:DeepCopyTable(profile.bindings),
-			groups = Addon:DeepCopyTable(profile.groups),
+			bindings = CopyTable(profile.bindings),
+			groups = CopyTable(profile.groups),
 			nextGroupId = profile.nextGroupId,
 			nextBindingId = profile.nextBindingId,
 			type = "profile",

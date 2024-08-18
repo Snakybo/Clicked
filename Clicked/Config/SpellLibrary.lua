@@ -333,9 +333,11 @@ function Addon.SpellLibrary:GetActionBarSpells()
 
 		if type == "spell" then
 			--- @cast id integer
-			local spell = Addon:DeepCopyTable(self:GetSpellById(id))
+
+			local spell = self:GetSpellById(id)
 
 			if spell ~= nil then
+				spell = CopyTable(spell)
 				spell.key = key
 				table.insert(result, spell)
 			end

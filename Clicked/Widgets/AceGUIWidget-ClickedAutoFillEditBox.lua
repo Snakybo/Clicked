@@ -264,7 +264,7 @@ end
 
 --- @param values ClickedAutoFillEditBox.Option[]
 function Methods:SetValues(values)
-	self.values = Addon:DeepCopyTable(values)
+	self.values = CopyTable(values)
 
 	if self:IsAutoCompleteBoxVisible() then
 		self:ShowPrediction()

@@ -396,12 +396,12 @@ local function PopulateTemplate(binding)
 	end
 
 	if binding.actionType == Addon.BindingTypes.SPELL then
-		template = Addon:DeepCopyTable(spellActionButtonTemplate)
+		template = CopyTable(spellActionButtonTemplate)
 		template.triggers[1].trigger.realSpellName = name
 		template.triggers[1].trigger.spellName = id
 		template.load.spellknown = id
 	elseif binding.actionType == Addon.BindingTypes.ITEM then
-		template = Addon:DeepCopyTable(itemActionButtonTemplate)
+		template = CopyTable(itemActionButtonTemplate)
 		template.triggers[1].trigger.itemName = id
 	end
 

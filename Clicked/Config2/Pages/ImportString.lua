@@ -248,7 +248,7 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 			local groups = {}
 
 			for _, current in ipairs(data.groups) do
-				local group = Addon:DeepCopyTable(current) --[[@as ShareData.Group]]
+				local group = CopyTable(current) --[[@as ShareData.Group]]
 				group.bindings = {}
 
 				--- @type ShareData

@@ -167,7 +167,7 @@ local function BuildReviewTab(container)
 			local groups = {}
 
 			for _, current in ipairs(reviewData.groups) do
-				local group = Addon:DeepCopyTable(current) --[[@as ShareData.Group]]
+				local group = CopyTable(current) --[[@as ShareData.Group]]
 				group.bindings = {}
 
 				--- @type ShareData

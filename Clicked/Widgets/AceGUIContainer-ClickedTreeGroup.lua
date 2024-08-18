@@ -469,7 +469,7 @@ local function Button_OnClick(frame, button)
 				notCheckable = true,
 				disabled = inCombat,
 				func = function()
-					self.bindingCopyBuffer = Addon:DeepCopyTable(frame.binding)
+					self.bindingCopyBuffer = CopyTable(frame.binding)
 				end
 			})
 
@@ -479,7 +479,7 @@ local function Button_OnClick(frame, button)
 				disabled = inCombat or self.bindingCopyBuffer == nil,
 				func = function()
 					if frame.binding ~= nil then
-						local clone = Addon:DeepCopyTable(self.bindingCopyBuffer)
+						local clone = CopyTable(self.bindingCopyBuffer)
 						Addon:ReplaceBindingContents(frame.binding, clone)
 					end
 				end

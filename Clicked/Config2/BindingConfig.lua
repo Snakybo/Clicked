@@ -347,7 +347,7 @@ function Addon.BindingConfig.Window:RedrawTree()
 		self.treeWidget:SetTree(self.tree)
 
 		--- @type integer[]
-		local selected = CopyTable(self.treeStatus.selected)
+		local selected = CopyTable(self.treeStatus.selected or {})
 		local selecctionChanged = false
 
 		for i = #selected, 1, -1 do
@@ -850,7 +850,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 						if source ~= nil then
 							--- @cast source Binding
-							local clone = Addon:DeepCopyTable(source)
+							local clone = CopyTable(source)
 							Addon:ReplaceBindingContents(obj, clone)
 						end
 					end):SetEnabled(self.bindingCopyTarget ~= nil)
@@ -969,7 +969,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 						if source ~= nil then
 							--- @cast source Binding
-							local clone = Addon:DeepCopyTable(source)
+							local clone = CopyTable(source)
 							Addon:ReplaceBindingContents(obj, clone)
 						end
 					end

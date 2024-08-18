@@ -536,7 +536,7 @@ end
 function Addon:CloneBinding(original)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 
-	local clone = Addon:DeepCopyTable(original)
+	local clone = CopyTable(original)
 	clone.uid = nil
 	clone.keybind = ""
 	clone.integrations = {}
