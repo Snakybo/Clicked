@@ -17,9 +17,10 @@
 --- @class BindingConfigTab
 --- @field public container AceGUIContainer
 --- @field public bindings Binding[]
---- @field public Show fun(self: BindingConfigTab, container: AceGUIContainer)
---- @field public Hide fun(self: BindingConfigTab)
---- @field public Redraw fun(self: BindingConfigTab, container: AceGUIContainer, binding: Binding)
+--- @field public Show? fun(self: BindingConfigTab, container: AceGUIContainer)
+--- @field public Hide? fun(self: BindingConfigTab)
+--- @field public Redraw? fun(self: BindingConfigTab, container: AceGUIContainer, binding: Binding)
+--- @field public OnBindingReload? fun(self: BindingConfigTab)
 
 --- @class BindingConfigTabImpl
 --- @field public title string
@@ -218,6 +219,58 @@ end
 
 function Addon.BindingConfig.BindingPage:OnBindingReload()
 	self:UpdateTabGroup()
+
+	local currentTab = self.currentTab
+
+	if currentTab ~= nil then
+		local impl = self.tabs[currentTab].implementation
+		Addon:SafeCall(impl.OnBindingReload, impl)
+	end
+end
+
+--- Activate a tab group by its ID.
+---
+--- If there's a tab group currently active, it will be hidden and the new tab group will be shown.
+---
+--- @private
+--- @param group string
+function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
+	local currentTab = self.currentTab
+
+	if currentTab ~= nil then
+		local tab = self.tabs[currentTab].implementation
+		Addon:SafeCall(tab.Hide, tab)
+
+		tab.container = nil
+		tab.bindings = nil
+
+		self.currentTab = nil
+	end
+
+	local newTab = self.tabs[group]
+	local impl = newTab.implementation
+
+	self.currentTab = group
+	Addon:SafeCall(impl.Show, impl)
+
+	impl.container = self.tabWidget
+	impl.bindings = self.filteredTargets[group] or self.targets
+
+	self:RedrawTab()
+end
+
+--- Redraw the currently active tab
+---
+--- @private
+function Addon.BindingConfig.BindingPage:RedrawTab()
+	local currentTab = self.currentTab
+
+	if currentTab ~= nil then
+		local impl = self.tabs[currentTab].implementation
+
+		self.tabWidget:ReleaseChildren()
+		Addon:SafeCall(impl.Redraw, impl)
+	end
 end
 
 --- Update the available tabs in the tab group widget
@@ -242,40 +295,14 @@ end
 ---
 --- @private
 function Addon.BindingConfig.BindingPage:CreateTabGroup()
-	--- @param container AceGUIContainer
 	--- @param group string
-	local function OnTabGroupSelected(container, _, group)
+	local function OnTabGroupSelected(_, _, group)
 		local currentTab = self.currentTab
-
 		if currentTab == group then
 			return
 		end
 
-		if currentTab ~= nil then
-			local tab = self.tabs[currentTab].implementation
-
-			Addon:SafeCall(tab.Hide, tab)
-
-			tab.container = nil
-			tab.bindings = nil
-
-			self.currentTab = nil
-		end
-
-		local newTab = self.tabs[group]
-
-		if newTab ~= nil then
-			local tab = newTab.implementation
-
-			self.currentTab = group
-
-			Addon:SafeCall(tab.Show, tab)
-
-			tab.container = container
-			tab.bindings = self.targets
-
-			Addon:SafeCall(tab.Redraw, tab)
-		end
+		self:ActivateTabGroup(group)
 	end
 
 	local tabs = self:GetAvailableTabs()
@@ -292,7 +319,12 @@ function Addon.BindingConfig.BindingPage:CreateTabGroup()
 	self.tabWidget:SetTabs(tabs)
 	self.tabWidget:SetStatusTable(self.tabStatus)
 	self.tabWidget:SetCallback("OnGroupSelected", OnTabGroupSelected)
-	self.tabWidget:SelectTab(selected)
+
+	if selected ~= self.tabStatus.selected then
+		self.tabWidget:SelectTab(selected)
+	else
+		self:ActivateTabGroup(selected)
+	end
 
 	self.container:AddChild(self.tabWidget)
 end
