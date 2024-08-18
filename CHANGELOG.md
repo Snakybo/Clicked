@@ -42,6 +42,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Merge the import window into the binding window
 * Update design of the import function
 * Merge the export window into the binding window
+* Update copy in various places
 
 ### Removed
 

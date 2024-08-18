@@ -964,11 +964,19 @@ end
 --- @param scope BindingScope
 function Addon:GetLocalizedScope(scope)
 	if scope == Addon.BindingScope.GLOBAL then
-		return Addon.L["Global bindings"]
+		return Addon.L["Global"]
 	end
 
 	if scope == Addon.BindingScope.PROFILE then
-		return Addon.L["Profile specific bindings"]
+		local defaultProfiles = {
+			["Default"] = Addon.L["Default"],
+			[Addon.db.keys.char] = Addon.db.keys.char,
+			[Addon.db.keys.realm] = Addon.db.keys.realm,
+			[Addon.db.keys.class] = UnitClass("player")
+		}
+
+		local profile = Addon.db:GetCurrentProfile()
+		return defaultProfiles[profile] or profile
 	end
 
 	error("Unknown binding scope: " .. scope)
