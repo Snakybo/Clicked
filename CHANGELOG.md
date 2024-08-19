@@ -38,12 +38,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Changed
 
-* Update keybind button text whilst in keybind mode
 * Move search bar above the bindings list
 * Merge the import window into the binding window
-* Update design of the import function
 * Merge the export window into the binding window
-* Update design of the action page
+* Update design of various UI screens
 * Update copy in various places
 
 ### Removed

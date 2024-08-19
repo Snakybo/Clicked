@@ -19,6 +19,8 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+local Helpers = Addon.BindingConfig.Helpers
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigGroupPage : BindingConfigPage
@@ -28,48 +30,79 @@ Addon.BindingConfig.GroupPage = {
 }
 
 function Addon.BindingConfig.GroupPage:Redraw()
-	local parent = Addon:GUI_InlineGroup()
-	parent:SetTitle(Addon.L["Group Name and Icon"])
-	self.container:AddChild(parent)
-
-	-- name text field
 	do
-		-- TODO: Support multiple targets
-		local widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
-		widget:SetText(self.targets[1].name)
-		widget:SetFullWidth(true)
-		widget:SetCallback("OnEnterPressed", function(_, _, value)
-			self.targets[1].name = Addon:TrimString(value)
-			widget:SetText(self.targets[1].name)
-			widget:ClearFocus()
-		end)
+		--- @param group Group
+		--- @return string
+		local function ValueSelector(group)
+			return group.name
+		end
 
-		parent:AddChild(widget)
+		--- @param value string
+		local function OnEnterPressed(_, _, value)
+			value = string.trim(value)
+
+			for _, group in ipairs(self.targets) do
+				group.name = value
+			end
+
+			Addon.BindingConfig.Window:RedrawTree()
+		end
+
+		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		widget:SetFullWidth(true)
+		widget:SetCallback("OnEnterPressed", OnEnterPressed)
+
+		Helpers:HandleWidget(widget, self.targets, ValueSelector, Addon.L["Group name"])
+
+		self.container:AddChild(widget)
 	end
 
 	-- icon field
 	do
-		local widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
-		widget:SetText(tostring(self.targets[1].displayIcon))
-		widget:SetRelativeWidth(0.7)
-		widget:SetCallback("OnEnterPressed", function(_, _, value)
-			self.targets[1].displayIcon = value
-			widget:ClearFocus()
-		end)
+		--- @param group Group
+		--- @return string
+		local function ValueSelector(group)
+			return tostring(group.displayIcon)
+		end
 
-		parent:AddChild(widget)
+		--- @param value string
+		local function OnEnterPressed(_, _, value)
+			for _, group in ipairs(self.targets) do
+				group.displayIcon = value
+			end
+
+			Addon.BindingConfig.Window:RedrawTree()
+		end
+
+		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		widget:SetRelativeWidth(0.7)
+		widget:SetCallback("OnEnterPressed", OnEnterPressed)
+
+		Helpers:HandleWidget(widget, self.targets, ValueSelector, Addon.L["Group icon"])
+
+		self.container:AddChild(widget)
 	end
 
 	do
-		local function OpenIconPicker()
-			self.controller:PushPage(self.controller.PAGE_ICON_SELECT)
+		--- @param bindings Group[]
+		--- @param value string
+		local function OnSelect(bindings, value)
+			for _, binding in ipairs(bindings) do
+				binding.displayIcon = value
+			end
+
+			Addon.BindingConfig.Window:RedrawTree()
+		end
+
+		local function OnClick()
+			self.controller:PushPage(self.controller.PAGE_ICON_SELECT, OnSelect)
 		end
 
 		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
 		widget:SetText(Addon.L["Select"])
-		widget:SetCallback("OnClick", OpenIconPicker)
+		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.3)
 
-		parent:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 end

@@ -336,3 +336,5 @@ L["Key Options"] = true
 L["Enabled"] = true
 L["Disabled"] = true
 L["Enabled by: %s"] = true
+L["Group name"] = true
+L["Group icon"] = true

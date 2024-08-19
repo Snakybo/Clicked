@@ -24,9 +24,11 @@ local MEDIA_ADDON_NAME = "ClickedMedia"
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigIconSelectPage : BindingConfigPage
+--- @field private onSelectCallback fun(targets: DataObject[], value: string)
 Addon.BindingConfig.IconSelectPage = {}
 
-function Addon.BindingConfig.IconSelectPage:Show()
+--- @param onSelectCallback fun(targets: DataObject[], value: string)
+function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 	if not C_AddOns.IsAddOnLoaded(MEDIA_ADDON_NAME) then
 		local loaded, reason = C_AddOns.LoadAddOn(MEDIA_ADDON_NAME)
 
@@ -39,6 +41,12 @@ function Addon.BindingConfig.IconSelectPage:Show()
 			end
 		end
 	end
+
+	self.onSelectCallback = onSelectCallback
+end
+
+function Addon.BindingConfig.IconSelectPage:Hide()
+	self.onSelectCallback = nil
 end
 
 function Addon.BindingConfig.IconSelectPage:Redraw()
@@ -70,18 +78,7 @@ function Addon.BindingConfig.IconSelectPage:Redraw()
 
 	do
 		local function OnIconSelected(_, _, value)
-			for _, target in ipairs(self.targets) do
-				if target.type == Clicked.DataObjectType.BINDING then
-					--- @cast target Binding
-					if target.actionType == Addon.BindingTypes.MACRO then
-						target.action.macroIcon = value
-					end
-				elseif target.type == Clicked.DataObjectType.GROUP then
-					--- @cast target Group
-					target.displayIcon = value
-				end
-			end
-
+			self.onSelectCallback(self.targets, value)
 			self.controller:PopPage(self)
 		end
 
