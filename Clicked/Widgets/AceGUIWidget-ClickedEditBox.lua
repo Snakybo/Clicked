@@ -45,6 +45,8 @@ local function Constructor()
 	--- @class ClickedEditBox
 	local widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
 	widget.type = Type
+
+	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
 
 	for method, func in pairs(Methods) do

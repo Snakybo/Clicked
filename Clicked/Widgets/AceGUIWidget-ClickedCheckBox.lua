@@ -45,6 +45,8 @@ local function Constructor()
 	--- @class ClickedCheckBox
 	local widget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
 	widget.type = Type
+
+	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire
 
 	for method, func in pairs(Methods) do
