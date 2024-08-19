@@ -83,9 +83,6 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 	end
 
 	do
-		local mixedValueText
-		hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.bindings, ValueSelector)
-
 		local hasMixedTypes = FindInTableIf(self.bindings, function(binding)
 			return binding.actionType ~= self.bindings[1].actionType
 		end) ~= nil
@@ -163,42 +160,33 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			end
 		end
 
-		--- @return string
-		--- @return string?
+		--- @return string[]
 		local function GetTooltipText()
-			--- @type string
-			local text = nil
-
 			--- @type string[]
-			local subtext = {}
+			local lines = {}
 
 			if hasMixedTypes then
-				text = Addon.L["Target spell, item, or aura"]
+				table.insert(lines, Addon.L["Target spell, item, or aura"])
 			else
 				if self.bindings[1].actionType == Addon.BindingTypes.SPELL then
-					text = Addon.L["Target spell"]
-					table.insert(subtext, Addon.L["Enter the spell name or spell ID."])
-					table.insert(subtext, "")
-					table.insert(subtext, Addon.L["You can also shift-click a spell in your spellbook or talent window to auto-fill."])
+					table.insert(lines, Addon.L["Target spell"])
+					table.insert(lines, Addon.L["Enter the spell name or spell ID."])
+					table.insert(lines, "")
+					table.insert(lines, Addon.L["You can also shift-click a spell in your spellbook or talent window to auto-fill."])
 				elseif self.bindings[1].actionType == Addon.BindingTypes.ITEM then
-					text = Addon.L["Target item"]
-					table.insert(subtext, Addon.L["Enter an item name, item ID, or equipment slot number."])
-					table.insert(subtext, "")
-					table.insert(subtext, Addon.L["You can also shift-click an item from your bags to auto-fill."])
+					table.insert(lines, Addon.L["Target item"])
+					table.insert(lines, Addon.L["Enter an item name, item ID, or equipment slot number."])
+					table.insert(lines, "")
+					table.insert(lines, Addon.L["You can also shift-click an item from your bags to auto-fill."])
 				elseif self.bindings[1].actionType == Addon.BindingTypes.CANCELAURA then
-					text = Addon.L["Target aura"]
-					table.insert(subtext, Addon.L["Enter the aura name or spell ID."])
-					table.insert(subtext, "")
-					table.insert(subtext, Addon.L["You can also shift-click a spell in your spellbook or talent window to auto-fill."])
+					table.insert(lines, Addon.L["Target aura"])
+					table.insert(lines, Addon.L["Enter the aura name or spell ID."])
+					table.insert(lines, "")
+					table.insert(lines, Addon.L["You can also shift-click a spell in your spellbook or talent window to auto-fill."])
 				end
 			end
 
-			if mixedValueText ~= nil then
-				table.insert(subtext, "")
-				table.insert(subtext, mixedValueText)
-			end
-
-			return text, table.concat(subtext, "\n")
+			return lines
 		end
 
 		local widget
@@ -240,10 +228,6 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 
 			local _, options = CreateOptions()
 			widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
-			widget:SetText(hasMixedValues and Helpers.MIXED_VALUE_TEXT or ValueSelector(self.bindings[1]))
-
-
-			widget:SetLabel(GetTooltipText())
 			widget:SetStrictMode(false)
 			widget:SetInputError(id == nil or Addon.SpellLibrary:GetSpellById(id) == nil)
 			widget:SetValues(options)
@@ -251,21 +235,19 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 		else
-			widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
+			widget = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
 			widget:DisableButton(true)
-			widget:SetLabel(GetTooltipText())
-			widget:SetText(hasMixedValues and Helpers.MIXED_VALUE_TEXT or ValueSelector(self.bindings[1]))
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
 			widget:SetCallback("OnTextChanged", OnTextChanged)
 		end
+
+		hasMixedValues = Helpers:HandleWidget(widget, self.bindings, ValueSelector, GetTooltipText)
 
 		if hasMixedValues or id == nil then
 			widget:SetFullWidth(true)
 		else
 			widget:SetRelativeWidth(0.85)
 		end
-
-		Helpers:RegisterTooltip(widget, GetTooltipText)
 
 		self.container:AddChild(widget)
 	end
@@ -320,6 +302,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		self.container:AddChild(widget)
 	end
 
+	-- TODO: Show the remove rank button if anything in the selection has a rank
 	if not hasMixedValues and id ~= nil and self.bindings[1].actionType == Addon.BindingTypes.SPELL and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
 		local name = ValueSelector(self.bindings[1])
 		local hasRank = string.find(name, "%((.+)%)")
@@ -514,6 +497,10 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 	group:SetFullWidth(true)
 	group:SetLayout("Flow")
 
+	local hasMixedKeys = FindInTableIf(self.bindings, function(obj)
+		return obj.keybind ~= self.bindings[1].keybind
+	end)
+
 	--- @param binding Binding
 	--- @param option string
 	--- @return boolean
@@ -533,18 +520,20 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 		return #setBy > 0, setBy
 	end
 
-	local function CreateCheckbox(group, label, tooltipText, key)
+	local function CreateCheckbox(label, tooltipText, key)
 		local function ValueSelector(binding)
+			if not hasMixedKeys then
+				return nil
+			end
+
 			return binding.action[key] and Addon.L["Enabled"] or Addon.L["Disabled"]
 		end
 
-		local hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.bindings, ValueSelector)
-		local hasMixedKeys = FindInTableIf(self.bindings, function(binding)
-			return binding.keybind ~= self.bindings[1].keybind
-		end)
+		--- @type boolean, fun():boolean
+		local hasMixedValues, updateCb
 
 		local function GetTooltipText()
-			local subtext = { tooltipText }
+			local lines = { label, tooltipText }
 
 			if not hasMixedValues and not self.bindings[1].action[key] then
 				local hasSharedData, setBy = IsSharedDataSet(self.bindings[1], key)
@@ -557,45 +546,41 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 						table.insert(items, NORMAL_FONT_COLOR:WrapTextInColorCode(name))
 					end
 
-					table.insert(subtext, "")
-					table.insert(subtext, string.format(Addon.L["Enabled by: %s"], table.concat(items, ", ")))
+					table.insert(lines, "")
+					table.insert(lines, string.format(Addon.L["Enabled by: %s"], table.concat(items, ", ")))
 				end
 			end
 
-			if hasMixedValues and hasMixedKeys then
-				table.insert(subtext, "")
-				table.insert(subtext, mixedValueText)
-			end
-
-			return label, table.concat(subtext, "\n")
+			return lines
 		end
 
-		--- @param widget AceGUICheckBox
-		local function SetEnabledState(widget)
+		--- @return boolean?
+		local function GetEnabledState()
 			local anyEnabled = FindInTableIf(self.bindings, function(binding)
 				return binding.action[key]
 			end)
 
 			if anyEnabled then
-				widget:SetValue(true)
+				return true
 			else
 				local _, loaded = FindInTableIf(self.bindings, function(binding)
 					return Clicked:IsBindingLoaded(binding)
 				end)
 
 				if loaded ~= nil and IsSharedDataSet(loaded, key) then
-					widget:SetTriState(true)
-					widget:SetValue(nil)
+					return nil
 				end
 			end
+
+			return false
 		end
 
-		--- @param widget AceGUICheckBox
 		--- @param value boolean?
-		local function OnValueChanged(widget, _, value)
-			--- @diagnostic disable-next-line: undefined-field
-			if value == false and widget.tristate then
+		local function OnValueChanged(_, _, value)
+			if value == false then
 				value = true
+			elseif value == nil then
+				value = false
 			end
 
 			for _, binding in ipairs(self.bindings) do
@@ -603,33 +588,26 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 				Clicked:ReloadBinding(binding, true)
 			end
 
-			hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.bindings, ValueSelector)
-			SetEnabledState(widget)
+			updateCb()
 		end
 
 		local widget = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
 		widget:SetType("checkbox")
-		widget:SetLabel(label)
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetFullWidth(true)
+		widget:SetTriState(true)
 
-		if hasMixedValues and hasMixedKeys then
-			widget:SetTextColor(Helpers.MIXED_VALUE_TEXT_COLOR)
-		else
-			SetEnabledState(widget)
-		end
-
-		Helpers:RegisterTooltip(widget, GetTooltipText)
+		hasMixedValues, updateCb = Helpers:HandleWidget(widget, self.bindings, ValueSelector, GetTooltipText, nil, GetEnabledState)
 
 		group:AddChild(widget)
 	end
 
-	CreateCheckbox(group, Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
-	CreateCheckbox(group, Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
-	CreateCheckbox(group, Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")
-	CreateCheckbox(group, Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
-	CreateCheckbox(group, Addon.L["Exit shapeshift form"], Addon.L["Allow this binding to automatically exit your shapeshift form."], "cancelForm")
-	CreateCheckbox(group, Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
+	CreateCheckbox(Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
+	CreateCheckbox(Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
+	CreateCheckbox(Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")
+	CreateCheckbox(Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
+	CreateCheckbox(Addon.L["Exit shapeshift form"], Addon.L["Allow this binding to automatically exit your shapeshift form."], "cancelForm")
+	CreateCheckbox(Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
 
 	self.container:AddChild(group)
 end

@@ -164,7 +164,8 @@ function Addon.BindingConfig.BindingPage:Redraw()
 			return #binding.keybind > 0 and Addon:SanitizeKeybind(binding.keybind) or Addon.L["UNBOUND"]
 		end
 
-		local hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.targets, ValueSelector)
+		--- @type boolean, fun():boolean
+		local hasMixedValues, updateCb
 
 		--- @return boolean
 		local function SupportsUnusedModifiers()
@@ -179,20 +180,16 @@ function Addon.BindingConfig.BindingPage:Redraw()
 			return false
 		end
 
-		--- @return string
-		--- @return string?
+		--- @return string[]
 		local function GetTooltipText()
-			local subtext = Addon.L["Click and press a key to bind, or right click to unbind."]
+			local lines = { Addon.L["Key"], Addon.L["Click and press a key to bind, or right click to unbind."] }
 
 			if SupportsUnusedModifiers() then
-				subtext = subtext .. "\n\n" .. Addon.L["Key combination also bound in combination with unassigned modifiers"]
+				table.insert(lines, "")
+				table.insert(lines, Addon.L["Key combination also bound in combination with unassigned modifiers"])
 			end
 
-			if mixedValueText ~= nil then
-				subtext = subtext .. "\n\n" .. mixedValueText
-			end
-
-			return Addon.L["Key"], subtext
+			return lines
 		end
 
 		--- @param widget ClickedKeybinding
@@ -205,17 +202,16 @@ function Addon.BindingConfig.BindingPage:Redraw()
 				Clicked:ReloadBinding(target, true)
 			end
 
-			hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.targets, ValueSelector)
+			updateCb()
 			widget:SetMarker(SupportsUnusedModifiers())
 		end
 
 		local widget = AceGUI:Create("ClickedKeybinding") --[[@as ClickedKeybinding]]
 		widget:SetFullWidth(true)
 		widget:SetCallback("OnKeyChanged", OnKeyChanged)
-		widget:SetKey(hasMixedValues and Helpers.MIXED_VALUE_TEXT or Addon:SanitizeKeybind(self.targets[1].keybind))
 		widget:SetMarker(SupportsUnusedModifiers())
 
-		Helpers:RegisterTooltip(widget, GetTooltipText)
+		hasMixedValues, updateCb = Helpers:HandleWidget(widget, self.targets, ValueSelector, GetTooltipText)
 
 		self.container:AddChild(widget)
 	end

@@ -253,6 +253,7 @@ function Methods:OnAcquire()
 	self.pullout:SetFrameLevel(self.frame:GetFrameLevel() + 1)
 	self.pullout:Hide()
 
+	self:SetLabelColor(NORMAL_FONT_COLOR)
 	self:DisableButton(true)
 end
 
@@ -636,6 +637,11 @@ function Methods:Select(value)
 	self.selectedOption = value
 
 	AceGUI:ClearFocus()
+end
+
+--- @param color ColorMixin
+function Methods:SetLabelColor(color)
+	self.label:SetTextColor(color:GetRGBA())
 end
 
 --- @private

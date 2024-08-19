@@ -17,6 +17,8 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+--- @alias TooltipTextValue string|fun(widget: AceGUIWidget):string[]
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 local MIXED_TEXT_COLOR =  BLUE_FONT_COLOR
@@ -38,20 +40,21 @@ Addon.BindingConfig.Helpers = {
 --- of the function.
 ---
 --- @param widget AceGUIWidget
---- @param text fun(widget: AceGUIWidget):string, string?|string
+--- @param text TooltipTextValue
 --- @param subtext string?
 function Addon.BindingConfig.Helpers:RegisterTooltip(widget, text, subtext)
-	--- @type (fun(widget: AceGUIWidget):string, string?)?
-	local callback = type(text) == "function" and text or nil
-
 	local function OnEnter()
-		if callback ~= nil then
-			text, subtext = callback(widget)
+		--- @type string[]
+		local lines
+
+		if type(text) == "function" then
+			lines = text(widget)
+		else
+			lines = { text, subtext }
 		end
 
-		--- @cast text string
 		--- @diagnostic disable-next-line: invisible
-		Addon:ShowTooltip(widget.frame, text, subtext)
+		Addon:ShowTooltip(widget.frame, lines[1], #lines > 1 and table.concat(lines, "\n", 2) or nil)
 	end
 
 	local function OnLeave()
@@ -69,7 +72,7 @@ end
 ---
 --- @generic T : DataObject
 --- @param targets T[]
---- @param valueSelector fun(target: T):string
+--- @param valueSelector fun(target: T):string?
 --- @return boolean hasMixedValues `true` if the targets have mixed values; `false` otherwise.
 --- @return string? mixedValueText The text to display in a tooltip, if there are mixed values.
 function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
@@ -92,10 +95,14 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 			name = Addon:GetGroupNameAndIcon(obj)
 		end
 
-		table.insert(values, {
-			name = name,
-			value = valueSelector(obj)
-		})
+		local value = valueSelector(obj)
+
+		if value ~= nil then
+			table.insert(values, {
+				name = name,
+				value = value
+			})
+		end
 	end
 
 	local result = true
@@ -127,4 +134,95 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 	end
 
 	return true, table.concat(lines, "\n")
+end
+
+--- @generic T : DataObject
+--- @param widget AceGUIWidget
+--- @param targets T[]
+--- @param valueSelector fun(target: T):string?
+--- @param tooltip TooltipTextValue
+--- @param tooltipSubtext? string
+--- @param rawValueSelector? fun(target: T):any
+--- @return boolean
+--- @return fun():boolean
+function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector, tooltip, tooltipSubtext, rawValueSelector)
+	--- @return string[]
+	local GetTooltipText = function()
+		--- @type string[]
+		local lines
+
+		if type(tooltip) == "function" then
+			lines = tooltip(widget)
+		else
+			lines = { tooltip }
+
+			if tooltipSubtext ~= nil then
+				table.insert(lines, tooltipSubtext)
+			end
+		end
+
+		local hasMixedValues, mixedValueText = self:GetMixedValues(targets, valueSelector)
+
+		if hasMixedValues then
+			table.insert(lines, "")
+			table.insert(lines, mixedValueText)
+		end
+
+		return lines
+	end
+
+	--- @return any
+	local function GetRawValue()
+		if rawValueSelector ~= nil then
+			return rawValueSelector(targets[1])
+		end
+
+		return valueSelector(targets[1])
+	end
+
+	--- @return boolean
+	local function UpdateCallback()
+		local hasMixedValues = self:GetMixedValues(targets, valueSelector)
+		local label = GetTooltipText()[1]
+
+		if widget.type == "ClickedCheckBox" then
+			--- @cast widget ClickedCheckBox
+
+			widget:SetLabel(label)
+
+			if hasMixedValues then
+				widget:SetValue(false)
+				widget:SetTextColor(self.MIXED_VALUE_TEXT_COLOR)
+			else
+				widget:SetValue(GetRawValue())
+				widget:SetTextColor(WHITE_FONT_COLOR)
+			end
+		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" then
+			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox
+
+			widget:SetLabel(label)
+
+			if hasMixedValues then
+				widget:SetText("")
+				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
+			else
+				widget:SetText(GetRawValue())
+				widget:SetLabelColor(NORMAL_FONT_COLOR)
+			end
+		elseif widget.type == "ClickedKeybinding" then
+			--- @cast widget ClickedKeybinding
+
+			if hasMixedValues then
+				widget:SetKey(self.MIXED_VALUE_TEXT)
+			else
+				widget:SetKey(valueSelector(targets[1]))
+			end
+		end
+
+		return hasMixedValues
+	end
+
+	self:RegisterTooltip(widget, GetTooltipText)
+
+	return UpdateCallback(), UpdateCallback
 end
