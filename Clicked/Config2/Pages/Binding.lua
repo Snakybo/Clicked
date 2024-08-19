@@ -84,13 +84,22 @@ Addon.BindingConfig.BindingPage = {
 			order = 1,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingActionTab),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_CANCELAURA }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
+		},
+		macro = {
+			title = "Macro",
+			order = 1,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingMacroTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_MACRO, BT_APPEND }
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},
 		target = {
 			title = "Targets",
-			order = 2,
+			order = 10,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingTargetTab),
 			filter = function(bindings)
 				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_UNIT_SELECT, BT_UNIT_MENU }
@@ -99,12 +108,12 @@ Addon.BindingConfig.BindingPage = {
 		},
 		load = {
 			title = "Load conditions",
-			order = 3,
+			order = 20,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab)
 		},
-		macro ={
+		load_macro ={
 			title = "Macro conditions",
-			order = 4,
+			order = 21,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab),
 			filter = function(bindings)
 				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_APPEND, BT_CANCELAURA }
@@ -113,7 +122,7 @@ Addon.BindingConfig.BindingPage = {
 		},
 		status = {
 			title = "Status",
-			order = 5,
+			order = 30,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingStatusTab),
 			filter = function(bindings)
 				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA }

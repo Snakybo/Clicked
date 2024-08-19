@@ -338,3 +338,6 @@ L["Disabled"] = true
 L["Enabled by: %s"] = true
 L["Group name"] = true
 L["Group icon"] = true
+L["Macro name"] = true
+L["Macro icon"] = true
+L["Macro text"] = true

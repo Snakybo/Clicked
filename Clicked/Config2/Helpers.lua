@@ -125,7 +125,13 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 	local lines = {}
 
 	for i = 1, math.min(#values, MAX_MIXED_VALUES_DISPLAYED) do
-		table.insert(lines, MIXED_TEXT_COLOR:WrapTextInColorCode(values[i].name .. ": " .. values[i].value))
+		local tooltipValue = values[i].value
+
+		if #tooltipValue > 20 then
+			tooltipValue = tooltipValue:sub(1, 20) .. "..."
+		end
+
+		table.insert(lines, MIXED_TEXT_COLOR:WrapTextInColorCode(values[i].name .. ": " .. tooltipValue))
 	end
 
 	if #values > MAX_MIXED_VALUES_DISPLAYED then
@@ -197,7 +203,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue(GetRawValue())
 				widget:SetTextColor(WHITE_FONT_COLOR)
 			end
-		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" then
+		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" then
 			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox
 
 			widget:SetLabel(label)

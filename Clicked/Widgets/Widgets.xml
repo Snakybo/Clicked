@@ -13,6 +13,7 @@
 	<Script file="AceGUIWidget-ClickedCheckBox.lua"/>
 	<Script file="AceGUIWidget-ClickedEditBox.lua"/>
 	<Script file="AceGUIWidget-ClickedKeyVisualizerButton.lua"/>
+	<Script file="AceGUIWidget-ClickedMultiLineEditBox.lua"/>
 	<Script file="AceGUIWidget-ClickedReadOnlyMultiLineEditBox.lua"/>
 	<Script file="AceGUIWidget-ClickedSearchBox.lua"/>
 	<Script file="AceGUIWidget-ClickedToggleHeading.lua"/>

@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Tabs\Action.lua"/>
 	<Script file="Tabs\Condition.lua"/>
+	<Script file="Tabs\Macro.lua"/>
 	<Script file="Tabs\Status.lua"/>
 	<Script file="Tabs\Target.lua"/>
 </Ui>
