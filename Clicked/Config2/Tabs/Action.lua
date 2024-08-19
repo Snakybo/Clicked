@@ -66,6 +66,12 @@ function Addon.BindingConfig.BindingActionTab:Hide()
 end
 
 function Addon.BindingConfig.BindingActionTab:Redraw()
+	self:RedrawTargetSpell()
+	self:RedrawActionGroups()
+end
+
+--- @private
+function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 	local id = tonumber(GetRawBindingValue(self.bindings[1]))
 	local hasMixedValues
 
@@ -338,6 +344,158 @@ function Addon.BindingConfig.BindingActionTab:Redraw()
 
 			self.container:AddChild(widget)
 		end
+	end
+end
+
+--- @private
+function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
+	-- Only show action groups if all bindings have the same keybind as the UI just wouldn't make sense otherwise
+	for i = 2, #self.bindings do
+		if self.bindings[i].keybind ~= self.bindings[1].keybind then
+			return
+		end
+	end
+
+	local title = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+	title:SetFullWidth(true)
+	title:SetText(Addon.L["Action Groups"])
+
+	local group = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
+	group:SetFullWidth(true)
+	group:SetLayout("Flow")
+
+	local count = 0
+
+	local function Redraw()
+		--- @type { [integer]: Binding[] }
+		local groups = { }
+
+		--- @type integer[]
+		local order = {}
+
+		--- @param left Binding
+		--- @param right Binding
+		--- @return boolean
+		local function SortFunc(left, right)
+			if left.actionType ~= Addon.BindingTypes.APPEND and right.actionType == Addon.BindingTypes.APPEND then
+				return true
+			end
+
+			if left.actionType == Addon.BindingTypes.APPEND and right.actionType ~= Addon.BindingTypes.APPEND then
+				return false
+			end
+
+			return left.uid < right.uid
+		end
+
+		for _, other in Clicked:IterateActiveBindings() do
+			if other.keybind == self.bindings[1].keybind and other.actionType ~= Addon.BindingTypes.MACRO then
+				local id = other.action.executionOrder
+
+				if groups[id] == nil then
+					groups[id] = {}
+					table.insert(order, id)
+				end
+
+				table.insert(groups[id], other)
+				count = count + 1
+			end
+		end
+
+		for _, g in pairs(groups) do
+			table.sort(g, SortFunc)
+		end
+
+		table.sort(order)
+
+		for _, id in ipairs(order) do
+			local bindings = groups[id]
+
+			local header = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			header:SetText(string.format(Addon.L["Group %d"], id))
+			header:SetFontObject(GameFontHighlight)
+
+			group:AddChild(header)
+
+			for index, current in ipairs(bindings) do
+				local function OnClick()
+					-- TODO: Select binding
+				end
+
+				local function OnMoveUp()
+					if current.action.executionOrder > 1 then
+						current.action.executionOrder = current.action.executionOrder - 1
+					else
+						for oid, obindings in pairs(groups) do
+							if oid >= id then
+								for _, obinding in ipairs(obindings) do
+									if obinding ~= current then
+										obinding.action.executionOrder = obinding.action.executionOrder + 1
+									end
+								end
+							end
+						end
+					end
+
+					Clicked:ReloadBinding(current, true)
+
+					group:ReleaseChildren()
+					Redraw()
+				end
+
+				local function OnMoveDown()
+					current.action.executionOrder = current.action.executionOrder + 1
+
+					Clicked:ReloadBinding(current, true)
+
+					group:ReleaseChildren()
+					Redraw()
+				end
+
+				local name, icon = Addon:GetBindingNameAndIcon(current)
+
+				if index > 1 then
+					-- TODO: There might be a better way for this
+					--- @param b Binding
+					--- @return string?
+					local function GetType(b)
+						if b.actionType == Addon.BindingTypes.SPELL or b.actionType == Addon.BindingTypes.ITEM then
+							return "cast"
+						elseif b.actionType == Addon.BindingTypes.CANCELAURA then
+							return "cancelaura"
+						end
+
+						return nil
+					end
+
+					local type = GetType(current)
+					local previousType = GetType(bindings[1])
+
+					if type ~= nil and previousType ~= nil and type ~= previousType then
+						name = RED_FONT_COLOR:WrapTextInColorCode(name)
+					end
+				end
+
+				local widget = AceGUI:Create("ClickedReorderableLabel") --[[@as ClickedReorderableLabel]]
+				widget:SetFontObject(GameFontHighlight)
+				widget:SetText(name)
+				widget:SetImage(icon)
+				widget:SetFullWidth(true)
+				widget:SetCallback("OnClick", OnClick)
+				widget:SetCallback("OnMoveUp", OnMoveUp)
+				widget:SetCallback("OnMoveDown", OnMoveDown)
+				widget:SetMoveUpButton(id > 1 or #bindings > 1)
+
+				group:AddChild(widget)
+			end
+		end
+	end
+
+	Redraw()
+
+	if count > 1 then
+		self.container:AddChild(title)
+		self.container:AddChild(group)
 	end
 end
 
