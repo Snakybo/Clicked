@@ -68,6 +68,7 @@ end
 function Addon.BindingConfig.BindingActionTab:Redraw()
 	self:RedrawTargetSpell()
 	self:RedrawActionGroups()
+	self:RedrawKeyOptions()
 end
 
 --- @private
@@ -441,6 +442,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 
 					group:ReleaseChildren()
 					Redraw()
+					self.container:DoLayout()
 				end
 
 				local function OnMoveDown()
@@ -450,6 +452,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 
 					group:ReleaseChildren()
 					Redraw()
+					self.container:DoLayout()
 				end
 
 				local name, icon = Addon:GetBindingNameAndIcon(current)
@@ -497,6 +500,138 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 		self.container:AddChild(title)
 		self.container:AddChild(group)
 	end
+end
+
+--- @private
+function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
+	local title = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+	title:SetFullWidth(true)
+	title:SetText(Addon.L["Key Options"])
+
+	self.container:AddChild(title)
+
+	local group = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
+	group:SetFullWidth(true)
+	group:SetLayout("Flow")
+
+	--- @param binding Binding
+	--- @param option string
+	--- @return boolean
+	--- @return Binding[]
+	local function IsSharedDataSet(binding, option)
+		--- @type Binding[]
+		local setBy = {}
+
+		for _, other in ipairs(Clicked:GetByKey(binding.keybind)) do
+			if other ~= binding and Clicked:IsBindingLoaded(other) then
+				if other.action[option] then
+					table.insert(setBy, other)
+				end
+			end
+		end
+
+		return #setBy > 0, setBy
+	end
+
+	local function CreateCheckbox(group, label, tooltipText, key)
+		local function ValueSelector(binding)
+			return binding.action[key] and Addon.L["Enabled"] or Addon.L["Disabled"]
+		end
+
+		local hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.bindings, ValueSelector)
+		local hasMixedKeys = FindInTableIf(self.bindings, function(binding)
+			return binding.keybind ~= self.bindings[1].keybind
+		end)
+
+		local function GetTooltipText()
+			local subtext = { tooltipText }
+
+			if not hasMixedValues and not self.bindings[1].action[key] then
+				local hasSharedData, setBy = IsSharedDataSet(self.bindings[1], key)
+
+				if hasSharedData then
+					local items = { }
+
+					for _, binding in ipairs(setBy) do
+						local name = Addon:GetBindingNameAndIcon(binding)
+						table.insert(items, NORMAL_FONT_COLOR:WrapTextInColorCode(name))
+					end
+
+					table.insert(subtext, "")
+					table.insert(subtext, string.format(Addon.L["Enabled by: %s"], table.concat(items, ", ")))
+				end
+			end
+
+			if hasMixedValues and hasMixedKeys then
+				table.insert(subtext, "")
+				table.insert(subtext, mixedValueText)
+			end
+
+			return label, table.concat(subtext, "\n")
+		end
+
+		--- @param widget AceGUICheckBox
+		local function SetEnabledState(widget)
+			local anyEnabled = FindInTableIf(self.bindings, function(binding)
+				return binding.action[key]
+			end)
+
+			if anyEnabled then
+				widget:SetValue(true)
+			else
+				local _, loaded = FindInTableIf(self.bindings, function(binding)
+					return Clicked:IsBindingLoaded(binding)
+				end)
+
+				if loaded ~= nil and IsSharedDataSet(loaded, key) then
+					widget:SetTriState(true)
+					widget:SetValue(nil)
+				end
+			end
+		end
+
+		--- @param widget AceGUICheckBox
+		--- @param value boolean?
+		local function OnValueChanged(widget, _, value)
+			--- @diagnostic disable-next-line: undefined-field
+			if value == false and widget.tristate then
+				value = true
+			end
+
+			for _, binding in ipairs(self.bindings) do
+				binding.action[key] = value
+				Clicked:ReloadBinding(binding, true)
+			end
+
+			hasMixedValues, mixedValueText = Helpers:GetMixedValues(self.bindings, ValueSelector)
+			SetEnabledState(widget)
+		end
+
+		local widget = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
+		widget:SetType("checkbox")
+		widget:SetLabel(label)
+		widget:SetCallback("OnValueChanged", OnValueChanged)
+		widget:SetFullWidth(true)
+
+		if hasMixedValues and hasMixedKeys then
+			widget:SetTextColor(Helpers.MIXED_VALUE_TEXT_COLOR)
+		else
+			SetEnabledState(widget)
+		end
+
+		Helpers:RegisterTooltip(widget, GetTooltipText)
+
+		group:AddChild(widget)
+	end
+
+	CreateCheckbox(group, Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
+	CreateCheckbox(group, Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
+	CreateCheckbox(group, Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")
+	CreateCheckbox(group, Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
+	CreateCheckbox(group, Addon.L["Exit shapeshift form"], Addon.L["Allow this binding to automatically exit your shapeshift form."], "cancelForm")
+	CreateCheckbox(group, Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
+
+	self.container:AddChild(group)
 end
 
 --- @private

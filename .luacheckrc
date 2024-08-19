@@ -217,6 +217,7 @@ read_globals = {
 	"UnitName",
 	"UnitRace",
 	"WorldFrame",
+	"WHITE_FONT_COLOR",
 	"wipe",
 	"WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
 	"WOW_PROJECT_CLASSIC",

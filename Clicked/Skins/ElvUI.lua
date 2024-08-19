@@ -144,6 +144,10 @@ local function Initialize()
 			widget.treeframe:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
 			skins:HandleButton(widget.sortButton, true)
+		elseif widget.type == "ClickedTreeGroup2" then
+			widget.content:GetParent():SetTemplate("Transparent")
+			widget.treeFrame:SetTemplate("Transparent")
+			skins:HandleScrollBar(widget.scrollbar)
 		end
 
 		return originalRegisterAsContainer(self, widget)

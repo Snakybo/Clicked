@@ -26,6 +26,7 @@ local MAX_MIXED_VALUES_DISPLAYED = 9
 
 --- @class BindingConfigUtil
 Addon.BindingConfig.Helpers = {
+	MIXED_VALUE_TEXT_COLOR = MIXED_TEXT_COLOR,
 	MIXED_VALUE_TEXT = MIXED_TEXT_COLOR:WrapTextInColorCode("...")
 }
 

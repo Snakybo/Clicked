@@ -332,3 +332,7 @@ L["The generated macro for binding '%s' is too long and will not function, pleas
 L["Press any key or ESC to cancel"] = true
 L["%d loaded bindings"] = true
 L["+%d more"] = true
+L["Key Options"] = true
+L["Enabled"] = true
+L["Disabled"] = true
+L["Enabled by: %s"] = true
