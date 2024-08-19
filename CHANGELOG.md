@@ -23,14 +23,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include all 7 action bars in quick start import, up from 4
 * Include all 15 Bartender4 action bars in quick start import, up from 6
 * Include all 15 ElvUI bars action bars in quick start import, up from 6
-* Add tooltips to groups
+* Add more information to a bunch of tooltips in the binding configuration window
 * Add spell ranks to spell autofill in Classic Era
 
 ### Fixed
 
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
-* Fix overlap in binding import tree
-* Massively reduce the work needed to update the window, improving performance
+* Optimize binding configuration window performance
+* Fix an issue where the binding configuration window would reload completely when a binding is reloaded
 * Fix dragging bindings onto an empty space not doing anything
 * Fix duplicate binding check when importing from spellbook or action bar
 * Fix cancelaura spell input not parsing correctly [#216] [#217]
