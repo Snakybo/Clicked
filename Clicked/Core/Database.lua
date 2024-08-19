@@ -19,6 +19,20 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+--- @class DataObjectLookup
+--- @field public uid table<integer,DataObject>
+--- @field public keybind table<string,Binding[]>
+--- @field public parent table<integer,Binding[]>
+--- @field public actionType table<BindingType,Binding[]>
+--- @field public scope table<BindingScope,DataObject[]>
+local lookupTable = {
+	uid = {},
+	keybind = {},
+	parent = {},
+	actionType = {},
+	scope = {}
+}
+
 --- @enum DataObjectType
 Clicked.DataObjectType = {
 	BINDING = 1,
@@ -66,7 +80,6 @@ local function GetNegatableTriStateLoadOptionTemplate(default)
 
 	return template
 end
-
 
 --- @param default string
 --- @return Binding.MutliFieldLoadOption
@@ -199,6 +212,72 @@ function Clicked:DeleteGroup(group)
 	return false
 end
 
+--- Update the data object lookup table
+---
+--- This will cache all data objects in a lookup table, this is used to quickly find bindings and groups by keybind, parent, action type or scope.
+---
+--- This will come at the cost of memory, but will greatly improve performance when searching for bindings or groups.
+---
+--- @param obj? DataObject
+function Addon:UpdateLookupTable(obj)
+	--- @type DataObject[]
+	local queue = {}
+	local clean = obj == nil
+
+	if obj == nil then
+		table.wipe(lookupTable.uid)
+		table.wipe(lookupTable.keybind)
+		table.wipe(lookupTable.parent)
+		table.wipe(lookupTable.actionType)
+		table.wipe(lookupTable.scope)
+
+		for _, configured in Clicked:IterateConfiguredBindings() do
+			table.insert(queue, configured)
+		end
+
+		for _, group in Clicked:IterateGroups() do
+			table.insert(queue, group)
+		end
+	else
+		table.insert(queue, obj)
+	end
+
+	--- @generic K
+	--- @param tbl table<K,DataObject[]>
+	--- @param key K
+	--- @param value DataObject
+	local function UpdateLookupTable(tbl, key, value)
+		if not clean then
+			for _, array in pairs(tbl) do
+				if Addon:TableRemoveItem(array, value) then
+					break
+				end
+			end
+		end
+
+		if not Addon:IsNilOrEmpty(key) then
+			tbl[key] = tbl[key] or {}
+			table.insert(tbl[key], value)
+		end
+	end
+
+	while #queue > 0 do
+		--- @type DataObject
+		local current = table.remove(queue, 1)
+
+		lookupTable.uid[current.uid] = current
+
+		if current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
+			UpdateLookupTable(lookupTable.keybind, current.keybind, current)
+			UpdateLookupTable(lookupTable.parent, current.parent, current)
+			UpdateLookupTable(lookupTable.actionType, current.actionType, current)
+		end
+
+		UpdateLookupTable(lookupTable.scope, current.scope, current)
+	end
+end
+
 --- Attempt to get a binding or group with the specified identifier.
 ---
 --- @param identifier? integer
@@ -208,38 +287,43 @@ function Clicked:GetByUid(identifier)
 		return nil
 	end
 
-	for _, group in self:IterateGroups() do
-		if group.uid == identifier then
-			return group
-		end
+	return lookupTable.uid[identifier]
+end
+
+--- @param key? string
+--- @return Binding[]
+function Clicked:GetByKey(key)
+	if key == nil then
+		return {}
 	end
 
-	for _, binding in self:IterateConfiguredBindings() do
-		if binding.uid == identifier then
-			return binding
-		end
-	end
+	return lookupTable.keybind[key] or {}
+end
 
-	return nil
+--- @param scope BindingScope
+--- @return DataObject[]
+function Clicked:GetByScope(scope)
+	return lookupTable.scope[scope] or {}
 end
 
 --- Get a list of all bindings that are part of the specified group.
 ---
---- @param identifier integer
+--- @param identifier? integer
 --- @return Binding[]
-function Clicked:GetBindingsInGroup(identifier)
-	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
-
-	--- @type Binding[]
-	local bindings = {}
-
-	for _, binding in self:IterateConfiguredBindings() do
-		if binding.parent == identifier then
-			table.insert(bindings, binding)
-		end
+function Clicked:GetByParent(identifier)
+	if identifier == nil then
+		return {}
 	end
 
-	return bindings
+	return lookupTable.parent[identifier] or {}
+end
+
+--- Get a list of all bindings that are part of the specified group.
+---
+--- @param type BindingType
+--- @return Binding[]
+function Clicked:GetByActionType(type)
+	return lookupTable.actionType[type] or {}
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
@@ -446,7 +530,7 @@ function Addon:ChangeScope(item, scope)
 		--- @cast item Group
 
 		local id = item.uid
-		local bindings = Clicked:GetBindingsInGroup(id)
+		local bindings = Clicked:GetByParent(id)
 
 		if Clicked:DeleteGroup(item) then
 			self:RegisterGroup(item, scope)
@@ -529,6 +613,8 @@ function Addon:RegisterGroup(group, scope)
 	else
 		error("Unknown binding scope " .. scope)
 	end
+
+	self:UpdateLookupTable(group)
 end
 
 --- @param original Binding

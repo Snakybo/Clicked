@@ -650,6 +650,8 @@ end
 function Clicked:ReloadBinding(binding, full, delayFrame, ...)
 	ProcessReloadBindingArguments(binding, full, delayFrame, ...)
 	ReloadBindings(delayFrame)
+
+	Addon:UpdateLookupTable(binding)
 end
 
 --- @param full boolean
@@ -660,6 +662,8 @@ end
 function Clicked:ReloadBindings(full, delayFrame, ...)
 	ProcessReloadArguments(full, delayFrame, ...)
 	ReloadBindings(delayFrame)
+
+	Addon:UpdateLookupTable()
 end
 
 function Clicked:ProcessActiveBindings()

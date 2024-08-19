@@ -113,7 +113,7 @@ function Clicked:SerializeDataObject(obj)
 			group = CopyTable(obj) --[[@as ShareData.Group]]
 		}
 
-		data.group.bindings = CopyTable(Clicked:GetBindingsInGroup(obj.uid))
+		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
 
 		-- Clear user-specific data
 		for _, binding in ipairs(data.group.bindings) do

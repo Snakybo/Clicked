@@ -809,7 +809,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 			text = Addon:GetGroupNameAndIcon(obj)
 
-			local bindings = Clicked:GetBindingsInGroup(uid)
+			local bindings = Clicked:GetByParent(uid)
 			local numLoaded = 0
 
 			for _, binding in ipairs(bindings) do
@@ -936,7 +936,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							msg = msg .. obj.keybind .. " " .. Addon:GetBindingNameAndIcon(obj)
 						elseif obj.type == Clicked.DataObjectType.GROUP then
 							--- @cast obj Group
-							local bindings = Clicked:GetBindingsInGroup(obj.uid)
+							local bindings = Clicked:GetByParent(obj.uid)
 
 							msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(#bindings) .. "\n\n"
 							msg = msg .. Addon:GetGroupNameAndIcon(obj)
@@ -1091,7 +1091,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							msg = msg .. obj.keybind .. " " .. Addon:GetBindingNameAndIcon(obj)
 						elseif obj.type == Clicked.DataObjectType.GROUP then
 							--- @cast obj Group
-							local bindings = Clicked:GetBindingsInGroup(obj.uid)
+							local bindings = Clicked:GetByParent(obj.uid)
 
 							msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(#bindings) .. "\n\n"
 							msg = msg .. Addon:GetGroupNameAndIcon(obj)

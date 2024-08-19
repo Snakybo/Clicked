@@ -88,8 +88,8 @@ end
 
 --- @param spell SpellLibrarySpellResult
 local function DoesSpellBookBindingExist(spell)
-	for _, binding in Clicked:IterateConfiguredBindings() do
-		if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spell.spellId then
+	for _, binding in ipairs(Clicked:GetByActionType(Addon.BindingTypes.SPELL)) do
+		if binding.action.spellValue == spell.spellId then
 			return true
 		end
 	end
