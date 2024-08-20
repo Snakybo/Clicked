@@ -75,6 +75,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private tabs { [string]: BindingConfigTabImpl }
 --- @field private currentTab? string
 --- @field private filteredTargets { [string]: Binding[] }
+--- @field private scrollView? AceGUIScrollFrame
 Addon.BindingConfig.BindingPage = {
 	keepTreeSelection = true,
 	tabStatus = {},
@@ -162,6 +163,7 @@ function Addon.BindingConfig.BindingPage:Hide()
 	table.wipe(self.filteredTargets)
 
 	self.tabWidget = nil
+	self.scrollView = nil
 end
 
 --- @protected
@@ -241,13 +243,29 @@ function Addon.BindingConfig.BindingPage:OnBindingReload()
 end
 
 --- Redraw the currently active tab
-function Addon.BindingConfig.BindingPage:RedrawTab()
+---
+--- @param full? boolean
+function Addon.BindingConfig.BindingPage:RedrawTab(full)
 	local currentTab = self.currentTab
 
 	if currentTab ~= nil then
 		local impl = self.tabs[currentTab].implementation
 
-		self.tabWidget:ReleaseChildren()
+		if full or self.scrollView == nil then
+			self.tabWidget:ReleaseChildren()
+
+			self.scrollView = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
+			self.scrollView:SetLayout("Flow")
+			self.scrollView:SetFullWidth(true)
+			self.scrollView:SetFullHeight(true)
+
+			self.tabWidget:AddChild(self.scrollView)
+
+			impl.container = self.scrollView
+		else
+			self.scrollView:ReleaseChildren()
+		end
+
 		Addon:SafeCall(impl.Redraw, impl)
 	end
 end

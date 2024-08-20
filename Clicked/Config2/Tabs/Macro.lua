@@ -24,21 +24,9 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigMacroTab : BindingConfigTab
---- @field private scrollview AceGUIScrollFrame
 Addon.BindingConfig.BindingMacroTab = {}
 
 function Addon.BindingConfig.BindingMacroTab:Redraw()
-	self.scrollview = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
-	self.scrollview:SetLayout("Flow")
-	self.scrollview:SetFullWidth(true)
-	self.scrollview:SetFullHeight(true)
-
-	self:RedrawScrollView()
-
-	self.container:AddChild(self.scrollview)
-end
-
-function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 	-- macro name
 	do
 		--- @param binding Binding
@@ -64,7 +52,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 
 		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Macro name"])
 
-		self.scrollview:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 
 	-- macro icon
@@ -93,7 +81,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 
 		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Macro icon"])
 
-		self.scrollview:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 
 	-- icon select button
@@ -117,7 +105,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.3)
 
-		self.scrollview:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 
 	-- activate on
@@ -163,8 +151,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 				Clicked:ReloadBinding(binding, true)
 			end
 
-			self.scrollview:ReleaseChildren()
-			self:RedrawScrollView()
+			self.controller:RedrawTab()
 		end
 
 		local widget = AceGUI:Create("ClickedDropdown") --[[@as AceGUIDropdown]]
@@ -174,7 +161,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 
 		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Activate on"], nil, GetRawValue)
 
-		self.scrollview:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 
 	-- hovercast-only warning
@@ -188,7 +175,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 			widget:SetText("\n" .. Addon.L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 
-			self.scrollview:AddChild(widget)
+			self.container:AddChild(widget)
 		end
 	end
 
@@ -208,7 +195,7 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 			widget:SetText("\n" .. table.concat(msg, "\n\n") .. "\n")
 			widget:SetFullWidth(true)
 
-			self.scrollview:AddChild(widget)
+			self.container:AddChild(widget)
 		end
 	end
 
@@ -239,6 +226,6 @@ function Addon.BindingConfig.BindingMacroTab:RedrawScrollView()
 
 		Addon.Media:UseMonoFont(widget)
 
-		self.scrollview:AddChild(widget)
+		self.container:AddChild(widget)
 	end
 end
