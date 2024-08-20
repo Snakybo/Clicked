@@ -425,7 +425,7 @@ local function ProcessBuckets()
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 
-			if #command.data > 255 and not macroTooLongNotified[command.data] then
+			if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
 				macroTooLongNotified[command.data] = true
 
 				local message = Addon.L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."]
