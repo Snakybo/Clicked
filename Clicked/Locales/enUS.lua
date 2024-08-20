@@ -341,3 +341,7 @@ L["Group icon"] = true
 L["Macro name"] = true
 L["Macro icon"] = true
 L["Macro text"] = true
+L["Activate on"] = true
+L["Key press"] = true
+L["Unit frame"] = true
+L["Both"] = true

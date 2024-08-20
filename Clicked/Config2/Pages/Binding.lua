@@ -102,7 +102,7 @@ Addon.BindingConfig.BindingPage = {
 			order = 10,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingTargetTab),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_UNIT_SELECT, BT_UNIT_MENU }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU }
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},
@@ -116,7 +116,7 @@ Addon.BindingConfig.BindingPage = {
 			order = 21,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_APPEND, BT_CANCELAURA }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_CANCELAURA }
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},

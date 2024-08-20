@@ -223,6 +223,18 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			else
 				widget:SetKey(valueSelector(targets[1]))
 			end
+		elseif widget.type == "ClickedDropdown" then
+			--- @cast widget ClickedDropdown
+
+			widget:SetLabel(label)
+
+			if hasMixedValues then
+				widget:SetValue(nil)
+				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
+			else
+				widget:SetValue(GetRawValue())
+				widget:SetLabelColor(NORMAL_FONT_COLOR)
+			end
 		end
 
 		return hasMixedValues
