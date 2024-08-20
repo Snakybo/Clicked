@@ -531,15 +531,14 @@ function Addon.BindingConfig.Window:ActivatePage()
 	end
 
 	local newPage = self.pageStack[#self.pageStack]
-	local impl = self.pages[newPage.page]
-
 	self.currentPage = newPage.page
-	Addon:SafeCall(impl.Show, impl, unpack(newPage.payload or {}))
 
+	local impl = self.pages[newPage.page]
 	impl.controller = self
 	impl.container = self.treeWidget
 	impl.targets = FilterTargets(self.treeStatus.selected)
 
+	Addon:SafeCall(impl.Show, impl, unpack(newPage.payload or {}))
 	self:RedrawPage()
 
 	if #self.pageStack == 1 and not impl.keepTreeSelection then

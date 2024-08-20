@@ -273,16 +273,14 @@ function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
 	end
 
 	local newTab = self.tabs[group]
-	local impl = newTab.implementation
-
 	self.currentTab = group
-	Addon:SafeCall(impl.Show, impl)
 
-	impl.container = self.tabWidget
+	local impl = newTab.implementation
 	impl.bindings = self.filteredTargets[group] or self.targets
 	impl.controller = self
 
-	self:RedrawTab()
+	Addon:SafeCall(impl.Show, impl)
+	self:RedrawTab(true)
 end
 
 --- Update the available tabs in the tab group widget
