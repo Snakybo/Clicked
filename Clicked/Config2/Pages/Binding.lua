@@ -250,8 +250,9 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 
 	if currentTab ~= nil then
 		local impl = self.tabs[currentTab].implementation
+		local createScrollView = full or self.scrollView == nil
 
-		if full or self.scrollView == nil then
+		if createScrollView then
 			self.tabWidget:ReleaseChildren()
 
 			self.scrollView = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
@@ -259,14 +260,16 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 			self.scrollView:SetFullWidth(true)
 			self.scrollView:SetFullHeight(true)
 
-			self.tabWidget:AddChild(self.scrollView)
-
 			impl.container = self.scrollView
 		else
 			self.scrollView:ReleaseChildren()
 		end
 
 		Addon:SafeCall(impl.Redraw, impl)
+
+		if createScrollView then
+			self.tabWidget:AddChild(self.scrollView)
+		end
 	end
 end
 
