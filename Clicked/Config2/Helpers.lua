@@ -243,8 +243,21 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue("")
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
-				widget:SetValue(GetRawValue())
-				widget:SetLabelColor(NORMAL_FONT_COLOR)
+				local value = GetRawValue()
+
+				-- assume it's an array if `[1]` is not nil
+				if widget:GetMultiselect() and value[1] ~= nil then
+					--- @diagnostic disable-next-line: undefined-field
+					for _, item in widget.pullout:IterateItems() do
+						local id = item.userdata.value
+
+						--- @diagnostic disable-next-line: param-type-mismatch
+						widget:SetItemValue(id, tContains(value, id))
+					end
+				else
+					widget:SetValue(GetRawValue())
+					widget:SetLabelColor(NORMAL_FONT_COLOR)
+				end
 			end
 		elseif widget.type == "ClickedToggleHeading" then
 			--- @cast widget ClickedToggleHeading
