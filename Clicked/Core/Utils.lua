@@ -816,21 +816,10 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	end
 
 	if left.keybind == right.keybind then
-		local leftValue = Addon:GetBindingValue(left)
-		local rightValue = Addon:GetBindingValue(right)
+		local leftValue = Addon:GetBindingNameAndIcon(left)
+		local rightValue = Addon:GetBindingNameAndIcon(right)
 
-		local leftNil = Addon:IsNilOrEmpty(leftValue)
-		local rightNil = Addon:IsNilOrEmpty(rightValue)
-
-		if not leftNil and rightNil then
-			return true
-		end
-
-		if leftNil and not rightNil then
-			return false
-		end
-
-		if leftNil and rightNil then
+		if leftValue == rightValue then
 			return left.uid < right.uid
 		end
 
