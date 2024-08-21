@@ -113,7 +113,9 @@ Addon.BindingConfig.BindingPage = {
 		load = {
 			title = "Load conditions",
 			order = 20,
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab)
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab, {
+				content = Addon.Condition.Registry:GetConditionSet("load")
+			})
 		},
 		load_macro ={
 			title = "Macro conditions",

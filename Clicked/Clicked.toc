@@ -31,6 +31,9 @@ Core\Serializer.lua
 Core\Tooltips.lua
 Core\Upgrader.lua
 
+Conditions\Condition.lua
+Conditions\LoadConditions.lua
+
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
@@ -51,6 +54,7 @@ Config\SpellLibrary.lua
 Debug\StatusOutput.lua
 
 Config2\Helpers.lua
+Config2\Conditions.xml
 Config2\Tabs.xml
 Config2\Pages.xml
 Config2\BindingConfig.lua

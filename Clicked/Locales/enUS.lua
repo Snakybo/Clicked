@@ -350,3 +350,5 @@ L["Hostility"] = true
 L["Any"] = true
 L["Vitals"] = true
 L["Unit"] = true
+L["Never"] = true
+L["Talent"] = true
