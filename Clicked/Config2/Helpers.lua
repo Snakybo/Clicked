@@ -29,7 +29,8 @@ local MAX_MIXED_VALUES_DISPLAYED = 9
 --- @class BindingConfigUtil
 Addon.BindingConfig.Helpers = {
 	MIXED_VALUE_TEXT_COLOR = MIXED_TEXT_COLOR,
-	MIXED_VALUE_TEXT = MIXED_TEXT_COLOR:WrapTextInColorCode("...")
+	MIXED_VALUE_TEXT = MIXED_TEXT_COLOR:WrapTextInColorCode("..."),
+	IGNORE_VALUE = "\001"
 }
 
 --- Register a tooltip for a widget.
@@ -97,7 +98,7 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 
 		local value = valueSelector(obj)
 
-		if value ~= nil then
+		if value ~= self.IGNORE_VALUE then
 			table.insert(values, {
 				name = name,
 				value = value
@@ -179,11 +180,21 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 	--- @return any
 	local function GetRawValue()
-		if rawValueSelector ~= nil then
-			return rawValueSelector(targets[1])
+		for _, obj in ipairs(targets) do
+			if rawValueSelector ~= nil then
+				local result = rawValueSelector(obj)
+				if result ~= self.IGNORE_VALUE then
+					return result
+				end
+			end
+
+			local result = valueSelector(obj)
+			if result ~= self.IGNORE_VALUE then
+				return result
+			end
 		end
 
-		return valueSelector(targets[1])
+		return nil
 	end
 
 	--- @return boolean
@@ -192,7 +203,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 		local label = GetTooltipText()[1]
 
 		if widget.type == "ClickedCheckBox" then
-			--- @cast widget ClickedCheckBox
+			--- @cast widget ClickedCheckBox|ClickedToggleHeading
 
 			widget:SetLabel(label)
 
@@ -229,7 +240,19 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			widget:SetLabel(label)
 
 			if hasMixedValues then
-				widget:SetValue(nil)
+				widget:SetValue("")
+				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
+			else
+				widget:SetValue(GetRawValue())
+				widget:SetLabelColor(NORMAL_FONT_COLOR)
+			end
+		elseif widget.type == "ClickedToggleHeading" then
+			--- @cast widget ClickedToggleHeading
+
+			widget:SetText(label)
+
+			if hasMixedValues then
+				widget:SetValue(false)
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
 				widget:SetValue(GetRawValue())

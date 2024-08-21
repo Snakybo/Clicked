@@ -520,10 +520,15 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 		return #setBy > 0, setBy
 	end
 
+	--- @param label string
+	--- @param tooltipText string
+	--- @param key string
 	local function CreateCheckbox(label, tooltipText, key)
+		--- @param binding Binding
+		--- @return string
 		local function ValueSelector(binding)
 			if not hasMixedKeys then
-				return nil
+				return Helpers.IGNORE_VALUE
 			end
 
 			return binding.action[key] and Addon.L["Enabled"] or Addon.L["Disabled"]

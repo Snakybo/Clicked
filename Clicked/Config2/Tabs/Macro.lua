@@ -121,7 +121,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		--- @param binding Binding
 		local function ValueSelector(binding)
 			if binding.actionType ~= Addon.BindingTypes.MACRO then
-				return nil
+				return Helpers.IGNORE_VALUE
 			end
 
 			if binding.targets.hovercastEnabled and binding.targets.regularEnabled then
