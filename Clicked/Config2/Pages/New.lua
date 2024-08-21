@@ -19,8 +19,6 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.BindingConfig = Addon.BindingConfig or {}
-
 --- @enum BindingConfigNewPageItemTemplate
 local ItemTemplate = {
 	GROUP = 0,
@@ -238,9 +236,14 @@ local function ImportActionbar()
 	return first
 end
 
+-- Private addon API
+
+Addon.BindingConfig = Addon.BindingConfig or {}
+
 --- @class BindingConfigNewPage : BindingConfigPage
 Addon.BindingConfig.NewPage = {}
 
+--- @protected
 function Addon.BindingConfig.NewPage:Redraw()
 	local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 	scrollFrame:SetLayout("Flow")

@@ -21,12 +21,15 @@ local Addon = select(2, ...)
 
 local MEDIA_ADDON_NAME = "ClickedMedia"
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigIconSelectPage : BindingConfigPage
 --- @field private onSelectCallback fun(targets: DataObject[], value: string)
 Addon.BindingConfig.IconSelectPage = {}
 
+--- @protected
 --- @param onSelectCallback fun(targets: DataObject[], value: string)
 function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 	if not C_AddOns.IsAddOnLoaded(MEDIA_ADDON_NAME) then
@@ -45,10 +48,12 @@ function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 	self.onSelectCallback = onSelectCallback
 end
 
+--- @protected
 function Addon.BindingConfig.IconSelectPage:Hide()
 	self.onSelectCallback = nil
 end
 
+--- @protected
 function Addon.BindingConfig.IconSelectPage:Redraw()
 	--- @type ClickedSearchBox
 	local searchBox

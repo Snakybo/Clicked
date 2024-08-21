@@ -20,16 +20,20 @@ local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigStatusTab : BindingConfigTab
 --- @field private selected integer
 Addon.BindingConfig.BindingStatusTab = {}
 
+--- @protected
 function Addon.BindingConfig.BindingStatusTab:Show()
 	self.selected = 1
 end
 
+--- @protected
 function Addon.BindingConfig.BindingStatusTab:Redraw()
 	if #self.bindings > 1 then
 		--- @param index integer
@@ -73,6 +77,7 @@ function Addon.BindingConfig.BindingStatusTab:Redraw()
 	self:RedrawPage()
 end
 
+--- @private
 function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 	local binding = self.bindings[self.selected]
 	if binding == nil then

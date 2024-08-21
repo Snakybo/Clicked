@@ -21,12 +21,6 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
-Addon.BindingConfig = Addon.BindingConfig or {}
-
---- @class BindingConfigActionTab : BindingConfigTab
---- @field private loadCallback? function
-Addon.BindingConfig.BindingActionTab = {}
-
 --- @param binding Binding
 --- @param value string|integer
 local function SetBindingValue(binding, value)
@@ -58,6 +52,15 @@ local function GetRawBindingValue(binding)
 	return nil
 end
 
+-- Private addon API
+
+Addon.BindingConfig = Addon.BindingConfig or {}
+
+--- @class BindingConfigActionTab : BindingConfigTab
+--- @field private loadCallback? function
+Addon.BindingConfig.BindingActionTab = {}
+
+--- @protected
 function Addon.BindingConfig.BindingActionTab:Hide()
 	if self.loadCallback ~= nil then
 		self.loadCallback()
@@ -65,6 +68,7 @@ function Addon.BindingConfig.BindingActionTab:Hide()
 	end
 end
 
+--- @protected
 function Addon.BindingConfig.BindingActionTab:Redraw()
 	self:RedrawTargetSpell()
 	self:RedrawActionGroups()

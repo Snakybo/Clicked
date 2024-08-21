@@ -14,17 +14,17 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class ClickedInternal
-local Addon = select(2, ...)
-
 --- @alias TooltipTextValue string|fun(widget: AceGUIWidget):string[]
 
-Addon.BindingConfig = Addon.BindingConfig or {}
+--- @class ClickedInternal
+local Addon = select(2, ...)
 
 local MIXED_TEXT_COLOR =  BLUE_FONT_COLOR
 local MAX_MIXED_VALUES_DISPLAYED = 9
 
 -- Private addon API
+
+Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigUtil
 Addon.BindingConfig.Helpers = {

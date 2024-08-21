@@ -22,6 +22,7 @@
 --- @field public Hide? fun(self: BindingConfigTab)
 --- @field public Redraw? fun(self: BindingConfigTab, container: AceGUIContainer, binding: Binding)
 --- @field public OnBindingReload? fun(self: BindingConfigTab)
+--- @field public OnKeybindChanged? fun(self: BindingConfigTab)
 
 --- @class BindingConfigTabImpl
 --- @field public title string
@@ -65,6 +66,8 @@ local function FilterBindingsByActionType(bindings, bindingTypes)
 
 	return result
 end
+
+-- Private addon API
 
 Addon.BindingConfig = Addon.BindingConfig or {}
 
@@ -273,11 +276,11 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 	end
 end
 
+--- @private
 --- Activate a tab group by its ID.
 ---
 --- If there's a tab group currently active, it will be hidden and the new tab group will be shown.
 ---
---- @private
 --- @param group string
 function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
 	local currentTab = self.currentTab
@@ -304,9 +307,8 @@ function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
 	self:RedrawTab(true)
 end
 
---- Update the available tabs in the tab group widget
----
 --- @private
+--- Update the available tabs in the tab group widget
 function Addon.BindingConfig.BindingPage:UpdateTabGroup()
 	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
@@ -323,9 +325,8 @@ function Addon.BindingConfig.BindingPage:UpdateTabGroup()
 	end
 end
 
---- Create the tab group widget.
----
 --- @private
+--- Create the tab group widget.
 function Addon.BindingConfig.BindingPage:CreateTabGroup()
 	--- @param group string
 	local function OnTabGroupSelected(_, _, group)
@@ -362,9 +363,9 @@ function Addon.BindingConfig.BindingPage:CreateTabGroup()
 	self.container:AddChild(self.tabWidget)
 end
 
+--- @private
 --- Get all available tabs for the current targets.
 ---
---- @private
 --- @return AceGUITabGroupTab[] tabs The available tabs for use in the `AceGUITabGroup` widget.
 function Addon.BindingConfig.BindingPage:GetAvailableTabs()
 	--- @type { [string]: integer }
@@ -400,9 +401,8 @@ function Addon.BindingConfig.BindingPage:GetAvailableTabs()
 	return tabs
 end
 
---- Filter bindings for all tabs.
----
 --- @private
+--- Filter bindings for all tabs.
 function Addon.BindingConfig.BindingPage:FilterBindings()
 	table.wipe(self.filteredTargets)
 

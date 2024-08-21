@@ -19,8 +19,6 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.BindingConfig = Addon.BindingConfig or {}
-
 --- @param mode BindingConfigImportStringPageMode
 --- @param text string
 --- @return boolean
@@ -55,6 +53,10 @@ local function OnTextChanged(mode, text)
 	return false, "Invalid mode: " .. mode
 end
 
+-- Private addon API
+
+Addon.BindingConfig = Addon.BindingConfig or {}
+
 --- @enum BindingConfigImportStringPageMode
 Addon.BindingConfig.ImportStringModes = {
 	BINDING_GROUP = 0,
@@ -69,6 +71,7 @@ Addon.BindingConfig.ImportStringModes = {
 --- @field private importKeybinds boolean
 Addon.BindingConfig.ImportStringPage = {}
 
+--- @protected
 --- @param mode BindingConfigImportStringPageMode
 --- @param ... any
 function Addon.BindingConfig.ImportStringPage:Show(mode, ...)
@@ -83,12 +86,14 @@ function Addon.BindingConfig.ImportStringPage:Show(mode, ...)
 	self.importKeybinds = true
 end
 
+--- @protected
 function Addon.BindingConfig.ImportStringPage:Hide()
 	self.mode = nil
 	self.importText = nil
 	self.reviewData = nil
 end
 
+--- @protected
 function Addon.BindingConfig.ImportStringPage:Redraw()
 	do
 		local widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]

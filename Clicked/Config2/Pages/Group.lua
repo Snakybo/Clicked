@@ -21,6 +21,8 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigGroupPage : BindingConfigPage
@@ -29,6 +31,7 @@ Addon.BindingConfig.GroupPage = {
 	keepTreeSelection = true
 }
 
+--- @protected
 function Addon.BindingConfig.GroupPage:Redraw()
 	do
 		--- @param group Group

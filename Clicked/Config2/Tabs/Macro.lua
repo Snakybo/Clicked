@@ -21,11 +21,14 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigMacroTab : BindingConfigTab
 Addon.BindingConfig.BindingMacroTab = {}
 
+--- @protected
 function Addon.BindingConfig.BindingMacroTab:Redraw()
 	-- macro name
 	do

@@ -21,19 +21,14 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigTargetTab : BindingConfigTab
 Addon.BindingConfig.BindingTargetTab = {}
 
-function Addon.BindingConfig.BindingTargetTab:Show()
-end
-
-function Addon.BindingConfig.BindingTargetTab:Hide()
-end
-
--- TODO: Add an event for on key changed so we can redraw this page
-
+--- @protected
 function Addon.BindingConfig.BindingTargetTab:Redraw()
 	-- hovercast
 	do

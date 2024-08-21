@@ -14,11 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local AceGUI = LibStub("AceGUI-3.0")
-
---- @class ClickedInternal
-local Addon = select(2, ...)
-
 --- @class BindingConfigPage
 --- @field public controller BindingConfigWindow
 --- @field public container AceGUIContainer
@@ -33,7 +28,10 @@ local Addon = select(2, ...)
 --- @field public title string
 --- @field public implementation BindingConfigPage
 
-Addon.BindingConfig = Addon.BindingConfig or {}
+local AceGUI = LibStub("AceGUI-3.0")
+
+--- @class ClickedInternal
+local Addon = select(2, ...)
 
 local SEARCH_FILTER_APPLY_DELAY = 0.1
 
@@ -203,6 +201,10 @@ local function SortByKey(left, right)
 
 	return left.uid < right.uid
 end
+
+-- Private addon API
+
+Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigWindow
 --- @field private frame? ClickedFrame

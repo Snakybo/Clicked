@@ -19,6 +19,8 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+-- Private addon API
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @enum BindingConfigExportStringPageMode
@@ -33,6 +35,7 @@ Addon.BindingConfig.ExportStringModes = {
 --- @field private serialized string
 Addon.BindingConfig.ExportStringPage = {}
 
+--- @protected
 --- @param mode BindingConfigExportStringPageMode
 --- @param target DataObject|Profile
 function Addon.BindingConfig.ExportStringPage:Show(mode, target)
@@ -51,11 +54,13 @@ function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 	end
 end
 
+--- @protected
 function Addon.BindingConfig.ExportStringPage:Hide()
 	self.mode = nil
 	self.target = nil
 end
 
+--- @protected
 function Addon.BindingConfig.ExportStringPage:Redraw()
 	local target = self.target
 
