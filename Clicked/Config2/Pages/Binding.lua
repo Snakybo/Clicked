@@ -218,6 +218,12 @@ function Addon.BindingConfig.BindingPage:Redraw()
 
 			updateCb()
 			widget:SetMarker(SupportsUnusedModifiers())
+
+			local currentTab = self.currentTab
+			if currentTab ~= nil then
+				local impl = self.tabs[currentTab].implementation
+				Addon:SafeCall(impl.OnKeybindChanged, impl)
+			end
 		end
 
 		local widget = AceGUI:Create("ClickedKeybinding") --[[@as ClickedKeybinding]]

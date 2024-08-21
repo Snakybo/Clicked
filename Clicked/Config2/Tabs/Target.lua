@@ -230,6 +230,11 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 	end
 end
 
+--- @protected
+function Addon.BindingConfig.BindingTargetTab:OnKeybindChanged()
+	self.controller:RedrawTab()
+end
+
 --- @private
 --- @param container AceGUIContainer
 --- @param index integer
