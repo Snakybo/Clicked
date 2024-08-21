@@ -209,10 +209,10 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 			if hasMixedValues then
 				widget:SetValue(false)
-				widget:SetTextColor(self.MIXED_VALUE_TEXT_COLOR)
+				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
 				widget:SetValue(GetRawValue())
-				widget:SetTextColor(WHITE_FONT_COLOR)
+				widget:SetLabelColor(WHITE_FONT_COLOR)
 			end
 		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" then
 			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox

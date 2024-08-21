@@ -29,11 +29,11 @@ local Methods = {}
 function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
-	self:SetTextColor(WHITE_FONT_COLOR)
+	self:SetLabelColor(WHITE_FONT_COLOR)
 end
 
 --- @param color ColorMixin
-function Methods:SetTextColor(color)
+function Methods:SetLabelColor(color)
 	self.text:SetTextColor(color:GetRGBA())
 end
 
