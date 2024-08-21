@@ -67,6 +67,7 @@ function Methods:OnAcquire()
 	self:SetText("")
 	self:SetValue(false)
 	self:SetDisabled(false)
+	self:SetLabelColor(NORMAL_FONT_COLOR)
 end
 
 --- @param text string
@@ -112,6 +113,11 @@ function Methods:SetValue(value)
 	end
 
 	self:SetDisabled(self.disabled)
+end
+
+--- @param color ColorMixin
+function Methods:SetLabelColor(color)
+	self.label:SetTextColor(color:GetRGBA())
 end
 
 --- @return boolean
