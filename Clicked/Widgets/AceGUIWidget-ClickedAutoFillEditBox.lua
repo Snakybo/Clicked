@@ -133,7 +133,7 @@ local function EditBox_OnEnterPressed(frame)
 		self:HideAutoCompleteBox()
 		self:SelectButton(self:GetSelectedButton())
 	else
-		local text = self:GetRealText()
+		local text = self:GetText()
 
 		if strlenutf8(text) == 0 then
 			self:Select("")
@@ -199,7 +199,7 @@ local function EditBox_OnFocusGained(frame)
 
 	self.BaseOnFocusGained(frame)
 
-	if strlenutf8(self:GetRealText()) == 0 then
+	if strlenutf8(self:GetText()) == 0 then
 		self:ShowAll()
 	else
 		self:ShowPrediction()
@@ -209,7 +209,7 @@ end
 local function EditBox_OnFocusLost(frame)
 	local self = frame.obj
 
-	if strlenutf8(self:GetRealText()) == 0 then
+	if strlenutf8(self:GetText()) == 0 then
 		self:SetText("")
 	elseif self:IsAutoCompleteBoxVisible() then
 		self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
@@ -493,7 +493,7 @@ end
 
 --- @private
 function Methods:ShowPrediction()
-	local text =  self:GetRealText()
+	local text =  self:GetText()
 
 	if strlenutf8(text) == 0 then
 		self:HideAutoCompleteBox()
@@ -644,6 +644,11 @@ function Methods:SetLabelColor(color)
 	self.label:SetTextColor(color:GetRGBA())
 end
 
+--- @return string
+function Methods:GetText()
+	return Addon:StripColorCodes(self:BaseGetText())
+end
+
 --- @private
 --- @return boolean
 function Methods:IsAutoCompleteBoxVisible()
@@ -717,12 +722,6 @@ function Methods:GetSelectedButton()
 end
 
 --- @private
---- @return string
-function Methods:GetRealText()
-	return Addon:StripColorCodes(self:GetText())
-end
-
---- @private
 --- @param direction integer
 function Methods:MoveCursor(direction)
 	if self:IsAutoCompleteBoxVisible() then
@@ -764,6 +763,8 @@ local function Constructor()
 	widget.BaseOnRelease = widget.OnRelease
 	--- @private
 	widget.BaseSetText = widget.SetText
+	--- @private
+	widget.BaseGetText = widget.GetText
 	--- @private
 	widget.BaseOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
 	--- @private
