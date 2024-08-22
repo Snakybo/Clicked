@@ -22,6 +22,7 @@ Addon.Condition = Addon.Condition or {}
 --- @class DrawerConfig
 --- @field public type string
 --- @field public label string
+--- @field public tooltip? string|string[]
 --- @field public availableValues? fun(...):...
 
 --- @class InputDrawerConfig : DrawerConfig

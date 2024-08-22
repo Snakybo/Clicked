@@ -21,6 +21,24 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
+--- @param drawer DrawerConfig
+--- @return string[]
+local function GetTooltipText(drawer)
+	--- @type string[]
+	local result = { Addon.L[drawer.label] }
+	local tooltip = drawer.tooltip
+
+	if type(tooltip) == "string" then
+		table.insert(result, tooltip)
+	elseif type(tooltip) == "table" then
+		for _, line in ipairs(tooltip) do
+			table.insert(result, line)
+		end
+	end
+
+	return result
+end
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingMultiselectConditionDrawer : BindingConditionDrawer
@@ -116,7 +134,7 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 		return Helpers.IGNORE_VALUE
 	end
 
-		--- @param value string
+	--- @param value string
 	local function OnValueChanged(_, _, value)
 		for _, binding in ipairs(self.bindings) do
 			--- @type MultiselectLoadOption
@@ -137,7 +155,7 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 	self.dropdown:SetList(items, order)
 	self.dropdown:SetRelativeWidth(0.5)
 
-	local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, Addon.L[drawer.label], GetRawValue)
+	local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, GetTooltipText, GetRawValue)
 	self.dropdownCb = cb
 
 	self.container:AddChild(self.dropdown)
@@ -249,7 +267,7 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 		self.multiselectDropdown:SetRelativeWidth(0.5)
 		self.multiselectDropdown:SetMultiselect(true)
 
-		local _, cb = Helpers:HandleWidget(self.multiselectDropdown, self.bindings, ValueSelector, Addon.L[drawer.label], GetRawValue)
+		local _, cb = Helpers:HandleWidget(self.multiselectDropdown, self.bindings, ValueSelector, GetTooltipText, GetRawValue)
 		self.multiselectDropdownCb = cb
 
 		self.container:AddChild(self.multiselectDropdown)

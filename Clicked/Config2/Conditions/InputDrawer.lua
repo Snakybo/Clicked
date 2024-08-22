@@ -59,6 +59,23 @@ function Drawer:Draw()
 			end
 		end
 
+		--- @return string[]
+		local function GetTooltipText()
+			--- @type string[]
+			local result = { Addon.L[drawer.label] }
+			local tooltip = drawer.tooltip
+
+			if type(tooltip) == "string" then
+				table.insert(result, tooltip)
+			elseif type(tooltip) == "table" then
+				for _, line in ipairs(tooltip) do
+					table.insert(result, line)
+				end
+			end
+
+			return result
+		end
+
 		--- @param value string
 		local function OnEnterPressed(_, _, value)
 			value = string.trim(value)
@@ -86,7 +103,7 @@ function Drawer:Draw()
 		self.editbox:SetCallback("OnEnterPressed", OnEnterPressed)
 		self.editbox:SetRelativeWidth(0.5)
 
-		Helpers:HandleWidget(self.editbox, self.bindings, ValueSelector, Addon.L[drawer.label])
+		Helpers:HandleWidget(self.editbox, self.bindings, ValueSelector, GetTooltipText)
 
 		self.container:AddChild(self.editbox)
 	end

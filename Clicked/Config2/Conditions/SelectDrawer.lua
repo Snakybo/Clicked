@@ -50,6 +50,23 @@ function Drawer:Draw()
 			return load.value
 		end
 
+		--- @return string[]
+		local function GetTooltipText()
+			--- @type string[]
+			local result = { Addon.L[drawer.label] }
+			local tooltip = drawer.tooltip
+
+			if type(tooltip) == "string" then
+				table.insert(result, tooltip)
+			elseif type(tooltip) == "table" then
+				for _, line in ipairs(tooltip) do
+					table.insert(result, line)
+				end
+			end
+
+			return result
+		end
+
 		--- @param value string
 		local function OnValueChanged(_, _, value)
 			for _, binding in ipairs(self.bindings) do
@@ -71,7 +88,7 @@ function Drawer:Draw()
 		self.dropdown:SetList(self.requestAvailableValues())
 		self.dropdown:SetRelativeWidth(0.5)
 
-		local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, Addon.L[drawer.label])
+		local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, GetTooltipText)
 		self.dropdownCb = cb
 
 		self.container:AddChild(self.dropdown)

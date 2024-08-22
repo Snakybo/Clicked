@@ -278,12 +278,17 @@ local config = {
 		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",
-			label = "Zone name(s)"
+			label = "Zone name(s)",
+			tooltip = {
+				string.format(Addon.L["Semicolon separated, use an exclamation mark (%s) to negate a zone condition, for example:"], "|r!|cffffffff"),
+				"",
+				string.format(Addon.L["%s will be active if you're not in Oribos"], "|r!" .. Addon.L["Oribos"] .. "|cffffffff"),
+				string.format(Addon.L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. Addon.L["Durotar"] .. ";" .. Addon.L["Orgrimmar"] .. "|cffffffff")
+			}
 		},
 		init = function()
 			return Utilities.CreateLoadOption("")
 		end,
-		-- TODO: Tooltips
 		unpack = Utilities.UnpackSimpleLoadOption,
 	},
 	{
@@ -340,6 +345,7 @@ local config = {
 		drawer = {
 			type = "input",
 			label = "Item equipped",
+			tooltip = Addon.L["This will not update when in combat, so swapping weapons or shields during combat does not work."],
 			validate = function(value)
 				local type, info = LinkUtil.ExtractLink(value)
 				if type ~= "item" then
