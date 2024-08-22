@@ -26,7 +26,7 @@ Addon.Condition = Addon.Condition or {}
 
 --- @class InputDrawerConfig : DrawerConfig
 --- @field public negatable? boolean
---- @field public validate? fun(value: string):string?
+--- @field public validate? fun(value: string, final: boolean):string
 
 --- @class Condition
 --- @field public id string

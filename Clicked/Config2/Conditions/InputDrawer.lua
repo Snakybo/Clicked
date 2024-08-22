@@ -95,9 +95,22 @@ function Drawer:Draw()
 			return load.value
 		end
 
+		--- @param widget ClickedEditBox
 		--- @param value string
-		local function OnValueChanged(_, _, value)
+		local function OnTextChanged(widget, _, value)
+			if drawer.validate ~= nil then
+				value = drawer.validate(value, false)
+				widget:SetText(value)
+			end
+		end
+
+		--- @param value string
+		local function OnEnterPressed(_, _, value)
 			value = string.trim(value)
+
+			if drawer.validate ~= nil then
+				value = drawer.validate(value, true)
+			end
 
 			for _, binding in ipairs(self.bindings) do
 				--- @type SimpleLoadOption
@@ -112,7 +125,8 @@ function Drawer:Draw()
 		end
 
 		self.editbox = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
-		self.editbox:SetCallback("OnEnterPressed", OnValueChanged)
+		self.editbox:SetCallback("OnTextChanged", OnTextChanged)
+		self.editbox:SetCallback("OnEnterPressed", OnEnterPressed)
 		self.editbox:SetRelativeWidth(0.5)
 
 		Helpers:HandleWidget(self.editbox, self.bindings, ValueSelector, Addon.L[drawer.label])
