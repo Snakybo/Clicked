@@ -101,10 +101,12 @@ function Drawer:Draw()
 			for _, binding in ipairs(self.bindings) do
 				--- @type SimpleLoadOption
 				local load = binding.load[self.fieldName] or self.condition.init()
-				load.value = value
-				binding.load[self.fieldName] = load
 
-				Clicked:ReloadBinding(binding, true)
+				if load.selected then
+					load.value = value
+					binding.load[self.fieldName] = load
+					Clicked:ReloadBinding(binding, true)
+				end
 			end
 
 			self.requestRedraw()
