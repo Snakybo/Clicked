@@ -33,6 +33,9 @@ function Drawer:Draw()
 
 	-- toggle
 	do
+		--- @type boolean
+		local hasMixedValues
+
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
@@ -45,6 +48,35 @@ function Drawer:Draw()
 		--- @return boolean
 		local function GetEnabledState(binding)
 			return binding.load[self.fieldName]
+		end
+
+		--- @return string[]
+		local function GetTooltipText()
+			if hasMixedValues then
+				return { Addon.L[drawer.label] }
+			end
+
+			local options = {
+				["false"] = Addon.L["Off"],
+				["true"] = Addon.L["On"]
+			}
+
+			local order = { "false", "true" }
+
+			local selectedStr = tostring(GetEnabledState(self.bindings[1]))
+			options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
+
+			local result = ""
+
+			for _, v in ipairs(order) do
+				if not Addon:IsNilOrEmpty(result) then
+					result = result .. " - "
+				end
+
+				result = result .. options[v]
+			end
+
+			return { Addon.L[drawer.label], result }
 		end
 
 		--- @param value boolean
@@ -62,7 +94,7 @@ function Drawer:Draw()
 		self.checkbox:SetCallback("OnValueChanged", OnValueChanged)
 		self.checkbox:SetFullWidth(true)
 
-		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], GetEnabledState)
+		hasMixedValues = Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, GetTooltipText, GetEnabledState)
 
 		self.container:AddChild(self.checkbox)
 	end

@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local AceGUI = LibStub("AceGUI-3.0")
+
 --- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string[]
 
 --- @class ClickedInternal
@@ -154,7 +156,7 @@ end
 --- @return fun():boolean
 function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector, tooltip, rawValueSelector)
 	--- @return string[]
-	local GetTooltipText = function()
+	local function GetTooltipText()
 		--- @type string[]
 		local lines
 
@@ -277,4 +279,221 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 	self:RegisterTooltip(widget, GetTooltipText)
 
 	return UpdateCallback(), UpdateCallback
+end
+
+--- @param container AceGUIContainer
+--- @param bindings Binding[]
+--- @param fieldName string
+--- @param condition Condition
+--- @param onValueChanged fun()
+--- @return ClickedCheckBox
+function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fieldName, condition, onValueChanged)
+	--- @type boolean
+	local hasMixedValues
+
+	--- @param binding Binding
+	--- @return string
+	local function ValueSelector(binding)
+		--- @type SimpleLoadOption
+		local load = binding.load[fieldName] or condition.init()
+		return load.selected and Addon.L["Enabled"] or Addon.L["Disabled"]
+	end
+
+	--- @param binding Binding
+	--- @return boolean?
+	local function GetEnabledState(binding)
+		--- @type SimpleLoadOption
+		local load = binding.load[fieldName] or condition.init()
+		return load.selected
+	end
+
+	--- @return string[]
+	local function GetTooltipText()
+		if hasMixedValues then
+			return { Addon.L[condition.drawer.label] }
+		end
+
+		local options = {
+			["false"] = Addon.L["Off"],
+			["true"] = Addon.L["On"]
+		}
+
+		local order = { "false", "true" }
+
+		local selectedStr = tostring(GetEnabledState(bindings[1]))
+		options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
+
+		local result = ""
+
+		for _, v in ipairs(order) do
+			if not Addon:IsNilOrEmpty(result) then
+				result = result .. " - "
+			end
+
+			result = result .. options[v]
+		end
+
+		return { Addon.L[condition.drawer.label], result }
+	end
+
+	--- @param value boolean|nil
+	local function OnValueChanged(_, _, value)
+		--- @cast value boolean
+
+		for _, binding in ipairs(bindings) do
+			--- @type SimpleLoadOption
+			local load = binding.load[fieldName] or condition.init()
+			load.selected = value
+			binding.load[fieldName] = load
+
+			Clicked:ReloadBinding(binding, true)
+		end
+
+		onValueChanged()
+	end
+
+	local checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
+	checkbox:SetType("checkbox")
+	checkbox:SetCallback("OnValueChanged", OnValueChanged)
+
+	local isAnyEnabled = FindInTableIf(bindings, function(binding)
+		--- @type SimpleLoadOption
+		local load = binding.load[fieldName] or condition.init()
+		return load.selected
+	end) ~= nil
+
+	if isAnyEnabled then
+		checkbox:SetRelativeWidth(0.5)
+	else
+		checkbox:SetFullWidth(true)
+	end
+
+	hasMixedValues = self:HandleWidget(checkbox, bindings, ValueSelector, GetTooltipText, GetEnabledState)
+	container:AddChild(checkbox)
+	return checkbox
+end
+
+--- @param container AceGUIContainer
+--- @param bindings Binding[]
+--- @param fieldName string
+--- @param condition Condition
+--- @param onValueChanged fun()
+--- @return ClickedCheckBox
+function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, bindings, fieldName, condition, onValueChanged)
+	--- @type boolean
+	local hasMixedValues
+
+	--- @param state `0`|`1`|`2`
+	--- @return boolean?
+	local function IndexToValue(state)
+		if state == 1 then
+			return true
+		elseif state == 2 then
+			return nil
+		end
+
+		return false
+	end
+
+	--- @param value? boolean
+	--- @return `0`|`1`|`2`
+	local function ValueToIndex(value)
+		if value == false then
+			return 0
+		elseif value == true then
+			return 1
+		else
+			return 2
+		end
+	end
+
+	--- @param binding Binding
+	--- @return string
+	local function ValueSelector(binding)
+		--- @type MultiselectLoadOption
+		local load = binding.load[fieldName] or condition.init()
+
+		if load.selected == 0 then
+			return Addon.L["Disabled"]
+		elseif load.selected == 1 then
+			return Addon.L["Single"]
+		else
+			return Addon.L["Multiple"]
+		end
+	end
+
+	--- @param binding Binding
+	--- @return boolean?
+	local function GetEnabledState(binding)
+		--- @type MultiselectLoadOption
+		local load = binding.load[fieldName] or condition.init()
+		return IndexToValue(load.selected)
+	end
+
+	--- @return string[]
+	local function GetTooltipText()
+		if hasMixedValues then
+			return { Addon.L[condition.drawer.label] }
+		end
+
+		local options = {
+			["0"] = Addon.L["Off"],
+			["1"] = Addon.L["Single"],
+			["2"] = Addon.L["Multiple"]
+		}
+
+		local order = { "0", "1", "2" }
+
+		local selectedStr = tostring(bindings[1].load[fieldName].selected)
+		options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
+
+		local result = ""
+
+		for _, v in ipairs(order) do
+			if not Addon:IsNilOrEmpty(result) then
+				result = result .. " - "
+			end
+
+			result = result .. options[v]
+		end
+
+		return { Addon.L[condition.drawer.label], result }
+	end
+
+	--- @param value boolean|nil
+	local function OnValueChanged(_, _, value)
+		local index = ValueToIndex(value)
+
+		for _, binding in ipairs(bindings) do
+			--- @type MultiselectLoadOption
+			local load = binding.load[fieldName] or condition.init()
+			load.selected = index
+			binding.load[fieldName] = load
+
+			Clicked:ReloadBinding(binding, true)
+		end
+
+		onValueChanged()
+	end
+
+	local checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
+	checkbox:SetType("checkbox")
+	checkbox:SetCallback("OnValueChanged", OnValueChanged)
+	checkbox:SetTriState(true)
+
+	local isAnyEnabled = FindInTableIf(bindings, function(binding)
+		--- @type MultiselectLoadOption
+		local load = binding.load[fieldName] or condition.init()
+		return load.selected > 0
+	end) ~= nil
+
+	if isAnyEnabled then
+		checkbox:SetRelativeWidth(0.5)
+	else
+		checkbox:SetFullWidth(true)
+	end
+
+	hasMixedValues = self:HandleWidget(checkbox, bindings, ValueSelector, GetTooltipText, GetEnabledState)
+	container:AddChild(checkbox)
+	return checkbox
 end

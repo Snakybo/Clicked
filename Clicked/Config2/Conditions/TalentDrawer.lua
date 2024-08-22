@@ -67,53 +67,7 @@ function Drawer:Draw()
 		return load.selected
 	end) ~= nil
 
-	do
-		--- @param binding Binding
-		--- @return string
-		local function ValueSelector(binding)
-			--- @type SimpleLoadOption
-			local load = binding.load[self.fieldName] or self.condition.init()
-			return load.selected and Addon.L["Enabled"] or Addon.L["Disabled"]
-		end
-
-		--- @param binding Binding
-		--- @return boolean?
-		local function GetEnabledState(binding)
-			--- @type SimpleLoadOption
-			local load = binding.load[self.fieldName] or self.condition.init()
-			return load.selected
-		end
-
-		--- @param value boolean|nil
-		local function OnValueChanged(_, _, value)
-			--- @cast value boolean
-
-			for _, binding in ipairs(self.bindings) do
-				--- @type SimpleLoadOption
-				local load = binding.load[self.fieldName] or self.condition.init()
-				load.selected = value
-				binding.load[self.fieldName] = load
-
-				Clicked:ReloadBinding(binding, true)
-			end
-
-			self.requestRedraw()
-		end
-
-		self.checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
-		self.checkbox:SetType("checkbox")
-		self.checkbox:SetCallback("OnValueChanged", OnValueChanged)
-
-		if isAnyEnabled then
-			self.checkbox:SetRelativeWidth(0.5)
-		else
-			self.checkbox:SetFullWidth(true)
-		end
-
-		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], GetEnabledState)
-
-		self.container:AddChild(self.checkbox)
-	end
+	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
 	if isAnyEnabled then
 		local function ValueSelector(binding)
