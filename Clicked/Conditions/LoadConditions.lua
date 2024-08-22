@@ -111,7 +111,7 @@ local config = {
 		init = function()
 			return Utilities.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utilities.UnpackSimpleLoadOption
 	},
 	{
 		id = "race",
@@ -126,7 +126,7 @@ local config = {
 			local _, englishName = UnitRace("player")
 			return Utilities.CreateMultiselectLoadOption(englishName)
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption,
+		unpack = Utilities.UnpackMultiselectLoadOption
 	},
 	{
 		id = "class",
@@ -141,7 +141,7 @@ local config = {
 			local _, classFileName = UnitClass("player")
 			return Utilities.CreateMultiselectLoadOption(classFileName)
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption,
+		unpack = Utilities.UnpackMultiselectLoadOption
 	},
 	{
 		id = "specialization",
@@ -171,7 +171,7 @@ local config = {
 				return Utilities.CreateMultiselectLoadOption(GetPrimaryTalentTree())
 			end
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption,
+		unpack = Utilities.UnpackMultiselectLoadOption
 	},
 	{
 		id = "talent",
@@ -195,7 +195,169 @@ local config = {
 		init = function()
 			return Utilities.CreateTalentLoadOption("")
 		end,
-		unpack = Utilities.UnpackTalentLoadOption,
+		unpack = Utilities.UnpackTalentLoadOption
+	},
+	{
+		id = "pvpTalent",
+		drawer = {
+			type = "talent",
+			label = "PvP talent",
+			--- @param class string[]
+			--- @param specialization integer[]
+			availableValues = function(class, specialization)
+				local specIds = GetRelevantSpecializationIds(class, specialization)
+				return Addon:GetLocalizedPvPTalents(specIds)
+			end
+		},
+		dependencies = { "class", "specialization" },
+		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
+		init = function()
+			return Utilities.CreateTalentLoadOption("")
+		end,
+		unpack = Utilities.UnpackTalentLoadOption
+	},
+	{
+		id = "warMode",
+		drawer = {
+			type = "select",
+			label = "War Mode",
+			availableValues = function()
+				return {
+					[true] = Addon.L["War Mode enabled"],
+					[false] = Addon.L["War Mode disabled"]
+				}, { true, false}
+			end
+		},
+		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
+		init = function()
+			return Utilities.CreateLoadOption(true)
+		end,
+		unpack = Utilities.UnpackSimpleLoadOption
+	},
+	{
+		id = "instanceType",
+		drawer = {
+			type = "multiselect",
+			label = "Instance type",
+			availableValues = function()
+				local items = {
+					NONE = Addon.L["No Instance"],
+					PARTY = Addon.L["Dungeon"],
+					RAID = Addon.L["Raid"]
+				}
+
+				local order = {
+					"NONE",
+					"PARTY",
+					"RAID"
+				}
+
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
+					items["PVP"] = Addon.L["Battleground"]
+					items["ARENA"] = Addon.L["Arena"]
+
+					table.insert(order, "PVP")
+					table.insert(order, "ARENA")
+				end
+
+				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+					items["SCENARIO"] = Addon.L["Scenario"]
+					table.insert(order, 2, "SCENARIO")
+				end
+
+				return items, order
+			end
+		},
+		init = function()
+			return Utilities.CreateMultiselectLoadOption("NONE")
+		end,
+		unpack = Utilities.UnpackMultiselectLoadOption
+	},
+	{
+		id = "zoneName",
+		--- @type InputDrawerConfig
+		drawer = {
+			type = "input",
+			label = "Zone name(s)"
+		},
+		init = function()
+			return Utilities.CreateLoadOption("")
+		end,
+		-- TODO: Tooltips
+		unpack = Utilities.UnpackSimpleLoadOption,
+	},
+	{
+		id = "spellKnown",
+		--- @type InputDrawerConfig
+		drawer = {
+			type = "input",
+			label = "Spell known"
+		},
+		init = function()
+			return Utilities.CreateLoadOption("")
+		end,
+		unpack = Utilities.UnpackSimpleLoadOption,
+	},
+	{
+		id = "inGroup",
+		drawer = {
+			type = "select",
+			label = "In group",
+			availableValues = function()
+				return {
+					IN_GROUP_PARTY_OR_RAID = Addon.L["In a party or raid group"],
+					IN_GROUP_PARTY = Addon.L["In a party"],
+					IN_GROUP_RAID = Addon.L["In a raid group"],
+					IN_GROUP_SOLO = Addon.L["Not in a group"]
+				}, {
+					"IN_GROUP_PARTY_OR_RAID",
+					"IN_GROUP_PARTY",
+					"IN_GROUP_RAID",
+					"IN_GROUP_SOLO"
+				}
+			end
+		},
+		init = function()
+			return Utilities.CreateLoadOption(Addon.GroupState.PARTY_OR_RAID)
+		end,
+		unpack = Utilities.UnpackSimpleLoadOption,
+	},
+	{
+		id = "playerInGroup",
+		--- @type InputDrawerConfig
+		drawer = {
+			type = "input",
+			label = "Player in group"
+		},
+		init = function()
+			return Utilities.CreateLoadOption("")
+		end,
+		unpack = Utilities.UnpackSimpleLoadOption,
+	},
+	{
+		id = "equipped",
+		--- @type InputDrawerConfig
+		drawer = {
+			type = "input",
+			label = "Item equipped",
+			validate = function(value)
+				local type, info = LinkUtil.ExtractLink(value)
+				if type ~= "item" then
+					return value
+				end
+
+				local name = C_Item.GetItemNameByID(value)
+				if name ~= nil then
+					return name
+				end
+
+				return value
+			end
+		},
+		init = function()
+			return Utilities.CreateLoadOption("")
+		end,
+		unpack = Utilities.UnpackSimpleLoadOption,
 	}
 }
 
