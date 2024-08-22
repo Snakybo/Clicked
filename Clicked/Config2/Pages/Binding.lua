@@ -78,7 +78,8 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private tabs { [string]: BindingConfigTabImpl }
 --- @field private currentTab? string
 --- @field private filteredTargets { [string]: Binding[] }
---- @field private scrollView? AceGUIScrollFrame
+--- @field private scrollFrame? AceGUIScrollFrame
+--- @field private scrollFrameStatus { scrollvalue: number }
 Addon.BindingConfig.BindingPage = {
 	keepTreeSelection = true,
 	tabStatus = {},
@@ -147,7 +148,8 @@ Addon.BindingConfig.BindingPage = {
 			end
 		}
 	},
-	filteredTargets = {}
+	filteredTargets = {},
+	scrollFrameStatus = {}
 }
 
 --- @protected
@@ -168,7 +170,7 @@ function Addon.BindingConfig.BindingPage:Hide()
 	table.wipe(self.filteredTargets)
 
 	self.tabWidget = nil
-	self.scrollView = nil
+	self.scrollFrame = nil
 end
 
 --- @protected
@@ -261,25 +263,29 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 
 	if currentTab ~= nil then
 		local impl = self.tabs[currentTab].implementation
-		local createScrollView = full or self.scrollView == nil
+		local createScrollFrame = full or self.scrollFrame == nil
+		local currentScrollValue = self.scrollFrameStatus.scrollvalue or 0
 
-		if createScrollView then
+		if createScrollFrame then
 			self.tabWidget:ReleaseChildren()
 
-			self.scrollView = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
-			self.scrollView:SetLayout("Flow")
-			self.scrollView:SetFullWidth(true)
-			self.scrollView:SetFullHeight(true)
+			self.scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
+			self.scrollFrame:SetLayout("Flow")
+			self.scrollFrame:SetFullWidth(true)
+			self.scrollFrame:SetFullHeight(true)
+			self.scrollFrame:SetStatusTable(self.scrollFrameStatus)
 
-			impl.container = self.scrollView
+			impl.container = self.scrollFrame
 		else
-			self.scrollView:ReleaseChildren()
+			self.scrollFrame:ReleaseChildren()
 		end
 
 		Addon:SafeCall(impl.Redraw, impl)
 
-		if createScrollView then
-			self.tabWidget:AddChild(self.scrollView)
+		if createScrollFrame then
+			self.tabWidget:AddChild(self.scrollFrame)
+		else
+			self.scrollFrame:SetScroll(currentScrollValue)
 		end
 	end
 end
