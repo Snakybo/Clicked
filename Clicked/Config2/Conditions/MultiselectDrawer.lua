@@ -116,7 +116,7 @@ function Drawer:Draw()
 			self.checkbox:SetFullWidth(true)
 		end
 
-		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], nil, GetEnabledState)
+		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], GetEnabledState)
 
 		self.container:AddChild(self.checkbox)
 	end
@@ -215,7 +215,7 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 	self.dropdown:SetList(items, order)
 	self.dropdown:SetRelativeWidth(0.5)
 
-	local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, Addon.L[drawer.label], nil, GetRawValue)
+	local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, Addon.L[drawer.label], GetRawValue)
 	self.dropdownCb = cb
 
 	self.container:AddChild(self.dropdown)
@@ -327,7 +327,7 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 		self.multiselectDropdown:SetRelativeWidth(0.5)
 		self.multiselectDropdown:SetMultiselect(true)
 
-		local _, cb = Helpers:HandleWidget(self.multiselectDropdown, self.bindings, ValueSelector, Addon.L[drawer.label], nil, GetRawValue)
+		local _, cb = Helpers:HandleWidget(self.multiselectDropdown, self.bindings, ValueSelector, Addon.L[drawer.label], GetRawValue)
 		self.multiselectDropdownCb = cb
 
 		self.container:AddChild(self.multiselectDropdown)

@@ -59,7 +59,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnValueChanged", OnValueChanged)
 
-			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit Frame Target"], nil, GetEnabledState)
+			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit Frame Target"], GetEnabledState)
 
 			self.container:AddChild(widget)
 		end
@@ -127,7 +127,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			widget:SetDisabled(not canAnyEnableRegularTargetMode)
 			widget:SetCallback("OnValueChanged", OnValueChanged)
 
-			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Target"], nil, GetEnabledState)
+			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Target"], GetEnabledState)
 
 			self.container:AddChild(widget)
 		end
@@ -359,7 +359,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, c
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 
-	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit"], nil, GetRawValue)
+	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit"], GetRawValue)
 
 	container:AddChild(widget)
 
@@ -415,7 +415,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetHostility(container, ind
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 
-	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Hostility"], nil, GetRawValue)
+	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Hostility"], GetRawValue)
 
 	container:AddChild(widget)
 
@@ -471,7 +471,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetVitals(container, index)
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 
-	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Vitals"], nil, GetRawValue)
+	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Vitals"], GetRawValue)
 
 	container:AddChild(widget)
 

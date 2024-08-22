@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @alias TooltipTextValue string|fun(widget: AceGUIWidget):string[]
+--- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string[]
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -42,16 +42,17 @@ Addon.BindingConfig.Helpers = {
 ---
 --- @param widget AceGUIWidget
 --- @param text TooltipTextValue
---- @param subtext string?
-function Addon.BindingConfig.Helpers:RegisterTooltip(widget, text, subtext)
+function Addon.BindingConfig.Helpers:RegisterTooltip(widget, text)
 	local function OnEnter()
 		--- @type string[]
 		local lines
 
 		if type(text) == "function" then
 			lines = text(widget)
+		elseif type(text) == "table" then
+			lines = text
 		else
-			lines = { text, subtext }
+			lines = { text }
 		end
 
 		--- @diagnostic disable-next-line: invisible
@@ -148,11 +149,10 @@ end
 --- @param targets T[]
 --- @param valueSelector fun(target: T):string?
 --- @param tooltip TooltipTextValue
---- @param tooltipSubtext? string
 --- @param rawValueSelector? fun(target: T):any
 --- @return boolean
 --- @return fun():boolean
-function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector, tooltip, tooltipSubtext, rawValueSelector)
+function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector, tooltip, rawValueSelector)
 	--- @return string[]
 	local GetTooltipText = function()
 		--- @type string[]
@@ -160,12 +160,10 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 		if type(tooltip) == "function" then
 			lines = tooltip(widget)
+		elseif type(tooltip) == "table" then
+			lines = tooltip
 		else
 			lines = { tooltip }
-
-			if tooltipSubtext ~= nil then
-				table.insert(lines, tooltipSubtext)
-			end
 		end
 
 		local hasMixedValues, mixedValueText = self:GetMixedValues(targets, valueSelector)

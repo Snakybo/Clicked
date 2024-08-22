@@ -162,7 +162,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		widget:SetList(items, order)
 		widget:SetFullWidth(true)
 
-		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Activate on"], nil, GetRawValue)
+		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Activate on"], GetRawValue)
 
 		self.container:AddChild(widget)
 	end

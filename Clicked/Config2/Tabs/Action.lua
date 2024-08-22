@@ -606,7 +606,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 		widget:SetFullWidth(true)
 		widget:SetTriState(true)
 
-		hasMixedValues, updateCb = Helpers:HandleWidget(widget, self.bindings, ValueSelector, GetTooltipText, nil, GetEnabledState)
+		hasMixedValues, updateCb = Helpers:HandleWidget(widget, self.bindings, ValueSelector, GetTooltipText, GetEnabledState)
 
 		group:AddChild(widget)
 	end

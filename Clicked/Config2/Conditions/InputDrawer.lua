@@ -80,7 +80,7 @@ function Drawer:Draw()
 			self.checkbox:SetFullWidth(true)
 		end
 
-		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], nil, GetEnabledState)
+		Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, Addon.L[drawer.label], GetEnabledState)
 
 		self.container:AddChild(self.checkbox)
 	end
