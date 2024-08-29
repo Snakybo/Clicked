@@ -39,14 +39,17 @@ Addon.BindingConfig.BindingConditionTab = {
 	status = {}
 }
 
+--- @protected
 function Addon.BindingConfig.BindingConditionTab:Show()
 end
 
+--- @protected
 function Addon.BindingConfig.BindingConditionTab:Hide()
 	table.wipe(self.drawers)
 	table.wipe(self.status)
 end
 
+--- @protected
 function Addon.BindingConfig.BindingConditionTab:Redraw()
 	table.wipe(self.drawers)
 
@@ -61,6 +64,7 @@ function Addon.BindingConfig.BindingConditionTab:Redraw()
 	end
 end
 
+--- @private
 --- @param condition string
 function Addon.BindingConfig.BindingConditionTab:RedrawItem(condition)
 	local drawer = self.drawers[condition]

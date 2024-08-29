@@ -264,6 +264,7 @@ function Addon.BindingConfig.Window:Close()
 	table.wipe(self.treeItems)
 end
 
+--- @return boolean
 function Addon.BindingConfig.Window:IsOpen()
 	return self.frame ~= nil and self.frame:IsVisible()
 end
