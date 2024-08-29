@@ -117,8 +117,13 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 		self.container:AddChild(widget)
 	end
 
+	--- @type Binding[]
 	local hovercast = {}
+
+	--- @type Binding[]
 	local regular = {}
+
+	--- @type Binding[]
 	local all = {}
 
 	for _, other in Clicked:IterateActiveBindings() do
@@ -161,7 +166,7 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 			if other ~= binding then
 				do
 					local function OnClick()
-						-- TODO: Select binding
+						Addon.BindingConfig.Window:Select(other.uid)
 					end
 
 					local name, icon = Addon:GetBindingNameAndIcon(other)

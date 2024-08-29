@@ -75,6 +75,11 @@ function Addon.BindingConfig.BindingActionTab:Redraw()
 	self:RedrawKeyOptions()
 end
 
+--- @protected
+function Addon.BindingConfig.BindingActionTab:OnKeybindChanged()
+	self.controller:RedrawTab()
+end
+
 --- @private
 function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 	local id = tonumber(GetRawBindingValue(self.bindings[1]))
@@ -407,7 +412,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 
 			for index, current in ipairs(bindings) do
 				local function OnClick()
-					-- TODO: Select binding
+					Addon.BindingConfig.Window:Select(current.uid)
 				end
 
 				local function OnMoveUp()

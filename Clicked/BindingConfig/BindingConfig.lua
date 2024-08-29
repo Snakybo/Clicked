@@ -332,6 +332,15 @@ function Addon.BindingConfig.Window:PopPage(page)
 	end
 end
 
+--- @param uid integer|integer[]
+function Addon.BindingConfig.Window:Select(uid)
+	if not self:IsOpen() then
+		return
+	end
+
+	self.treeWidget:Select(uid)
+end
+
 function Addon.BindingConfig.Window:OnBindingReload()
 	self.wereBindingsReloaded = true
 	self:RedrawTree()
