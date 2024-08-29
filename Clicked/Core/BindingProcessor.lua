@@ -1023,8 +1023,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
 
 		do
-			local value = Addon:GetBindingValue(binding)
-			state.value = value == nil or #tostring(value) > 0
+			state.value = Addon:GetBindingValue(binding) ~= nil
 		end
 	end
 
