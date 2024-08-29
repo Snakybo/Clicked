@@ -165,8 +165,10 @@ local function EditBox_OnReceiveDrag(frame)
 	if type == "item" then
 		name = info
 	elseif type == "spell" then
+		--- @cast id number
 		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
 	elseif type == "petaction" then
+		--- @cast id number
 		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
 	end
 
@@ -392,7 +394,7 @@ function Methods:UpdateButtons()
 		button:SetText("...")
 		button:Disable()
 
-		button.icon:SetTexture(nil)
+		button.icon:SetTexture(nil) --- @diagnostic disable-line: undefined-field
 	end
 
 	local matches = self:GetMatches()
@@ -634,7 +636,7 @@ function Methods:Select(value)
 	self.editbox:SetCursorPosition(strlen(text))
 
 	self:Fire("OnSelect", text, option)
-	self.selectedOption = value
+	self.selectedOption = value --[[@as ClickedAutoFillEditBox.Option?]]
 
 	AceGUI:ClearFocus()
 end

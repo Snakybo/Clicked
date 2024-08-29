@@ -161,6 +161,7 @@ local function BuildLayout(layout, size)
 		buttonCache[key:GetId()] = widget
 	end
 
+	--- @diagnostic disable-next-line: invisible
 	local oldWidth = frame.frame:GetWidth()
 	local width = math.max(tree:GetTreeWidth() + tree:GetContentWidth() + 54, MIN_FRAME_WIDTH)
 	frame:SetWidth(width)
@@ -168,9 +169,11 @@ local function BuildLayout(layout, size)
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
 
 	if point == "CENTER" or point == "TOP" or point == "BOTTOM" then
+		--- @diagnostic disable-next-line: invisible
 		local xOffset = (frame.frame:GetWidth() - oldWidth) / 2
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	elseif point == "RIGHT" or point == "TOPRIGHT" or point == "BOTTOMRIGHT" then
+		--- @diagnostic disable-next-line: invisible
 		local xOffset = (frame.frame:GetWidth() - oldWidth)
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	end
@@ -231,11 +234,14 @@ local function PopulateKeys()
 			elseif type == "item" or (type == "macro" and subType == "item") then
 				name = C_Item.GetItemInfo(id)
 			elseif type == "flyout" then
+				--- @cast id number
 				name = GetFlyoutInfo(id)
 			elseif type == "summonpet" then
+				--- @cast id string
 				local speciesId, customName = C_PetJournal.GetPetInfoByPetID(id)
 				name = customName or C_PetJournal.GetPetInfoBySpeciesID(speciesId)
 			elseif type == "summonmount" then
+				--- @cast id number
 				name = C_MountJournal.GetMountInfoByID(id)
 			end
 
@@ -386,7 +392,8 @@ function KeyVisualizer:Open()
 			showGroup = GROUP_ALL
 
 			buttonCache = nil
-			frame = nil
+
+			frame = nil --- @diagnostic disable-line: cast-local-type
 		end
 
 		frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]

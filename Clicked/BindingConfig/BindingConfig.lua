@@ -79,8 +79,8 @@ local function SortByName(left, right)
 	local leftObj = Clicked:GetByUid(left.uid)
 	local rightObj = Clicked:GetByUid(right.uid)
 
-	leftScope = leftScope or leftObj.scope --- @diagnostic disable-line: need-check-nil
-	rightScope = rightScope or rightObj.scope --- @diagnostic disable-line: need-check-nil
+	leftScope = leftScope or leftObj ~= nil and leftObj.scope or 1
+	rightScope = rightScope or rightObj ~= nil and rightObj.scope or 1
 
 	-- Sort by scope
 	if leftScope > rightScope then
@@ -149,8 +149,8 @@ local function SortByKey(left, right)
 	local leftObj = Clicked:GetByUid(left.uid)
 	local rightObj = Clicked:GetByUid(right.uid)
 
-	leftScope = leftScope or leftObj.scope --- @diagnostic disable-line: need-check-nil
-	rightScope = rightScope or rightObj.scope --- @diagnostic disable-line: need-check-nil
+	leftScope = leftScope or leftObj ~= nil and leftObj.scope or 1
+	rightScope = rightScope or rightObj ~= nil and rightObj.scope or 1
 
 	-- Sort by scope
 	if leftScope > rightScope then
