@@ -39,6 +39,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix spell autofill for flyout abilities [#212]
 * Fix a game freeze when clearing the search box
 * Fix macro length calculation for non-English letters
+* Fix Lua error in the keyboard visualizer
 
 ### Changed
 

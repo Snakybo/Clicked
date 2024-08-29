@@ -270,7 +270,7 @@ local function PopulateKeys()
 
 				if targetKey == key then
 					local formIcon, _, _, spellId = GetShapeshiftFormInfo(form)
-					local spellName = GetSpellInfo(spellId)
+					local spellName = GetSpellName(spellId)
 					Register(spellName, formIcon)
 				end
 			end
