@@ -138,7 +138,8 @@ function Clicked:GetDatabaseDefaults()
 				bindUnassignedModifiers = false,
 				minimap = {
 					hide = false
-				}
+				},
+				ignoreSelfCastWarning = false
 			},
 			groups = {},
 			bindings = {},

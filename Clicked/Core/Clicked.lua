@@ -88,6 +88,14 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
+		elseif args[1] == "ignore-self-cast-warning" then
+			Addon.db.profile.options.ignoreSelfCastWarning = not Addon.db.profile.options.ignoreSelfCastWarning
+
+			if Addon.db.profile.options.ignoreSelfCastWarning then
+				print(Addon:GetPrefixedAndFormattedString(Addon.L["Disabled self-cast warning, type this command again to re-enable it."]))
+			else
+				print(Addon:GetPrefixedAndFormattedString(Addon.L["Enabled self-cast warning, type this command again to disable it."]))
+			end
 		end
 	end
 end
@@ -279,12 +287,22 @@ function Clicked:OnInitialize()
 end
 
 function Clicked:OnEnable()
-	--@debug@
+--@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
 	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
-	--@end-debug@
+--@end-debug@
 
 	UpdateEventHooks(self, self.RegisterEvent)
+
+	-- self-cast warning
+	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		local selfCastModifier = GetModifiedClick("SELFCAST")
+
+		if selfCastModifier ~= "NONE" then
+			local message = string.format(Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: %s"], selfCastModifier, YELLOW_FONT_COLOR:WrapTextInColorCode("/clicked ignore-self-cast-warning"))
+			print(Addon:GetPrefixedAndFormattedString(message))
+		end
+	end
 end
 
 function Clicked:OnDisable()

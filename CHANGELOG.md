@@ -27,6 +27,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add spell ranks to spell autofill in Classic Era
 * Create bindings when dragging a macro into the binding configuration window
 * Add quick start import from macros
+* Add chat command to disable (or re-enable) the self-cast warning
 
 ### Fixed
 
@@ -49,6 +50,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Merge the export window into the binding window
 * Update design of various UI screens
 * Update copy in various places
+* Show self-cast warning upon login
 
 ### Removed
 
