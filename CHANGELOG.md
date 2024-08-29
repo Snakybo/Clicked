@@ -37,6 +37,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix duplicate binding check when importing from spellbook or action bar
 * Fix cancelaura spell input not parsing correctly [#216] [#217]
 * Fix spell autofill for flyout abilities [#212]
+* Fix a game freeze when clearing the search box
+* Fix macro length calculation for non-English letters
 
 ### Changed
 
