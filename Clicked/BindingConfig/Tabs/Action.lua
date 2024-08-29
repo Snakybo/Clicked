@@ -311,20 +311,24 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		self.container:AddChild(widget)
 	end
 
-	-- TODO: Show the remove rank button if anything in the selection has a rank
-	if not hasMixedValues and id ~= nil and self.bindings[1].actionType == Addon.BindingTypes.SPELL and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK then
-		local name = ValueSelector(self.bindings[1])
-		local hasRank = string.find(name, "%((.+)%)")
+	do
+		local anyHasRank = FindInTableIf(self.bindings, function(binding)
+			if binding.actionType ~= Addon.BindingTypes.SPELL then
+				return false
+			end
 
-		if hasRank then
+			local name = ValueSelector(binding)
+			local hasRank = string.find(name, "%((.+)%)")
+			return hasRank
+		end)
+
+		if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and anyHasRank then
 			local function OnClick()
-				if id == nil then
-					return
-				end
-
 				for _, binding in ipairs(self.bindings) do
-					binding.action.spellMaxRank = true
-					Clicked:ReloadBinding(binding, true)
+					if binding.actionType == Addon.BindingTypes.SPELL then
+						binding.action.spellMaxRank = true
+						Clicked:ReloadBinding(binding, true)
+					end
 				end
 
 				self.controller:RedrawTab()
