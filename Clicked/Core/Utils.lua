@@ -768,15 +768,6 @@ function Addon:IsNilOrEmpty(value)
 	return false
 end
 
---- @param string string
---- @return string
-function Addon:TrimString(string)
-	string = string or ""
-
-	local result = string.gsub(string, "^%s*(.-)%s*$", "%1")
-	return result
-end
-
 --- Compare two bindings, for use in a comparison function such as `table.sort`
 --- This function is stable and will return the opposite result if called with inverted parameters
 ---
@@ -949,23 +940,6 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	end
 
 	return forms
-end
-
---- Get the race(s) the specified binding should activate for.
----
---- @param binding Binding
---- @return integer[]
-function Addon:GetBindingRaces(binding)
-	if binding.load.race.selected == 1 then
-		return { binding.load.race.single }
-	end
-
-	if binding.load.race.selected == 2 then
-		return binding.load.race.multiple
-	end
-
-	local _, raceName = UnitRace("player")
-	return { raceName }
 end
 
 --- Show a tooltip on the specified frame after a short delay.
@@ -1234,13 +1208,6 @@ function Addon:CanUnitBeDead(unit)
 	}
 
 	return valid[unit] == true
-end
-
---- Notify the user that Clicked is currently in combat lockdown mode,
---- this will print a message to the user's chat frame with a helpful message.
-function Addon:NotifyCombatLockdown()
-	local message = Addon:GetPrefixedAndFormattedString(Addon.L["You are in combat, the binding configuration is in read-only mode."])
-	print(message)
 end
 
 --- Colorize the specified string. This will enclose the string

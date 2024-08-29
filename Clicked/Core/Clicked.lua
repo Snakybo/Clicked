@@ -44,7 +44,7 @@ local function RegisterIcons()
 		label = Addon.L["Clicked"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
-			Addon:BindingConfig_Open()
+			Addon.BindingConfig.Window:Open()
 		end,
 		OnTooltipShow = function(tooltip)
 			tooltip:AddLine(Addon.L["Clicked"])
@@ -79,7 +79,7 @@ local function HandleChatCommand(input)
 			openConfigOnCombatExit = true
 			print(Addon:AppendClickedMessagePrefix("Binding configuration will open once you leave combat."))
 		else
-			Addon:BindingConfig_Open()
+			Addon.BindingConfig.Window:Open()
 		end
 	elseif #args == 1 then
 		if args[1] == "opt" or args[1] == "options" then
@@ -88,8 +88,6 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
-		elseif args[1] == "v2" then
-			Addon.BindingConfig.Window:Open()
 		end
 	end
 end
@@ -98,8 +96,9 @@ end
 
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
-	openConfigOnCombatExit = Addon:BindingConfig_Close()
+	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
+	Addon.BindingConfig.Window:Close()
 	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
@@ -118,7 +117,7 @@ local function PLAYER_REGEN_ENABLED()
 	end
 
 	if openConfigOnCombatExit then
-		Addon:BindingConfig_Open()
+		Addon.BindingConfig.Window:Open()
 		openConfigOnCombatExit = false
 	end
 end
@@ -133,10 +132,6 @@ end
 
 local function ADDON_LOADED()
 	Addon:ProcessFrameQueue()
-end
-
-local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
-	Addon:BindingConfig_ItemInfoReceived(itemId, success)
 end
 
 local function ZONE_CHANGED()
@@ -249,7 +244,6 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	method(self, "GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	method(self, "ADDON_LOADED", ADDON_LOADED)
-	method(self, "GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
 	method(self, "ZONE_CHANGED", ZONE_CHANGED)
 	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)

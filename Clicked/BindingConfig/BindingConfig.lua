@@ -69,8 +69,8 @@ local function FilterTargets(selected)
 	return result, containsIllegal
 end
 
---- @param left ClickedTreeGroup2RuntimeItem
---- @param right ClickedTreeGroup2RuntimeItem
+--- @param left ClickedTreeGroupRuntimeItem
+--- @param right ClickedTreeGroupRuntimeItem
 --- @return boolean
 local function SortByName(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
@@ -139,8 +139,8 @@ local function SortByName(left, right)
 	return left.uid < right.uid
 end
 
---- @param left ClickedTreeGroup2RuntimeItem
---- @param right ClickedTreeGroup2RuntimeItem
+--- @param left ClickedTreeGroupRuntimeItem
+--- @param right ClickedTreeGroupRuntimeItem
 --- @return boolean
 local function SortByKey(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
@@ -212,9 +212,9 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private pageStack { page: string, payload: any[] }[]
 --- @field private currentPage? string
 --- @field private sortMode "key"|"name"
---- @field private tree ClickedTreeGroup2Item[]
---- @field private treeItems { [integer]: ClickedTreeGroup2Item }
---- @field private treeStatus ClickedTreeGroup2Status
+--- @field private tree ClickedTreeGroupItem[]
+--- @field private treeItems { [integer]: ClickedTreeGroupItem }
+--- @field private treeStatus ClickedTreeGroupStatus
 --- @field private redrawTimer? TimerCallback
 --- @field private bindingCopyTarget? integer
 --- @field private wereBindingsReloaded? boolean
@@ -672,7 +672,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 	for _, scope in pairs(Addon.BindingScope) do
 		local uid = Addon:GetScopeUid(scope)
 
-		--- @type ClickedTreeGroup2Item
+		--- @type ClickedTreeGroupItem
 		self.treeItems[uid] = self.treeItems[uid] or {
 			uid = uid,
 			title = Addon:GetLocalizedScope(scope),
@@ -686,7 +686,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 
 		while #queue > 0 do
 			local current = table.remove(queue, 1)
-			local children = self.treeItems[current].children --[[@as ClickedTreeGroup2Item[]]
+			local children = self.treeItems[current].children --[[@as ClickedTreeGroupItem[]]
 
 			if hierarchy[current] ~= nil then
 				for _, item in ipairs(hierarchy[current]) do
@@ -721,7 +721,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 
 						local title, icon = Addon:GetGroupNameAndIcon(item)
 
-						--- @type ClickedTreeGroup2Item
+						--- @type ClickedTreeGroupItem
 						local data = self.treeItems[item.uid]
 						if data == nil then
 							data = {
@@ -749,7 +749,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 	end
 
 	for uid in pairs(existing) do
-		local item = self.treeItems[uid] --[[@as ClickedTreeGroup2RuntimeItem]]
+		local item = self.treeItems[uid] --[[@as ClickedTreeGroupRuntimeItem]]
 
 		if item.parent ~= nil then
 			for i = 1, #item.parent.children do
@@ -772,7 +772,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 			return self.treeStatus.selected
 		end
 
-		--- @type ClickedTreeGroup2Item[]
+		--- @type ClickedTreeGroupItem[]
 		local queue = { }
 
 		for _, item in ipairs(self.tree) do
@@ -780,7 +780,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		end
 
 		while #queue > 0 do
-			--- @type ClickedTreeGroup2Item
+			--- @type ClickedTreeGroupItem
 			local current = table.remove(queue, 1)
 
 			if current.uid > 0 then
@@ -1152,7 +1152,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		end
 	end
 
-	self.treeWidget = AceGUI:Create("ClickedTreeGroup2") --[[@as ClickedTreeGroup2]]
+	self.treeWidget = AceGUI:Create("ClickedTreeGroup") --[[@as ClickedTreeGroup]]
 	self.treeWidget:SetLayout("Flow")
 	self.treeWidget:SetFullWidth(true)
 	self.treeWidget:SetFullHeight(true)

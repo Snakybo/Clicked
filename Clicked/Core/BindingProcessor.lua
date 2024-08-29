@@ -635,7 +635,6 @@ local function ReloadBindings(delayFrame)
 	Clicked:ProcessActiveBindings()
 
 	Addon.BindingConfig.Window:OnBindingReload()
-	Addon:BindingConfig_Redraw()
 	Addon.KeyVisualizer:Redraw()
 end
 

@@ -3,10 +3,8 @@
 	<Script file="AceGUIContainer-ClickedFrame.lua"/>
 	<Script file="AceGUIContainer-ClickedIconSelectorList.lua"/>
 	<Script file="AceGUIContainer-ClickedKeyVisualizerTreeGroup.lua"/>
-	<Script file="AceGUIContainer-ClickedReorderableInlineGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTargetGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedTreeGroup.lua"/>
-	<Script file="AceGUIContainer-ClickedTreeGroup2.lua"/>
 	<Script file="AceGUIContainer-ClickedTabGroup.lua"/>
 	<Script file="AceGUIContainer-ClickedSimpleGroup.lua"/>
 	<Script file="AceGUIWidget-ClickedHorizontalIcon.lua"/>

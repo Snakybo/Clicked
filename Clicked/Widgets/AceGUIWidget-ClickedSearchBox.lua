@@ -55,7 +55,7 @@ end
 
 local function EditBox_OnTextChanged(frame)
 	local self = frame.obj
-	local value = Addon:TrimString(frame:GetText())
+	local value = string.trim(frame:GetText())
 
 	if not self.isPlaceholderActive and tostring(value) ~= tostring(self.searchTerm) then
 		self.searchTerm = value
