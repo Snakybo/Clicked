@@ -359,3 +359,4 @@ L["Never"] = true
 L["Talent"] = true
 L["PvP talent"] = true
 L["Always"] = true
+L["Automatically import from macros"] = true

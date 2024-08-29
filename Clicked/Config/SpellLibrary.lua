@@ -321,9 +321,9 @@ function Addon.SpellLibrary:GetActionBarSpells()
 
 	--- @param key? string
 	--- @param type? string
-	--- @param id? integer
+	--- @param id? string|integer
 	local function Register(key, type, id)
-		if type == nil or id == nil then
+		if type == nil or id == nil or id == 0 then
 			return
 		end
 
@@ -368,10 +368,8 @@ function Addon.SpellLibrary:GetActionBarSpells()
 	--- @param slot integer
 	local function RegisterActionButton(uid, slot)
 		-- TODO: Add support for multiple keys, maybe?
-		--- @type string?
 		local key = GetBindingKey(uid)
 
-		--- @type string?, integer?
 		local type, id = GetActionInfo(slot)
 		if type == nil or id == nil then
 			return
@@ -381,7 +379,7 @@ function Addon.SpellLibrary:GetActionBarSpells()
 		-- TODO: Check if this is also the case on Classic
 		if type == "macro" then
 			local text = GetActionText(slot)
-			id = text ~= nil and GetMacroIndexByName(text) or nil --- @diagnostic disable-line: param-type-mismatch
+			id = text ~= nil and GetMacroIndexByName(text) or 0
 		end
 
 		Register(key, type, id)
@@ -457,6 +455,26 @@ function Addon.SpellLibrary:GetActionBarSpells()
 				Register(GetBindingKey(uid), "spell", spell)
 			end
 		end
+	end
+
+	return result
+end
+
+--- @return SpellLibraryMacroResult[]
+function Addon.SpellLibrary:GetMacroSpells()
+	--- @type SpellLibraryMacroResult[]
+	local result = {}
+
+	for i = 1, GetNumMacros() do
+		local name, icon, content = GetMacroInfo(i)
+
+		--- @type SpellLibraryMacroResult
+		table.insert(result, {
+			type = Addon.SpellLibrary.ResultType.MACRO,
+			name = name,
+			icon = icon,
+			content = content
+		})
 	end
 
 	return result

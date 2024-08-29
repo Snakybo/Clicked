@@ -31,7 +31,8 @@ local ItemTemplate = {
 	BINDING_UNIT_TARGET = 16,
 	BINDING_UNIT_MENU = 17,
 	IMPORT_SPELLBOOK = 100,
-	IMPORT_ACTIONBAR = 101
+	IMPORT_ACTIONBAR = 101,
+	IMPORT_MACROS = 102
 }
 
 --- @return Group
@@ -72,13 +73,30 @@ local function CreateBinding(type)
 end
 
 --- @return { [string]: Binding[] }
-local function CreateBindingCache()
+local function CreateActionBarBindingCache()
 	--- @type { [string]: Binding[] }
 	local result = {}
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
 		result[binding.keybind] = result[binding.keybind] or {}
 		table.insert(result[binding.keybind], binding)
+	end
+
+	return result
+end
+
+--- @return { name: string, content: string }[]
+local function CreateMacroBindingCache()
+	--- @type { name: string, content: string }[]
+	local result = {}
+
+	for _, binding in Clicked:IterateConfiguredBindings() do
+		if binding.actionType == Addon.BindingTypes.MACRO then
+			table.insert(result, {
+				name = binding.action.macroName,
+				content = binding.action.macroValue
+			})
+		end
 	end
 
 	return result
@@ -114,9 +132,21 @@ local function DoesActionBarBindingExist(cache, spell)
 			end
 		elseif spell.type == Addon.SpellLibrary.ResultType.MACRO and binding.actionType == Addon.BindingTypes.MACRO then
 			--- @cast spell SpellLibraryMacroResult
-			if binding.action.macroValue == spell.content then
+			if binding.action.macroName == spell.name and binding.action.macroValue == spell.content then
 				return true
 			end
+		end
+	end
+
+	return false
+end
+
+--- @param cache { name: string, content: string }[]
+--- @param spell SpellLibraryMacroResult
+local function DoesMacroBindingExist(cache, spell)
+	for _, item in ipairs(cache) do
+		if item.name == spell.name and item.content == spell.content then
+			return true
 		end
 	end
 
@@ -181,7 +211,7 @@ end
 
 --- @return Binding?
 local function ImportActionbar()
-	local cache = CreateBindingCache()
+	local cache = CreateActionBarBindingCache()
 
 	--- @type Binding?
 	local first = nil
@@ -236,6 +266,37 @@ local function ImportActionbar()
 	return first
 end
 
+--- @return Binding?
+local function ImportMacros()
+	local cache = CreateMacroBindingCache()
+
+	--- @type Binding?
+	local first = nil
+
+	for _, spell in ipairs(Addon.SpellLibrary:GetMacroSpells()) do
+		if not DoesMacroBindingExist(cache, spell) then
+			local binding = Clicked:CreateBinding()
+			first = first or binding
+
+			binding.actionType = Addon.BindingTypes.MACRO
+			binding.action.macroName = spell.name
+			binding.action.macroIcon = spell.icon
+			binding.action.macroValue = spell.content
+
+			table.insert(cache, {
+				name = spell.name,
+				content = spell.content
+			})
+		end
+	end
+
+	if first ~= nil then
+		Clicked:ReloadBindings(true)
+	end
+
+	return first
+end
+
 -- Private addon API
 
 Addon.BindingConfig = Addon.BindingConfig or {}
@@ -260,6 +321,7 @@ function Addon.BindingConfig.NewPage:Redraw()
 
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_ACTIONBAR, Addon.L["Automatically import from action bars"])
+	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_MACROS, Addon.L["Automatically import from macros"])
 
 	do
 		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
@@ -333,6 +395,8 @@ function Addon.BindingConfig.NewPage:CreateItem(type)
 		target = ImportSpellbook()
 	elseif type == ItemTemplate.IMPORT_ACTIONBAR then
 		target = ImportActionbar()
+	elseif type == ItemTemplate.IMPORT_MACROS then
+		target = ImportMacros()
 	end
 
 	if target ~= nil then
