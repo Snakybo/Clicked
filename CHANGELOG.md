@@ -40,6 +40,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix a game freeze when clearing the search box
 * Fix macro length calculation for non-English letters
 * Fix Lua error in the keyboard visualizer
+* Fix missing UI elements in unit frame blacklist
 
 ### Changed
 
