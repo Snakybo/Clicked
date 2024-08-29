@@ -78,10 +78,10 @@ local function GetSpells_v2()
 				local _, _, spellCount = GetFlyoutInfo(spell.actionID)
 
 				for k = 1, spellCount do
-					local spellId = GetFlyoutSlotInfo(spell.actionID, k)
+					local spellId, _, isKnown = GetFlyoutSlotInfo(spell.actionID, k)
 					local info = Addon:GetSpellInfo(spellId, false)
 
-					if info ~= nil then
+					if isKnown and info ~= nil and not C_Spell.IsSpellPassive(spellId) then
 						--- @type SpellLibrarySpellResult
 						result[spellId] = {
 							type = Addon.SpellLibrary.ResultType.SPELL,
@@ -208,10 +208,10 @@ local function GetSpells_v1()
 				local _, _, spellCount = GetFlyoutInfo(id)
 
 				for k = 1, spellCount do
-					local spellId = GetFlyoutSlotInfo(id, k)
+					local spellId, _, isKnown = GetFlyoutSlotInfo(id, k)
 					local spell = Addon:GetSpellInfo(spellId, false)
 
-					if spell ~= nil then
+					if isKnown and spell ~= nil and not IsPassiveSpell(spellId) then
 						--- @type SpellLibrarySpellResult
 						result[spellId] = {
 							type = Addon.SpellLibrary.ResultType.SPELL,
