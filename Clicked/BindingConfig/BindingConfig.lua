@@ -877,9 +877,9 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 			subtext = string.format(Addon.L["%d loaded bindings"], numLoaded)
 		end
 
-		if IsShiftKeyDown() then
-			subtext = subtext .. string.format("\nuid: %d", obj.uid)
-		end
+--@debug@
+		subtext = subtext .. string.format("\n\nuid: %d", obj.uid)
+--@end-debug@
 
 		Addon:ShowTooltip(button, text, subtext, "RIGHT", "LEFT")
 	end

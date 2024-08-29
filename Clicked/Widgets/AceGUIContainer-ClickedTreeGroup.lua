@@ -936,10 +936,10 @@ function Methods:IsFiltered(item)
 		return false
 	end
 
-	--- @param ... string
+	--- @param fields string[]
 	--- @return boolean
-	local function Find(...)
-		for _, str in ipairs({...}) do
+	local function Find(fields)
+		for _, str in ipairs(fields) do
 			if not Addon:IsNilOrEmpty(str) and string.find(string.lower(str), self.filter, 1, true) ~= nil then
 				return false
 			end
@@ -948,7 +948,13 @@ function Methods:IsFiltered(item)
 		return true
 	end
 
-	return Find(item.title, item.subtitle)
+	return Find({
+		item.title,
+		item.subtitle,
+--@debug@
+		tostring(item.uid),
+--@end-debug@
+	})
 end
 
 --- @private
