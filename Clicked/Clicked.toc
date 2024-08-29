@@ -55,11 +55,11 @@ Config\KeyVisualizer.lua
 Config\SpellLibrary.lua
 Debug\StatusOutput.lua
 
-Config2\Helpers.lua
-Config2\Conditions.xml
-Config2\Tabs.xml
-Config2\Pages.xml
-Config2\BindingConfig.lua
+BindingConfig\Helpers.lua
+BindingConfig\Conditions.xml
+BindingConfig\Tabs.xml
+BindingConfig\Pages.xml
+BindingConfig\BindingConfig.lua
 
 # Skinning
 Skins\ElvUI.lua
