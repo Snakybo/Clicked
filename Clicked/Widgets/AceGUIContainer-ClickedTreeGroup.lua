@@ -92,7 +92,13 @@ local function Button_OnClick(button, key)
 	local status = self.status or self.localstatus
 
 	if key == "RightButton" then
-		self:Fire("OnButtonContext", button.uid, button)
+		local ids = status.selected or {}
+
+		if not tContains(ids, button.uid) then
+			ids = { button.uid }
+		end
+
+		self:Fire("OnButtonContext", ids, button)
 	else
 		self:Fire("OnButtonClick", button.uid, button.selected)
 

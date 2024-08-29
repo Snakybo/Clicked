@@ -568,7 +568,7 @@ function Addon:ReplaceBindingContents(original, replacement)
 	replacement.keybind = original.keybind
 
 	for index, binding in Clicked:IterateConfiguredBindings() do
-		if binding == original then
+		if binding.uid == original.uid then
 			Addon.db.profile.bindings[index] = replacement
 			Clicked:ReloadBinding(binding, true)
 			break
