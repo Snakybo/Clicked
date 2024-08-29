@@ -4,6 +4,59 @@ if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) == 0 then
 	return
 end
 
+--- @param scrollToSelection? boolean
+--- @param fromOnUpdate? boolean
+local function ClickedTreeGroup_RefreshTree(self, scrollToSelection, fromOnUpdate)
+	self:OriginalRefreshTree(scrollToSelection, fromOnUpdate)
+
+	if self.tree == nil then
+		return
+	end
+
+	self.border:ClearAllPoints()
+
+	if self.userdata and self.userdata.option and self.userdata.option.childGroups == 'ElvUI_HiddenTree' then
+		self.border:Point('TOPLEFT', self.treeFrame, 'TOPRIGHT', 1, 13)
+		self.border:Point('BOTTOMRIGHT', self.frame, 'BOTTOMRIGHT', 6, 0)
+		self.treeFrame:Point('TOPLEFT', 0, 0)
+		self.treeFrame:Hide()
+		return
+	end
+
+	self.border:Point('TOPLEFT', self.treeFrame, 'TOPRIGHT')
+	self.border:Point('BOTTOMRIGHT', self.frame)
+	self.treeFrame:Point('TOPLEFT', 0, -2)
+	self.treeFrame:Show()
+
+	local elv = unpack(ElvUI);
+	if elv == nil or not elv.private.skins or not elv.private.skins.ace3Enable then
+		return
+	end
+
+	local status = self.status or self.localstatus
+
+	for i = status.scrollValue + 1, #self.lines do
+		local button = self.buttons[i - status.scrollValue]
+
+		if button ~= nil then
+			if button.highlight then
+				button.highlight:SetVertexColor(1.0, 0.9, 0.0, 0.8)
+			end
+
+			local item = self.treeLookup[button.uid]
+			if not item.isFolded then
+				button.toggle:SetNormalTexture(elv.Media.Textures.Minus)
+				button.toggle:SetPushedTexture(elv.Media.Textures.Minus)
+			else
+				button.toggle:SetNormalTexture(elv.Media.Textures.Plus)
+				button.toggle:SetPushedTexture(elv.Media.Textures.Plus)
+			end
+
+			button.toggle:SetHighlightTexture(elv.ClearTexture)
+		end
+	end
+end
+
 local function Initialize()
 	local elv = unpack(ElvUI);
 	if elv == nil or not elv.private.skins or not elv.private.skins.ace3Enable then
@@ -143,6 +196,11 @@ local function Initialize()
 			widget.content:GetParent():SetTemplate("Transparent")
 			widget.treeFrame:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
+
+			if widget.OriginalRefreshTree == nil then
+				widget.OriginalRefreshTree = widget.RefreshTree
+				widget.RefreshTree = ClickedTreeGroup_RefreshTree
+			end
 		end
 
 		return originalRegisterAsContainer(self, widget)
