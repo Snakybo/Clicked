@@ -93,9 +93,18 @@ Addon.BindingConfig.BindingPage = {
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},
+		action_unit = {
+			title = "Action",
+			order = 2,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingUnitActionTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_UNIT_SELECT, BT_UNIT_MENU }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
+		},
 		macro = {
 			title = "Macro",
-			order = 1,
+			order = 3,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingMacroTab),
 			filter = function(bindings)
 				local bindingTypes = { BT_MACRO, BT_APPEND }
@@ -125,7 +134,7 @@ Addon.BindingConfig.BindingPage = {
 				content = Addon.Condition.Registry:GetConditionSet("macro")
 			}),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_CANCELAURA }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_CANCELAURA }
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},

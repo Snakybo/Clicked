@@ -5,4 +5,5 @@
 	<Script file="Tabs\Macro.lua"/>
 	<Script file="Tabs\Status.lua"/>
 	<Script file="Tabs\Target.lua"/>
+	<Script file="Tabs\UnitAction.lua"/>
 </Ui>

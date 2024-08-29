@@ -122,6 +122,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		local order = { "key", "unitframe", "all" }
 
 		--- @param binding Binding
+		--- @return string
 		local function ValueSelector(binding)
 			if binding.actionType ~= Addon.BindingTypes.MACRO then
 				return Helpers.IGNORE_VALUE
@@ -137,6 +138,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		end
 
 		--- @param binding Binding
+		--- @return string
 		local function GetRawValue(binding)
 			if binding.targets.hovercastEnabled and binding.targets.regularEnabled then
 				return "all"
@@ -147,6 +149,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			end
 		end
 
+		--- @param value string
 		local function OnValueChanged(_, _, value)
 			for _, binding in ipairs(self.bindings) do
 				binding.targets.regularEnabled = value == "key" or value == "all"
@@ -211,6 +214,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		end
 
 
+		--- @param value string
 		local function OnEnterPressed(_, _, value)
 			value = string.trim(value)
 

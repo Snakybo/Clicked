@@ -358,3 +358,4 @@ L["Unit"] = true
 L["Never"] = true
 L["Talent"] = true
 L["PvP talent"] = true
+L["Always"] = true
