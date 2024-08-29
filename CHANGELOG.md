@@ -25,6 +25,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include all 15 ElvUI bars action bars in quick start import, up from 6
 * Add more information to a bunch of tooltips in the binding configuration window
 * Add spell ranks to spell autofill in Classic Era
+* Create bindings when dragging a macro into the binding configuration window
 
 ### Fixed
 

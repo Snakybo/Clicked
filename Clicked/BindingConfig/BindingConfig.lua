@@ -589,8 +589,53 @@ function Addon.BindingConfig.Window:CreateFrame()
 		self.frame = nil
 	end
 
+	local function OnReceiveDrag()
+		local type, p2, _, p4 = GetCursorInfo()
+
+		--- @type BindingType
+		local actionType
+
+		--- @type integer
+		local id
+
+		if type == "item" then
+			actionType = Addon.BindingTypes.ITEM
+			id = p2 --[[@as integer]]
+		elseif type == "spell" then
+			actionType = Addon.BindingTypes.SPELL
+			id = p4 --[[@as integer]]
+		elseif type == "petaction" then
+			actionType = Addon.BindingTypes.SPELL
+			id = p2 --[[@as integer]]
+		elseif type == "macro" then
+			actionType = Addon.BindingTypes.MACRO
+			id = p2 --[[@as integer]]
+		end
+
+		if actionType ~= nil then
+			local binding = Clicked:CreateBinding()
+			binding.actionType = actionType
+
+			if binding.actionType == Addon.BindingTypes.SPELL then
+				binding.action.spellValue = id
+			elseif binding.actionType == Addon.BindingTypes.ITEM then
+				binding.action.itemValue = id
+			elseif binding.actionType == Addon.BindingTypes.MACRO then
+				local name, icon, content = GetMacroInfo(id)
+				binding.action.macroName = name
+				binding.action.macroIcon = icon
+				binding.action.macroValue = content
+			end
+
+			Clicked:ReloadBinding(binding, true)
+
+			ClearCursor()
+		end
+	end
+
 	self.frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
 	self.frame:SetCallback("OnClose", OnClose)
+	self.frame:SetCallback("OnReceiveDrag", OnReceiveDrag)
 	self.frame:SetTitle(Addon.L["Clicked Binding Configuration"])
 	self.frame:SetLayout("Flow")
 	self.frame:SetWidth(900)
