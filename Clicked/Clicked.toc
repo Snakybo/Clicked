@@ -31,7 +31,8 @@ Core\Serializer.lua
 Core\Tooltips.lua
 Core\Upgrader.lua
 
-Conditions\Condition.lua
+Conditions\ConditionRegistry.lua
+Conditions\ConditionUtils.lua
 Conditions\LoadConditions.lua
 Conditions\MacroConditions.lua
 

@@ -20,7 +20,7 @@ local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local Utilities = Addon.Condition.Utilities
+local Utils = Addon.Condition.Utils
 
 --- @param classNames string[]
 --- @param specIndices integer[]
@@ -109,9 +109,9 @@ local config = {
 			label = "Player Name-Realm"
 		},
 		init = function()
-			return Utilities.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
+			return Utils.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "race",
@@ -124,9 +124,9 @@ local config = {
 		},
 		init = function()
 			local _, englishName = UnitRace("player")
-			return Utilities.CreateMultiselectLoadOption(englishName)
+			return Utils.CreateMultiselectLoadOption(englishName)
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption
 	},
 	{
 		id = "class",
@@ -139,9 +139,9 @@ local config = {
 		},
 		init = function()
 			local _, classFileName = UnitClass("player")
-			return Utilities.CreateMultiselectLoadOption(classFileName)
+			return Utils.CreateMultiselectLoadOption(classFileName)
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption
 	},
 	{
 		id = "specialization",
@@ -166,12 +166,12 @@ local config = {
 		init = function()
 			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
 				local specIndex = GetSpecialization()
-				return Utilities.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
+				return Utils.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
 			else
-				return Utilities.CreateMultiselectLoadOption(GetPrimaryTalentTree())
+				return Utils.CreateMultiselectLoadOption(GetPrimaryTalentTree())
 			end
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption
 	},
 	{
 		id = "talent",
@@ -193,9 +193,9 @@ local config = {
 		dependencies = { "class", "specialization" },
 		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.CATA,
 		init = function()
-			return Utilities.CreateTalentLoadOption("")
+			return Utils.CreateTalentLoadOption("")
 		end,
-		unpack = Utilities.UnpackTalentLoadOption
+		unpack = Utils.UnpackTalentLoadOption
 	},
 	{
 		id = "pvpTalent",
@@ -212,9 +212,9 @@ local config = {
 		dependencies = { "class", "specialization" },
 		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
 		init = function()
-			return Utilities.CreateTalentLoadOption("")
+			return Utils.CreateTalentLoadOption("")
 		end,
-		unpack = Utilities.UnpackTalentLoadOption
+		unpack = Utils.UnpackTalentLoadOption
 	},
 	{
 		id = "warMode",
@@ -230,9 +230,9 @@ local config = {
 		},
 		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
 		init = function()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "instanceType",
@@ -269,9 +269,9 @@ local config = {
 			end
 		},
 		init = function()
-			return Utilities.CreateMultiselectLoadOption("NONE")
+			return Utils.CreateMultiselectLoadOption("NONE")
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption
 	},
 	{
 		id = "zoneName",
@@ -287,9 +287,9 @@ local config = {
 			}
 		},
 		init = function()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utils.UnpackSimpleLoadOption,
 	},
 	{
 		id = "spellKnown",
@@ -299,9 +299,9 @@ local config = {
 			label = "Spell known"
 		},
 		init = function()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utils.UnpackSimpleLoadOption,
 	},
 	{
 		id = "inGroup",
@@ -323,9 +323,9 @@ local config = {
 			end
 		},
 		init = function()
-			return Utilities.CreateLoadOption(Addon.GroupState.PARTY_OR_RAID)
+			return Utils.CreateLoadOption(Addon.GroupState.PARTY_OR_RAID)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utils.UnpackSimpleLoadOption,
 	},
 	{
 		id = "playerInGroup",
@@ -335,9 +335,9 @@ local config = {
 			label = "Player in group"
 		},
 		init = function()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utils.UnpackSimpleLoadOption,
 	},
 	{
 		id = "equipped",
@@ -361,9 +361,9 @@ local config = {
 			end
 		},
 		init = function()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption,
+		unpack = Utils.UnpackSimpleLoadOption,
 	}
 }
 

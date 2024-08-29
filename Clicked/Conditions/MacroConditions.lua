@@ -20,7 +20,7 @@ local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local Utilities = Addon.Condition.Utilities
+local Utils = Addon.Condition.Utils
 
 --- @param classNames string[]
 --- @param specIndices integer[]
@@ -105,9 +105,9 @@ local config = {
 		},
 		dependencies = { "class", "specialization" },
 		init = function()
-			return Utilities.CreateMultiselectLoadOption(1)
+			return Utils.CreateMultiselectLoadOption(1)
 		end,
-		unpack = Utilities.UnpackMultiselectLoadOption,
+		unpack = Utils.UnpackMultiselectLoadOption,
 	},
 	{
 		id = "combat",
@@ -122,9 +122,9 @@ local config = {
 			end
 		},
 		init = function()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "pet",
@@ -139,9 +139,9 @@ local config = {
 			end
 		},
 		init = function()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "stealth",
@@ -156,9 +156,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "mounted",
@@ -173,9 +173,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "outdoors",
@@ -190,9 +190,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "swimming",
@@ -207,9 +207,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "channeling",
@@ -219,9 +219,9 @@ local config = {
 			negatable = true
 		},
 		init = function ()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "flying",
@@ -237,9 +237,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "dynamicFlying",
@@ -255,9 +255,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "flyable",
@@ -273,9 +273,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "advancedFlyable",
@@ -291,9 +291,9 @@ local config = {
 			end
 		},
 		init = function ()
-			return Utilities.CreateLoadOption(true)
+			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	},
 	{
 		id = "bonusbar",
@@ -304,9 +304,9 @@ local config = {
 			negatable = true
 		},
 		init = function ()
-			return Utilities.CreateLoadOption("")
+			return Utils.CreateLoadOption("")
 		end,
-		unpack = Utilities.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption
 	}
 }
 
