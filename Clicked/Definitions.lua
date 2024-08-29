@@ -53,7 +53,6 @@
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
 --- @field public load Binding.Load
---- @field public integrations table<string,any>
 
 --- @class Binding.Targets
 --- @field public hovercast Binding.Target

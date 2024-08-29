@@ -473,8 +473,6 @@ function Addon:GetNewBindingTemplate()
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate()
-		},
-		integrations = {
 		}
 	}
 
@@ -568,7 +566,6 @@ function Addon:ReplaceBindingContents(original, replacement)
 	replacement.scope = original.scope
 	replacement.uid = original.uid
 	replacement.keybind = original.keybind
-	replacement.integrations = original.integrations
 
 	for index, binding in Clicked:IterateConfiguredBindings() do
 		if binding == original then
@@ -625,7 +622,6 @@ function Addon:CloneBinding(original)
 	local clone = CopyTable(original)
 	clone.uid = nil
 	clone.keybind = ""
-	clone.integrations = {}
 
 	self:RegisterBinding(clone, original.scope)
 	return clone

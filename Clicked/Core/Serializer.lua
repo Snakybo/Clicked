@@ -102,7 +102,6 @@ function Clicked:SerializeDataObject(obj)
 		}
 
 		-- Clear user-specific data
-		wipe(data.binding.integrations)
 		data.binding.parent = nil
 	elseif obj.type == Clicked.DataObjectType.GROUP then
 		--- @cast obj Group
@@ -114,11 +113,6 @@ function Clicked:SerializeDataObject(obj)
 		}
 
 		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
-
-		-- Clear user-specific data
-		for _, binding in ipairs(data.group.bindings) do
-			wipe(binding.integrations)
-		end
 	end
 
 	return SerializeTable(data, true)
@@ -157,11 +151,6 @@ function Clicked:SerializeProfile(profile, printable, full)
 			type = "profile",
 			lightweight = true
 		}
-
-		-- Clear user-specific data
-		for _, binding in ipairs(data.bindings) do
-			wipe(binding.integrations)
-		end
 	end
 
 	return SerializeTable(data, printable)
