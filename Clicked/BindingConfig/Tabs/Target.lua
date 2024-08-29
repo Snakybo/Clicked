@@ -59,7 +59,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnValueChanged", OnValueChanged)
 
-			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit Frame Target"], GetEnabledState)
+			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit frame"], GetEnabledState)
 
 			self.container:AddChild(widget)
 		end
@@ -127,7 +127,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			widget:SetDisabled(not canAnyEnableRegularTargetMode)
 			widget:SetCallback("OnValueChanged", OnValueChanged)
 
-			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Target"], GetEnabledState)
+			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Global"], GetEnabledState)
 
 			self.container:AddChild(widget)
 		end

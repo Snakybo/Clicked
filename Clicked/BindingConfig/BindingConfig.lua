@@ -471,7 +471,7 @@ function Addon.BindingConfig.Window:DrawHeader()
 		widget:DisableButton(true)
 		widget:SetPlaceholderText(Addon.L["Search..."])
 		widget:SetCallback("SearchTermChanged", OnSearchTermChanged)
-		widget:SetTooltipText(Addon.L["Search Filters"], tooltipSubtext)
+		widget:SetTooltipText(Addon.L["Search filters"], tooltipSubtext)
 		widget:SetWidth(250)
 
 		line:AddChild(widget)
