@@ -115,12 +115,17 @@ local function GetSpells_v2()
 	do
 		local professions = { GetProfessions() }
 
-		for _, i in ipairs(professions) do
+		--- @type SpellBookSkillLineInfo
+		local professionsParent = nil
+
+		for _, i in pairs(professions) do
 			local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
+			professionsParent = professionsParent or CopyTable(tab)
+			professionsParent.name = TRADE_SKILLS
 
 			for j = tab.itemIndexOffset + 1, tab.itemIndexOffset + tab.numSpellBookItems do
 				local spell = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
-				ParseSpellBookItem(spell, tab)
+				ParseSpellBookItem(spell, professionsParent)
 			end
 		end
 	end
@@ -235,12 +240,16 @@ local function GetSpells_v1()
 	do
 		local professions = { GetProfessions() }
 
-		for _, i in ipairs(professions) do
-			local _, _, offset, count = GetSpellTabInfo(i)
+		local tabName, tabIcon
+
+		for _, i in pairs(professions) do
+			local name, icon, offset, count = GetSpellTabInfo(i)
+			tabName = tabName or name
+			tabIcon = tabIcon or icon
 
 			for j = offset + 1, offset + count do
 				local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
-				ParseSpellBookItem(type, id)
+				ParseSpellBookItem(type, id, tabName, tabIcon)
 			end
 		end
 	end

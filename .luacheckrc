@@ -204,6 +204,7 @@ read_globals = {
 	"TalentButtonUtil",
 	"TalentUtil",
 	"tContains",
+	"TRADE_SKILLS",
 	"ToggleDropDownMenu",
 	"TooltipDataProcessor",
 	"UIDropDownMenu_AddButton",

@@ -99,7 +99,8 @@
 		"HasPetSpells",
 		"MenuUtil",
 		"LinkUtil",
-		"ID"
+		"ID",
+		"TRADE_SKILLS"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",
