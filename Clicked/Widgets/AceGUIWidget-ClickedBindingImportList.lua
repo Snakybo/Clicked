@@ -106,7 +106,7 @@ local function UpdateButton(button, line, canExpand, isExpanded)
 	button.text:SetPoint("TOPLEFT", (line.icon and 28 or 0) + 8 * line.level, -1)
 	button.text:SetText(line.title or "")
 
-	if line.showKeybinds and not Addon:IsStringNilOrEmpty(line.keybind) then
+	if line.showKeybinds and not Addon:IsNilOrEmpty(line.keybind) then
 		button.keybind:SetPoint("BOTTOMLEFT", (line.icon and 28 or 0) + 8 * line.level, 1)
 		button.keybind:SetText(line.keybind or "")
 		button.keybind:Show()
@@ -179,6 +179,10 @@ local function OnScrollValueChanged(frame, value)
 	local status = self.status or self.localstatus
 	status.scrollvalue = floor(value + 0.5)
 	self:RefreshTree()
+end
+
+local function Tree_OnSizeChanged(frame)
+	frame.obj:RefreshTree()
 end
 
 local function Tree_OnMouseWheel(frame, delta)
@@ -258,7 +262,7 @@ function Methods:RefreshTree(fromOnUpdate)
 	self:BuildLevel(self.tree, 1)
 
 	local numlines = #lines
-	local maxlines = (floor(((self.treeframe:GetHeight() or 0)) / 28))
+	local maxlines = math.floor(((self.treeframe:GetHeight() or 0) - 15) / 28)
 
 	if maxlines <= 0 then
 		return
@@ -490,13 +494,14 @@ local function Constructor()
 	treeframe:SetPoint("TOPLEFT")
 	treeframe:SetPoint("BOTTOMRIGHT")
 	treeframe:EnableMouseWheel(true)
-	treeframe --[[@as BackdropTemplate]]:SetBackdrop(PaneBackdrop)
-	treeframe --[[@as BackdropTemplate]]:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-	treeframe --[[@as BackdropTemplate]]:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	treeframe:SetBackdrop(PaneBackdrop)
+	treeframe:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+	treeframe:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetScript("OnUpdate", FirstFrameUpdate)
+	treeframe:SetScript("OnSizeChanged", Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", Tree_OnMouseWheel)
 
-	local scrollbar = CreateFrame("Slider", ("AceConfigDialogTreeGroup%dScrollBar"):format(num), treeframe, "UIPanelScrollBarTemplate")
+	local scrollbar = CreateFrame("Slider", ("ClickedBindingImportList%dScrollBar"):format(num), treeframe, "UIPanelScrollBarTemplate")
 	scrollbar:SetScript("OnValueChanged", nil)
 	scrollbar:SetPoint("TOPRIGHT", -10, -26)
 	scrollbar:SetPoint("BOTTOMRIGHT", -10, 26)

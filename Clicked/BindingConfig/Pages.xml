@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Pages\Binding.lua"/>
+	<Script file="Pages\ExportString.lua"/>
+	<Script file="Pages\Group.lua"/>
+	<Script file="Pages\IconSelect.lua"/>
+	<Script file="Pages\ImportString.lua"/>
+	<Script file="Pages\New.lua"/>
+</Ui>

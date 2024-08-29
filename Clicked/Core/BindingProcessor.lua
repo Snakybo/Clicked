@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -156,7 +156,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 			local key = condition.negated and negated or value
 			local macro = key
 
-			if not Addon:IsStringNilOrEmpty(condition.value) then
+			if not Addon:IsNilOrEmpty(condition.value) then
 				macro = macro .. ":" .. condition.value
 			end
 
@@ -425,7 +425,7 @@ local function ProcessBuckets()
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 
-			if #command.data > 255 and not macroTooLongNotified[command.data] then
+			if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
 				macroTooLongNotified[command.data] = true
 
 				local message = Addon.L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."]
@@ -634,7 +634,7 @@ local function ReloadBindings(delayFrame)
 
 	Clicked:ProcessActiveBindings()
 
-	Addon:BindingConfig_Redraw()
+	Addon.BindingConfig.Window:OnBindingReload()
 	Addon.KeyVisualizer:Redraw()
 end
 
@@ -649,6 +649,8 @@ end
 function Clicked:ReloadBinding(binding, full, delayFrame, ...)
 	ProcessReloadBindingArguments(binding, full, delayFrame, ...)
 	ReloadBindings(delayFrame)
+
+	Addon:UpdateLookupTable(binding)
 end
 
 --- @param full boolean
@@ -659,6 +661,8 @@ end
 function Clicked:ReloadBindings(full, delayFrame, ...)
 	ProcessReloadArguments(full, delayFrame, ...)
 	ReloadBindings(delayFrame)
+
+	Addon:UpdateLookupTable()
 end
 
 function Clicked:ProcessActiveBindings()
@@ -1019,8 +1023,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
 
 		do
-			local value = Addon:GetBindingValue(binding)
-			state.value = value == nil or #tostring(value) > 0
+			state.value = Addon:GetBindingValue(binding) ~= nil
 		end
 	end
 
@@ -1678,7 +1681,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					conditions = "[" .. conditions .. "]"
 				end
 
-				if not Addon:IsStringNilOrEmpty(conditions) then
+				if not Addon:IsNilOrEmpty(conditions) then
 					table.insert(macroConditions, conditions)
 					table.insert(macroSegments, conditions .. action.ability)
 					table.insert(localSegments, conditions .. action.ability)

@@ -4,13 +4,9 @@ Reorderable inline group widget
 
 --- @diagnostic disable-next-line: duplicate-doc-alias
 --- @alias AceGUIWidgetType
---- | "ClickedReorderableInlineGroup"
+--- | "ClickedTargetGroup"
 
---- @class ClickedReorderableInlineGroup : AceGUIInlineGroup
---- @field private moveDown Button
---- @field private moveUp Button
-
-local Type, Version = "ClickedReorderableInlineGroup", 1
+local Type, Version = "ClickedTargetGroup", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
@@ -21,15 +17,14 @@ end
 Support functions
 -------------------------------------------------------------------------------]]
 
---- @param widget any
+--- @param parent Frame
 --- @param texture string
---- @param callback function
+--- @param callback fun(frame: Frame)
 --- @return Button
-local function CreateButton(widget, texture, callback)
+local function CreateButton(parent, texture, callback)
 	texture = [[Interface\AddOns\Clicked\Media\Textures\]] .. texture .. ".tga"
 
-	local frame = CreateFrame("Button", nil, widget.frame)
-	frame.obj = widget
+	local frame = CreateFrame("Button", nil, parent)
 	frame:SetScript("OnClick", callback)
 	frame:SetSize(16, 16)
 
@@ -54,36 +49,21 @@ local function MoveUp_OnClick(frame)
 	AceGUI:ClearFocus()
 end
 
-local function UpdateButtonOffsets(frame)
-	local self = frame.obj
-
-	frame:SetScript("OnUpdate", nil)
-
-	self.moveUp:ClearAllPoints()
-
-	if self.moveDown:IsShown() then
-		self.moveUp:SetPoint("RIGHT", self.moveDown, "LEFT", -2, 0)
-	else
-		self.moveUp:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
-	end
-end
-
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
 
---- @class ClickedReorderableInlineGroup
+--- @class ClickedTargetGroup
 local Methods = {}
 
 --- @protected
 function Methods:OnAcquire()
-	self:BaseOnAcquire()
-
+	self:SetWidth(300)
+	self:SetHeight(100)
 	self:SetMoveUpButton(false)
 	self:SetMoveDownButton(false)
 end
 
---- @param self ClickedReorderableInlineGroup
 --- @param enabled boolean
 function Methods:SetMoveUpButton(enabled)
 	if enabled then
@@ -91,11 +71,8 @@ function Methods:SetMoveUpButton(enabled)
 	else
 		self.moveUp:Hide()
 	end
-
-	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
 end
 
---- @param self ClickedReorderableInlineGroup
 --- @param enabled boolean
 function Methods:SetMoveDownButton(enabled)
 	if enabled then
@@ -103,30 +80,64 @@ function Methods:SetMoveDownButton(enabled)
 	else
 		self.moveDown:Hide()
 	end
+end
 
-	self.frame:SetScript("OnUpdate", UpdateButtonOffsets)
+--- @protected
+--- @param height number
+function Methods:LayoutFinished(_, height)
+	self:SetHeight(height or 0)
+end
+
+--- @protected
+--- @param width number
+function Methods:OnWidthSet(width)
+	local content = self.content
+	content:SetWidth(width)
+	content.width = width
+end
+
+--- @protected
+--- @param height number
+function Methods:OnHeightSet(height)
+	local content = self.content
+	content:SetHeight(height)
+	content.height = height
 end
 
 --[[ Constructor ]]--
 
 local function Constructor()
-	--- @class ClickedReorderableInlineGroup
-	local widget = AceGUI:Create("InlineGroup")
-	widget.type = Type
+	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	widget.moveDown = CreateButton(widget, "ui_arrow_down", MoveDown_OnClick)
-	widget.moveDown:SetPoint("TOPRIGHT", widget.frame, "TOPRIGHT", -6, 0)
-	widget.moveUp = CreateButton(widget, "ui_arrow_up", MoveUp_OnClick)
-	widget.moveUp:SetPoint("RIGHT", widget.moveDown, "LEFT", -2, 0)
+	local moveUp = CreateButton(frame, "ui_arrow_up", MoveUp_OnClick)
+	moveUp:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -16, 0)
 
-	--- @private
-	widget.BaseOnAcquire = widget.OnAcquire
+	local moveDown = CreateButton(frame, "ui_arrow_down", MoveDown_OnClick)
+	moveDown:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+
+	-- Container Support
+	local content = CreateFrame("Frame", nil, frame)
+	content:SetPoint("TOPLEFT", 0, 0)
+	content:SetPoint("BOTTOMRIGHT")
+
+	--- @class ClickedTargetGroup : AceGUIContainer
+	local widget = {
+		frame = frame,
+		content = content,
+		moveUp = moveUp,
+		moveDown = moveDown,
+		type = Type
+	}
 
 	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
 
-	return widget
+	--- @diagnostic disable-next-line: inject-field
+	moveDown.obj, moveUp.obj = widget, widget
+
+	return AceGUI:RegisterAsContainer(widget)
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)

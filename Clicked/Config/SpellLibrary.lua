@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,45 +18,73 @@
 local Addon = select(2, ...)
 
 --- @class SpellLibrary
-local SpellLibrary = {}
+Addon.SpellLibrary = {}
 
---- @class SpellLibrary.Spell
+--- @enum SpellLibraryResultType
+Addon.SpellLibrary.ResultType = {
+	SPELL = 0,
+	ITEM = 1,
+	MACRO = 2
+}
+
+--- @class SpellLibraryResult
+--- @field public type SpellLibraryResultType
+--- @field public key? string
+
+--- @class SpellLibrarySpellResult : SpellLibraryResult
 --- @field public name string
---- @field public spellId integer
 --- @field public icon integer
---- @field public tabName string
---- @field public tabIcon integer
---- @field public specId integer
+--- @field public spellId integer
+--- @field public tabName? string
+--- @field public tabIcon? string|integer
+--- @field public specId? integer
 
---- @return table<integer,SpellLibrary.Spell>
+--- @class SpellLibraryItemResult : SpellLibraryResult
+--- @field public name string
+--- @field public icon integer
+--- @field public itemId integer
+
+--- @class SpellLibraryMacroResult : SpellLibraryResult
+--- @field public name string
+--- @field public icon integer
+--- @field public content string
+
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells_v2()
+	--- @type table<integer, SpellLibrarySpellResult>
 	local result = {}
+
+	--- @type string?, integer?
 	local activeTabName, activetabIcon
 
+	--- @param spell SpellBookItemInfo
+	--- @param tab? SpellBookSkillLineInfo
 	local function ParseSpellBookItem(spell, tab)
-		if spell.spellID == nil then
-			return
-		end
-
 		if not spell.isPassive then
 			if spell.itemType == Enum.SpellBookItemType.Spell or spell.itemType == Enum.SpellBookItemType.FutureSpell or spell.itemType == Enum.SpellBookItemType.PetAction then
-				result[spell.spellID] = {
-					name = spell.name,
-					spellId = spell.spellID,
-					icon = spell.iconID,
-					tabName = tab and tab.name,
-					tabIcon = tab and tab.iconID,
-					specId = tab and tab.specID
-				}
+				if spell.spellID ~= nil then
+					--- @type SpellLibrarySpellResult
+					result[spell.spellID] = {
+						type = Addon.SpellLibrary.ResultType.SPELL,
+						name = spell.name,
+						spellId = spell.spellID,
+						icon = spell.iconID,
+						tabName = tab and tab.name,
+						tabIcon = tab and tab.iconID,
+						specId = tab and tab.specID
+					}
+				end
 			elseif spell.itemType == Enum.SpellBookItemType.Flyout then
 				local _, _, spellCount = GetFlyoutInfo(spell.actionID)
 
 				for k = 1, spellCount do
-					local spellId = GetFlyoutSlotInfo(spell.actionID, k)
+					local spellId, _, isKnown = GetFlyoutSlotInfo(spell.actionID, k)
 					local info = Addon:GetSpellInfo(spellId, false)
 
-					if info ~= nil then
+					if isKnown and info ~= nil and not C_Spell.IsSpellPassive(spellId) then
+						--- @type SpellLibrarySpellResult
 						result[spellId] = {
+							type = Addon.SpellLibrary.ResultType.SPELL,
 							name = info.name,
 							spellId = spellId,
 							icon = info.iconID,
@@ -85,6 +113,24 @@ local function GetSpells_v2()
 	end
 
 	do
+		local professions = { GetProfessions() }
+
+		--- @type SpellBookSkillLineInfo
+		local professionsParent = nil
+
+		for _, i in pairs(professions) do
+			local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
+			professionsParent = professionsParent or CopyTable(tab)
+			professionsParent.name = TRADE_SKILLS
+
+			for j = tab.itemIndexOffset + 1, tab.itemIndexOffset + tab.numSpellBookItems do
+				local spell = C_SpellBook.GetSpellBookItemInfo(j, Enum.SpellBookSpellBank.Player)
+				ParseSpellBookItem(spell, professionsParent)
+			end
+		end
+	end
+
+	do
 		local count = C_SpellBook.HasPetSpells()
 
 		if count ~= nil then
@@ -97,44 +143,59 @@ local function GetSpells_v2()
 
 	for _, talent in ipairs(Addon:GetLocalizedTalents()) do
 		if not C_Spell.IsSpellPassive(talent.spellId) then
-			result[talent.spellId] = result[talent.spellId] or {
-				name = talent.text,
-				spellId = talent.spellId,
-				icon = talent.icon,
-				tabName = activeTabName,
-				tabIcon = activetabIcon,
-				specId = talent.specId
-			}
+			if result[talent.spellId] == nil then
+				--- @type SpellLibrarySpellResult
+				result[talent.spellId] = {
+					type = Addon.SpellLibrary.ResultType.SPELL,
+					name = talent.text,
+					spellId = talent.spellId,
+					icon = talent.icon,
+					tabName = activeTabName,
+					tabIcon = activetabIcon,
+					specId = talent.specId
+				}
+			end
 		end
 	end
 
 	for _, talent in ipairs(Addon:GetLocalizedPvPTalents()) do
 		if not C_Spell.IsSpellPassive(talent.spellId) then
-			result[talent.spellId] = result[talent.spellId] or {
-				name = talent.text,
-				spellId = talent.spellId,
-				icon = talent.icon,
-				tabName = activeTabName,
-				tabIcon = activetabIcon,
-				specId = talent.specId
-			}
+			if result[talent.spellId] == nil then
+				--- @type SpellLibrarySpellResult
+				result[talent.spellId] = {
+					type = Addon.SpellLibrary.ResultType.SPELL,
+					name = talent.text,
+					spellId = talent.spellId,
+					icon = talent.icon,
+					tabName = activeTabName,
+					tabIcon = activetabIcon,
+					specId = talent.specId
+				}
+			end
 		end
 	end
 
 	return result
 end
 
---- @return table<integer,SpellLibrary.Spell>
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells_v1()
 	local result = {}
 
+	--- @param type string
+	--- @param id integer
+	--- @param tabName? string
+	--- @param tabIcon? string
+	--- @param specId? integer
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
 			if type == "SPELL" or type == "FUTURESPELL" or type == "PETACTION" then
-				local spell = Addon:GetSpellInfo(id, false)
+				local spell = Addon:GetSpellInfo(id, Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK)
 
 				if spell ~= nil then
+					--- @type SpellLibrarySpellResult
 					result[id] = {
+						type = Addon.SpellLibrary.ResultType.SPELL,
 						name = spell.name,
 						spellId = id,
 						icon = spell.iconID,
@@ -147,11 +208,13 @@ local function GetSpells_v1()
 				local _, _, spellCount = GetFlyoutInfo(id)
 
 				for k = 1, spellCount do
-					local spellId = GetFlyoutSlotInfo(id, k)
+					local spellId, _, isKnown = GetFlyoutSlotInfo(id, k)
 					local spell = Addon:GetSpellInfo(spellId, false)
 
-					if spell ~= nil then
+					if isKnown and spell ~= nil and not IsPassiveSpell(spellId) then
+						--- @type SpellLibrarySpellResult
 						result[spellId] = {
+							type = Addon.SpellLibrary.ResultType.SPELL,
 							name = spell.name,
 							spellId = spellId,
 							icon = spell.iconID,
@@ -175,6 +238,23 @@ local function GetSpells_v1()
 	end
 
 	do
+		local professions = { GetProfessions() }
+
+		local tabName, tabIcon
+
+		for _, i in pairs(professions) do
+			local name, icon, offset, count = GetSpellTabInfo(i)
+			tabName = tabName or name
+			tabIcon = tabIcon or icon
+
+			for j = offset + 1, offset + count do
+				local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
+				ParseSpellBookItem(type, id, tabName, tabIcon)
+			end
+		end
+	end
+
+	do
 		local count = HasPetSpells()
 
 		if count ~= nil then
@@ -192,7 +272,7 @@ local function GetSpells_v1()
 	return result
 end
 
---- @return table<integer,SpellLibrary.Spell>
+--- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells()
 	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
 		return GetSpells_v2()
@@ -201,15 +281,21 @@ local function GetSpells()
 	end
 end
 
+-- Private addon API
+
+--- Get a spell by its spell ID from the spellbook.
+---
 --- @param spellId integer
---- @return SpellLibrary.Spell?
-function SpellLibrary:GetSpellById(spellId)
+--- @return SpellLibrarySpellResult?
+function Addon.SpellLibrary:GetSpellById(spellId)
 	return GetSpells()[spellId]
 end
 
+--- Get a spell by its name from the spellbook.
+---
 --- @param name string
---- @return SpellLibrary.Spell?
-function SpellLibrary:GetSpellByName(name)
+--- @return SpellLibrarySpellResult?
+function Addon.SpellLibrary:GetSpellByName(name)
 	for _, spell in pairs(GetSpells()) do
 		if spell.name == name then
 			return spell
@@ -219,8 +305,186 @@ function SpellLibrary:GetSpellByName(name)
 	return nil
 end
 
-function SpellLibrary:GetSpells()
-	return pairs(GetSpells())
+--- Get all castable spells in the player's spellbook.
+---
+--- This includes spells from:
+--- - The player's spellbook.
+--- - The player's pet spellbook.
+---
+--- @return table<integer, SpellLibrarySpellResult>
+function Addon.SpellLibrary:GetSpells()
+	return GetSpells()
 end
 
-Addon.SpellLibrary = SpellLibrary
+--- Get all abilities that are currently on the player's action bars.
+---
+--- This includes abilities of the following types:
+--- - Spells
+--- - Items
+--- - Macros
+---
+--- @return table<integer, SpellLibraryResult>
+function Addon.SpellLibrary:GetActionBarSpells()
+	--- @type table<integer, SpellLibraryResult>
+	local result = {}
+
+	--- @param key? string
+	--- @param type? string
+	--- @param id? string|integer
+	local function Register(key, type, id)
+		if type == nil or id == nil or id == 0 then
+			return
+		end
+
+		-- TODO: Add support for importing of summonmount, summonpet, equipmentset
+
+		if type == "spell" then
+			--- @cast id integer
+
+			local spell = self:GetSpellById(id)
+
+			if spell ~= nil then
+				spell = CopyTable(spell)
+				spell.key = key
+				table.insert(result, spell)
+			end
+		elseif type == "item" then
+			--- @cast id integer
+			--- @type SpellLibraryItemResult
+			table.insert(result, {
+				type = Addon.SpellLibrary.ResultType.ITEM,
+				key = key,
+				name = C_Item.GetItemNameByID(id),
+				icon = C_Item.GetItemIconByID(id),
+				itemId = id
+			})
+		elseif type == "macro" then
+			--- @cast id integer
+			local name, icon, content = GetMacroInfo(id)
+
+			--- @type SpellLibraryMacroResult
+			table.insert(result, {
+				type = Addon.SpellLibrary.ResultType.MACRO,
+				key = key,
+				name = name,
+				icon = icon,
+				content = content
+			})
+		end
+	end
+
+	--- @param uid string
+	--- @param slot integer
+	local function RegisterActionButton(uid, slot)
+		-- TODO: Add support for multiple keys, maybe?
+		local key = GetBindingKey(uid)
+
+		local type, id = GetActionInfo(slot)
+		if type == nil or id == nil then
+			return
+		end
+
+		-- Since 10.2.0 this doesn't provide the macro ID anymore, but instead returns the computed spell or item ID
+		-- TODO: Check if this is also the case on Classic
+		if type == "macro" then
+			local text = GetActionText(slot)
+			id = text ~= nil and GetMacroIndexByName(text) or 0
+		end
+
+		Register(key, type, id)
+	end
+
+	if _G["Dominos"] then
+		for i = 1, 168 do
+			local uid = "CLICK DominosActionButton" .. i .. ":HOTKEY"
+			RegisterActionButton(uid, i)
+		end
+	elseif _G["Bartender4"] then
+		for i = 1, 180 do
+			local uid = "CLICK BT4Button" .. i .. ":Keybind"
+			RegisterActionButton(uid, i)
+		end
+	elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+		for i = 1, 180 do
+			local bar = math.ceil(i / 12)
+			local button = 1 + (i - 1) % 12
+			local frame = _G["ElvUI_Bar" .. bar .. "Button" .. button]
+
+			if frame ~= nil and _G["ElvUI_Bar" .. bar] and _G["ElvUI_Bar" .. bar].db.enabled then
+				local uid = frame.bindstring or frame.keyBoundTarget or ("CLICK " .. frame:GetName() .. ":LeftButton")
+				local action = tonumber(frame._state_action)
+
+				if action ~= nil then
+					RegisterActionButton(uid, action)
+				end
+			end
+		end
+	else
+		for i = 1, 180 do
+			local button = 1 + (i - 1) % 12
+			--- @type string
+			local uid
+
+			if i <= 24 then
+				uid = "ACTIONBUTTON" .. button
+			elseif i <= 36 then
+				uid = "MULTIACTIONBAR3BUTTON" .. button
+			elseif i <= 48 then
+				uid = "MULTIACTIONBAR4BUTTON" .. button
+			elseif i <= 60 then
+				uid = "MULTIACTIONBAR2BUTTON" .. button
+			elseif i <= 72 then
+				uid = "MULTIACTIONBAR1BUTTON" .. button
+			elseif i <= 144 then
+				uid = "ACTIONBUTTON" .. button
+			elseif i < 157 then
+				uid = "MULTIACTIONBAR5BUTTON" .. button
+			elseif i < 169 then
+				uid = "MULTIACTIONBAR6BUTTON" .. button
+			elseif i < 181 then
+				uid = "MULTIACTIONBAR7BUTTON" .. button
+			end
+
+			RegisterActionButton(uid, i)
+		end
+
+		-- Shapeshift forms
+		for i = 1, GetNumShapeshiftForms() do
+			local uid = "SHAPESHIFTBUTTON" .. i
+			local spell = select(4, GetShapeshiftFormInfo(i))
+			Register(GetBindingKey(uid), "spell", spell)
+		end
+
+		-- Pet buttons
+		for i = 1, NUM_PET_ACTION_SLOTS do
+			local uid = "BONUSACTIONBUTTON" .. i
+			local spell = select(7, GetPetActionInfo(i))
+
+			if spell ~= nil then
+				Register(GetBindingKey(uid), "spell", spell)
+			end
+		end
+	end
+
+	return result
+end
+
+--- @return SpellLibraryMacroResult[]
+function Addon.SpellLibrary:GetMacroSpells()
+	--- @type SpellLibraryMacroResult[]
+	local result = {}
+
+	for i = 1, GetNumMacros() do
+		local name, icon, content = GetMacroInfo(i)
+
+		--- @type SpellLibraryMacroResult
+		table.insert(result, {
+			type = Addon.SpellLibrary.ResultType.MACRO,
+			name = name,
+			icon = icon,
+			content = content
+		})
+	end
+
+	return result
+end

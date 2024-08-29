@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -148,5 +148,17 @@ function Addon:IsGameVersionAtleast(version)
 		return true
 	end
 
+	return false
+end
+
+--- Check if the user is running a development build of the addon.
+---
+--- @return boolean
+function Addon:IsDevelopmentBuild()
+--@debug@
+	if Clicked.VERSION == "development" then
+		return true
+	end
+--@end-debug@
 	return false
 end

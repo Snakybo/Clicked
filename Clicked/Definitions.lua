@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 
 --- @class DataObject
 --- @field public uid integer
---- @field public type integer
+--- @field public type DataObjectType
 --- @field public scope BindingScope
 
 --- @class Binding : DataObject
@@ -53,7 +53,6 @@
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
 --- @field public load Binding.Load
---- @field public integrations table<string,any>
 
 --- @class Binding.Targets
 --- @field public hovercast Binding.Target

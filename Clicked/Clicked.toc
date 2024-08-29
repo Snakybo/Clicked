@@ -31,6 +31,11 @@ Core\Serializer.lua
 Core\Tooltips.lua
 Core\Upgrader.lua
 
+Conditions\ConditionRegistry.lua
+Conditions\ConditionUtils.lua
+Conditions\LoadConditions.lua
+Conditions\MacroConditions.lua
+
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
@@ -38,20 +43,19 @@ UnitFrames\Blizzard.lua
 
 # Configuration and UI
 Media\Media.lua
-Config\GUI.lua
 Config\Addon.lua
 Config\Profile.lua
-Config\Bindings.lua
-Config\ImportFrame.lua
-Config\ExportFrame.lua
 Config\Blacklist.lua
 Config\KeyLayouts.lua
 Config\KeyVisualizer.lua
 Config\SpellLibrary.lua
 Debug\StatusOutput.lua
 
+BindingConfig\Helpers.lua
+BindingConfig\Conditions.xml
+BindingConfig\Tabs.xml
+BindingConfig\Pages.xml
+BindingConfig\BindingConfig.lua
+
 # Skinning
 Skins\ElvUI.lua
-
-# Third party integrations
-Integrations\WeakAuras.lua

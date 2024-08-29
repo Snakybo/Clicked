@@ -95,7 +95,12 @@
 		"GetPrimaryTalentTree",
 		"GetTalentTabInfo",
 		"Mixin",
-		"Round"
+		"Round",
+		"HasPetSpells",
+		"MenuUtil",
+		"LinkUtil",
+		"ID",
+		"TRADE_SKILLS"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",
@@ -109,7 +114,7 @@
 		"utf8": "disable"
 	},
 	"Lua.workspace.library": [
-		"~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations"
+		"~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations"
 	],
 	"Lua.diagnostics.disable": [
 		"deprecated"

@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ local function RegisterIcons()
 		label = Addon.L["Clicked"],
 		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
 		OnClick = function()
-			Addon:BindingConfig_Open()
+			Addon.BindingConfig.Window:Open()
 		end,
 		OnTooltipShow = function(tooltip)
 			tooltip:AddLine(Addon.L["Clicked"])
@@ -79,7 +79,7 @@ local function HandleChatCommand(input)
 			openConfigOnCombatExit = true
 			print(Addon:AppendClickedMessagePrefix("Binding configuration will open once you leave combat."))
 		else
-			Addon:BindingConfig_Open()
+			Addon.BindingConfig.Window:Open()
 		end
 	elseif #args == 1 then
 		if args[1] == "opt" or args[1] == "options" then
@@ -88,6 +88,14 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
+		elseif args[1] == "ignore-self-cast-warning" then
+			Addon.db.profile.options.ignoreSelfCastWarning = not Addon.db.profile.options.ignoreSelfCastWarning
+
+			if Addon.db.profile.options.ignoreSelfCastWarning then
+				print(Addon:GetPrefixedAndFormattedString(Addon.L["Disabled self-cast warning, type this command again to re-enable it."]))
+			else
+				print(Addon:GetPrefixedAndFormattedString(Addon.L["Enabled self-cast warning, type this command again to disable it."]))
+			end
 		end
 	end
 end
@@ -96,8 +104,9 @@ end
 
 local function PLAYER_REGEN_DISABLED()
 	isPlayerInCombat = true
-	openConfigOnCombatExit = Addon:BindingConfig_Close()
+	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
+	Addon.BindingConfig.Window:Close()
 	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
@@ -116,7 +125,7 @@ local function PLAYER_REGEN_ENABLED()
 	end
 
 	if openConfigOnCombatExit then
-		Addon:BindingConfig_Open()
+		Addon.BindingConfig.Window:Open()
 		openConfigOnCombatExit = false
 	end
 end
@@ -131,10 +140,6 @@ end
 
 local function ADDON_LOADED()
 	Addon:ProcessFrameQueue()
-end
-
-local function GET_ITEM_INFO_RECEIVED(_, itemId, success)
-	Addon:BindingConfig_ItemInfoReceived(itemId, success)
 end
 
 local function ZONE_CHANGED()
@@ -247,7 +252,6 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	method(self, "GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	method(self, "ADDON_LOADED", ADDON_LOADED)
-	method(self, "GET_ITEM_INFO_RECEIVED", GET_ITEM_INFO_RECEIVED)
 	method(self, "ZONE_CHANGED", ZONE_CHANGED)
 	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
@@ -283,12 +287,22 @@ function Clicked:OnInitialize()
 end
 
 function Clicked:OnEnable()
-	--@debug@
+--@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
 	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
-	--@end-debug@
+--@end-debug@
 
 	UpdateEventHooks(self, self.RegisterEvent)
+
+	-- self-cast warning
+	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		local selfCastModifier = GetModifiedClick("SELFCAST")
+
+		if selfCastModifier ~= "NONE" then
+			local message = string.format(Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: %s"], selfCastModifier, YELLOW_FONT_COLOR:WrapTextInColorCode("/clicked ignore-self-cast-warning"))
+			print(Addon:GetPrefixedAndFormattedString(message))
+		end
+	end
 end
 
 function Clicked:OnDisable()

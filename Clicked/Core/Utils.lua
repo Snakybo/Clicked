@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ local KEYBIND_ORDER_LIST = {
 --- @type { [integer]: integer[] } | { [string]: integer[][] }
 local shapeshiftForms
 
--- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
+-- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
 if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
@@ -283,15 +283,6 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 
 -- Private addon API
 
-function Addon:IsDevelopmentBuild()
---@debug@
-	if Clicked.VERSION == "development" then
-		return true
-	end
---@end-debug@
-	return false
-end
-
 --- @param addon string
 function Addon:ShowAddonIncompatibilityPopup(addon)
 	StaticPopup_Show("CLICKED_INCOMPATIBLE_ADDON", "", "", { addon = addon })
@@ -311,27 +302,6 @@ function Addon:ShowConfirmationPopup(message, onAccept, onCancel)
 		onAccept = onAccept,
 		onCancel = onCancel
 	})
-end
-
---- @generic T : table
---- @param original T
---- @return T
-function Addon:DeepCopyTable(original)
-	if original == nil then
-		return nil
-	end
-
-	local result = {}
-
-	for k, v in pairs(original) do
-		if type(v) == "table" then
-			v = Addon:DeepCopyTable(v)
-		end
-
-		result[k] = v
-	end
-
-	return result
 end
 
 --- @param text string?
@@ -406,56 +376,82 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 end
 
 --- @param binding Binding
---- @return boolean
-function Addon:HasBindingValue(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
-
-	local value = Addon:GetBindingValue(binding)
-	return not Addon:IsStringNilOrEmpty(tostring(value))
-end
-
---- @param binding Binding
---- @param value string|integer
-function Addon:SetBindingValue(binding, value)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
-
-	if binding.actionType == Addon.BindingTypes.SPELL then
-		binding.action.spellValue = value
-	elseif binding.actionType == Addon.BindingTypes.ITEM then
-		binding.action.itemValue = value
-	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
-		binding.action.macroValue = value --[[@as string]]
-	end
-end
-
---- @param binding Binding
---- @return string|integer?
+--- @return string?
 function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.actionType == Addon.BindingTypes.SPELL then
-		local spell = self:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
-		return spell ~= nil and spell.name ~= nil and spell.name or binding.action.spellValue
+		local spell = binding.action.spellValue
+		if spell == nil then
+			return nil
+		end
+
+		--- @type string?
+		local name
+
+		if type(spell) == "number" then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+				name = C_Spell.GetSpellName(spell)
+			else
+				local data = GetSpellInfo(spell)
+				name = data ~= nil and data.name or nil
+			end
+		else
+			--- @cast spell string
+			name = spell
+		end
+
+		if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and not binding.action.spellMaxRank then
+			local rank = GetSpellSubtext(spell)
+
+			if rank ~= nil then
+				name = string.format("%s(%s)", name, rank)
+			end
+		end
+
+		return name
 	end
 
 	if binding.actionType == Addon.BindingTypes.ITEM then
 		local item = binding.action.itemValue
-
-		if type(item) == "number" and item < 20 then
-			local equipped = GetInventoryItemID("player", item)
-
-			if equipped == nil then
-				return item
-			end
-
-			item = equipped
+		if item == nil then
+			return nil
 		end
 
-		return self:GetItemInfo(item) or item
+		if type(item) == "number" then
+			if item < 20 then
+				item = GetInventoryItemID("player", item) or item
+			end
+
+			return C_Item.GetItemNameByID(item)
+		end
+
+		--- @cast item string
+		return item
 	end
 
 	if binding.actionType == Addon.BindingTypes.CANCELAURA then
-		return binding.action.auraName
+		local aura = binding.action.auraName
+		if aura == nil then
+			return nil
+		end
+
+		--- @type string?
+		local name
+
+		if type(aura) == "number" then
+			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+				name = C_Spell.GetSpellName(aura)
+			else
+				local data = GetSpellInfo(aura)
+				name = data ~= nil and data.name or nil
+			end
+		else
+			--- @cast aura string
+			name = aura
+		end
+
+		return name
 	end
 
 	if binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
@@ -542,7 +538,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			icon = spellIcon --[[@as string|integer]]
 		end
 	elseif binding.actionType == Addon.BindingTypes.MACRO or binding.actionType == Addon.BindingTypes.APPEND then
-		if Addon:IsStringNilOrEmpty(binding.action.macroName) then
+		if Addon:IsNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
 		else
 			name = binding.action.macroName
@@ -552,11 +548,11 @@ function Addon:GetBindingNameAndIcon(binding)
 			icon = binding.action.macroIcon
 		end
 	elseif binding.actionType == Addon.BindingTypes.CANCELAURA then
-		local _, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
 
-		if value ~= nil then
-			name = string.format(Addon.L["Cancel %s"], value)
+		if spellName ~= nil or value ~= nil then
+			name = string.format(Addon.L["Cancel %s"], spellName or value)
 		end
 
 		if IsValidIcon(spellIcon) then
@@ -566,6 +562,31 @@ function Addon:GetBindingNameAndIcon(binding)
 		name = Addon.L["Target the unit"]
 	elseif binding.actionType == Addon.BindingTypes.UNIT_MENU then
 		name = Addon.L["Open the unit menu"]
+	end
+
+	return name, icon
+end
+
+--- Get the name and icon of a group for display purposes.
+---
+--- If the group does not have a name or icon, a default will be returned.
+---
+--- @param group Group
+--- @return string
+--- @return string|integer
+function Addon:GetGroupNameAndIcon(group)
+	local name = Addon.L["New Group"]
+
+	--- @type string|integer
+	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
+
+	if not Addon:IsNilOrEmpty(group.name) then
+		name = group.name
+	end
+
+	if (type(group.displayIcon) == "string" and not Addon:IsNilOrEmpty(group.displayIcon --[[@as string]])) or
+	   (type(group.displayIcon) == "number" and group.displayIcon > 0) then
+		icon = group.displayIcon
 	end
 
 	return name, icon
@@ -620,7 +641,7 @@ function Addon:GetSpellInfo(input, addSubText)
 	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK and addSubText then
 		local subtext = GetSpellSubtext(spell.spellID)
 
-		if not self:IsStringNilOrEmpty(subtext) then
+		if not self:IsNilOrEmpty(subtext) then
 			spell.name = string.format("%s(%s)", spell.name, subtext)
 		end
 	end
@@ -729,26 +750,22 @@ function Addon:CreateAttributeIdentifier(keybind, hovercast)
 	return mods, key
 end
 
---- Check if a string is `nil` or has a length of `0`.
+--- Check if an object is `nil` or has a length of `0`.
 ---
---- @param string? string
+--- @param value? any
 --- @return boolean
-function Addon:IsStringNilOrEmpty(string)
-	if string == nil then
+function Addon:IsNilOrEmpty(value)
+	if value == nil then
 		return true
 	end
 
-	assert(type(string) == "string", "bad argument #1, expected string but got " .. type(string))
-	return #string == 0
-end
+	if type(value) == "string" then
+		return #value == 0
+	elseif type(value) == "table" then
+		return next(value) == nil
+	end
 
---- @param string string
---- @return string
-function Addon:TrimString(string)
-	string = string or ""
-
-	local result = string.gsub(string, "^%s*(.-)%s*$", "%1")
-	return result
+	return false
 end
 
 --- Compare two bindings, for use in a comparison function such as `table.sort`
@@ -790,22 +807,14 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	end
 
 	if left.keybind == right.keybind then
-		local leftValue = Addon:GetBindingValue(left)
-		local rightValue = Addon:GetBindingValue(right)
+		local leftValue = Addon:GetBindingNameAndIcon(left)
+		local rightValue = Addon:GetBindingNameAndIcon(right)
 
-		if leftValue ~= nil and rightValue == nil then
-			return true
-		end
-
-		if leftValue == nil and rightValue ~= nil then
-			return false
-		end
-
-		if leftValue == nil and rightValue == nil then
+		if leftValue == rightValue then
 			return left.uid < right.uid
 		end
 
-		return tostring(leftValue) < tostring(rightValue)
+		return leftValue < rightValue
 	end
 
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
@@ -933,23 +942,6 @@ function Addon:GetAvailableShapeshiftForms(binding)
 	return forms
 end
 
---- Get the race(s) the specified binding should activate for.
----
---- @param binding Binding
---- @return integer[]
-function Addon:GetBindingRaces(binding)
-	if binding.load.race.selected == 1 then
-		return { binding.load.race.single }
-	end
-
-	if binding.load.race.selected == 2 then
-		return binding.load.race.multiple
-	end
-
-	local _, raceName = UnitRace("player")
-	return { raceName }
-end
-
 --- Show a tooltip on the specified frame after a short delay.
 ---
 --- @param frame table
@@ -1056,7 +1048,7 @@ end
 --- @param keybind string
 --- @return boolean
 function Addon:IsMouseButton(keybind)
-	if Addon:IsStringNilOrEmpty(keybind) then
+	if Addon:IsNilOrEmpty(keybind) then
 		return false
 	end
 
@@ -1071,7 +1063,7 @@ end
 --- @param keybind string
 --- @return boolean
 function Addon:IsUnmodifiedKeybind(keybind)
-	if Addon:IsStringNilOrEmpty(keybind) then
+	if Addon:IsNilOrEmpty(keybind) then
 		return false
 	end
 
@@ -1218,13 +1210,6 @@ function Addon:CanUnitBeDead(unit)
 	return valid[unit] == true
 end
 
---- Notify the user that Clicked is currently in combat lockdown mode,
---- this will print a message to the user's chat frame with a helpful message.
-function Addon:NotifyCombatLockdown()
-	local message = Addon:GetPrefixedAndFormattedString(Addon.L["You are in combat, the binding configuration is in read-only mode."])
-	print(message)
-end
-
 --- Colorize the specified string. This will enclose the string
 --- in WoW color tags (`|c` and `|r`).
 ---
@@ -1263,6 +1248,30 @@ function Addon:SanitizeKeybind(keybind)
 	return keybind
 end
 
+--- Get the UID for the specified scope.
+---
+--- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
+---
+--- @param scope BindingScope
+--- @return integer
+function Addon:GetScopeUid(scope)
+	return -100 + scope
+end
+
+--- Convert a UID back to a scope.
+---
+--- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
+---
+--- @param uid integer
+--- @return BindingScope?
+function Addon:GetScopeFromUid(uid)
+	if uid < 0 then
+		return uid + 100
+	end
+
+	return nil
+end
+
 --- Check if the table contains the specified value.
 ---
 --- @generic T
@@ -1277,6 +1286,53 @@ function Addon:TableContains(tbl, element)
 	end
 
 	return false
+end
+
+--- Remove the specified element from the table.
+---
+--- @generic T
+--- @param tbl T[]
+--- @param element T
+--- @return boolean `true` if the element was removed; `false` otherwise.
+function Addon:TableRemoveItem(tbl, element)
+	for i = 1, #tbl do
+		if tbl[i] == element then
+			table.remove(tbl, i)
+			return true
+		end
+	end
+
+	return false
+end
+
+--- Check if the two arrays are equivalent. This will return `true` if the arrays are functionally the same, but are not necessarily in the same order.
+---
+--- @generic T
+--- @param tbl1 T[]
+--- @param tbl2 T[]
+--- @return boolean `true` if the arrays are equivalent; `false` otherwise.
+function Addon:TableEquivalent(tbl1, tbl2)
+	if #tbl1 ~= #tbl2 then
+		return false
+	end
+
+	--- @type table<any,boolean>
+	local set = {}
+
+	for i = 1, #tbl1 do
+		local element = tbl1[i]
+		set[element] = true
+	end
+
+	for i = 1, #tbl2 do
+		local element = tbl2[i]
+
+		if set[element] == nil then
+			return false
+		end
+	end
+
+	return true
 end
 
 --- Construct a table containing only the specified elements.

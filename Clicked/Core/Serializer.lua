@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -80,51 +80,40 @@ end
 
 -- Public addon API
 
---- Serialize the specified group, including all bindings that are part of the group, and generate a string that can be shared.
+--- Serialize the specified data object and generate a string that can be shared.
 ---
---- @param group Group
---- @return string
---- @see Clicked#SerializeBinding
---- @see Clicked#Deserialize
-function Clicked:SerializeGroup(group)
-	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
-
-	--- @type ShareData
-	local data = {
-		version = Addon.DATA_VERSION,
-		type = "group",
-		group = Addon:DeepCopyTable(group) --[[@as ShareData.Group]]
-	}
-
-	data.group.bindings = Addon:DeepCopyTable(Clicked:GetBindingsInGroup(group.uid))
-
-	-- Clear user-specific data
-	for _, binding in ipairs(data.group.bindings) do
-		wipe(binding.integrations)
-	end
-
-	return SerializeTable(data, true)
-end
-
---- Serialize the specified binding and generate a string that can be shared.
----
---- @param binding Binding
+--- @param obj DataObject
 --- @return string
 --- @see Clicked#SerializeGroup
 --- @see Clicked#Deserialize
-function Clicked:SerializeBinding(binding)
-	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
+function Clicked:SerializeDataObject(obj)
+	assert(type(obj) == "table", "bad argument #1, expected table but got " .. type(obj))
 
 	--- @type ShareData
-	local data = {
-		version = Addon.DATA_VERSION,
-		type = "binding",
-		binding = Addon:DeepCopyTable(binding)
-	}
+	local data
 
-	-- Clear user-specific data
-	wipe(data.binding.integrations)
-	data.binding.parent = nil
+	if obj.type == Clicked.DataObjectType.BINDING then
+		--- @cast obj Binding
+
+		data = {
+			version = Addon.DATA_VERSION,
+			type = "binding",
+			binding = CopyTable(obj)
+		}
+
+		-- Clear user-specific data
+		data.binding.parent = nil
+	elseif obj.type == Clicked.DataObjectType.GROUP then
+		--- @cast obj Group
+
+		data = {
+			version = Addon.DATA_VERSION,
+			type = "group",
+			group = CopyTable(obj) --[[@as ShareData.Group]]
+		}
+
+		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
+	end
 
 	return SerializeTable(data, true)
 end
@@ -137,7 +126,6 @@ end
 --- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
 --- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
 --- @return string
---- @see Clicked#Deserialize
 function Clicked:SerializeProfile(profile, printable, full)
 	assert(type(profile) == "table", "bad argument #1, expected table but got " .. type(profile))
 	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
@@ -147,7 +135,7 @@ function Clicked:SerializeProfile(profile, printable, full)
 
 	if full then
 		--- @type ExportProfile
-		data = Addon:DeepCopyTable(profile)
+		data = CopyTable(profile)
 		data.type = "profile"
 		data.lightweight = false
 	else
@@ -156,24 +144,19 @@ function Clicked:SerializeProfile(profile, printable, full)
 		--- @type ExportProfile
 		data = {
 			version = profile.version,
-			bindings = Addon:DeepCopyTable(profile.bindings),
-			groups = Addon:DeepCopyTable(profile.groups),
+			bindings = CopyTable(profile.bindings),
+			groups = CopyTable(profile.groups),
 			nextGroupId = profile.nextGroupId,
 			nextBindingId = profile.nextBindingId,
 			type = "profile",
 			lightweight = true
 		}
-
-		-- Clear user-specific data
-		for _, binding in ipairs(data.bindings) do
-			wipe(binding.integrations)
-		end
 	end
 
 	return SerializeTable(data, printable)
 end
 
---- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeGroup` and `SerializeBinding`.
+--- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeDataObject`.
 ---
 --- The deserialization process itself does not actually import the data, it simply makes it readable for a consumer. Use the `Clicked:Import` function to
 --- import the deserialized data.
@@ -182,9 +165,6 @@ end
 --- @param printable boolean
 --- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
 --- @return ShareData|ExportProfile|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
---- @see Clicked#Import
---- @see Clicked#SerializeBinding
---- @see Clicked#SerializeGroup
 function Clicked:Deserialize(encoded, printable)
 	local compressed
 

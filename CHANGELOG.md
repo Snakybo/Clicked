@@ -8,6 +8,55 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+* Add multi-selection to the bindings list, use ctrl+click and shift+click to select multiple bindings
+* Add multi-selection editing, select multiple items and edit them all at once
+* Remember last selected sorting method when closing the binding window
+* Remember last selected binding(s) when closing the binding window
+* Add profession abilities to spell autofill
+* Add profession abilities to spellbook import
+* Add Dominos action bars to quick start import
+* Include shapeshift-specific action bars in quick start import
+* Include all 7 action bars in quick start import, up from 4
+* Include all 15 Bartender4 action bars in quick start import, up from 6
+* Include all 15 ElvUI bars action bars in quick start import, up from 6
+* Add more information to a bunch of tooltips in the binding configuration window
+* Add spell ranks to spell autofill in Classic Era
+* Create bindings when dragging a macro into the binding configuration window
+* Add quick start import from macros
+* Add chat command to disable (or re-enable) the self-cast warning
+
+### Fixed
+
+* Fix a potential issue when pasting binding contents onto a binding in a different scope
+* Optimize binding configuration window performance
+* Fix an issue where the binding configuration window would reload completely when a binding is reloaded
+* Fix dragging bindings onto an empty space not doing anything
+* Fix duplicate binding check when importing from spellbook or action bar
+* Fix cancelaura spell input not parsing correctly [#216] [#217]
+* Fix spell autofill for flyout abilities [#212]
+* Fix a game freeze when clearing the search box
+* Fix macro length calculation for non-English letters
+* Fix Lua error in the keyboard visualizer
+* Fix missing UI elements in unit frame blacklist
+
+### Changed
+
+* Move search bar above the bindings list
+* Merge the import window into the binding window
+* Merge the export window into the binding window
+* Update design of various UI screens
+* Update copy in various places
+* Show self-cast warning upon login
+
+### Removed
+
+* Remove the ability to search for macro contents
+* Remove WeakAuras integration
+
 ## [1.15.6] - 2024-08-18
 
 ### Added
@@ -1530,6 +1579,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#217]: https://github.com/Snakybo/Clicked/issues/217
+[#216]: https://github.com/Snakybo/Clicked/issues/216
+[#212]: https://github.com/Snakybo/Clicked/issues/212
 [#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203

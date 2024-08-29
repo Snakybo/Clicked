@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,8 +19,25 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local TYPE_BINDING = 1
-local TYPE_GROUP = 2
+--- @class DataObjectLookup
+--- @field public uid table<integer,DataObject>
+--- @field public keybind table<string,Binding[]>
+--- @field public parent table<integer,Binding[]>
+--- @field public actionType table<BindingType,Binding[]>
+--- @field public scope table<BindingScope,DataObject[]>
+local lookupTable = {
+	uid = {},
+	keybind = {},
+	parent = {},
+	actionType = {},
+	scope = {}
+}
+
+--- @enum DataObjectType
+Clicked.DataObjectType = {
+	BINDING = 1,
+	GROUP = 2
+}
 
 -- Local support functions
 
@@ -63,7 +80,6 @@ local function GetNegatableTriStateLoadOptionTemplate(default)
 
 	return template
 end
-
 
 --- @param default string
 --- @return Binding.MutliFieldLoadOption
@@ -122,7 +138,8 @@ function Clicked:GetDatabaseDefaults()
 				bindUnassignedModifiers = false,
 				minimap = {
 					hide = false
-				}
+				},
+				ignoreSelfCastWarning = false
 			},
 			groups = {},
 			bindings = {},
@@ -153,7 +170,7 @@ end
 function Clicked:CreateGroup()
 	--- @type Group
 	local group = {
-		type = TYPE_GROUP,
+		type = Clicked.DataObjectType.GROUP,
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
@@ -196,39 +213,118 @@ function Clicked:DeleteGroup(group)
 	return false
 end
 
---- Attempt to get a binding group with the specified identifier.
+--- Update the data object lookup table
 ---
---- @param identifier integer
---- @return Group?
-function Clicked:GetGroupById(identifier)
-	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
+--- This will cache all data objects in a lookup table, this is used to quickly find bindings and groups by keybind, parent, action type or scope.
+---
+--- This will come at the cost of memory, but will greatly improve performance when searching for bindings or groups.
+---
+--- @param obj? DataObject
+function Addon:UpdateLookupTable(obj)
+	--- @type DataObject[]
+	local queue = {}
+	local clean = obj == nil
 
-	for _, group in self:IterateGroups() do
-		if group.uid == identifier then
-			return group
+	if obj == nil then
+		table.wipe(lookupTable.uid)
+		table.wipe(lookupTable.keybind)
+		table.wipe(lookupTable.parent)
+		table.wipe(lookupTable.actionType)
+		table.wipe(lookupTable.scope)
+
+		for _, configured in Clicked:IterateConfiguredBindings() do
+			table.insert(queue, configured)
+		end
+
+		for _, group in Clicked:IterateGroups() do
+			table.insert(queue, group)
+		end
+	else
+		table.insert(queue, obj)
+	end
+
+	--- @generic K
+	--- @param tbl table<K,DataObject[]>
+	--- @param key K
+	--- @param value DataObject
+	local function UpdateLookupTable(tbl, key, value)
+		if not clean then
+			for _, array in pairs(tbl) do
+				if Addon:TableRemoveItem(array, value) then
+					break
+				end
+			end
+		end
+
+		if not Addon:IsNilOrEmpty(key) then
+			tbl[key] = tbl[key] or {}
+			table.insert(tbl[key], value)
 		end
 	end
 
-	return nil
+	while #queue > 0 do
+		--- @type DataObject
+		local current = table.remove(queue, 1)
+
+		lookupTable.uid[current.uid] = current
+
+		if current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
+			UpdateLookupTable(lookupTable.keybind, current.keybind, current)
+			UpdateLookupTable(lookupTable.parent, current.parent, current)
+			UpdateLookupTable(lookupTable.actionType, current.actionType, current)
+		end
+
+		UpdateLookupTable(lookupTable.scope, current.scope, current)
+	end
+end
+
+--- Attempt to get a binding or group with the specified identifier.
+---
+--- @param identifier? integer
+--- @return DataObject?
+function Clicked:GetByUid(identifier)
+	if identifier == nil then
+		return nil
+	end
+
+	return lookupTable.uid[identifier]
+end
+
+--- @param key? string
+--- @return Binding[]
+function Clicked:GetByKey(key)
+	if key == nil then
+		return {}
+	end
+
+	return lookupTable.keybind[key] or {}
+end
+
+--- @param scope BindingScope
+--- @return DataObject[]
+function Clicked:GetByScope(scope)
+	return lookupTable.scope[scope] or {}
 end
 
 --- Get a list of all bindings that are part of the specified group.
 ---
---- @param identifier integer
+--- @param identifier? integer
 --- @return Binding[]
-function Clicked:GetBindingsInGroup(identifier)
-	assert(type(identifier) == "number", "bad argument #1, expected number but got " .. type(identifier))
-
-	--- @type Binding[]
-	local bindings = {}
-
-	for _, binding in self:IterateConfiguredBindings() do
-		if binding.parent == identifier then
-			table.insert(bindings, binding)
-		end
+function Clicked:GetByParent(identifier)
+	if identifier == nil then
+		return {}
 	end
 
-	return bindings
+	return lookupTable.parent[identifier] or {}
+end
+
+--- Get a list of all bindings that are part of the specified group.
+---
+--- @param type BindingType
+--- @return Binding[]
+function Clicked:GetByActionType(type)
+	return lookupTable.actionType[type] or {}
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
@@ -320,7 +416,7 @@ function Addon:GetNewBindingTemplate()
 	--- @type Binding
 	local template = {
 		actionType = Addon.BindingTypes.SPELL,
-		type = TYPE_BINDING,
+		type = Clicked.DataObjectType.BINDING,
 		keybind = "",
 		parent = nil,
 		action = {
@@ -378,8 +474,6 @@ function Addon:GetNewBindingTemplate()
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate()
-		},
-		integrations = {
 		}
 	}
 
@@ -431,11 +525,11 @@ function Addon:ChangeScope(item, scope)
 		return
 	end
 
-	if self:IsGroup(item) then
+	if item.type == Clicked.DataObjectType.GROUP then
 		--- @cast item Group
 
 		local id = item.uid
-		local bindings = Clicked:GetBindingsInGroup(id)
+		local bindings = Clicked:GetByParent(id)
 
 		if Clicked:DeleteGroup(item) then
 			self:RegisterGroup(item, scope)
@@ -455,14 +549,27 @@ function Addon:ChangeScope(item, scope)
 	end
 end
 
+--- Replace the contents of a binding with another binding.
+---
+--- This will replace almost all properties of the original binding with the properties of the replacement binding. Notable exceptions are:
+--- - The UID of the original binding will be preserved.
+--- - The keybind of the original binding will be preserved.
+--- - The parent of the original binding will be preserved.
+--- - The scope of the original binding will be preserved.
+---
 --- @param original Binding
 --- @param replacement Binding
-function Addon:ReplaceBinding(original, replacement)
+function Addon:ReplaceBindingContents(original, replacement)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 	assert(type(replacement) == "table", "bad argument #2, expected table but got " .. type(replacement))
 
+	replacement.parent = original.parent
+	replacement.scope = original.scope
+	replacement.uid = original.uid
+	replacement.keybind = original.keybind
+
 	for index, binding in Clicked:IterateConfiguredBindings() do
-		if binding == original then
+		if binding.uid == original.uid then
 			Addon.db.profile.bindings[index] = replacement
 			Clicked:ReloadBinding(binding, true)
 			break
@@ -504,6 +611,8 @@ function Addon:RegisterGroup(group, scope)
 	else
 		error("Unknown binding scope " .. scope)
 	end
+
+	self:UpdateLookupTable(group)
 end
 
 --- @param original Binding
@@ -511,10 +620,9 @@ end
 function Addon:CloneBinding(original)
 	assert(type(original) == "table", "bad argument #1, expected table but got " .. type(original))
 
-	local clone = Addon:DeepCopyTable(original)
+	local clone = CopyTable(original)
 	clone.uid = nil
 	clone.keybind = ""
-	clone.integrations = {}
 
 	self:RegisterBinding(clone, original.scope)
 	return clone
@@ -532,13 +640,4 @@ function Addon:GetContainingDatabase(item)
 	else
 		error("Unknown binding scope " .. item.scope)
 	end
-end
-
---- Check if the specified string is a group identifier.
----
---- @param item DataObject
---- @return boolean
-function Addon:IsGroup(item)
-	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
-	return item.type == TYPE_GROUP
 end

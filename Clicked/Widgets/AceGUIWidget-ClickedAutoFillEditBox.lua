@@ -133,7 +133,7 @@ local function EditBox_OnEnterPressed(frame)
 		self:HideAutoCompleteBox()
 		self:SelectButton(self:GetSelectedButton())
 	else
-		local text = self:GetRealText()
+		local text = self:GetText()
 
 		if strlenutf8(text) == 0 then
 			self:Select("")
@@ -165,8 +165,10 @@ local function EditBox_OnReceiveDrag(frame)
 	if type == "item" then
 		name = info
 	elseif type == "spell" then
+		--- @cast id number
 		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
 	elseif type == "petaction" then
+		--- @cast id number
 		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
 	end
 
@@ -199,7 +201,7 @@ local function EditBox_OnFocusGained(frame)
 
 	self.BaseOnFocusGained(frame)
 
-	if strlenutf8(self:GetRealText()) == 0 then
+	if strlenutf8(self:GetText()) == 0 then
 		self:ShowAll()
 	else
 		self:ShowPrediction()
@@ -209,7 +211,7 @@ end
 local function EditBox_OnFocusLost(frame)
 	local self = frame.obj
 
-	if strlenutf8(self:GetRealText()) == 0 then
+	if strlenutf8(self:GetText()) == 0 then
 		self:SetText("")
 	elseif self:IsAutoCompleteBoxVisible() then
 		self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
@@ -253,6 +255,7 @@ function Methods:OnAcquire()
 	self.pullout:SetFrameLevel(self.frame:GetFrameLevel() + 1)
 	self.pullout:Hide()
 
+	self:SetLabelColor(NORMAL_FONT_COLOR)
 	self:DisableButton(true)
 end
 
@@ -264,7 +267,7 @@ end
 
 --- @param values ClickedAutoFillEditBox.Option[]
 function Methods:SetValues(values)
-	self.values = Addon:DeepCopyTable(values)
+	self.values = CopyTable(values)
 
 	if self:IsAutoCompleteBoxVisible() then
 		self:ShowPrediction()
@@ -391,7 +394,7 @@ function Methods:UpdateButtons()
 		button:SetText("...")
 		button:Disable()
 
-		button.icon:SetTexture(nil)
+		button.icon:SetTexture(nil) --- @diagnostic disable-line: undefined-field
 	end
 
 	local matches = self:GetMatches()
@@ -492,7 +495,7 @@ end
 
 --- @private
 function Methods:ShowPrediction()
-	local text =  self:GetRealText()
+	local text =  self:GetText()
 
 	if strlenutf8(text) == 0 then
 		self:HideAutoCompleteBox()
@@ -633,9 +636,19 @@ function Methods:Select(value)
 	self.editbox:SetCursorPosition(strlen(text))
 
 	self:Fire("OnSelect", text, option)
-	self.selectedOption = value
+	self.selectedOption = value --[[@as ClickedAutoFillEditBox.Option?]]
 
 	AceGUI:ClearFocus()
+end
+
+--- @param color ColorMixin
+function Methods:SetLabelColor(color)
+	self.label:SetTextColor(color:GetRGBA())
+end
+
+--- @return string
+function Methods:GetText()
+	return Addon:StripColorCodes(self:BaseGetText())
 end
 
 --- @private
@@ -711,12 +724,6 @@ function Methods:GetSelectedButton()
 end
 
 --- @private
---- @return string
-function Methods:GetRealText()
-	return Addon:StripColorCodes(self:GetText())
-end
-
---- @private
 --- @param direction integer
 function Methods:MoveCursor(direction)
 	if self:IsAutoCompleteBoxVisible() then
@@ -758,6 +765,8 @@ local function Constructor()
 	widget.BaseOnRelease = widget.OnRelease
 	--- @private
 	widget.BaseSetText = widget.SetText
+	--- @private
+	widget.BaseGetText = widget.GetText
 	--- @private
 	widget.BaseOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
 	--- @private

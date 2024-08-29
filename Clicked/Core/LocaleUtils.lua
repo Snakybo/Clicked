@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ local function GetTalentsForSpecialization(specId)
 					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 					local spellName = Addon:StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
 
-					if not Addon:IsStringNilOrEmpty(spellName) then
+					if not Addon:IsNilOrEmpty(spellName) then
 						table.insert(allTalents[specId], {
 							entryId = talentId,
 							spellId = definitionInfo.spellID,
@@ -173,7 +173,7 @@ local function GetPvPTalentsForSpecialization(specId)
 		if talentId ~= nil then
 			local _, name, texture, _, _, spellId = GetPvpTalentInfoByID(talentId)
 
-			if not Addon:IsStringNilOrEmpty(name) then
+			if not Addon:IsNilOrEmpty(name) then
 				table.insert(allPvpTalents[specId], {
 					entryId = talentId,
 					spellId = spellId,
@@ -419,7 +419,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				local _, name, _, icon = GetSpecializationInfoByID(specId)
 				local key = specIndex
 
-				if not Addon:IsStringNilOrEmpty(name) then
+				if not Addon:IsNilOrEmpty(name) then
 					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
@@ -433,7 +433,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				for _, specId in pairs(specs) do
 					local _, name = GetSpecializationInfoByID(specId)
 
-					if not Addon:IsStringNilOrEmpty(name) then
+					if not Addon:IsNilOrEmpty(name) then
 						count = count + 1
 					end
 				end
@@ -572,11 +572,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			local specId = specializations[1]
 			local defaultForm = Addon.L["None"]
 
-			-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
-			if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-				defaultForm = Addon.L["Humanoid Form"]
-			end
-
 			do
 				local key = #order + 1
 
@@ -653,7 +648,7 @@ elseif Addon:IsGameVersionAtleast("CATA") then
 				local _, name, _, icon = GetSpecializationInfoForSpecID(spec.id)
 				local key = specIndex
 
-				if not Addon:IsStringNilOrEmpty(name) then
+				if not Addon:IsNilOrEmpty(name) then
 					items[key] = Addon:GetTextureString(name, icon)
 					table.insert(order, key)
 				end
@@ -843,7 +838,7 @@ else
 					local _, name, texture = LibTalentInfoClassic:GetTalentInfoByTab(class, tab, index)
 					local key = #order + 1
 
-					if not Addon:IsStringNilOrEmpty(name) then
+					if not Addon:IsNilOrEmpty(name) then
 						items[key] = Addon:GetTextureString(name, texture)
 						table.insert(order, key)
 					end
@@ -964,11 +959,19 @@ end
 --- @param scope BindingScope
 function Addon:GetLocalizedScope(scope)
 	if scope == Addon.BindingScope.GLOBAL then
-		return Addon.L["Global bindings"]
+		return Addon.L["Global"]
 	end
 
 	if scope == Addon.BindingScope.PROFILE then
-		return Addon.L["Profile specific bindings"]
+		local defaultProfiles = {
+			["Default"] = Addon.L["Default"],
+			[Addon.db.keys.char] = Addon.db.keys.char,
+			[Addon.db.keys.realm] = Addon.db.keys.realm,
+			[Addon.db.keys.class] = UnitClass("player")
+		}
+
+		local profile = Addon.db:GetCurrentProfile()
+		return defaultProfiles[profile] or profile
 	end
 
 	error("Unknown binding scope: " .. scope)

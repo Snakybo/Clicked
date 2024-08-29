@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 10
+Addon.DATA_VERSION = 11
 
 -- Local support functions
 
@@ -754,7 +754,7 @@ local function Upgrade(db, from)
 			binding.scope = 1
 			binding.identifier = "1-binding-" .. binding.identifier
 
-			if not Addon:IsStringNilOrEmpty(binding.parent) then
+			if not Addon:IsNilOrEmpty(binding.parent) then
 				binding.parent = "1-" .. binding.parent
 			end
 		end
@@ -858,6 +858,12 @@ local function Upgrade(db, from)
 				selected = false,
 				value = true
 			}
+		end
+	end
+
+	if from < 11 then
+		for _, binding in ipairs(db.bindings) do
+			binding.integrations = nil
 		end
 	end
 end

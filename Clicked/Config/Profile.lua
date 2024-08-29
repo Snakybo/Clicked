@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2022  Kevin Krol
+-- Copyright (C) 2024  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 62,
 		func = function()
-			Addon.ImportFrame:ImportProfile()
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE)
 		end
 	}
 
@@ -77,7 +77,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 63,
 		func = function()
-			Addon.ExportFrame:ExportProfile(Addon.db.profile)
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.PROFILE, Addon.db.profile)
 		end
 	}
 
@@ -107,7 +107,7 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 67,
 		disabled = function()
-			if Addon:IsStringNilOrEmpty(shareTarget) then
+			if Addon:IsNilOrEmpty(shareTarget) then
 				return true
 			end
 
@@ -209,7 +209,8 @@ function ProfileOptions:OnCommReceived(_, message, _, sender)
 	else
 		local success, data = Clicked:Deserialize(message, false)
 
-		Addon.ImportFrame:ImportProfileFromComm(success, data, sender)
+		Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE_COMM, data, sender)
+
 		shareEnabled = not success
 	end
 
