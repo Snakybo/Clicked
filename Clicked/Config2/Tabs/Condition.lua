@@ -117,7 +117,8 @@ function Addon.BindingConfig.BindingConditionTab:GetAvailableValues(condition)
 		for i, dependencyId in ipairs(condition.dependencies) do
 			dependencies[i] = dependencies[i] or {}
 
-			local dependency = self.content.map[dependencyId]
+			local dependency = Addon.Condition.Registry:GetConditionById(dependencyId)
+			assert(dependency ~= nil, "Dependency not found: " .. dependencyId)
 
 			for _, binding in ipairs(self.bindings) do
 				local load = binding.load[dependencyId] or dependency.init()

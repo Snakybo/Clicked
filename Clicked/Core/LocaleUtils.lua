@@ -572,11 +572,6 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 			local specId = specializations[1]
 			local defaultForm = Addon.L["None"]
 
-			-- Balance Druid, Feral Druid, Guardian Druid, Restoration Druid, Initial Druid
-			if specId == 102 or specId == 103 or specId == 104 or specId == 105 or specId == 1447 then
-				defaultForm = Addon.L["Humanoid Form"]
-			end
-
 			do
 				local key = #order + 1
 

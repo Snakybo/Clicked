@@ -26,6 +26,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @class BindingInputConditionDrawer : BindingConditionDrawer
 --- @field private checkbox ClickedCheckBox
 --- @field private editbox? ClickedEditBox
+--- @field private negated? ClickedCheckBox
 local Drawer = {}
 
 --- @protected
@@ -40,8 +41,12 @@ function Drawer:Draw()
 
 	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
+	if not isAnyEnabled then
+		return
+	end
+
 	-- editbox
-	if isAnyEnabled then
+	do
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
@@ -107,6 +112,9 @@ function Drawer:Draw()
 
 		self.container:AddChild(self.editbox)
 	end
+
+	-- negate
+	self.negated = Helpers:DrawNegateToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 end
 
 Addon.BindingConfig.BindingConditionDrawers = Addon.BindingConfig.BindingConditionDrawers or {}

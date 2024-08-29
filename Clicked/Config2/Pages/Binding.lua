@@ -121,7 +121,9 @@ Addon.BindingConfig.BindingPage = {
 		load_macro ={
 			title = "Macro conditions",
 			order = 21,
-			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab),
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingConditionTab, {
+				content = Addon.Condition.Registry:GetConditionSet("macro")
+			}),
 			filter = function(bindings)
 				local bindingTypes = { BT_SPELL, BT_ITEM, BT_UNIT_SELECT, BT_UNIT_MENU, BT_CANCELAURA }
 				return FilterBindingsByActionType(bindings, bindingTypes)

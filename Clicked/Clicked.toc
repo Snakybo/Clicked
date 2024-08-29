@@ -33,6 +33,7 @@ Core\Upgrader.lua
 
 Conditions\Condition.lua
 Conditions\LoadConditions.lua
+Conditions\MacroConditions.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua

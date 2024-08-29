@@ -55,7 +55,7 @@ local KEYBIND_ORDER_LIST = {
 --- @type { [integer]: integer[] } | { [string]: integer[][] }
 local shapeshiftForms
 
--- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=GetSpellInfo(f);b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
+-- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
 if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {

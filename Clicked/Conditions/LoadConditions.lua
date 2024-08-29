@@ -347,7 +347,7 @@ local config = {
 			label = "Item equipped",
 			tooltip = Addon.L["This will not update when in combat, so swapping weapons or shields during combat does not work."],
 			validate = function(value)
-				local type, info = LinkUtil.ExtractLink(value)
+				local type = LinkUtil.ExtractLink(value)
 				if type ~= "item" then
 					return value
 				end

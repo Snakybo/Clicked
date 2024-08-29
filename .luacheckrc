@@ -184,6 +184,7 @@ read_globals = {
 	"RegisterStateDriver",
 	"ReloadUI",
 	"Round",
+	"SafeUnpack",
 	"SecureCmdOptionParse",
 	"SetDesaturation",
 	"Settings",

@@ -27,6 +27,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private checkbox ClickedCheckBox
 --- @field private dropdown? ClickedDropdown
 --- @field private dropdownCb? fun():boolean
+--- @field private negated? ClickedCheckBox
 local Drawer = {}
 
 --- @protected
@@ -41,11 +42,30 @@ function Drawer:Draw()
 
 	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
-	if isAnyEnabled then
+	if not isAnyEnabled then
+		return
+	end
+
+	-- dropdown
+	do
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
 			--- @type SimpleLoadOption
+			local load = binding.load[self.fieldName] or self.condition.init()
+
+			if type(load.value) == "string" then
+				return load.value
+			elseif type(load.value) == "boolean" then
+				return load.value and Addon.L["Enabled"] or Addon.L["Disabled"]
+			end
+
+			return tostring(load.value)
+		end
+
+		--- @param binding Binding
+		--- @return any
+		local function GetRawValue(binding)
 			local load = binding.load[self.fieldName] or self.condition.init()
 			return load.value
 		end
@@ -88,11 +108,14 @@ function Drawer:Draw()
 		self.dropdown:SetList(self.requestAvailableValues())
 		self.dropdown:SetRelativeWidth(0.5)
 
-		local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, GetTooltipText)
+		local _, cb = Helpers:HandleWidget(self.dropdown, self.bindings, ValueSelector, GetTooltipText, GetRawValue)
 		self.dropdownCb = cb
 
 		self.container:AddChild(self.dropdown)
 	end
+
+	-- negate
+	self.negated = Helpers:DrawNegateToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 end
 
 --- @protected

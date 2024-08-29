@@ -23,10 +23,10 @@ Addon.Condition = Addon.Condition or {}
 --- @field public type string
 --- @field public label string
 --- @field public tooltip? string|string[]
+--- @field public negatable? boolean
 --- @field public availableValues? fun(...):...
 
 --- @class InputDrawerConfig : DrawerConfig
---- @field public negatable? boolean
 --- @field public validate? fun(value: string, final: boolean):string
 
 --- @class Condition
@@ -106,11 +106,27 @@ do
 
 		return result
 	end
+
+	--- @param id string
+	--- @return Condition?
+	function Addon.Condition.Registry:GetConditionById(id)
+		for _, set in pairs(registry) do
+			local condition = set.map[id]
+
+			if condition ~= nil then
+				return condition
+			end
+		end
+
+		return nil
+	end
 end
 
 do
 	--- @class ConditionUtilities
 	Addon.Condition.Utilities = {}
+
+	--- @alias NegatableLoadOption SimpleLoadOption|MultiselectLoadOption
 
 	--- @param default any
 	--- @return SimpleLoadOption
@@ -132,6 +148,7 @@ do
 		--- @field public selected `0`|`1`|`2`
 		--- @field public single any
 		--- @field public multiple any[]
+		--- @field public negated? boolean
 		return {
 			selected = 0,
 			single = default,

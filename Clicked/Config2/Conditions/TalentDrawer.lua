@@ -59,8 +59,6 @@ local Drawer = {}
 
 --- @protected
 function Drawer:Draw()
-	local drawer = self.condition.drawer
-
 	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
 		--- @type SimpleLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
@@ -113,16 +111,18 @@ end
 
 --- @protected
 function Drawer:Update()
-	local function ValueSelector(binding)
-		--- @type TalentLoadOption
-		local load = binding.load[self.fieldName] or self.condition.init()
-		return TalentValueSelector(load)
+	if self.miniTalentRow ~= nil then
+		local function ValueSelector(binding)
+			--- @type TalentLoadOption
+			local load = binding.load[self.fieldName] or self.condition.init()
+			return TalentValueSelector(load)
+		end
+
+		self.hasMixedValues = Helpers:GetMixedValues(self.bindings, ValueSelector)
+		self.talents = self.requestAvailableValues()
+
+		self:DrawMiniTalentRow()
 	end
-
-	self.hasMixedValues = Helpers:GetMixedValues(self.bindings, ValueSelector)
-	self.talents = self.requestAvailableValues()
-
-	self:DrawMiniTalentRow()
 
 	if self.inputFields ~= nil then
 		for _, inputField in ipairs(self.inputFields) do

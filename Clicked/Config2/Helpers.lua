@@ -378,6 +378,66 @@ end
 --- @param fieldName string
 --- @param condition Condition
 --- @param onValueChanged fun()
+--- @return ClickedCheckBox?
+function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, fieldName, condition, onValueChanged)
+	if not condition.drawer.negatable then
+		return nil
+	end
+
+	do
+		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		widget:SetRelativeWidth(0.5)
+		container:AddChild(widget)
+	end
+
+	do
+		--- @param binding Binding
+		--- @return string
+		local function ValueSelector(binding)
+			--- @type NegatableLoadOption
+			local load = binding.load[fieldName] or condition.init()
+			return load.negated and Addon.L["Inverted"] or Addon.L["Not inverted"]
+		end
+
+		local function GetEnabledState(binding)
+			--- @type NegatableLoadOption
+			local load = binding.load[fieldName] or condition.init()
+			return load.negated and true or false
+		end
+
+		--- @param value boolean
+		local function OnValueChanged(_, _, value)
+			for _, binding in ipairs(bindings) do
+				--- @type NegatableLoadOption
+				local load = binding.load[fieldName] or condition.init()
+
+				if load.selected then
+					-- TODO: Set this to nil if false
+					load.negated = value
+					binding.load[fieldName] = load
+					Clicked:ReloadBinding(binding, true)
+				end
+			end
+
+			onValueChanged()
+		end
+
+		local negated = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
+		negated:SetCallback("OnValueChanged", OnValueChanged)
+		negated:SetRelativeWidth(0.5)
+
+		self:HandleWidget(negated, bindings, ValueSelector, Addon.L["Invert"], GetEnabledState)
+
+		container:AddChild(negated)
+		return negated
+	end
+end
+
+--- @param container AceGUIContainer
+--- @param bindings Binding[]
+--- @param fieldName string
+--- @param condition Condition
+--- @param onValueChanged fun()
 --- @return ClickedCheckBox
 function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, bindings, fieldName, condition, onValueChanged)
 	--- @type boolean

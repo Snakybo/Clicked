@@ -23,7 +23,7 @@ local Helpers = Addon.BindingConfig.Helpers
 
 --- @param drawer DrawerConfig
 --- @return string[]
-local function GetTooltipText(drawer)
+local function GetValueTooltipText(drawer)
 	--- @type string[]
 	local result = { Addon.L[drawer.label] }
 	local tooltip = drawer.tooltip
@@ -47,6 +47,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private dropdownCb? fun():boolean
 --- @field private multiselectDropdown? ClickedDropdown
 --- @field private multiselectDropdownCb? fun():boolean
+--- @field private negated? ClickedCheckBox
 local Drawer = {}
 
 --- @protected
@@ -61,7 +62,12 @@ function Drawer:Draw()
 
 	self.checkbox = Helpers:DrawMultiselectConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
-	if isAnyEnabled then
+	if not isAnyEnabled then
+		return
+	end
+
+	-- dropdowns
+	do
 		local isAnySingleSelect = FindInTableIf(self.bindings, function(binding)
 			--- @type MultiselectLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
@@ -85,6 +91,9 @@ function Drawer:Draw()
 			self:DrawMultiSelectMultiple(drawer, items, order, isAnySingleSelect)
 		end
 	end
+
+	-- negate
+	self.negated = Helpers:DrawNegateToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 end
 
 
@@ -132,6 +141,11 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 		end
 
 		return Helpers.IGNORE_VALUE
+	end
+
+	--- @return string[]
+	local function GetTooltipText()
+		return GetValueTooltipText(drawer)
 	end
 
 	--- @param value string
@@ -216,6 +230,11 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 			end
 
 			return Helpers.IGNORE_VALUE
+		end
+
+		--- @return string[]
+		local function GetTooltipText()
+			return GetValueTooltipText(drawer)
 		end
 
 		--- @param value string
