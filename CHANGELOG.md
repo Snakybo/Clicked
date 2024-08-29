@@ -53,6 +53,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Removed
 
 * Remove the ability to search for macro contents
+* Remove WeakAuras integration
 
 ## [1.15.6] - 2024-08-18
 

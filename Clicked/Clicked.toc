@@ -59,6 +59,3 @@ BindingConfig\BindingConfig.lua
 
 # Skinning
 Skins\ElvUI.lua
-
-# Third party integrations
-Integrations\WeakAuras.lua
