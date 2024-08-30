@@ -177,7 +177,7 @@ local function UpgradeLegacy(profile, from)
 				value = "ACTIVE"
 			}
 
-			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BFA then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
 				binding.load.pvpTalent = {
 					selected = 0,
 					single = 1,
@@ -334,7 +334,7 @@ local function UpgradeLegacy(profile, from)
 				end
 			end
 
-			if binding.type == Addon.BindingTypes.MACRO then
+			if binding.type == Clicked.ActionType.MACRO then
 				while #regular > 0 do
 					table.remove(regular, 1)
 				end
@@ -370,7 +370,7 @@ local function UpgradeLegacy(profile, from)
 				itemValue = binding.actions.item.value,
 				macroValue = binding.actions.macro.value,
 				macroMode = binding.actions.macro.mode,
-				interrupt = binding.type == Addon.BindingTypes.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Addon.BindingTypes.ITEM and binding.actions.item.interruptCurrentCast or false,
+				interrupt = binding.type == Clicked.ActionType.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.ActionType.ITEM and binding.actions.item.interruptCurrentCast or false,
 				allowStartAttack = true
 			}
 
@@ -451,7 +451,7 @@ local function UpgradeLegacy(profile, from)
 			binding.action.macroName = Addon.L["Run custom macro"]
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
-			if binding.type == Addon.BindingTypes.MACRO then
+			if binding.type == Clicked.ActionType.MACRO then
 				binding.action.macroName = binding.cache.displayName
 				binding.action.macroIcon = binding.cache.displayIcon
 			end
@@ -516,7 +516,7 @@ local function UpgradeLegacy(profile, from)
 		end
 
 		for _, binding in ipairs(profile.bindings) do
-			if binding.type == Addon.BindingTypes.MACRO then
+			if binding.type == Clicked.ActionType.MACRO then
 				if binding.action.macroMode == "FIRST" then
 					for _, other in GetRelatedBindings(binding) do
 						other.action.executionOrder = other.action.executionOrder + 1
@@ -684,7 +684,7 @@ local function UpgradeLegacy(profile, from)
 	-- 1.8.0 to 1.8.1
 	if string.sub(from, 1, 5) == "1.8.0" then
 		for _, binding in ipairs(profile.bindings) do
-			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 				if binding.load.talent.selected ~= 0 then
 					binding.load.class.selected = 1
 					binding.load.specialization.selected = 1
@@ -723,7 +723,7 @@ local function Upgrade(db, from)
 		for _, binding in ipairs(db.bindings) do
 			binding.action.cancelForm = false
 
-			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 				binding.load.talent = {
 					selected = false,
 					entries = {
@@ -777,7 +777,7 @@ local function Upgrade(db, from)
 
 	if from < 6 then
 		for _, binding in ipairs(db.bindings) do
-			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 				if #binding.load.talent.entries > 1 and binding.load.talent.entries[1].operation == "OR" then
 					binding.load.talent.entries[1].operation = "AND"
 				end
@@ -800,7 +800,7 @@ local function Upgrade(db, from)
 
 	if from < 7 then
 		for _, binding in ipairs(db.bindings) do
-			if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.CATA then
+			if Addon.EXPANSION_LEVEL <= Addon.Expansion.CATA then
 				binding.load.talent = {
 					selected = false,
 					entries = {
@@ -812,7 +812,7 @@ local function Upgrade(db, from)
 					}
 				}
 
-				if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CLASSIC then
+				if Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC then
 					Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
 				end
 			end

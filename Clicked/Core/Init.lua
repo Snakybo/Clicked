@@ -18,7 +18,7 @@
 local Addon = select(2, ...)
 
 --- @enum ExpansionLevel
-Addon.EXPANSION = {
+Addon.Expansion = {
 	CLASSIC = 1,
 	BC = 2,
 	WOTLK = 3,
@@ -112,15 +112,15 @@ function Addon:IsCata()
 end
 
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.TWW
+	Addon.EXPANSION_LEVEL = Addon.Expansion.TWW
 elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.CATA
+	Addon.EXPANSION_LEVEL = Addon.Expansion.CATA
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.WOTLK
+	Addon.EXPANSION_LEVEL = Addon.Expansion.WOTLK
 elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.BC
+	Addon.EXPANSION_LEVEL = Addon.Expansion.BC
 elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.EXPANSION.CLASSIC
+	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
 end
 
 --- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the

@@ -163,7 +163,7 @@ local function OnTooltipSetSpell(self)
 
 	--- @type Binding
 	for _, binding in Clicked:IterateActiveBindings() do
-		if binding.actionType == Addon.BindingTypes.SPELL and binding.action.spellValue == spellId then
+		if binding.actionType == Clicked.ActionType.SPELL and binding.action.spellValue == spellId then
 			local text = string.format(Addon.L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
 
 			if not addedEmptyLine then
@@ -181,7 +181,7 @@ end
 function Addon:AbilityTooltips_Initialize()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
-		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
 		else
 			GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
@@ -190,7 +190,7 @@ function Addon:AbilityTooltips_Initialize()
 		GameTooltip:HookScript("OnHide", OnTooltipHide)
 	end)
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, OnTooltipSetSpell)
 	else
 		GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)

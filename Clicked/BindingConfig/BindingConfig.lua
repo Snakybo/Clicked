@@ -602,23 +602,23 @@ function Addon.BindingConfig.Window:CreateFrame()
 	local function OnReceiveDrag()
 		local type, p2, _, p4 = GetCursorInfo()
 
-		--- @type BindingType
+		--- @type ActionType
 		local actionType
 
 		--- @type integer
 		local id
 
 		if type == "item" then
-			actionType = Addon.BindingTypes.ITEM
+			actionType = Clicked.ActionType.ITEM
 			id = p2 --[[@as integer]]
 		elseif type == "spell" then
-			actionType = Addon.BindingTypes.SPELL
+			actionType = Clicked.ActionType.SPELL
 			id = p4 --[[@as integer]]
 		elseif type == "petaction" then
-			actionType = Addon.BindingTypes.SPELL
+			actionType = Clicked.ActionType.SPELL
 			id = p2 --[[@as integer]]
 		elseif type == "macro" then
-			actionType = Addon.BindingTypes.MACRO
+			actionType = Clicked.ActionType.MACRO
 			id = p2 --[[@as integer]]
 		end
 
@@ -626,11 +626,11 @@ function Addon.BindingConfig.Window:CreateFrame()
 			local binding = Clicked:CreateBinding()
 			binding.actionType = actionType
 
-			if binding.actionType == Addon.BindingTypes.SPELL then
+			if binding.actionType == Clicked.ActionType.SPELL then
 				binding.action.spellValue = id
-			elseif binding.actionType == Addon.BindingTypes.ITEM then
+			elseif binding.actionType == Clicked.ActionType.ITEM then
 				binding.action.itemValue = id
-			elseif binding.actionType == Addon.BindingTypes.MACRO then
+			elseif binding.actionType == Clicked.ActionType.MACRO then
 				local name, icon, content = GetMacroInfo(id)
 				binding.action.macroName = name
 				binding.action.macroIcon = icon
@@ -679,7 +679,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 		table.insert(hierarchy[parent], binding)
 	end
 
-	for _, scope in pairs(Addon.BindingScope) do
+	for _, scope in pairs(Clicked.DataObjectScope) do
 		local uid = Addon:GetScopeUid(scope)
 
 		--- @type ClickedTreeGroupItem
@@ -904,7 +904,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 		local ref = objects[1]
 
-		if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+		if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 			MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
 				if ref.type == Clicked.DataObjectType.BINDING then
 					--- @cast objects Binding[]
@@ -967,13 +967,13 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							end)
 						end
 
-						CreateOption(Addon.BindingTypes.SPELL, Addon.L["Cast a spell"])
-						CreateOption(Addon.BindingTypes.ITEM, Addon.L["Use an item"])
-						CreateOption(Addon.BindingTypes.CANCELAURA, Addon.L["Cancel an aura"])
-						CreateOption(Addon.BindingTypes.UNIT_SELECT, Addon.L["Target the unit"])
-						CreateOption(Addon.BindingTypes.UNIT_MENU, Addon.L["Open the unit menu"])
-						CreateOption(Addon.BindingTypes.MACRO, Addon.L["Run a macro"])
-						CreateOption(Addon.BindingTypes.APPEND, Addon.L["Append a binding segment"])
+						CreateOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
+						CreateOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
+						CreateOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
+						CreateOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
+						CreateOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
+						CreateOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
+						CreateOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
 					end
 				end
 
@@ -1012,8 +1012,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						end
 					end
 
-					CreateOption(Addon.BindingScope.GLOBAL, Addon.L["Global"])
-					CreateOption(Addon.BindingScope.PROFILE, Addon.L["Profile"])
+					CreateOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
+					CreateOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
 				end
 
 				rootDescription:CreateButton(Addon.L["Share"], function()
@@ -1131,13 +1131,13 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 					table.insert(menu, convertTo)
 
-					AddConvertToOption(Addon.BindingTypes.SPELL, Addon.L["Cast a spell"])
-					AddConvertToOption(Addon.BindingTypes.ITEM, Addon.L["Use an item"])
-					AddConvertToOption(Addon.BindingTypes.CANCELAURA, Addon.L["Cancel an aura"])
-					AddConvertToOption(Addon.BindingTypes.UNIT_SELECT, Addon.L["Target the unit"])
-					AddConvertToOption(Addon.BindingTypes.UNIT_MENU, Addon.L["Open the unit menu"])
-					AddConvertToOption(Addon.BindingTypes.MACRO, Addon.L["Run a macro"])
-					AddConvertToOption(Addon.BindingTypes.APPEND, Addon.L["Append a binding segment"])
+					AddConvertToOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
+					AddConvertToOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
+					AddConvertToOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
+					AddConvertToOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
+					AddConvertToOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
+					AddConvertToOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
+					AddConvertToOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
 				end
 			end
 
@@ -1166,8 +1166,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 				table.insert(menu, changeScope)
 
-				AddOption(Addon.BindingScope.GLOBAL, Addon.L["Global"])
-				AddOption(Addon.BindingScope.PROFILE, Addon.L["Profile"])
+				AddOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
+				AddOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
 			end
 
 			table.insert(menu, {

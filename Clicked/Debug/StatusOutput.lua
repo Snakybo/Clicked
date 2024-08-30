@@ -44,15 +44,15 @@ local function GetBasicinfoString()
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		local configId =  C_ClassTalents.GetActiveConfigID()
 		table.insert(lines, "Talents: " .. (configId ~= nil and C_Traits.GenerateImportString(configId) or "unknown"))
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		local id, name = GetSpecializationInfo(GetSpecialization())
 		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
-	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		local id, name = GetTalentTabInfo(GetPrimaryTalentTree())
 		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
 	end
@@ -65,12 +65,12 @@ local function GetBasicinfoString()
 	table.insert(lines, "Possess Bar: " .. driver:GetAttribute("state-possessbar"))
 	table.insert(lines, "Override Bar: " .. driver:GetAttribute("state-overridebar"))
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
 		table.insert(lines, "Vehicle: " .. driver:GetAttribute("state-vehicle"))
 		table.insert(lines, "Vehicle UI: " .. driver:GetAttribute("state-vehicleui"))
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		table.insert(lines, "Pet Battle: " .. driver:GetAttribute("state-petbattle"))
 	end
 
@@ -265,12 +265,12 @@ function Addon:StatusOutput_Initialize()
 	CreateStateDriver("possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriver("overridebar", "[overridebar] enabled; disabled")
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
 		CreateStateDriver("vehicle", "[@vehicle,exists] enabled; disabled")
 		CreateStateDriver("vehicleui", "[vehicleui] enabled; disabled")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
 	end
 

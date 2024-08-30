@@ -37,13 +37,13 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
-local BT_SPELL = Addon.BindingTypes.SPELL
-local BT_ITEM = Addon.BindingTypes.ITEM
-local BT_MACRO = Addon.BindingTypes.MACRO
-local BT_UNIT_SELECT = Addon.BindingTypes.UNIT_SELECT
-local BT_UNIT_MENU = Addon.BindingTypes.UNIT_MENU
-local BT_APPEND = Addon.BindingTypes.APPEND
-local BT_CANCELAURA = Addon.BindingTypes.CANCELAURA
+local BT_SPELL = Clicked.ActionType.SPELL
+local BT_ITEM = Clicked.ActionType.ITEM
+local BT_MACRO = Clicked.ActionType.MACRO
+local BT_UNIT_SELECT = Clicked.ActionType.UNIT_SELECT
+local BT_UNIT_MENU = Clicked.ActionType.UNIT_MENU
+local BT_APPEND = Clicked.ActionType.APPEND
+local BT_CANCELAURA = Clicked.ActionType.CANCELAURA
 
 --- @param bindings Binding[]
 --- @param bindingTypes string[]

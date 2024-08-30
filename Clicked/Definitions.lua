@@ -44,10 +44,10 @@
 --- @class DataObject
 --- @field public uid integer
 --- @field public type DataObjectType
---- @field public scope BindingScope
+--- @field public scope DataObjectScope
 
 --- @class Binding : DataObject
---- @field public actionType string
+--- @field public actionType ActionType
 --- @field public keybind string
 --- @field public parent integer?
 --- @field public action Binding.Action

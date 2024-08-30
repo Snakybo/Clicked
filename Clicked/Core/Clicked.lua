@@ -221,28 +221,28 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
 	method(self, "PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
 
-	if Addon.EXPANSION_LEVEL == Addon.EXPANSION.CLASSIC then
+	if Addon.EXPANSION_LEVEL == Addon.Expansion.CLASSIC then
 		method(self, "RUNE_UPDATED", RUNE_UPDATED)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
 		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 	end
 
-	if Addon.EXPANSION_LEVEL <= Addon.EXPANSION.CATA then
+	if Addon.EXPANSION_LEVEL <= Addon.Expansion.CATA then
 		method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.WOTLK then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
 		method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BFA then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
 		method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
 		method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
 		method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	end
@@ -295,7 +295,7 @@ function Clicked:OnEnable()
 	UpdateEventHooks(self, self.RegisterEvent)
 
 	-- self-cast warning
-	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		local selfCastModifier = GetModifiedClick("SELFCAST")
 
 		if selfCastModifier ~= "NONE" then

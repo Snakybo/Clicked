@@ -191,7 +191,7 @@ local function Constructor()
 	local background = frame:CreateTexture(nil, "BACKGROUND")
 	background:SetAllPoints()
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		background:SetTexture("Interface/HUD/UIActionBar");
 		background:SetTexCoord(0.707031, 0.886719, 0.248047, 0.291992)
 		background:SetTextureSliceMargins(8, 8, 8, 8)
@@ -209,7 +209,7 @@ local function Constructor()
 
 	local backgroundMask
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		backgroundMask = frame:CreateMaskTexture(nil, "BACKGROUND")
 		backgroundMask:SetPoint("CENTER", 0, -0.5)
 		backgroundMask:SetTexture("Interface/HUD/UIActionBarIconFrameMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE");

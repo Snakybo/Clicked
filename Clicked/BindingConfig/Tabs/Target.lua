@@ -86,7 +86,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 		--- @param binding Binding
 		--- @return boolean
 		local function CanEnableRegularTargetMode(binding)
-			local disallowed = { Addon.BindingTypes.UNIT_SELECT, Addon.BindingTypes.UNIT_MENU }
+			local disallowed = { Clicked.ActionType.UNIT_SELECT, Clicked.ActionType.UNIT_MENU }
 
 			if Addon:IsRestrictedKeybind(binding.keybind) or tContains(disallowed, binding.actionType) then
 				return false
@@ -242,51 +242,51 @@ end
 --- @return AceGUIDropdown
 function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 	local items = {
-		[Addon.TargetUnits.DEFAULT] = Addon.L["Default"],
-		[Addon.TargetUnits.PLAYER] = Addon.L["Player (you)"],
-		[Addon.TargetUnits.TARGET] = Addon.L["Target"],
-		[Addon.TargetUnits.TARGET_OF_TARGET] = Addon.L["Target of target"],
-		[Addon.TargetUnits.MOUSEOVER] = Addon.L["Mouseover"],
-		[Addon.TargetUnits.MOUSEOVER_TARGET] = Addon.L["Target of mouseover"],
-		[Addon.TargetUnits.CURSOR] = Addon.L["Cursor"],
-		[Addon.TargetUnits.PET] = Addon.L["Pet"],
-		[Addon.TargetUnits.PET_TARGET] = Addon.L["Pet target"],
-		[Addon.TargetUnits.PARTY_1] = Addon.L["Party %s"]:format("1"),
-		[Addon.TargetUnits.PARTY_2] = Addon.L["Party %s"]:format("2"),
-		[Addon.TargetUnits.PARTY_3] = Addon.L["Party %s"]:format("3"),
-		[Addon.TargetUnits.PARTY_4] = Addon.L["Party %s"]:format("4"),
-		[Addon.TargetUnits.PARTY_5] = Addon.L["Party %s"]:format("5")
+		[Addon.TargetUnit.DEFAULT] = Addon.L["Default"],
+		[Addon.TargetUnit.PLAYER] = Addon.L["Player (you)"],
+		[Addon.TargetUnit.TARGET] = Addon.L["Target"],
+		[Addon.TargetUnit.TARGET_OF_TARGET] = Addon.L["Target of target"],
+		[Addon.TargetUnit.MOUSEOVER] = Addon.L["Mouseover"],
+		[Addon.TargetUnit.MOUSEOVER_TARGET] = Addon.L["Target of mouseover"],
+		[Addon.TargetUnit.CURSOR] = Addon.L["Cursor"],
+		[Addon.TargetUnit.PET] = Addon.L["Pet"],
+		[Addon.TargetUnit.PET_TARGET] = Addon.L["Pet target"],
+		[Addon.TargetUnit.PARTY_1] = Addon.L["Party %s"]:format("1"),
+		[Addon.TargetUnit.PARTY_2] = Addon.L["Party %s"]:format("2"),
+		[Addon.TargetUnit.PARTY_3] = Addon.L["Party %s"]:format("3"),
+		[Addon.TargetUnit.PARTY_4] = Addon.L["Party %s"]:format("4"),
+		[Addon.TargetUnit.PARTY_5] = Addon.L["Party %s"]:format("5")
 	}
 
 	local order = {
-		Addon.TargetUnits.DEFAULT,
-		Addon.TargetUnits.PLAYER,
-		Addon.TargetUnits.TARGET,
-		Addon.TargetUnits.TARGET_OF_TARGET,
-		Addon.TargetUnits.MOUSEOVER,
-		Addon.TargetUnits.MOUSEOVER_TARGET,
-		Addon.TargetUnits.CURSOR,
-		Addon.TargetUnits.PET,
-		Addon.TargetUnits.PET_TARGET,
-		Addon.TargetUnits.PARTY_1,
-		Addon.TargetUnits.PARTY_2,
-		Addon.TargetUnits.PARTY_3,
-		Addon.TargetUnits.PARTY_4,
-		Addon.TargetUnits.PARTY_5
+		Addon.TargetUnit.DEFAULT,
+		Addon.TargetUnit.PLAYER,
+		Addon.TargetUnit.TARGET,
+		Addon.TargetUnit.TARGET_OF_TARGET,
+		Addon.TargetUnit.MOUSEOVER,
+		Addon.TargetUnit.MOUSEOVER_TARGET,
+		Addon.TargetUnit.CURSOR,
+		Addon.TargetUnit.PET,
+		Addon.TargetUnit.PET_TARGET,
+		Addon.TargetUnit.PARTY_1,
+		Addon.TargetUnit.PARTY_2,
+		Addon.TargetUnit.PARTY_3,
+		Addon.TargetUnit.PARTY_4,
+		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
-		items[Addon.TargetUnits.FOCUS] = Addon.L["Focus"]
-		table.insert(order, 7, Addon.TargetUnits.FOCUS)
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
+		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
-		items[Addon.TargetUnits.ARENA_1] = Addon.L["Arena %s"]:format("1")
-		items[Addon.TargetUnits.ARENA_2] = Addon.L["Arena %s"]:format("2")
-		items[Addon.TargetUnits.ARENA_3] = Addon.L["Arena %s"]:format("3")
-		table.insert(order, Addon.TargetUnits.ARENA_1)
-		table.insert(order, Addon.TargetUnits.ARENA_2)
-		table.insert(order, Addon.TargetUnits.ARENA_3)
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+		items[Addon.TargetUnit.ARENA_1] = Addon.L["Arena %s"]:format("1")
+		items[Addon.TargetUnit.ARENA_2] = Addon.L["Arena %s"]:format("2")
+		items[Addon.TargetUnit.ARENA_3] = Addon.L["Arena %s"]:format("3")
+		table.insert(order, Addon.TargetUnit.ARENA_1)
+		table.insert(order, Addon.TargetUnit.ARENA_2)
+		table.insert(order, Addon.TargetUnit.ARENA_3)
 	end
 
 	if index == 0 then

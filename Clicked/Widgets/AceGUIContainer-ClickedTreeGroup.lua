@@ -231,8 +231,8 @@ local function Button_OnDragStop(button)
 	--- @type integer?
 	local newParent = nil
 
-	--- @type BindingScope
-	local newScope = Addon.BindingScope.PROFILE
+	--- @type DataObjectScope
+	local newScope = Clicked.DataObjectScope.PROFILE
 
 	--- @type ClickedTreeGroupRuntimeItem
 	--- @diagnostic disable-next-line: assign-type-mismatch

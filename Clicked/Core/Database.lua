@@ -19,24 +19,30 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+--- @enum DataObjectType
+Clicked.DataObjectType = {
+	BINDING = 1,
+	GROUP = 2
+}
+
+--- @enum DataObjectScope
+Clicked.DataObjectScope = {
+	PROFILE = 1,
+	GLOBAL = 2
+}
+
 --- @class DataObjectLookup
 --- @field public uid table<integer,DataObject>
 --- @field public keybind table<string,Binding[]>
 --- @field public parent table<integer,Binding[]>
---- @field public actionType table<BindingType,Binding[]>
---- @field public scope table<BindingScope,DataObject[]>
+--- @field public actionType table<ActionType,Binding[]>
+--- @field public scope table<DataObjectScope,DataObject[]>
 local lookupTable = {
 	uid = {},
 	keybind = {},
 	parent = {},
 	actionType = {},
 	scope = {}
-}
-
---- @enum DataObjectType
-Clicked.DataObjectType = {
-	BINDING = 1,
-	GROUP = 2
 }
 
 -- Local support functions
@@ -175,7 +181,7 @@ function Clicked:CreateGroup()
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
 
-	Addon:RegisterGroup(group, Addon.BindingScope.PROFILE)
+	Addon:RegisterGroup(group, Clicked.DataObjectScope.PROFILE)
 	return group
 end
 
@@ -301,7 +307,7 @@ function Clicked:GetByKey(key)
 	return lookupTable.keybind[key] or {}
 end
 
---- @param scope BindingScope
+--- @param scope DataObjectScope
 --- @return DataObject[]
 function Clicked:GetByScope(scope)
 	return lookupTable.scope[scope] or {}
@@ -321,7 +327,7 @@ end
 
 --- Get a list of all bindings that are part of the specified group.
 ---
---- @param type BindingType
+--- @param type ActionType
 --- @return Binding[]
 function Clicked:GetByActionType(type)
 	return lookupTable.actionType[type] or {}
@@ -351,7 +357,7 @@ end
 function Clicked:CreateBinding()
 	local binding = Addon:GetNewBindingTemplate()
 
-	Addon:RegisterBinding(binding, Addon.BindingScope.PROFILE)
+	Addon:RegisterBinding(binding, Clicked.DataObjectScope.PROFILE)
 	return binding
 end
 
@@ -415,7 +421,7 @@ end
 function Addon:GetNewBindingTemplate()
 	--- @type Binding
 	local template = {
-		actionType = Addon.BindingTypes.SPELL,
+		actionType = Clicked.ActionType.SPELL,
 		type = Clicked.DataObjectType.BINDING,
 		keybind = "",
 		parent = nil,
@@ -477,11 +483,11 @@ function Addon:GetNewBindingTemplate()
 		}
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		local specIndex = GetSpecialization()
 		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-	elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		--- @type number
 		local specIndex = GetPrimaryTalentTree()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
@@ -494,7 +500,7 @@ end
 function Addon:GetNewBindingTargetTemplate()
 	--- @type Binding.Target
 	local template = {
-		unit = Addon.TargetUnits.DEFAULT,
+		unit = Addon.TargetUnit.DEFAULT,
 		hostility = Addon.TargetHostility.ANY,
 		vitals = Addon.TargetVitals.ANY
 	}
@@ -512,7 +518,7 @@ end
 --- This will re-register the binding (or group) within the target database.
 ---
 ---@param item DataObject
----@param scope BindingScope
+---@param scope DataObjectScope
 function Addon:ChangeScope(item, scope)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
@@ -578,16 +584,16 @@ function Addon:ReplaceBindingContents(original, replacement)
 end
 
 --- @param binding Binding
---- @param scope BindingScope
+--- @param scope DataObjectScope
 function Addon:RegisterBinding(binding, scope)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	binding.uid = binding.uid or self:GetNextUid()
 	binding.scope = scope
 
-	if scope == Addon.BindingScope.GLOBAL then
+	if scope == Clicked.DataObjectScope.GLOBAL then
 		table.insert(Addon.db.global.bindings, binding)
-	elseif scope == Addon.BindingScope.PROFILE then
+	elseif scope == Clicked.DataObjectScope.PROFILE then
 		table.insert(Addon.db.profile.bindings, binding)
 	else
 		error("Unknown binding scope " .. scope)
@@ -597,16 +603,16 @@ function Addon:RegisterBinding(binding, scope)
 end
 
 --- @param group Group
---- @param scope BindingScope
+--- @param scope DataObjectScope
 function Addon:RegisterGroup(group, scope)
 	assert(type(group) == "table", "bad argument #1, expected table but got " .. type(group))
 
 	group.uid = group.uid or self:GetNextUid()
 	group.scope = scope
 
-	if scope == Addon.BindingScope.GLOBAL then
+	if scope == Clicked.DataObjectScope.GLOBAL then
 		table.insert(Addon.db.global.groups, group)
-	elseif scope == Addon.BindingScope.PROFILE then
+	elseif scope == Clicked.DataObjectScope.PROFILE then
 		table.insert(Addon.db.profile.groups, group)
 	else
 		error("Unknown binding scope " .. scope)
@@ -633,9 +639,9 @@ end
 function Addon:GetContainingDatabase(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 
-	if item.scope == Addon.BindingScope.GLOBAL then
+	if item.scope == Clicked.DataObjectScope.GLOBAL then
 		return Addon.db.global
-	elseif item.scope == Addon.BindingScope.PROFILE then
+	elseif item.scope == Clicked.DataObjectScope.PROFILE then
 		return Addon.db.profile
 	else
 		error("Unknown binding scope " .. item.scope)

@@ -20,12 +20,10 @@ local Addon = select(2, ...)
 --- @class SpellLibrary
 Addon.SpellLibrary = {}
 
---- @enum SpellLibraryResultType
-Addon.SpellLibrary.ResultType = {
-	SPELL = 0,
-	ITEM = 1,
-	MACRO = 2
-}
+--- @alias SpellLibraryResultType
+--- | "SPELL"
+--- | "ITEM"
+--- | "MACRO"
 
 --- @class SpellLibraryResult
 --- @field public type SpellLibraryResultType
@@ -65,7 +63,7 @@ local function GetSpells_v2()
 				if spell.spellID ~= nil then
 					--- @type SpellLibrarySpellResult
 					result[spell.spellID] = {
-						type = Addon.SpellLibrary.ResultType.SPELL,
+						type = "SPELL",
 						name = spell.name,
 						spellId = spell.spellID,
 						icon = spell.iconID,
@@ -84,7 +82,7 @@ local function GetSpells_v2()
 					if isKnown and info ~= nil and not C_Spell.IsSpellPassive(spellId) then
 						--- @type SpellLibrarySpellResult
 						result[spellId] = {
-							type = Addon.SpellLibrary.ResultType.SPELL,
+							type = "SPELL",
 							name = info.name,
 							spellId = spellId,
 							icon = info.iconID,
@@ -146,7 +144,7 @@ local function GetSpells_v2()
 			if result[talent.spellId] == nil then
 				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {
-					type = Addon.SpellLibrary.ResultType.SPELL,
+					type = "SPELL",
 					name = talent.text,
 					spellId = talent.spellId,
 					icon = talent.icon,
@@ -163,7 +161,7 @@ local function GetSpells_v2()
 			if result[talent.spellId] == nil then
 				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {
-					type = Addon.SpellLibrary.ResultType.SPELL,
+					type = "SPELL",
 					name = talent.text,
 					spellId = talent.spellId,
 					icon = talent.icon,
@@ -190,12 +188,12 @@ local function GetSpells_v1()
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
 			if type == "SPELL" or type == "FUTURESPELL" or type == "PETACTION" then
-				local spell = Addon:GetSpellInfo(id, Addon.EXPANSION_LEVEL <= Addon.EXPANSION.WOTLK)
+				local spell = Addon:GetSpellInfo(id, Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK)
 
 				if spell ~= nil then
 					--- @type SpellLibrarySpellResult
 					result[id] = {
-						type = Addon.SpellLibrary.ResultType.SPELL,
+						type = "SPELL",
 						name = spell.name,
 						spellId = id,
 						icon = spell.iconID,
@@ -214,7 +212,7 @@ local function GetSpells_v1()
 					if isKnown and spell ~= nil and not IsPassiveSpell(spellId) then
 						--- @type SpellLibrarySpellResult
 						result[spellId] = {
-							type = Addon.SpellLibrary.ResultType.SPELL,
+							type = "SPELL",
 							name = spell.name,
 							spellId = spellId,
 							icon = spell.iconID,
@@ -274,7 +272,7 @@ end
 
 --- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells()
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.TWW then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 		return GetSpells_v2()
 	else
 		return GetSpells_v1()
@@ -352,7 +350,7 @@ function Addon.SpellLibrary:GetActionBarSpells()
 			--- @cast id integer
 			--- @type SpellLibraryItemResult
 			table.insert(result, {
-				type = Addon.SpellLibrary.ResultType.ITEM,
+				type = "ITEM",
 				key = key,
 				name = C_Item.GetItemNameByID(id),
 				icon = C_Item.GetItemIconByID(id),
@@ -364,7 +362,7 @@ function Addon.SpellLibrary:GetActionBarSpells()
 
 			--- @type SpellLibraryMacroResult
 			table.insert(result, {
-				type = Addon.SpellLibrary.ResultType.MACRO,
+				type = "MACRO",
 				key = key,
 				name = name,
 				icon = icon,
@@ -479,7 +477,7 @@ function Addon.SpellLibrary:GetMacroSpells()
 
 		--- @type SpellLibraryMacroResult
 		table.insert(result, {
-			type = Addon.SpellLibrary.ResultType.MACRO,
+			type = "MACRO",
 			name = name,
 			icon = icon,
 			content = content

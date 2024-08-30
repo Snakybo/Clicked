@@ -34,14 +34,14 @@ local function GetRelevantSpecializationIds(classNames, specIndices)
 
 	if #specIndices == 0 then
 		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CATA then
+			if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
 				specIndices[1] = GetSpecialization()
 			else
 				specIndices[1] = GetPrimaryTalentTree()
 			end
 		else
 			for _, class in ipairs(classNames) do
-				if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CATA then
+				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
 					local specs = LibTalentInfo:GetClassSpecIDs(class)
 
 					for specIndex in pairs(specs) do
@@ -61,7 +61,7 @@ local function GetRelevantSpecializationIds(classNames, specIndices)
 	for i = 1, #classNames do
 		local class = classNames[i]
 
-		if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CATA then
+		if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
 			local specs = LibTalentInfo:GetClassSpecIDs(class)
 
 			for j = 1, #specIndices do
@@ -154,7 +154,7 @@ local config = {
 					class[1] = select(2, UnitClass("player"))
 				end
 
-				if Addon.EXPANSION_LEVEL > Addon.EXPANSION.DF then
+				if Addon.EXPANSION_LEVEL > Addon.Expansion.DF then
 					return Addon:GetLocalizedSpecializations(class)
 				else
 					return Addon:Cata_GetLocalizedSpecializations(class)
@@ -162,9 +162,9 @@ local config = {
 			end
 		},
 		dependencies = { "class" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.CATA,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
 		init = function()
-			if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 				local specIndex = GetSpecialization()
 				return Utils.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
 			else
@@ -183,7 +183,7 @@ local config = {
 			availableValues = function(class, specialization)
 				local specIds = GetRelevantSpecializationIds(class, specialization)
 
-				if Addon.EXPANSION_LEVEL > Addon.EXPANSION.CATA then
+				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
 					return Addon:GetLocalizedTalents(specIds)
 				else
 					return Addon:Cata_GetLocalizedTalents(specIds)
@@ -191,7 +191,7 @@ local config = {
 			end
 		},
 		dependencies = { "class", "specialization" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.CATA,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
@@ -210,7 +210,7 @@ local config = {
 			end
 		},
 		dependencies = { "class", "specialization" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
@@ -228,7 +228,7 @@ local config = {
 				}, { true, false}
 			end
 		},
-		disabled = Addon.EXPANSION_LEVEL < Addon.EXPANSION.BFA,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
 		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
@@ -252,7 +252,7 @@ local config = {
 					"RAID"
 				}
 
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
 					items["PVP"] = Addon.L["Battleground"]
 					items["ARENA"] = Addon.L["Arena"]
 
@@ -260,7 +260,7 @@ local config = {
 					table.insert(order, "ARENA")
 				end
 
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 					items["SCENARIO"] = Addon.L["Scenario"]
 					table.insert(order, 2, "SCENARIO")
 				end

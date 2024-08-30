@@ -19,7 +19,6 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
---- @enum BindingConfigNewPageItemTemplate
 local ItemTemplate = {
 	GROUP = 0,
 	BINDING_CAST_SPELL = 10,
@@ -43,29 +42,29 @@ local function CreateGroup()
 	return group
 end
 
---- @param type BindingConfigNewPageItemTemplate
+--- @param type integer
 --- @return Binding
 local function CreateBinding(type)
 	local binding = Clicked:CreateBinding()
 
 	if type == ItemTemplate.BINDING_CAST_SPELL then
-		binding.actionType = Addon.BindingTypes.SPELL
+		binding.actionType = Clicked.ActionType.SPELL
 	elseif type == ItemTemplate.BINDING_CAST_SPELL_CLICKCAST then
-		binding.actionType = Addon.BindingTypes.SPELL
+		binding.actionType = Clicked.ActionType.SPELL
 		binding.targets.hovercastEnabled = true
 		binding.targets.regularEnabled = false
 	elseif type == ItemTemplate.BINDING_USE_ITEM then
-		binding.actionType = Addon.BindingTypes.ITEM
+		binding.actionType = Clicked.ActionType.ITEM
 	elseif type == ItemTemplate.BINDING_RUN_MACRO then
-		binding.actionType = Addon.BindingTypes.MACRO
+		binding.actionType = Clicked.ActionType.MACRO
 	elseif type == ItemTemplate.BINDING_RUN_MACRO_APPEND then
-		binding.actionType = Addon.BindingTypes.APPEND
+		binding.actionType = Clicked.ActionType.APPEND
 	elseif type == ItemTemplate.BINDING_CANCELAURA then
-		binding.actionType = Addon.BindingTypes.CANCELAURA
+		binding.actionType = Clicked.ActionType.CANCELAURA
 	elseif type == ItemTemplate.BINDING_UNIT_TARGET then
-		binding.actionType = Addon.BindingTypes.UNIT_SELECT
+		binding.actionType = Clicked.ActionType.UNIT_SELECT
 	elseif type == ItemTemplate.BINDING_UNIT_MENU then
-		binding.actionType = Addon.BindingTypes.UNIT_MENU
+		binding.actionType = Clicked.ActionType.UNIT_MENU
 	end
 
 	Clicked:ReloadBinding(binding, true)
@@ -91,7 +90,7 @@ local function CreateMacroBindingCache()
 	local result = {}
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
-		if binding.actionType == Addon.BindingTypes.MACRO then
+		if binding.actionType == Clicked.ActionType.MACRO then
 			table.insert(result, {
 				name = binding.action.macroName,
 				content = binding.action.macroValue
@@ -104,7 +103,7 @@ end
 
 --- @param spell SpellLibrarySpellResult
 local function DoesSpellBookBindingExist(spell)
-	for _, binding in ipairs(Clicked:GetByActionType(Addon.BindingTypes.SPELL)) do
+	for _, binding in ipairs(Clicked:GetByActionType(Clicked.ActionType.SPELL)) do
 		if binding.action.spellValue == spell.spellId then
 			return true
 		end
@@ -120,17 +119,17 @@ local function DoesActionBarBindingExist(cache, spell)
 	local collection = cache[key] or {}
 
 	for _, binding in ipairs(collection) do
-		if spell.type == Addon.SpellLibrary.ResultType.SPELL and binding.actionType == Addon.BindingTypes.SPELL then
+		if spell.type == "SPELL" and binding.actionType == Clicked.ActionType.SPELL then
 			--- @cast spell SpellLibrarySpellResult
 			if binding.action.spellValue == spell.spellId then
 				return true
 			end
-		elseif spell.type == Addon.SpellLibrary.ResultType.ITEM and binding.actionType == Addon.BindingTypes.ITEM then
+		elseif spell.type == "ITEM" and binding.actionType == Clicked.ActionType.ITEM then
 			--- @cast spell SpellLibraryItemResult
 			if binding.action.itemValue == spell.itemId then
 				return true
 			end
-		elseif spell.type == Addon.SpellLibrary.ResultType.MACRO and binding.actionType == Addon.BindingTypes.MACRO then
+		elseif spell.type == "MACRO" and binding.actionType == Clicked.ActionType.MACRO then
 			--- @cast spell SpellLibraryMacroResult
 			if binding.action.macroName == spell.name and binding.action.macroValue == spell.content then
 				return true
@@ -187,7 +186,7 @@ local function ImportSpellbook()
 			local binding = Clicked:CreateBinding()
 			first = first or binding
 
-			binding.actionType = Addon.BindingTypes.SPELL
+			binding.actionType = Clicked.ActionType.SPELL
 			binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
 			binding.action.spellValue = spell.spellId
 
@@ -225,30 +224,30 @@ local function ImportActionbar()
 				binding.keybind = spell.key
 			end
 
-			if spell.type == Addon.SpellLibrary.ResultType.SPELL then
+			if spell.type == "SPELL" then
 				--- @cast spell SpellLibrarySpellResult
 				binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
 
 				binding.load.class.selected = 1
 				binding.load.class.single = select(2, UnitClass("player"))
 
-				if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.MOP then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 					binding.load.specialization.selected = 1
 					binding.load.specialization.single = GetSpecialization()
-				elseif Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+				elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 					binding.load.specialization.selected = 1
 					binding.load.specialization.single = GetPrimaryTalentTree()
 				end
 
-				binding.actionType = Addon.BindingTypes.SPELL
+				binding.actionType = Clicked.ActionType.SPELL
 				binding.action.spellValue = spell.spellId
-			elseif spell.type == Addon.SpellLibrary.ResultType.ITEM then
+			elseif spell.type == "ITEM" then
 				--- @cast spell SpellLibraryItemResult
-				binding.actionType = Addon.BindingTypes.ITEM
+				binding.actionType = Clicked.ActionType.ITEM
 				binding.action.itemValue = spell.itemId
-			elseif spell.type == Addon.SpellLibrary.ResultType.MACRO then
+			elseif spell.type == "MACRO" then
 				--- @cast spell SpellLibraryMacroResult
-				binding.actionType = Addon.BindingTypes.MACRO
+				binding.actionType = Clicked.ActionType.MACRO
 				binding.action.macroName = spell.name
 				binding.action.macroIcon = spell.icon
 				binding.action.macroValue = spell.content
@@ -278,7 +277,7 @@ local function ImportMacros()
 			local binding = Clicked:CreateBinding()
 			first = first or binding
 
-			binding.actionType = Addon.BindingTypes.MACRO
+			binding.actionType = Clicked.ActionType.MACRO
 			binding.action.macroName = spell.name
 			binding.action.macroIcon = spell.icon
 			binding.action.macroValue = spell.content
@@ -355,7 +354,7 @@ end
 
 --- @private
 --- @param container AceGUIContainer
---- @param type BindingConfigNewPageItemTemplate
+--- @param type integer
 --- @param label string
 function Addon.BindingConfig.NewPage:CreateTemplateButton(container, type, label)
 	do
@@ -382,7 +381,7 @@ function Addon.BindingConfig.NewPage:CreateTemplateButton(container, type, label
 end
 
 --- @private
---- @param type BindingConfigNewPageItemTemplate
+--- @param type integer
 function Addon.BindingConfig.NewPage:CreateItem(type)
 	--- @type DataObject?
 	local target = nil

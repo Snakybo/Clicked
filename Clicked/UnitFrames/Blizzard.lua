@@ -79,16 +79,16 @@ function Addon:RegisterBlizzardUnitFrames()
 
 	HookUnitFrame(5, "Boss%dTargetFrame")
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
 		Clicked:RegisterClickCastFrame("FocusFrame")
 		Clicked:RegisterClickCastFrame("FocusFrameToT")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.CATA then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		HookUnitFrame(3, "ArenaEnemyFrame%d", "Blizzard_ArenaUI")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.EXPANSION.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do

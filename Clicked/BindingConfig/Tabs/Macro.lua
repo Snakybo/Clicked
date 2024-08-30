@@ -124,7 +124,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			if binding.actionType ~= Addon.BindingTypes.MACRO then
+			if binding.actionType ~= Clicked.ActionType.MACRO then
 				return Helpers.IGNORE_VALUE
 			end
 
@@ -173,7 +173,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 	-- hovercast-only warning
 	do
 		local hide = FindInTableIf(self.bindings, function(binding)
-			return binding.actionType ~= Addon.BindingTypes.MACRO or Addon:IsMacroCastEnabled(binding)
+			return binding.actionType ~= Clicked.ActionType.MACRO or Addon:IsMacroCastEnabled(binding)
 		end)
 
 		if not hide then
@@ -188,7 +188,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 	-- append mode instructions
 	do
 		local hide = FindInTableIf(self.bindings, function(binding)
-			return binding.actionType == Addon.BindingTypes.MACRO
+			return binding.actionType == Clicked.ActionType.MACRO
 		end)
 
 		if not hide then
