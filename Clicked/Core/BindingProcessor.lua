@@ -946,43 +946,15 @@ end
 --- @param binding Binding
 --- @param options table<string,boolean>
 function Addon:UpdateBindingLoadState(binding, options)
-	--- @param data Binding.LoadOption
-	--- @param validationFunc fun(input):boolean
-	--- @return boolean?
-	local function ValidateLoadOption(data, validationFunc)
-		if data.selected then
-			return validationFunc(data.value)
-		end
-
-		return nil
-	end
-
-	--- @param data Binding.TriStateLoadOption
-	--- @param validationFunc fun(input):boolean
-	--- @return boolean?
-	local function ValidateTriStateLoadOption(data, validationFunc)
-		if data.selected == 1 then
-			return validationFunc(data.single)
-		elseif data.selected == 2 then
-			for i = 1, #data.multiple do
-				if validationFunc(data.multiple[i]) then
-					return true
-				end
-			end
-
-			return false
-		end
-
-		return nil
-	end
-
-	--- @param ... string
+	--- @param events? string[]
 	--- @return boolean
-	local function ShouldPerformStateCheck(...)
+	local function ShouldPerformStateCheck(events)
 		-- All bindings should be updated
 		if options.full then
 			return true
 		end
+
+		events = events or {}
 
 		-- A specific binding should be updated
 		if options.binding ~= nil and options.binding[binding.uid] ~= nil then
@@ -991,7 +963,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 			end
 
 			-- A specific event should be updated
-			for cause in pairs({ ... }) do
+			for _, cause in pairs(events) do
 				if options.binding[binding.uid].events[cause] then
 					return true
 				end
@@ -1000,7 +972,7 @@ function Addon:UpdateBindingLoadState(binding, options)
 
 		-- A specific event should be updated
 		if options.events ~= nil then
-			for _, cause in ipairs({ ... }) do
+			for _, cause in ipairs(events) do
 				if options.events[cause] then
 					return true
 				end
@@ -1011,374 +983,28 @@ function Addon:UpdateBindingLoadState(binding, options)
 	end
 
 	local state = bindingStateCache[binding.uid] or {}
+	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
 	if ShouldPerformStateCheck() then
 		state.keybind = binding.keybind ~= ""
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
-
-		do
-			state.value = Addon:GetBindingValue(binding) ~= nil
-		end
+		state.value = Addon:GetBindingValue(binding) ~= nil
 	end
 
-	local load = binding.load
+	for _, condition in ipairs(conditions.config) do
+		--- @cast condition LoadCondition
 
-	if ShouldPerformStateCheck() then
-		state.never = not load.never
-	end
+		if ShouldPerformStateCheck(condition.testOnEvents) then
+			local load = binding.load[condition.id] or condition.init()
+			local selected = condition.unpack(load)
 
-	-- player name
-	if ShouldPerformStateCheck() then
-		local function IsPlayerNameRealm(value)
-			local name = UnitName("player")
-			local realm = GetRealmName()
-
-			return value == name or value == name .. "-" .. realm
-		end
-
-		state.playerName = ValidateLoadOption(load.playerNameRealm, IsPlayerNameRealm)
-	end
-
-	-- class
-	if ShouldPerformStateCheck() then
-		local function IsClassIndexSelected(index)
-			local _, className = UnitClass("player")
-			return className == index
-		end
-
-		state.class = ValidateTriStateLoadOption(load.class, IsClassIndexSelected)
-	end
-
-	-- race
-	if ShouldPerformStateCheck() then
-		local function IsRaceIndexSelected(index)
-			local _, raceName = UnitRace("player")
-			return raceName == index
-		end
-
-		state.race = ValidateTriStateLoadOption(load.race, IsRaceIndexSelected)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
-		-- pvp talent selected
-		if ShouldPerformStateCheck("PLAYER_PVP_TALENT_UPDATE") then
-			local cache = {}
-
-			--- @param entries Binding.MutliFieldLoadOption.Entry[]
-			--- @return boolean
-			local function IsTalentMatrixValid(entries)
-				if #entries == 0 then
-					return false
-				end
-
-				if next(cache) == nil then
-					return false
-				end
-
-				local compounds = {{}}
-
-				for _, entry in ipairs(entries) do
-					if entry.operation == "OR" then
-						table.insert(compounds, {})
-					end
-
-					table.insert(compounds[#compounds], {
-						negated = entry.negated,
-						value = entry.value
-					})
-				end
-
-				for _, compound in ipairs(compounds) do
-					local valid = true
-
-					for _, item in ipairs(compound) do
-						if #item.value > 0 then
-							if cache[item.value] and item.negated or not cache[item.value] and not item.negated then
-								valid = false
-							end
-						end
-					end
-
-					if valid then
-						return true
-					end
-				end
-
-				return false
-			end
-
-			local function PopulateCache()
-				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1);
-
-				if slotInfo ~= nil and slotInfo.availableTalentIDs then
-					for _, id in ipairs(slotInfo.availableTalentIDs) do
-						local _, name, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(id)
-
-						if selected or known or grantedByAura then
-							cache[name] = true
-						end
-					end
-				end
-			end
-
-			if load.pvpTalent.selected then
-				PopulateCache()
-				state.pvpTalent = IsTalentMatrixValid(load.pvpTalent.entries)
+			if selected ~= nil then
+				local _, result = Addon:SafeCall(condition.test, selected)
+				state[condition.id] = result
 			else
-				state.pvpTalent = nil
+				state[condition.id] = true
 			end
 		end
-
-		-- war mode
-		if ShouldPerformStateCheck("PLAYER_FLAGS_CHANGED") then
-			local function IsWarMode(value)
-				if value == true and not C_PvP.IsWarModeDesired() then
-					return false
-				elseif value == false and C_PvP.IsWarModeDesired() then
-					return false
-				end
-
-				return true
-			end
-
-			state.warMode = ValidateLoadOption(load.warMode, IsWarMode)
-		end
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-		-- specialization
-		if ShouldPerformStateCheck("PLAYER_TALENT_UPDATE") then
-			local function IsSpecializationIndexSelected(index)
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-					return index == GetSpecialization()
-				else
-					return index == GetPrimaryTalentTree()
-				end
-			end
-
-			state.specialization = ValidateTriStateLoadOption(load.specialization, IsSpecializationIndexSelected)
-		end
-	end
-
-	-- talent selected
-	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED") then
-		--- @param entries Binding.MutliFieldLoadOption.Entry[]
-		--- @return boolean
-		local function IsTalentMatrixValid(entries)
-			if #entries == 0 then
-				return false
-			end
-
-			if next(talentCache) == nil then
-				return false
-			end
-
-			local compounds = {{}}
-
-			for _, entry in ipairs(entries) do
-				if entry.operation == "OR" then
-					table.insert(compounds, {})
-				end
-
-				table.insert(compounds[#compounds], {
-					negated = entry.negated,
-					value = entry.value
-				})
-			end
-
-			for _, compound in ipairs(compounds) do
-				local valid = true
-
-				for _, item in ipairs(compound) do
-					if #item.value > 0 then
-						if talentCache[item.value] and item.negated or not talentCache[item.value] and not item.negated then
-							valid = false
-						end
-					end
-				end
-
-				if valid then
-					return true
-				end
-			end
-
-			return false
-		end
-
-		if load.talent.selected then
-			state.talent = IsTalentMatrixValid(load.talent.entries)
-		else
-			state.talent = nil
-		end
-	end
-
-	-- forms
-	if ShouldPerformStateCheck("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED") then
-		local function IsFormIndexSelected(index)
-			local formIndex = index - 1
-
-			-- 0 is no form/humanoid form and is always known
-			if formIndex == 0 then
-				return true
-			end
-
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-				local specId = GetSpecializationInfo(GetSpecialization())
-
-				-- specId can be nil on the first PLAYER_TALENT_UPDATE event fires before PLAYER_ENTERING_WORLD fires
-				if specId == nil then
-					return false
-				end
-
-				local forms = Addon:GetShapeshiftForms(specId)
-
-				if formIndex > #forms then
-					return false
-				end
-
-				return IsSpellKnown(forms[formIndex])
-			else
-				local class = select(2, UnitClass("player"))
-				local forms = Addon:Classic_GetShapeshiftForms(class)
-
-				for _, spellId in ipairs(forms[formIndex]) do
-					if IsSpellKnown(spellId) then
-						return true
-					end
-				end
-
-				return false
-			end
-		end
-
-		state.form = ValidateTriStateLoadOption(load.form, IsFormIndexSelected)
-	end
-
-	-- spell known
-	do
-		local checks = { "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" }
-
-		if Addon.EXPANSION_LEVEL == Addon.Expansion.CLASSIC then
-			table.insert(checks, "RUNE_UPDATED")
-			table.insert(checks, "PLAYER_EQUIPMENT_CHANGED")
-		end
-
-		if ShouldPerformStateCheck(unpack(checks)) then
-			-- If the known spell limiter has been enabled, see if the spell is currrently
-			-- avaialble for the player. This is not limited to just spells as the name
-			-- implies, using the GetSpellInfo function on an item also returns a valid value.
-
-			local function IsSpellKnown(value)
-				local spell = Addon:GetSpellInfo(value, true)
-				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
-			end
-
-			state.spellKnown = ValidateLoadOption(load.spellKnown, IsSpellKnown)
-		end
-	end
-
-	-- in group
-	if ShouldPerformStateCheck("GROUP_ROSTER_UPDATE") then
-		local function IsInGroup(value)
-			if value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
-				return false
-			else
-				if value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
-					return false
-				elseif value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
-					return false
-				elseif value == Addon.GroupState.RAID and not IsInRaid() then
-					return false
-				end
-
-				return true
-			end
-		end
-
-		state.inGroup = ValidateLoadOption(load.inGroup, IsInGroup)
-	end
-
-	-- instance type
-	if ShouldPerformStateCheck("ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA") then
-		local function IsInInstanceType(type)
-			local inInstance, instanceType = IsInInstance()
-
-			-- Convert to lowercase as that is what `IsInInstance` returns
-			type = string.lower(type)
-
-			if type == "none" then
-				return not inInstance
-			else
-				if inInstance then
-					return type == instanceType
-				end
-
-				return false
-			end
-		end
-
-		state.instanceType = ValidateTriStateLoadOption(load.instanceType, IsInInstanceType)
-	end
-
-	-- zone name
-	if ShouldPerformStateCheck("ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA") then
-		local function IsInZone(value)
-			local realZone = GetRealZoneText()
-
-			for zone in string.gmatch(value, "([^;]+)") do
-				local negate = false
-
-				if string.sub(zone, 0, 1) == "!" then
-					negate = true
-					zone = string.sub(zone, 2)
-				end
-
-				if (negate and zone ~= realZone) or (not negate and zone == realZone) then
-					return true
-				end
-			end
-
-			return false
-		end
-
-		state.zoneName = ValidateLoadOption(load.zoneName, IsInZone)
-	end
-
-	-- player in group
-	if ShouldPerformStateCheck("GROUP_ROSTER_UPDATE") then
-		local function IsPlayerInGroup(value)
-			if value == UnitName("player") then
-				return true
-			else
-				local unit = IsInRaid() and "raid" or "party"
-				local numGroupMembers = GetNumGroupMembers()
-
-				if numGroupMembers == 0 then
-					return false
-				end
-
-				for i = 1, numGroupMembers do
-					local name = UnitName(unit .. i)
-
-					if name == value then
-						return true
-					end
-				end
-			end
-
-			return false
-		end
-
-		state.playerInGroup = ValidateLoadOption(load.playerInGroup, IsPlayerInGroup)
-	end
-
-	-- item equipped
-	if ShouldPerformStateCheck("PLAYER_EQUIPMENT_CHANGED") then
-		local function IsItemEquipped(value)
-			return C_Item.IsEquippedItem(value)
-		end
-
-		state.equipped = ValidateLoadOption(load.equipped, IsItemEquipped)
 	end
 
 	-- Remove true values from the data
@@ -1727,4 +1353,15 @@ end
 --- @return Binding[]
 function Addon:GetActiveBindings()
 	return activeBindings
+end
+
+--- @param name string
+--- @return boolean
+function Addon:IsTalentSelected(name)
+	return talentCache[name] == true
+end
+
+--- @return boolean
+function Addon:IsTalentCacheReady()
+	return next(talentCache) ~= nil
 end

@@ -32,6 +32,10 @@
 --- @field public disabled? boolean|fun():boolean
 --- @field public unpack fun(option: any):any?
 
+--- @class LoadCondition : Condition
+--- @field public testOnEvents? string[]
+--- @field public test fun(value: any):boolean
+
 --- @class RuntimeConditionSet
 --- @field public config Condition[]
 --- @field public map table<string, Condition>

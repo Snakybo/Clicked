@@ -27,7 +27,12 @@
 
 --- @class TalentLoadOption
 --- @field public selected boolean
---- @field public entries { operation: "AND"|"OR", negated?: boolean, value: any }[]
+--- @field public entries TalentLoadOptionEntry[]
+
+--- @class TalentLoadOptionEntry
+--- @field public operation "AND"|"OR"
+--- @field public negated? boolean
+--- @field public value any
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -85,6 +90,8 @@ function Addon.Condition.Utils.UnpackSimpleLoadOption(option)
 	if option.selected then
 		return option.value
 	end
+
+	return nil
 end
 
 --- @param option MultiselectLoadOption
@@ -95,16 +102,18 @@ function Addon.Condition.Utils.UnpackMultiselectLoadOption(option)
 	elseif option.selected == 2 then
 		return option.multiple
 	end
+
+	return nil
 end
 
 --- @param option TalentLoadOption
---- @return any[][]?
+--- @return TalentLoadOptionEntry[][]?
 function Addon.Condition.Utils.UnpackTalentLoadOption(option)
 	if option.selected then
-		--- @type any[]
+		--- @type TalentLoadOptionEntry[][]
 		local result = {}
 
-		--- @type any
+		--- @type TalentLoadOptionEntry[]
 		local current = {}
 		table.insert(result, current)
 
@@ -114,9 +123,11 @@ function Addon.Condition.Utils.UnpackTalentLoadOption(option)
 				table.insert(result, current)
 			end
 
-			table.insert(current, entry.value)
+			table.insert(current, entry)
 		end
 
 		return result
 	end
+
+	return nil
 end

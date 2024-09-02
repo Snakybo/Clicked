@@ -85,7 +85,7 @@ local function GetRelevantSpecializationIds(classNames, specIndices)
 	return specializationIds
 end
 
---- @type Condition[]
+--- @type LoadCondition[]
 local config = {
 	{
 		id = "never",
@@ -100,6 +100,10 @@ local config = {
 		unpack = function(option)
 			return option
 		end,
+		--- @param value boolean
+		test = function(value)
+			return not value
+		end
 	},
 	{
 		id = "playerNameRealm",
@@ -111,7 +115,13 @@ local config = {
 		init = function()
 			return Utils.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
 		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption,
+		--- @param value string
+		test = function(value)
+			local name = UnitName("player")
+			local realm = GetRealmName()
+			return value == name or value == name .. "-" .. realm
+		end
 	},
 	{
 		id = "race",
@@ -126,7 +136,12 @@ local config = {
 			local _, englishName = UnitRace("player")
 			return Utils.CreateMultiselectLoadOption(englishName)
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption,
+		--- @param value string[]
+		test = function(value)
+			local _, raceName = UnitRace("player")
+			return tContains(value, raceName)
+		end
 	},
 	{
 		id = "class",
@@ -141,7 +156,12 @@ local config = {
 			local _, classFileName = UnitClass("player")
 			return Utils.CreateMultiselectLoadOption(classFileName)
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption,
+		--- @param value string[]
+		test = function(value)
+			local _, classFileName = UnitClass("player")
+			return tContains(value, classFileName)
+		end
 	},
 	{
 		id = "specialization",
@@ -171,7 +191,17 @@ local config = {
 				return Utils.CreateMultiselectLoadOption(GetPrimaryTalentTree())
 			end
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption,
+		testOnEvents = { "PLAYER_TALENT_UPDATE" },
+		--- @param value number[]
+		test = function(value)
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+				local specIndex = GetSpecialization()
+				return tContains(value, specIndex == 5 and 1 or specIndex)
+			else
+				return tContains(value, GetPrimaryTalentTree())
+			end
+		end
 	},
 	{
 		id = "talent",
@@ -195,7 +225,34 @@ local config = {
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
-		unpack = Utils.UnpackTalentLoadOption
+		unpack = Utils.UnpackTalentLoadOption,
+		testOnEvents = { "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" },
+		--- @param value TalentLoadOptionEntry[][]
+		test = function(value)
+			if not Addon:IsTalentCacheReady() then
+				return false
+			end
+
+			for _, compound in ipairs(value) do
+				local valid = true
+
+				for _, talent in ipairs(compound) do
+					local name = talent.value
+					local selected = Addon:IsTalentSelected(name)
+
+					if #name > 0 and (selected and talent.negated or not selected and not talent.negated) then
+						valid = false
+						break
+					end
+				end
+
+				if valid then
+					return true
+				end
+			end
+
+			return false
+		end
 	},
 	{
 		id = "pvpTalent",
@@ -214,7 +271,50 @@ local config = {
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
-		unpack = Utils.UnpackTalentLoadOption
+		unpack = Utils.UnpackTalentLoadOption,
+		testOnEvents = { "PLAYER_PVP_TALENT_UPDATE" },
+		--- @param value TalentLoadOptionEntry[][]
+		test = function(value)
+			local cache = {}
+
+			do
+				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1);
+
+				if slotInfo ~= nil and slotInfo.availableTalentIDs then
+					for _, id in ipairs(slotInfo.availableTalentIDs) do
+						local _, name, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(id)
+
+						if selected or known or grantedByAura then
+							cache[name] = true
+						end
+					end
+				end
+			end
+
+			if next(cache) == nil then
+				return false
+			end
+
+			for _, compound in ipairs(value) do
+				local valid = true
+
+				for _, talent in ipairs(compound) do
+					local name = talent.value
+					local selected = cache[name]
+
+					if #name > 0 and (selected and talent.negated or not selected and not talent.negated) then
+						valid = false
+						break
+					end
+				end
+
+				if valid then
+					return true
+				end
+			end
+
+			return false
+		end
 	},
 	{
 		id = "warMode",
@@ -232,7 +332,12 @@ local config = {
 		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "PLAYER_FLAGS_CHANGED" },
+		--- @param value boolean
+		test = function(value)
+			return value == C_PvP.IsWarModeDesired()
+		end
 	},
 	{
 		id = "instanceType",
@@ -271,7 +376,23 @@ local config = {
 		init = function()
 			return Utils.CreateMultiselectLoadOption("NONE")
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption
+		unpack = Utils.UnpackMultiselectLoadOption,
+		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
+		--- @param value string[]
+		test = function(value)
+			local _, instanceType = IsInInstance()
+
+			for _, current in ipairs(value) do
+				-- Convert to lowercase as that is what `IsInInstance` returns
+				current = string.lower(current)
+
+				if current == instanceType then
+					return true
+				end
+			end
+
+			return false
+		end
 	},
 	{
 		id = "zoneName",
@@ -290,6 +411,26 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
+		--- @param value string
+		test = function(value)
+			local realZone = GetRealZoneText()
+
+			for zone in string.gmatch(value, "([^;]+)") do
+				local negate = false
+
+				if string.sub(zone, 0, 1) == "!" then
+					negate = true
+					zone = string.sub(zone, 2)
+				end
+
+				if (negate and zone ~= realZone) or (not negate and zone == realZone) then
+					return true
+				end
+			end
+
+			return false
+		end
 	},
 	{
 		id = "spellKnown",
@@ -302,6 +443,18 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC and
+			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" } or
+			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
+		test = function(value)
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+				local spell = C_Spell.GetSpellInfo(value)
+				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
+			else
+				local spellId = GetSpellInfo(value)
+				return spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId) or false
+			end
+		end
 	},
 	{
 		id = "inGroup",
@@ -326,6 +479,21 @@ local config = {
 			return Utils.CreateLoadOption(Addon.GroupState.PARTY_OR_RAID)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "GROUP_ROSTER_UPDATE" },
+		--- @param value GroupState
+		test = function(value)
+			if value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
+				return false
+			elseif value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+				return false
+			elseif value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+				return false
+			elseif value == Addon.GroupState.RAID and not IsInRaid() then
+				return false
+			end
+
+			return true
+		end
 	},
 	{
 		id = "playerInGroup",
@@ -338,6 +506,24 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "GROUP_ROSTER_UPDATE" },
+		--- @param value string
+		test = function(value)
+			if value == UnitName("player") then
+				return true
+			else
+				local unit = IsInRaid() and "raid" or "party"
+
+				for i = 1, GetNumGroupMembers() do
+					local name = UnitName(unit .. i)
+					if name == value then
+						return true
+					end
+				end
+			end
+
+			return false
+		end
 	},
 	{
 		id = "equipped",
@@ -364,6 +550,11 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "PLAYER_EQUIPMENT_CHANGED" },
+		--- @param value string
+		test = function(value)
+			return C_Item.IsEquippedItem(value)
+		end
 	}
 }
 
