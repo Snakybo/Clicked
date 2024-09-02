@@ -91,7 +91,7 @@ Addon.InteractionType = {
 --- @type Binding[]
 local activeBindings = {}
 
---- @type table<string,table<string,boolean?>>
+--- @type table<string,table<string,boolean>>
 local bindingStateCache = {}
 
 --- @type table<string,Binding[]>
@@ -101,7 +101,7 @@ local hovercastBucket = {}
 local regularBucket = {}
 
 --- @type BindingReloadCauses
-local pendingReloadCauses = {}
+local pendingReloadCauses = {} --- @diagnostic disable-line: missing-fields
 
 --- @type table<string,boolean>
 local talentCache = {}
@@ -109,11 +109,11 @@ local talentCache = {}
 --- @type table<string,boolean>
 local macroTooLongNotified = {}
 
-local isPendingReload = false
-local isPendingProcess = false
-
 local reloadBindingsDelayTicker = nil
 local reloadTalentCacheDelayTicker = nil
+
+--- @type string[]?
+local reloadTalentCacheEvents = nil
 
 -- Local support functions
 
@@ -529,143 +529,108 @@ local function StripColorCodes(str)
 	return str
 end
 
---- @param binding Binding|integer
+--- @param bindings Binding[]
 --- @param full boolean
---- @param delayFrame boolean
---- @param ... string
---- @overload fun(binding:Binding, full:boolean, ...:string)
---- @overload fun(binding:Binding, ...:string)
-local function ProcessReloadBindingArguments(binding, full, delayFrame, ...)
-	--- @type integer
-	local identifier = nil
-
-	if type(binding) == "table" then
-		identifier = binding.uid
-	elseif type(binding) == "number" then
-		identifier = binding
-	else
-		error("bad argument #1, expected Binding or number but got " .. type(binding))
-	end
-
-	pendingReloadCauses.binding = pendingReloadCauses.binding or {}
-	pendingReloadCauses.binding[identifier] = pendingReloadCauses.binding[identifier] or {}
-	pendingReloadCauses.binding[identifier].events = pendingReloadCauses.binding[identifier].events or {}
-
-	if type(full) == "boolean" and full then
-		pendingReloadCauses.binding[identifier].full = true
-	elseif type(full) == "string" then
-		pendingReloadCauses.binding[identifier].events[full] = true
-	end
-
-	if type(delayFrame) == "string" then
-		pendingReloadCauses.binding[identifier].events[delayFrame] = true
-	end
-
-	for _, item in ipairs({ ... }) do
-		pendingReloadCauses.binding[identifier].events[item] = true
-	end
-end
-
---- @param full boolean
---- @param delayFrame boolean
---- @param ... string
---- @overload fun(full:boolean, ...:string)
---- @overload fun(...:string)
-local function ProcessReloadArguments(full, delayFrame, ...)
+--- @param events string[]
+--- @param conditions string[]
+local function ProcessReloadArguments(bindings, full, events, conditions)
 	pendingReloadCauses.events = pendingReloadCauses.events or {}
+	pendingReloadCauses.binding = pendingReloadCauses.binding or {}
+	pendingReloadCauses.conditions = pendingReloadCauses.conditions or {}
 
-	if type(full) == "boolean" and full then
-		pendingReloadCauses.full = true
-	elseif type(full) == "string" then
-		pendingReloadCauses.events[full] = true
-	end
+	if #bindings == 0 then
+		if full then
+			pendingReloadCauses.full = true
+		end
 
-	if type(delayFrame) == "string" then
-		pendingReloadCauses.events[delayFrame] = true
-	end
+		for _, item in ipairs(events) do
+			pendingReloadCauses.events[item] = true
+		end
 
-	for _, item in ipairs({ ... }) do
-		pendingReloadCauses.events[item] = true
+		for _, item in ipairs(conditions) do
+			pendingReloadCauses.conditions[item] = true
+		end
+	else
+		for _, binding in ipairs(bindings) do
+			local uid = binding.uid
+
+			pendingReloadCauses.binding[uid] = pendingReloadCauses.binding[uid] or {}
+			pendingReloadCauses.binding[uid].events = pendingReloadCauses.binding[uid].events or {}
+			pendingReloadCauses.binding[uid].conditions = pendingReloadCauses.binding[uid].conditions or {}
+
+			if full then
+				pendingReloadCauses.binding[uid].full = true
+			end
+
+			for _, item in ipairs(events) do
+				pendingReloadCauses.binding[uid].events[item] = true
+			end
+
+			for _, item in ipairs(conditions) do
+				pendingReloadCauses.binding[uid].conditions[item] = true
+			end
+		end
 	end
 end
 
---- @param delayFrame boolean
-local function ReloadBindings(delayFrame)
-	if InCombatLockdown() then
-		isPendingReload = true
+local function ReloadBindings()
+	if reloadBindingsDelayTicker ~= nil or InCombatLockdown() then
 		return
 	end
 
-	if type(delayFrame) == "boolean" and delayFrame then
-		if reloadBindingsDelayTicker == nil then
-			reloadBindingsDelayTicker = C_Timer.NewTimer(0, function()
-				reloadBindingsDelayTicker = nil
-				Clicked:ReloadBindings()
-			end)
+	local function DoReloadBindings()
+		reloadBindingsDelayTicker = nil
+
+		-- The pendingReloadCauses can contains three "targets":
+		--  1. a specific binding, using the `binding` property
+		--  2. all bindings, using the '*' property
+		--  3. a subset of bindings that are affected by an event using the `events` property (i.e. PLAYER_REGEN_DISABLED)
+
+		wipe(activeBindings)
+
+		for _, binding in Clicked:IterateConfiguredBindings() do
+			Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
+
+			if Clicked:CanBindingLoad(binding) then
+				table.insert(activeBindings, binding)
+			end
 		end
 
-		return
+		wipe(pendingReloadCauses)
+
+		Clicked:ProcessActiveBindings()
+
+		Addon.BindingConfig.Window:OnBindingReload()
+		Addon.KeyVisualizer:Redraw()
 	end
 
-	isPendingReload = false
-
-	-- The pendingReloadCauses can contains three "targets":
-	--  1. a specific binding, using the `binding` property
-	--  2. all bindings, using the '*' property
-	--  3. a subset of bindings that are affected by an event using the `events` property (i.e. PLAYER_REGEN_DISABLED)
-
-	wipe(activeBindings)
-
-	for _, binding in Clicked:IterateConfiguredBindings() do
-		Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
-
-		if Clicked:CanBindingLoad(binding) then
-			table.insert(activeBindings, binding)
-		end
-	end
-
-	wipe(pendingReloadCauses)
-
-	Clicked:ProcessActiveBindings()
-
-	Addon.BindingConfig.Window:OnBindingReload()
-	Addon.KeyVisualizer:Redraw()
+	reloadBindingsDelayTicker = C_Timer.NewTimer(0, DoReloadBindings)
 end
 
 -- Public addon API
 
---- @param binding Binding
---- @param full boolean
---- @param delayFrame boolean
---- @param ... string
---- @overload fun(self:Clicked, binding:Binding, full:boolean, ...:string)
---- @overload fun(self:Clicked, binding:Binding, ...:string)
-function Clicked:ReloadBinding(binding, full, delayFrame, ...)
-	ProcessReloadBindingArguments(binding, full, delayFrame, ...)
-	ReloadBindings(delayFrame)
+--- Reload the given binding(s). If omited, all bindings will be fully refreshed.
+---
+--- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
+---
+--- @param bindings? Binding|Binding[]
+function Clicked:ReloadBindings(bindings)
+	if bindings == nil then
+		bindings = {}
+	elseif bindings[1] == nil then
+		bindings = { bindings }
+	end
 
-	Addon:UpdateLookupTable(binding)
-end
-
---- @param full boolean
---- @param delayFrame boolean
---- @param ... string
---- @overload fun(self:Clicked, full:boolean, ...:string)
---- @overload fun(self:Clicked, ...:string)
-function Clicked:ReloadBindings(full, delayFrame, ...)
-	ProcessReloadArguments(full, delayFrame, ...)
-	ReloadBindings(delayFrame)
+	ProcessReloadArguments(bindings, true, {}, {})
+	ReloadBindings()
 
 	Addon:UpdateLookupTable()
 end
 
 function Clicked:ProcessActiveBindings()
 	if InCombatLockdown() then
-		isPendingProcess = true
 		return
 	end
-
-	isPendingProcess = false
 
 	GenerateBuckets(activeBindings)
 	ProcessBuckets()
@@ -841,102 +806,140 @@ end
 
 -- Private addon API
 
---- @param delay boolean?
---- @param ... any
-function Addon:UpdateTalentCacheAndReloadBindings(delay, ...)
-	if delay then
-		if reloadTalentCacheDelayTicker == nil then
-			local args = { ... }
+--- Reload all bindings, optionally only refresh conditions that depend on the specified events. If no events are given, all bindings will be fully refreshed.
+---
+--- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
+---
+--- @param ... string
+function Addon:ReloadBindings(...)
+	local events = { ... }
 
-			reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, function()
-				reloadTalentCacheDelayTicker = nil
-				Addon:UpdateTalentCacheAndReloadBindings(false, unpack(args))
-			end)
-		end
+	ProcessReloadArguments({}, #events == 0, events, {})
+	ReloadBindings()
 
-		return
+	Addon:UpdateLookupTable()
+end
+
+--- Reload a binding, if `condition` is a string, only the specified condition will be refreshed, if it is `true`, the entire state will be refreshed.---
+---
+--- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
+---
+--- @param binding Binding
+--- @param condition string
+--- @overload fun(self:Clicked, binding:Binding, full:boolean)
+function Addon:ReloadBinding(binding, condition)
+	local conditions = {}
+	local full = false
+
+	if type(condition) == "boolean" then
+		full = condition
+	elseif type(condition) == "string" then
+		conditions[1] = condition
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-		wipe(talentCache)
+	ProcessReloadArguments({ binding }, full, {}, conditions)
+	ReloadBindings()
 
-		local configId = C_ClassTalents.GetActiveConfigID()
-		if configId == nil then
-			Addon:UpdateTalentCacheAndReloadBindings(true, ...)
-			return
-		end
+	Addon:UpdateLookupTable(binding)
+end
 
-		local configInfo = C_Traits.GetConfigInfo(configId)
-		if configInfo == nil then
-			Addon:UpdateTalentCacheAndReloadBindings(true, ...)
-			return
-		end
+--- @param ... string
+function Addon:UpdateTalentCacheAndReloadBindings(...)
+	local function DoUpdateTalentCache()
+		reloadTalentCacheDelayTicker = nil
 
-		local treeId = configInfo.treeIDs[1]
-		local nodes = C_Traits.GetTreeNodes(treeId)
+		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+			wipe(talentCache)
 
-		for _, nodeId in ipairs(nodes) do
-			local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
+			local configId = C_ClassTalents.GetActiveConfigID()
+			if configId == nil then
+				Addon:UpdateTalentCacheAndReloadBindings()
+				return
+			end
 
-			if nodeInfo.ID ~= 0 then
-				-- check if the node was manually selected by the player, the easy way
-				local isValid = nodeInfo.currentRank > 0
+			local configInfo = C_Traits.GetConfigInfo(configId)
+			if configInfo == nil then
+				Addon:UpdateTalentCacheAndReloadBindings()
+				return
+			end
 
-				-- check if the node was granted to the player automatically
-				if not isValid then
-					for _, conditionId in ipairs(nodeInfo.conditionIDs) do
-						local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
+			local treeId = configInfo.treeIDs[1]
+			local nodes = C_Traits.GetTreeNodes(treeId)
 
-						if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
-							isValid = true
-							break
+			for _, nodeId in ipairs(nodes) do
+				local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
+
+				if nodeInfo.ID ~= 0 then
+					-- check if the node was manually selected by the player, the easy way
+					local isValid = nodeInfo.currentRank > 0
+
+					-- check if the node was granted to the player automatically
+					if not isValid then
+						for _, conditionId in ipairs(nodeInfo.conditionIDs) do
+							local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
+
+							if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
+								isValid = true
+								break
+							end
+						end
+					end
+
+					if isValid then
+						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
+						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
+						local definitionInfo = entryInfo ~= nil and entryInfo.definitionID ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+
+						if definitionInfo ~= nil then
+							local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+							talentCache[name] = true
 						end
 					end
 				end
+			end
+		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+			wipe(talentCache)
 
-				if isValid then
-					local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
-					local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
-					local definitionInfo = entryInfo ~= nil and entryInfo.definitionID ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
+			for tab = 1, GetNumTalentTabs() do
+				for index = 1, GetNumTalents(tab) do
+					local name, _, _, _, rank  = GetTalentInfo(tab, index)
 
-					if definitionInfo ~= nil then
-						local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
-						talentCache[name] = true
+					if name ~= nil then
+						talentCache[name] = rank > 0
 					end
 				end
 			end
 		end
-	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-		wipe(talentCache)
 
-		for tab = 1, GetNumTalentTabs() do
-			for index = 1, GetNumTalents(tab) do
-				local name, _, _, _, rank  = GetTalentInfo(tab, index)
+		if reloadTalentCacheEvents ~= nil then
+			Addon:ReloadBindings(unpack(reloadTalentCacheEvents))
+			reloadTalentCacheEvents = nil
+		else
+			Addon:ReloadBindings()
+		end
+	end
 
-				if name ~= nil then
-					talentCache[name] = rank > 0
+	local args = { ... }
+
+	if reloadTalentCacheDelayTicker == nil then
+		if #args > 0 then
+			reloadTalentCacheEvents = args
+		end
+
+		reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, function()
+			DoUpdateTalentCache()
+		end)
+	else
+		if #args == 0 then
+			reloadTalentCacheEvents = nil
+		elseif reloadTalentCacheEvents ~= nil then
+			for _, event in ipairs(args) do
+				if not tContains(reloadTalentCacheEvents, event) then
+					table.insert(reloadTalentCacheEvents, event)
 				end
 			end
 		end
 	end
-
-	Clicked:ReloadBindings(...)
-end
-
-function Addon:ReloadBindingsIfPending()
-	if not isPendingReload then
-		return
-	end
-
-	Clicked:ReloadBindings()
-end
-
-function Addon:ProcessActiveBindingsIfPending()
-	if not isPendingProcess then
-		return
-	end
-
-	Clicked:ProcessActiveBindings()
 end
 
 --- Check if the specified binding is currently active based on the configuration
@@ -944,39 +947,48 @@ end
 --- valid (it has a keybind and an action to perform)
 ---
 --- @param binding Binding
---- @param options table<string,boolean>
-function Addon:UpdateBindingLoadState(binding, options)
+--- @param causes BindingReloadCauses
+function Addon:UpdateBindingLoadState(binding, causes)
+	--- @param condition string
 	--- @param events? string[]
 	--- @return boolean
-	local function ShouldPerformStateCheck(events)
+	local function ShouldPerformStateCheck(condition, events)
 		-- All bindings should be updated
-		if options.full then
+		if causes.full then
 			return true
 		end
 
 		events = events or {}
 
 		-- A specific binding should be updated
-		if options.binding ~= nil and options.binding[binding.uid] ~= nil then
-			if options.binding[binding.uid].full then
+		local current = causes.binding[binding.uid]
+		if current ~= nil then
+			if current.full then
 				return true
 			end
 
 			-- A specific event should be updated
 			for _, cause in pairs(events) do
-				if options.binding[binding.uid].events[cause] then
+				if current.events[cause] then
 					return true
 				end
+			end
+
+			-- A specific condition should be updated
+			if condition ~= nil and current.conditions[condition] then
+				return true
 			end
 		end
 
 		-- A specific event should be updated
-		if options.events ~= nil then
-			for _, cause in ipairs(events) do
-				if options.events[cause] then
-					return true
-				end
+		for _, cause in ipairs(events) do
+			if causes.events[cause] then
+				return true
 			end
+		end
+
+		if condition ~= nil and causes.conditions[condition] then
+			return true
 		end
 
 		return false
@@ -985,16 +997,22 @@ function Addon:UpdateBindingLoadState(binding, options)
 	local state = bindingStateCache[binding.uid] or {}
 	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
-	if ShouldPerformStateCheck() then
-		state.keybind = binding.keybind ~= ""
+	if ShouldPerformStateCheck("keybind") then
+		state.keybind = not Addon:IsNilOrEmpty(binding.keybind)
+	end
+
+	if ShouldPerformStateCheck("targets") then
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
-		state.value = Addon:GetBindingValue(binding) ~= nil
+	end
+
+	if ShouldPerformStateCheck("value") then
+		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
 	end
 
 	for _, condition in ipairs(conditions.config) do
 		--- @cast condition LoadCondition
 
-		if ShouldPerformStateCheck(condition.testOnEvents) then
+		if ShouldPerformStateCheck(condition.id, condition.testOnEvents) then
 			local load = binding.load[condition.id] or condition.init()
 			local selected = condition.unpack(load)
 

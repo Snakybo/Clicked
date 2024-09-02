@@ -83,7 +83,7 @@ function Drawer:Draw()
 		local function OnValueChanged(_, _, value)
 			for _, binding in ipairs(self.bindings) do
 				binding.load[self.fieldName] = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding, self.fieldName)
 			end
 
 			self.requestRedraw()

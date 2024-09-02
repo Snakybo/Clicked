@@ -48,7 +48,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 		local function OnValueChanged(_, _, value)
 			for _, binding in ipairs(self.bindings) do
 				binding.targets.hovercastEnabled = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding, "targets")
 			end
 
 			self.controller:RedrawTab()
@@ -112,7 +112,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			for _, binding in ipairs(self.bindings) do
 				if CanEnableRegularTargetMode(binding) then
 					binding.targets.regularEnabled = value
-					Clicked:ReloadBinding(binding, true)
+					Addon:ReloadBinding(binding, "targets")
 				end
 			end
 
@@ -162,7 +162,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 							end
 						end
 
-						Clicked:ReloadBinding(binding, true)
+						Addon:ReloadBinding(binding)
 					end
 
 					self.controller:RedrawTab()
@@ -326,7 +326,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, c
 		elseif value == "_DELETE_" then
 			for _, binding in ipairs(self.bindings) do
 				if #binding.targets.regular > 1 and table.remove(binding.targets.regular, index) then
-					Clicked:ReloadBinding(binding, true)
+					Addon:ReloadBinding(binding)
 				end
 			end
 		elseif index == 0 then
@@ -339,7 +339,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, c
 				new.vitals = last.vitals or new.vitals
 
 				table.insert(binding.targets.regular, new)
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding)
 			end
 		else
 			for _, binding in ipairs(self.bindings) do
@@ -347,7 +347,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, c
 
 				if target ~= nil then
 					target.unit = value
-					Clicked:ReloadBinding(binding, true)
+					Addon:ReloadBinding(binding)
 				end
 			end
 		end
@@ -404,7 +404,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetHostility(container, ind
 
 			if target ~= nil then
 				target.hostility = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding)
 			end
 		end
 
@@ -460,7 +460,7 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetVitals(container, index)
 
 			if target ~= nil then
 				target.vitals = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding)
 			end
 		end
 

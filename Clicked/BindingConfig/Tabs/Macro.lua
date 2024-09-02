@@ -154,7 +154,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			for _, binding in ipairs(self.bindings) do
 				binding.targets.regularEnabled = value == "key" or value == "all"
 				binding.targets.hovercastEnabled = value == "unitframe" or value == "all"
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding, "targets")
 			end
 
 			self.controller:RedrawTab()
@@ -220,7 +220,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 
 			for _, binding in ipairs(self.bindings) do
 				binding.action.macroValue = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding, "value")
 			end
 		end
 

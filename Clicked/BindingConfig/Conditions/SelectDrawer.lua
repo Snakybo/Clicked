@@ -96,7 +96,7 @@ function Drawer:Draw()
 				if load.selected then
 					load.value = value
 					binding.load[self.fieldName] = load
-					Clicked:ReloadBinding(binding, true)
+					Addon:ReloadBinding(binding, self.fieldName)
 				end
 			end
 

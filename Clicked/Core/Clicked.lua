@@ -135,7 +135,7 @@ local function PLAYER_ENTERING_WORLD()
 
 	Addon:ProcessFrameQueue()
 	Addon:UpdateClickCastHeaderBlacklist()
-	Addon:UpdateTalentCacheAndReloadBindings(true, true)
+	Addon:UpdateTalentCacheAndReloadBindings()
 end
 
 local function ADDON_LOADED()
@@ -144,42 +144,42 @@ end
 
 local function ZONE_CHANGED()
 	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
-	-- Clicked:ReloadBindings(false, true, "ZONE_CHANGED")
+	-- Addon:ReloadBindings("ZONE_CHANGED")
 end
 
 local function ZONE_CHANGED_INDOORS()
 	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
-	-- Clicked:ReloadBindings(false, true, "ZONE_CHANGED_INDOORS")
+	-- Addon:ReloadBindings("ZONE_CHANGED_INDOORS")
 end
 
 local function ZONE_CHANGED_NEW_AREA()
-	Clicked:ReloadBindings(false, true, "ZONE_CHANGED_NEW_AREA")
+	Addon:ReloadBindings("ZONE_CHANGED_NEW_AREA")
 end
 
 local function CHARACTER_POINTS_CHANGED()
-	Addon:UpdateTalentCacheAndReloadBindings(true, "CHARACTER_POINTS_CHANGED")
+	Addon:UpdateTalentCacheAndReloadBindings("CHARACTER_POINTS_CHANGED")
 end
 
 local function PLAYER_FLAGS_CHANGED(_, unit)
 	if unit == "player" then
-		Clicked:ReloadBindings(false, true, "PLAYER_FLAGS_CHANGED")
+		Addon:ReloadBindings("PLAYER_FLAGS_CHANGED")
 	end
 end
 
 local function PLAYER_TALENT_UPDATE()
-	Addon:UpdateTalentCacheAndReloadBindings(true, "PLAYER_TALENT_UPDATE")
+	Addon:UpdateTalentCacheAndReloadBindings("PLAYER_TALENT_UPDATE")
 end
 
 local function PLAYER_PVP_TALENT_UPDATE()
-	Clicked:ReloadBindings(false, true, "PLAYER_PVP_TALENT_UPDATE")
+	Addon:ReloadBindings("PLAYER_PVP_TALENT_UPDATE")
 end
 
 local function TRAIT_CONFIG_CREATED()
-	Addon:UpdateTalentCacheAndReloadBindings(true, "TRAIT_CONFIG_CREATED")
+	Addon:UpdateTalentCacheAndReloadBindings("TRAIT_CONFIG_CREATED")
 end
 
 local function TRAIT_CONFIG_UPDATED()
-	Addon:UpdateTalentCacheAndReloadBindings(true, "TRAIT_CONFIG_UPDATED")
+	Addon:UpdateTalentCacheAndReloadBindings("TRAIT_CONFIG_UPDATED")
 end
 
 local function PLAYER_FOCUS_CHANGED()
@@ -187,19 +187,19 @@ local function PLAYER_FOCUS_CHANGED()
 end
 
 local function PLAYER_LEVEL_CHANGED()
-	Clicked:ReloadBindings("PLAYER_LEVEL_CHANGED")
+	Addon:ReloadBindings("PLAYER_LEVEL_CHANGED")
 end
 
 local function LEARNED_SPELL_IN_TAB()
-	Clicked:ReloadBindings(false, true, "LEARNED_SPELL_IN_TAB")
+	Addon:ReloadBindings("LEARNED_SPELL_IN_TAB")
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
-	Clicked:ReloadBindings(false, true, "PLAYER_EQUIPMENT_CHANGED")
+	Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
 end
 
 local function GROUP_ROSTER_UPDATE()
-	Clicked:ReloadBindings(false, true, "GROUP_ROSTER_UPDATE")
+	Addon:ReloadBindings("GROUP_ROSTER_UPDATE")
 end
 
 local function MODIFIER_STATE_CHANGED()
@@ -211,7 +211,7 @@ local function UNIT_TARGET()
 end
 
 local function RUNE_UPDATED()
-	Clicked:ReloadBindings(false, true, "RUNE_UPDATED")
+	Addon:ReloadBindings("RUNE_UPDATED")
 end
 
 --- @param self AceEvent-3.0

@@ -637,7 +637,7 @@ function Addon.BindingConfig.Window:CreateFrame()
 				binding.action.macroValue = content
 			end
 
-			Clicked:ReloadBinding(binding, true)
+			Addon:ReloadBinding(binding, true)
 
 			ClearCursor()
 		end
@@ -959,7 +959,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 										binding.actionType = type
 
 										Addon:EnsureSupportedTargetModes(binding.targets, binding.keybind, type)
-										Clicked:ReloadBinding(binding, true)
+										Addon:ReloadBinding(binding, true)
 									end
 								end
 
@@ -1121,7 +1121,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 								ref.actionType = type
 
 								Addon:EnsureSupportedTargetModes(ref.targets, ref.keybind, type)
-								Clicked:ReloadBinding(ref, true)
+								Addon:ReloadBinding(ref, true)
 								self.treeWidget:Select(ref.uid)
 
 								contextMenuFrame:Hide()

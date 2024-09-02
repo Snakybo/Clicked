@@ -75,7 +75,7 @@ function Addon.BindingConfig.BindingUnitActionTab:Redraw()
 				end
 
 				binding.load.combat = load
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding)
 			end
 
 			self.controller:RedrawTab()

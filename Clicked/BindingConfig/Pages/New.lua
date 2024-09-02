@@ -67,7 +67,7 @@ local function CreateBinding(type)
 		binding.actionType = Clicked.ActionType.UNIT_MENU
 	end
 
-	Clicked:ReloadBinding(binding, true)
+	Addon:ReloadBinding(binding)
 	return binding
 end
 
@@ -176,15 +176,15 @@ local function FindGroupId(name, icon)
 	return nil
 end
 
---- @return Binding?
+--- @return Binding[]
 local function ImportSpellbook()
-	--- @type Binding?
-	local first = nil
+	--- @type Binding[]
+	local result = {}
 
 	for _, spell in pairs(Addon.SpellLibrary:GetSpells()) do
 		if not DoesSpellBookBindingExist(spell) then
 			local binding = Clicked:CreateBinding()
-			first = first or binding
+			table.insert(result, binding)
 
 			binding.actionType = Clicked.ActionType.SPELL
 			binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
@@ -198,27 +198,25 @@ local function ImportSpellbook()
 				binding.load.specialization.selected = 1
 				binding.load.specialization.single = spec
 			end
+
+			Addon:ReloadBinding(binding, true)
 		end
 	end
 
-	if first ~= nil then
-		Clicked:ReloadBindings(true)
-	end
-
-	return first
+	return result
 end
 
---- @return Binding?
+--- @return Binding[]
 local function ImportActionbar()
 	local cache = CreateActionBarBindingCache()
 
-	--- @type Binding?
-	local first = nil
+	--- @type Binding[]
+	local result = {}
 
 	for _, spell in ipairs(Addon.SpellLibrary:GetActionBarSpells()) do
 		if not DoesActionBarBindingExist(cache, spell) then
 			local binding = Clicked:CreateBinding()
-			first = first or binding
+			table.insert(result, binding)
 
 			if spell.key ~= nil then
 				binding.keybind = spell.key
@@ -255,27 +253,25 @@ local function ImportActionbar()
 
 			cache[binding.keybind] = cache[binding.keybind] or {}
 			table.insert(cache[binding.keybind], binding)
+
+			Addon:ReloadBinding(binding, true)
 		end
 	end
 
-	if first ~= nil then
-		Clicked:ReloadBindings(true)
-	end
-
-	return first
+	return result
 end
 
---- @return Binding?
+--- @return Binding[]
 local function ImportMacros()
 	local cache = CreateMacroBindingCache()
 
-	--- @type Binding?
-	local first = nil
+	--- @type Binding[]
+	local result = {}
 
 	for _, spell in ipairs(Addon.SpellLibrary:GetMacroSpells()) do
 		if not DoesMacroBindingExist(cache, spell) then
 			local binding = Clicked:CreateBinding()
-			first = first or binding
+			table.insert(result, binding)
 
 			binding.actionType = Clicked.ActionType.MACRO
 			binding.action.macroName = spell.name
@@ -286,14 +282,12 @@ local function ImportMacros()
 				name = spell.name,
 				content = spell.content
 			})
+
+			Addon:ReloadBinding(binding, true)
 		end
 	end
 
-	if first ~= nil then
-		Clicked:ReloadBindings(true)
-	end
-
-	return first
+	return result
 end
 
 -- Private addon API

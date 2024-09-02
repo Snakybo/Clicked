@@ -179,9 +179,10 @@
 --- @class BindingReloadCause
 --- @field public full boolean
 --- @field public events table<string,boolean>
+--- @field public conditions table<string,boolean>
 
 --- @class BindingReloadCauses : BindingReloadCause
---- @field public binding? BindingReloadCause
+--- @field public binding table<integer,BindingReloadCause>
 
 --- @class TalentInfo
 --- @field public entryId integer

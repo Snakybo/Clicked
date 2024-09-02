@@ -167,7 +167,7 @@ function Clicked:ReloadDatabase()
 	end
 
 	Addon.BlacklistOptions:Refresh()
-	Clicked:ReloadBindings(true)
+	Addon:ReloadBindings()
 end
 
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
@@ -209,10 +209,10 @@ function Clicked:DeleteGroup(group)
 
 			if binding.parent == group.uid then
 				table.remove(db.bindings, i)
+				Addon:ReloadBinding(binding, true)
 			end
 		end
 
-		self:ReloadBindings(true)
 		return true
 	end
 
@@ -381,7 +381,7 @@ function Clicked:DeleteBinding(binding)
 	end
 
 	if deleted then
-		self:ReloadBindings(true)
+		Addon:ReloadBinding(binding, true)
 		return true
 	end
 
@@ -410,7 +410,7 @@ end
 --- @param from string
 function Clicked:UpgradeDatabase(from)
 	Addon:UpgradeDatabase(from)
-	Clicked:ReloadBindings(true)
+	Addon:ReloadBindings()
 end
 
 --@end-debug@
@@ -577,7 +577,7 @@ function Addon:ReplaceBindingContents(original, replacement)
 	for index, binding in Clicked:IterateConfiguredBindings() do
 		if binding.uid == original.uid then
 			Addon.db.profile.bindings[index] = replacement
-			Clicked:ReloadBinding(binding, true)
+			Addon:ReloadBinding(binding, true)
 			break
 		end
 	end
@@ -599,7 +599,7 @@ function Addon:RegisterBinding(binding, scope)
 		error("Unknown binding scope " .. scope)
 	end
 
-	Clicked:ReloadBinding(binding, true)
+	Addon:ReloadBinding(binding, true)
 end
 
 --- @param group Group

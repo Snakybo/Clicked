@@ -345,8 +345,7 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 			local load = binding.load[fieldName] or condition.init()
 			load.selected = value
 			binding.load[fieldName] = load
-
-			Clicked:ReloadBinding(binding, true)
+			Addon:ReloadBinding(binding, fieldName)
 		end
 
 		onValueChanged()
@@ -415,7 +414,7 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 					-- TODO: Set this to nil if false
 					load.negated = value
 					binding.load[fieldName] = load
-					Clicked:ReloadBinding(binding, true)
+					Addon:ReloadBinding(binding, fieldName)
 				end
 			end
 
@@ -529,8 +528,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 			local load = binding.load[fieldName] or condition.init()
 			load.selected = index
 			binding.load[fieldName] = load
-
-			Clicked:ReloadBinding(binding, true)
+			Addon:ReloadBinding(binding, fieldName)
 		end
 
 		onValueChanged()

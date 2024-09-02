@@ -27,14 +27,14 @@ local function SetBindingValue(binding, value)
 	if binding.actionType == Clicked.ActionType.SPELL then
 		--- @cast value integer
 		binding.action.spellValue = value
-		Clicked:ReloadBinding(binding, true)
+		Addon:ReloadBinding(binding, "value")
 	elseif binding.actionType == Clicked.ActionType.ITEM then
 		--- @cast value integer
 		binding.action.itemValue = value
-		Clicked:ReloadBinding(binding, true)
+		Addon:ReloadBinding(binding, "value")
 	elseif binding.actionType == Clicked.ActionType.CANCELAURA then
 		binding.action.auraName = value
-		Clicked:ReloadBinding(binding, true)
+		Addon:ReloadBinding(binding, "value")
 	end
 end
 
@@ -325,9 +325,9 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and anyHasRank then
 			local function OnClick()
 				for _, binding in ipairs(self.bindings) do
-					if binding.actionType == Clicked.ActionType.SPELL then
+					if binding.actionType == Clicked.ActionType.SPELL and not binding.action.spellMaxRank then
 						binding.action.spellMaxRank = true
-						Clicked:ReloadBinding(binding, true)
+						Addon:ReloadBinding(binding)
 					end
 				end
 
@@ -434,7 +434,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 						end
 					end
 
-					Clicked:ReloadBinding(current, true)
+					Addon:ReloadBinding(current)
 
 					group:ReleaseChildren()
 					Redraw()
@@ -444,7 +444,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 				local function OnMoveDown()
 					current.action.executionOrder = current.action.executionOrder + 1
 
-					Clicked:ReloadBinding(current, true)
+					Addon:ReloadBinding(current)
 
 					group:ReleaseChildren()
 					Redraw()
@@ -603,7 +603,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 
 			for _, binding in ipairs(self.bindings) do
 				binding.action[key] = value
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding)
 			end
 
 			updateCb()
@@ -650,7 +650,7 @@ function Addon.BindingConfig.BindingActionTab:UpdateSpellValue(binding, value)
 	if newValue ~= nil then
 		SetBindingValue(binding, newValue)
 	else
-		Clicked:ReloadBinding(binding, true)
+		Addon:ReloadBinding(binding, "value")
 	end
 end
 

@@ -315,7 +315,7 @@ function Drawer:DrawTalentSelect()
 
 					if otherLoad.selected then
 						otherLoad.entries[i].negated = not otherLoad.entries[i].negated
-						Clicked:ReloadBinding(other, true)
+						Addon:ReloadBinding(binding, self.fieldName)
 					end
 				end
 
@@ -341,7 +341,7 @@ function Drawer:DrawTalentSelect()
 
 					if otherLoad.selected then
 						otherLoad.entries[i].value = value
-						Clicked:ReloadBinding(other, true)
+						Addon:ReloadBinding(binding, self.fieldName)
 					end
 				end
 
@@ -381,7 +381,7 @@ function Drawer:DrawTalentSelect()
 							end
 						end
 
-						Clicked:ReloadBinding(binding, true)
+						Addon:ReloadBinding(binding, self.fieldName)
 					end
 				end
 

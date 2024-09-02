@@ -157,7 +157,7 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 			if load.selected == 1 then
 				load.single = value
 				binding.load[self.fieldName] = load
-				Clicked:ReloadBinding(binding, true)
+				Addon:ReloadBinding(binding, self.fieldName)
 			end
 		end
 
@@ -270,7 +270,7 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 					local load = binding.load[self.fieldName] or self.condition.init()
 
 					if load.selected == 2 then
-						Clicked:ReloadBinding(binding, true)
+						Addon:ReloadBinding(binding, self.fieldName)
 					end
 				end
 
