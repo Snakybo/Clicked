@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Fixed
+
+* Fix item bindings not always loading upon login
+
 ### Changed
 
 * Optimize binding reload logic for better performance

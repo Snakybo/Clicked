@@ -167,6 +167,7 @@ function Clicked:ReloadDatabase()
 	end
 
 	Addon.BlacklistOptions:Refresh()
+	Addon:RequestItemLoadForBindings()
 	Addon:ReloadBindings()
 end
 

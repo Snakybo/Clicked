@@ -133,6 +133,7 @@ end
 local function PLAYER_ENTERING_WORLD()
 	isInitialized = true
 
+	Addon:RequestItemLoadForBindings()
 	Addon:ProcessFrameQueue()
 	Addon:UpdateClickCastHeaderBlacklist()
 	Addon:UpdateTalentCacheAndReloadBindings()
@@ -214,6 +215,20 @@ local function RUNE_UPDATED()
 	Addon:ReloadBindings("RUNE_UPDATED")
 end
 
+--- @param itemId integer
+--- @param success boolean
+local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
+	if not success then
+		return
+	end
+
+	for _, binding in Clicked:IterateConfiguredBindings() do
+		if binding.actionType == Clicked.ActionType.ITEM and binding.action.itemValue == itemId then
+			Addon:ReloadBinding(binding, "value")
+		end
+	end
+end
+
 --- @param self AceEvent-3.0
 --- @param method fun(self: AceEvent-3.0, event: WowEvent, callback: function|string)
 local function UpdateEventHooks(self, method)
@@ -257,6 +272,7 @@ local function UpdateEventHooks(self, method)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 	method(self, "MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	method(self, "UNIT_TARGET", UNIT_TARGET)
+	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
 end
 
 -- Public addon API
@@ -310,6 +326,18 @@ function Clicked:OnDisable()
 end
 
 -- Private addon API
+
+function Addon:RequestItemLoadForBindings()
+	for _, binding in Clicked:IterateConfiguredBindings() do
+		if binding.actionType == Clicked.ActionType.ITEM then
+			local itemId = tonumber(binding.action.itemValue)
+
+			if itemId ~= nil then
+				C_Item.RequestLoadItemDataByID(itemId)
+			end
+		end
+	end
+end
 
 --- Check if the addon is fully initialized.
 ---
