@@ -1015,7 +1015,9 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							submenu:CreateRadio(label, function()
 								return objects[1].scope == scope
 							end, function()
-								Addon:ChangeScope(objects[1], scope)
+								for _, current in ipairs(objects) do
+									Addon:ChangeScope(current, scope)
+								end
 
 								self:CreateOrUpdateTree()
 								self.treeWidget:Select(objects[1].uid)

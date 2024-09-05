@@ -565,28 +565,49 @@ function Addon:ChangeScope(item, scope)
 		return
 	end
 
-	if item.type == Clicked.DataObjectType.GROUP then
-		--- @cast item Group
+	--- @type DataObject[]
+	local queue = { item }
 
-		local id = item.uid
-		local bindings = Clicked:GetByParent(id)
+	while #queue > 0 do
+		--- @type DataObject
+		local current = table.remove(queue, 1)
 
-		if Clicked:DeleteGroup(item) then
-			self:RegisterGroup(item, scope)
-
-			for _, binding in ipairs(bindings) do
-				self:RegisterBinding(binding, scope)
-				binding.parent = item.uid
+		if current.type == Clicked.DataObjectType.GROUP then
+			--- @cast current Group
+			for _, binding in ipairs(Clicked:GetByParent(current.uid)) do
+				table.insert(queue, binding)
 			end
 		end
-	else
-		--- @cast item Binding
 
-		if Clicked:DeleteBinding(item) then
-			self:RegisterBinding(item, scope)
-			item.parent = nil
+		current.scope = scope
+
+		if current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
+			local parent = Clicked:GetByUid(current.parent)
+
+			if parent ~= nil and parent.scope ~= scope then
+				current.parent = nil
+			end
 		end
+
+		if scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.GROUP then
+			table.insert(Addon.db.profile.groups, current)
+			Addon:TableRemoveItem(Addon.db.global.groups, current)
+		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.GROUP then
+			table.insert(Addon.db.global.groups, current)
+			Addon:TableRemoveItem(Addon.db.profile.groups, current)
+		elseif scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.BINDING then
+			table.insert(Addon.db.profile.bindings, current)
+			Addon:TableRemoveItem(Addon.db.global.bindings, current)
+		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.BINDING then
+			table.insert(Addon.db.global.bindings, current)
+			Addon:TableRemoveItem(Addon.db.profile.bindings, current)
+		end
+
+		self:UpdateLookupTable(current)
 	end
+
+	Addon.BindingConfig.Window:RedrawTree()
 end
 
 --- Replace the contents of a binding with another binding.
