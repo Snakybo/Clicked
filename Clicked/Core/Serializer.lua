@@ -45,11 +45,13 @@ local function RegisterGroup(data)
 	local bindings = data.group.bindings
 	data.group.bindings = nil
 
-	Addon:RegisterGroup(data.group, Clicked.DataObjectScope.PROFILE)
+	Addon:RegisterDataObject(data.group)
 
 	for _, binding in ipairs(bindings) do
 		binding.parent = data.group.uid
-		Addon:RegisterBinding(binding, Clicked.DataObjectScope.PROFILE)
+
+		Addon:RegisterDataObject(binding)
+		Addon:ReloadBinding(binding, true)
 	end
 end
 
@@ -59,7 +61,8 @@ local function RegisterBinding(data)
 		error("bad argument #1, expected binding but got " .. data.type)
 	end
 
-	Addon:RegisterBinding(data.binding, Clicked.DataObjectScope.PROFILE)
+	Addon:RegisterDataObject(data.binding, Clicked.DataObjectScope.PROFILE)
+	Addon:ReloadBinding(data.binding, true)
 end
 
 --- @param data ExportProfile

@@ -921,6 +921,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							for _, binding in ipairs(objects) do
 								local clone = CopyTable(source)
 								Addon:ReplaceBindingContents(binding, clone)
+								Addon:ReloadBinding(binding, true)
 							end
 						end
 					end):SetEnabled(self.bindingCopyTarget ~= nil)
@@ -930,7 +931,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						local first
 
 						for _, binding in ipairs(objects) do
-							local clone = Addon:CloneBinding(binding)
+							local clone = Addon:CloneDataObject(binding)
 							first = first or clone
 						end
 
@@ -984,19 +985,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						local first
 
 						for _, group in ipairs(objects) do
-							local clone = Clicked:CreateGroup()
-							clone.name = group.name .. " - copy"
-							clone.displayIcon = group.displayIcon
+							local clone = Addon:CloneDataObject(group)
 							first = first or clone
-
-							Addon:ChangeScope(clone, group.scope)
-
-							for _, binding in ipairs(Clicked:GetByParent(group.uid)) do
-								local cloneBinding = Addon:CloneBinding(binding)
-								cloneBinding.parent = clone.uid
-
-								Addon:UpdateLookupTable(cloneBinding)
-							end
 						end
 
 						self.treeWidget:Select(first.uid)
@@ -1016,7 +1006,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 								return objects[1].scope == scope
 							end, function()
 								for _, current in ipairs(objects) do
-									Addon:ChangeScope(current, scope)
+									Addon:ChangeDataObjectScope(current, scope)
 								end
 
 								self:CreateOrUpdateTree()
@@ -1030,7 +1020,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 								for _, obj in ipairs(objects) do
 									if obj.scope ~= scope then
 										first = first or obj
-										Addon:ChangeScope(obj, scope)
+										Addon:ChangeDataObjectScope(obj, scope)
 									end
 								end
 
@@ -1055,13 +1045,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						end
 
 						for _, obj in ipairs(objects) do
-							if obj.type == Clicked.DataObjectType.BINDING then
-								--- @cast obj Binding
-								Clicked:DeleteBinding(obj)
-							elseif obj.type == Clicked.DataObjectType.GROUP then
-								--- @cast obj Group
-								Clicked:DeleteGroup(obj)
-							end
+							Clicked:DeleteDataObject(obj)
 						end
 					end
 
@@ -1116,6 +1100,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							--- @cast source Binding
 							local clone = CopyTable(source)
 							Addon:ReplaceBindingContents(ref, clone)
+							Addon:ReloadBinding(ref, true)
 						end
 					end
 				})
@@ -1124,7 +1109,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 					text = Addon.L["Duplicate"],
 					notCheckable = true,
 					func = function()
-						local clone = Addon:CloneBinding(ref)
+						local clone = Addon:CloneDataObject(ref)
 						self.treeWidget:Select(clone.uid)
 					end
 				})
@@ -1179,19 +1164,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						local first
 
 						for _, group in ipairs(objects) do
-							local clone = Clicked:CreateGroup()
-							clone.name = group.name .. " - copy"
-							clone.displayIcon = group.displayIcon
+							local clone = Addon:CloneDataObject(group)
 							first = first or clone
-
-							Addon:ChangeScope(clone, group.scope)
-
-							for _, binding in ipairs(Clicked:GetByParent(group.uid)) do
-								local cloneBinding = Addon:CloneBinding(binding)
-								cloneBinding.parent = clone.uid
-
-								Addon:UpdateLookupTable(cloneBinding)
-							end
 						end
 
 						self.treeWidget:Select(first.uid)
@@ -1212,7 +1186,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						text = label,
 						checked = ref.scope == scope,
 						func = function()
-							Addon:ChangeScope(ref, scope)
+							Addon:ChangeDataObjectScope(ref, scope)
 
 							self:CreateOrUpdateTree()
 							self.treeWidget:Select(ref.uid)
@@ -1245,13 +1219,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							return
 						end
 
-						if ref.type == Clicked.DataObjectType.BINDING then
-							--- @cast ref Binding
-							Clicked:DeleteBinding(ref)
-						elseif ref.type == Clicked.DataObjectType.GROUP then
-							--- @cast ref Group
-							Clicked:DeleteGroup(ref)
-						end
+						Clicked:DeleteDataObject(ref)
 					end
 
 					if IsShiftKeyDown() then

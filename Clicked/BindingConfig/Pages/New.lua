@@ -67,7 +67,7 @@ local function CreateBinding(type)
 		binding.actionType = Clicked.ActionType.UNIT_MENU
 	end
 
-	Addon:ReloadBinding(binding)
+	Addon:ReloadBinding(binding, true)
 	return binding
 end
 

@@ -307,3 +307,4 @@ L["PvP talent"] = true
 L["Always"] = true
 L["Automatically import from macros"] = true
 L["Are you sure you want to delete these %d bindings and/or groups?"] = true
+L["copy"] = true

@@ -281,7 +281,7 @@ local function Button_OnDragStop(button)
 			local item = self.treeLookup[uid]
 
 			if obj.scope ~= newScope then
-				Addon:ChangeScope(obj, newScope)
+				Addon:ChangeDataObjectScope(obj, newScope)
 			end
 
 			if obj.type == Clicked.DataObjectType.BINDING then

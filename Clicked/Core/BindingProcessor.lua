@@ -825,7 +825,7 @@ end
 --- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
 ---
 --- @param binding Binding
---- @param condition string
+--- @param condition? string
 --- @overload fun(self:Clicked, binding:Binding, full:boolean)
 function Addon:ReloadBinding(binding, condition)
 	local conditions = {}
