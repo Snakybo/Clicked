@@ -975,6 +975,32 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						CreateOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
 						CreateOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
 					end
+				elseif ref.type == Clicked.DataObjectType.GROUP then
+					--- @cast objects Group[]
+					--- @cast ref Group
+
+					rootDescription:CreateButton(Addon.L["Duplicate"], function()
+						--- @type Group
+						local first
+
+						for _, group in ipairs(objects) do
+							local clone = Clicked:CreateGroup()
+							clone.name = group.name .. " - copy"
+							clone.displayIcon = group.displayIcon
+							first = first or clone
+
+							Addon:ChangeScope(clone, group.scope)
+
+							for _, binding in ipairs(Clicked:GetByParent(group.uid)) do
+								local cloneBinding = Addon:CloneBinding(binding)
+								cloneBinding.parent = clone.uid
+
+								Addon:UpdateLookupTable(cloneBinding)
+							end
+						end
+
+						self.treeWidget:Select(first.uid)
+					end)
 				end
 
 				do
@@ -1139,6 +1165,36 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 					AddConvertToOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
 					AddConvertToOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
 				end
+			elseif ref.type == Clicked.DataObjectType.GROUP then
+				--- @cast objects Group[]
+				--- @cast ref Group
+
+				table.insert(menu, {
+					text = Addon.L["Duplicate"],
+					notCheckable = true,
+					func = function()
+						--- @type Group
+						local first
+
+						for _, group in ipairs(objects) do
+							local clone = Clicked:CreateGroup()
+							clone.name = group.name .. " - copy"
+							clone.displayIcon = group.displayIcon
+							first = first or clone
+
+							Addon:ChangeScope(clone, group.scope)
+
+							for _, binding in ipairs(Clicked:GetByParent(group.uid)) do
+								local cloneBinding = Addon:CloneBinding(binding)
+								cloneBinding.parent = clone.uid
+
+								Addon:UpdateLookupTable(cloneBinding)
+							end
+						end
+
+						self.treeWidget:Select(first.uid)
+					end
+				})
 			end
 
 			do

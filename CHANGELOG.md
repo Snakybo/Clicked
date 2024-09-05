@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add duplicate option to groups
+
 ### Fixed
 
 * Fix item bindings not always loading upon login
