@@ -39,20 +39,23 @@ local function ClickedTreeGroup_RefreshTree(self, scrollToSelection, fromOnUpdat
 		local button = self.buttons[i - status.scrollValue]
 
 		if button ~= nil then
-			if button.highlight then
-				button.highlight:SetVertexColor(1.0, 0.9, 0.0, 0.8)
-			end
-
 			local item = self.treeLookup[button.uid]
-			if not item.isFolded then
-				button.toggle:SetNormalTexture(elv.Media.Textures.Minus)
-				button.toggle:SetPushedTexture(elv.Media.Textures.Minus)
-			else
-				button.toggle:SetNormalTexture(elv.Media.Textures.Plus)
-				button.toggle:SetPushedTexture(elv.Media.Textures.Plus)
-			end
 
-			button.toggle:SetHighlightTexture(elv.ClearTexture)
+			if item ~= nil then
+				if button.highlight then
+					button.highlight:SetVertexColor(1.0, 0.9, 0.0, 0.8)
+				end
+
+				if not item.isFolded then
+					button.toggle:SetNormalTexture(elv.Media.Textures.Minus)
+					button.toggle:SetPushedTexture(elv.Media.Textures.Minus)
+				else
+					button.toggle:SetNormalTexture(elv.Media.Textures.Plus)
+					button.toggle:SetPushedTexture(elv.Media.Textures.Plus)
+				end
+
+				button.toggle:SetHighlightTexture(elv.ClearTexture)
+			end
 		end
 	end
 end
@@ -114,7 +117,7 @@ local function Initialize()
 				for i = offset + 1, #lines do
 					local button = buttons[i - offset]
 
-					if button then
+					if button ~= nil then
 						if button.highlight then
 							button.highlight:SetVertexColor(1.0, 0.9, 0.0, 0.8)
 						end

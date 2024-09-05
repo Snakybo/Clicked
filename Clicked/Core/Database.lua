@@ -37,12 +37,14 @@ Clicked.DataObjectScope = {
 --- @field public parent table<integer,Binding[]>
 --- @field public actionType table<ActionType,Binding[]>
 --- @field public scope table<DataObjectScope,DataObject[]>
+--- @field public deleted integer[]
 local lookupTable = {
 	uid = {},
 	keybind = {},
 	parent = {},
 	actionType = {},
-	scope = {}
+	scope = {},
+	deleted = {}
 }
 
 -- Local support functions
@@ -205,13 +207,17 @@ function Clicked:DeleteGroup(group)
 	end
 
 	if deleted then
-		for i = #db.bindings, 1, -1 do
-			local binding = db.bindings[i]
+		table.insert(lookupTable.deleted, group.uid)
 
-			if binding.parent == group.uid then
-				table.remove(db.bindings, i)
-				Addon:ReloadBinding(binding, true)
+		-- Create a copy as DeleteBinding will modify the cache
+		local bindings = CopyTable(Clicked:GetByParent(group.uid))
+
+		if #bindings > 0 then
+			for _, binding in ipairs(bindings) do
+				Clicked:DeleteBinding(binding)
 			end
+		else
+			Addon.BindingConfig.Window:RedrawTree()
 		end
 
 		return true
@@ -238,6 +244,7 @@ function Addon:UpdateLookupTable(obj)
 		table.wipe(lookupTable.parent)
 		table.wipe(lookupTable.actionType)
 		table.wipe(lookupTable.scope)
+		table.wipe(lookupTable.deleted)
 
 		for _, configured in Clicked:IterateConfiguredBindings() do
 			table.insert(queue, configured)
@@ -269,20 +276,45 @@ function Addon:UpdateLookupTable(obj)
 		end
 	end
 
+	--- @param tbl table<any,DataObject[]>
+	--- @param value DataObject
+	local function DeleteFromLookupTable(tbl, value)
+		for _, array in pairs(tbl) do
+			if Addon:TableRemoveItem(array, value) then
+				break
+			end
+		end
+	end
+
 	while #queue > 0 do
 		--- @type DataObject
 		local current = table.remove(queue, 1)
 
-		lookupTable.uid[current.uid] = current
+		if tContains(lookupTable.deleted, current.uid) then
+			lookupTable.uid[current.uid] = nil
 
-		if current.type == Clicked.DataObjectType.BINDING then
-			--- @cast current Binding
-			UpdateLookupTable(lookupTable.keybind, current.keybind, current)
-			UpdateLookupTable(lookupTable.parent, current.parent, current)
-			UpdateLookupTable(lookupTable.actionType, current.actionType, current)
+			Addon:TableRemoveItem(lookupTable.deleted, current.uid)
+
+			if current.type == Clicked.DataObjectType.BINDING then
+				--- @cast current Binding
+				DeleteFromLookupTable(lookupTable.keybind, current)
+				DeleteFromLookupTable(lookupTable.parent, current)
+				DeleteFromLookupTable(lookupTable.actionType, current)
+			end
+
+			DeleteFromLookupTable(lookupTable.scope, current)
+		else
+			lookupTable.uid[current.uid] = current
+
+			if current.type == Clicked.DataObjectType.BINDING then
+				--- @cast current Binding
+				UpdateLookupTable(lookupTable.keybind, current.keybind, current)
+				UpdateLookupTable(lookupTable.parent, current.parent, current)
+				UpdateLookupTable(lookupTable.actionType, current.actionType, current)
+			end
+
+			UpdateLookupTable(lookupTable.scope, current.scope, current)
 		end
-
-		UpdateLookupTable(lookupTable.scope, current.scope, current)
 	end
 end
 
@@ -382,6 +414,7 @@ function Clicked:DeleteBinding(binding)
 	end
 
 	if deleted then
+		table.insert(lookupTable.deleted, binding.uid)
 		Addon:ReloadBinding(binding, true)
 		return true
 	end

@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix item bindings not always loading upon login
+* Fix various minor Lua errors when deleting bindings
 
 ### Changed
 
