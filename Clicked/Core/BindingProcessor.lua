@@ -101,7 +101,12 @@ local hovercastBucket = {}
 local regularBucket = {}
 
 --- @type BindingReloadCauses
-local pendingReloadCauses = {} --- @diagnostic disable-line: missing-fields
+local pendingReloadCauses = {
+	full = false,
+	events = {},
+	binding = {},
+	conditions = {}
+}
 
 --- @type table<string,boolean>
 local talentCache = {}
@@ -538,10 +543,6 @@ end
 --- @param events string[]
 --- @param conditions string[]
 local function ProcessReloadArguments(bindings, full, events, conditions)
-	pendingReloadCauses.events = pendingReloadCauses.events or {}
-	pendingReloadCauses.binding = pendingReloadCauses.binding or {}
-	pendingReloadCauses.conditions = pendingReloadCauses.conditions or {}
-
 	if #bindings == 0 then
 		if full then
 			pendingReloadCauses.full = true
@@ -584,7 +585,10 @@ local function ReloadBindings(immediate)
 	end
 
 	local function DoReloadBindings()
-		reloadBindingsDelayTicker = nil
+		if reloadBindingsDelayTicker ~= nil then
+			reloadBindingsDelayTicker:Cancel()
+			reloadBindingsDelayTicker = nil
+		end
 
 		-- The pendingReloadCauses can contains three "targets":
 		--  1. a specific binding, using the `binding` property
@@ -601,7 +605,10 @@ local function ReloadBindings(immediate)
 			end
 		end
 
-		wipe(pendingReloadCauses)
+		pendingReloadCauses.full = false
+		wipe(pendingReloadCauses.events)
+		wipe(pendingReloadCauses.binding)
+		wipe(pendingReloadCauses.conditions)
 
 		Clicked:ProcessActiveBindings()
 
@@ -864,7 +871,10 @@ end
 --- @param immediate? boolean
 function Addon:UpdateTalentCache(callback, immediate)
 	local function DoUpdateTalentCache()
-		reloadTalentCacheDelayTicker = nil
+		if reloadTalentCacheDelayTicker ~= nil then
+			reloadTalentCacheDelayTicker:Cancel()
+			reloadTalentCacheDelayTicker = nil
+		end
 
 		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 			wipe(talentCache)
