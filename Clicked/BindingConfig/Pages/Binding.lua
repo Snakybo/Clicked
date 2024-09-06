@@ -227,8 +227,8 @@ function Addon.BindingConfig.BindingPage:Redraw()
 			for _, target in ipairs(self.targets) do
 				target.keybind = key
 
-				Addon:EnsureSupportedTargetModes(target.targets, key, target.actionType)
 				Addon:ReloadBinding(target, "keybind")
+				Addon:ReloadBinding(target, "targets")
 			end
 
 			updateCb()

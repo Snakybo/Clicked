@@ -1135,32 +1135,15 @@ function Addon:IsMacroCastEnabled(binding)
 		return true
 	end
 
+	if binding.actionType == Clicked.ActionType.UNIT_MENU or binding.actionType == Clicked.ActionType.UNIT_SELECT then
+		return false
+	end
+
+	if Addon:IsRestrictedKeybind(binding.keybind) then
+		return false
+	end
+
 	return binding.targets.regularEnabled
-end
-
---- Ensure that the specified `targets` table is properly updated after switching
---- the type or keybind of a binding. Some bindings only support hovercast, e.g. mouse button 1 and 2.
---- Other binding types, such as `MACRO` do not support specifying multiple targets.
----
---- @param targets Binding.Targets
---- @param keybind string
---- @param type string
-function Addon:EnsureSupportedTargetModes(targets, keybind, type)
-	if Addon:IsRestrictedKeybind(keybind) or type == Clicked.ActionType.UNIT_SELECT or type == Clicked.ActionType.UNIT_MENU then
-		targets.hovercastEnabled = true
-		targets.regularEnabled = false
-	end
-
-	if type == Clicked.ActionType.MACRO then
-		while #targets.regular > 0 do
-			table.remove(targets.regular, 1)
-		end
-
-		targets.regular[1] = Addon:GetNewBindingTargetTemplate()
-
-		targets.hovercast.hostility = Addon.TargetHostility.ANY
-		targets.hovercast.vitals = Addon.TargetVitals.ANY
-	end
 end
 
 --- Check if a binding's target unit can have a hostility. This will be

@@ -959,7 +959,6 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 										first = first or binding
 										binding.actionType = type
 
-										Addon:EnsureSupportedTargetModes(binding.targets, binding.keybind, type)
 										Addon:ReloadBinding(binding, true)
 									end
 								end
@@ -1133,7 +1132,6 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							func = function()
 								ref.actionType = type
 
-								Addon:EnsureSupportedTargetModes(ref.targets, ref.keybind, type)
 								Addon:ReloadBinding(ref, true)
 								self.treeWidget:Select(ref.uid)
 

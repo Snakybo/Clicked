@@ -95,123 +95,122 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			return true
 		end
 
-		--- @param binding Binding
-		--- @return string
-		local function ValueSelector(binding)
-			return binding.targets.regularEnabled and Addon.L["Enabled"] or Addon.L["Disabled"]
-		end
+		if FindInTableIf(self.bindings, CanEnableRegularTargetMode) ~= nil then
+			--- @param binding Binding
+			--- @return string
+			local function ValueSelector(binding)
+				return binding.targets.regularEnabled and Addon.L["Enabled"] or Addon.L["Disabled"]
+			end
 
-		--- @param binding Binding
-		--- @return boolean
-		local function GetEnabledState(binding)
-			return binding.targets.regularEnabled
-		end
+			--- @param binding Binding
+			--- @return boolean
+			local function GetEnabledState(binding)
+				return binding.targets.regularEnabled
+			end
 
-		--- @param value boolean
-		local function OnValueChanged(_, _, value)
-			for _, binding in ipairs(self.bindings) do
-				if CanEnableRegularTargetMode(binding) then
-					binding.targets.regularEnabled = value
-					Addon:ReloadBinding(binding, "targets")
+			--- @param value boolean
+			local function OnValueChanged(_, _, value)
+				for _, binding in ipairs(self.bindings) do
+					if CanEnableRegularTargetMode(binding) then
+						binding.targets.regularEnabled = value
+						Addon:ReloadBinding(binding, "targets")
+					end
 				end
+
+				self.controller:RedrawTab()
 			end
 
-			self.controller:RedrawTab()
-		end
+			do
+				local widget = AceGUI:Create("ClickedToggleHeading") --[[@as ClickedToggleHeading]]
+				widget:SetFullWidth(true)
+				widget:SetCallback("OnValueChanged", OnValueChanged)
 
-		do
-			local canAnyEnableRegularTargetMode = FindInTableIf(self.bindings, CanEnableRegularTargetMode) ~= nil
+				Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Global"], GetEnabledState)
 
-			local widget = AceGUI:Create("ClickedToggleHeading") --[[@as ClickedToggleHeading]]
-			widget:SetFullWidth(true)
-			widget:SetDisabled(not canAnyEnableRegularTargetMode)
-			widget:SetCallback("OnValueChanged", OnValueChanged)
-
-			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Global"], GetEnabledState)
-
-			self.container:AddChild(widget)
-		end
-
-		local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
-			return binding.targets.regularEnabled
-		end)
-
-		if isAnyEnabled then
-			local maxTargets = 0
-
-			for _, binding in ipairs(self.bindings) do
-				maxTargets = math.max(maxTargets, #binding.targets.regular)
+				self.container:AddChild(widget)
 			end
 
-			for i = 1, maxTargets + 1 do
-				local function OnMove(_, event)
-					for _, binding in ipairs(self.bindings) do
-						if event == "OnMoveUp" then
-							local temp = binding.targets.regular[i - 1]
+			local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+				return binding.targets.regularEnabled
+			end)
 
-							if temp ~= nil then
-								binding.targets.regular[i - 1] = binding.targets.regular[i]
-								binding.targets.regular[i] = temp
-							end
-						elseif event == "OnMoveDown" then
-							local temp = binding.targets.regular[i + 1]
+			if isAnyEnabled then
+				local maxTargets = 0
 
-							if temp ~= nil then
-								binding.targets.regular[i + 1] = binding.targets.regular[i]
-								binding.targets.regular[i] = temp
+				for _, binding in ipairs(self.bindings) do
+					maxTargets = math.max(maxTargets, #binding.targets.regular)
+				end
+
+				for i = 1, maxTargets + 1 do
+					local function OnMove(_, event)
+						for _, binding in ipairs(self.bindings) do
+							if event == "OnMoveUp" then
+								local temp = binding.targets.regular[i - 1]
+
+								if temp ~= nil then
+									binding.targets.regular[i - 1] = binding.targets.regular[i]
+									binding.targets.regular[i] = temp
+								end
+							elseif event == "OnMoveDown" then
+								local temp = binding.targets.regular[i + 1]
+
+								if temp ~= nil then
+									binding.targets.regular[i + 1] = binding.targets.regular[i]
+									binding.targets.regular[i] = temp
+								end
 							end
+
+							Addon:ReloadBinding(binding)
 						end
 
-						Addon:ReloadBinding(binding)
+						self.controller:RedrawTab()
 					end
 
-					self.controller:RedrawTab()
-				end
+					local index = i > maxTargets and 0 or i
 
-				local index = i > maxTargets and 0 or i
+					local group = AceGUI:Create("ClickedTargetGroup") --[[@as ClickedTargetGroup]]
+					group:SetFullWidth(true)
+					group:SetLayout("Flow")
+					group:SetMoveUpButton(index ~= 0 and i > 1)
+					group:SetMoveDownButton(index ~= 0 and i < maxTargets)
+					group:SetCallback("OnMoveDown", OnMove)
+					group:SetCallback("OnMoveUp", OnMove)
 
-				local group = AceGUI:Create("ClickedTargetGroup") --[[@as ClickedTargetGroup]]
-				group:SetFullWidth(true)
-				group:SetLayout("Flow")
-				group:SetMoveUpButton(index ~= 0 and i > 1)
-				group:SetMoveDownButton(index ~= 0 and i < maxTargets)
-				group:SetCallback("OnMoveDown", OnMove)
-				group:SetCallback("OnMoveUp", OnMove)
+					local canAnyBeHostile = FindInTableIf(self.bindings, function(binding)
+						local target = binding.targets.regular[i]
+						return target ~= nil and Addon:CanUnitBeHostile(target.unit)
+					end)
 
-				local canAnyBeHostile = FindInTableIf(self.bindings, function(binding)
-					local target = binding.targets.regular[i]
-					return target ~= nil and Addon:CanUnitBeHostile(target.unit)
-				end)
+					local canAnyBeDead = FindInTableIf(self.bindings, function(binding)
+						local target = binding.targets.regular[i]
+						return target ~= nil and Addon:CanUnitBeDead(target.unit)
+					end)
 
-				local canAnyBeDead = FindInTableIf(self.bindings, function(binding)
-					local target = binding.targets.regular[i]
-					return target ~= nil and Addon:CanUnitBeDead(target.unit)
-				end)
-
-				do
-					local widget = self:DrawTargetUnit(group, index, maxTargets > 1)
-					widget:SetRelativeWidth(0.33)
-				end
-
-				do
-					local widget = self:DrawTargetHostility(group, index)
-					widget:SetRelativeWidth(0.33)
-
-					if index == 0 or not canAnyBeHostile then
-						widget:SetDisabled(true)
+					do
+						local widget = self:DrawTargetUnit(group, index, maxTargets > 1)
+						widget:SetRelativeWidth(0.33)
 					end
-				end
 
-				do
-					local widget = self:DrawTargetVitals(group, index)
-					widget:SetRelativeWidth(0.33)
+					do
+						local widget = self:DrawTargetHostility(group, index)
+						widget:SetRelativeWidth(0.33)
 
-					if index == 0 or not canAnyBeDead then
-						widget:SetDisabled(true)
+						if index == 0 or not canAnyBeHostile then
+							widget:SetDisabled(true)
+						end
 					end
-				end
 
-				self.container:AddChild(group)
+					do
+						local widget = self:DrawTargetVitals(group, index)
+						widget:SetRelativeWidth(0.33)
+
+						if index == 0 or not canAnyBeDead then
+							widget:SetDisabled(true)
+						end
+					end
+
+					self.container:AddChild(group)
+				end
 			end
 		end
 	end

@@ -23,6 +23,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix macro too long message sometimes incorrectly showing upon login
 * Improve startup behavior to ensure bindings are always loaded correctly even in combat
 
+### Changed
+
+* Hide "Global" targets section of none of the selected bindings support it
+* Don't automatically change target settings when e.g. assigning a binding to the left or right mouse button [#213]
+
 ## [1.16.2] - 2024-09-05
 
 ### Added
@@ -1623,6 +1628,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#223]: https://github.com/Snakybo/Clicked/issues/223
 [#217]: https://github.com/Snakybo/Clicked/issues/217
 [#216]: https://github.com/Snakybo/Clicked/issues/216
+[#213]: https://github.com/Snakybo/Clicked/issues/213
 [#212]: https://github.com/Snakybo/Clicked/issues/212
 [#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
