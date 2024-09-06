@@ -315,3 +315,6 @@ L["Specialization role"] = true
 L["DPS"] = true
 L["Tank"] = true
 L["Healer"] = true
+L["Clear blue cursor"] = true
+L["Clears the \"blue casting cursor\"."] = true
+L["It's recommended to always leave this option enabled, as without it you may sometimes be left with a pending spell cast on your cursor."] = true

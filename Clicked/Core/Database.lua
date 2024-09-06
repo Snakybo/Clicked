@@ -465,6 +465,7 @@ function Addon:GetNewBindingTemplate()
 			interrupt = false,
 			startAutoAttack = false,
 			startPetAttack = false,
+			stopSpellTarget = true,
 			cancelQueuedSpell = false,
 			cancelForm = false,
 			targetUnitAfterCast = false

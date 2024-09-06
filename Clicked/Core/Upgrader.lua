@@ -882,6 +882,8 @@ local function Upgrade(db, from)
 					"DAMAGER"
 				}
 			}
+
+			binding.action.stopSpellTarget = true
 		end
 	end
 end

@@ -15,6 +15,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add action bar page (`bar` and `nobar`) macro conditions [#183]
 * Add input validation to bonus bar and action bar page macro conditions
 * Add specialization role load condtion [#160]
+* Add option to disable the `/stopspelltarget` command [#202]
 
 ### Fixed
 
@@ -1624,6 +1625,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#210]: https://github.com/Snakybo/Clicked/issues/210
 [#204]: https://github.com/Snakybo/Clicked/issues/204
 [#203]: https://github.com/Snakybo/Clicked/issues/203
+[#202]: https://github.com/Snakybo/Clicked/issues/202
 [#201]: https://github.com/Snakybo/Clicked/issues/201
 [#199]: https://github.com/Snakybo/Clicked/issues/199
 [#193]: https://github.com/Snakybo/Clicked/issues/193

@@ -1178,6 +1178,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		local startPetAttack = false
 		local cancelQueuedSpell = false
 		local cancelForm = false
+		local stopSpellTarget = false
 
 		for _, binding in ipairs(bindings) do
 			if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM or binding.actionType == Clicked.ActionType.CANCELAURA then
@@ -1207,11 +1208,14 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 					interrupt = true
 					table.insert(lines, "/stopcasting")
 				end
+
+				-- add a command to remove the blue casting cursor
+				if not stopSpellTarget and binding.action.stopSpellTarget then
+					stopSpellTarget = true
+					table.insert(lines, "/stopspelltarget")
+				end
 			end
 		end
-
-		-- add a command to remove the blue casting cursor
-		table.insert(lines, "/stopspelltarget")
 	end
 
 	-- Add all action groups in order

@@ -626,6 +626,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 	CreateCheckbox(Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
 	CreateCheckbox(Addon.L["Exit shapeshift form"], Addon.L["Allow this binding to automatically exit your shapeshift form."], "cancelForm")
 	CreateCheckbox(Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
+	CreateCheckbox(Addon.L["Clear blue cursor"], Addon.L["Clears the \"blue casting cursor\"."] .. "\n\n" .. Addon.L["It's recommended to always leave this option enabled, as without it you may sometimes be left with a pending spell cast on your cursor."], "stopSpellTarget")
 
 	self.container:AddChild(group)
 end

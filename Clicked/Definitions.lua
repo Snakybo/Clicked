@@ -73,6 +73,7 @@
 --- @field public macroIcon string|integer
 --- @field public auraName string|integer
 --- @field public interrupt boolean
+--- @field public stopSpellTarget boolean
 --- @field public executionOrder integer
 --- @field public spellMaxRank boolean
 --- @field public startAutoAttack boolean
