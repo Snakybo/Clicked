@@ -298,10 +298,15 @@ local config = {
 	{
 		id = "bonusbar",
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
+		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",
 			label = "Bonus bar",
-			negatable = true
+			negatable = true,
+			validate = function(previousValue, value)
+				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
+			end,
+			tooltip = "Enter the bonus bar page number."
 		},
 		init = function()
 			return Utils.CreateLoadOption("")
@@ -310,10 +315,15 @@ local config = {
 	},
 	{
 		id = "bar",
+		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",
 			label = "Action bar page",
-			negatable = true
+			negatable = true,
+			validate = function(previousValue, value)
+				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
+			end,
+			tooltip = "Enter the action bar page number."
 		},
 		init = function()
 			return Utils.CreateLoadOption("")

@@ -12,7 +12,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add `bar` and `nobar` macro conditions [#183]
+* Add Action bar page (`bar` and `nobar`) macro conditions [#183]
+* Add input validation to Bonus bar and Action bar page macro conditions
 
 ### Fixed
 

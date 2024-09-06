@@ -57,9 +57,10 @@ function Drawer:Draw()
 
 		--- @param widget ClickedEditBox
 		--- @param value string
-		local function OnTextChanged(widget, _, value)
+		--- @param previousValue string
+		local function OnTextChanged(widget, _, value, previousValue)
 			if drawer.validate ~= nil then
-				value = drawer.validate(value, false)
+				value = drawer.validate(previousValue, value, false)
 				widget:SetText(value)
 			end
 		end
@@ -82,11 +83,12 @@ function Drawer:Draw()
 		end
 
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		--- @param previousValue string
+		local function OnEnterPressed(_, _, value, previousValue)
 			value = string.trim(value)
 
 			if drawer.validate ~= nil then
-				value = drawer.validate(value, true)
+				value = drawer.validate(previousValue, value, true)
 			end
 
 			for _, binding in ipairs(self.bindings) do

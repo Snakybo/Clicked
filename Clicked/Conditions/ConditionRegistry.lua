@@ -22,7 +22,7 @@
 --- @field public availableValues? fun(...):...
 
 --- @class InputDrawerConfig : DrawerConfig
---- @field public validate? fun(value: string, final: boolean):string
+--- @field public validate? fun(previousValue: string, value: string, final: boolean):string
 
 --- @class Condition
 --- @field public id string
