@@ -196,6 +196,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.advFlyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
 	ParseNegatableStringCondition(action.bonusbar, "bonusbar", "nobonusbar")
+	ParseNegatableStringCondition(action.bar, "bar", "nobar")
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
@@ -228,8 +229,9 @@ local function ConstructAction(binding, target)
 
 	--- @param condition Binding.NegatableStringLoadOption
 	--- @param key string
-	local function AppendNegatableStringCondition(condition, key)
-		if condition.selected then
+	--- @param ignoreEmptyValue? boolean
+	local function AppendNegatableStringCondition(condition, key, ignoreEmptyValue)
+		if condition.selected and (not ignoreEmptyValue or not Addon:IsNilOrEmpty(condition.value)) then
 			action[key] = {
 				negated = condition.negated,
 				value = condition.value
@@ -244,6 +246,7 @@ local function ConstructAction(binding, target)
 	AppendCondition(binding.load.outdoors, "outdoors")
 	AppendCondition(binding.load.swimming, "swimming")
 	AppendNegatableStringCondition(binding.load.channeling, "channeling")
+	AppendNegatableStringCondition(binding.load.bar, "bar", true)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
 		AppendCondition(binding.load.flying, "flying")
@@ -341,6 +344,7 @@ local function SortActions(actions, indexMap)
 			{ left = left.flyable, right = right.flyable, value = true, comparison = "eq" },
 			{ left = left.advFlyable, right = right.advFlyable, value = true, comparison = "eq" },
 			{ left = left.bonusbar, right = right.bonusbar, value = true, comparison = "eq" },
+			{ left = left.bar, right = right.bar, value = true, comparison = "eq" },
 
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 

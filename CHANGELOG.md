@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add `bar` and `nobar` macro conditions [#183]
+
 ### Fixed
 
 * Properly hide unavailable load conditions on Classic [#223]
@@ -1625,6 +1629,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#189]: https://github.com/Snakybo/Clicked/issues/189
 [#186]: https://github.com/Snakybo/Clicked/issues/186
 [#184]: https://github.com/Snakybo/Clicked/issues/184
+[#183]: https://github.com/Snakybo/Clicked/issues/183
 [#182]: https://github.com/Snakybo/Clicked/issues/182
 [#181]: https://github.com/Snakybo/Clicked/issues/181
 [#179]: https://github.com/Snakybo/Clicked/issues/179

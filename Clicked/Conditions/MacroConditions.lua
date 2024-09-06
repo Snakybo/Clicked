@@ -155,7 +155,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -172,7 +172,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -189,7 +189,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -206,7 +206,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -218,7 +218,7 @@ local config = {
 			label = "Channeling",
 			negatable = true
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -236,7 +236,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -254,7 +254,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -272,7 +272,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -290,7 +290,7 @@ local config = {
 				}, { true, false }
 			end
 		},
-		init = function ()
+		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
 		unpack = Utils.UnpackSimpleLoadOption
@@ -303,7 +303,19 @@ local config = {
 			label = "Bonus bar",
 			negatable = true
 		},
-		init = function ()
+		init = function()
+			return Utils.CreateLoadOption("")
+		end,
+		unpack = Utils.UnpackSimpleLoadOption
+	},
+	{
+		id = "bar",
+		drawer = {
+			type = "input",
+			label = "Action bar page",
+			negatable = true
+		},
+		init = function()
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption

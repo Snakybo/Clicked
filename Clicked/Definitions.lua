@@ -109,6 +109,7 @@
 --- @field public warMode Binding.LoadOption
 --- @field public channeling Binding.NegatableStringLoadOption
 --- @field public bonusbar Binding.NegatableStringLoadOption
+--- @field public bar Binding.NegatableStringLoadOption
 
 --- @class Binding.LoadOption
 --- @field public selected boolean
@@ -156,6 +157,7 @@
 --- @field public channeling? Action.NegatableValueString
 --- @field public forms? Action.NegatableValueString
 --- @field public bonusbar? Action.NegatableValueString
+--- @field public bar? Action.NegatableValueString
 --- @field public unit? string
 --- @field public hostility? string
 --- @field public vitals? string

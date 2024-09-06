@@ -499,6 +499,7 @@ function Addon:GetNewBindingTemplate()
 			zoneName = GetLoadOptionTemplate(""),
 			equipped = GetLoadOptionTemplate(""),
 			bonusbar = GetNegatableStringLoadOptionTemplate(),
+			bar = GetNegatableStringLoadOptionTemplate(),
 			channeling = GetNegatableStringLoadOptionTemplate(),
 			flying = GetNegatableLoadOptionTemplate(),
 			dynamicFlying = GetNegatableLoadOptionTemplate(),
