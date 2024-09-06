@@ -27,7 +27,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Hide "Global" targets section of none of the selected bindings support it
 * Don't automatically change target settings when e.g. assigning a binding to the left or right mouse button [#213]
-* Remove special sorting for `@mouseover`, `@player`, `@cursor`, and default targets, targets will now always appear in the generated macro in the same order as the configuration [@215]
+* Remove special sorting for `@mouseover`, `@player`, `@cursor`, and default targets, targets will now always appear in the generated macro in the same order as the configuration [#215]
 
 ## [1.16.2] - 2024-09-05
 
