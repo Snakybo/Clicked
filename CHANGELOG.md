@@ -20,6 +20,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Properly hide unavailable load conditions on Classic [#223]
+* Fix macro too long message sometimes incorrectly showing upon login
 
 ## [1.16.2] - 2024-09-05
 

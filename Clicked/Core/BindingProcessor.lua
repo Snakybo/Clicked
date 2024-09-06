@@ -578,7 +578,7 @@ local function ProcessReloadArguments(bindings, full, events, conditions)
 end
 
 local function ReloadBindings()
-	if reloadBindingsDelayTicker ~= nil or InCombatLockdown() then
+	if reloadBindingsDelayTicker ~= nil or InCombatLockdown() or not Addon:IsInitialized() then
 		return
 	end
 
@@ -847,8 +847,9 @@ function Addon:ReloadBinding(binding, condition)
 	Addon:UpdateLookupTable(binding)
 end
 
+--- @param callback fun(...: string)
 --- @param ... string
-function Addon:UpdateTalentCacheAndReloadBindings(...)
+function Addon:UpdateTalentCache(callback, ...)
 	local function DoUpdateTalentCache()
 		reloadTalentCacheDelayTicker = nil
 
@@ -857,13 +858,13 @@ function Addon:UpdateTalentCacheAndReloadBindings(...)
 
 			local configId = C_ClassTalents.GetActiveConfigID()
 			if configId == nil then
-				Addon:UpdateTalentCacheAndReloadBindings()
+				Addon:UpdateTalentCache(callback)
 				return
 			end
 
 			local configInfo = C_Traits.GetConfigInfo(configId)
 			if configInfo == nil then
-				Addon:UpdateTalentCacheAndReloadBindings()
+				Addon:UpdateTalentCache(callback)
 				return
 			end
 
@@ -916,10 +917,10 @@ function Addon:UpdateTalentCacheAndReloadBindings(...)
 		end
 
 		if reloadTalentCacheEvents ~= nil then
-			Addon:ReloadBindings(unpack(reloadTalentCacheEvents))
+			callback(unpack(reloadTalentCacheEvents))
 			reloadTalentCacheEvents = nil
 		else
-			Addon:ReloadBindings()
+			callback()
 		end
 	end
 
