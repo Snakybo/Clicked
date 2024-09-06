@@ -112,8 +112,8 @@ local macroTooLongNotified = {}
 local reloadBindingsDelayTicker = nil
 local reloadTalentCacheDelayTicker = nil
 
---- @type string[]?
-local reloadTalentCacheEvents = nil
+--- @type function[]
+local reloadTalentCacheCallbacks = {}
 
 -- Local support functions
 
@@ -577,8 +577,9 @@ local function ProcessReloadArguments(bindings, full, events, conditions)
 	end
 end
 
-local function ReloadBindings()
-	if reloadBindingsDelayTicker ~= nil or InCombatLockdown() or not Addon:IsInitialized() then
+--- @param immediate? boolean
+local function ReloadBindings(immediate)
+	if not immediate and (reloadBindingsDelayTicker ~= nil or InCombatLockdown() or not Addon:IsInitialized()) then
 		return
 	end
 
@@ -608,7 +609,11 @@ local function ReloadBindings()
 		Addon.KeyVisualizer:Redraw()
 	end
 
-	reloadBindingsDelayTicker = C_Timer.NewTimer(0, DoReloadBindings)
+	if immediate then
+		DoReloadBindings()
+	else
+		reloadBindingsDelayTicker = C_Timer.NewTimer(0, DoReloadBindings)
+	end
 end
 
 -- Public addon API
@@ -824,6 +829,14 @@ function Addon:ReloadBindings(...)
 	Addon:UpdateLookupTable()
 end
 
+--- Immediately fully reload all bindings.
+function Addon:ReloadBindingsImmediate()
+	ProcessReloadArguments({}, true, {}, {})
+	ReloadBindings(true)
+
+	Addon:UpdateLookupTable()
+end
+
 --- Reload a binding, if `condition` is a string, only the specified condition will be refreshed, if it is `true`, the entire state will be refreshed.---
 ---
 --- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
@@ -847,9 +860,9 @@ function Addon:ReloadBinding(binding, condition)
 	Addon:UpdateLookupTable(binding)
 end
 
---- @param callback fun(...: string)
---- @param ... string
-function Addon:UpdateTalentCache(callback, ...)
+--- @param callback? fun()
+--- @param immediate? boolean
+function Addon:UpdateTalentCache(callback, immediate)
 	local function DoUpdateTalentCache()
 		reloadTalentCacheDelayTicker = nil
 
@@ -858,13 +871,13 @@ function Addon:UpdateTalentCache(callback, ...)
 
 			local configId = C_ClassTalents.GetActiveConfigID()
 			if configId == nil then
-				Addon:UpdateTalentCache(callback)
+				Addon:UpdateTalentCache()
 				return
 			end
 
 			local configInfo = C_Traits.GetConfigInfo(configId)
 			if configInfo == nil then
-				Addon:UpdateTalentCache(callback)
+				Addon:UpdateTalentCache()
 				return
 			end
 
@@ -916,34 +929,22 @@ function Addon:UpdateTalentCache(callback, ...)
 			end
 		end
 
-		if reloadTalentCacheEvents ~= nil then
-			callback(unpack(reloadTalentCacheEvents))
-			reloadTalentCacheEvents = nil
-		else
-			callback()
+		local callbacks = CopyTable(reloadTalentCacheCallbacks)
+		wipe(reloadTalentCacheCallbacks)
+
+		for _, cb in ipairs(callbacks) do
+			cb()
 		end
 	end
 
-	local args = { ... }
+	if callback ~= nil then
+		table.insert(reloadTalentCacheCallbacks, callback)
+	end
 
-	if reloadTalentCacheDelayTicker == nil then
-		if #args > 0 then
-			reloadTalentCacheEvents = args
-		end
-
-		reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, function()
-			DoUpdateTalentCache()
-		end)
-	else
-		if #args == 0 then
-			reloadTalentCacheEvents = nil
-		elseif reloadTalentCacheEvents ~= nil then
-			for _, event in ipairs(args) do
-				if not tContains(reloadTalentCacheEvents, event) then
-					table.insert(reloadTalentCacheEvents, event)
-				end
-			end
-		end
+	if immediate then
+		DoUpdateTalentCache()
+	elseif reloadTalentCacheDelayTicker == nil then
+		reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, DoUpdateTalentCache)
 	end
 end
 

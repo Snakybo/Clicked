@@ -133,12 +133,20 @@ end
 local function PLAYER_ENTERING_WORLD()
 	isInitialized = true
 
+	local isInitialLoadPending = false
+
+	Addon:RequestItemLoadForBindings()
 	Addon:ProcessFrameQueue()
 	Addon:UpdateClickCastHeaderBlacklist()
-	Addon:UpdateTalentCache(function(...)
-		Addon:ReloadBindings(...)
-		Addon:RequestItemLoadForBindings()
-	end)
+	Addon:UpdateTalentCache(function()
+		isInitialLoadPending = true
+		Addon:ReloadBindingsImmediate()
+	end, true)
+
+	-- Reload immediately in case we are about to be in combat
+	if not isInitialLoadPending then
+		Addon:ReloadBindingsImmediate()
+	end
 end
 
 local function ADDON_LOADED()
@@ -160,9 +168,9 @@ local function ZONE_CHANGED_NEW_AREA()
 end
 
 local function CHARACTER_POINTS_CHANGED()
-	Addon:UpdateTalentCache(function(...)
-		Addon:ReloadBindings(...)
-	end, "CHARACTER_POINTS_CHANGED")
+	Addon:UpdateTalentCache(function()
+		Addon:ReloadBindings("CHARACTER_POINTS_CHANGED")
+	end)
 end
 
 local function PLAYER_FLAGS_CHANGED(_, unit)
@@ -172,9 +180,9 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 end
 
 local function PLAYER_TALENT_UPDATE()
-	Addon:UpdateTalentCache(function(...)
-		Addon:ReloadBindings(...)
-	end, "PLAYER_TALENT_UPDATE")
+	Addon:UpdateTalentCache(function()
+		Addon:ReloadBindings("PLAYER_TALENT_UPDATE")
+	end)
 end
 
 local function PLAYER_PVP_TALENT_UPDATE()
@@ -182,15 +190,15 @@ local function PLAYER_PVP_TALENT_UPDATE()
 end
 
 local function TRAIT_CONFIG_CREATED()
-	Addon:UpdateTalentCache(function(...)
-		Addon:ReloadBindings(...)
-	end, "TRAIT_CONFIG_CREATED")
+	Addon:UpdateTalentCache(function()
+		Addon:ReloadBindings("TRAIT_CONFIG_CREATED")
+	end)
 end
 
 local function TRAIT_CONFIG_UPDATED()
-	Addon:UpdateTalentCache(function(...)
-		Addon:ReloadBindings(...)
-	end, "TRAIT_CONFIG_UPDATED")
+	Addon:UpdateTalentCache(function()
+		Addon:ReloadBindings("TRAIT_CONFIG_UPDATED")
+	end)
 end
 
 local function PLAYER_FOCUS_CHANGED()
