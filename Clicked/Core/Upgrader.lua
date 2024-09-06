@@ -874,6 +874,14 @@ local function Upgrade(db, from)
 				negated = false,
 				value = ""
 			}
+
+			binding.load.specRole = {
+				selected = 0,
+				single = "DAMAGER",
+				multiple = {
+					"DAMAGER"
+				}
+			}
 		end
 	end
 end

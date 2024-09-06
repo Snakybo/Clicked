@@ -104,6 +104,7 @@
 --- @field public zoneName Binding.LoadOption
 --- @field public equipped Binding.LoadOption
 --- @field public specialization Binding.TriStateLoadOption
+--- @field public specRole Binding.TriStateLoadOption
 --- @field public talent Binding.TriStateLoadOption|Binding.MutliFieldLoadOption
 --- @field public pvpTalent Binding.MutliFieldLoadOption
 --- @field public warMode Binding.LoadOption

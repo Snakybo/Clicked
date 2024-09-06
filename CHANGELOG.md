@@ -12,8 +12,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add Action bar page (`bar` and `nobar`) macro conditions [#183]
-* Add input validation to Bonus bar and Action bar page macro conditions
+* Add action bar page (`bar` and `nobar`) macro conditions [#183]
+* Add input validation to bonus bar and action bar page macro conditions
+* Add specialization role load condtion [#160]
 
 ### Fixed
 
@@ -1639,6 +1640,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#169]: https://github.com/Snakybo/Clicked/issues/169
 [#166]: https://github.com/Snakybo/Clicked/issues/166
 [#163]: https://github.com/Snakybo/Clicked/issues/163
+[#160]: https://github.com/Snakybo/Clicked/issues/160
 [#155]: https://github.com/Snakybo/Clicked/issues/155
 [#146]: https://github.com/Snakybo/Clicked/issues/146
 [#142]: https://github.com/Snakybo/Clicked/issues/142

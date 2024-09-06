@@ -204,6 +204,36 @@ local config = {
 		end
 	},
 	{
+		id = "specRole",
+		drawer = {
+			type = "multiselect",
+			label = "Specialization role",
+			availableValues = function()
+				return {
+					DAMAGER = Addon.L["DPS"],
+					TANK = Addon.L["Tank"],
+					HEALER = Addon.L["Healer"]
+				}, {
+					"DAMAGER",
+					"TANK",
+					"HEALER"
+				}
+			end
+		},
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.MOP,
+		init = function()
+			local role = GetSpecializationRole(GetSpecialization()) or "DAMAGER"
+			return Utils.CreateMultiselectLoadOption(role)
+		end,
+		unpack = Utils.UnpackMultiselectLoadOption,
+		testOnEvents = { "PLAYER_TALENT_UPDATE" },
+		--- @param value string[]
+		test = function(value)
+			local role = GetSpecializationRole(GetSpecialization())
+			return tContains(value, role)
+		end
+	},
+	{
 		id = "talent",
 		drawer = {
 			type = "talent",

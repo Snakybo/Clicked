@@ -311,3 +311,7 @@ L["copy"] = true
 L["Action bar page"] = true
 L["Enter the bonus bar page number."] = true
 L["Enter the action bar page number."] = true
+L["Specialization role"] = true
+L["DPS"] = true
+L["Tank"] = true
+L["Healer"] = true

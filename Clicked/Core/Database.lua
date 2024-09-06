@@ -506,6 +506,7 @@ function Addon:GetNewBindingTemplate()
 			flyable = GetNegatableLoadOptionTemplate(),
 			advancedFlyable = GetNegatableLoadOptionTemplate(),
 			specialization = GetTriStateLoadOptionTemplate(1),
+			specRole = GetTriStateLoadOptionTemplate(""),
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate()
@@ -516,6 +517,7 @@ function Addon:GetNewBindingTemplate()
 		local specIndex = GetSpecialization()
 		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
+		template.load.specRole = GetTriStateLoadOptionTemplate(specIndex)
 	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		--- @type number
 		local specIndex = GetPrimaryTalentTree()
