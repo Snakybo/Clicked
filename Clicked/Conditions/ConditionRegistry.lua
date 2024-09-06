@@ -79,16 +79,20 @@ Addon.Condition.Registry = {
 --- @param id string
 --- @param config Condition[]
 function Addon.Condition.Registry:RegisterConditionConfig(id, config)
+	local enabled = {}
 	local map = {}
 
 	for _, condition in ipairs(config) do
-		map[condition.id] = condition
+		if not condition.disabled then
+			table.insert(enabled, condition)
+			map[condition.id] = condition
+		end
 	end
 
 	self.registry[id] = {
-		config = config,
+		config = enabled,
 		map = map,
-		dependencyGraph = BuildDependencyGraph(config)
+		dependencyGraph = BuildDependencyGraph(enabled)
 	}
 end
 
