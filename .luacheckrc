@@ -126,6 +126,7 @@ read_globals = {
 	"GetSpecializationInfoByID",
 	"GetSpecializationInfoForClassID",
 	"GetSpecializationInfoForSpecID",
+	"GetSpecializationRole",
 	"GetSpellBookItemInfo",
 	"GetSpellBookItemName",
 	"GetSpellInfo",
