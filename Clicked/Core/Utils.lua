@@ -82,7 +82,7 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		-- Initial Rogue
 		[259] = { 1784 }, -- Stealth
 		[260] = { 1784 }, -- Stealth
-		[261] = { 1784 }, -- Stealth
+		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
 		[1453] = { 1784 },  -- Stealth
 
 		-- Shadow Priest
