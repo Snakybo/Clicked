@@ -226,12 +226,20 @@ local function GetSpells_v1()
 		end
 	end
 
+	local runesTabName = nil
+	local runesTabIcon = nil
+
 	for i = 1, GetNumSpellTabs() do
 		local tabName, tabIcon, offset, count, _, specId = GetSpellTabInfo(i)
 
-		for j = offset + 1, offset + count do
-			local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
-			ParseSpellBookItem(type, id, tabName, tabIcon, specId)
+		if tabIcon ~= 134419 then
+			for j = offset + 1, offset + count do
+				local type, id = GetSpellBookItemInfo(j, BOOKTYPE_SPELL)
+				ParseSpellBookItem(type, id, tabName, tabIcon, specId)
+			end
+		else
+			runesTabName = tabName
+			runesTabIcon = tabIcon
 		end
 	end
 
@@ -262,6 +270,25 @@ local function GetSpells_v1()
 
 				if id ~= nil then
 					ParseSpellBookItem("PETACTION", id)
+				end
+			end
+		end
+	end
+
+	if C_Engraving ~= nil then
+		C_Engraving.RefreshRunesList()
+
+		for _, category in ipairs(C_Engraving.GetRuneCategories(false, true)) do
+			for _, engraving in ipairs(C_Engraving.GetRunesForCategory(category, false)) do
+				for _, spellId in ipairs(engraving.learnedAbilitySpellIDs) do
+					result[spellId] = {
+						type = "SPELL",
+						name = engraving.name,
+						spellId = spellId,
+						icon = engraving.iconTexture,
+						tabName = runesTabName,
+						tabIcon = runesTabIcon
+					}
 				end
 			end
 		end

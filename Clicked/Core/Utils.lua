@@ -404,7 +404,7 @@ function Addon:GetBindingValue(binding)
 		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank then
 			local rank = GetSpellSubtext(spell)
 
-			if rank ~= nil then
+			if not self:IsNilOrEmpty(rank) then
 				name = string.format("%s(%s)", name, rank)
 			end
 		end

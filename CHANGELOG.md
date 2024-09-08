@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add Shadow Dance form for Subtlety Rogue [#224]
+* Add Runes to the spell autofill and spellbook import for Classic Era
 
 ## [1.16.3] - 2024-09-06
 
