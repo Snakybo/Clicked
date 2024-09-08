@@ -585,6 +585,47 @@ local config = {
 		test = function(value)
 			return C_Item.IsEquippedItem(value)
 		end
+	},
+	{
+		id = "runeEquipped",
+		drawer = {
+			type = "input",
+			label = "Rune equipped",
+			availableValues = function()
+				--- @type ClickedAutoFillEditBox.Option[]
+				local result = {}
+
+				C_Engraving:ClearAllCategoryFilters();
+				C_Engraving.RefreshRunesList()
+
+				for _, category in ipairs(C_Engraving.GetRuneCategories(false, false)) do
+					for _, engraving in ipairs(C_Engraving.GetRunesForCategory(category, false)) do
+						table.insert(result, {
+							text = engraving.name,
+							icon = engraving.iconTexture,
+							spellId = engraving.skillLineAbilityID
+						})
+					end
+				end
+
+				return result
+			end
+		},
+		disabled = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or C_Engraving == nil,
+		init = function()
+			return Utils.CreateLoadOption("")
+		end,
+		unpack = Utils.UnpackSimpleLoadOption,
+		testOnEvents = { "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
+		--- @param value string
+		test = function(value)
+			local spellId = tonumber(value)
+			if spellId == nil then
+				return false
+			end
+
+			return C_Engraving.IsRuneEquipped(spellId)
+		end
 	}
 }
 

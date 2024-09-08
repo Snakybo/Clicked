@@ -13,7 +13,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add Shadow Dance form for Subtlety Rogue [#224]
-* Add Runes to the spell autofill and spellbook import for Classic Era
+* Add Runes to the spell autocomplete and spellbook import for Classic Era
+* Add Rune equipped load condition for Classic Era
 
 ## [1.16.3] - 2024-09-06
 
@@ -67,7 +68,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add multi-selection editing, select multiple items and edit them all at once
 * Remember last selected sorting method when closing the binding window
 * Remember last selected binding(s) when closing the binding window
-* Add profession abilities to spell autofill
+* Add profession abilities to spell autocomplete
 * Add profession abilities to spellbook import
 * Add Dominos action bars to quick start import
 * Include shapeshift-specific action bars in quick start import
@@ -75,7 +76,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Include all 15 Bartender4 action bars in quick start import, up from 6
 * Include all 15 ElvUI bars action bars in quick start import, up from 6
 * Add more information to a bunch of tooltips in the binding configuration window
-* Add spell ranks to spell autofill in Classic Era
+* Add spell ranks to spell autocomplete in Classic Era
 * Create bindings when dragging a macro into the binding configuration window
 * Add quick start import from macros
 * Add chat command to disable (or re-enable) the self-cast warning
@@ -88,7 +89,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix dragging bindings onto an empty space not doing anything
 * Fix duplicate binding check when importing from spellbook or action bar
 * Fix cancelaura spell input not parsing correctly [#216] [#217]
-* Fix spell autofill for flyout abilities [#212]
+* Fix spell autocomplete for flyout abilities [#212]
 * Fix a game freeze when clearing the search box
 * Fix macro length calculation for non-English letters
 * Fix Lua error in the keyboard visualizer
@@ -141,7 +142,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add pet abilities to spell autofill
+* Add pet abilities to spell autocomplete
 * Add drag support for pet abilities into the spell name input field
 
 ### Fixed

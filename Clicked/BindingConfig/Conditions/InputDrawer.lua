@@ -25,7 +25,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingInputConditionDrawer : BindingConditionDrawer
 --- @field private checkbox ClickedCheckBox
---- @field private editbox? ClickedEditBox
+--- @field private editbox? ClickedEditBox|ClickedAutoFillEditBox
 --- @field private negated? ClickedCheckBox
 local Drawer = {}
 
@@ -47,11 +47,23 @@ function Drawer:Draw()
 
 	-- editbox
 	do
+		local items = self.requestAvailableValues()
+
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
 			--- @type SimpleLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
+			local spellId = tonumber(load.value)
+
+			if items ~= nil and spellId ~= nil then
+				for _, item in ipairs(items) do
+					if spellId == item.spellId then
+						return item.text
+					end
+				end
+			end
+
 			return load.value
 		end
 
@@ -105,7 +117,39 @@ function Drawer:Draw()
 			self.requestRedraw()
 		end
 
-		self.editbox = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
+		local function OnSelect(_, _, value, match)
+			local spellId = (match ~= nil and match.spellId ~= nil) and tostring(match.spellId) or value
+
+			for _, binding in ipairs(self.bindings) do
+				--- @type SimpleLoadOption
+				local load = binding.load[self.fieldName] or self.condition.init()
+
+				if load.selected then
+					load.value = spellId
+					binding.load[self.fieldName] = load
+					Addon:ReloadBinding(binding, self.fieldName)
+				end
+			end
+		end
+
+		if items ~= nil then
+			local error = FindInTableIf(self.bindings, function(binding)
+				--- @type SimpleLoadOption
+				local load = binding.load[self.fieldName] or self.condition.init()
+
+				return load.selected and FindInTableIf(items, function(item)
+					return item.spellId == load.value
+				end) == nil
+			end) == nil
+
+			self.editbox = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
+			self.editbox:SetInputError(error)
+			self.editbox:SetValues(items)
+			self.editbox:SetCallback("OnSelect", OnSelect)
+		else
+			self.editbox = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
+		end
+
 		self.editbox:SetCallback("OnTextChanged", OnTextChanged)
 		self.editbox:SetCallback("OnEnterPressed", OnEnterPressed)
 		self.editbox:SetRelativeWidth(0.5)

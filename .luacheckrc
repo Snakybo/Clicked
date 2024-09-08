@@ -57,6 +57,7 @@ read_globals = {
 	"C_ChatInfo",
 	"C_ClassTalents",
 	"C_CreatureInfo",
+	"C_Engraving",
 	"C_Item",
 	"C_MountJournal",
 	"C_PetJournal",

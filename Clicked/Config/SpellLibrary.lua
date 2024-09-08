@@ -183,7 +183,7 @@ local function GetSpells_v1()
 	--- @param type string
 	--- @param id integer
 	--- @param tabName? string
-	--- @param tabIcon? string
+	--- @param tabIcon? string|integer
 	--- @param specId? integer
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
@@ -276,19 +276,13 @@ local function GetSpells_v1()
 	end
 
 	if C_Engraving ~= nil then
+		C_Engraving:ClearAllCategoryFilters();
 		C_Engraving.RefreshRunesList()
 
-		for _, category in ipairs(C_Engraving.GetRuneCategories(false, true)) do
+		for _, category in ipairs(C_Engraving.GetRuneCategories(false, false)) do
 			for _, engraving in ipairs(C_Engraving.GetRunesForCategory(category, false)) do
 				for _, spellId in ipairs(engraving.learnedAbilitySpellIDs) do
-					result[spellId] = {
-						type = "SPELL",
-						name = engraving.name,
-						spellId = spellId,
-						icon = engraving.iconTexture,
-						tabName = runesTabName,
-						tabIcon = runesTabIcon
-					}
+					ParseSpellBookItem("SPELL", spellId, runesTabName, runesTabIcon)
 				end
 			end
 		end
