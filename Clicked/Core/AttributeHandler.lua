@@ -87,14 +87,17 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 		return
 	end
 
+	local requiresGsub = not Addon.db.profile.options.onKeyDown and frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME]
+	local requiresMenu = frame:GetAttribute("*type2") == "menu"
+
 	for key, value in pairs(attributes) do
-		if frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME] then
-			key = string.gsub(key, "typerelease", "type")
+		if requiresGsub then
+			key = string.gsub(key, "^typerelease", "type")
 		end
 
 		-- Some unit frames use "menu" instead of "togglemenu", an easy way to make sure we use the correct variant is to look at *type2 and check whether that
 		-- is set to `menu`. If it is, we use "menu" instead.
-		if value == "togglemenu" and frame:GetAttribute("*type2") == "menu" then
+		if value == "togglemenu" and requiresMenu then
 			value = "menu"
 		end
 

@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for subzones and indoor zones in the zone name load condition
 
+### Fixed
+
+* Further improve performance of binding reloads
+
 ## [1.16.5] - 2024-09-15
 
 ### Fixed
