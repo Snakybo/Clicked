@@ -119,24 +119,25 @@ function Addon.BindingConfig.BindingConditionTab:GetAvailableValues(condition)
 
 	if condition.dependencies ~= nil then
 		for i, dependencyId in ipairs(condition.dependencies) do
+			local dependency = Addon.Condition.Registry:GetConditionById(dependencyId)
+
 			dependencies[i] = dependencies[i] or {}
 
-			local dependency = Addon.Condition.Registry:GetConditionById(dependencyId)
-			assert(dependency ~= nil, "Dependency not found: " .. dependencyId)
+			if dependency ~= nil then
+				for _, binding in ipairs(self.bindings) do
+					local load = binding.load[dependencyId] or dependency.init()
+					local value = dependency.unpack(load)
 
-			for _, binding in ipairs(self.bindings) do
-				local load = binding.load[dependencyId] or dependency.init()
-				local value = dependency.unpack(load)
-
-				if type(value) == "table" and value[1] ~= nil then
-					for j = 1, #value do
-						if not tContains(dependencies[i], value[j]) then
-							table.insert(dependencies[i], value[j])
+					if type(value) == "table" and value[1] ~= nil then
+						for j = 1, #value do
+							if not tContains(dependencies[i], value[j]) then
+								table.insert(dependencies[i], value[j])
+							end
 						end
-					end
-				elseif value ~= nil then
-					if not tContains(dependencies[i], value) then
-						table.insert(dependencies[i], value)
+					elseif value ~= nil then
+						if not tContains(dependencies[i], value) then
+							table.insert(dependencies[i], value)
+						end
 					end
 				end
 			end

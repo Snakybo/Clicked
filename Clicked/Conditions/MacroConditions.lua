@@ -14,76 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local LibTalentInfo = LibStub("LibTalentInfo-1.0")
-local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
 local Utils = Addon.Condition.Utils
-
---- @param classNames string[]
---- @param specIndices integer[]
---- @return integer[]
-local function GetRelevantSpecializationIds(classNames, specIndices)
-	local specializationIds = {}
-
-	if #classNames == 0 then
-		classNames[1] = select(2, UnitClass("player"))
-	end
-
-	if #specIndices == 0 then
-		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
-				specIndices[1] = GetSpecialization()
-			else
-				specIndices[1] = GetPrimaryTalentTree()
-			end
-		else
-			for _, class in ipairs(classNames) do
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
-					local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-					for specIndex in pairs(specs) do
-						table.insert(specIndices, specIndex)
-					end
-				else
-					local specs = LibTalentInfoClassic:GetClassSpecializations(class)
-
-					for specIndex in pairs(specs) do
-						table.insert(specIndices, specIndex)
-					end
-				end
-			end
-		end
-	end
-
-	for i = 1, #classNames do
-		local class = classNames[i]
-
-		if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
-			local specs = LibTalentInfo:GetClassSpecIDs(class)
-
-			for j = 1, #specIndices do
-				local specIndex = specIndices[j]
-				local specId = specs[specIndex]
-
-				table.insert(specializationIds, specId)
-			end
-		else
-			local specs = LibTalentInfoClassic:GetClassSpecializations(class)
-
-			for j = 1, #specIndices do
-				local specIndex = specIndices[j]
-				local spec = specs[specIndex]
-
-				table.insert(specializationIds, spec.id)
-			end
-		end
-	end
-
-	return specializationIds
-end
 
 --- @type Condition[]
 local config = {
@@ -94,7 +28,7 @@ local config = {
 			label = "Form / Stance",
 			negatable = true,
 			availableValues = function(class, specialization)
-				local specIds = GetRelevantSpecializationIds(class, specialization)
+				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 					return Addon:GetLocalizedForms(specIds)
