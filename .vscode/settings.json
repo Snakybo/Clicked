@@ -100,7 +100,8 @@
 		"MenuUtil",
 		"LinkUtil",
 		"ID",
-		"TRADE_SKILLS"
+		"TRADE_SKILLS",
+		"C_Engraving"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",
