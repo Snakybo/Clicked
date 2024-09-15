@@ -155,13 +155,11 @@ local function ADDON_LOADED()
 end
 
 local function ZONE_CHANGED()
-	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
-	-- Addon:ReloadBindings("ZONE_CHANGED")
+	Addon:ReloadBindings("ZONE_CHANGED")
 end
 
 local function ZONE_CHANGED_INDOORS()
-	-- TODO: Currently, only ZONE_CHANGED_NEW_AREA is supported by the check for this, enable this once support for sub-zones is enabled
-	-- Addon:ReloadBindings("ZONE_CHANGED_INDOORS")
+	Addon:ReloadBindings("ZONE_CHANGED_INDOORS")
 end
 
 local function ZONE_CHANGED_NEW_AREA()
