@@ -36,6 +36,9 @@ local isPlayerInCombat = false
 local isInitialized = false
 local openConfigOnCombatExit = false
 
+--- @type table<string, boolean>
+local playerFlagsCache = {}
+
 -- Local support functions
 
 local function RegisterIcons()
@@ -173,7 +176,18 @@ local function CHARACTER_POINTS_CHANGED()
 end
 
 local function PLAYER_FLAGS_CHANGED(_, unit)
-	if unit == "player" then
+	if unit ~= "player" then
+		return
+	end
+
+	local changed = false
+
+	if C_PvP.IsWarModeDesired() ~= playerFlagsCache.warMode then
+		playerFlagsCache.warMode = not playerFlagsCache.warMode
+		changed = true
+	end
+
+	if changed then
 		Addon:ReloadBindings("PLAYER_FLAGS_CHANGED")
 	end
 end
