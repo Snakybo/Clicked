@@ -92,7 +92,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix a potential issue when pasting binding contents onto a binding in a different scope
 * Optimize binding configuration window performance
-* Fix an issue where the binding configuration window would reload completely when a binding is reloaded
+* Fix an issue where the binding configuration window would reload completely when a binding is reloaded [#204]
 * Fix dragging bindings onto an empty space not doing anything
 * Fix duplicate binding check when importing from spellbook or action bar
 * Fix cancelaura spell input not parsing correctly [#216] [#217]
@@ -1172,7 +1172,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for other targets when the unit frame target is selected [#22]
 * Add a new visualization for the binding targets page, the unit frame target and regular targets are now separated and togglable using a checkbox
 * Add an improved visualization of the `/cc dump` frame with clearer and more data
-* Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames
+* Add a message when using the Mouseover target with a mouse button that the Unit Frame Target should be enabled in order to enable clicking on unit frames [#27]
 * Add support for shift-clicking spells and talents in spell bindings
 * Add a button to sort the bindings list alphabetically
 * Add the binding search box to the scroll frame instead of above it
@@ -1370,6 +1370,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix custom macro target option for unit frames
+
+## [0.7.1] - 2020-09-26
+
+### Added
+
+* Add target of target binding target
 
 ## [0.7.0] - 2020-09-24
 
@@ -1685,7 +1691,6 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#127]: https://github.com/Snakybo/Clicked/issues/127
 [#121]: https://github.com/Snakybo/Clicked/issues/121
 [#120]: https://github.com/Snakybo/Clicked/issues/120
-[#109]: https://github.com/Snakybo/Clicked/issues/109
 [#108]: https://github.com/Snakybo/Clicked/issues/108
 [#107]: https://github.com/Snakybo/Clicked/issues/107
 [#105]: https://github.com/Snakybo/Clicked/issues/105
