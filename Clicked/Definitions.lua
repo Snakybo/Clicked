@@ -182,7 +182,6 @@
 
 --- @class BindingReloadCause
 --- @field public full boolean
---- @field public initialized boolean
 --- @field public events table<string,boolean>
 --- @field public conditions table<string,boolean>
 
