@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a potential Lua error upon login [#230]
+* Fix "spell known" load condition in Classic Era and Cataclysm classic [#227]
 
 ## [1.16.4] - 2024-09-08
 
@@ -1643,6 +1644,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#230]: https://github.com/Snakybo/Clicked/issues/230
+[#227]: https://github.com/Snakybo/Clicked/issues/227
 [#224]: https://github.com/Snakybo/Clicked/issues/224
 [#223]: https://github.com/Snakybo/Clicked/issues/223
 [#217]: https://github.com/Snakybo/Clicked/issues/217

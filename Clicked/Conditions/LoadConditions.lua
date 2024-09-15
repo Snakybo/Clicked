@@ -481,7 +481,7 @@ local config = {
 				local spell = C_Spell.GetSpellInfo(value)
 				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
 			else
-				local spellId = GetSpellInfo(value)
+				local spellId = select(7, GetSpellInfo(value))
 				return spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId) or false
 			end
 		end
