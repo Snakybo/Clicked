@@ -956,12 +956,14 @@ end
 --- @param binding Binding
 --- @param causes BindingReloadCauses
 function Addon:UpdateBindingLoadState(binding, causes)
+	local cachedState = bindingStateCache[binding.uid]
+
 	--- @param condition string
 	--- @param events? string[]
 	--- @return boolean
 	local function ShouldPerformStateCheck(condition, events)
-		-- All bindings should be updated
-		if causes.full then
+		-- All bindings should be updated, or the binding has not been initialized yet
+		if causes.full or cachedState == nil then
 			return true
 		end
 
