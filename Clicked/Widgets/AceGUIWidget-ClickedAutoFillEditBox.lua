@@ -22,7 +22,6 @@ EditBox Widget
 --- @field public icon integer
 --- @field public spellId integer?
 --- @field public value any
---- @field public score number
 --- @field public custom boolean?
 
 --- @class ClickedAutoFillEditBox.Match : ClickedAutoFillEditBox.Option
@@ -75,6 +74,7 @@ local function FindMatches(text, values)
 	local matches = {}
 
 	for _, value in ipairs(values) do
+		--- @cast value ClickedAutoFillEditBox.Match
 		value.score = ScoreMatch(text, value.text, false)
 		table.insert(matches, value)
 	end
@@ -241,6 +241,7 @@ function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
 	self.values = {}
+	self.tempValue = nil
 	self.matches = {}
 	self.selected = 1
 	self.selectedOption = nil
@@ -270,6 +271,33 @@ function Methods:SetValues(values)
 	self.values = CopyTable(values)
 
 	if self:IsAutoCompleteBoxVisible() then
+		self:ShowPrediction()
+	end
+end
+
+--- @param value ClickedAutoFillEditBox.Option
+--- @param showPrediction? boolean
+function Methods:SetTemporaryValue(value, showPrediction)
+	if self.tempValue ~= nil then
+		self.values[self.tempValue] = value
+	else
+		table.insert(self.values, value)
+		self.tempValue = #self.values
+	end
+
+	if showPrediction and self:IsAutoCompleteBoxVisible() then
+		self:ShowPrediction()
+	end
+end
+
+--- @param showPrediction? boolean
+function Methods:ClearTemporaryValue(showPrediction)
+	if self.tempValue ~= nil then
+		table.remove(self.values, self.tempValue)
+		self.tempValue = nil
+	end
+
+	if showPrediction and self:IsAutoCompleteBoxVisible() then
 		self:ShowPrediction()
 	end
 end
@@ -553,6 +581,7 @@ function Methods:ShowAll()
 	local matches = {}
 
 	for _, value in ipairs(self:GetValues()) do
+		--- @cast value ClickedAutoFillEditBox.Match
 		value.score = 0
 		table.insert(matches, value)
 	end

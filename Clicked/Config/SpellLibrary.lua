@@ -47,6 +47,12 @@ Addon.SpellLibrary = {}
 --- @field public icon integer
 --- @field public content string
 
+--- @type table<integer, SpellLibrarySpellResult>?
+local cached = nil
+
+--- @type number?
+local cachedTime = nil
+
 --- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells_v2()
 	--- @type table<integer, SpellLibrarySpellResult>
@@ -293,11 +299,18 @@ end
 
 --- @return table<integer, SpellLibrarySpellResult>
 local function GetSpells()
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-		return GetSpells_v2()
-	else
-		return GetSpells_v1()
+	if cached ~= nil and cachedTime == GetTime() then
+		return cached
 	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+		cached = GetSpells_v2()
+	else
+		cached = GetSpells_v1()
+	end
+
+	cachedTime = GetTime()
+	return cached
 end
 
 -- Private addon API

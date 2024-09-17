@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for subzones and indoor zones in the zone name load condition
+* Add autofill support for custom spells [#228]
 
 ### Fixed
 
@@ -1662,6 +1663,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
 [#230]: https://github.com/Snakybo/Clicked/issues/230
+[#228]: https://github.com/Snakybo/Clicked/issues/228
 [#227]: https://github.com/Snakybo/Clicked/issues/227
 [#226]: https://github.com/Snakybo/Clicked/issues/226
 [#224]: https://github.com/Snakybo/Clicked/issues/224

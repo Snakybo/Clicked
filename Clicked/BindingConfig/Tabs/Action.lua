@@ -121,51 +121,76 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		end
 
 		--- @param value string
-		local function OnTextChanged(_, _, value)
+		--- @return ClickedAutoFillEditBox.Option?
+		local function GetAutoFillOptionFromInput(value)
+			local spell = Addon:GetSpellInfo(value, false)
+			if spell ~= nil then
+				return {
+					text = value,
+					icon = spell.iconID,
+					spellId = spell.spellID
+				}
+			end
+
+			return nil
+		end
+
+		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
+		--- @param value string
+		local function OnTextChanged(widget, _, value)
 			local type, info = LinkUtil.ExtractLink(value)
-			if type == nil then
-				return
-			end
 
-			local segments = { string.split(":", info) }
+			if type ~= nil then
+				local segments = { string.split(":", info) }
 
-			local linkId = tonumber(segments[1])
-			if linkId == nil then
-				return
-			end
-
-			--- @param name string
-			local function UpdateValue(name)
-				for _, binding in ipairs(self.bindings) do
-					if binding.actionType == Clicked.ActionType.SPELL and type == "spell" then
-						SetBindingValue(binding, linkId)
-					elseif binding.actionType == Clicked.ActionType.ITEM and type == "item" then
-						SetBindingValue(binding, linkId)
-					elseif binding.actionType == Clicked.ActionType.CANCELAURA then
-						SetBindingValue(binding, name)
-					end
+				local linkId = tonumber(segments[1])
+				if linkId == nil then
+					return
 				end
 
-				self.controller:RedrawTab()
-			end
+				--- @param name string
+				local function UpdateValue(name)
+					for _, binding in ipairs(self.bindings) do
+						if binding.actionType == Clicked.ActionType.SPELL and type == "spell" then
+							SetBindingValue(binding, linkId)
+						elseif binding.actionType == Clicked.ActionType.ITEM and type == "item" then
+							SetBindingValue(binding, linkId)
+						elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+							SetBindingValue(binding, name)
+						end
+					end
 
-			if self.loadCallback ~= nil then
-				self.loadCallback()
-				self.loadCallback = nil
-			end
+					self.controller:RedrawTab()
+				end
 
-			if type == "item" then
-				local item = Item:CreateFromItemID(linkId)
+				if self.loadCallback ~= nil then
+					self.loadCallback()
+					self.loadCallback = nil
+				end
 
-				self.loadCallback = item:ContinueWithCancelOnItemLoad(function()
-					UpdateValue(item:GetItemName())
-				end)
-			elseif type == "spell" then
-				local spell = Spell:CreateFromSpellID(linkId)
+				if type == "item" then
+					local item = Item:CreateFromItemID(linkId)
 
-				self.loadCallback = spell:ContinueWithCancelOnSpellLoad(function()
-					UpdateValue(spell:GetSpellName())
-				end)
+					self.loadCallback = item:ContinueWithCancelOnItemLoad(function()
+						UpdateValue(item:GetItemName())
+					end)
+				elseif type == "spell" then
+					local spell = Spell:CreateFromSpellID(linkId)
+
+					self.loadCallback = spell:ContinueWithCancelOnSpellLoad(function()
+						UpdateValue(spell:GetSpellName())
+					end)
+				end
+			elseif widget.type == "ClickedAutoFillEditBox" then
+				--- @cast widget ClickedAutoFillEditBox
+
+				local option = GetAutoFillOptionFromInput(value)
+
+				if option ~= nil then
+					widget:SetTemporaryValue(option)
+				else
+					widget:ClearTemporaryValue()
+				end
 			end
 		end
 
@@ -235,10 +260,14 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 				self.controller:RedrawTab()
 			end
 
+			local function IsInputError()
+				return id == nil or (Addon.SpellLibrary:GetSpellById(id) == nil and GetAutoFillOptionFromInput(ValueSelector(self.bindings[1])) == nil)
+			end
+
 			local _, options = CreateOptions()
 			widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
 			widget:SetStrictMode(false)
-			widget:SetInputError(id == nil or Addon.SpellLibrary:GetSpellById(id) == nil)
+			widget:SetInputError(IsInputError())
 			widget:SetValues(options)
 			widget:SetCallback("OnSelect", OnSelect)
 			widget:SetCallback("OnEnterPressed", OnEnterPressed)
