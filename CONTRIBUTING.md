@@ -107,15 +107,11 @@ action.
 
 If you have a custom unitframe addon and wish to integrate click-cast support, this should help you get started.
 
-First and foremost, Clicked aims to be integration-free, and offers very limited support to manually register a frame. Instead, Clicked uses a global table
+First and foremost, Clicked aims to be integration-free, and no support to manually register a frame. Instead, Clicked uses a global table
 which can be used by other click-cast addon implementations so no custom implementations are needed.
 
 The global table that is used for this is the `ClickCastFrames` table, registering a frame using this table is as simple as setting
 `ClickCastFrames[myFrame] = true` to register a frame, or `ClickCastFrames[myFrame] = false` to unregister a frame.
-
-If, for some reason you are interested in manually adding a frame to Clicked (this will not add it to the global table for other addons), you can do so using
-the `Clicked:RegisterClickCastFrame(string addon, Frame frame)` and `Clicked:UnregisterClickCastFrame(Frame frame)`. The `addon` parameter in registration
-can be set to a non-empty value if the frame you're registering is part of a load-on-demand addon and is not loaded yet.
 
 In addition to the global `ClickCastFrames` table, it is also possible to register frames using protected code which is ran within attributes, this can be done
 using the global `ClickCastHeader` frame. This frame has a `clickcast_register` and `clickcast_unregister` attribute which can be executed from within your
