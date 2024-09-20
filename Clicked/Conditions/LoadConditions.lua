@@ -378,7 +378,10 @@ local config = {
 		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
 		--- @param value string
 		test = function(value)
-			local realZone = GetRealZoneText()
+			local zones = {
+				GetRealZoneText(),
+				GetSubZoneText() or ""
+			}
 
 			for zone in string.gmatch(value, "([^;]+)") do
 				local negate = false
@@ -388,7 +391,7 @@ local config = {
 					zone = string.sub(zone, 2)
 				end
 
-				if (negate and zone ~= realZone) or (not negate and zone == realZone) then
+				if (negate and not tContains(zones, zone)) or (not negate and tContains(zones, zone)) then
 					return true
 				end
 			end

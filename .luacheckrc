@@ -133,6 +133,7 @@ read_globals = {
 	"GetSpellInfo",
 	"GetSpellSubtext",
 	"GetSpellTabInfo",
+	"GetSubZoneText",
 	"GetTalentTabInfo",
 	"GetTalentInfo",
 	"GetTalentInfoByID",
