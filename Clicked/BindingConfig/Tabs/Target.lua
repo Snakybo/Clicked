@@ -230,8 +230,11 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingTargetTab:OnKeybindChanged()
-	self.controller:RedrawTab()
+--- @param relevant boolean
+function Addon.BindingConfig.BindingTargetTab:OnBindingReload(relevant)
+	if relevant then
+		self.controller:RedrawTab()
+	end
 end
 
 --- @private

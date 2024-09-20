@@ -581,18 +581,29 @@ local function ReloadBindings(immediate)
 			reloadBindingsDelayTicker = nil
 		end
 
-		-- The pendingReloadCauses can contains three "targets":
-		--  1. a specific binding, using the `binding` property
-		--  2. all bindings, using the '*' property
-		--  3. a subset of bindings that are affected by an event using the `events` property (i.e. PLAYER_REGEN_DISABLED)
+		local seen = {}
+		local changed = {}
 
-		wipe(activeBindings)
+		for i = #activeBindings, 1, -1 do
+			local binding = activeBindings[i]
+			local isValid, wasValid = Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
+
+			if not isValid and wasValid then
+				table.remove(activeBindings, i)
+				table.insert(changed, binding.uid)
+			end
+
+			seen[binding.uid] = true
+		end
 
 		for _, binding in Clicked:IterateConfiguredBindings() do
-			Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
+			if not seen[binding.uid] then
+				local isValid, wasValid = Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
 
-			if Clicked:CanBindingLoad(binding) then
-				table.insert(activeBindings, binding)
+				if isValid and not wasValid then
+					table.insert(activeBindings, binding)
+					table.insert(changed, binding.uid)
+				end
 			end
 		end
 
@@ -603,7 +614,7 @@ local function ReloadBindings(immediate)
 
 		Clicked:ProcessActiveBindings()
 
-		Addon.BindingConfig.Window:OnBindingReload()
+		Addon.BindingConfig.Window:OnBindingReload(changed)
 		Addon.KeyVisualizer:Redraw()
 	end
 
@@ -783,24 +794,6 @@ end
 
 --- @param binding Binding
 --- @return boolean
-function Clicked:CanBindingLoad(binding)
-	local state = bindingStateCache[binding.uid]
-
-	if state == nil then
-		return false
-	end
-
-	for _, value in pairs(state) do
-		if not value then
-			return false
-		end
-	end
-
-	return true
-end
-
---- @param binding Binding
---- @return boolean
 function Clicked:IsBindingLoaded(binding)
 	for _, active in ipairs(activeBindings) do
 		if active.uid == binding.uid then
@@ -955,6 +948,8 @@ end
 ---
 --- @param binding Binding
 --- @param causes BindingReloadCauses
+--- @return boolean
+--- @return boolean
 function Addon:UpdateBindingLoadState(binding, causes)
 	local cachedState = bindingStateCache[binding.uid]
 
@@ -1003,6 +998,21 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		return false
 	end
 
+	local function IsStateValid(state)
+		if state == nil then
+			return false
+		end
+
+		for _, value in pairs(state) do
+			if not value then
+				return false
+			end
+		end
+
+		return true
+	end
+
+	local wasValid = IsStateValid(cachedState)
 	local state = bindingStateCache[binding.uid] or {}
 	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
@@ -1044,6 +1054,8 @@ function Addon:UpdateBindingLoadState(binding, causes)
 	if bindingStateCache[binding.uid] == nil then
 		bindingStateCache[binding.uid] = state
 	end
+
+	return IsStateValid(state), wasValid
 end
 
 --- Check if a binding is valid for the current state of the player, this will

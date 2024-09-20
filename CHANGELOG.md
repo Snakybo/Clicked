@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Further improve performance of binding reloads
+* Fix some configuration redraw issues
 
 ## [1.16.5] - 2024-09-15
 

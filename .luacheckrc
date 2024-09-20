@@ -205,6 +205,7 @@ read_globals = {
 	"SPELLS_PER_PAGE",
 	"TalentButtonUtil",
 	"TalentUtil",
+	"tAppendAll",
 	"tContains",
 	"TRADE_SKILLS",
 	"ToggleDropDownMenu",

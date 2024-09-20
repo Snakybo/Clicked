@@ -22,7 +22,7 @@
 --- @field public Show? fun(self: BindingConfigPage)
 --- @field public Hide? fun(self: BindingConfigPage)
 --- @field public Redraw? fun(self: BindingConfigPage)
---- @field public OnBindingReload? fun(self: BindingConfigPage)
+--- @field public OnBindingReload? fun(self: BindingConfigPage, relevant: boolean, changed: integer[])
 
 --- @class BindingConfigPageImpl
 --- @field public title string
@@ -217,7 +217,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private treeStatus ClickedTreeGroupStatus
 --- @field private redrawTimer? TimerCallback
 --- @field private bindingCopyTarget? integer
---- @field private wereBindingsReloaded? boolean
+--- @field private reloadedBindings integer[]
 Addon.BindingConfig.Window = {
 	PAGE_BINDING = "binding",
 	PAGE_EXPORT_STRING = "exportString",
@@ -237,7 +237,8 @@ Addon.BindingConfig.Window = {
 	sortMode = "key",
 	tree = {},
 	treeItems = {},
-	treeStatus = {}
+	treeStatus = {},
+	reloadedBindings = {}
 }
 
 function Addon.BindingConfig.Window:Open()
@@ -342,8 +343,13 @@ function Addon.BindingConfig.Window:Select(uid)
 	self.treeWidget:Select(uid)
 end
 
-function Addon.BindingConfig.Window:OnBindingReload()
-	self.wereBindingsReloaded = true
+--- @param changed Binding[]
+function Addon.BindingConfig.Window:OnBindingReload(changed)
+	if not self:IsOpen() then
+		return
+	end
+
+	tAppendAll(self.reloadedBindings, changed)
 	self:RedrawTree()
 end
 
@@ -394,14 +400,20 @@ end
 
 --- @private
 function Addon.BindingConfig.Window:HandleOnBindingReload()
-	if self.wereBindingsReloaded then
-		self.wereBindingsReloaded = false
+	if #self.reloadedBindings > 0 then
+		--- @type integer[]
+		local changed = CopyTable(self.reloadedBindings)
+		table.wipe(self.reloadedBindings)
+
+		local isRelevantReload = FindInTableIf(self.treeStatus.selected, function(uid)
+			return tContains(changed, uid)
+		end) ~= nil
 
 		local currentPage = self.currentPage
 
 		if currentPage ~= nil then
 			local impl = self.pages[currentPage]
-			Addon:SafeCall(impl.OnBindingReload, impl)
+			Addon:SafeCall(impl.OnBindingReload, impl, isRelevantReload, changed)
 		end
 	end
 end

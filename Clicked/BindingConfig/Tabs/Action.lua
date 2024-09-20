@@ -58,7 +58,10 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigActionTab : BindingConfigTab
 --- @field private loadCallback? function
-Addon.BindingConfig.BindingActionTab = {}
+--- @field private references integer[]
+Addon.BindingConfig.BindingActionTab = {
+	references = {}
+}
 
 --- @protected
 function Addon.BindingConfig.BindingActionTab:Hide()
@@ -66,6 +69,8 @@ function Addon.BindingConfig.BindingActionTab:Hide()
 		self.loadCallback()
 		self.loadCallback = nil
 	end
+
+	table.wipe(self.references)
 end
 
 --- @protected
@@ -76,8 +81,27 @@ function Addon.BindingConfig.BindingActionTab:Redraw()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingActionTab:OnKeybindChanged()
-	self.controller:RedrawTab()
+--- @param relevant boolean
+--- @param changed integer[]
+function Addon.BindingConfig.BindingActionTab:OnBindingReload(relevant, changed)
+	if relevant then
+		self.controller:RedrawTab()
+		return
+	end
+
+	for _, uid in ipairs(self.references) do
+		if tContains(changed, uid) then
+			self.controller:RedrawTab()
+			return
+		end
+	end
+
+	for _, other in Clicked:IterateActiveBindings() do
+		if other.keybind == self.bindings[1].keybind and other.actionType ~= Clicked.ActionType.MACRO and tContains(changed, other.uid) then
+			self.controller:RedrawTab()
+			return
+		end
+	end
 end
 
 --- @private
@@ -399,6 +423,8 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 		--- @type integer[]
 		local order = {}
 
+		table.wipe(self.references)
+
 		--- @param left Binding
 		--- @param right Binding
 		--- @return boolean
@@ -424,6 +450,8 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 				end
 
 				table.insert(groups[id], other)
+				table.insert(self.references, other.uid)
+
 				count = count + 1
 			end
 		end

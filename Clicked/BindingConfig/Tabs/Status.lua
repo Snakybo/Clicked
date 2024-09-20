@@ -26,11 +26,16 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigStatusTab : BindingConfigTab
 --- @field private selected integer
-Addon.BindingConfig.BindingStatusTab = {}
+--- @field private references integer[]
+Addon.BindingConfig.BindingStatusTab = {
+	selected = 1,
+	references = {}
+}
 
 --- @protected
-function Addon.BindingConfig.BindingStatusTab:Show()
+function Addon.BindingConfig.BindingStatusTab:Hide()
 	self.selected = 1
+	table.wipe(self.references)
 end
 
 --- @protected
@@ -61,6 +66,7 @@ function Addon.BindingConfig.BindingStatusTab:Redraw()
 			local key = IndexToString(i)
 			local name, icon = Addon:GetBindingNameAndIcon(binding)
 			items[key] = Addon:GetTextureString(name, icon)
+
 			table.insert(order, key)
 		end
 
@@ -75,6 +81,34 @@ function Addon.BindingConfig.BindingStatusTab:Redraw()
 	end
 
 	self:RedrawPage()
+end
+
+--- @protected
+--- @param relevant boolean
+--- @param changed integer[]
+function Addon.BindingConfig.BindingStatusTab:OnBindingReload(relevant, changed)
+	if relevant then
+		self.controller:RedrawTab()
+		return
+	end
+
+	local binding = self.bindings[self.selected]
+
+	if binding ~= nil then
+		for _, uid in ipairs(self.references) do
+			if tContains(changed, uid) then
+				self.controller:RedrawTab()
+				return
+			end
+		end
+
+		for _, other in Clicked:IterateActiveBindings() do
+			if other.keybind == binding.keybind and tContains(changed, other.uid) then
+				self.controller:RedrawTab()
+				return
+			end
+		end
+	end
 end
 
 --- @private
@@ -126,6 +160,8 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 	--- @type Binding[]
 	local all = {}
 
+	table.wipe(self.references)
+
 	for _, other in Clicked:IterateActiveBindings() do
 		if other.keybind == binding.keybind then
 			local valid = false
@@ -142,6 +178,7 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 
 			if valid then
 				table.insert(all, other)
+				table.insert(self.references, other.uid)
 			end
 		end
 	end

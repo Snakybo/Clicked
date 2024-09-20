@@ -21,8 +21,7 @@
 --- @field public Show? fun(self: BindingConfigTab, container: AceGUIContainer)
 --- @field public Hide? fun(self: BindingConfigTab)
 --- @field public Redraw? fun(self: BindingConfigTab, container: AceGUIContainer, binding: Binding)
---- @field public OnBindingReload? fun(self: BindingConfigTab)
---- @field public OnKeybindChanged? fun(self: BindingConfigTab)
+--- @field public OnBindingReload? fun(self: BindingConfigTab, relevant: boolean, changed: integer[])
 
 --- @class BindingConfigTabImpl
 --- @field public title string
@@ -233,12 +232,6 @@ function Addon.BindingConfig.BindingPage:Redraw()
 
 			updateCb()
 			widget:SetMarker(SupportsUnusedModifiers())
-
-			local currentTab = self.currentTab
-			if currentTab ~= nil then
-				local impl = self.tabs[currentTab].implementation
-				Addon:SafeCall(impl.OnKeybindChanged, impl)
-			end
 		end
 
 		local widget = AceGUI:Create("ClickedKeybinding") --[[@as ClickedKeybinding]]
@@ -255,14 +248,16 @@ function Addon.BindingConfig.BindingPage:Redraw()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingPage:OnBindingReload()
+--- @param relevant boolean
+--- @param changed integer[]
+function Addon.BindingConfig.BindingPage:OnBindingReload(relevant, changed)
 	self:UpdateTabGroup()
 
 	local currentTab = self.currentTab
 
 	if currentTab ~= nil then
 		local impl = self.tabs[currentTab].implementation
-		Addon:SafeCall(impl.OnBindingReload, impl)
+		Addon:SafeCall(impl.OnBindingReload, impl, relevant, changed)
 	end
 end
 
