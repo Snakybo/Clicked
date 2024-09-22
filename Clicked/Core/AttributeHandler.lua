@@ -92,7 +92,7 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 
 	for key, value in pairs(attributes) do
 		if requiresGsub then
-			key = string.gsub(key, "^typerelease", "type")
+			key = string.gsub(key, "typerelease", "type")
 		end
 
 		-- Some unit frames use "menu" instead of "togglemenu", an easy way to make sure we use the correct variant is to look at *type2 and check whether that
