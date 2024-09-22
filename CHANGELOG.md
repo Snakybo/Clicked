@@ -8,7 +8,13 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [1.16.6] - 2024-09-22
+## [1.16.7] - 2024-09-22
+
+### Fixed
+
+* Fix an issue that caused bindings to not work properly [#232]
+
+## [1.16.6] - 2024-09-22 [YANKED]
 
 ### Added
 
@@ -1534,7 +1540,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.16.6...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.16.7...master
+[1.16.7]: https://github.com/Snakybo/Clicked/releases/tag/1.16.7
 [1.16.6]: https://github.com/Snakybo/Clicked/releases/tag/1.16.6
 [1.16.5]: https://github.com/Snakybo/Clicked/releases/tag/1.16.5
 [1.16.4]: https://github.com/Snakybo/Clicked/releases/tag/1.16.4
@@ -1664,6 +1671,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#232]: https://github.com/Snakybo/Clicked/issues/232
 [#230]: https://github.com/Snakybo/Clicked/issues/230
 [#228]: https://github.com/Snakybo/Clicked/issues/228
 [#227]: https://github.com/Snakybo/Clicked/issues/227
