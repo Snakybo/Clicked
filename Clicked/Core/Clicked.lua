@@ -158,11 +158,11 @@ local function ADDON_LOADED()
 end
 
 local function ZONE_CHANGED()
-	Addon:ReloadBindings("ZONE_CHANGED")
+	-- Addon:ReloadBindings("ZONE_CHANGED")
 end
 
 local function ZONE_CHANGED_INDOORS()
-	Addon:ReloadBindings("ZONE_CHANGED_INDOORS")
+	-- Addon:ReloadBindings("ZONE_CHANGED_INDOORS")
 end
 
 local function ZONE_CHANGED_NEW_AREA()
