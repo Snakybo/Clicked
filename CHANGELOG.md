@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix a game crash on Classic Era [#237]
+
 ## [1.16.8] - 2024-09-24
 
 ### Changed
@@ -1678,6 +1684,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#237]: https://github.com/Snakybo/Clicked/issues/237
 [#232]: https://github.com/Snakybo/Clicked/issues/232
 [#230]: https://github.com/Snakybo/Clicked/issues/230
 [#228]: https://github.com/Snakybo/Clicked/issues/228
