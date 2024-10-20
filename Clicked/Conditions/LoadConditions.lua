@@ -501,7 +501,7 @@ local config = {
 			tooltip = Addon.L["This will not update when in combat, so swapping weapons or shields during combat does not work."],
 			validate = function(value)
 				local type = LinkUtil.ExtractLink(value)
-				if type ~= "item" then
+				if type ~= nil and type ~= "item" then
 					return value
 				end
 

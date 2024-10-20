@@ -72,8 +72,7 @@ function Drawer:Draw()
 		--- @param previousValue string
 		local function OnTextChanged(widget, _, value, previousValue)
 			if drawer.validate ~= nil then
-				value = drawer.validate(previousValue, value, false)
-				widget:SetText(value)
+				widget:SetText(drawer.validate(value, previousValue, false))
 			end
 		end
 
@@ -100,7 +99,7 @@ function Drawer:Draw()
 			value = string.trim(value)
 
 			if drawer.validate ~= nil then
-				value = drawer.validate(previousValue, value, true)
+				value = drawer.validate(value, previousValue, true)
 			end
 
 			for _, binding in ipairs(self.bindings) do
