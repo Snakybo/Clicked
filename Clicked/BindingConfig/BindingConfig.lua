@@ -972,10 +972,9 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 										binding.actionType = type
 
 										Addon:ReloadBinding(binding, true)
+										self:RedrawPage()
 									end
 								end
-
-								self.treeWidget:Select(first.uid)
 							end)
 						end
 
