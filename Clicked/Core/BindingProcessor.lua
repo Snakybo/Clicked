@@ -897,6 +897,14 @@ function Addon:UpdateTalentCache(callback, immediate)
 						end
 					end
 
+					-- check if the node is part of a hero talent tree that is currently selected
+					if isValid and nodeInfo.subTreeID then
+						local subTreeInfo = C_Traits.GetSubTreeInfo(configId, nodeInfo.subTreeID)
+						if not subTreeInfo.isActive then
+							isValid = false
+						end
+					end
+
 					if isValid then
 						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
 						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
