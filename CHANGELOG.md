@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix an issue with the item equipped load condition input field [#241]
+* Fix talent load condition for inactive Hero tree talents [#242] [#243] (by [m33shoq])
 
 ## [1.16.9] - 2024-09-26
 
@@ -1695,6 +1696,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#243]: https://github.com/Snakybo/Clicked/issues/243
+[#242]: https://github.com/Snakybo/Clicked/pull/242
 [#241]: https://github.com/Snakybo/Clicked/issues/241
 [#237]: https://github.com/Snakybo/Clicked/issues/237
 [#232]: https://github.com/Snakybo/Clicked/issues/232
@@ -1807,3 +1810,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [novsirion]: https://github.com/novsirion
 [nihilistzsche]: https://github.com/nihilistzsche
 [Aeceon]: https://github.com/Aeceon
+[m33shoq]: https://github.com/m33shoq
