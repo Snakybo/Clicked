@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2024  Kevin Krol
+-- Copyright (C) 2022  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -8998,6 +8998,8 @@ local icons = {
 	[5617455] = "inv_parrotpiratemountclassic_green",
 	[5617456] = "inv_parrotpiratemountclassic_purple",
 	[5617457] = "inv_parrotpiratemountclassic_red",
+	[6238482] = "inv_shaserpentmount",
+	[6243518] = "inv_shatigermount",
 }
 
 --- @type integer[]
@@ -17981,6 +17983,8 @@ local order = {
 	5617455,
 	5617456,
 	5617457,
+	6238482,
+	6243518,
 }
 
 --- @return table<integer,string>

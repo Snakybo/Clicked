@@ -14,6 +14,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for The War Within 11.0.5
 * Add support for Cataclysm Classic 4.4.1
+* Add icons from The War Within 11.0.5 to icon picker
+* Add icons from Cataclysm Classic 4.4.1 to icon picker
 * Update PvP talent data
 
 ### Fixed
