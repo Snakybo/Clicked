@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 40401
 ## Title: ClickedMedia
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo

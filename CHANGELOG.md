@@ -10,6 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for The War Within 11.0.5
+* Add support for Cataclysm Classic 4.4.1
+
 ### Fixed
 
 * Fix an issue with the item equipped load condition input field [#241]
