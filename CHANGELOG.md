@@ -14,6 +14,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for The War Within 11.0.5
 * Add support for Cataclysm Classic 4.4.1
+* Update PvP talent data
 
 ### Fixed
 

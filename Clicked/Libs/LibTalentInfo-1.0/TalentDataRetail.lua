@@ -1,5 +1,5 @@
 local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 55522
+local version = 57292
 
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
 	return
@@ -90,17 +90,17 @@ local specializations = {
 --- @type table<integer,integer[]>
 local pvpTalents = {
 	-- Arcane Mage
-	[62] = { 635, 637, 3517, 3529, 5397, 5488, 5491, 5589, 5601, }, -- Master of Escape, Improved Mass Invisibility, Temporal Shield, Kleptomania, Arcanosphere, Ice Wall, Ring of Fire, Master Shepherd, Ethereal Blink
+	[62] = { 635, 637, 3517, 3529, 5397, 5488, 5491, 5589, 5601, 5661, }, -- Master of Escape, Improved Mass Invisibility, Temporal Shield, Kleptomania, Arcanosphere, Ice Wall, Ring of Fire, Master Shepherd, Ethereal Blink, Chrono Shift
 	-- Fire Mage
 	[63] = { 644, 648, 5389, 5489, 5495, 5588, 5602, 5621, 5656, }, -- World in Flames, Greater Pyroblast, Ring of Fire, Ice Wall, Glass Cannon, Master Shepherd, Ethereal Blink, Improved Mass Invisibility, Fireheart
 	-- Frost Mage
 	[64] = { 66, 632, 634, 5390, 5490, 5496, 5497, 5581, 5600, 5622, }, -- Icy Feet, Concentrated Coolness, Ice Form, Ice Wall, Ring of Fire, Frost Bomb, Snowdrift, Master Shepherd, Ethereal Blink, Improved Mass Invisibility
 	-- Holy Paladin
-	[65] = { 85, 86, 87, 88, 640, 642, 3618, 5583, 5618, 5651, 5657, }, -- Ultimate Sacrifice, Darkest before the Dawn, Spreading the Word, Blessed Hands, Divine Vision, Cleanse the Weak, Hallowed Ground, Searing Glare, Denounce, Wrench Evil, Judgments of the Pure
+	[65] = { 85, 86, 87, 88, 640, 642, 3618, 5583, 5618, 5657, 5663, 5665, }, -- Ultimate Sacrifice, Darkest before the Dawn, Spreading the Word, Blessed Hands, Divine Vision, Cleanse the Weak, Hallowed Ground, Searing Glare, Denounce, Judgments of the Pure, Divine Plea, Spellbreaker
 	-- Protection Paladin
-	[66] = { 90, 91, 92, 94, 97, 844, 860, 861, 3474, 5554, 5582, 5652, }, -- Hallowed Ground, Steed of Glory, Sacred Duty, Guardian of the Forgotten Queen, Guarded by the Light, Inquisition, Warrior of Light, Shield of Virtue, Luminescence, Aura of Reckoning, Searing Glare, Wrench Evil
+	[66] = { 90, 91, 92, 94, 97, 844, 860, 861, 3474, 5554, 5582, 5664, 5667, }, -- Hallowed Ground, Steed of Glory, Sacred Duty, Guardian of the Forgotten Queen, Guarded by the Light, Inquisition, Warrior of Light, Shield of Virtue, Luminescence, Aura of Reckoning, Searing Glare, Bear the Burden, Spellbreaker
 	-- Retribution Paladin
-	[70] = { 81, 752, 753, 754, 756, 5535, 5572, 5573, 5584, 5653, }, -- Luminescence, Blessing of Sanctuary, Ultimate Retribution, Lawbringer, Aura of Reckoning, Hallowed Ground, Spreading the Word, Blessing of Spellwarding, Searing Glare, Wrench Evil
+	[70] = { 81, 752, 754, 756, 5535, 5572, 5573, 5584, 5666, 753, }, -- Luminescence, Blessing of Sanctuary, Lawbringer, Aura of Reckoning, Hallowed Ground, Spreading the Word, Blessing of Spellwarding, Searing Glare, Spellbreaker, Ultimate Retribution
 	-- Arms Warrior
 	[71] = { 28, 29, 31, 32, 33, 34, 3534, 5372, 5376, 5547, 5625, 5630, }, -- Master and Commander, Shadow of the Colossus, Storm of Destruction, War Banner, Sharpen Blade, Duel, Disarm, Demolition, Warbringer, Rebound, Safeguard, Battlefield Commander
 	-- Fury Warrior
@@ -114,13 +114,13 @@ local pvpTalents = {
 	-- Guardian Druid
 	[104] = { 49, 51, 52, 194, 195, 196, 197, 842, 1237, 3750, 5410, 5648, }, -- Master Shapeshifter, Den Mother, Demoralizing Roar, Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Alpha Challenge, Malorne's Swiftness, Freedom of the Herd, Grove Protection, Tireless Pursuit
 	-- Restoration Druid
-	[105] = { 59, 691, 692, 697, 700, 835, 838, 1215, 5387, 5514, 5649, }, -- Disentanglement, Reactive Resin, Entangling Bark, Thorns, Deep Roots, Focused Growth, High Winds, Early Spring, Preserve Nature, Malorne's Swiftness, Tireless Pursuit
+	[105] = { 59, 692, 697, 700, 835, 838, 1215, 5387, 5514, 5649, }, -- Disentanglement, Entangling Bark, Thorns, Deep Roots, Focused Growth, High Winds, Early Spring, Preserve Nature, Malorne's Swiftness, Tireless Pursuit
 	-- Blood Death Knight
-	[250] = { 204, 205, 206, 608, 609, 841, 3441, 3511, 5513, 5587, 5592, }, -- Rot and Wither, Walking Dead, Strangulate, Last Dance, Death Chain, Murderous Intent, Decomposing Aura, Dark Simulacrum, Necrotic Aura, Bloodforged Armor, Spellwarden
+	[250] = { 204, 205, 206, 608, 609, 841, 3441, 3511, 5587, 5592, }, -- Rot and Wither, Walking Dead, Strangulate, Last Dance, Death Chain, Murderous Intent, Decomposing Aura, Dark Simulacrum, Bloodforged Armor, Spellwarden
 	-- Frost Death Knight
-	[251] = { 701, 702, 3439, 3512, 3743, 5429, 5435, 5510, 5512, 5586, 5591, }, -- Deathchill, Delirium, Shroud of Winter, Dark Simulacrum, Dead of Winter, Strangulate, Bitter Chill, Rot and Wither, Necrotic Aura, Bloodforged Armor, Spellwarden
+	[251] = { 701, 702, 3439, 3512, 3743, 5429, 5435, 5510, 5586, 5591, }, -- Deathchill, Delirium, Shroud of Winter, Dark Simulacrum, Dead of Winter, Strangulate, Bitter Chill, Rot and Wither, Bloodforged Armor, Spellwarden
 	-- Unholy Death Knight
-	[252] = { 40, 41, 149, 152, 3437, 3746, 5430, 5436, 5511, 5585, 5590, }, -- Life and Death, Dark Simulacrum, Necrotic Wounds, Reanimation, Necrotic Aura, Necromancer's Bargain, Strangulate, Doomburst, Rot and Wither, Bloodforged Armor, Spellwarden
+	[252] = { 40, 41, 149, 152, 3746, 5430, 5436, 5511, 5585, 5590, }, -- Life and Death, Dark Simulacrum, Necrotic Wounds, Reanimation, Necromancer's Bargain, Strangulate, Doomburst, Rot and Wither, Bloodforged Armor, Spellwarden
 	-- Beast Mastery Hunter
 	[253] = { 693, 824, 825, 1214, 3599, 3604, 3730, 5441, 5444, 5534, }, -- The Beast Within, Dire Beast: Hawk, Dire Beast: Basilisk, Interlope, Survival Tactics, Chimaeral Sting, Hunting Pack, Wild Kingdom, Kindred Beasts, Diamond Ice
 	-- Marksmanship Hunter
@@ -140,13 +140,13 @@ local pvpTalents = {
 	-- Subtlety Rogue
 	[261] = { 136, 146, 153, 846, 856, 1209, 3447, 3462, 5406, 5409, 5411, 5529, }, -- Veil of Midnight, Thief's Bargain, Shadowy Duel, Dagger in the Dark, Silhouette, Smoke Bomb, Maneuverability, Death from Above, Dismantle, Thick as Thieves, Distracting Mirage, Control is King
 	-- Elemental Shaman
-	[262] = { 727, 3488, 3490, 3491, 3620, 5571, 5574, 5659, 5660, }, -- Static Field Totem, Totem of Wrath, Counterstrike Totem, Unleash Shield, Grounding Totem, Volcanic Surge, Burrow, Electrocute, Shamanism
+	[262] = { 727, 3488, 3490, 3491, 3620, 5574, 5659, 5660, }, -- Static Field Totem, Totem of Wrath, Counterstrike Totem, Unleash Shield, Grounding Totem, Burrow, Electrocute, Shamanism
 	-- Enhancement Shaman
 	[263] = { 721, 722, 3487, 3489, 3492, 3622, 5438, 5575, 5596, 5658, }, -- Ride the Lightning, Shamanism, Totem of Wrath, Counterstrike Totem, Unleash Shield, Grounding Totem, Static Field Totem, Burrow, Stormweaver, Electrocute
 	-- Restoration Shaman
 	[264] = { 707, 708, 714, 715, 3755, 5388, 5437, 5567, 5576, }, -- Totem of Wrath, Counterstrike Totem, Electrocute, Grounding Totem, Rain Dance, Living Tide, Unleash Shield, Static Field Totem, Burrow
 	-- Affliction Warlock
-	[265] = { 15, 16, 18, 19, 5379, 5386, 5392, 5543, 5546, 5579, 5608, }, -- Gateway Mastery, Rot and Decay, Nether Ward, Essence Drain, Rampant Afflictions, Jinx, Shadow Rift, Call Observer, Bonds of Fel, Impish Instincts, Soul Rip
+	[265] = { 15, 16, 18, 19, 5379, 5386, 5392, 5543, 5546, 5579, 5608, 5662, }, -- Gateway Mastery, Rot and Decay, Nether Ward, Essence Drain, Rampant Afflictions, Jinx, Shadow Rift, Call Observer, Bonds of Fel, Impish Instincts, Soul Rip, Soul Swap
 	-- Demonology Warlock
 	[266] = { 162, 165, 1213, 3506, 3624, 5394, 5545, 5577, 5606, }, -- Call Fel Lord, Call Observer, Master Summoner, Gateway Mastery, Nether Ward, Shadow Rift, Bonds of Fel, Impish Instincts, Soul Rip
 	-- Destruction Warlock
@@ -156,11 +156,11 @@ local pvpTalents = {
 	-- Windwalker Monk
 	[269] = { 77, 675, 852, 3052, 3737, 3744, 3745, 5448, 5610, 5641, 5643, 5644, }, -- Ride the Wind, Tigereye Brew, Reverse Harm, Grapple Weapon, Wind Waker, Predestination, Turbo Fists, Perpetual Paralysis, Stormspirit Strikes, Absolute Serenity, Rising Dragon Sweep, Rodeo
 	-- Mistweaver Monk
-	[270] = { 70, 679, 680, 683, 1928, 3732, 5395, 5398, 5402, 5539, 5551, 5565, 5603, 5642, 5645, }, -- Eminence, Counteract Magic, Dome of Mist, Healing Sphere, Zen Focus Tea, Grapple Weapon, Peaceweaver, Dematerialize, Thunderous Focus Tea, Mighty Ox Kick, Alpha Tiger, Jadefire Accord, Zen Spheres, Absolute Serenity, Rodeo
+	[270] = { 70, 679, 683, 1928, 3732, 5395, 5398, 5539, 5551, 5565, 5603, 5642, 5645, }, -- Eminence, Counteract Magic, Healing Sphere, Zen Focus Tea, Grapple Weapon, Peaceweaver, Dematerialize, Mighty Ox Kick, Alpha Tiger, Jadefire Accord, Zen Spheres, Absolute Serenity, Rodeo
 	-- Havoc Demon Hunter
-	[577] = { 805, 806, 809, 811, 812, 813, 1206, 1218, 5433, 5523, }, -- Cleansed by Flame, Reverse Magic, Chaotic Imprint, Rain from Above, Detainment, Glimpse, Cover of Darkness, Unending Hatred, Blood Moon, Sigil Mastery
+	[577] = { 805, 806, 811, 812, 813, 1206, 1218, 5433, 5523, }, -- Cleansed by Flame, Reverse Magic, Rain from Above, Detainment, Glimpse, Cover of Darkness, Unending Hatred, Blood Moon, Sigil Mastery
 	-- Vengeance Demon Hunter
-	[581] = { 814, 815, 816, 819, 1220, 1948, 3423, 3429, 3430, 3727, 5434, 5439, 5520, 5521, 5522, }, -- Cleansed by Flame, Everlasting Hunt, Jagged Spikes, Illidan's Grasp, Tormentor, Sigil Mastery, Demonic Trample, Reverse Magic, Detainment, Unending Hatred, Blood Moon, Chaotic Imprint, Cover of Darkness, Rain from Above, Glimpse
+	[581] = { 814, 815, 816, 819, 1220, 1948, 3423, 3429, 3430, 3727, 5434, 5520, 5521, 5522, }, -- Cleansed by Flame, Everlasting Hunt, Jagged Spikes, Illidan's Grasp, Tormentor, Sigil Mastery, Demonic Trample, Reverse Magic, Detainment, Unending Hatred, Blood Moon, Cover of Darkness, Rain from Above, Glimpse
 	-- Initial Shaman
 	[1444] = { },
 	-- Initial Warrior
