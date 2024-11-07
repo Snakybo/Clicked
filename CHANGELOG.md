@@ -8,7 +8,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.16.11] - 2024-11-07
 
 ### Fixed
 
@@ -1577,7 +1577,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.16.10...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.16.11...master
+[1.16.11]: https://github.com/Snakybo/Clicked/releases/tag/1.16.11
 [1.16.10]: https://github.com/Snakybo/Clicked/releases/tag/1.16.10
 [1.16.9]: https://github.com/Snakybo/Clicked/releases/tag/1.16.9
 [1.16.8]: https://github.com/Snakybo/Clicked/releases/tag/1.16.8
