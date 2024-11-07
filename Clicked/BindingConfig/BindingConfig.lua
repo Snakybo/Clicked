@@ -35,8 +35,6 @@ local Addon = select(2, ...)
 
 local SEARCH_FILTER_APPLY_DELAY = 0.1
 
-local contextMenuFrame = CreateFrame("Frame", "ClickedContextMenu", UIParent, "UIDropDownMenuTemplate")
-
 --- @param selected integer[]
 --- @return DataObject[]
 --- @return boolean
@@ -605,7 +603,6 @@ function Addon.BindingConfig.Window:CreateFrame()
 		end
 
 		container:ReleaseChildren()
-		contextMenuFrame:Hide()
 
 		self.bindingCopyTarget = nil
 		self.frame = nil
@@ -830,8 +827,6 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 				self:SetPage(self.PAGE_NEW)
 			end
 		end
-
-		contextMenuFrame:Hide()
 	end
 
 	--- @param uid integer
@@ -897,8 +892,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 	end
 
 	--- @param ids integer[]
-	--- @param button Button
-	local function OnButtonContext(_, _, ids, button)
+	local function OnButtonContext(_, _, ids)
 		--- @type DataObject[]
 		local objects = {}
 
@@ -916,327 +910,157 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 		local ref = objects[1]
 
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-			MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
-				if ref.type == Clicked.DataObjectType.BINDING then
-					--- @cast objects Binding[]
-					--- @cast ref Binding
-
-					rootDescription:CreateButton(Addon.L["Copy Data"], function()
-						self.bindingCopyTarget = ref.uid
-					end):SetEnabled(#objects == 1)
-
-					rootDescription:CreateButton(Addon.L["Paste Data"], function()
-						local source = Clicked:GetByUid(self.bindingCopyTarget) --[[@as Binding?]]
-
-						if source ~= nil then
-							for _, binding in ipairs(objects) do
-								local clone = CopyTable(source)
-								Addon:ReplaceBindingContents(binding, clone)
-								Addon:ReloadBinding(binding, true)
-							end
-						end
-					end):SetEnabled(self.bindingCopyTarget ~= nil)
-
-					rootDescription:CreateButton(Addon.L["Duplicate"], function()
-						--- @type Binding
-						local first
-
-						for _, binding in ipairs(objects) do
-							local clone = Addon:CloneDataObject(binding)
-							first = first or clone
-						end
-
-						self.treeWidget:Select(first.uid)
-					end)
-
-					do
-						local submenu = rootDescription:CreateButton(Addon.L["Convert to"])
-
-						local function CreateOption(type, label)
-							local isAvailable = FindInTableIf(objects, function(obj)
-								return obj.actionType == type
-							end) == nil
-
-							if not isAvailable then
-								return
-							end
-
-							submenu:CreateButton(label, function()
-								--- @type Binding
-								local first
-
-								for _, binding in ipairs(objects) do
-									if binding.actionType ~= type then
-										first = first or binding
-										binding.actionType = type
-
-										Addon:ReloadBinding(binding, true)
-										self:RedrawPage()
-									end
-								end
-							end)
-						end
-
-						CreateOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
-						CreateOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
-						CreateOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
-						CreateOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
-						CreateOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
-						CreateOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
-						CreateOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
-					end
-				elseif ref.type == Clicked.DataObjectType.GROUP then
-					--- @cast objects Group[]
-					--- @cast ref Group
-
-					rootDescription:CreateButton(Addon.L["Duplicate"], function()
-						--- @type Group
-						local first
-
-						for _, group in ipairs(objects) do
-							local clone = Addon:CloneDataObject(group)
-							first = first or clone
-						end
-
-						self.treeWidget:Select(first.uid)
-					end)
-				end
-
-				do
-					local submenu = rootDescription:CreateButton(Addon.L["Change scope"])
-
-					local function CreateOption(scope, label)
-						local hasMixedValues = FindInTableIf(objects, function(obj)
-							return obj.scope ~= objects[1].scope
-						end) ~= nil
-
-						if not hasMixedValues then
-							submenu:CreateRadio(label, function()
-								return objects[1].scope == scope
-							end, function()
-								for _, current in ipairs(objects) do
-									Addon:ChangeDataObjectScope(current, scope)
-								end
-
-								self:CreateOrUpdateTree()
-								self.treeWidget:Select(objects[1].uid)
-							end)
-						else
-							submenu:CreateButton(label, function()
-								--- @type DataObject
-								local first
-
-								for _, obj in ipairs(objects) do
-									if obj.scope ~= scope then
-										first = first or obj
-										Addon:ChangeDataObjectScope(obj, scope)
-									end
-								end
-
-								self:CreateOrUpdateTree()
-								self.treeWidget:Select(first.uid)
-							end)
-						end
-					end
-
-					CreateOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
-					CreateOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
-				end
-
-				rootDescription:CreateButton(Addon.L["Share"], function()
-					self:SetPage(self.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.BINDING_GROUP, ref)
-				end):SetEnabled(#objects == 1)
-
-				rootDescription:CreateButton(Addon.L["Delete"], function()
-					local function OnConfirm()
-						if InCombatLockdown() then
-							return
-						end
-
-						for _, obj in ipairs(objects) do
-							Clicked:DeleteDataObject(obj)
-						end
-					end
-
-					if IsShiftKeyDown() then
-						OnConfirm()
-					else
-						--- @type string
-						local msg
-
-						if #objects > 1 then
-							msg = string.format(Addon.L["Are you sure you want to delete these %d bindings and/or groups?"], #objects)
-						else
-							if ref.type == Clicked.DataObjectType.BINDING then
-								--- @cast ref Binding
-								msg = Addon.L["Are you sure you want to delete this binding?"] .. "\n\n"
-								msg = msg .. ref.keybind .. " " .. Addon:GetBindingNameAndIcon(ref)
-							elseif ref.type == Clicked.DataObjectType.GROUP then
-								--- @cast ref Group
-								local bindings = Clicked:GetByParent(ref.uid)
-
-								msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(#bindings) .. "\n\n"
-								msg = msg .. Addon:GetGroupNameAndIcon(ref)
-							end
-						end
-
-						Addon:ShowConfirmationPopup(msg, OnConfirm)
-					end
-				end)
-			end)
-		else
-			local menu = {}
-
+		MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
 			if ref.type == Clicked.DataObjectType.BINDING then
+				--- @cast objects Binding[]
 				--- @cast ref Binding
 
-				table.insert(menu, {
-					text = Addon.L["Copy Data"],
-					notCheckable = true,
-					func = function()
-						self.bindingCopyTarget = ref.uid
-					end
-				})
+				rootDescription:CreateButton(Addon.L["Copy Data"], function()
+					self.bindingCopyTarget = ref.uid
+				end):SetEnabled(#objects == 1)
 
-				table.insert(menu, {
-					text = Addon.L["Paste Data"],
-					notCheckable = true,
-					disabled = self.bindingCopyTarget == nil,
-					func = function()
-						local source = Clicked:GetByUid(self.bindingCopyTarget)
+				rootDescription:CreateButton(Addon.L["Paste Data"], function()
+					local source = Clicked:GetByUid(self.bindingCopyTarget) --[[@as Binding?]]
 
-						if source ~= nil then
-							--- @cast source Binding
+					if source ~= nil then
+						for _, binding in ipairs(objects) do
 							local clone = CopyTable(source)
-							Addon:ReplaceBindingContents(ref, clone)
-							Addon:ReloadBinding(ref, true)
+							Addon:ReplaceBindingContents(binding, clone)
+							Addon:ReloadBinding(binding, true)
 						end
 					end
-				})
+				end):SetEnabled(self.bindingCopyTarget ~= nil)
 
-				table.insert(menu, {
-					text = Addon.L["Duplicate"],
-					notCheckable = true,
-					func = function()
-						local clone = Addon:CloneDataObject(ref)
-						self.treeWidget:Select(clone.uid)
+				rootDescription:CreateButton(Addon.L["Duplicate"], function()
+					--- @type Binding
+					local first
+
+					for _, binding in ipairs(objects) do
+						local clone = Addon:CloneDataObject(binding)
+						first = first or clone
 					end
-				})
+
+					self.treeWidget:Select(first.uid)
+				end)
 
 				do
-					local convertTo = {
-						text = Addon.L["Convert to"],
-						hasArrow = true,
-						notCheckable = true,
-						menuList = {}
-					}
+					local submenu = rootDescription:CreateButton(Addon.L["Convert to"])
 
-					local function AddConvertToOption(type, label)
-						if ref.actionType == type then
+					local function CreateOption(type, label)
+						local isAvailable = FindInTableIf(objects, function(obj)
+							return obj.actionType == type
+						end) == nil
+
+						if not isAvailable then
 							return
 						end
 
-						table.insert(convertTo.menuList, {
-							text = label,
-							notCheckable = true,
-							func = function()
-								ref.actionType = type
+						submenu:CreateButton(label, function()
+							--- @type Binding
+							local first
 
-								Addon:ReloadBinding(ref, true)
-								self.treeWidget:Select(ref.uid)
+							for _, binding in ipairs(objects) do
+								if binding.actionType ~= type then
+									first = first or binding
+									binding.actionType = type
 
-								contextMenuFrame:Hide()
+									Addon:ReloadBinding(binding, true)
+									self:RedrawPage()
+								end
 							end
-						})
+						end)
 					end
 
-					table.insert(menu, convertTo)
-
-					AddConvertToOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
-					AddConvertToOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
-					AddConvertToOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
-					AddConvertToOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
-					AddConvertToOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
-					AddConvertToOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
-					AddConvertToOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
+					CreateOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
+					CreateOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
+					CreateOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
+					CreateOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
+					CreateOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
+					CreateOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
+					CreateOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
 				end
 			elseif ref.type == Clicked.DataObjectType.GROUP then
 				--- @cast objects Group[]
 				--- @cast ref Group
 
-				table.insert(menu, {
-					text = Addon.L["Duplicate"],
-					notCheckable = true,
-					func = function()
-						--- @type Group
-						local first
+				rootDescription:CreateButton(Addon.L["Duplicate"], function()
+					--- @type Group
+					local first
 
-						for _, group in ipairs(objects) do
-							local clone = Addon:CloneDataObject(group)
-							first = first or clone
-						end
-
-						self.treeWidget:Select(first.uid)
+					for _, group in ipairs(objects) do
+						local clone = Addon:CloneDataObject(group)
+						first = first or clone
 					end
-				})
+
+					self.treeWidget:Select(first.uid)
+				end)
 			end
 
 			do
-				local changeScope = {
-					text = Addon.L["Change scope"],
-					hasArrow = true,
-					notCheckable = true,
-					menuList = {}
-				}
+				local submenu = rootDescription:CreateButton(Addon.L["Change scope"])
 
-				local function AddOption(scope, label)
-					table.insert(changeScope.menuList, {
-						text = label,
-						checked = ref.scope == scope,
-						func = function()
-							Addon:ChangeDataObjectScope(ref, scope)
+				local function CreateOption(scope, label)
+					local hasMixedValues = FindInTableIf(objects, function(obj)
+						return obj.scope ~= objects[1].scope
+					end) ~= nil
+
+					if not hasMixedValues then
+						submenu:CreateRadio(label, function()
+							return objects[1].scope == scope
+						end, function()
+							for _, current in ipairs(objects) do
+								Addon:ChangeDataObjectScope(current, scope)
+							end
 
 							self:CreateOrUpdateTree()
-							self.treeWidget:Select(ref.uid)
+							self.treeWidget:Select(objects[1].uid)
+						end)
+					else
+						submenu:CreateButton(label, function()
+							--- @type DataObject
+							local first
 
-							contextMenuFrame:Hide()
-						end
-					})
+							for _, obj in ipairs(objects) do
+								if obj.scope ~= scope then
+									first = first or obj
+									Addon:ChangeDataObjectScope(obj, scope)
+								end
+							end
+
+							self:CreateOrUpdateTree()
+							self.treeWidget:Select(first.uid)
+						end)
+					end
 				end
 
-				table.insert(menu, changeScope)
-
-				AddOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
-				AddOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
+				CreateOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
+				CreateOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
 			end
 
-			table.insert(menu, {
-				text = Addon.L["Share"],
-				notCheckable = true,
-				func = function ()
-					self:SetPage(self.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.BINDING_GROUP, ref)
-				end
-			})
+			rootDescription:CreateButton(Addon.L["Share"], function()
+				self:SetPage(self.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.BINDING_GROUP, ref)
+			end):SetEnabled(#objects == 1)
 
-			table.insert(menu, {
-				text = Addon.L["Delete"],
-				notCheckable = true,
-				func = function()
-					local function OnConfirm()
-						if InCombatLockdown() then
-							return
-						end
-
-						Clicked:DeleteDataObject(ref)
+			rootDescription:CreateButton(Addon.L["Delete"], function()
+				local function OnConfirm()
+					if InCombatLockdown() then
+						return
 					end
 
-					if IsShiftKeyDown() then
-						OnConfirm()
-					else
-						--- @type string
-						local msg
+					for _, obj in ipairs(objects) do
+						Clicked:DeleteDataObject(obj)
+					end
+				end
 
+				if IsShiftKeyDown() then
+					OnConfirm()
+				else
+					--- @type string
+					local msg
+
+					if #objects > 1 then
+						msg = string.format(Addon.L["Are you sure you want to delete these %d bindings and/or groups?"], #objects)
+					else
 						if ref.type == Clicked.DataObjectType.BINDING then
 							--- @cast ref Binding
 							msg = Addon.L["Are you sure you want to delete this binding?"] .. "\n\n"
@@ -1248,14 +1072,12 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(#bindings) .. "\n\n"
 							msg = msg .. Addon:GetGroupNameAndIcon(ref)
 						end
-
-						Addon:ShowConfirmationPopup(msg, OnConfirm)
 					end
-				end
-			})
 
-			EasyMenu(menu, contextMenuFrame, button, 0, 0, "MENU")
-		end
+					Addon:ShowConfirmationPopup(msg, OnConfirm)
+				end
+			end)
+		end)
 	end
 
 	self.treeWidget = AceGUI:Create("ClickedTreeGroup") --[[@as ClickedTreeGroup]]
