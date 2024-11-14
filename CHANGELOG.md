@@ -8,6 +8,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+* Select the imported binding after importing via export string [#245]  (by [m33shoq])
+
+### Fixed
+
+* Fix a potential data conflict issue when importing bindings or groups via export string [#245] (by [m33shoq])
+
 ## [1.16.11] - 2024-11-07
 
 ### Fixed
@@ -1712,6 +1722,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#245]: https://github.com/Snakybo/Clicked/pull/245
 [#243]: https://github.com/Snakybo/Clicked/issues/243
 [#242]: https://github.com/Snakybo/Clicked/pull/242
 [#241]: https://github.com/Snakybo/Clicked/issues/241
