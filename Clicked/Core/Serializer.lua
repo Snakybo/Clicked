@@ -44,11 +44,13 @@ local function RegisterGroup(data)
 
 	local bindings = data.group.bindings
 	data.group.bindings = nil
+	data.group.uid = nil
 
 	Addon:RegisterDataObject(data.group)
 
 	for _, binding in ipairs(bindings) do
 		binding.parent = data.group.uid
+		binding.uid = nil
 
 		Addon:RegisterDataObject(binding)
 		Addon:ReloadBinding(binding, true)
@@ -60,7 +62,7 @@ local function RegisterBinding(data)
 	if data.type ~= "binding" then
 		error("bad argument #1, expected binding but got " .. data.type)
 	end
-
+	data.binding.uid = nil
 	Addon:RegisterDataObject(data.binding, Clicked.DataObjectScope.PROFILE)
 	Addon:ReloadBinding(data.binding, true)
 end
