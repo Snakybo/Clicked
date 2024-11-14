@@ -218,7 +218,13 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 			end
 
 			Clicked:Import(review)
-			self.controller:PopPage(self)
+			if review.type == "group" then
+				Addon.BindingConfig.Window:Select(review.group.uid)
+			elseif review.type == "binding" then
+				Addon.BindingConfig.Window:Select(review.binding.uid)
+			else
+				self.controller:PopPage(self)
+			end
 		end)
 
 		self.container:AddChild(widget)
