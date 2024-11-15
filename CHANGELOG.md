@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Select the imported binding after importing via export string [#245]  (by [m33shoq])
+* Ignore blacklisted frames completely [#235]
 
 ### Fixed
 
@@ -1727,6 +1728,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#242]: https://github.com/Snakybo/Clicked/pull/242
 [#241]: https://github.com/Snakybo/Clicked/issues/241
 [#237]: https://github.com/Snakybo/Clicked/issues/237
+[#235]: https://github.com/Snakybo/Clicked/issues/235
 [#232]: https://github.com/Snakybo/Clicked/issues/232
 [#230]: https://github.com/Snakybo/Clicked/issues/230
 [#228]: https://github.com/Snakybo/Clicked/issues/228

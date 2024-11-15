@@ -83,10 +83,6 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 
 	EnsureCache(frame)
 
-	if Addon:IsFrameBlacklisted(frame) then
-		return
-	end
-
 	local requiresGsub = not Addon.db.profile.options.onKeyDown and frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME]
 	local requiresMenu = frame:GetAttribute("*type2") == "menu"
 

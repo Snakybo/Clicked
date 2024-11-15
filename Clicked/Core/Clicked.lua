@@ -139,7 +139,6 @@ local function PLAYER_ENTERING_WORLD()
 	local isInitialLoadPending = false
 
 	Addon:ProcessFrameQueue()
-	Addon:UpdateClickCastHeaderBlacklist()
 	Addon:UpdateTalentCache(function()
 		isInitialLoadPending = true
 		Addon:ReloadBindingsImmediate()

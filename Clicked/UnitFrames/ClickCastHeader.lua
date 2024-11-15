@@ -46,15 +46,8 @@ function Addon:RegisterClickCastHeader()
 
 	ClickCastHeader:SetAttribute("clicked-keybinds", "")
 	ClickCastHeader:SetAttribute("clicked-identifiers", "")
-	ClickCastHeader:Execute([[
-		blacklist = table.new()
-	]])
 
 	ClickCastHeader:SetAttribute("setup-keybinds", [[
-		if blacklist[self:GetName()] then
-			return
-		end
-
 		if currentClickcastButton ~= nil then
 			control:RunFor(currentClickcastButton, control:GetAttribute("clear-keybinds"))
 		end
@@ -163,28 +156,6 @@ function Addon:RegisterClickCastHeader()
 	Clique.UpdateRegisteredClicks = function(_, frame)
 		safecall(Clicked.RegisterFrameClicks, Clicked, frame, true)
 	end
-end
-
-function Addon:UpdateClickCastHeaderBlacklist()
-	local blacklist = Addon.db.profile.blacklist
-	local data = {
-		"blacklist = table.wipe(blacklist)"
-	}
-
-	for group, blacklisted in pairs(blacklist) do
-		if blacklisted then
-			for _, frameName in ipairs(Addon.BlacklistOptions:GetBlacklistGroupItems(group)) do
-				local line = [[
-					blacklist["%s"] = true
-				]]
-
-				local lua = string.format(line, frameName)
-				table.insert(data, lua)
-			end
-		end
-	end
-
-	Addon.ClickCastHeader:Execute(table.concat(data, "\n"))
 end
 
 --- @param keybinds Keybind[]

@@ -203,6 +203,10 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 		return
 	end
 
+	if Addon:IsFrameBlacklisted(frame) then
+		return
+	end
+
 	if frame:GetName() == nil then
 		Clicked:CreateSidecar(frame, nil)
 	end
@@ -220,11 +224,21 @@ end
 
 --- Unregister a registered click-cast enabled frame. See the documentation of `RegisterClickCastFrame` for more information.
 ---
---- @param frame Button The frame to unregister
+--- @param frame Button|string The frame to unregister
 --- @see Clicked#RegisterClickCastFrame
 function Clicked:UnregisterClickCastFrame(frame)
 	if frame == nil then
 		return
+	end
+
+	if type(frame) == "string" then
+		local name = frame --[[@as string]]
+		frame = _G[name]
+
+		if frame == nil then
+			print(Addon:GetPrefixedAndFormattedString(Addon.L["Unable to unregister unit frame: %s"], name))
+			return
+		end
 	end
 
 	local index = 0
@@ -270,8 +284,6 @@ function Clicked:UnregisterClickCastFrame(frame)
 	-- TODO: Unregister sidecar?
 
 	table.remove(frames, index)
-
-	Addon.BlacklistOptions:UnregisterFrame(frame)
 end
 
 --- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on

@@ -74,9 +74,7 @@ function BlacklistOptions:Initialize()
 	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
 	AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
 
-	for _, frame in Clicked:IterateClickCastFrames() do
-		self:RegisterFrame(frame)
-	end
+	self:Refresh()
 end
 
 --- Set the name of the blacklist group the frame belongs to.
@@ -124,6 +122,11 @@ function BlacklistOptions:Refresh()
 	for _, frame in Clicked:IterateClickCastFrames() do
 		self:RegisterFrame(frame)
 	end
+
+	for name, state in pairs(Addon.db.profile.blacklist) do
+		self:SetSelectedItem(name, state)
+		self:SetDropdownItem(name, not state)
+	end
 end
 
 --- @param frame Frame
@@ -133,16 +136,6 @@ function BlacklistOptions:RegisterFrame(frame)
 	if group ~= nil then
 		self:SetSelectedItem(group, Addon.db.profile.blacklist[group])
 		self:SetDropdownItem(group, not Addon.db.profile.blacklist[group])
-	end
-end
-
---- @param frame Frame
-function BlacklistOptions:UnregisterFrame(frame)
-	local group = self:GetBlacklistGroup(frame)
-
-	if group ~= nil then
-		self:SetSelectedItem(group, false)
-		self:SetDropdownItem(group, false)
 	end
 end
 
@@ -175,7 +168,7 @@ function BlacklistOptions:CreateOptionsTable()
 			},
 			help3 = {
 				type = "description",
-				name = Addon.L["This will take effect immediately."],
+				name = Addon.L["This will take effect immediately, however may require a UI reload if a unit frame is pass-through by default."],
 				order = 4,
 			},
 			selector = {
@@ -230,7 +223,7 @@ function BlacklistOptions:CreateOptionsTable()
 						self:SetSelectedItem(val, true)
 						self:SetDropdownItem(val, false)
 
-						Addon:UpdateClickCastHeaderBlacklist()
+						Clicked:UnregisterClickCastFrame(val)
 						Clicked:ProcessActiveBindings()
 					end
 				end,
@@ -325,7 +318,7 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 
 					self:SetDropdownItem(name, true)
 
-					Addon:UpdateClickCastHeaderBlacklist()
+					Clicked:RegisterClickCastFrame(name)
 					Clicked:ProcessActiveBindings()
 				end
 			end,
