@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a potential data conflict issue when importing bindings or groups via export string [#245] (by [m33shoq])
+* Include blacklisted unit frames in the UI even if the addon they came from is disabled
 
 ## [1.16.11] - 2024-11-07
 
