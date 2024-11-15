@@ -339,7 +339,11 @@ local function UpgradeLegacy(profile, from)
 					table.remove(regular, 1)
 				end
 
-				regular[1] = Addon:GetNewBindingTargetTemplate()
+				regular[1] = {
+					unit = "DEFAULT",
+					hostility = "ANY",
+					vitals = "ANY"
+				}
 
 				hovercast.hostility = Addon.TargetHostility.ANY
 				hovercast.vitals = Addon.TargetVitals.ANY
