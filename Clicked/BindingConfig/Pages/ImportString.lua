@@ -224,6 +224,14 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 				Addon.BindingConfig.Window:Select(review.binding.uid)
 			else
 				self.controller:PopPage(self)
+				if not Addon.BindingConfig.Window:IsOpen() then
+					Addon.BindingConfig.Window:Open()
+				end
+				if type(review.groups) == "table" and review.groups[1] then
+					Addon.BindingConfig.Window:Select(review.groups[1].uid)
+				elseif type(review.bindings) == "table" and review.binding[1] then
+					Addon.BindingConfig.Window:Select(review.bindings[1].uid)
+				end
 			end
 		end)
 
