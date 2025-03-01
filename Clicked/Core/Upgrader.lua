@@ -909,7 +909,7 @@ function Addon:UpgradeDatabase(from)
 	-- when the value of a constant changes. Always use direct values that are
 	-- read from the database.
 
-	do
+	if not Addon.DISABLE_GLOBAL_SCOPE then
 		local src = from or Addon.db.global.version or Addon.DATA_VERSION
 
 		if type(src) == "number" then

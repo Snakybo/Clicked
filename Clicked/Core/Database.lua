@@ -31,6 +31,8 @@ Clicked.DataObjectScope = {
 	GLOBAL = 2
 }
 
+Addon.DISABLE_GLOBAL_SCOPE = false
+
 --- @class DataObjectLookup
 --- @field public uid table<integer,DataObject>
 --- @field public keybind table<string,Binding[]>
@@ -245,15 +247,13 @@ function Clicked:DeleteDataObject(object)
 		end
 	end
 
-	if deleted then
-		for _, current in ipairs(deleted) do
-			if current.type == Clicked.DataObjectType.BINDING then
-				--- @cast current Binding
-				Addon:ReloadBinding(current)
-			elseif current.type == Clicked.DataObjectType.GROUP then
-				Addon:UpdateLookupTable(current)
-				Addon.BindingConfig.Window:RedrawTree()
-			end
+	for _, current in ipairs(deleted) do
+		if current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
+			Addon:ReloadBinding(current)
+		elseif current.type == Clicked.DataObjectType.GROUP then
+			Addon:UpdateLookupTable(current)
+			Addon.BindingConfig.Window:RedrawTree()
 		end
 	end
 
@@ -317,8 +317,10 @@ function Clicked:IterateGroups()
 		table.insert(result, group)
 	end
 
-	for _, group in ipairs(Addon.db.global.groups) do
-		table.insert(result, group)
+	if not Addon.DISABLE_GLOBAL_SCOPE then
+		for _, group in ipairs(Addon.db.global.groups) do
+			table.insert(result, group)
+		end
 	end
 
 	return ipairs(result)
@@ -334,8 +336,10 @@ function Clicked:IterateConfiguredBindings()
 		table.insert(result, binding)
 	end
 
-	for _, binding in ipairs(Addon.db.global.bindings) do
-		table.insert(result, binding)
+	if not Addon.DISABLE_GLOBAL_SCOPE then
+		for _, binding in ipairs(Addon.db.global.bindings) do
+			table.insert(result, binding)
+		end
 	end
 
 	return ipairs(result)
