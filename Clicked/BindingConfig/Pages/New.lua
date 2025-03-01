@@ -43,8 +43,9 @@ local function CreateGroup()
 end
 
 --- @param type integer
+--- @param parent DataObject?
 --- @return Binding
-local function CreateBinding(type)
+local function CreateBinding(type, parent)
 	local binding = Clicked:CreateBinding()
 
 	if type == ItemTemplate.BINDING_CAST_SPELL then
@@ -65,6 +66,15 @@ local function CreateBinding(type)
 		binding.actionType = Clicked.ActionType.UNIT_SELECT
 	elseif type == ItemTemplate.BINDING_UNIT_MENU then
 		binding.actionType = Clicked.ActionType.UNIT_MENU
+	end
+
+	if parent ~= nil then
+		if parent.type == Clicked.DataObjectType.BINDING then
+			--- @cast parent Binding
+			binding.parent = parent.parent
+		elseif parent.type == Clicked.DataObjectType.GROUP then
+			binding.parent = parent.uid
+		end
 	end
 
 	Addon:ReloadBinding(binding, true)
@@ -295,7 +305,9 @@ end
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigNewPage : BindingConfigPage
-Addon.BindingConfig.NewPage = {}
+Addon.BindingConfig.NewPage = {
+	keepTreeSelection = true
+}
 
 --- @protected
 function Addon.BindingConfig.NewPage:Redraw()
@@ -383,7 +395,7 @@ function Addon.BindingConfig.NewPage:CreateItem(type)
 	if type == ItemTemplate.GROUP then
 		target = CreateGroup()
 	elseif type >= ItemTemplate.BINDING_CAST_SPELL and type <= ItemTemplate.BINDING_UNIT_MENU then
-		target = CreateBinding(type)
+		target = CreateBinding(type, self.controller:GetSelection()[1])
 	elseif type == ItemTemplate.IMPORT_SPELLBOOK then
 		target = ImportSpellbook()
 	elseif type == ItemTemplate.IMPORT_ACTIONBAR then
@@ -393,6 +405,6 @@ function Addon.BindingConfig.NewPage:CreateItem(type)
 	end
 
 	if target ~= nil then
-		self.controller.treeWidget:Select(target.uid)
+		self.controller:Select(target.uid, true)
 	end
 end

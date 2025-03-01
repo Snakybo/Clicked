@@ -216,6 +216,8 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private redrawTimer? TimerCallback
 --- @field private bindingCopyTarget? integer
 --- @field private reloadedBindings integer[]
+--- @field private treeWidget ClickedTreeGroup
+--- @field private pendingSelection? integer|integer[]
 Addon.BindingConfig.Window = {
 	PAGE_BINDING = "binding",
 	PAGE_EXPORT_STRING = "exportString",
@@ -333,12 +335,33 @@ function Addon.BindingConfig.Window:PopPage(page)
 end
 
 --- @param uid integer|integer[]
-function Addon.BindingConfig.Window:Select(uid)
+--- @param enqueue? boolean
+function Addon.BindingConfig.Window:Select(uid, enqueue)
 	if not self:IsOpen() then
 		return
 	end
 
-	self.treeWidget:Select(uid)
+	if self.redrawTimer ~= nil or enqueue then
+		self.pendingSelection = uid
+	else
+		self.treeWidget:Select(uid)
+	end
+end
+
+--- @return DataObject[]
+function Addon.BindingConfig.Window:GetSelection()
+	if not self:IsOpen() then
+		return {}
+	end
+
+	--- @type DataObject[]
+	local result = {}
+
+	for _, id in ipairs(self.treeStatus.selected) do
+		table.insert(result, Clicked:GetByUid(id))
+	end
+
+	return result
 end
 
 --- @param changed Binding[]
@@ -362,21 +385,26 @@ function Addon.BindingConfig.Window:RedrawTree()
 		self:CreateOrUpdateTree()
 		self.treeWidget:SetTree(self.tree)
 
-		--- @type integer[]
-		local selected = CopyTable(self.treeStatus.selected or {})
-		local selecctionChanged = false
-
-		for i = #selected, 1, -1 do
-			if self.treeItems[selected[i]] == nil then
-				table.remove(selected, i)
-				selecctionChanged = true
-			end
-		end
-
-		if selecctionChanged then
-			self.treeWidget:Select(selected)
+		if self.pendingSelection ~= nil then
+			self.treeWidget:Select(self.pendingSelection)
+			self.pendingSelection = nil
 		else
-			self.treeWidget:RefreshTree()
+			--- @type integer[]
+			local selected = CopyTable(self.treeStatus.selected or {})
+			local selecctionChanged = false
+
+			for i = #selected, 1, -1 do
+				if self.treeItems[selected[i]] == nil then
+					table.remove(selected, i)
+					selecctionChanged = true
+				end
+			end
+
+			if selecctionChanged then
+				self.treeWidget:Select(selected)
+			else
+				self.treeWidget:RefreshTree()
+			end
 		end
 
 		self:HandleOnBindingReload()

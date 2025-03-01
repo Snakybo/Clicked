@@ -27,7 +27,9 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigIconSelectPage : BindingConfigPage
 --- @field private onSelectCallback fun(targets: DataObject[], value: string)
-Addon.BindingConfig.IconSelectPage = {}
+Addon.BindingConfig.IconSelectPage = {
+	keepTreeSelection = true
+}
 
 --- @protected
 --- @param onSelectCallback fun(targets: DataObject[], value: string)

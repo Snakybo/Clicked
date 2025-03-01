@@ -509,11 +509,9 @@ function Methods:RefreshTree(scrollToSelection, fromOnUpdate)
 		return
 	end
 
-	self:UpdateLines()
+	local lines = self:UpdateLines()
 
-	local lines = self.lines
-
-	local numlines = #self.lines
+	local numlines = #lines
 	local maxlines = math.floor(((self.treeFrame:GetHeight() or 0) - 20) / 28)
 
 	if maxlines <= 0 then
@@ -754,12 +752,21 @@ function Methods:RemoveSelection(uid)
 end
 
 --- @private
+--- @return ClickedTreeGroupRuntimeItem[]
 function Methods:UpdateLines()
 	table.wipe(self.lines)
 
 	local tree = self.tree
 	if tree == nil then
-		return
+		return self.lines
+	end
+
+	local status = self.status or self.localstatus
+
+	--- @param child ClickedTreeGroupItem
+	--- @return boolean
+	local function IsChildSelected(child)
+		return Addon:TableContains(status.selected, child.uid)
 	end
 
 	--- @param children ClickedTreeGroupRuntimeItem[]
@@ -769,6 +776,10 @@ function Methods:UpdateLines()
 				table.insert(self.lines, item)
 			elseif item.children ~= nil and (item.level == 1 or not item.isFiltered or item.isAnyChildVisible) then
 				table.insert(self.lines, item)
+
+				if status.scrollToSelection and FindInTableIf(item.children, IsChildSelected) then
+					item.isFolded = false
+				end
 
 				if not item.isFolded then
 					if self.sortMethod ~= nil then
@@ -786,6 +797,8 @@ function Methods:UpdateLines()
 	end
 
 	BuildLevel(tree)
+
+	return self.lines
 end
 
 --- @private
