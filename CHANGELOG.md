@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Create bindings directly inside of a group [#265]
 * Add option to import class-wide abilities per specialization [#267]
 * Add option to prevent toggling an ability off [#248]
+* Make key options respect macro condtions where able [#251]
 
 ### Fixed
 
@@ -1732,6 +1733,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#267]: https://github.com/Snakybo/Clicked/pull/267
 [#265]: https://github.com/Snakybo/Clicked/pull/265
 [#263]: https://github.com/Snakybo/Clicked/pull/263
+[#251]: https://github.com/Snakybo/Clicked/pull/251
 [#248]: https://github.com/Snakybo/Clicked/pull/248
 [#247]: https://github.com/Snakybo/Clicked/pull/247
 [#245]: https://github.com/Snakybo/Clicked/pull/245

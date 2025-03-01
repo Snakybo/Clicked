@@ -215,7 +215,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 end
 
 --- @param binding Binding
---- @param target Binding.Target
+--- @param target? Binding.Target
 --- @return Action
 local function ConstructAction(binding, target)
 	--- @type Action
@@ -283,22 +283,24 @@ local function ConstructAction(binding, target)
 		}
 	end
 
-	if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
-		action.unit = Addon.TargetUnit.MOUSEOVER
-	else
-		action.unit = target.unit
-	end
+	if target ~= nil then
+		if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
+			action.unit = Addon.TargetUnit.MOUSEOVER
+		else
+			action.unit = target.unit
+		end
 
-	if target.hostility ~= Addon.TargetHostility.ANY then
-		action.hostility = target.hostility
-	else
-		action.hostility = ""
-	end
+		if target.hostility ~= Addon.TargetHostility.ANY then
+			action.hostility = target.hostility
+		else
+			action.hostility = ""
+		end
 
-	if target.vitals ~= Addon.TargetVitals.ANY then
-		action.vitals = target.vitals
-	else
-		action.vitals = ""
+		if target.vitals ~= Addon.TargetVitals.ANY then
+			action.vitals = target.vitals
+		else
+			action.vitals = ""
+		end
 	end
 
 	return action
@@ -1198,47 +1200,76 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 	-- Add all prefix shared binding options
 	do
-		local interrupt = false
-		local startAutoAttack = false
-		local startPetAttack = false
-		local cancelQueuedSpell = false
-		local cancelForm = false
-		local stopSpellTarget = false
+		--- @alias CommandSegment { command: string, index: integer?, conditions: string[]?, seen: integer? }
+
+		--- @type CommandSegment
+		local interrupt = { command = "/stopcasting" }
+		--- @type CommandSegment
+		local startAutoAttack = { command = "/startattack" }
+		--- @type CommandSegment
+		local startPetAttack = { command = "/petattack"}
+		--- @type CommandSegment
+		local cancelQueuedSpell = { command = "/cqs" }
+		--- @type CommandSegment
+		local cancelForm = { command = "/cancelform" }
+		--- @type CommandSegment
+		local stopSpellTarget = { command = "/stopspelltarget" }
+
+		local all = { interrupt, startAutoAttack, startPetAttack, cancelQueuedSpell, cancelForm, stopSpellTarget }
+
+		--- @param command CommandSegment
+		--- @param binding Binding
+		local function RegisterCommand(command, binding)
+			if command.index == nil then
+				table.insert(lines, command.command)
+				command.index = #lines
+				command.conditions = {}
+				command.seen = 0
+			end
+
+			command.seen = command.seen + 1
+
+			local action = ConstructAction(binding)
+			local conditions = GetMacroSegmentFromAction(action, -1, false)
+
+			if not Addon:IsNilOrEmpty(conditions) then
+				table.insert(command.conditions, conditions)
+			end
+		end
 
 		for _, binding in ipairs(bindings) do
 			if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM or binding.actionType == Clicked.ActionType.CANCELAURA then
-				if not cancelQueuedSpell and binding.action.cancelQueuedSpell then
-					cancelQueuedSpell = true
-					table.insert(lines, "/cancelqueuedspell")
+				if binding.action.cancelQueuedSpell then
+					RegisterCommand(cancelQueuedSpell, binding)
 				end
 
 				if interactionType == Addon.InteractionType.REGULAR then
-					if not startAutoAttack and binding.action.startAutoAttack then
-						startAutoAttack = true
-						table.insert(lines, "/startattack")
+					if binding.action.startAutoAttack then
+						RegisterCommand(startAutoAttack, binding)
 					end
 
-					if not startPetAttack and binding.action.startPetAttack then
-						startPetAttack = true
-						table.insert(lines, "/petattack")
+					if binding.action.startPetAttack then
+						RegisterCommand(startPetAttack, binding)
 					end
 
-					if not cancelForm and binding.action.cancelForm then
-						cancelForm = true
-						table.insert(lines, "/cancelform")
+					if binding.action.cancelForm then
+						RegisterCommand(cancelForm, binding)
 					end
 				end
 
-				if not interrupt and binding.action.interrupt then
-					interrupt = true
-					table.insert(lines, "/stopcasting")
+				if binding.action.interrupt then
+					RegisterCommand(interrupt, binding)
 				end
 
-				-- add a command to remove the blue casting cursor
-				if not stopSpellTarget and binding.action.stopSpellTarget then
-					stopSpellTarget = true
-					table.insert(lines, "/stopspelltarget")
+				if binding.action.stopSpellTarget then
+					RegisterCommand(stopSpellTarget, binding)
 				end
+			end
+		end
+
+		for _, command in ipairs(all) do
+			if command.seen ~= #bindings and command.conditions ~= nil and #command.conditions > 0 then
+				lines[command.index] = command.command .. " [" .. table.concat(command.conditions, ",") .. "]"
 			end
 		end
 	end

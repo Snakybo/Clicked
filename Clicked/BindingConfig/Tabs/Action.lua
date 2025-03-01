@@ -559,7 +559,7 @@ end
 function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 	local title = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
 	title:SetFullWidth(true)
-	title:SetText(Addon.L["Key Options"])
+	title:SetText(Addon.L["Options"])
 
 	self.container:AddChild(title)
 
@@ -622,7 +622,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 					end
 
 					table.insert(lines, "")
-					table.insert(lines, string.format(Addon.L["Enabled by: %s"], table.concat(items, ", ")))
+					table.insert(lines, string.format(Addon.L["May be enabled by: %s"], table.concat(items, ", ")))
 				end
 			end
 

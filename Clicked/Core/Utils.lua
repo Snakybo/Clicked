@@ -1150,7 +1150,7 @@ end
 --- `false` when, for example, `PARTY_2` is passed in because party members
 --- are by definition always friendly during the configuration phase.
 ---
---- @param unit string
+--- @param unit? string
 --- @return boolean
 function Addon:CanUnitBeHostile(unit)
 	local valid = {
@@ -1173,7 +1173,7 @@ end
 --- when `PLAYER` is passed in. The player can technically be dead, but we cannot
 --- cast anything while dead so it is a condition that can never be reached.
 ---
---- @param unit string
+--- @param unit? string
 --- @return boolean
 function Addon:CanUnitBeDead(unit)
 	local valid = {
