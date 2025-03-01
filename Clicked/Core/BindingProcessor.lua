@@ -1342,19 +1342,23 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 			SortActions(actions[order], actionsSequence)
 
 			for index, action in ipairs(actions[order]) do
-				local conditions = GetMacroSegmentFromAction(action, interactionType, index == #actions[order])
+				-- Upon login the ability can sometimes be nil due to spells not being cached yet, this will resolve itself as bindings are reloaded
+				-- when spell data becomes available, so this is mostly to prevent an error upon login
+				if action.ability ~= nil then
+					local conditions = GetMacroSegmentFromAction(action, interactionType, index == #actions[order])
 
-				if #conditions > 0 then
-					conditions = "[" .. conditions .. "]"
-				end
+					if #conditions > 0 then
+						conditions = "[" .. conditions .. "]"
+					end
 
-				if not Addon:IsNilOrEmpty(conditions) then
-					table.insert(macroConditions, conditions)
-					table.insert(macroSegments, conditions .. action.ability)
-					table.insert(localSegments, conditions .. action.ability)
-				else
-					table.insert(macroSegments, action.ability)
-					table.insert(localSegments, action.ability)
+					if not Addon:IsNilOrEmpty(conditions) then
+						table.insert(macroConditions, conditions)
+						table.insert(macroSegments, conditions .. action.ability)
+						table.insert(localSegments, conditions .. action.ability)
+					else
+						table.insert(macroSegments, action.ability)
+						table.insert(localSegments, action.ability)
+					end
 				end
 			end
 

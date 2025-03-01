@@ -20,6 +20,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a potential data conflict issue when importing bindings or groups via export string [#245] (by [m33shoq])
+* Fix a potential Lua error upon login [#247]
 * Include blacklisted unit frames in the UI even if the addon they came from is disabled
 * Fix bindings sometimes not updating after changing their group [#263]
 
@@ -1730,6 +1731,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#267]: https://github.com/Snakybo/Clicked/pull/267
 [#265]: https://github.com/Snakybo/Clicked/pull/265
 [#263]: https://github.com/Snakybo/Clicked/pull/263
+[#247]: https://github.com/Snakybo/Clicked/pull/247
 [#245]: https://github.com/Snakybo/Clicked/pull/245
 [#243]: https://github.com/Snakybo/Clicked/issues/243
 [#242]: https://github.com/Snakybo/Clicked/pull/242
