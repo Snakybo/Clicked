@@ -19,6 +19,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix a potential data conflict issue when importing bindings or groups via export string [#245] (by [m33shoq])
 * Include blacklisted unit frames in the UI even if the addon they came from is disabled
+* Fix bindings sometimes not updating after changing their group [#263]
 
 ## [1.16.11] - 2024-11-07
 
@@ -1724,6 +1725,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#263]: https://github.com/Snakybo/Clicked/pull/263
 [#245]: https://github.com/Snakybo/Clicked/pull/245
 [#243]: https://github.com/Snakybo/Clicked/issues/243
 [#242]: https://github.com/Snakybo/Clicked/pull/242

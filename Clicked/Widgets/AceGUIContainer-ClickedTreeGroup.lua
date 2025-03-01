@@ -287,7 +287,7 @@ local function Button_OnDragStop(button)
 			if obj.type == Clicked.DataObjectType.BINDING then
 				--- @cast obj Binding
 
-				obj.parent = newParent
+				Addon:ChangeDataObjectParent(obj, newParent)
 
 				local parent = groupItem or scopeItem
 

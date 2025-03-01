@@ -612,6 +612,38 @@ function Addon:ChangeDataObjectScope(item, scope)
 	Addon.BindingConfig.Window:RedrawTree()
 end
 
+--- Change the parent of a binding.
+---
+--- @param item Binding
+--- @param parent Group|integer?
+function Addon:ChangeDataObjectParent(item, parent)
+	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
+
+	if item.type ~= Clicked.DataObjectType.BINDING then
+		return
+	end
+
+	--- @type Group?
+	local parentObject = nil
+
+	if type(parent) == "table" then
+		--- @cast parent Group
+		item.parent = parent.uid
+		parentObject = parent
+	else
+		--- @cast parent integer?
+		item.parent = parent
+		parentObject = Clicked:GetByUid(parent) --[[@as Group?]]
+	end
+
+	if parentObject ~= nil and item.scope ~= parentObject.scope then
+		self:ChangeDataObjectScope(item, parentObject.scope)
+	end
+
+	self:UpdateLookupTable(item)
+	Addon.BindingConfig.Window:RedrawTree()
+end
+
 --- Replace the contents of a binding with another binding.
 ---
 --- This will replace almost all properties of the original binding with the properties of the replacement binding. Notable exceptions are:
