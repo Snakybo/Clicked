@@ -320,3 +320,4 @@ L["Clears the \"blue casting cursor\"."] = true
 L["It's recommended to always leave this option enabled unless you need the extra space in a macro."] = true
 L["Without it you may be left with a dangling cast if the macro cannot determine the target automatically, in other words if your targets don't end in either 'player' or 'cursor' (or 'default' if self-cast is enabled)"] = true
 L["Rune equipped"] = true
+L["Import class abilities per specialization"] = true

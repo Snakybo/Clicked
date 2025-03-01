@@ -111,17 +111,6 @@ local function CreateMacroBindingCache()
 	return result
 end
 
---- @param spell SpellLibrarySpellResult
-local function DoesSpellBookBindingExist(spell)
-	for _, binding in ipairs(Clicked:GetByActionType(Clicked.ActionType.SPELL)) do
-		if binding.action.spellValue == spell.spellId then
-			return true
-		end
-	end
-
-	return false
-end
-
 --- @param cache { [string]: Binding[] }
 --- @param spell SpellLibraryResult
 local function DoesActionBarBindingExist(cache, spell)
@@ -164,8 +153,9 @@ end
 
 --- @param name? string
 --- @param icon? integer|string
+--- @param disableAutoCreate? boolean
 --- @return integer?
-local function FindGroupId(name, icon)
+local function FindGroupId(name, icon, disableAutoCreate)
 	if name == nil and icon == nil then
 		return nil
 	end
@@ -176,7 +166,7 @@ local function FindGroupId(name, icon)
 		end
 	end
 
-	if name ~= nil and icon ~= nil then
+	if not disableAutoCreate and name ~= nil and icon ~= nil then
 		local group = Clicked:CreateGroup()
 		group.name = name
 		group.displayIcon = icon
@@ -186,30 +176,87 @@ local function FindGroupId(name, icon)
 	return nil
 end
 
+--- @param spell SpellLibrarySpellResult
+--- @param parent? integer
+local function DoesSpellBookBindingExist(spell, parent)
+	for _, binding in ipairs(Clicked:GetByActionType(Clicked.ActionType.SPELL)) do
+		if binding.action.spellValue == spell.spellId and binding.parent == parent then
+			return true
+		end
+	end
+
+	return false
+end
+
+--- @param importClassAbilitiesPerSpec boolean
 --- @return Binding[]
-local function ImportSpellbook()
+local function ImportSpellbook(importClassAbilitiesPerSpec)
 	--- @type Binding[]
 	local result = {}
 
+	--- @type SpellLibrarySpellResult[]
+	local genericSpells = {}
+
 	for _, spell in pairs(Addon.SpellLibrary:GetSpells()) do
-		if not DoesSpellBookBindingExist(spell) then
-			local binding = Clicked:CreateBinding()
-			table.insert(result, binding)
+		if importClassAbilitiesPerSpec and spell.specId == nil then
+			table.insert(genericSpells, spell)
+		else
+			if not DoesSpellBookBindingExist(spell, FindGroupId(spell.tabName, spell.tabIcon, true)) then
+				local binding = Clicked:CreateBinding()
+				table.insert(result, binding)
 
-			binding.actionType = Clicked.ActionType.SPELL
-			binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
-			binding.action.spellValue = spell.spellId
+				binding.actionType = Clicked.ActionType.SPELL
+				binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
+				binding.action.spellValue = spell.spellId
 
-			binding.load.class.selected = 1
-			binding.load.class.single = select(2, UnitClass("player"))
+				binding.load.class.selected = 1
+				binding.load.class.single = select(2, UnitClass("player"))
 
-			local spec = Addon:GetSpecIndexFromId(spell.specId)
-			if spec ~= nil then
-				binding.load.specialization.selected = 1
-				binding.load.specialization.single = spec
+				local spec = Addon:GetSpecIndexFromId(spell.specId)
+				if spec ~= nil then
+					binding.load.specialization.selected = 1
+					binding.load.specialization.single = spec
+				end
+
+				Addon:ReloadBinding(binding, true)
 			end
+		end
+	end
 
-			Addon:ReloadBinding(binding, true)
+
+
+	if importClassAbilitiesPerSpec and #genericSpells > 0 then
+		--- @type { specId: integer, groupId: integer }[]
+		local specs = {}
+
+		for i = 1, GetNumSpecializations() do
+			local _, name, _, icon = GetSpecializationInfo(i)
+
+			table.insert(specs, {
+				specId = i,
+				groupId = FindGroupId(name, icon, true)
+			})
+		end
+
+		for _, spell in ipairs(genericSpells) do
+			for _, spec in ipairs(specs) do
+				if not DoesSpellBookBindingExist(spell, spec.groupId) then
+					local binding = Clicked:CreateBinding()
+					table.insert(result, binding)
+
+					binding.actionType = Clicked.ActionType.SPELL
+					binding.parent = spec.groupId
+					binding.action.spellValue = spell.spellId
+
+					binding.load.class.selected = 1
+					binding.load.class.single = select(2, UnitClass("player"))
+
+					binding.load.specialization.selected = 1
+					binding.load.specialization.single = spec.specId
+
+					Addon:ReloadBinding(binding, true)
+				end
+			end
 		end
 	end
 
@@ -305,8 +352,10 @@ end
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigNewPage : BindingConfigPage
+--- @field private importClassAbilitiesPerSpec boolean
 Addon.BindingConfig.NewPage = {
-	keepTreeSelection = true
+	keepTreeSelection = true,
+	importClassAbilitiesPerSpec = false
 }
 
 --- @protected
@@ -325,6 +374,24 @@ function Addon.BindingConfig.NewPage:Redraw()
 	end
 
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
+
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+		local label = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		label:SetText(Addon.L["Import class abilities per specialization"])
+		label:SetRelativeWidth(0.79)
+		scrollFrame:AddChild(label)
+
+		---@param value boolean
+		local function OnValueChanged(_, _, value)
+			self.importClassAbilitiesPerSpec = value
+		end
+
+		local checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
+		checkbox:SetRelativeWidth(0.2)
+		checkbox:SetCallback("OnValueChanged", OnValueChanged)
+		scrollFrame:AddChild(checkbox)
+	end
+
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_ACTIONBAR, Addon.L["Automatically import from action bars"])
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_MACROS, Addon.L["Automatically import from macros"])
 
@@ -397,7 +464,7 @@ function Addon.BindingConfig.NewPage:CreateItem(type)
 	elseif type >= ItemTemplate.BINDING_CAST_SPELL and type <= ItemTemplate.BINDING_UNIT_MENU then
 		target = CreateBinding(type, self.controller:GetSelection()[1])
 	elseif type == ItemTemplate.IMPORT_SPELLBOOK then
-		target = ImportSpellbook()
+		target = ImportSpellbook(self.importClassAbilitiesPerSpec)
 	elseif type == ItemTemplate.IMPORT_ACTIONBAR then
 		target = ImportActionbar()
 	elseif type == ItemTemplate.IMPORT_MACROS then

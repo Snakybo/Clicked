@@ -30,6 +30,7 @@ function Methods:OnAcquire()
 	self:BaseOnAcquire()
 
 	self:SetLabelColor(WHITE_FONT_COLOR)
+	self:SetLabel("")
 end
 
 --- @param color ColorMixin
