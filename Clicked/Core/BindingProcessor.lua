@@ -335,12 +335,13 @@ local function SortActions(actions, indexMap)
 	---@param right Action
 	---@return boolean
 	local function SortFunc(left, right)
+		--- @type { left: string?, right: string?, value: integer|boolean, comparison: "eq"|"gt"|"neq" }[]
 		local priority = {
 			-- Macro conditions take presedence over actions that don't specify them explicitly
 			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },
 			{ left = left.vitals, right = right.vitals, value = 0, comparison = "gt" },
 			{ left = left.combat, right = right.combat, value = true, comparison = "eq" },
-			{ left = left.forms, right = right.forms, value = 0, comparison = "gt" },
+			{ left = left.forms and left.forms.value, right = right.forms and right.forms.value, value = 0, comparison = "gt" },
 			{ left = left.pet, right = right.pet, value = true, comparison = "eq" },
 			{ left = left.stealth, right = right.stealth, value = true, comparison = "eq" },
 			{ left = left.mounted, right = right.mounted, value = true, comparison = "eq" },
@@ -350,8 +351,8 @@ local function SortActions(actions, indexMap)
 			{ left = left.dynamicFlying, right = right.dynamicFlying, value = true, comparison = "eq" },
 			{ left = left.flyable, right = right.flyable, value = true, comparison = "eq" },
 			{ left = left.advFlyable, right = right.advFlyable, value = true, comparison = "eq" },
-			{ left = left.bonusbar, right = right.bonusbar, value = true, comparison = "eq" },
-			{ left = left.bar, right = right.bar, value = true, comparison = "eq" },
+			{ left = left.bonusbar and left.bonusbar.value, right = right.bonusbar and right.bonusbar.value, value = true, comparison = "eq" },
+			{ left = left.bar and left.bar.value, right = right.bar and right.bar.value, value = true, comparison = "eq" },
 
 			-- Any actions that do not use conditions will be placed here
 		}

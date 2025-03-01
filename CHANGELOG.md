@@ -25,6 +25,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix a potential Lua error upon login [#247]
 * Include blacklisted unit frames in the UI even if the addon they came from is disabled
 * Fix bindings sometimes not updating after changing their group [#263]
+* Fix automatic sorting of macros using the form, bonusbar, or bar macro options
 
 ## [1.16.11] - 2024-11-07
 
