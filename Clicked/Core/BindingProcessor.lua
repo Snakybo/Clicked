@@ -1031,6 +1031,11 @@ function Addon:UpdateBindingLoadState(binding, causes)
 	local state = bindingStateCache[binding.uid] or {}
 	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
+	if wasValid and Clicked:GetByUid(binding.uid) == nil then
+		bindingStateCache[binding.uid] = nil
+		return false, wasValid
+	end
+
 	if ShouldPerformStateCheck("keybind") then
 		state.keybind = not Addon:IsNilOrEmpty(binding.keybind)
 	end
