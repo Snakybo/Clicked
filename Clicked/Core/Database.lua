@@ -472,7 +472,8 @@ function Addon:GetNewBindingTemplate()
 			stopSpellTarget = true,
 			cancelQueuedSpell = false,
 			cancelForm = false,
-			targetUnitAfterCast = false
+			targetUnitAfterCast = false,
+			preventToggle = false
 		},
 		targets = {
 			hovercast = {

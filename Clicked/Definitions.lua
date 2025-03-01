@@ -81,6 +81,7 @@
 --- @field public cancelQueuedSpell boolean
 --- @field public cancelForm boolean
 --- @field public targetUnitAfterCast boolean
+--- @field public preventToggle boolean
 
 --- @class Binding.Load
 --- @field public never boolean

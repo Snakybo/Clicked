@@ -224,6 +224,10 @@ local function ConstructAction(binding, target)
 		type = binding.actionType
 	}
 
+	if action.ability ~= nil and binding.action.preventToggle then
+		action.ability = "!" .. action.ability
+	end
+
 	--- @param condition Binding.LoadOption
 	--- @param key string
 	local function AppendCondition(condition, key)

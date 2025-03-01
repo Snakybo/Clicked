@@ -321,3 +321,5 @@ L["It's recommended to always leave this option enabled unless you need the extr
 L["Without it you may be left with a dangling cast if the macro cannot determine the target automatically, in other words if your targets don't end in either 'player' or 'cursor' (or 'default' if self-cast is enabled)"] = true
 L["Rune equipped"] = true
 L["Import class abilities per specialization"] = true
+L["Prevent toggle"] = true
+L["Prevent the ability from being toggled off by repeatetly pressing the keybind."] = true

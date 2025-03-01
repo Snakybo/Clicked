@@ -683,6 +683,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 	CreateCheckbox(Addon.L["Override queued spell"], Addon.L["Allow this binding to override a spell that is queued by the lag-tolerance system, should be reserved for high-priority spells."], "cancelQueuedSpell")
 	CreateCheckbox(Addon.L["Exit shapeshift form"], Addon.L["Allow this binding to automatically exit your shapeshift form."], "cancelForm")
 	CreateCheckbox(Addon.L["Target on cast"], Addon.L["Targets the unit you are casting on."], "targetUnitAfterCast")
+	CreateCheckbox(Addon.L["Prevent toggle"], Addon.L["Prevent the ability from being toggled off by repeatetly pressing the keybind."], "preventToggle")
 
 	do
 		local tooltip = {
