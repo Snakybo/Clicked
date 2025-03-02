@@ -990,6 +990,22 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							for _, binding in ipairs(objects) do
 								if binding.actionType ~= type then
 									first = first or binding
+
+									-- When converting spell to macro, try pre-define name, icon and a "/cast" in macro.
+									if binding.actionType == Clicked.ActionType.SPELL and type == Clicked.ActionType.MACRO then
+										if binding.action.spellValue then
+											local spellName = C_Spell.GetSpellName(binding.action.spellValue)
+											local iconId, _ = C_Spell.GetSpellTexture(binding.action.spellValue)
+											if spellName then
+												binding.action.macroName = "Cast " .. spellName .. " (Macro)"
+												binding.action.macroValue = "/cast " .. spellName
+											end
+											if iconId then
+												binding.action.macroIcon = iconId
+											end
+										end
+									end
+									
 									binding.actionType = type
 
 									Addon:ReloadBinding(binding, true)
