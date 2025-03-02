@@ -991,21 +991,37 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 								if binding.actionType ~= type then
 									first = first or binding
 
-									-- When converting spell to macro, try pre-define name, icon and a "/cast" in macro.
-									if binding.actionType == Clicked.ActionType.SPELL and type == Clicked.ActionType.MACRO then
-										if binding.action.spellValue then
-											local spellName = C_Spell.GetSpellName(binding.action.spellValue)
-											local iconId, _ = C_Spell.GetSpellTexture(binding.action.spellValue)
-											if spellName then
-												binding.action.macroName = "Cast " .. spellName .. " (Macro)"
-												binding.action.macroValue = "/cast " .. spellName
-											end
-											if iconId then
-												binding.action.macroIcon = iconId
-											end
+									-- When converting to any macro, try to fill in the macro name, value and icon
+									if type == Clicked.ActionType.MACRO and Addon:IsNilOrEmpty(binding.action.macroValue) then
+										local name = nil
+										local icon = nil
+										local format = nil
+
+										if binding.actionType == Clicked.ActionType.SPELL then
+											name = C_Spell.GetSpellName(binding.action.spellValue)
+											icon = C_Spell.GetSpellTexture(binding.action.spellValue)
+											format = Addon.L["Cast %s"]
+										elseif binding.actionType == Clicked.ActionType.ITEM then
+											name = C_Item.GetItemNameByID(binding.action.itemValue)
+											icon = C_Item.GetItemIconByID(binding.action.itemValue)
+											format = Addon.L["Use %s"]
+										elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+											name = C_Spell.GetSpellName(binding.action.auraName)
+											icon = C_Spell.GetSpellTexture(binding.action.auraName)
+											format = Addon.L["Cancel %s"]
 										end
+
+										if name ~= nil and format ~= nil then
+											binding.action.macroName = string.format(format, name)
+										end
+
+										if icon ~= nil then
+											binding.action.macroIcon = icon
+										end
+
+										binding.action.macroValue = Addon:GetMacroForBindings({ binding }, Addon.InteractionType.REGULAR, true)
 									end
-									
+
 									binding.actionType = type
 
 									Addon:ReloadBinding(binding, true)

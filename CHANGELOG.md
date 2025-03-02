@@ -19,6 +19,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add option to prevent toggling an ability off [#248]
 * Make key options respect macro condtions where able [#251]
 * Add option to automatically fall back to action bar abilities when no other macro conditions are met [#257]
+* Automatically populate macro when converting from a spell, item, or cancelaura binding [#264] (by [Gateswong])
 
 ### Fixed
 
@@ -1733,14 +1734,15 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
-[#267]: https://github.com/Snakybo/Clicked/pull/267
-[#265]: https://github.com/Snakybo/Clicked/pull/265
-[#263]: https://github.com/Snakybo/Clicked/pull/263
-[#257]: https://github.com/Snakybo/Clicked/pull/257
-[#251]: https://github.com/Snakybo/Clicked/pull/251
-[#248]: https://github.com/Snakybo/Clicked/pull/248
-[#247]: https://github.com/Snakybo/Clicked/pull/247
-[#245]: https://github.com/Snakybo/Clicked/pull/245
+[#267]: https://github.com/Snakybo/Clicked/issues/267
+[#265]: https://github.com/Snakybo/Clicked/issues/265
+[#264]: https://github.com/Snakybo/Clicked/pull/264
+[#263]: https://github.com/Snakybo/Clicked/issues/263
+[#257]: https://github.com/Snakybo/Clicked/issues/257
+[#251]: https://github.com/Snakybo/Clicked/issues/251
+[#248]: https://github.com/Snakybo/Clicked/issues/248
+[#247]: https://github.com/Snakybo/Clicked/issues/247
+[#245]: https://github.com/Snakybo/Clicked/issues/245
 [#243]: https://github.com/Snakybo/Clicked/issues/243
 [#242]: https://github.com/Snakybo/Clicked/pull/242
 [#241]: https://github.com/Snakybo/Clicked/issues/241
@@ -1857,3 +1859,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [nihilistzsche]: https://github.com/nihilistzsche
 [Aeceon]: https://github.com/Aeceon
 [m33shoq]: https://github.com/m33shoq
+[Gateswong]: https://github.com/Gateswong

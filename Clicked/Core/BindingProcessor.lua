@@ -1201,9 +1201,10 @@ end
 ---
 --- @param bindings Binding[]
 --- @param interactionType number
+--- @param ignoreActionBar? boolean
 --- @return string macro
 --- @return string segments
-function Addon:GetMacroForBindings(bindings, interactionType)
+function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 	assert(type(bindings) == "table", "bad argument #1, expected table but got " .. type(bindings))
 	assert(type(interactionType) == "number", "bad argument #1, expected number but got " .. type(interactionType))
 
@@ -1347,7 +1348,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 		do
 			local actionBar = {}
 
-			if Addon.db.profile.options.autoBindActionBar and interactionType == Addon.InteractionType.REGULAR then
+			if not ignoreActionBar and Addon.db.profile.options.autoBindActionBar and interactionType == Addon.InteractionType.REGULAR then
 				actionBar = Addon.SpellLibrary:GetActionBarSpells()
 			end
 
