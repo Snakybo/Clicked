@@ -29,4 +29,5 @@ jobs:
       if: success()
       with:
         name: Clicked
-        path: ".release/"
+        path: .release/
+        include-hidden-files: true
