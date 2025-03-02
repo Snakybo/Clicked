@@ -29,8 +29,6 @@
 --- @field public groups Group[]
 --- @field public bindings Binding[]
 --- @field public blacklist table<string,boolean>
---- @field public nextGroupId integer
---- @field public nextBindingId integer
 
 --- @class Profile.Options
 --- @field public onKeyDown boolean

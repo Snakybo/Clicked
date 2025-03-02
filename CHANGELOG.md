@@ -20,6 +20,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Make key options respect macro condtions where able [#251]
 * Add option to automatically fall back to action bar abilities when no other macro conditions are met [#257]
 * Automatically populate macro when converting from a spell, item, or cancelaura binding [#264] (by [Gateswong])
+* Keep the binding configuration window open when importing a profile [#252] (by [m33shoq])
 
 ### Fixed
 
@@ -29,6 +30,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix bindings sometimes not updating after changing their group [#263]
 * Fix automatic sorting of macros using the form, bonusbar, or bar macro options
 * Fix deleted bindings not being deactivated immediately
+* Fix a potential data conflict issue when importing a profile [#252] (by [m33shoq])
 
 ## [1.16.11] - 2024-11-07
 
@@ -1739,6 +1741,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#264]: https://github.com/Snakybo/Clicked/pull/264
 [#263]: https://github.com/Snakybo/Clicked/issues/263
 [#257]: https://github.com/Snakybo/Clicked/issues/257
+[#252]: https://github.com/Snakybo/Clicked/pull/252
 [#251]: https://github.com/Snakybo/Clicked/issues/251
 [#248]: https://github.com/Snakybo/Clicked/issues/248
 [#247]: https://github.com/Snakybo/Clicked/issues/247

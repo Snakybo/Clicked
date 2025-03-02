@@ -217,20 +217,22 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 				end
 			end
 
+			local type = review.type
 			Clicked:Import(review)
-			if review.type == "group" then
+
+			if type == "group" then
 				Addon.BindingConfig.Window:Select(review.group.uid)
-			elseif review.type == "binding" then
+			elseif type == "binding" then
 				Addon.BindingConfig.Window:Select(review.binding.uid)
-			else
-				self.controller:PopPage(self)
-				if not Addon.BindingConfig.Window:IsOpen() then
-					Addon.BindingConfig.Window:Open()
-				end
-				if type(review.groups) == "table" and review.groups[1] then
+			elseif type == "profile" then
+				if #review.groups > 0 then
+					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_GROUP)
 					Addon.BindingConfig.Window:Select(review.groups[1].uid)
-				elseif type(review.bindings) == "table" and review.binding[1] then
+				elseif #review.bindings > 0 then
+					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_BINDING)
 					Addon.BindingConfig.Window:Select(review.bindings[1].uid)
+				else
+					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_NEW)
 				end
 			end
 		end)

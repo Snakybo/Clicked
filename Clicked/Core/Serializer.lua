@@ -62,6 +62,7 @@ local function RegisterBinding(data)
 	if data.type ~= "binding" then
 		error("bad argument #1, expected binding but got " .. data.type)
 	end
+
 	data.binding.uid = nil
 	Addon:RegisterDataObject(data.binding, Clicked.DataObjectScope.PROFILE)
 	Addon:ReloadBinding(data.binding, true)
@@ -76,32 +77,24 @@ local function RegisterProfile(data)
 	data.lightweight = nil
 	data.type = nil
 
+	--- @type table<integer, integer>
+	local groupUidMap = {}
+
+	-- Assign new UIDs to all imported groups and bindings
+	for _, group in ipairs(data.groups) do
+		local uid = Addon:GetNextUid()
+		groupUidMap[group.uid] = uid
+		group.uid = uid
+	end
+
+	for _, binding in ipairs(data.bindings) do
+		binding.uid = Addon:GetNextUid()
+		binding.parent = groupUidMap[binding.parent]
+	end
+
 	for key in pairs(data) do
 		Addon.db.profile[key] = data[key]
 	end
-
-	-- ensure UIDs are unique
-	if data.groups then
-		for _, group in pairs(data.groups) do
-			local oldUID = group.uid
-			group.uid = Addon:GetNextUid()
-
-			if oldUID then
-				for _, binding in pairs(data.bindings) do
-					if binding.parent == oldUID then
-						binding.parent = group.uid
-					end
-				end
-			end
-		end
-	end
-
-	if data.bindings then
-		for _, binding in pairs(data.bindings) do
-			binding.uid = Addon:GetNextUid()
-		end
-	end
-
 
 	Clicked:ReloadDatabase()
 end
@@ -174,8 +167,6 @@ function Clicked:SerializeProfile(profile, printable, full)
 			version = profile.version,
 			bindings = CopyTable(profile.bindings),
 			groups = CopyTable(profile.groups),
-			nextGroupId = profile.nextGroupId,
-			nextBindingId = profile.nextBindingId,
 			type = "profile",
 			lightweight = true
 		}
