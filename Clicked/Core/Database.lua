@@ -33,6 +33,10 @@ Clicked.DataObjectScope = {
 
 Addon.DISABLE_GLOBAL_SCOPE = false
 
+--@non-debug@
+  -- Addon.DISABLE_GLOBAL_SCOPE = false
+--@end-non-debug@
+
 --- @class DataObjectLookup
 --- @field public uid table<integer,DataObject>
 --- @field public keybind table<string,Binding[]>
