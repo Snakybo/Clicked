@@ -123,6 +123,20 @@ function AddonOptions:CreateOptionsTable()
 				get = function ()
 					return Addon.db.profile.options.bindUnassignedModifiers
 				end
+			},
+			autoBindActionBar = {
+				name = Addon.L["Automatically bind all action bar abilities"],
+				desc = Addon.L["If enabled, all abilities on the action bar will automatically be appended to a binding on the same key, this will make Clicked fall back to the action bar when all other macro conditions are not met.\n\nNote that this only supports spells and items, not macros."],
+				type = "toggle",
+				order = 500,
+				width = "full",
+				set = function (_, val)
+					Addon.db.profile.options.autoBindActionBar = val
+					Clicked:ProcessActiveBindings()
+				end,
+				get = function ()
+					return Addon.db.profile.options.autoBindActionBar
+				end
 			}
 		}
 	}

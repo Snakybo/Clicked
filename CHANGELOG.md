@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add option to import class-wide abilities per specialization [#267]
 * Add option to prevent toggling an ability off [#248]
 * Make key options respect macro condtions where able [#251]
+* Add option to automatically fall back to action bar abilities when no other macro conditions are met [#257]
 
 ### Fixed
 
@@ -1735,6 +1736,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#267]: https://github.com/Snakybo/Clicked/pull/267
 [#265]: https://github.com/Snakybo/Clicked/pull/265
 [#263]: https://github.com/Snakybo/Clicked/pull/263
+[#257]: https://github.com/Snakybo/Clicked/pull/257
 [#251]: https://github.com/Snakybo/Clicked/pull/251
 [#248]: https://github.com/Snakybo/Clicked/pull/248
 [#247]: https://github.com/Snakybo/Clicked/pull/247

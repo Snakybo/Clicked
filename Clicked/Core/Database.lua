@@ -146,6 +146,7 @@ function Clicked:GetDatabaseDefaults()
 				onKeyDown = false,
 				tooltips = false,
 				bindUnassignedModifiers = false,
+				autoBindActionBar = false,
 				minimap = {
 					hide = false
 				},

@@ -355,7 +355,7 @@ end
 --- - Items
 --- - Macros
 ---
---- @return table<integer, SpellLibraryResult>
+--- @return SpellLibraryResult[]
 function Addon.SpellLibrary:GetActionBarSpells()
 	--- @type table<integer, SpellLibraryResult>
 	local result = {}

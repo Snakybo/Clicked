@@ -221,6 +221,12 @@ local function PLAYER_LEVEL_CHANGED()
 	Addon:ReloadBindings("PLAYER_LEVEL_CHANGED")
 end
 
+local function ACTIONBAR_SLOT_CHANGED()
+	if Addon.db.profile.options.autoBindActionBar then
+		Addon:ReloadBindings("ACTIONBAR_SLOT_CHANGED")
+	end
+end
+
 local function LEARNED_SPELL_IN_TAB()
 	Addon:ReloadBindings("LEARNED_SPELL_IN_TAB")
 end
@@ -303,6 +309,7 @@ local function UpdateEventHooks(self, method)
 	method(self, "MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	method(self, "UNIT_TARGET", UNIT_TARGET)
 	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
+	method(self, "ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
 end
 
 -- Public addon API

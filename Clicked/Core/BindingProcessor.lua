@@ -207,7 +207,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		table.insert(flags, "exists")
 	end
 
-	if #action.forms.value > 0 then
+	if  action.forms ~= nil and #action.forms.value > 0 then
 		ParseNegatableStringCondition(action.forms, "form", "noform")
 	end
 
@@ -308,8 +308,9 @@ end
 
 --- @param binding Binding
 --- @param interactionType number
+--- @param actionBarItems SpellLibraryResult[]
 --- @return Action[]
-local function ConstructActions(binding, interactionType)
+local function ConstructActions(binding, interactionType, actionBarItems)
 	--- @type Action[]
 	local actions = {}
 
@@ -322,6 +323,18 @@ local function ConstructActions(binding, interactionType)
 		for _, target in ipairs(binding.targets.regular) do
 			local action = ConstructAction(binding, target)
 			table.insert(actions, action)
+		end
+
+		-- Create virtual actions for action bar items
+		for _, item in ipairs(actionBarItems) do
+			if item.key == binding.keybind and (item.type == "SPELL" or item.type == "ITEM") then
+				--- @cast item SpellLibrarySpellResult|SpellLibraryItemResult
+
+				table.insert(actions, {
+					ability = C_Spell.GetSpellName(item.spellId) or C_Item.GetItemNameByID(item.itemId),
+					type = binding.actionType
+				})
+			end
 		end
 	end
 
@@ -1332,6 +1345,12 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 		-- Generate actions for SPELL and ITEM bindings, and insert macro values
 		do
+			local actionBar = {}
+
+			if Addon.db.profile.options.autoBindActionBar and interactionType == Addon.InteractionType.REGULAR then
+				actionBar = Addon.SpellLibrary:GetActionBarSpells()
+			end
+
 			for order, group in pairs(bindingGroups) do
 				actions[order] = {}
 				macros[order] = {}
@@ -1341,7 +1360,7 @@ function Addon:GetMacroForBindings(bindings, interactionType)
 
 				for _, binding in ipairs(group) do
 					if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
-						for _, action in ipairs(ConstructActions(binding, interactionType)) do
+						for _, action in ipairs(ConstructActions(binding, interactionType, actionBar)) do
 							table.insert(actions[order], action)
 
 							actionsSequence[action] = nextActionIndex
