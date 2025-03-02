@@ -625,7 +625,7 @@ function Addon:ChangeDataObjectParent(item, parent)
 	end
 
 	--- @type Group?
-	local parentObject = nil
+	local parentObject
 
 	if type(parent) == "table" then
 		--- @cast parent Group
