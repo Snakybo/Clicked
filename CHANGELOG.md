@@ -31,6 +31,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix automatic sorting of macros using the form, bonusbar, or bar macro options
 * Fix deleted bindings not being deactivated immediately
 * Fix a potential data conflict issue when importing a profile [#252] (by [m33shoq])
+* Fix logic error [#270] (by [KyrosKrane])
 
 ## [1.16.11] - 2024-11-07
 
@@ -1736,6 +1737,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#270]: https://github.com/Snakybo/Clicked/issues/270
 [#267]: https://github.com/Snakybo/Clicked/issues/267
 [#265]: https://github.com/Snakybo/Clicked/issues/265
 [#264]: https://github.com/Snakybo/Clicked/pull/264
@@ -1863,3 +1865,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [Aeceon]: https://github.com/Aeceon
 [m33shoq]: https://github.com/m33shoq
 [Gateswong]: https://github.com/Gateswong
+[KyrosKrane]: https://github.com/KyrosKrane

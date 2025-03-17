@@ -458,7 +458,7 @@ function Addon:GetBindingValue(binding)
 		return binding.action.macroValue
 	end
 
-	if binding.actionType == Clicked.ActionType.UNIT_SELECT or Clicked.ActionType.UNIT_MENU then
+	if binding.actionType == Clicked.ActionType.UNIT_SELECT or binding.actionType == Clicked.ActionType.UNIT_MENU then
 		return binding.actionType
 	end
 
