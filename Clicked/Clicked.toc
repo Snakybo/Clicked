@@ -1,10 +1,22 @@
-## Interface: 11504, 40401, 110005
+## Interface: 11506, 40402, 110100
 ## Title: Clicked
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
+## Group: Clicked
+## Category-enUS: Action Bars
+## Category-deDE: Aktionsleisten
+## Category-esES: Barras de acción
+## Category-esMX: Barras de acción
+## Category-frFR: Barres d’action
+## Category-itIT: Barre delle azioni
+## Category-koKR: 행동 단축바
+## Category-ptBR: Barras de ação
+## Category-ruRU: Панели команд
+## Category-zhCN: 动作条
+## Category-zhTW: 快捷列
 ## X-Website: https://github.com/Snakybo/Clicked
 ## X-Curse-Project-ID: 405267
 ## X-WoWI-ID: 25703

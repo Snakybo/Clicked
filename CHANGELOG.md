@@ -12,6 +12,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add support for The War Within 11.1.0
+* Add support for Cataclysm Classic 4.4.2
+* Add support for Classic Era 1.15.6
 * Select the imported binding after importing via export string [#245]  (by [m33shoq])
 * Ignore blacklisted frames completely [#235]
 * Create bindings directly inside of a group [#265]
