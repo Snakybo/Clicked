@@ -5,6 +5,8 @@ local Addon = select(2, ...)
 
 Addon.DATA_VERSION = 12
 
+local upgradeData = {}
+
 -- Local support functions
 
 local function errorhandler(err)
@@ -890,6 +892,37 @@ local function Upgrade(db, from)
 			binding.action.stopSpellTarget = true
 		end
 	end
+
+	if from < 13 then
+		upgradeData[13] = upgradeData[13] or {}
+		upgradeData[13].seen = upgradeData[13].seen or {}
+
+		local orphans = {}
+
+		for i, binding in ipairs(db.bindings) do
+			local function HasParent(group)
+				return binding.parent == group.uid
+			end
+
+			if upgradeData[13].seen[binding.uid] then
+				if binding.parent == nil or FindInTableIf(db.groups, HasParent) then
+					binding.uid = Addon.db.global.nextUid
+					Addon.db.global.nextUid = binding.uid + 1
+				else
+					table.insert(orphans, i)
+				end
+			elseif binding.parent ~= nil and not FindInTableIf(db.groups, HasParent) then
+				binding.parent = nil
+			end
+
+			upgradeData[13].seen[binding.uid] = true
+		end
+
+		table.sort(orphans, function(a, b) return a > b end)
+		for _, i in ipairs(orphans) do
+			table.remove(db.bindings, i)
+		end
+	end
 end
 
 -- Private addon API
@@ -908,6 +941,8 @@ function Addon:UpgradeDatabase(from)
 	-- Don't use any constants in this function to prevent breaking the updater
 	-- when the value of a constant changes. Always use direct values that are
 	-- read from the database.
+
+	table.wipe(upgradeData)
 
 	if not Addon.DISABLE_GLOBAL_SCOPE then
 		local src = from or Addon.db.global.version or Addon.DATA_VERSION

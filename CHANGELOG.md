@@ -39,6 +39,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Fix deleted bindings not being deactivated immediately
 * Fix a potential data conflict issue when importing a profile [#252] (by [m33shoq])
 * Fix logic error [#270] (by [KyrosKrane])
+* Fix duplicate binding IDs [#255]
 
 ## [1.16.11] - 2024-11-07
 
@@ -1750,6 +1751,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#264]: https://github.com/Snakybo/Clicked/pull/264
 [#263]: https://github.com/Snakybo/Clicked/issues/263
 [#257]: https://github.com/Snakybo/Clicked/issues/257
+[#255]: https://github.com/Snakybo/Clicked/issues/255
 [#252]: https://github.com/Snakybo/Clicked/pull/252
 [#251]: https://github.com/Snakybo/Clicked/issues/251
 [#248]: https://github.com/Snakybo/Clicked/issues/248
