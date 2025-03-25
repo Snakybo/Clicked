@@ -24,6 +24,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add option to automatically fall back to action bar abilities when no other macro conditions are met [#257]
 * Automatically populate macro when converting from a spell, item, or cancelaura binding [#264] (by [Gateswong])
 * Keep the binding configuration window open when importing a profile [#252] (by [m33shoq])
+* Add icons from The War Within 11.1.0 to icon picked
+* Add icons from Cataclysm Classic 4.4.2 to icon picker
+* Add icons from Classic Era 1.15.6 to icon picker
 
 ### Fixed
 

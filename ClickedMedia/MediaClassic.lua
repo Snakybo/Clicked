@@ -1,5 +1,5 @@
 -- Clicked, a World of Warcraft keybind manager.
--- Copyright (C) 2024  Kevin Krol
+-- Copyright (C) 2022  Kevin Krol
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -6332,6 +6332,7 @@ local icons = {
 	[2241756] = "inv_scarab_ivory",
 	[2245030] = "inv_mace23",
 	[2245099] = "inv_mace_22",
+	[3096527] = "inv_mace_1h_uther_d_01",
 	[3873028] = "inv_axe_31",
 	[3940790] = "inv_warpstalkermountbc",
 	[4006481] = "pvp-arenapoints-icon",
@@ -6340,12 +6341,28 @@ local icons = {
 	[4352492] = "ability_warlock_incubus",
 	[4352493] = "ability_warlock_randomizesuccubusincubus",
 	[4501546] = "inv_tuskarrgliderwotlk",
+	[4571434] = "inv_hearthstonebronze",
+	[4631367] = "inv_10_enchanting2_magicswirl_bronze",
+	[4638724] = "inv_10_fishing_dragonislescoins_bronze",
+	[4638725] = "inv_10_fishing_dragonislescoins_gold",
+	[4638726] = "inv_10_fishing_dragonislescoins_silver",
+	[4675218] = "inv_shoulder_armor_dragonspawn_c_01_bronze",
 	[4680677] = "inv_lunarrabbitpet",
 	[4687496] = "inv_rabbitmountclassic",
 	[4777763] = "inv_magicalfishpet",
 	[5588107] = "ui_selffound",
 	[5838262] = "inv_bracer_leather_olivescale_b_01",
 	[5838263] = "inv_shoulder_leather_olivescale_b_01",
+	[5904994] = "inv_sword_1h_hunter_a_01",
+	[5904995] = "inv_knife_1h_rogue_a_01",
+	[5904997] = "inv_shield_warrior_a_01",
+	[5905006] = "inv_stave_2h_warlock_a_01",
+	[5906162] = "inv_stave_2h_mage_a_01",
+	[5906169] = "inv_sword_2h_paladin_a_01",
+	[5906231] = "inv_shield_shaman_a_01",
+	[5933402] = "inv_misc_1h_book_priest_a_01",
+	[5934896] = "inv_stave_2h_druid_a_01",
+	[5934898] = "inv_stave_2h_druid_a_02",
 }
 
 --- @type integer[]
@@ -12663,6 +12680,7 @@ local order = {
 	2241756,
 	2245030,
 	2245099,
+	3096527,
 	3873028,
 	3940790,
 	4006481,
@@ -12671,12 +12689,28 @@ local order = {
 	4352492,
 	4352493,
 	4501546,
+	4571434,
+	4631367,
+	4638724,
+	4638725,
+	4638726,
+	4675218,
 	4680677,
 	4687496,
 	4777763,
 	5588107,
 	5838262,
 	5838263,
+	5904994,
+	5904995,
+	5904997,
+	5905006,
+	5906162,
+	5906169,
+	5906231,
+	5933402,
+	5934896,
+	5934898,
 }
 
 --- @return table<integer,string>
