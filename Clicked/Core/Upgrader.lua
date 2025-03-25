@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 12
+Addon.DATA_VERSION = 13
 
 local upgradeData = {}
 
