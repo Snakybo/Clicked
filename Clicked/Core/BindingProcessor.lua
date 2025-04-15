@@ -350,7 +350,11 @@ local function SortActions(actions, indexMap)
 	local function SortFunc(left, right)
 		--- @type { left: string?, right: string?, value: integer|boolean, comparison: "eq"|"gt"|"neq" }[]
 		local priority = {
-			-- Macro conditions take presedence over actions that don't specify them explicitly
+			-- 1. Mouseover targets always come first
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.MOUSEOVER, comparison = "eq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.MOUSEOVER_TARGET, comparison = "eq"},
+
+			-- 2. Macro conditions take presedence over actions that don't specify them explicitly
 			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },
 			{ left = left.vitals, right = right.vitals, value = 0, comparison = "gt" },
 			{ left = left.combat, right = right.combat, value = true, comparison = "eq" },
@@ -367,7 +371,12 @@ local function SortActions(actions, indexMap)
 			{ left = left.bonusbar and left.bonusbar.value, right = right.bonusbar and right.bonusbar.value, value = true, comparison = "eq" },
 			{ left = left.bar and left.bar.value, right = right.bar and right.bar.value, value = true, comparison = "eq" },
 
-			-- Any actions that do not use conditions will be placed here
+			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
+
+			-- 4. The player, cursor, and default targets will always come last
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.PLAYER, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.CURSOR, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.DEFAULT, comparison = "neq" }
 		}
 
 		for _, item in ipairs(priority) do
@@ -1186,8 +1195,12 @@ end
 --- It will prioritize bindings in the following order:
 ---
 --- 1. All custom macros
---- 4. Any bindings with the help or harm tag and a combat/nocombat flag
---- 5. Any bindings with the combat/nocombat
+--- 2. All @mouseover bindings with the help or harm tag and a combat/nocombat flag
+--- 3. All remaining @mouseover bindings with a combat/nocombat flag
+--- 4. Any remaining bindings with the help or harm tag and a combat/nocombat flag
+--- 5. Any remaining bindings with the combat/nocombat
+--- 6. All @mouseover bindings with the help or harm tag
+--- 7. All remaining @mouseover bindings
 --- 8. Any remaining bindings with the help or harm tag
 --- 9. Any remaining bindings
 ---
