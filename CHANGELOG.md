@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Fixed
+
+* Fix Moonkin form spell ID
+
 ### Changed
 
 * Re-add special sorting for `@mouseover`, `@player`, `@cursor`, and default targets. This was removed in 1.16.4, but needs a better solution
