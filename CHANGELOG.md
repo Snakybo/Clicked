@@ -10,6 +10,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for The War Within 11.1.5
+* Add support for Classic Era 1.15.7
+
 ### Fixed
 
 * Fix Moonkin form spell ID
