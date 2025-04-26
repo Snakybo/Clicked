@@ -6321,6 +6321,7 @@ local icons = {
 	[626007] = "classicon_warlock",
 	[626008] = "classicon_warrior",
 	[894556] = "xp_icon",
+	[1109508] = "inv_sword_2h_artifactashbringer_d_01",
 	[1120721] = "wow_token01",
 	[1121394] = "wow_token02",
 	[1126583] = "vas_factionchange",
@@ -6350,6 +6351,8 @@ local icons = {
 	[4680677] = "inv_lunarrabbitpet",
 	[4687496] = "inv_rabbitmountclassic",
 	[4777763] = "inv_magicalfishpet",
+	[5210047] = "inv_shield_1h_scarletcrusade_b_01",
+	[5519425] = "ability_orangebirdclassic",
 	[5588107] = "ui_selffound",
 	[5838262] = "inv_bracer_leather_olivescale_b_01",
 	[5838263] = "inv_shoulder_leather_olivescale_b_01",
@@ -6363,6 +6366,7 @@ local icons = {
 	[5933402] = "inv_misc_1h_book_priest_a_01",
 	[5934896] = "inv_stave_2h_druid_a_01",
 	[5934898] = "inv_stave_2h_druid_a_02",
+	[6725876] = "inv_pvpwarhorse_scarlet",
 }
 
 --- @type integer[]
@@ -12669,6 +12673,7 @@ local order = {
 	626007,
 	626008,
 	894556,
+	1109508,
 	1120721,
 	1121394,
 	1126583,
@@ -12698,6 +12703,8 @@ local order = {
 	4680677,
 	4687496,
 	4777763,
+	5210047,
+	5519425,
 	5588107,
 	5838262,
 	5838263,
@@ -12711,6 +12718,7 @@ local order = {
 	5933402,
 	5934896,
 	5934898,
+	6725876,
 }
 
 --- @return table<integer,string>
