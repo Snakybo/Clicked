@@ -327,13 +327,22 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 
 		-- Create virtual actions for action bar items
 		for _, item in ipairs(actionBarItems) do
-			if item.key == binding.keybind and (item.type == "SPELL" or item.type == "ITEM") then
-				--- @cast item SpellLibrarySpellResult|SpellLibraryItemResult
+			if item.key == binding.keybind then
+				if item.type == "SPELL" then
+					--- @cast item SpellLibrarySpellResult
 
-				table.insert(actions, {
-					ability = C_Spell.GetSpellName(item.spellId) or C_Item.GetItemNameByID(item.itemId),
-					type = binding.actionType
-				})
+					table.insert(actions, {
+						ability = C_Spell.GetSpellName(item.spellId),
+						type = binding.actionType
+					})
+				elseif item.type == "ITEM" then
+					--- @cast item SpellLibraryItemResult
+
+					table.insert(actions, {
+						ability = C_Item.GetItemNameByID(item.itemId),
+						type = binding.actionType
+					})
+				end
 			end
 		end
 	end

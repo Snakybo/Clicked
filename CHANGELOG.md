@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix Moonkin form spell ID
+* Fix Lua error with items on action bars if automatic binding of action bar abilities is enabled [#276]
 
 ### Changed
 
@@ -1756,6 +1757,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#276]: https://github.com/Snakybo/Clicked/issues/276
 [#270]: https://github.com/Snakybo/Clicked/issues/270
 [#267]: https://github.com/Snakybo/Clicked/issues/267
 [#265]: https://github.com/Snakybo/Clicked/issues/265
