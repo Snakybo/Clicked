@@ -383,9 +383,9 @@ local function SortActions(actions, indexMap)
 			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
 			-- 4. The player, cursor, and default targets will always come last
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.PLAYER, comparison = "neq" },
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.DEFAULT, comparison = "neq" },
 			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.CURSOR, comparison = "neq" },
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.DEFAULT, comparison = "neq" }
+			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.PLAYER, comparison = "neq" },
 		}
 
 		for _, item in ipairs(priority) do
