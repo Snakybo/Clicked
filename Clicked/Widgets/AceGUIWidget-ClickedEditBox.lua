@@ -50,12 +50,8 @@ local function EditBox_OnReceiveDrag(frame)
 	if type == "item" then
 		name = info
 	elseif type == "spell" then
-		if C_Spell and C_Spell.GetSpellName then
-			--- @diagnostic disable-next-line: param-type-mismatch
-			name = C_Spell.GetSpellName(extra)
-		else
-			name = GetSpellInfo(id, info)
-		end
+		--- @diagnostic disable-next-line: param-type-mismatch
+		name = C_Spell.GetSpellName(extra)
 	elseif type == "macro" then
 		--- @diagnostic disable-next-line: param-type-mismatch
 		name = GetMacroInfo(id)

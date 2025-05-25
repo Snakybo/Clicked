@@ -14,25 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local GetSpellSubtext = C_Spell.GetSpellSubtext or GetSpellSubtext -- Deprecated in 11.0.0
-
---- @type fun(spellIdentifier: string|number):SpellInfo?
-local GetSpellInfo = C_Spell.GetSpellInfo or function(input) -- Deprecated in 11.0.0
-	local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
-	if name == nil then
-		return nil
-	end
-
-	return {
-		name = name,
-		iconID = icon,
-		castTime = castTime,
-		minRange = minRange,
-		maxRange = maxRange,
-		spellID = spellId
-	}
-end
-
 local AceGUI = LibStub("AceGUI-3.0")
 
 --- @class ClickedInternal
@@ -393,7 +374,7 @@ function Addon:GetBindingValue(binding)
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 				name = C_Spell.GetSpellName(spell)
 			else
-				local data = GetSpellInfo(spell)
+				local data = C_Spell.GetSpellInfo(spell)
 				name = data ~= nil and data.name or nil
 			end
 		else
@@ -402,7 +383,7 @@ function Addon:GetBindingValue(binding)
 		end
 
 		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank and C_Spell.IsSpellDataCached(spell) then
-			local rank = GetSpellSubtext(spell)
+			local rank = C_Spell.GetSpellSubtext(spell)
 
 			if not self:IsNilOrEmpty(rank) then
 				name = string.format("%s(%s)", name, rank)
@@ -443,7 +424,7 @@ function Addon:GetBindingValue(binding)
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 				name = C_Spell.GetSpellName(aura)
 			else
-				local data = GetSpellInfo(aura)
+				local data = C_Spell.GetSpellInfo(aura)
 				name = data ~= nil and data.name or nil
 			end
 		else
@@ -640,10 +621,10 @@ end
 function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
-	local spell = GetSpellInfo(input)
+	local spell = C_Spell.GetSpellInfo(input)
 
 	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and addSubText and C_Spell.IsSpellDataCached(spell.spellID) then
-		local subtext = GetSpellSubtext(spell.spellID)
+		local subtext = C_Spell.GetSpellSubtext(spell.spellID)
 
 		if not self:IsNilOrEmpty(subtext) then
 			spell.name = string.format("%s(%s)", spell.name, subtext)

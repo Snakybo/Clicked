@@ -414,13 +414,8 @@ local config = {
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		test = function(value)
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-				local spell = C_Spell.GetSpellInfo(value)
-				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
-			else
-				local spellId = select(7, GetSpellInfo(value))
-				return spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId) or false
-			end
+			local spell = C_Spell.GetSpellInfo(value)
+			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
 		end
 	},
 	{

@@ -14,9 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- Deprecated in 11.0.0
-local GetMouseFoci = GetMouseFoci or function() return { GetMouseFocus() } end
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -219,6 +216,7 @@ end
 --- @return Action
 local function ConstructAction(binding, target)
 	--- @type Action
+	--- @diagnostic disable-next-line: missing-fields
 	local action = {
 		ability = Addon:GetBindingValue(binding) --[[@as string|integer]],
 		type = binding.actionType
@@ -928,7 +926,7 @@ function Addon:UpdateTalentCache(callback, immediate)
 						for _, conditionId in ipairs(nodeInfo.conditionIDs) do
 							local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
 
-							if conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
+							if conditionInfo ~= nil and conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
 								isValid = true
 								break
 							end

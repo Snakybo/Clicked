@@ -16,9 +16,6 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
--- Deprecated in 11.0.0
-local GetSpellName = C_Spell.GetSpellName or GetSpellInfo
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -230,7 +227,7 @@ local function PopulateKeys()
 			local name
 
 			if type == "spell" or (type == "macro" and subType == "spell") then
-				name = GetSpellName(id)
+				name = C_Spell.GetSpellName(id)
 			elseif type == "item" or (type == "macro" and subType == "item") then
 				name = C_Item.GetItemInfo(id)
 			elseif type == "flyout" then
@@ -276,7 +273,7 @@ local function PopulateKeys()
 
 				if targetKey == key then
 					local formIcon, _, _, spellId = GetShapeshiftFormInfo(form)
-					local spellName = GetSpellName(spellId)
+					local spellName = C_Spell.GetSpellName(spellId)
 					Register(spellName, formIcon)
 				end
 			end
