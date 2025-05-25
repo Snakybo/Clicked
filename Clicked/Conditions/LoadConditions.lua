@@ -17,6 +17,9 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+
 local Utils = Addon.Condition.Utils
 
 --- @type LoadCondition[]

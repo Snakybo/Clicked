@@ -16,6 +16,11 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+-- Deprecated in 5.5.0
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 

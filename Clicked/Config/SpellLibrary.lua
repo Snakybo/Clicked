@@ -14,6 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+-- Deprecated in 5.5.0
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
