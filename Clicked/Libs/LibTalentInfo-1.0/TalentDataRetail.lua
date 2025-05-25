@@ -1,202 +1,762 @@
-local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
-local version = 59679
+-- LibTalentInfo, a World of Warcraft library to provide class, specialization, and talent information.
+-- Copyright (C) 2024  Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE or LibTalentInfo == nil or version <= LibTalentInfo:GetTalentProviderVersion() then
+local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
+
+local interfaceVersion = select(4, GetBuildInfo())
+
+if LibTalentInfo == nil or interfaceVersion < 110000 or interfaceVersion >= 120000 then
 	return
 end
 
---- @type table<string,table<integer,integer>>
-local specializations = {
-	MAGE = {
-		[1] = 62, -- Arcane
-		[2] = 63, -- Fire
-		[3] = 64, -- Frost
-		[5] = 1449, -- Initial
+LibTalentInfo:SetProvider({
+	classes = {
+		"DEATHKNIGHT",
+		"DEMONHUNTER",
+		"DRUID",
+		"EVOKER",
+		"HUNTER",
+		"MAGE",
+		"MONK",
+		"PALADIN",
+		"PRIEST",
+		"ROGUE",
+		"SHAMAN",
+		"WARLOCK",
+		"WARRIOR",
 	},
-	PALADIN = {
-		[1] = 65, -- Holy
-		[2] = 66, -- Protection
-		[3] = 70, -- Retribution
-		[5] = 1451, -- Initial
-	},
-	WARRIOR = {
-		[1] = 71, -- Arms
-		[2] = 72, -- Fury
-		[3] = 73, -- Protection
-		[5] = 1446, -- Initial
-	},
-	DRUID = {
-		[1] = 102, -- Balance
-		[2] = 103, -- Feral
-		[3] = 104, -- Guardian
-		[4] = 105, -- Restoration
-		[5] = 1447, -- Initial
-	},
-	DEATHKNIGHT = {
-		[1] = 250, -- Blood
-		[2] = 251, -- Frost
-		[3] = 252, -- Unholy
-		[5] = 1455, -- Initial
-	},
-	HUNTER = {
-		[1] = 253, -- Beast Mastery
-		[2] = 254, -- Marksmanship
-		[3] = 255, -- Survival
-		[5] = 1448, -- Initial
-	},
-	PRIEST = {
-		[1] = 256, -- Discipline
-		[2] = 257, -- Holy
-		[3] = 258, -- Shadow
-		[5] = 1452, -- Initial
-	},
-	ROGUE = {
-		[1] = 259, -- Assassination
-		[2] = 260, -- Outlaw
-		[3] = 261, -- Subtlety
-		[5] = 1453, -- Initial
-	},
-	SHAMAN = {
-		[1] = 262, -- Elemental
-		[2] = 263, -- Enhancement
-		[3] = 264, -- Restoration
-		[5] = 1444, -- Initial
-	},
-	WARLOCK = {
-		[1] = 265, -- Affliction
-		[2] = 266, -- Demonology
-		[3] = 267, -- Destruction
-		[5] = 1454, -- Initial
-	},
-	MONK = {
-		[1] = 268, -- Brewmaster
-		[2] = 270, -- Mistweaver
-		[3] = 269, -- Windwalker
-		[5] = 1450, -- Initial
-	},
-	DEMONHUNTER = {
-		[1] = 577, -- Havoc
-		[2] = 581, -- Vengeance
-		[5] = 1456, -- Initial
-	},
-	EVOKER = {
-		[1] = 1467, -- Devastation
-		[2] = 1468, -- Preservation
-		[3] = 1473, -- Augmentation
-		[5] = 1465, -- Initial
-	},
-}
 
---- @type table<integer,integer[]>
-local pvpTalents = {
-	-- Arcane Mage
-	[62] = { 635, 637, 3529, 5397, 5488, 5491, 5589, 5601, 5661, 5707, }, -- Master of Escape, Improved Mass Invisibility, Kleptomania, Arcanosphere, Ice Wall, Ring of Fire, Master Shepherd, Ethereal Blink, Chrono Shift, Overpowered Barrier
-	-- Fire Mage
-	[63] = { 644, 648, 5389, 5489, 5495, 5588, 5602, 5621, 5685, 5706, }, -- World in Flames, Greater Pyroblast, Ring of Fire, Ice Wall, Glass Cannon, Master Shepherd, Ethereal Blink, Improved Mass Invisibility, Ignition Burst, Overpowered Barrier
-	-- Frost Mage
-	[64] = { 66, 632, 634, 5390, 5490, 5496, 5497, 5581, 5600, 5622, 5708, }, -- Icy Feet, Concentrated Coolness, Ice Form, Ice Wall, Ring of Fire, Frost Bomb, Snowdrift, Master Shepherd, Ethereal Blink, Improved Mass Invisibility, Overpowered Barrier
-	-- Holy Paladin
-	[65] = { 85, 86, 87, 640, 642, 3618, 5583, 5618, 5663, 5665, 5674, 5676, 5692, }, -- Ultimate Sacrifice, Darkest before the Dawn, Spreading the Word, Divine Vision, Cleanse the Weak, Hallowed Ground, Searing Glare, Denounce, Divine Plea, Spellbreaker, Luminescence, Shining Revelation, Blessing of Spellwarding
-	-- Protection Paladin
-	[66] = { 90, 91, 92, 94, 97, 844, 860, 861, 3474, 5582, 5664, 5667, 5677, }, -- Hallowed Ground, Steed of Glory, Sacred Duty, Guardian of the Forgotten Queen, Guarded by the Light, Inquisition, Warrior of Light, Shield of Virtue, Luminescence, Searing Glare, Bear the Burden, Spellbreaker, Shining Revelation
-	-- Retribution Paladin
-	[70] = { 81, 752, 753, 5535, 5572, 5573, 5584, 5666, 5675, }, -- Luminescence, Blessing of Sanctuary, Ultimate Retribution, Hallowed Ground, Spreading the Word, Blessing of Spellwarding, Searing Glare, Spellbreaker, Shining Revelation
-	-- Arms Warrior
-	[71] = { 28, 31, 33, 34, 3534, 5372, 5547, 5625, 5630, 5679, 5701, }, -- Master and Commander, Storm of Destruction, Sharpen Blade, Duel, Disarm, Demolition, Rebound, Safeguard, Battlefield Commander, Dragon Charge, Berserker Roar
-	-- Fury Warrior
-	[72] = { 177, 179, 3528, 3533, 3735, 5373, 5548, 5624, 5628, 5678, 5702, }, -- Enduring Rage, Death Wish, Master and Commander, Disarm, Slaughterhouse, Demolition, Rebound, Safeguard, Battlefield Commander, Dragon Charge, Berserker Roar
-	-- Protection Warrior
-	[73] = { 24, 168, 171, 173, 175, 831, 833, 845, 5374, 5626, 5627, 5629, 5703, }, -- Disarm, Bodyguard, Morale Killer, Shield Bash, Thunderstruck, Dragon Charge, Rebound, Oppressor, Demolition, Safeguard, Storm of Destruction, Battlefield Commander, Berserker Roar
-	-- Balance Druid
-	[102] = { 180, 182, 184, 185, 822, 834, 836, 3058, 3728, 3731, 5383, 5407, 5515, 5604, 5646, }, -- Celestial Guardian, Crescent Burn, Moon and Stars, Moonkin Aura, Dying Stars, Deep Roots, Faerie Swarm, Star Burst, Protector of the Grove, Thorns, High Winds, Owlkin Adept, Malorne's Swiftness, Master Shapeshifter, Tireless Pursuit
-	-- Feral Druid
-	[103] = { 201, 203, 601, 611, 612, 620, 820, 3053, 3751, 5384, 5647, }, -- Thorns, Freedom of the Herd, Malorne's Swiftness, Ferocious Wound, Fresh Wound, Wicked Claws, Savage Momentum, Strength of the Wild, Leader of the Pack, High Winds, Tireless Pursuit
-	-- Guardian Druid
-	[104] = { 49, 51, 52, 194, 195, 196, 197, 842, 1237, 3750, 5410, 5648, }, -- Master Shapeshifter, Den Mother, Demoralizing Roar, Charging Bash, Entangling Claws, Overrun, Emerald Slumber, Alpha Challenge, Malorne's Swiftness, Freedom of the Herd, Grove Protection, Tireless Pursuit
-	-- Restoration Druid
-	[105] = { 59, 692, 697, 700, 838, 1215, 5514, 5649, 5668, 5687, }, -- Disentanglement, Entangling Bark, Thorns, Deep Roots, High Winds, Early Spring, Malorne's Swiftness, Tireless Pursuit, Ancient of Lore, Forest Guardian
-	-- Blood Death Knight
-	[250] = { 204, 206, 608, 609, 841, 3441, 3511, 5587, 5592, }, -- Rot and Wither, Strangulate, Last Dance, Death Chain, Murderous Intent, Decomposing Aura, Dark Simulacrum, Bloodforged Armor, Spellwarden
-	-- Frost Death Knight
-	[251] = { 701, 702, 3439, 3512, 5429, 5435, 5510, 5586, 5591, 5693, }, -- Deathchill, Delirium, Shroud of Winter, Dark Simulacrum, Strangulate, Bitter Chill, Rot and Wither, Bloodforged Armor, Spellwarden, Death's Cold Embrace
-	-- Unholy Death Knight
-	[252] = { 40, 41, 149, 152, 3746, 5430, 5436, 5511, 5585, 5590, }, -- Life and Death, Dark Simulacrum, Necrotic Wounds, Reanimation, Necromancer's Bargain, Strangulate, Doomburst, Rot and Wither, Bloodforged Armor, Spellwarden
-	-- Beast Mastery Hunter
-	[253] = { 693, 824, 825, 1214, 3599, 3604, 3730, 5441, 5444, 5534, 5689, }, -- The Beast Within, Dire Beast: Hawk, Dire Beast: Basilisk, Interlope, Survival Tactics, Chimaeral Sting, Hunting Pack, Wild Kingdom, Kindred Beasts, Diamond Ice, Explosive Powder
-	-- Marksmanship Hunter
-	[254] = { 651, 653, 659, 660, 3729, 5440, 5533, 5688, 5700, }, -- Survival Tactics, Chimaeral Sting, Ranger's Finesse, Sniper's Advantage, Hunting Pack, Consecutive Concussion, Diamond Ice, Explosive Powder, Aspect of the Fox
-	-- Survival Hunter
-	[255] = { 661, 662, 664, 665, 686, 3607, 3609, 5443, 5532, 5690, }, -- Hunting Pack, Mending Bandage, Sticky Tar Bomb, Tracker's Net, Diamond Ice, Survival Tactics, Chimaeral Sting, Wild Kingdom, Interlope, Explosive Powder
-	-- Discipline Priest
-	[256] = { 100, 109, 111, 114, 123, 126, 855, 5416, 5480, 5487, 5570, 5635, 5640, }, -- Purification, Trinity, Strength of Soul, Ultimate Radiance, Archangel, Dark Archangel, Thoughtsteal, Inner Light and Shadow, Absolute Faith, Catharsis, Phase Shift, Improved Mass Dispel, Mindgames
-	-- Holy Priest
-	[257] = { 101, 108, 112, 124, 127, 1927, 5365, 5366, 5479, 5485, 5569, 5634, 5639, }, -- Holy Ward, Sanctified Ground, Greater Heal, Spirit of the Redeemer, Ray of Hope, Absolute Faith, Thoughtsteal, Divine Ascension, Purification, Catharsis, Phase Shift, Improved Mass Dispel, Mindgames
-	-- Shadow Priest
-	[258] = { 106, 113, 763, 5381, 5447, 5481, 5486, 5568, 5636, 5638, }, -- Driven to Madness, Mind Trauma, Psyfiend, Thoughtsteal, Void Volley, Absolute Faith, Catharsis, Phase Shift, Improved Mass Dispel, Mindgames
-	-- Assassination Rogue
-	[259] = { 141, 147, 830, 3448, 3479, 3480, 5405, 5408, 5530, 5550, 5697, }, -- Creeping Venom, System Shock, Hemotoxin, Maneuverability, Death from Above, Smoke Bomb, Dismantle, Thick as Thieves, Control is King, Dagger in the Dark, Preemptive Maneuver
-	-- Outlaw Rogue
-	[260] = { 129, 138, 139, 145, 853, 1208, 3421, 3483, 3619, 5549, 5699, }, -- Maneuverability, Control is King, Drink Up Me Hearties, Dismantle, Boarding Party, Thick as Thieves, Turn the Tables, Smoke Bomb, Death from Above, Dagger in the Dark, Preemptive Maneuver
-	-- Subtlety Rogue
-	[261] = { 146, 846, 856, 1209, 3447, 3462, 5406, 5409, 5411, 5529, 5698, }, -- Thief's Bargain, Dagger in the Dark, Silhouette, Smoke Bomb, Maneuverability, Death from Above, Dismantle, Thick as Thieves, Distracting Mirage, Control is King, Preemptive Maneuver
-	-- Elemental Shaman
-	[262] = { 727, 3488, 3490, 3491, 3620, 5574, 5659, 5660, 5681, }, -- Static Field Totem, Totem of Wrath, Counterstrike Totem, Unleash Shield, Grounding Totem, Burrow, Electrocute, Shamanism, Storm Conduit
-	-- Enhancement Shaman
-	[263] = { 722, 3487, 3489, 3492, 3622, 5438, 5575, 5596, 5658, }, -- Shamanism, Totem of Wrath, Counterstrike Totem, Unleash Shield, Grounding Totem, Static Field Totem, Burrow, Stormweaver, Electrocute
-	-- Restoration Shaman
-	[264] = { 708, 714, 715, 3755, 5388, 5437, 5567, 5576, 5704, 5705, }, -- Counterstrike Totem, Electrocute, Grounding Totem, Rain Dance, Living Tide, Unleash Shield, Static Field Totem, Burrow, Storm Conduit, Totem of Wrath
-	-- Affliction Warlock
-	[265] = { 15, 16, 18, 19, 5379, 5386, 5392, 5546, 5579, 5608, 5662, 5695, }, -- Gateway Mastery, Rot and Decay, Nether Ward, Essence Drain, Rampant Afflictions, Jinx, Shadow Rift, Bonds of Fel, Impish Instincts, Soul Rip, Soul Swap, Bloodstones
-	-- Demonology Warlock
-	[266] = { 162, 1213, 3506, 3624, 5394, 5545, 5577, 5606, 5694, }, -- Call Fel Lord, Master Summoner, Gateway Mastery, Nether Ward, Shadow Rift, Bonds of Fel, Impish Instincts, Soul Rip, Bloodstones
-	-- Destruction Warlock
-	[267] = { 157, 164, 3508, 5382, 5393, 5401, 5580, 5607, 5696, }, -- Fel Fissure, Bane of Havoc, Nether Ward, Gateway Mastery, Shadow Rift, Bonds of Fel, Impish Instincts, Soul Rip, Bloodstones
-	-- Brewmaster Monk
-	[268] = { 666, 667, 668, 669, 670, 672, 673, 765, 843, 1958, 5417, 5538, 5541, }, -- Microbrew, Hot Trub, Guided Meditation, Avert Harm, Nimble Brew, Double Barrel, Mighty Ox Kick, Eerie Fermentation, Admonishment, Niuzao's Essence, Rodeo, Grapple Weapon, Dematerialize
-	-- Windwalker Monk
-	[269] = { 77, 675, 3052, 3737, 3744, 3745, 5448, 5610, 5641, 5643, 5644, }, -- Ride the Wind, Tigereye Brew, Grapple Weapon, Wind Waker, Predestination, Turbo Fists, Perpetual Paralysis, Stormspirit Strikes, Absolute Serenity, Rising Dragon Sweep, Rodeo
-	-- Mistweaver Monk
-	[270] = { 70, 679, 683, 1928, 3732, 5395, 5398, 5539, 5565, 5603, 5642, 5645, 5669, }, -- Eminence, Counteract Magic, Healing Sphere, Zen Focus Tea, Grapple Weapon, Peaceweaver, Dematerialize, Mighty Ox Kick, Jadefire Accord, Zen Spheres, Absolute Serenity, Rodeo, Feather Feet
-	-- Havoc Demon Hunter
-	[577] = { 805, 806, 811, 812, 813, 1206, 1218, 5433, 5523, 5691, }, -- Cleansed by Flame, Reverse Magic, Rain from Above, Detainment, Glimpse, Cover of Darkness, Unending Hatred, Blood Moon, Sigil Mastery, Illidan's Grasp
-	-- Vengeance Demon Hunter
-	[581] = { 814, 815, 816, 819, 1220, 1948, 3423, 3429, 3430, 3727, 5434, 5520, 5521, 5522, }, -- Cleansed by Flame, Everlasting Hunt, Jagged Spikes, Illidan's Grasp, Tormentor, Sigil Mastery, Demonic Trample, Reverse Magic, Detainment, Unending Hatred, Blood Moon, Cover of Darkness, Rain from Above, Glimpse
-	-- Initial Shaman
-	[1444] = { },
-	-- Initial Warrior
-	[1446] = { },
-	-- Initial Druid
-	[1447] = { },
-	-- Initial Hunter
-	[1448] = { },
-	-- Initial Mage
-	[1449] = { },
-	-- Initial Monk
-	[1450] = { },
-	-- Initial Paladin
-	[1451] = { },
-	-- Initial Priest
-	[1452] = { },
-	-- Initial Rogue
-	[1453] = { },
-	-- Initial Warlock
-	[1454] = { },
-	-- Initial Death Knight
-	[1455] = { },
-	-- Initial Demon Hunter
-	[1456] = { },
-	-- Initial Evoker
-	[1465] = { },
-	-- Devastation Evoker
-	[1467] = { 5456, 5460, 5462, 5464, 5466, 5467, 5469, 5556, 5617, }, -- Chrono Loop, Obsidian Mettle, Scouring Flame, Time Stop, Swoop Up, Nullifying Shroud, Unburdened Flight, Divide and Conquer, Dreamwalker's Embrace
-	-- Preservation Evoker
-	[1468] = { 5455, 5459, 5461, 5463, 5465, 5468, 5470, 5595, 5616, 5711, }, -- Chrono Loop, Obsidian Mettle, Scouring Flame, Time Stop, Swoop Up, Nullifying Shroud, Unburdened Flight, Divide and Conquer, Dreamwalker's Embrace, Dream Projection
-	-- Augmentation Evoker
-	[1473] = { 5454, 5557, 5558, 5560, 5561, 5562, 5563, 5564, 5612, 5615, 5619, }, -- Seismic Slam, Divide and Conquer, Nullifying Shroud, Unburdened Flight, Scouring Flame, Swoop Up, Obsidian Mettle, Chrono Loop, Born in Flame, Dreamwalker's Embrace, Time Stop
-}
+	specializations = {
+		["DEATHKNIGHT"] = {
+			[1] = { id = 250, name = "Blood", icon = 135770 },
+			[2] = { id = 251, name = "Frost", icon = 135773 },
+			[3] = { id = 252, name = "Unholy", icon = 135775 },
+			[5] = { id = 1455, name = nil, icon = nil },
+		},
+		["DEMONHUNTER"] = {
+			[1] = { id = 577, name = "Havoc", icon = 1247264 },
+			[2] = { id = 581, name = "Vengeance", icon = 1247265 },
+			[5] = { id = 1456, name = nil, icon = nil },
+		},
+		["DRUID"] = {
+			[1] = { id = 102, name = "Balance", icon = 136096 },
+			[2] = { id = 103, name = "Feral", icon = 132115 },
+			[3] = { id = 104, name = "Guardian", icon = 132276 },
+			[4] = { id = 105, name = "Restoration", icon = 136041 },
+			[5] = { id = 1447, name = nil, icon = nil },
+		},
+		["EVOKER"] = {
+			[5] = { id = 1465, name = nil, icon = nil },
+			[1] = { id = 1467, name = "Devastation", icon = 4511811 },
+			[2] = { id = 1468, name = "Preservation", icon = 4511812 },
+			[3] = { id = 1473, name = "Augmentation", icon = 5198700 },
+		},
+		["HUNTER"] = {
+			[1] = { id = 253, name = "Beast Mastery", icon = 461112 },
+			[2] = { id = 254, name = "Marksmanship", icon = 236179 },
+			[3] = { id = 255, name = "Survival", icon = 461113 },
+			[5] = { id = 1448, name = nil, icon = nil },
+		},
+		["MAGE"] = {
+			[1] = { id = 62, name = "Arcane", icon = 135932 },
+			[2] = { id = 63, name = "Fire", icon = 135810 },
+			[3] = { id = 64, name = "Frost", icon = 135846 },
+			[5] = { id = 1449, name = nil, icon = nil },
+		},
+		["MONK"] = {
+			[1] = { id = 268, name = "Brewmaster", icon = 608951 },
+			[3] = { id = 269, name = "Windwalker", icon = 608953 },
+			[2] = { id = 270, name = "Mistweaver", icon = 608952 },
+			[5] = { id = 1450, name = nil, icon = nil },
+		},
+		["PALADIN"] = {
+			[1] = { id = 65, name = "Holy", icon = 135920 },
+			[2] = { id = 66, name = "Protection", icon = 236264 },
+			[3] = { id = 70, name = "Retribution", icon = 135873 },
+			[5] = { id = 1451, name = nil, icon = nil },
+		},
+		["PRIEST"] = {
+			[1] = { id = 256, name = "Discipline", icon = 135940 },
+			[2] = { id = 257, name = "Holy", icon = 237542 },
+			[3] = { id = 258, name = "Shadow", icon = 136207 },
+			[5] = { id = 1452, name = nil, icon = nil },
+		},
+		["ROGUE"] = {
+			[1] = { id = 259, name = "Assassination", icon = 236270 },
+			[2] = { id = 260, name = "Outlaw", icon = 236286 },
+			[3] = { id = 261, name = "Subtlety", icon = 132320 },
+			[5] = { id = 1453, name = nil, icon = nil },
+		},
+		["SHAMAN"] = {
+			[1] = { id = 262, name = "Elemental", icon = 136048 },
+			[2] = { id = 263, name = "Enhancement", icon = 237581 },
+			[3] = { id = 264, name = "Restoration", icon = 136052 },
+			[5] = { id = 1444, name = nil, icon = nil },
+		},
+		["WARLOCK"] = {
+			[1] = { id = 265, name = "Affliction", icon = 136145 },
+			[2] = { id = 266, name = "Demonology", icon = 136172 },
+			[3] = { id = 267, name = "Destruction", icon = 136186 },
+			[5] = { id = 1454, name = nil, icon = nil },
+		},
+		["WARRIOR"] = {
+			[1] = { id = 71, name = "Arms", icon = 132355 },
+			[2] = { id = 72, name = "Fury", icon = 132347 },
+			[3] = { id = 73, name = "Protection", icon = 132341 },
+			[5] = { id = 1446, name = nil, icon = nil },
+		},
+	},
 
-LibTalentInfo:RegisterTalentProvider({
-	version = version,
-	specializations = specializations,
-	pvpTalents = pvpTalents
+	talents = {
+		[62] = {
+		},
+		[63] = {
+		},
+		[64] = {
+		},
+		[65] = {
+		},
+		[66] = {
+		},
+		[70] = {
+		},
+		[71] = {
+		},
+		[72] = {
+		},
+		[73] = {
+		},
+		[102] = {
+		},
+		[103] = {
+		},
+		[104] = {
+		},
+		[105] = {
+		},
+		[250] = {
+		},
+		[251] = {
+		},
+		[252] = {
+		},
+		[253] = {
+		},
+		[254] = {
+		},
+		[255] = {
+		},
+		[256] = {
+		},
+		[257] = {
+		},
+		[258] = {
+		},
+		[259] = {
+		},
+		[260] = {
+		},
+		[261] = {
+		},
+		[262] = {
+		},
+		[263] = {
+		},
+		[264] = {
+		},
+		[265] = {
+		},
+		[266] = {
+		},
+		[267] = {
+		},
+		[268] = {
+		},
+		[269] = {
+		},
+		[270] = {
+		},
+		[577] = {
+		},
+		[581] = {
+		},
+		[1444] = {
+		},
+		[1446] = {
+		},
+		[1447] = {
+		},
+		[1448] = {
+		},
+		[1449] = {
+		},
+		[1450] = {
+		},
+		[1451] = {
+		},
+		[1452] = {
+		},
+		[1453] = {
+		},
+		[1454] = {
+		},
+		[1455] = {
+		},
+		[1456] = {
+		},
+		[1465] = {
+		},
+		[1467] = {
+		},
+		[1468] = {
+		},
+		[1473] = {
+		},
+	},
+
+	pvpTalents = {
+		[62] = {
+			{ id = 635, name = "Master of Escape", icon = 132220 },
+			{ id = 637, name = "Improved Mass Invisibility", icon = 1387356 },
+			{ id = 3529, name = "Kleptomania", icon = 135729 },
+			{ id = 5397, name = "Arcanosphere", icon = 4226155 },
+			{ id = 5488, name = "Ice Wall", icon = 4226156 },
+			{ id = 5491, name = "Ring of Fire", icon = 4067368 },
+			{ id = 5589, name = "Master Shepherd", icon = 575586 },
+			{ id = 5601, name = "Ethereal Blink", icon = 136054 },
+			{ id = 5661, name = "Chrono Shift", icon = 629533 },
+			{ id = 5707, name = "Overpowered Barrier", icon = 1723997 },
+		},
+		[63] = {
+			{ id = 644, name = "World in Flames", icon = 236228 },
+			{ id = 648, name = "Greater Pyroblast", icon = 1387354 },
+			{ id = 5389, name = "Ring of Fire", icon = 4067368 },
+			{ id = 5489, name = "Ice Wall", icon = 4226156 },
+			{ id = 5495, name = "Glass Cannon", icon = 429384 },
+			{ id = 5588, name = "Master Shepherd", icon = 575586 },
+			{ id = 5602, name = "Ethereal Blink", icon = 136054 },
+			{ id = 5621, name = "Improved Mass Invisibility", icon = 1387356 },
+			{ id = 5685, name = "Ignition Burst", icon = 524795 },
+			{ id = 5706, name = "Overpowered Barrier", icon = 1723997 },
+		},
+		[64] = {
+			{ id = 66, name = "Icy Feet", icon = 5152258 },
+			{ id = 632, name = "Concentrated Coolness", icon = 629077 },
+			{ id = 634, name = "Ice Form", icon = 1387355 },
+			{ id = 5390, name = "Ice Wall", icon = 4226156 },
+			{ id = 5490, name = "Ring of Fire", icon = 4067368 },
+			{ id = 5496, name = "Frost Bomb", icon = 609814 },
+			{ id = 5497, name = "Snowdrift", icon = 135783 },
+			{ id = 5581, name = "Master Shepherd", icon = 575586 },
+			{ id = 5600, name = "Ethereal Blink", icon = 136054 },
+			{ id = 5622, name = "Improved Mass Invisibility", icon = 1387356 },
+			{ id = 5708, name = "Overpowered Barrier", icon = 1723997 },
+		},
+		[65] = {
+			{ id = 85, name = "Ultimate Sacrifice", icon = 135966 },
+			{ id = 86, name = "Darkest before the Dawn", icon = 461859 },
+			{ id = 87, name = "Spreading the Word", icon = 354719 },
+			{ id = 640, name = "Divine Vision", icon = 135934 },
+			{ id = 642, name = "Cleanse the Weak", icon = 135949 },
+			{ id = 3618, name = "Hallowed Ground", icon = 135926 },
+			{ id = 5583, name = "Searing Glare", icon = 5260436 },
+			{ id = 5618, name = "Denounce", icon = 135950 },
+			{ id = 5663, name = "Divine Plea", icon = 1316218 },
+			{ id = 5665, name = "Spellbreaker", icon = 458412 },
+			{ id = 5674, name = "Luminescence", icon = 135905 },
+			{ id = 5676, name = "Shining Revelation", icon = 135921 },
+			{ id = 5692, name = "Blessing of Spellwarding", icon = 135880 },
+		},
+		[66] = {
+			{ id = 90, name = "Hallowed Ground", icon = 135926 },
+			{ id = 91, name = "Steed of Glory", icon = 135890 },
+			{ id = 92, name = "Sacred Duty", icon = 135964 },
+			{ id = 94, name = "Guardian of the Forgotten Queen", icon = 135919 },
+			{ id = 97, name = "Guarded by the Light", icon = 236252 },
+			{ id = 844, name = "Inquisition", icon = 135984 },
+			{ id = 860, name = "Warrior of Light", icon = 1030099 },
+			{ id = 861, name = "Shield of Virtue", icon = 237452 },
+			{ id = 3474, name = "Luminescence", icon = 135905 },
+			{ id = 5582, name = "Searing Glare", icon = 5260436 },
+			{ id = 5664, name = "Bear the Burden", icon = 571557 },
+			{ id = 5667, name = "Spellbreaker", icon = 458412 },
+			{ id = 5677, name = "Shining Revelation", icon = 135921 },
+		},
+		[70] = {
+			{ id = 81, name = "Luminescence", icon = 135905 },
+			{ id = 752, name = "Blessing of Sanctuary", icon = 135911 },
+			{ id = 753, name = "Ultimate Retribution", icon = 135889 },
+			{ id = 5535, name = "Hallowed Ground", icon = 135926 },
+			{ id = 5572, name = "Spreading the Word", icon = 354719 },
+			{ id = 5573, name = "Blessing of Spellwarding", icon = 135880 },
+			{ id = 5584, name = "Searing Glare", icon = 5260436 },
+			{ id = 5666, name = "Spellbreaker", icon = 458412 },
+			{ id = 5675, name = "Shining Revelation", icon = 135921 },
+		},
+		[71] = {
+			{ id = 28, name = "Master and Commander", icon = 132351 },
+			{ id = 31, name = "Storm of Destruction", icon = 236303 },
+			{ id = 33, name = "Sharpen Blade", icon = 1380678 },
+			{ id = 34, name = "Duel", icon = 1455893 },
+			{ id = 3534, name = "Disarm", icon = 132343 },
+			{ id = 5372, name = "Demolition", icon = 311430 },
+			{ id = 5547, name = "Rebound", icon = 132358 },
+			{ id = 5625, name = "Safeguard", icon = 236311 },
+			{ id = 5630, name = "Battlefield Commander", icon = 132339 },
+			{ id = 5679, name = "Dragon Charge", icon = 1380676 },
+			{ id = 5701, name = "Berserker Roar", icon = 136009 },
+		},
+		[72] = {
+			{ id = 177, name = "Enduring Rage", icon = 132352 },
+			{ id = 179, name = "Death Wish", icon = 136146 },
+			{ id = 3528, name = "Master and Commander", icon = 132351 },
+			{ id = 3533, name = "Disarm", icon = 132343 },
+			{ id = 3735, name = "Slaughterhouse", icon = 4067373 },
+			{ id = 5373, name = "Demolition", icon = 311430 },
+			{ id = 5548, name = "Rebound", icon = 132358 },
+			{ id = 5624, name = "Safeguard", icon = 236311 },
+			{ id = 5628, name = "Battlefield Commander", icon = 132339 },
+			{ id = 5678, name = "Dragon Charge", icon = 1380676 },
+			{ id = 5702, name = "Berserker Roar", icon = 136009 },
+		},
+		[73] = {
+			{ id = 24, name = "Disarm", icon = 132343 },
+			{ id = 168, name = "Bodyguard", icon = 132359 },
+			{ id = 171, name = "Morale Killer", icon = 132366 },
+			{ id = 173, name = "Shield Bash", icon = 132357 },
+			{ id = 175, name = "Thunderstruck", icon = 460957 },
+			{ id = 831, name = "Dragon Charge", icon = 1380676 },
+			{ id = 833, name = "Rebound", icon = 132358 },
+			{ id = 845, name = "Oppressor", icon = 136080 },
+			{ id = 5374, name = "Demolition", icon = 311430 },
+			{ id = 5626, name = "Safeguard", icon = 236311 },
+			{ id = 5627, name = "Storm of Destruction", icon = 236303 },
+			{ id = 5629, name = "Battlefield Commander", icon = 132339 },
+			{ id = 5703, name = "Berserker Roar", icon = 136009 },
+		},
+		[102] = {
+			{ id = 180, name = "Celestial Guardian", icon = 1408835 },
+			{ id = 182, name = "Crescent Burn", icon = 136096 },
+			{ id = 184, name = "Moon and Stars", icon = 1408838 },
+			{ id = 185, name = "Moonkin Aura", icon = 236156 },
+			{ id = 822, name = "Dying Stars", icon = 1392544 },
+			{ id = 834, name = "Deep Roots", icon = 134221 },
+			{ id = 836, name = "Faerie Swarm", icon = 538516 },
+			{ id = 3058, name = "Star Burst", icon = 1408832 },
+			{ id = 3728, name = "Protector of the Grove", icon = 136062 },
+			{ id = 3731, name = "Thorns", icon = 136104 },
+			{ id = 5383, name = "High Winds", icon = 132119 },
+			{ id = 5407, name = "Owlkin Adept", icon = 236163 },
+			{ id = 5515, name = "Malorne's Swiftness", icon = 1394966 },
+			{ id = 5604, name = "Master Shapeshifter", icon = 236161 },
+			{ id = 5646, name = "Tireless Pursuit", icon = 538517 },
+		},
+		[103] = {
+			{ id = 201, name = "Thorns", icon = 136104 },
+			{ id = 203, name = "Freedom of the Herd", icon = 464343 },
+			{ id = 601, name = "Malorne's Swiftness", icon = 1394966 },
+			{ id = 611, name = "Ferocious Wound", icon = 132127 },
+			{ id = 612, name = "Fresh Wound", icon = 132122 },
+			{ id = 620, name = "Wicked Claws", icon = 1392548 },
+			{ id = 820, name = "Savage Momentum", icon = 132242 },
+			{ id = 3053, name = "Strength of the Wild", icon = 1408835 },
+			{ id = 3751, name = "Leader of the Pack", icon = 135881 },
+			{ id = 5384, name = "High Winds", icon = 132119 },
+			{ id = 5647, name = "Tireless Pursuit", icon = 538517 },
+		},
+		[104] = {
+			{ id = 49, name = "Master Shapeshifter", icon = 236161 },
+			{ id = 51, name = "Den Mother", icon = 1408834 },
+			{ id = 52, name = "Demoralizing Roar", icon = 132117 },
+			{ id = 194, name = "Charging Bash", icon = 236946 },
+			{ id = 195, name = "Entangling Claws", icon = 136100 },
+			{ id = 196, name = "Overrun", icon = 1408833 },
+			{ id = 197, name = "Emerald Slumber", icon = 1394953 },
+			{ id = 842, name = "Alpha Challenge", icon = 132270 },
+			{ id = 1237, name = "Malorne's Swiftness", icon = 1394966 },
+			{ id = 3750, name = "Freedom of the Herd", icon = 464343 },
+			{ id = 5410, name = "Grove Protection", icon = 4067364 },
+			{ id = 5648, name = "Tireless Pursuit", icon = 538517 },
+		},
+		[105] = {
+			{ id = 59, name = "Disentanglement", icon = 134222 },
+			{ id = 692, name = "Entangling Bark", icon = 572025 },
+			{ id = 697, name = "Thorns", icon = 136104 },
+			{ id = 700, name = "Deep Roots", icon = 134221 },
+			{ id = 838, name = "High Winds", icon = 132119 },
+			{ id = 1215, name = "Early Spring", icon = 236153 },
+			{ id = 5514, name = "Malorne's Swiftness", icon = 1394966 },
+			{ id = 5649, name = "Tireless Pursuit", icon = 538517 },
+			{ id = 5668, name = "Ancient of Lore", icon = 874857 },
+			{ id = 5687, name = "Forest Guardian", icon = 1408831 },
+		},
+		[250] = {
+			{ id = 204, name = "Rot and Wither", icon = 538561 },
+			{ id = 206, name = "Strangulate", icon = 136214 },
+			{ id = 608, name = "Last Dance", icon = 135277 },
+			{ id = 609, name = "Death Chain", icon = 1390941 },
+			{ id = 841, name = "Murderous Intent", icon = 136088 },
+			{ id = 3441, name = "Decomposing Aura", icon = 1390945 },
+			{ id = 3511, name = "Dark Simulacrum", icon = 135888 },
+			{ id = 5587, name = "Bloodforged Armor", icon = 237512 },
+			{ id = 5592, name = "Spellwarden", icon = 136120 },
+		},
+		[251] = {
+			{ id = 701, name = "Deathchill", icon = 135842 },
+			{ id = 702, name = "Delirium", icon = 344804 },
+			{ id = 3439, name = "Shroud of Winter", icon = 4226149 },
+			{ id = 3512, name = "Dark Simulacrum", icon = 135888 },
+			{ id = 5429, name = "Strangulate", icon = 136214 },
+			{ id = 5435, name = "Bitter Chill", icon = 349760 },
+			{ id = 5510, name = "Rot and Wither", icon = 538561 },
+			{ id = 5586, name = "Bloodforged Armor", icon = 237512 },
+			{ id = 5591, name = "Spellwarden", icon = 136120 },
+			{ id = 5693, name = "Death's Cold Embrace", icon = 636332 },
+		},
+		[252] = {
+			{ id = 40, name = "Life and Death", icon = 348565 },
+			{ id = 41, name = "Dark Simulacrum", icon = 135888 },
+			{ id = 149, name = "Necrotic Wounds", icon = 366936 },
+			{ id = 152, name = "Reanimation", icon = 1390947 },
+			{ id = 3746, name = "Necromancer's Bargain", icon = 1392565 },
+			{ id = 5430, name = "Strangulate", icon = 136214 },
+			{ id = 5436, name = "Doomburst", icon = 136181 },
+			{ id = 5511, name = "Rot and Wither", icon = 538561 },
+			{ id = 5585, name = "Bloodforged Armor", icon = 237512 },
+			{ id = 5590, name = "Spellwarden", icon = 136120 },
+		},
+		[253] = {
+			{ id = 693, name = "The Beast Within", icon = 132166 },
+			{ id = 824, name = "Dire Beast: Hawk", icon = 612363 },
+			{ id = 825, name = "Dire Beast: Basilisk", icon = 1412204 },
+			{ id = 1214, name = "Interlope", icon = 132180 },
+			{ id = 3599, name = "Survival Tactics", icon = 132293 },
+			{ id = 3604, name = "Chimaeral Sting", icon = 132211 },
+			{ id = 3730, name = "Hunting Pack", icon = 236181 },
+			{ id = 5441, name = "Wild Kingdom", icon = 236159 },
+			{ id = 5444, name = "Kindred Beasts", icon = 236184 },
+			{ id = 5534, name = "Diamond Ice", icon = 236209 },
+			{ id = 5689, name = "Explosive Powder", icon = 1044088 },
+		},
+		[254] = {
+			{ id = 651, name = "Survival Tactics", icon = 132293 },
+			{ id = 653, name = "Chimaeral Sting", icon = 132211 },
+			{ id = 659, name = "Ranger's Finesse", icon = 132208 },
+			{ id = 660, name = "Sniper's Advantage", icon = 1412205 },
+			{ id = 3729, name = "Hunting Pack", icon = 236181 },
+			{ id = 5440, name = "Consecutive Concussion", icon = 135860 },
+			{ id = 5533, name = "Diamond Ice", icon = 236209 },
+			{ id = 5688, name = "Explosive Powder", icon = 1044088 },
+			{ id = 5700, name = "Aspect of the Fox", icon = 458223 },
+		},
+		[255] = {
+			{ id = 661, name = "Hunting Pack", icon = 236181 },
+			{ id = 662, name = "Mending Bandage", icon = 1014022 },
+			{ id = 664, name = "Sticky Tar Bomb", icon = 5094557 },
+			{ id = 665, name = "Tracker's Net", icon = 1412207 },
+			{ id = 686, name = "Diamond Ice", icon = 236209 },
+			{ id = 3607, name = "Survival Tactics", icon = 132293 },
+			{ id = 3609, name = "Chimaeral Sting", icon = 132211 },
+			{ id = 5443, name = "Wild Kingdom", icon = 236159 },
+			{ id = 5532, name = "Interlope", icon = 132180 },
+			{ id = 5690, name = "Explosive Powder", icon = 1044088 },
+		},
+		[256] = {
+			{ id = 100, name = "Purification", icon = 135894 },
+			{ id = 109, name = "Trinity", icon = 537078 },
+			{ id = 111, name = "Strength of Soul", icon = 135880 },
+			{ id = 114, name = "Ultimate Radiance", icon = 1386546 },
+			{ id = 123, name = "Archangel", icon = 458225 },
+			{ id = 126, name = "Dark Archangel", icon = 1445237 },
+			{ id = 855, name = "Thoughtsteal", icon = 3718862 },
+			{ id = 5416, name = "Inner Light and Shadow", icon = 4226157 },
+			{ id = 5480, name = "Absolute Faith", icon = 463836 },
+			{ id = 5487, name = "Catharsis", icon = 1386547 },
+			{ id = 5570, name = "Phase Shift", icon = 775463 },
+			{ id = 5635, name = "Improved Mass Dispel", icon = 135739 },
+			{ id = 5640, name = "Mindgames", icon = 6035316 },
+		},
+		[257] = {
+			{ id = 101, name = "Holy Ward", icon = 458722 },
+			{ id = 108, name = "Sanctified Ground", icon = 237544 },
+			{ id = 112, name = "Greater Heal", icon = 135915 },
+			{ id = 124, name = "Spirit of the Redeemer", icon = 132864 },
+			{ id = 127, name = "Ray of Hope", icon = 1445239 },
+			{ id = 1927, name = "Absolute Faith", icon = 463836 },
+			{ id = 5365, name = "Thoughtsteal", icon = 3718862 },
+			{ id = 5366, name = "Divine Ascension", icon = 1345176 },
+			{ id = 5479, name = "Purification", icon = 135894 },
+			{ id = 5485, name = "Catharsis", icon = 1386547 },
+			{ id = 5569, name = "Phase Shift", icon = 775463 },
+			{ id = 5634, name = "Improved Mass Dispel", icon = 135739 },
+			{ id = 5639, name = "Mindgames", icon = 6035316 },
+		},
+		[258] = {
+			{ id = 106, name = "Driven to Madness", icon = 236300 },
+			{ id = 113, name = "Mind Trauma", icon = 462324 },
+			{ id = 763, name = "Psyfiend", icon = 537021 },
+			{ id = 5381, name = "Thoughtsteal", icon = 3718862 },
+			{ id = 5447, name = "Void Volley", icon = 132776 },
+			{ id = 5481, name = "Absolute Faith", icon = 463836 },
+			{ id = 5486, name = "Catharsis", icon = 1386547 },
+			{ id = 5568, name = "Phase Shift", icon = 775463 },
+			{ id = 5636, name = "Improved Mass Dispel", icon = 135739 },
+			{ id = 5638, name = "Mindgames", icon = 6035316 },
+		},
+		[259] = {
+			{ id = 141, name = "Creeping Venom", icon = 1398086 },
+			{ id = 147, name = "System Shock", icon = 1398089 },
+			{ id = 830, name = "Hemotoxin", icon = 3610996 },
+			{ id = 3448, name = "Maneuverability", icon = 965900 },
+			{ id = 3479, name = "Death from Above", icon = 1043573 },
+			{ id = 3480, name = "Smoke Bomb", icon = 458733 },
+			{ id = 5405, name = "Dismantle", icon = 236272 },
+			{ id = 5408, name = "Thick as Thieves", icon = 236283 },
+			{ id = 5530, name = "Control is King", icon = 132298 },
+			{ id = 5550, name = "Dagger in the Dark", icon = 643249 },
+			{ id = 5697, name = "Preemptive Maneuver", icon = 132294 },
+		},
+		[260] = {
+			{ id = 129, name = "Maneuverability", icon = 965900 },
+			{ id = 138, name = "Control is King", icon = 132298 },
+			{ id = 139, name = "Drink Up Me Hearties", icon = 461806 },
+			{ id = 145, name = "Dismantle", icon = 236272 },
+			{ id = 853, name = "Boarding Party", icon = 1141392 },
+			{ id = 1208, name = "Thick as Thieves", icon = 236283 },
+			{ id = 3421, name = "Turn the Tables", icon = 236286 },
+			{ id = 3483, name = "Smoke Bomb", icon = 458733 },
+			{ id = 3619, name = "Death from Above", icon = 1043573 },
+			{ id = 5549, name = "Dagger in the Dark", icon = 643249 },
+			{ id = 5699, name = "Preemptive Maneuver", icon = 132294 },
+		},
+		[261] = {
+			{ id = 146, name = "Thief's Bargain", icon = 133473 },
+			{ id = 846, name = "Dagger in the Dark", icon = 643249 },
+			{ id = 856, name = "Silhouette", icon = 132303 },
+			{ id = 1209, name = "Smoke Bomb", icon = 458733 },
+			{ id = 3447, name = "Maneuverability", icon = 965900 },
+			{ id = 3462, name = "Death from Above", icon = 1043573 },
+			{ id = 5406, name = "Dismantle", icon = 236272 },
+			{ id = 5409, name = "Thick as Thieves", icon = 236283 },
+			{ id = 5411, name = "Distracting Mirage", icon = 132289 },
+			{ id = 5529, name = "Control is King", icon = 132298 },
+			{ id = 5698, name = "Preemptive Maneuver", icon = 132294 },
+		},
+		[262] = {
+			{ id = 727, name = "Static Field Totem", icon = 1020304 },
+			{ id = 3488, name = "Totem of Wrath", icon = 1385914 },
+			{ id = 3490, name = "Counterstrike Totem", icon = 511726 },
+			{ id = 3491, name = "Unleash Shield", icon = 538567 },
+			{ id = 3620, name = "Grounding Totem", icon = 136039 },
+			{ id = 5574, name = "Burrow", icon = 5260435 },
+			{ id = 5659, name = "Electrocute", icon = 136075 },
+			{ id = 5660, name = "Shamanism", icon = 454482 },
+			{ id = 5681, name = "Storm Conduit", icon = 135990 },
+		},
+		[263] = {
+			{ id = 722, name = "Shamanism", icon = 454482 },
+			{ id = 3487, name = "Totem of Wrath", icon = 1385914 },
+			{ id = 3489, name = "Counterstrike Totem", icon = 511726 },
+			{ id = 3492, name = "Unleash Shield", icon = 538567 },
+			{ id = 3622, name = "Grounding Totem", icon = 136039 },
+			{ id = 5438, name = "Static Field Totem", icon = 1020304 },
+			{ id = 5575, name = "Burrow", icon = 5260435 },
+			{ id = 5596, name = "Stormweaver", icon = 136213 },
+			{ id = 5658, name = "Electrocute", icon = 136075 },
+		},
+		[264] = {
+			{ id = 708, name = "Counterstrike Totem", icon = 511726 },
+			{ id = 714, name = "Electrocute", icon = 136075 },
+			{ id = 715, name = "Grounding Totem", icon = 136039 },
+			{ id = 3755, name = "Rain Dance", icon = 463570 },
+			{ id = 5388, name = "Living Tide", icon = 538569 },
+			{ id = 5437, name = "Unleash Shield", icon = 538567 },
+			{ id = 5567, name = "Static Field Totem", icon = 1020304 },
+			{ id = 5576, name = "Burrow", icon = 5260435 },
+			{ id = 5704, name = "Storm Conduit", icon = 135990 },
+			{ id = 5705, name = "Totem of Wrath", icon = 1385914 },
+		},
+		[265] = {
+			{ id = 15, name = "Gateway Mastery", icon = 607512 },
+			{ id = 16, name = "Rot and Decay", icon = 1032479 },
+			{ id = 18, name = "Nether Ward", icon = 135796 },
+			{ id = 19, name = "Essence Drain", icon = 571321 },
+			{ id = 5379, name = "Rampant Afflictions", icon = 3033715 },
+			{ id = 5386, name = "Jinx", icon = 460699 },
+			{ id = 5392, name = "Shadow Rift", icon = 4067372 },
+			{ id = 5546, name = "Bonds of Fel", icon = 1117883 },
+			{ id = 5579, name = "Impish Instincts", icon = 237560 },
+			{ id = 5608, name = "Soul Rip", icon = 5260437 },
+			{ id = 5662, name = "Soul Swap", icon = 460857 },
+			{ id = 5695, name = "Bloodstones", icon = 538744 },
+		},
+		[266] = {
+			{ id = 162, name = "Call Fel Lord", icon = 1113433 },
+			{ id = 1213, name = "Master Summoner", icon = 1115910 },
+			{ id = 3506, name = "Gateway Mastery", icon = 607512 },
+			{ id = 3624, name = "Nether Ward", icon = 135796 },
+			{ id = 5394, name = "Shadow Rift", icon = 4067372 },
+			{ id = 5545, name = "Bonds of Fel", icon = 1117883 },
+			{ id = 5577, name = "Impish Instincts", icon = 237560 },
+			{ id = 5606, name = "Soul Rip", icon = 5260437 },
+			{ id = 5694, name = "Bloodstones", icon = 538744 },
+		},
+		[267] = {
+			{ id = 157, name = "Fel Fissure", icon = 135801 },
+			{ id = 164, name = "Bane of Havoc", icon = 1380866 },
+			{ id = 3508, name = "Nether Ward", icon = 135796 },
+			{ id = 5382, name = "Gateway Mastery", icon = 607512 },
+			{ id = 5393, name = "Shadow Rift", icon = 4067372 },
+			{ id = 5401, name = "Bonds of Fel", icon = 1117883 },
+			{ id = 5580, name = "Impish Instincts", icon = 237560 },
+			{ id = 5607, name = "Soul Rip", icon = 5260437 },
+			{ id = 5696, name = "Bloodstones", icon = 538744 },
+		},
+		[268] = {
+			{ id = 666, name = "Microbrew", icon = 615341 },
+			{ id = 667, name = "Hot Trub", icon = 623775 },
+			{ id = 668, name = "Guided Meditation", icon = 642417 },
+			{ id = 669, name = "Avert Harm", icon = 620829 },
+			{ id = 670, name = "Nimble Brew", icon = 839394 },
+			{ id = 672, name = "Double Barrel", icon = 644378 },
+			{ id = 673, name = "Mighty Ox Kick", icon = 1381297 },
+			{ id = 765, name = "Eerie Fermentation", icon = 651580 },
+			{ id = 843, name = "Admonishment", icon = 620830 },
+			{ id = 1958, name = "Niuzao's Essence", icon = 133701 },
+			{ id = 5417, name = "Rodeo", icon = 628134 },
+			{ id = 5538, name = "Grapple Weapon", icon = 132343 },
+			{ id = 5541, name = "Dematerialize", icon = 4067369 },
+		},
+		[269] = {
+			{ id = 77, name = "Ride the Wind", icon = 1381298 },
+			{ id = 675, name = "Tigereye Brew", icon = 613399 },
+			{ id = 3052, name = "Grapple Weapon", icon = 132343 },
+			{ id = 3737, name = "Wind Waker", icon = 611420 },
+			{ id = 3744, name = "Predestination", icon = 606552 },
+			{ id = 3745, name = "Turbo Fists", icon = 627606 },
+			{ id = 5448, name = "Perpetual Paralysis", icon = 629534 },
+			{ id = 5610, name = "Stormspirit Strikes", icon = 2032605 },
+			{ id = 5641, name = "Absolute Serenity", icon = 988197 },
+			{ id = 5643, name = "Rising Dragon Sweep", icon = 134158 },
+			{ id = 5644, name = "Rodeo", icon = 628134 },
+		},
+		[270] = {
+			{ id = 70, name = "Eminence", icon = 627608 },
+			{ id = 679, name = "Counteract Magic", icon = 1381294 },
+			{ id = 683, name = "Healing Sphere", icon = 606546 },
+			{ id = 1928, name = "Zen Focus Tea", icon = 651940 },
+			{ id = 3732, name = "Grapple Weapon", icon = 132343 },
+			{ id = 5395, name = "Peaceweaver", icon = 1020466 },
+			{ id = 5398, name = "Dematerialize", icon = 4067369 },
+			{ id = 5539, name = "Mighty Ox Kick", icon = 1381297 },
+			{ id = 5565, name = "Jadefire Accord", icon = 977169 },
+			{ id = 5603, name = "Zen Spheres", icon = 5094560 },
+			{ id = 5642, name = "Absolute Serenity", icon = 988197 },
+			{ id = 5645, name = "Rodeo", icon = 628134 },
+			{ id = 5669, name = "Feather Feet", icon = 2103804 },
+		},
+		[577] = {
+			{ id = 805, name = "Cleansed by Flame", icon = 135802 },
+			{ id = 806, name = "Reverse Magic", icon = 1380372 },
+			{ id = 811, name = "Rain from Above", icon = 1380371 },
+			{ id = 812, name = "Detainment", icon = 463560 },
+			{ id = 813, name = "Glimpse", icon = 1348401 },
+			{ id = 1206, name = "Cover of Darkness", icon = 1305154 },
+			{ id = 1218, name = "Unending Hatred", icon = 1450140 },
+			{ id = 5433, name = "Blood Moon", icon = 828455 },
+			{ id = 5523, name = "Sigil Mastery", icon = 1058938 },
+			{ id = 5691, name = "Illidan's Grasp", icon = 1380367 },
+		},
+		[581] = {
+			{ id = 814, name = "Cleansed by Flame", icon = 135802 },
+			{ id = 815, name = "Everlasting Hunt", icon = 1247265 },
+			{ id = 816, name = "Jagged Spikes", icon = 1344645 },
+			{ id = 819, name = "Illidan's Grasp", icon = 1380367 },
+			{ id = 1220, name = "Tormentor", icon = 1344654 },
+			{ id = 1948, name = "Sigil Mastery", icon = 1058938 },
+			{ id = 3423, name = "Demonic Trample", icon = 134294 },
+			{ id = 3429, name = "Reverse Magic", icon = 1380372 },
+			{ id = 3430, name = "Detainment", icon = 463560 },
+			{ id = 3727, name = "Unending Hatred", icon = 1450140 },
+			{ id = 5434, name = "Blood Moon", icon = 828455 },
+			{ id = 5520, name = "Cover of Darkness", icon = 1305154 },
+			{ id = 5521, name = "Rain from Above", icon = 1380371 },
+			{ id = 5522, name = "Glimpse", icon = 1348401 },
+		},
+		[1444] = {
+		},
+		[1446] = {
+		},
+		[1447] = {
+		},
+		[1448] = {
+		},
+		[1449] = {
+		},
+		[1450] = {
+		},
+		[1451] = {
+		},
+		[1452] = {
+		},
+		[1453] = {
+		},
+		[1454] = {
+		},
+		[1455] = {
+		},
+		[1456] = {
+		},
+		[1465] = {
+		},
+		[1467] = {
+			{ id = 5456, name = "Chrono Loop", icon = 4630470 },
+			{ id = 5460, name = "Obsidian Mettle", icon = 1526594 },
+			{ id = 5462, name = "Scouring Flame", icon = 135826 },
+			{ id = 5464, name = "Time Stop", icon = 4631367 },
+			{ id = 5466, name = "Swoop Up", icon = 4622446 },
+			{ id = 5467, name = "Nullifying Shroud", icon = 135752 },
+			{ id = 5469, name = "Unburdened Flight", icon = 1029587 },
+			{ id = 5556, name = "Divide and Conquer", icon = 5152257 },
+			{ id = 5617, name = "Dreamwalker's Embrace", icon = 4913233 },
+		},
+		[1468] = {
+			{ id = 5455, name = "Chrono Loop", icon = 4630470 },
+			{ id = 5459, name = "Obsidian Mettle", icon = 1526594 },
+			{ id = 5461, name = "Scouring Flame", icon = 135826 },
+			{ id = 5463, name = "Time Stop", icon = 4631367 },
+			{ id = 5465, name = "Swoop Up", icon = 4622446 },
+			{ id = 5468, name = "Nullifying Shroud", icon = 135752 },
+			{ id = 5470, name = "Unburdened Flight", icon = 1029587 },
+			{ id = 5595, name = "Divide and Conquer", icon = 5152257 },
+			{ id = 5616, name = "Dreamwalker's Embrace", icon = 4913233 },
+			{ id = 5711, name = "Dream Projection", icon = 4622475 },
+		},
+		[1473] = {
+			{ id = 5454, name = "Seismic Slam", icon = 5199643 },
+			{ id = 5557, name = "Divide and Conquer", icon = 5152257 },
+			{ id = 5558, name = "Nullifying Shroud", icon = 135752 },
+			{ id = 5560, name = "Unburdened Flight", icon = 1029587 },
+			{ id = 5561, name = "Scouring Flame", icon = 135826 },
+			{ id = 5562, name = "Swoop Up", icon = 4622446 },
+			{ id = 5563, name = "Obsidian Mettle", icon = 1526594 },
+			{ id = 5564, name = "Chrono Loop", icon = 4630470 },
+			{ id = 5612, name = "Born in Flame", icon = 4622464 },
+			{ id = 5615, name = "Dreamwalker's Embrace", icon = 4913233 },
+			{ id = 5619, name = "Time Stop", icon = 4631367 },
+		},
+	}
 })

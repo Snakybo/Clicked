@@ -85,6 +85,8 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		[105] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
 	}
+elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+	-- TODO
 else
 	--- @type { [string]: integer[][] }
 	shapeshiftForms = {
@@ -810,7 +812,7 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
-if Addon:IsGameVersionAtleast("RETAIL") then
+if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 	--- Get all available shapeshift forms for the specified spec ID.
 	--- Note that this does not mean _currently available_ shapeshift forms,
 	--- just all possible shapeshift forms.
@@ -840,7 +842,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	function Addon:IterateShapeshiftForms(specId)
 		return ipairs(shapeshiftForms[specId] or {})
 	end
-elseif Addon:IsGameVersionAtleast("CLASSIC") then
+else
 	--- Get all available shapeshift forms for the specified class name.
 	--- Note that this does not mean _currently available_ shapeshift forms,
 	--- just all possible shapeshift forms.
@@ -854,20 +856,20 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	---
 	--- @param class string
 	--- @return integer[][]
-	function Addon:Classic_GetShapeshiftForms(class)
+	function Addon:GetShapeshiftForms(class)
 		local forms = shapeshiftForms[class] or {}
 		return { unpack(forms) }
 	end
 
 	--- Iterate through all available shapeshift classes.
-	function Addon:Classic_IterateShapeshiftClasses()
+	function Addon:IterateShapeshiftClasses()
 		return pairs(shapeshiftForms)
 	end
 
 	--- Iterate through all available shapeshift forms for the specified class.
 	---
 	--- @param class string
-	function Addon:Classic_IterateShapeshiftForms(class)
+	function Addon:IterateShapeshiftForms(class)
 		return ipairs(shapeshiftForms[class])
 	end
 end
