@@ -953,7 +953,20 @@ function Addon:UpdateTalentCache(callback, immediate)
 					end
 				end
 			end
-		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+			wipe(talentCache)
+
+			for i = 1, MAX_NUM_TALENTS do
+				local info = C_SpecializationInfo.GetTalentInfo({
+					tier = math.ceil(i / MAX_NUM_TALENTS),
+					column = (i - 1) % MAX_NUM_TALENTS + 1
+				})
+
+				if info ~= nil then
+					talentCache[info.name] = info.selected
+				end
+			end
+		else
 			wipe(talentCache)
 
 			for tab = 1, GetNumTalentTabs() do

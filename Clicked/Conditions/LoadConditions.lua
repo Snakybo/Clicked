@@ -111,11 +111,7 @@ local config = {
 					class[1] = select(2, UnitClass("player"))
 				end
 
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.DF then
-					return Addon:GetLocalizedSpecializations(class)
-				else
-					return Addon:Cata_GetLocalizedSpecializations(class)
-				end
+				return Addon:GetLocalizedSpecializations(class)
 			end
 		},
 		dependencies = { "class" },
@@ -178,17 +174,16 @@ local config = {
 			--- @param class string[]
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
-				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedTalents(specIds)
 				else
-					return Addon:Cata_GetLocalizedTalents(specIds)
+					local classes = Utils.GetRelevantClasses(class)
+					return Addon:GetLocalizedTalents(classes)
 				end
 			end
 		},
 		dependencies = { "class", "specialization" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,

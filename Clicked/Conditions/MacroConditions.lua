@@ -30,10 +30,10 @@ local config = {
 			availableValues = function(class, specialization)
 				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 					return Addon:GetLocalizedForms(specIds)
 				else
-					return Addon:Classic_GetLocalizedForms(class)
+					return Addon:GetLocalizedForms(class)
 				end
 			end
 		},

@@ -71,46 +71,6 @@ function Addon:SafeCall(func, ...)
 	return false
 end
 
---- Check if the game client is running the retail version of the API.
----
---- @return boolean
---- @deprecated
-function Addon:IsRetail()
-	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-end
-
---- Check if the game client is running the Classic version of the API.
----
---- @return boolean
---- @deprecated
-function Addon:IsClassic()
-	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-end
-
---- Check if the game client is running the Burning Crusade version of the API.
----
---- @return boolean
---- @deprecated
-function Addon:IsBC()
-	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
-end
-
---- Check if the game client is running the Wrath of the Lich King version of the API.
----
---- @return boolean
---- @deprecated
-function Addon:IsWotLK()
-	return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
-end
-
---- Check if the game client is running the Cataclysm version of the API.
----
---- @return boolean
---- @deprecated
-function Addon:IsCata()
-	return WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
-end
-
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.TWW
 elseif WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
@@ -123,34 +83,6 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.BC
 elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
-end
-
---- Check if the client version is at least the specified version, for example `IsAtLeast("BC")` will return `true` on both the BC and Retail versions of the
---- game, but `false` on Classic.
----
---- @param version "RETAIL"|"CLASSIC"|"BC"|"WOTLK"|"CATA"
---- @return boolean
---- @deprecated
-function Addon:IsGameVersionAtleast(version)
-	local isRetail = Addon:IsRetail()
-	local isCata = isRetail or Addon:IsCata()
-	local isWOTLK = isCata or Addon:IsWotLK()
-	local isBC = isWOTLK or Addon:IsBC()
-	local isClassic = isBC or Addon:IsClassic()
-
-	if version == "RETAIL" and isRetail then
-		return true
-	elseif version == "CATA" and isCata then
-		return true
-	elseif version == "WOTLK" and isWOTLK then
-		return true
-	elseif version == "BC" and isBC then
-		return true
-	elseif version == "CLASSIC" and isClassic then
-		return true
-	end
-
-	return false
 end
 
 --- Check if the user is running a development build of the addon.

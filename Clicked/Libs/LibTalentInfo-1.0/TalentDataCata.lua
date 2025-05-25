@@ -1,69 +1,90 @@
---- @type LibTalentInfoClassic-1.0
-local LibTalentInfoClassic = LibStub and LibStub("LibTalentInfoClassic-1.0", true)
-local version = 54377
+-- LibTalentInfo, a World of Warcraft library to provide class, specialization, and talent information.
+-- Copyright (C) 2024  Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-if WOW_PROJECT_ID ~= WOW_PROJECT_CATACLYSM_CLASSIC or LibTalentInfoClassic == nil or version <= LibTalentInfoClassic:GetTalentProviderVersion() then
+local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
+
+local interfaceVersion = select(4, GetBuildInfo())
+
+if LibTalentInfo == nil or interfaceVersion < 40400 or interfaceVersion >= 50000 then
 	return
 end
 
---- @type table<integer,{[integer]: { id: integer, name: string, icon: integer }}>
-local specializations = {
-	ROGUE = {
-		[1] = { id = 182, name = "Assassination", icon = 132292 }, -- Assassination
-		[2] = { id = 181, name = "Combat", icon = 132090 }, -- Combat
-		[3] = { id = 183, name = "Subtlety", icon = 132320 }, -- Subtlety
+LibTalentInfo:SetProvider({
+	classes = {
+		"DEATHKNIGHT",
+		"DRUID",
+		"HUNTER",
+		"MAGE",
+		"PALADIN",
+		"PRIEST",
+		"ROGUE",
+		"SHAMAN",
+		"WARRIOR",
 	},
-	SHAMAN = {
-		[1] = { id = 261, name = "Elemental", icon = 136048 }, -- Elemental
-		[2] = { id = 263, name = "Enhancement", icon = 136051 }, -- Enhancement
-		[3] = { id = 262, name = "Restoration", icon = 136052 }, -- Restoration
-	},
-	DEATHKNIGHT = {
-		[1] = { id = 398, name = "Blood", icon = 135770 }, -- Blood
-		[2] = { id = 399, name = "Frost", icon = 135773 }, -- Frost
-		[3] = { id = 400, name = "Unholy", icon = 135775 }, -- Unholy
-	},
-	WARRIOR = {
-		[1] = { id = 746, name = "Arms", icon = 132355 }, -- Arms
-		[2] = { id = 815, name = "Fury", icon = 132347 }, -- Fury
-		[3] = { id = 845, name = "Protection", icon = 132341 }, -- Protection
-	},
-	DRUID = {
-		[1] = { id = 752, name = "Balance", icon = 136096 }, -- Balance
-		[2] = { id = 750, name = "Feral Combat", icon = 132276 }, -- Feral Combat
-		[3] = { id = 748, name = "Restoration", icon = 136041 }, -- Restoration
-	},
-	PRIEST = {
-		[1] = { id = 760, name = "Discipline", icon = 135940 }, -- Discipline
-		[2] = { id = 813, name = "Holy", icon = 237542 }, -- Holy
-		[3] = { id = 795, name = "Shadow", icon = 136207 }, -- Shadow
-	},
-	MAGE = {
-		[1] = { id = 799, name = "Arcane", icon = 135932 }, -- Arcane
-		[2] = { id = 851, name = "Fire", icon = 135810 }, -- Fire
-		[3] = { id = 823, name = "Frost", icon = 135846 }, -- Frost
-	},
-	HUNTER = {
-		[1] = { id = 811, name = "Beast Mastery", icon = 461112 }, -- Beast Mastery
-		[2] = { id = 807, name = "Marksmanship", icon = 236179 }, -- Marksmanship
-		[3] = { id = 809, name = "Survival", icon = 461113 }, -- Survival
-	},
-	PALADIN = {
-		[1] = { id = 831, name = "Holy", icon = 135920 }, -- Holy
-		[2] = { id = 839, name = "Protection", icon = 236264 }, -- Protection
-		[3] = { id = 855, name = "Retribution", icon = 135873 }, -- Retribution
-	},
-	WARLOCK = {
-		[1] = { id = 871, name = "Affliction", icon = 136145 }, -- Affliction
-		[2] = { id = 867, name = "Demonology", icon = 136172 }, -- Demonology
-		[3] = { id = 865, name = "Destruction", icon = 136186 }, -- Destruction
-	},
-}
 
---- @type table<integer,{ id: integer, name: string, icon: integer }>
-local talents = {
-	-- Combat Rogue
-	[181] = {
+	specializations = {
+		["DEATHKNIGHT"] = {
+			[1] = { id = 398, name = "Blood", icon = 135770 },
+			[2] = { id = 399, name = "Frost", icon = 135773 },
+			[3] = { id = 400, name = "Unholy", icon = 135775 },
+		},
+		["DRUID"] = {
+			[3] = { id = 748, name = "Restoration", icon = 136041 },
+			[2] = { id = 750, name = "Feral Combat", icon = 132276 },
+			[1] = { id = 752, name = "Balance", icon = 136096 },
+		},
+		["HUNTER"] = {
+			[2] = { id = 807, name = "Marksmanship", icon = 236179 },
+			[3] = { id = 809, name = "Survival", icon = 461113 },
+			[1] = { id = 811, name = "Beast Mastery", icon = 461112 },
+		},
+		["MAGE"] = {
+			[1] = { id = 799, name = "Arcane", icon = 135932 },
+			[3] = { id = 823, name = "Frost", icon = 135846 },
+			[2] = { id = 851, name = "Fire", icon = 135810 },
+		},
+		["PALADIN"] = {
+			[1] = { id = 831, name = "Holy", icon = 135920 },
+			[2] = { id = 839, name = "Protection", icon = 236264 },
+			[3] = { id = 855, name = "Retribution", icon = 135873 },
+		},
+		["PRIEST"] = {
+			[1] = { id = 760, name = "Discipline", icon = 135940 },
+			[3] = { id = 795, name = "Shadow", icon = 136207 },
+			[2] = { id = 813, name = "Holy", icon = 237542 },
+		},
+		["ROGUE"] = {
+			[2] = { id = 181, name = "Combat", icon = 132090 },
+			[1] = { id = 182, name = "Assassination", icon = 132292 },
+			[3] = { id = 183, name = "Subtlety", icon = 132320 },
+		},
+		["SHAMAN"] = {
+			[1] = { id = 261, name = "Elemental", icon = 136048 },
+			[3] = { id = 262, name = "Restoration", icon = 136052 },
+			[2] = { id = 263, name = "Enhancement", icon = 136051 },
+		},
+		["WARRIOR"] = {
+			[1] = { id = 746, name = "Arms", icon = 132355 },
+			[2] = { id = 815, name = "Fury", icon = 132347 },
+			[3] = { id = 845, name = "Protection", icon = 132341 },
+		},
+	},
+
+	talents = {
+		[181] = {
 			{ id = 29, name = "Precision", icon = 132222 },
 			{ id = 30, name = "Lightning Reflexes", icon = 136047 },
 			{ id = 31, name = "Improved Sinister Strike", icon = 136189 },
@@ -83,9 +104,8 @@ local talents = {
 			{ id = 45, name = "Restless Blades", icon = 458731 },
 			{ id = 46, name = "Revealing Strike", icon = 135407 },
 			{ id = 47, name = "Bandit's Guile", icon = 236278 },
-	},
-	-- Assassination Rogue
-	[182] = {
+		},
+		[182] = {
 			{ id = 1, name = "Lethality", icon = 132109 },
 			{ id = 2, name = "Ruthlessness", icon = 132122 },
 			{ id = 3, name = "Coup de Grace", icon = 132292 },
@@ -105,9 +125,8 @@ local talents = {
 			{ id = 17, name = "Murderous Intent", icon = 136147 },
 			{ id = 18, name = "Venomous Wounds", icon = 458736 },
 			{ id = 19, name = "Deadened Nerves", icon = 132286 },
-	},
-	-- Subtlety Rogue
-	[183] = {
+		},
+		[183] = {
 			{ id = 57, name = "Nightstalker", icon = 132320 },
 			{ id = 58, name = "Initiative", icon = 136159 },
 			{ id = 59, name = "Elusiveness", icon = 135994 },
@@ -127,9 +146,8 @@ local talents = {
 			{ id = 73, name = "Sanguinary Vein", icon = 457636 },
 			{ id = 74, name = "Enveloping Shadows", icon = 132291 },
 			{ id = 75, name = "Energetic Recovery", icon = 458734 },
-	},
-	-- Elemental Shaman
-	[261] = {
+		},
+		[261] = {
 			{ id = 1, name = "Call of Flame", icon = 135817 },
 			{ id = 2, name = "Concussion", icon = 135807 },
 			{ id = 3, name = "Convection", icon = 459025 },
@@ -149,9 +167,8 @@ local talents = {
 			{ id = 17, name = "Rolling Thunder", icon = 136014 },
 			{ id = 18, name = "Earth's Grasp", icon = 136100 },
 			{ id = 19, name = "Fulmination", icon = 136111 },
-	},
-	-- Restoration Shaman
-	[262] = {
+		},
+		[262] = {
 			{ id = 57, name = "Ancestral Healing", icon = 136109 },
 			{ id = 58, name = "Resurgence", icon = 132315 },
 			{ id = 59, name = "Soothing Rains", icon = 136037 },
@@ -172,9 +189,8 @@ local talents = {
 			{ id = 74, name = "Spark of Life", icon = 237556 },
 			{ id = 75, name = "Cleansing Waters", icon = 136079 },
 			{ id = 76, name = "Spirit Link Totem", icon = 237586 },
-	},
-	-- Enhancement Shaman
-	[263] = {
+		},
+		[263] = {
 			{ id = 29, name = "Flurry", icon = 132152 },
 			{ id = 30, name = "Ancestral Swiftness", icon = 348567 },
 			{ id = 31, name = "Improved Shields", icon = 136051 },
@@ -194,9 +210,8 @@ local talents = {
 			{ id = 45, name = "Frozen Power", icon = 135776 },
 			{ id = 46, name = "Totemic Reach", icon = 136008 },
 			{ id = 47, name = "Seasoned Winds", icon = 136027 },
-	},
-	-- Blood Death Knight
-	[398] = {
+		},
+		[398] = {
 			{ id = 1, name = "Improved Blood Presence", icon = 135770 },
 			{ id = 2, name = "Bladed Armor", icon = 135067 },
 			{ id = 3, name = "Butchery", icon = 132455 },
@@ -217,9 +232,8 @@ local talents = {
 			{ id = 18, name = "Crimson Scourge", icon = 237513 },
 			{ id = 19, name = "Hand of Doom", icon = 458966 },
 			{ id = 20, name = "Improved Blood Tap", icon = 237515 },
-	},
-	-- Frost Death Knight
-	[399] = {
+		},
+		[399] = {
 			{ id = 29, name = "Endless Winter", icon = 136223 },
 			{ id = 30, name = "Pillar of Frost", icon = 458718 },
 			{ id = 31, name = "Brittle Bones", icon = 460686 },
@@ -240,9 +254,8 @@ local talents = {
 			{ id = 46, name = "Threat of Thassarian", icon = 132148 },
 			{ id = 47, name = "Might of the Frozen Wastes", icon = 135303 },
 			{ id = 48, name = "On a Pale Horse", icon = 132264 },
-	},
-	-- Unholy Death Knight
-	[400] = {
+		},
+		[400] = {
 			{ id = 57, name = "Virulence", icon = 136126 },
 			{ id = 58, name = "Epidemic", icon = 136207 },
 			{ id = 59, name = "Unholy Blight", icon = 136132 },
@@ -263,9 +276,8 @@ local talents = {
 			{ id = 74, name = "Shadow Infusion", icon = 136188 },
 			{ id = 75, name = "Contagion", icon = 136182 },
 			{ id = 76, name = "Death's Advance", icon = 237561 },
-	},
-	-- Arms Warrior
-	[746] = {
+		},
+		[746] = {
 			{ id = 1, name = "Deep Wounds", icon = 132090 },
 			{ id = 2, name = "Drums of War", icon = 236397 },
 			{ id = 3, name = "Second Wind", icon = 132175 },
@@ -286,9 +298,8 @@ local talents = {
 			{ id = 18, name = "Tactical Mastery", icon = 136031 },
 			{ id = 19, name = "Improved Hamstring", icon = 132316 },
 			{ id = 20, name = "Improved Slam", icon = 132340 },
-	},
-	-- Restoration Druid
-	[748] = {
+		},
+		[748] = {
 			{ id = 57, name = "Blessing of the Grove", icon = 237586 },
 			{ id = 58, name = "Natural Shapeshifter", icon = 136116 },
 			{ id = 59, name = "Improved Rejuvenation", icon = 136081 },
@@ -310,9 +321,8 @@ local talents = {
 			{ id = 75, name = "Fury of Stormrage", icon = 237472 },
 			{ id = 76, name = "Heart of the Wild", icon = 135879 },
 			{ id = 77, name = "Malfurion's Gift", icon = 237578 },
-	},
-	-- Feral Combat Druid
-	[750] = {
+		},
+		[750] = {
 			{ id = 29, name = "Thick Hide", icon = 134355 },
 			{ id = 30, name = "Feral Swiftness", icon = 136095 },
 			{ id = 31, name = "Feral Charge", icon = 132183 },
@@ -335,9 +345,8 @@ local talents = {
 			{ id = 48, name = "Predatory Strikes", icon = 132185 },
 			{ id = 49, name = "Feral Aggression", icon = 132121 },
 			{ id = 50, name = "Furor", icon = 135881 },
-	},
-	-- Balance Druid
-	[752] = {
+		},
+		[752] = {
 			{ id = 1, name = "Starlight Wrath", icon = 136006 },
 			{ id = 2, name = "Moonglow", icon = 136087 },
 			{ id = 3, name = "Nature's Grace", icon = 136062 },
@@ -358,9 +367,8 @@ local talents = {
 			{ id = 18, name = "Genesis", icon = 135730 },
 			{ id = 19, name = "Dreamstate", icon = 132123 },
 			{ id = 20, name = "Sunfire", icon = 236216 },
-	},
-	-- Discipline Priest
-	[760] = {
+		},
+		[760] = {
 			{ id = 1, name = "Twin Disciplines", icon = 135969 },
 			{ id = 2, name = "Inner Sanctum", icon = 135926 },
 			{ id = 3, name = "Inner Focus", icon = 135863 },
@@ -382,9 +390,8 @@ local talents = {
 			{ id = 19, name = "Atonement", icon = 458720 },
 			{ id = 20, name = "Strength of Soul", icon = 135871 },
 			{ id = 21, name = "Train of Thought", icon = 236225 },
-	},
-	-- Shadow Priest
-	[795] = {
+		},
+		[795] = {
 			{ id = 57, name = "Darkness", icon = 458226 },
 			{ id = 58, name = "Improved Shadow Word: Pain", icon = 136207 },
 			{ id = 59, name = "Improved Psychic Scream", icon = 136184 },
@@ -406,9 +413,8 @@ local talents = {
 			{ id = 75, name = "Paralysis", icon = 132299 },
 			{ id = 76, name = "Twisted Faith", icon = 237566 },
 			{ id = 77, name = "Masochism", icon = 136176 },
-	},
-	-- Arcane Mage
-	[799] = {
+		},
+		[799] = {
 			{ id = 1, name = "Improved Polymorph", icon = 136071 },
 			{ id = 2, name = "Arcane Concentration", icon = 136170 },
 			{ id = 3, name = "Improved Counterspell", icon = 135856 },
@@ -430,9 +436,8 @@ local talents = {
 			{ id = 19, name = "Invocation", icon = 429383 },
 			{ id = 20, name = "Nether Vortex", icon = 135735 },
 			{ id = 22, name = "Improved Arcane Explosion", icon = 136116 },
-	},
-	-- Marksmanship Hunter
-	[807] = {
+		},
+		[807] = {
 			{ id = 29, name = "Rapid Killing", icon = 132205 },
 			{ id = 30, name = "Efficiency", icon = 236179 },
 			{ id = 31, name = "Go for the Throat", icon = 132174 },
@@ -452,9 +457,8 @@ local talents = {
 			{ id = 45, name = "Marked for Death", icon = 236173 },
 			{ id = 46, name = "Chimera Shot", icon = 236176 },
 			{ id = 47, name = "Piercing Shots", icon = 236198 },
-	},
-	-- Survival Hunter
-	[809] = {
+		},
+		[809] = {
 			{ id = 57, name = "Pathing", icon = 236183 },
 			{ id = 58, name = "Entrapment", icon = 136100 },
 			{ id = 59, name = "Hunter vs. Wild", icon = 236180 },
@@ -475,9 +479,8 @@ local talents = {
 			{ id = 74, name = "Thrill of the Hunt", icon = 132216 },
 			{ id = 75, name = "Trap Mastery", icon = 132149 },
 			{ id = 76, name = "Serpent Spread", icon = 132209 },
-	},
-	-- Beast Mastery Hunter
-	[811] = {
+		},
+		[811] = {
 			{ id = 1, name = "One with Nature", icon = 461117 },
 			{ id = 2, name = "Bestial Discipline", icon = 461112 },
 			{ id = 3, name = "Improved Kill Command", icon = 132210 },
@@ -497,9 +500,8 @@ local talents = {
 			{ id = 17, name = "Kindred Spirits", icon = 236202 },
 			{ id = 18, name = "Beast Mastery", icon = 236175 },
 			{ id = 19, name = "Crouching Tiger, Hidden Chimera", icon = 236190 },
-	},
-	-- Holy Priest
-	[813] = {
+		},
+		[813] = {
 			{ id = 29, name = "Divine Fury", icon = 135971 },
 			{ id = 30, name = "Empowered Healing", icon = 135913 },
 			{ id = 31, name = "Inspiration", icon = 135928 },
@@ -521,9 +523,8 @@ local talents = {
 			{ id = 47, name = "Surge of Light", icon = 135981 },
 			{ id = 48, name = "Tome of Light", icon = 133739 },
 			{ id = 49, name = "Rapid Renewal", icon = 236249 },
-	},
-	-- Fury Warrior
-	[815] = {
+		},
+		[815] = {
 			{ id = 29, name = "Battle Trance", icon = 133074 },
 			{ id = 30, name = "Cruelty", icon = 132292 },
 			{ id = 31, name = "Blood Craze", icon = 136218 },
@@ -545,9 +546,8 @@ local talents = {
 			{ id = 47, name = "Raging Blow", icon = 132215 },
 			{ id = 48, name = "Die by the Sword", icon = 135396 },
 			{ id = 49, name = "Rude Interruption", icon = 132339 },
-	},
-	-- Frost Mage
-	[823] = {
+		},
+		[823] = {
 			{ id = 57, name = "Ice Floes", icon = 135854 },
 			{ id = 58, name = "Permafrost", icon = 135864 },
 			{ id = 59, name = "Icy Veins", icon = 135838 },
@@ -567,9 +567,8 @@ local talents = {
 			{ id = 73, name = "Improved Cone of Cold", icon = 135852 },
 			{ id = 74, name = "Improved Freeze", icon = 135861 },
 			{ id = 75, name = "Reactive Barrier", icon = 135859 },
-	},
-	-- Holy Paladin
-	[831] = {
+		},
+		[831] = {
 			{ id = 1, name = "Last Word", icon = 135921 },
 			{ id = 2, name = "Arbiter of the Light", icon = 135917 },
 			{ id = 3, name = "Denounce", icon = 135903 },
@@ -590,9 +589,8 @@ local talents = {
 			{ id = 18, name = "Blazing Light", icon = 135920 },
 			{ id = 19, name = "Paragon of Virtue", icon = 135875 },
 			{ id = 20, name = "Protector of the Innocent", icon = 460690 },
-	},
-	-- Protection Paladin
-	[839] = {
+		},
+		[839] = {
 			{ id = 29, name = "Seals of the Pure", icon = 133526 },
 			{ id = 30, name = "Toughness", icon = 135892 },
 			{ id = 31, name = "Divine Guardian", icon = 253400 },
@@ -613,9 +611,8 @@ local talents = {
 			{ id = 46, name = "Shield of the Righteous", icon = 236265 },
 			{ id = 47, name = "Eternal Glory", icon = 135433 },
 			{ id = 48, name = "Divinity", icon = 135883 },
-	},
-	-- Protection Warrior
-	[845] = {
+		},
+		[845] = {
 			{ id = 57, name = "Incite", icon = 236309 },
 			{ id = 58, name = "Shield Specialization", icon = 134952 },
 			{ id = 59, name = "Gag Order", icon = 132453 },
@@ -636,9 +633,8 @@ local talents = {
 			{ id = 74, name = "Bastion of Defense", icon = 132110 },
 			{ id = 75, name = "Hold the Line", icon = 236351 },
 			{ id = 76, name = "Impending Victory", icon = 132342 },
-	},
-	-- Fire Mage
-	[851] = {
+		},
+		[851] = {
 			{ id = 29, name = "Improved Fire Blast", icon = 135807 },
 			{ id = 30, name = "Ignite", icon = 135818 },
 			{ id = 31, name = "Burning Soul", icon = 429590 },
@@ -660,9 +656,8 @@ local talents = {
 			{ id = 47, name = "Cauterize", icon = 252268 },
 			{ id = 48, name = "Fire Power", icon = 135817 },
 			{ id = 49, name = "Improved Hot Streak", icon = 236218 },
-	},
-	-- Retribution Paladin
-	[855] = {
+		},
+		[855] = {
 			{ id = 57, name = "Divine Purpose", icon = 135897 },
 			{ id = 58, name = "Seals of Command", icon = 132347 },
 			{ id = 59, name = "Eye for an Eye", icon = 135904 },
@@ -683,76 +678,63 @@ local talents = {
 			{ id = 74, name = "Pursuit of Justice", icon = 135937 },
 			{ id = 75, name = "Improved Judgement", icon = 236255 },
 			{ id = 76, name = "Guardian's Favor", icon = 135964 },
+		},
 	},
-	-- Destruction Warlock
-	[865] = {
-			{ id = 57, name = "Shadow and Flame", icon = 136196 },
-			{ id = 58, name = "Bane", icon = 136146 },
-			{ id = 59, name = "Improved Soul Fire", icon = 135808 },
-			{ id = 60, name = "Shadowburn", icon = 136191 },
-			{ id = 61, name = "Backlash", icon = 135823 },
-			{ id = 62, name = "Improved Immolate", icon = 135817 },
-			{ id = 63, name = "Bane of Havoc", icon = 460695 },
-			{ id = 64, name = "Nether Protection", icon = 136178 },
-			{ id = 65, name = "Soul Leech", icon = 136214 },
-			{ id = 66, name = "Backdraft", icon = 236290 },
-			{ id = 67, name = "Shadowfury", icon = 136201 },
-			{ id = 68, name = "Empowered Imp", icon = 236294 },
-			{ id = 69, name = "Fire and Brimstone", icon = 236297 },
-			{ id = 70, name = "Chaos Bolt", icon = 236291 },
-			{ id = 71, name = "Emberstorm", icon = 135826 },
-			{ id = 72, name = "Burning Embers", icon = 460952 },
-			{ id = 73, name = "Improved Searing Pain", icon = 135827 },
-			{ id = 74, name = "Aftermath", icon = 135805 },
-			{ id = 75, name = "Nether Ward", icon = 135796 },
-	},
-	-- Demonology Warlock
-	[867] = {
-			{ id = 29, name = "Dark Arts", icon = 460697 },
-			{ id = 30, name = "Demonic Embrace", icon = 136172 },
-			{ id = 31, name = "Improved Health Funnel", icon = 136168 },
-			{ id = 32, name = "Master Summoner", icon = 136164 },
-			{ id = 33, name = "Mana Feed", icon = 136171 },
-			{ id = 34, name = "Molten Core", icon = 236301 },
-			{ id = 35, name = "Decimation", icon = 135808 },
-			{ id = 36, name = "Demonic Pact", icon = 237562 },
-			{ id = 37, name = "Metamorphosis", icon = 237558 },
-			{ id = 38, name = "Demonic Empowerment", icon = 236292 },
-			{ id = 39, name = "Ancient Grimoire", icon = 460694 },
-			{ id = 40, name = "Inferno", icon = 460698 },
-			{ id = 41, name = "Demonic Aegis", icon = 136185 },
-			{ id = 42, name = "Impending Doom", icon = 136082 },
-			{ id = 43, name = "Cremation", icon = 460696 },
-			{ id = 44, name = "Hand of Gul'dan", icon = 135265 },
-			{ id = 45, name = "Fel Synergy", icon = 237564 },
-			{ id = 46, name = "Demonic Rebirth", icon = 136150 },
-			{ id = 47, name = "Aura of Foreboding", icon = 136192 },
-	},
-	-- Affliction Warlock
-	[871] = {
-			{ id = 1, name = "Doom and Gloom", icon = 136139 },
-			{ id = 2, name = "Improved Corruption", icon = 136118 },
-			{ id = 3, name = "Improved Life Tap", icon = 136126 },
-			{ id = 4, name = "Soul Siphon", icon = 460700 },
-			{ id = 5, name = "Improved Fear", icon = 136183 },
-			{ id = 6, name = "Nightfall", icon = 136223 },
-			{ id = 7, name = "Shadow Embrace", icon = 136198 },
-			{ id = 8, name = "Curse of Exhaustion", icon = 136162 },
-			{ id = 9, name = "Eradication", icon = 236295 },
-			{ id = 10, name = "Improved Howl of Terror", icon = 136147 },
-			{ id = 11, name = "Death's Embrace", icon = 237557 },
-			{ id = 12, name = "Everlasting Affliction", icon = 236296 },
-			{ id = 13, name = "Haunt", icon = 236298 },
-			{ id = 14, name = "Pandemic", icon = 136166 },
-			{ id = 15, name = "Jinx", icon = 460699 },
-			{ id = 16, name = "Soul Swap", icon = 460857 },
-			{ id = 17, name = "Soulburn: Seed of Corruption", icon = 136193 },
-			{ id = 18, name = "Siphon Life", icon = 136188 },
-	},
-}
 
-LibTalentInfoClassic:RegisterTalentProvider({
-	version = version,
-	specializations = specializations,
-	talents = talents,
+	pvpTalents = {
+		[181] = {
+		},
+		[182] = {
+		},
+		[183] = {
+		},
+		[261] = {
+		},
+		[262] = {
+		},
+		[263] = {
+		},
+		[398] = {
+		},
+		[399] = {
+		},
+		[400] = {
+		},
+		[746] = {
+		},
+		[748] = {
+		},
+		[750] = {
+		},
+		[752] = {
+		},
+		[760] = {
+		},
+		[795] = {
+		},
+		[799] = {
+		},
+		[807] = {
+		},
+		[809] = {
+		},
+		[811] = {
+		},
+		[813] = {
+		},
+		[815] = {
+		},
+		[823] = {
+		},
+		[831] = {
+		},
+		[839] = {
+		},
+		[845] = {
+		},
+		[851] = {
+		},
+		[855] = {
+		},
+	}
 })
