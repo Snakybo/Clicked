@@ -13,6 +13,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for The War Within 11.1.7
+* Add support for Mists of Pandaria Classic 5.5.0
+* Add talent load condition to Classic Era
 * Improve stance selector when multiple specializations are selected
 * Update Korean translations (by [007bb](https://www.curseforge.com/members/007bb))
 
