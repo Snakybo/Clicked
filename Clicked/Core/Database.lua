@@ -185,6 +185,7 @@ end
 --- @return Group
 function Clicked:CreateGroup()
 	--- @type Group
+	--- @diagnostic disable-next-line: missing-fields
 	local group = {
 		type = Clicked.DataObjectType.GROUP,
 		name = Addon.L["New Group"],
@@ -457,6 +458,7 @@ end
 --- @return Binding
 function Addon:GetNewBindingTemplate()
 	--- @type Binding
+	--- @diagnostic disable-next-line: missing-fields
 	local template = {
 		actionType = Clicked.ActionType.SPELL,
 		type = Clicked.DataObjectType.BINDING,

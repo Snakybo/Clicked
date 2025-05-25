@@ -196,7 +196,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 					local item = Item:CreateFromItemID(linkId)
 
 					self.loadCallback = item:ContinueWithCancelOnItemLoad(function()
-						UpdateValue(item:GetItemName())
+						UpdateValue(item:GetItemName() --[[@as string]])
 					end)
 				elseif type == "spell" then
 					local spell = Spell:CreateFromSpellID(linkId)
@@ -341,20 +341,18 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			end
 		end
 
+		--- @type integer
 		local icon
 
 		if actionType == Clicked.ActionType.SPELL or actionType == Clicked.ActionType.CANCELAURA then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-				icon = C_Spell.GetSpellTexture(id)
-			else
-				icon = select(3, GetSpellInfo(id))
-			end
+			icon = C_Spell.GetSpellTexture(id)
 		elseif actionType == Clicked.ActionType.ITEM then
-			icon = C_Item.GetItemIconByID(id)
+			icon = C_Item.GetItemIconByID(id) --[[@as integer]]
 		end
 
 		local widget = AceGUI:Create("ClickedHorizontalIcon") --[[@as ClickedHorizontalIcon]]
 		widget:SetLabel(tostring(id))
+		--- @diagnostic disable-next-line: param-type-mismatch
 		widget:SetImage(icon)
 		widget:SetImageSize(16, 16)
 		widget:SetRelativeWidth(0.15)

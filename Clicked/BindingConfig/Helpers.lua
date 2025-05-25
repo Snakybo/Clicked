@@ -232,7 +232,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			if hasMixedValues then
 				widget:SetKey(self.MIXED_VALUE_TEXT)
 			else
-				widget:SetKey(valueSelector(targets[1]))
+				widget:SetKey(valueSelector(targets[1]) --[[@as string]])
 			end
 		elseif widget.type == "ClickedDropdown" then
 			--- @cast widget ClickedDropdown

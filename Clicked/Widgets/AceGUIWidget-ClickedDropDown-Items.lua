@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local AceGUI = LibStub("AceGUI-3.0")
 local IBLib = LibStub("AceGUI-3.0-DropDown-ItemBase")
 

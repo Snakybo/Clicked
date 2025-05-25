@@ -101,7 +101,12 @@
 		"LinkUtil",
 		"ID",
 		"TRADE_SKILLS",
-		"C_Engraving"
+		"C_Engraving",
+		"FillLocalizedClassList",
+		"GetSpellBookItemName",
+		"GetNumSpellTabs",
+		"GetSpellTabInfo",
+		"WOW_PROJECT_MISTS_CLASSIC"
 	],
 	"Lua.runtime.builtin": {
 		"basic": "disable",
@@ -119,7 +124,8 @@
 		"~\\.vscode\\extensions\\ketho.wow-api-0.20.6\\Annotations\\FrameXML"
 	],
 	"Lua.diagnostics.disable": [
-		"deprecated"
+		"deprecated",
+		"assign-type-mismatch"
 	]
 
 }
