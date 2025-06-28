@@ -120,8 +120,8 @@
 		"utf8": "disable"
 	},
 	"Lua.workspace.library": [
-		"~\\.vscode\\extensions\\ketho.wow-api-0.20.6\\Annotations\\Core",
-		"~\\.vscode\\extensions\\ketho.wow-api-0.20.6\\Annotations\\FrameXML"
+		"~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\Core",
+		"~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\FrameXML"
 	],
 	"Lua.diagnostics.disable": [
 		"deprecated",

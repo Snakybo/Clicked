@@ -19,4 +19,4 @@
 ## Category-zhCN: 材质
 ## Category-zhTW: 材質
 
-MediaCata.lua
+MediaMists.lua
