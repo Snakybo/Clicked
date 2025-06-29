@@ -12,6 +12,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add support for The War Within 11.1.7
+* Improve stance selector when multiple specializations are selected
 * Update Korean translations (by [007bb](https://www.curseforge.com/members/007bb))
 
 ## [1.16.13] - 2025-04-26
@@ -20,7 +22,6 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for The War Within 11.1.5
 * Add support for Classic Era 1.15.7
-* Improve stance selector when multiple specializations are selected
 
 ### Fixed
 
