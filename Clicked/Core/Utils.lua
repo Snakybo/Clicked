@@ -41,38 +41,25 @@ local KEYBIND_ORDER_LIST = {
 --- @type { [integer]: integer[] } | { [string]: integer[][] }
 local shapeshiftForms
 
--- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
+-- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ", ").." }, -- " ..a(b,", "))
 if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
-		-- Arms Warrior
-		-- Fury Warrior
-		-- Protection Warrior
-		-- Initial Warrior
-		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-		[72] = { 386196 }, -- Beserker Stance
-		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-
 		-- Holy Paladin
 		-- Protection Paladin
 		-- Retribution Paladin
 		-- Initial Paladin
-		[65] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[66] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[70] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[1451] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[65] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[66] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[70] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[1451] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
 
-		-- Assassination Rogue
-		-- Outlaw Rogue
-		-- Subtlety Rogue
-		-- Initial Rogue
-		[259] = { 1784 }, -- Stealth
-		[260] = { 1784 }, -- Stealth
-		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
-		[1453] = { 1784 },  -- Stealth
-
-		-- Shadow Priest
-		[258] = { 232698 }, -- Shadowform
+		-- Arms Warrior
+		-- Fury Warrior
+		-- Protection Warrior
+		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
+		[72] = { 386196 }, -- Beserker Stance
+		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
 
 		-- Balance Druid
 		-- Feral Druid
@@ -84,9 +71,93 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		[104] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[105] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
+
+		-- Shadow Priest
+		[258] = { 232698 }, -- Shadowform
+
+		-- Assassination Rogue
+		-- Outlaw Rogue
+		-- Subtlety Rogue
+		-- Initial Rogue
+		[259] = { 1784 }, -- Stealth
+		[260] = { 1784 }, -- Stealth
+		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
+		[1453] = { 1784 },  -- Stealth
 	}
 elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-	-- TODO
+	--- @type { [integer]: integer[] }
+	shapeshiftForms = {
+		-- Holy Paladin
+		-- Protection Paladin
+		-- Retribution Paladin
+		-- Initial Paladin
+		[65] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+		[66] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+		[70] = { 31801, 20154, 20164, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Justice, Seal of Insight
+		[1451] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+
+		-- Arms Warrior
+		-- Fury Warrior
+		-- Protection Warrior
+		-- Initial Warrior
+		[71] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[72] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[73] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[1446] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+
+		-- Balance Druid
+		-- Feral Druid
+		-- Guardian Druid
+		-- Restoration Druid
+		-- Initial Druid
+		[102] = { 5487, 1066, 768, 783, 24858, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Moonkin Form, Swift Flight Form
+		[103] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[104] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[105] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[1447] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+
+		-- Beast Mastery Hunter
+		-- Marksmanship Hunter
+		-- Survival Hunter
+		-- Initial Hunter
+		[253] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[254] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[255] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[1448] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+
+		-- Assassination Rogue
+		-- Outlaw Rogue
+		-- Subtlety Rogue
+		-- Initial Rogue
+		[259] = { 1784 }, -- Stealth
+		[260] = { 1784 }, -- Stealth
+		[261] = { 1784, 51713 }, -- Stealth, Shadow Dance
+		[1453] = { 1784 }, -- Stealth
+
+		-- Shadow Priest
+		[258] = { 15473 }, -- Shadowform
+
+		-- Demonology Warlock
+		[266] = { 103958 }, -- Metamorphosis
+
+		-- Blood Death Knight
+		-- Frost Death Knight
+		-- Unholy Death Knight
+		-- Initial Death Knight
+		[250] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[251] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[252] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[1455] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+
+		-- Brewmaster Monk
+		-- Windwalker Monk
+		-- Mistweaver Monk
+		-- Initial Monk
+		[268] = { 115069, 103985 }, -- Stance of the Sturdy Ox, Stance of the Fierce Tiger
+		[269] = { 103985 }, -- Stance of the Fierce Tiger
+		[270] = { 115070, 103985 }, -- Stance of the Wise Serpent, Stance of the Fierce Tiger
+		[1450] = { 103985 }, -- Stance of the Fierce Tiger
+	}
 else
 	--- @type { [string]: integer[][] }
 	shapeshiftForms = {
