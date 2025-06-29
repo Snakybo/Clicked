@@ -20,6 +20,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for The War Within 11.1.5
 * Add support for Classic Era 1.15.7
+* Improve stance selector when multiple specializations are selected
 
 ### Fixed
 

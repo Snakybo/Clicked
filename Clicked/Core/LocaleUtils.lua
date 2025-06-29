@@ -553,31 +553,22 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	--- Get a localized list of all available shapeshift forms for the given specialization IDs.
 	--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
 	---
-	--- @param specializations? integer[]
+	--- @param specializations integer[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:GetLocalizedForms(specializations)
 		--- @type table<integer,string>
-		local items = {}
+		local items = {
+			Addon.L["None"]
+		}
 
 		--- @type integer[]
-		local order = {}
-
-		if specializations == nil then
-			specializations = {}
-			specializations[1] = GetSpecializationInfo(GetSpecialization())
-		end
+		local order = {
+			1
+		}
 
 		if #specializations == 1 then
 			local specId = specializations[1]
-			local defaultForm = Addon.L["None"]
-
-			do
-				local key = #order + 1
-
-				items[key] = defaultForm
-				table.insert(order, key)
-			end
 
 			for _, spellId in Addon:IterateShapeshiftForms(specId) do
 				local spell = Addon:GetSpellInfo(spellId, true)
@@ -590,31 +581,39 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 				table.insert(order, key)
 			end
 		else
-			local max = 0
+			--- @type { [integer]: { name: string, icon: integer, seen: integer }}
+			local found = {}
 
-			-- Find specialization with the highest number of forms
-			if #specializations == 0 then
-				for _, forms in Addon:IterateShapeshiftSpecs() do
-					if #forms > max then
-						max = #forms
-					end
-				end
-			-- Find specialization with the highest number of forms out of the selected specializations
-			else
-				for _, spec in ipairs(specializations) do
-					local forms = Addon:GetShapeshiftForms(spec)
+			for _, spec in ipairs(specializations) do
+				for index, spellId in ipairs(Addon:GetShapeshiftForms(spec)) do
+					local spell = Addon:GetSpellInfo(spellId, true)
+					local name = spell ~= nil and spell.name or nil
+					local icon = spell ~= nil and spell.iconID or nil
 
-					if #forms > max then
-						max = #forms
+					local current = found[index]
+
+					if current == nil then
+						found[index] = {
+							name = name,
+							icon = icon,
+							seen = 1
+						}
+					elseif current.name == name and current.icon == icon then
+						current.seen = current.seen + 1
 					end
 				end
 			end
 
-			-- start at 0 because [form:0] is no form
-			for i = 0, max do
+			for i = 1, #found do
 				local key = #order + 1
+				local current = found[i]
 
-				items[key] = string.format(Addon.L["Stance %s"], i)
+				if current.seen == #specializations then
+					items[key] = Addon:GetTextureString(current.name, current.icon)
+				else
+					items[key] = string.format(Addon.L["Stance %s"], i)
+				end
+
 				table.insert(order, key)
 			end
 		end
