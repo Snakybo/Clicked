@@ -1087,6 +1087,7 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
 	--- @type ClickedTreeGroup
+	--- @diagnostic disable-next-line: missing-fields
 	local widget = {
 		frame = frame,
 		lines = {},

@@ -14,26 +14,12 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local GetSpellSubtext = C_Spell.GetSpellSubtext or GetSpellSubtext -- Deprecated in 11.0.0
-
---- @type fun(spellIdentifier: string|number):SpellInfo?
-local GetSpellInfo = C_Spell.GetSpellInfo or function(input) -- Deprecated in 11.0.0
-	local name, _, icon, castTime, minRange, maxRange, spellId = GetSpellInfo(input)
-	if name == nil then
-		return nil
-	end
-
-	return {
-		name = name,
-		iconID = icon,
-		castTime = castTime,
-		minRange = minRange,
-		maxRange = maxRange,
-		spellID = spellId
-	}
-end
-
 local AceGUI = LibStub("AceGUI-3.0")
+
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+-- Deprecated in 5.5.0
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -55,38 +41,25 @@ local KEYBIND_ORDER_LIST = {
 --- @type { [integer]: integer[] } | { [string]: integer[][] }
 local shapeshiftForms
 
--- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ",").." }, --" ..a(b,", "))
+-- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ", ").." }, -- " ..a(b,", "))
 if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
-		-- Arms Warrior
-		-- Fury Warrior
-		-- Protection Warrior
-		-- Initial Warrior
-		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-		[72] = { 386196 }, -- Beserker Stance
-		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-
 		-- Holy Paladin
 		-- Protection Paladin
 		-- Retribution Paladin
 		-- Initial Paladin
-		[65] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[66] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[70] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[1451] = { 32223, 465, 183435, 317920 }, --Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[65] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[66] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[70] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
+		[1451] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
 
-		-- Assassination Rogue
-		-- Outlaw Rogue
-		-- Subtlety Rogue
-		-- Initial Rogue
-		[259] = { 1784 }, -- Stealth
-		[260] = { 1784 }, -- Stealth
-		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
-		[1453] = { 1784 },  -- Stealth
-
-		-- Shadow Priest
-		[258] = { 232698 }, -- Shadowform
+		-- Arms Warrior
+		-- Fury Warrior
+		-- Protection Warrior
+		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
+		[72] = { 386196 }, -- Beserker Stance
+		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
 
 		-- Balance Druid
 		-- Feral Druid
@@ -98,6 +71,92 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		[104] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[105] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
 		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
+
+		-- Shadow Priest
+		[258] = { 232698 }, -- Shadowform
+
+		-- Assassination Rogue
+		-- Outlaw Rogue
+		-- Subtlety Rogue
+		-- Initial Rogue
+		[259] = { 1784 }, -- Stealth
+		[260] = { 1784 }, -- Stealth
+		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
+		[1453] = { 1784 },  -- Stealth
+	}
+elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+	--- @type { [integer]: integer[] }
+	shapeshiftForms = {
+		-- Holy Paladin
+		-- Protection Paladin
+		-- Retribution Paladin
+		-- Initial Paladin
+		[65] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+		[66] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+		[70] = { 31801, 20154, 20164, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Justice, Seal of Insight
+		[1451] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
+
+		-- Arms Warrior
+		-- Fury Warrior
+		-- Protection Warrior
+		-- Initial Warrior
+		[71] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[72] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[73] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+		[1446] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
+
+		-- Balance Druid
+		-- Feral Druid
+		-- Guardian Druid
+		-- Restoration Druid
+		-- Initial Druid
+		[102] = { 5487, 1066, 768, 783, 24858, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Moonkin Form, Swift Flight Form
+		[103] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[104] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[105] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+		[1447] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
+
+		-- Beast Mastery Hunter
+		-- Marksmanship Hunter
+		-- Survival Hunter
+		-- Initial Hunter
+		[253] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[254] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[255] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+		[1448] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
+
+		-- Assassination Rogue
+		-- Outlaw Rogue
+		-- Subtlety Rogue
+		-- Initial Rogue
+		[259] = { 1784 }, -- Stealth
+		[260] = { 1784 }, -- Stealth
+		[261] = { 1784, 51713 }, -- Stealth, Shadow Dance
+		[1453] = { 1784 }, -- Stealth
+
+		-- Shadow Priest
+		[258] = { 15473 }, -- Shadowform
+
+		-- Demonology Warlock
+		[266] = { 103958 }, -- Metamorphosis
+
+		-- Blood Death Knight
+		-- Frost Death Knight
+		-- Unholy Death Knight
+		-- Initial Death Knight
+		[250] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[251] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[252] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+		[1455] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
+
+		-- Brewmaster Monk
+		-- Windwalker Monk
+		-- Mistweaver Monk
+		-- Initial Monk
+		[268] = { 115069, 103985 }, -- Stance of the Sturdy Ox, Stance of the Fierce Tiger
+		[269] = { 103985 }, -- Stance of the Fierce Tiger
+		[270] = { 115070, 103985 }, -- Stance of the Wise Serpent, Stance of the Fierce Tiger
+		[1450] = { 103985 }, -- Stance of the Fierce Tiger
 	}
 else
 	--- @type { [string]: integer[][] }
@@ -393,7 +452,7 @@ function Addon:GetBindingValue(binding)
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 				name = C_Spell.GetSpellName(spell)
 			else
-				local data = GetSpellInfo(spell)
+				local data = C_Spell.GetSpellInfo(spell)
 				name = data ~= nil and data.name or nil
 			end
 		else
@@ -402,7 +461,7 @@ function Addon:GetBindingValue(binding)
 		end
 
 		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank and C_Spell.IsSpellDataCached(spell) then
-			local rank = GetSpellSubtext(spell)
+			local rank = C_Spell.GetSpellSubtext(spell)
 
 			if not self:IsNilOrEmpty(rank) then
 				name = string.format("%s(%s)", name, rank)
@@ -443,7 +502,7 @@ function Addon:GetBindingValue(binding)
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 				name = C_Spell.GetSpellName(aura)
 			else
-				local data = GetSpellInfo(aura)
+				local data = C_Spell.GetSpellInfo(aura)
 				name = data ~= nil and data.name or nil
 			end
 		else
@@ -640,10 +699,10 @@ end
 function Addon:GetSpellInfo(input, addSubText)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
-	local spell = GetSpellInfo(input)
+	local spell = C_Spell.GetSpellInfo(input)
 
 	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and addSubText and C_Spell.IsSpellDataCached(spell.spellID) then
-		local subtext = GetSpellSubtext(spell.spellID)
+		local subtext = C_Spell.GetSpellSubtext(spell.spellID)
 
 		if not self:IsNilOrEmpty(subtext) then
 			spell.name = string.format("%s(%s)", spell.name, subtext)
@@ -824,7 +883,7 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
-if Addon:IsGameVersionAtleast("RETAIL") then
+if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 	--- Get all available shapeshift forms for the specified spec ID.
 	--- Note that this does not mean _currently available_ shapeshift forms,
 	--- just all possible shapeshift forms.
@@ -854,7 +913,7 @@ if Addon:IsGameVersionAtleast("RETAIL") then
 	function Addon:IterateShapeshiftForms(specId)
 		return ipairs(shapeshiftForms[specId] or {})
 	end
-elseif Addon:IsGameVersionAtleast("CLASSIC") then
+else
 	--- Get all available shapeshift forms for the specified class name.
 	--- Note that this does not mean _currently available_ shapeshift forms,
 	--- just all possible shapeshift forms.
@@ -868,20 +927,20 @@ elseif Addon:IsGameVersionAtleast("CLASSIC") then
 	---
 	--- @param class string
 	--- @return integer[][]
-	function Addon:Classic_GetShapeshiftForms(class)
+	function Addon:GetShapeshiftForms(class)
 		local forms = shapeshiftForms[class] or {}
 		return { unpack(forms) }
 	end
 
 	--- Iterate through all available shapeshift classes.
-	function Addon:Classic_IterateShapeshiftClasses()
+	function Addon:IterateShapeshiftClasses()
 		return pairs(shapeshiftForms)
 	end
 
 	--- Iterate through all available shapeshift forms for the specified class.
 	---
 	--- @param class string
-	function Addon:Classic_IterateShapeshiftForms(class)
+	function Addon:IterateShapeshiftForms(class)
 		return ipairs(shapeshiftForms[class])
 	end
 end

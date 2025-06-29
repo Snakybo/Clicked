@@ -191,7 +191,6 @@
 --- @field public binding table<integer,BindingReloadCause>
 
 --- @class TalentInfo
---- @field public entryId integer
 --- @field public spellId integer
 --- @field public text string
 --- @field public icon integer

@@ -17,6 +17,9 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+
 local Utils = Addon.Condition.Utils
 
 --- @type LoadCondition[]
@@ -108,11 +111,7 @@ local config = {
 					class[1] = select(2, UnitClass("player"))
 				end
 
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.DF then
-					return Addon:GetLocalizedSpecializations(class)
-				else
-					return Addon:Cata_GetLocalizedSpecializations(class)
-				end
+				return Addon:GetLocalizedSpecializations(class)
 			end
 		},
 		dependencies = { "class" },
@@ -175,17 +174,16 @@ local config = {
 			--- @param class string[]
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
-				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedTalents(specIds)
 				else
-					return Addon:Cata_GetLocalizedTalents(specIds)
+					local classes = Utils.GetRelevantClasses(class)
+					return Addon:GetLocalizedTalents(classes)
 				end
 			end
 		},
 		dependencies = { "class", "specialization" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
@@ -414,13 +412,8 @@ local config = {
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		test = function(value)
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-				local spell = C_Spell.GetSpellInfo(value)
-				return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
-			else
-				local spellId = select(7, GetSpellInfo(value))
-				return spellId ~= nil and IsSpellKnownOrOverridesKnown(spellId) or false
-			end
+			local spell = C_Spell.GetSpellInfo(value)
+			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
 		end
 	},
 	{

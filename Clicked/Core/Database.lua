@@ -16,6 +16,9 @@
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -185,6 +188,7 @@ end
 --- @return Group
 function Clicked:CreateGroup()
 	--- @type Group
+	--- @diagnostic disable-next-line: missing-fields
 	local group = {
 		type = Clicked.DataObjectType.GROUP,
 		name = Addon.L["New Group"],
@@ -457,6 +461,7 @@ end
 --- @return Binding
 function Addon:GetNewBindingTemplate()
 	--- @type Binding
+	--- @diagnostic disable-next-line: missing-fields
 	local template = {
 		actionType = Clicked.ActionType.SPELL,
 		type = Clicked.DataObjectType.BINDING,

@@ -35,7 +35,9 @@
 --- @field public value any
 
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
-local LibTalentInfoClassic = LibStub("LibTalentInfoClassic-1.0")
+
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -136,10 +138,23 @@ function Addon.Condition.Utils.UnpackTalentLoadOption(option)
 end
 
 --- @param classNames string[]
+--- @return string[]
+function Addon.Condition.Utils.GetRelevantClasses(classNames)
+	local result = CopyTable(classNames)
+
+	if #classNames == 0 then
+		local classFileName = select(2, UnitClass("player"))
+		table.insert(result, classFileName)
+	end
+
+	return result
+end
+
+--- @param classNames string[]
 --- @param specIndices integer[]
 --- @return integer[]
 function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndices)
-	local specializationIds = {}
+	local result = {}
 
 	if #classNames == 0 then
 		classNames[1] = select(2, UnitClass("player"))
@@ -147,53 +162,31 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 
 	if #specIndices == 0 then
 		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 				specIndices[1] = GetSpecialization()
 			else
 				specIndices[1] = GetPrimaryTalentTree()
 			end
 		else
 			for _, class in ipairs(classNames) do
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
-					local specs = LibTalentInfo:GetClassSpecIDs(class)
+				local specs = LibTalentInfo:GetSpecializations(class)
 
-					for specIndex in pairs(specs) do
-						table.insert(specIndices, specIndex)
-					end
-				else
-					local specs = LibTalentInfoClassic:GetClassSpecializations(class)
-
-					for specIndex in pairs(specs) do
-						table.insert(specIndices, specIndex)
-					end
+				for specIndex in ipairs(specs) do
+					table.insert(specIndices, specIndex)
 				end
 			end
 		end
 	end
 
 	for i = 1, #classNames do
-		local class = classNames[i]
+		local specs = LibTalentInfo:GetSpecializations(classNames[i])
 
-		if Addon.EXPANSION_LEVEL > Addon.Expansion.CATA then
-			local specs = LibTalentInfo:GetClassSpecIDs(class)
+		for j = 1, #specIndices do
+			local specIndex = specIndices[j]
 
-			for j = 1, #specIndices do
-				local specIndex = specIndices[j]
-				local specId = specs[specIndex]
-
-				table.insert(specializationIds, specId)
-			end
-		elseif Addon.EXPANSION_LEVEL == Addon.Expansion.CATA then
-			local specs = LibTalentInfoClassic:GetClassSpecializations(class)
-
-			for j = 1, #specIndices do
-				local specIndex = specIndices[j]
-				local spec = specs[specIndex]
-
-				table.insert(specializationIds, spec.id)
-			end
+			table.insert(result, specs[specIndex].id)
 		end
 	end
 
-	return specializationIds
+	return result
 end

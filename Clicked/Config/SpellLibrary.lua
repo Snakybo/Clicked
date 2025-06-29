@@ -14,6 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+-- Deprecated in 5.5.0
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+-- Deprecated in 5.5.0
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -54,7 +59,7 @@ local cached = nil
 local cachedTime = nil
 
 --- @return table<integer, SpellLibrarySpellResult>
-local function GetSpells_v2()
+local function GetSpells_TWW()
 	--- @type table<integer, SpellLibrarySpellResult>
 	local result = {}
 
@@ -183,7 +188,7 @@ local function GetSpells_v2()
 end
 
 --- @return table<integer, SpellLibrarySpellResult>
-local function GetSpells_v1()
+local function GetSpells_Classic()
 	local result = {}
 
 	--- @param type string
@@ -272,10 +277,10 @@ local function GetSpells_v1()
 		if count ~= nil then
 			for i = 1, count do
 				local name = GetSpellBookItemName(i, BOOKTYPE_PET)
-				local id = select(7, GetSpellInfo(name))
+				local info = C_Spell.GetSpellInfo(name)
 
-				if id ~= nil then
-					ParseSpellBookItem("PETACTION", id)
+				if info ~= nil then
+					ParseSpellBookItem("PETACTION", info.spellID)
 				end
 			end
 		end
@@ -304,9 +309,9 @@ local function GetSpells()
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-		cached = GetSpells_v2()
+		cached = GetSpells_TWW()
 	else
-		cached = GetSpells_v1()
+		cached = GetSpells_Classic()
 	end
 
 	cachedTime = GetTime()

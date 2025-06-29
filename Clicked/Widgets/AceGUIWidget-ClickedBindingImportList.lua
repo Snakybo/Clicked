@@ -429,6 +429,7 @@ function Methods:SetItems(data)
 
 		--- @type ClickedBindingImportList.BindingItem
 		local item = {
+			uid = binding.uid,
 			binding = binding,
 			title = title,
 			icon = icon,
@@ -443,6 +444,7 @@ function Methods:SetItems(data)
 
 		--- @type ClickedBindingImportList.GroupItem
 		local item = {
+			uid = group.uid,
 			group = group,
 			title = group.name,
 			icon = group.displayIcon,
