@@ -22,7 +22,9 @@ if LibTalentInfo == nil or interfaceVersion < 110000 or interfaceVersion >= 1200
 	return
 end
 
+--- @type LibTalentInfo-1.0.Provider
 LibTalentInfo:SetProvider({
+	--- @type string[]
 	classes = {
 		"DEATHKNIGHT",
 		"DEMONHUNTER",
@@ -39,6 +41,7 @@ LibTalentInfo:SetProvider({
 		"WARRIOR",
 	},
 
+	--- @type { [string]: { [integer]: TalentData.Specialization } }
 	specializations = {
 		["DEATHKNIGHT"] = {
 			[1] = { id = 250, name = "Blood", icon = 135770 },
@@ -120,6 +123,7 @@ LibTalentInfo:SetProvider({
 		},
 	},
 
+	--- @type { [unknown]: TalentData.Talent[] }
 	talents = {
 		[62] = {
 		},
@@ -227,6 +231,7 @@ LibTalentInfo:SetProvider({
 		},
 	},
 
+	--- @type { [unknown]: TalentData.Talent[] }
 	pvpTalents = {
 		[62] = {
 			{ id = 635, name = "Master of Escape", icon = 132220 },
@@ -239,6 +244,7 @@ LibTalentInfo:SetProvider({
 			{ id = 5601, name = "Ethereal Blink", icon = 136054 },
 			{ id = 5661, name = "Chrono Shift", icon = 629533 },
 			{ id = 5707, name = "Overpowered Barrier", icon = 1723997 },
+			{ id = 5714, name = "Nether Flux", icon = 1717107 },
 		},
 		[63] = {
 			{ id = 644, name = "World in Flames", icon = 236228 },
@@ -271,7 +277,6 @@ LibTalentInfo:SetProvider({
 			{ id = 87, name = "Spreading the Word", icon = 354719 },
 			{ id = 640, name = "Divine Vision", icon = 135934 },
 			{ id = 642, name = "Cleanse the Weak", icon = 135949 },
-			{ id = 3618, name = "Hallowed Ground", icon = 135926 },
 			{ id = 5583, name = "Searing Glare", icon = 5260436 },
 			{ id = 5618, name = "Denounce", icon = 135950 },
 			{ id = 5663, name = "Divine Plea", icon = 1316218 },
@@ -346,6 +351,7 @@ LibTalentInfo:SetProvider({
 			{ id = 5627, name = "Storm of Destruction", icon = 236303 },
 			{ id = 5629, name = "Battlefield Commander", icon = 132339 },
 			{ id = 5703, name = "Berserker Roar", icon = 136009 },
+			{ id = 5715, name = "Power Through Adversity", icon = 132175 },
 		},
 		[102] = {
 			{ id = 180, name = "Celestial Guardian", icon = 1408835 },
@@ -413,6 +419,7 @@ LibTalentInfo:SetProvider({
 			{ id = 3511, name = "Dark Simulacrum", icon = 135888 },
 			{ id = 5587, name = "Bloodforged Armor", icon = 237512 },
 			{ id = 5592, name = "Spellwarden", icon = 136120 },
+			{ id = 5712, name = "Price of Progress", icon = 538039 },
 		},
 		[251] = {
 			{ id = 701, name = "Deathchill", icon = 135842 },
@@ -509,7 +516,7 @@ LibTalentInfo:SetProvider({
 			{ id = 113, name = "Mind Trauma", icon = 462324 },
 			{ id = 763, name = "Psyfiend", icon = 537021 },
 			{ id = 5381, name = "Thoughtsteal", icon = 3718862 },
-			{ id = 5447, name = "Void Volley", icon = 132776 },
+			{ id = 5447, name = "Cascading Horrors", icon = 132776 },
 			{ id = 5481, name = "Absolute Faith", icon = 463836 },
 			{ id = 5486, name = "Catharsis", icon = 1386547 },
 			{ id = 5568, name = "Phase Shift", icon = 775463 },
@@ -605,7 +612,6 @@ LibTalentInfo:SetProvider({
 		},
 		[266] = {
 			{ id = 162, name = "Call Fel Lord", icon = 1113433 },
-			{ id = 1213, name = "Master Summoner", icon = 1115910 },
 			{ id = 3506, name = "Gateway Mastery", icon = 607512 },
 			{ id = 3624, name = "Nether Ward", icon = 135796 },
 			{ id = 5394, name = "Shadow Rift", icon = 4067372 },
@@ -695,6 +701,7 @@ LibTalentInfo:SetProvider({
 			{ id = 5520, name = "Cover of Darkness", icon = 1305154 },
 			{ id = 5521, name = "Rain from Above", icon = 1380371 },
 			{ id = 5522, name = "Glimpse", icon = 1348401 },
+			{ id = 5716, name = "Lay In Wait", icon = 1380366 },
 		},
 		[1444] = {
 		},

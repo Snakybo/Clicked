@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for The War Within 11.2.0
+
 ### Fixed
 
 * Fix Lua error when showing a popup [#281]
