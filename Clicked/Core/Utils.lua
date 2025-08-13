@@ -295,8 +295,14 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked"]),
 	button2 = "",
 	OnShow = function(self)
-		self.text:SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
-		self.button2:SetFormattedText(Addon.L["Keep %s"],self.data.addon)
+		-- deprecated in 11.2.0
+		if self.text ~= nil then
+			self.text:SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
+			self.button2:SetFormattedText(Addon.L["Keep %s"],self.data.addon)
+		else
+			self:GetTextFontString():SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
+			self:GetButton2():SetFormattedText(Addon.L["Keep %s"],self.data.addon)
+		end
 	end,
 	OnAccept = function(self)
 		C_AddOns.DisableAddOn(self.data.addon)
@@ -315,7 +321,11 @@ StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	text = "",
 	button1 = Addon.L["Continue"],
 	OnShow = function(self)
-		self.text:SetText(self.data.text)
+		if self.text ~= nil then
+			self.text:SetText(self.data.text)
+		else
+			self:GetTextFontString():SetText(self.data.text)
+		end
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -327,7 +337,11 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	button1 = Addon.L["Yes"],
 	button2 = Addon.L["No"],
 	OnShow = function(self)
-		self.text:SetText(self.data.text)
+		if self.text ~= nil then
+			self.text:SetText(self.data.text)
+		else
+			self:GetTextFontString():SetText(self.data.text)
+		end
 	end,
 	OnAccept = function(self)
 		Addon:SafeCall(self.data.onAccept)
