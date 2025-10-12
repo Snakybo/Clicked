@@ -11907,6 +11907,7 @@ local icons = {
 	[4687496] = "inv_rabbitmountclassic",
 	[4777763] = "inv_magicalfishpet",
 	[5140791] = "inv_lunardragonmount_classic",
+	[5260432] = "inv_encrypted13_blue",
 	[5279604] = "inv_arfuspet_classic",
 	[5373378] = "inv_wooddragonpet2",
 	[5505176] = "inv_belt_armor_twilightcultist_b_01",
@@ -11951,6 +11952,9 @@ local icons = {
 	[6705370] = "inv_ravenmount_white",
 	[6795069] = "inv_celestialserpentmount_jade",
 	[6799143] = "inv_shadrakemount",
+	[7307329] = "inv_warpstalkermount_blue",
+	[7307358] = "inv_warpstalkermountbc_blue",
+	[7310370] = "inv_dimensionalshippet",
 }
 
 --- @type integer[]
@@ -23843,6 +23847,7 @@ local order = {
 	4687496,
 	4777763,
 	5140791,
+	5260432,
 	5279604,
 	5373378,
 	5505176,
@@ -23887,6 +23892,9 @@ local order = {
 	6705370,
 	6795069,
 	6799143,
+	7307329,
+	7307358,
+	7310370,
 }
 
 --- @return table<integer,string>
