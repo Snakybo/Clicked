@@ -12,6 +12,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
+* Add support for The War Within 11.2.5
 * Add support for Mists of Pandaria Classic 5.5.1
 
 ## [1.16.15] - 2025-08-14

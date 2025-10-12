@@ -94,7 +94,6 @@
 		"BOOKTYPE_PET",
 		"GetPrimaryTalentTree",
 		"GetTalentTabInfo",
-		"Mixin",
 		"Round",
 		"HasPetSpells",
 		"MenuUtil",
@@ -102,10 +101,6 @@
 		"ID",
 		"TRADE_SKILLS",
 		"C_Engraving",
-		"FillLocalizedClassList",
-		"GetSpellBookItemName",
-		"GetNumSpellTabs",
-		"GetSpellTabInfo",
 		"WOW_PROJECT_MISTS_CLASSIC"
 	],
 	"Lua.runtime.builtin": {
@@ -120,8 +115,8 @@
 		"utf8": "disable"
 	},
 	"Lua.workspace.library": [
-		"~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\Core",
-		"~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\FrameXML"
+		"~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\Core",
+		"~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\FrameXML"
 	],
 	"Lua.diagnostics.disable": [
 		"deprecated",

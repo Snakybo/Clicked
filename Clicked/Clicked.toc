@@ -1,4 +1,4 @@
-## Interface: 11507, 50501, 110200
+## Interface: 11507, 50501, 110205
 ## Title: Clicked
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
