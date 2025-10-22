@@ -1098,7 +1098,8 @@ function Addon:UpdateBindingLoadState(binding, causes)
 			local selected = condition.unpack(load)
 
 			if selected ~= nil then
-				local _, result = Addon:SafeCall(condition.test, selected)
+				local currentState = condition.state ~= nil and { select(2, Addon:SafeCall(condition.state)) } or {}
+				local _, result = Addon:SafeCall(condition.test, selected, unpack(currentState))
 				state[condition.id] = result
 			else
 				state[condition.id] = true

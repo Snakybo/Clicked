@@ -82,6 +82,30 @@ local function GetBasicinfoString()
 	return table.concat(lines, "\n")
 end
 
+local function GetLoadConditionState()
+	local conditions = Addon.Condition.Registry:GetConditionSet("load")
+
+	local lines = {
+		"----- Load conditions -----"
+	}
+
+	for _, condition in ipairs(conditions.config) do
+		--- @cast condition LoadCondition
+
+		if condition.state ~= nil then
+			local state = { select(2, Addon:SafeCall(condition.state)) }
+
+			for i = 1, #state do
+				state[i] = tostring(state[i])
+			end
+
+			table.insert(lines, condition.id .. ": " .. table.concat(state, ", "))
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
 --- @return string
 local function GetLoadedBindings()
 	local lines = {}
@@ -237,6 +261,7 @@ local function UpdateStatusOutputText()
 
 	local text = {}
 	table.insert(text, GetBasicinfoString())
+	table.insert(text, GetLoadConditionState())
 	table.insert(text, GetLoadedBindings())
 	table.insert(text, GetUnloadedBindings())
 	table.insert(text, GetRegisteredClickCastFrames())

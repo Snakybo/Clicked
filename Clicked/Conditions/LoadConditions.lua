@@ -53,10 +53,14 @@ local config = {
 			return Utils.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
+		--- @return string, string
+		state = function()
+			return UnitName("player"), GetRealmName()
+		end,
 		--- @param value string
-		test = function(value)
-			local name = UnitName("player")
-			local realm = GetRealmName()
+		--- @param name string
+		--- @param realm string
+		test = function(value, name, realm)
 			return value == name or value == name .. "-" .. realm
 		end
 	},
@@ -74,10 +78,15 @@ local config = {
 			return Utils.CreateMultiselectLoadOption(englishName)
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
-		--- @param value string[]
-		test = function(value)
+		--- @return string
+		state = function()
 			local _, raceName = UnitRace("player")
-			return tContains(value, raceName)
+			return raceName
+		end,
+		--- @param value string[]
+		--- @param race string
+		test = function(value, race)
+			return tContains(value, race)
 		end
 	},
 	{
@@ -94,10 +103,16 @@ local config = {
 			return Utils.CreateMultiselectLoadOption(classFileName)
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
-		--- @param value string[]
-		test = function(value)
+		--- @return string
+		state = function()
 			local _, classFileName = UnitClass("player")
-			return tContains(value, classFileName)
+			return classFileName
+		end,
+		--- @param value string[]
+		--- @param class string
+		test = function(value, class)
+
+			return tContains(value, class)
 		end
 	},
 	{
@@ -126,14 +141,19 @@ local config = {
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "PLAYER_TALENT_UPDATE" },
-		--- @param value number[]
-		test = function(value)
+		--- @return integer
+		state = function()
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 				local specIndex = GetSpecialization()
-				return tContains(value, specIndex == 5 and 1 or specIndex)
-			else
-				return tContains(value, GetPrimaryTalentTree())
+				return specIndex == 5 and 1 or specIndex
 			end
+
+			return GetPrimaryTalentTree()
+		end,
+		--- @param value number[]
+		--- @param spec integer
+		test = function(value, spec)
+			return tContains(value, spec)
 		end
 	},
 	{
@@ -160,9 +180,13 @@ local config = {
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "PLAYER_TALENT_UPDATE" },
+		--- @return integer
+		state = function()
+			return GetSpecializationRole(GetSpecialization())
+		end,
 		--- @param value string[]
-		test = function(value)
-			local role = GetSpecializationRole(GetSpecialization())
+		--- @param role string
+		test = function(value, role)
 			return tContains(value, role)
 		end
 	},
@@ -189,6 +213,7 @@ local config = {
 		end,
 		unpack = Utils.UnpackTalentLoadOption,
 		testOnEvents = { "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" },
+		--- @return integer
 		--- @param value TalentLoadOptionEntry[][]
 		test = function(value)
 			if not Addon:IsTalentCacheReady() then
@@ -296,9 +321,14 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "PLAYER_FLAGS_CHANGED" },
+		--- @return boolean
+		state = function()
+			return C_PvP.IsWarModeDesired()
+		end,
 		--- @param value boolean
-		test = function(value)
-			return value == C_PvP.IsWarModeDesired()
+		--- @param warMode boolean
+		test = function(value, warMode)
+			return value == warMode
 		end
 	},
 	{
@@ -340,10 +370,14 @@ local config = {
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
-		--- @param value string[]
-		test = function(value)
+		--- @return string
+		state = function()
 			local _, instanceType = IsInInstance()
-
+			return instanceType
+		end,
+		--- @param value string[]
+		--- @param instanceType string
+		test = function(value, instanceType)
 			for _, current in ipairs(value) do
 				-- Convert to lowercase as that is what `IsInInstance` returns
 				current = string.lower(current)
@@ -374,11 +408,17 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
+		--- @return string, string
+		state = function()
+			return GetRealZoneText(), GetSubZoneText() or ""
+		end,
 		--- @param value string
-		test = function(value)
+		--- @param realZoneText string
+		--- @param subZoneText string
+		test = function(value, realZoneText, subZoneText)
 			local zones = {
-				GetRealZoneText(),
-				GetSubZoneText() or ""
+				realZoneText,
+				subZoneText
 			}
 
 			for zone in string.gmatch(value, "([^;]+)") do
@@ -409,8 +449,9 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC and
-			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" } or
+			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "LEARNED_SPELL_IN_SKILL_LINE" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
+		--- @return integer
 		test = function(value)
 			local spell = C_Spell.GetSpellInfo(value)
 			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
@@ -440,15 +481,22 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "GROUP_ROSTER_UPDATE" },
+		--- @return integer, integer, boolean
+		state = function()
+			return GetNumGroupMembers(), GetNumSubgroupMembers(), IsInRaid()
+		end,
 		--- @param value GroupState
-		test = function(value)
-			if value == Addon.GroupState.SOLO and GetNumGroupMembers() > 0 then
+		--- @param numGroupMembers integer
+		--- @param numSubGroupMembers integer
+		--- @param isInRaid boolean
+		test = function(value, numGroupMembers, numSubGroupMembers, isInRaid)
+			if value == Addon.GroupState.SOLO and numGroupMembers > 0 then
 				return false
-			elseif value == Addon.GroupState.PARTY_OR_RAID and GetNumGroupMembers() == 0 then
+			elseif value == Addon.GroupState.PARTY_OR_RAID and numGroupMembers == 0 then
 				return false
-			elseif value == Addon.GroupState.PARTY and (GetNumSubgroupMembers() == 0 or IsInRaid()) then
+			elseif value == Addon.GroupState.PARTY and (numSubGroupMembers == 0 or isInRaid) then
 				return false
-			elseif value == Addon.GroupState.RAID and not IsInRaid() then
+			elseif value == Addon.GroupState.RAID and not isInRaid then
 				return false
 			end
 
