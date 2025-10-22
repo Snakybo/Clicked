@@ -1044,7 +1044,7 @@ function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoin
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
 		tooltip:SetPoint(anchorPoint, frame, anchorRelativePoint)
-		tooltip:SetText(text, true)
+		tooltip:SetText(text, nil, nil, nil, nil, true)
 		tooltip:Show()
 	end)
 end

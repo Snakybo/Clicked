@@ -151,7 +151,7 @@ local function GetSpells_TWW()
 	end
 
 	for _, talent in ipairs(Addon:GetLocalizedTalents()) do
-		if not C_Spell.IsSpellPassive(talent.spellId) then
+		if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
 			if result[talent.spellId] == nil then
 				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {
@@ -168,7 +168,7 @@ local function GetSpells_TWW()
 	end
 
 	for _, talent in ipairs(Addon:GetLocalizedPvPTalents()) do
-		if not C_Spell.IsSpellPassive(talent.spellId) then
+		if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
 			if result[talent.spellId] == nil then
 				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {

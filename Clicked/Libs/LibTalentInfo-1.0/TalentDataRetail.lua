@@ -18,7 +18,7 @@ local LibTalentInfo = LibStub and LibStub("LibTalentInfo-1.0", true)
 
 local interfaceVersion = select(4, GetBuildInfo())
 
-if LibTalentInfo == nil or interfaceVersion < 110000 or interfaceVersion >= 120000 then
+if LibTalentInfo == nil or interfaceVersion < 110000 or interfaceVersion >= 130000 then
 	return
 end
 
