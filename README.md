@@ -136,7 +136,6 @@ Download and install Clicked using any of the three available portals:
 
 * [CurseForge](https://www.curseforge.com/wow/addons/clicked)
 * [Wago](https://addons.wago.io/addons/clicked)
-* [WoWInterface](https://www.wowinterface.com/downloads/info25703-Clicked.html)
 * [GitHub](https://github.com/Snakybo/Clicked/releases)
 
 ## Usage
