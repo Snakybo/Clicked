@@ -1426,3 +1426,35 @@ function Addon:CharAt(str, index)
 
 	return string.sub(str, index, index)
 end
+
+--- Set the `keybinds` and `identifiers` variables within the restricted environment of the frame.
+---
+--- @param frame Frame
+--- @param keybinds Keybind[]
+function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
+	local keys = {}
+	local identifiers = {}
+
+	for _, keybind in ipairs(keybinds) do
+		table.insert(keys, keybind.key)
+		table.insert(identifiers, keybind.identifier)
+	end
+
+	--- @type string
+	local command
+
+	if #keybinds == 0 then
+		command = [[
+			keybinds = table.new()
+			identifiers = table.new()
+		]]
+	else
+		command = string.format([[
+			keybinds = table.new('%s')
+			identifiers = table.new('%s')
+		]], table.concat(keys, ", "), table.concat(identifiers, ", "))
+	end
+
+	--- @diagnostic disable-next-line: undefined-field
+	frame:Execute(command)
+end

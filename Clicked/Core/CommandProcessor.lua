@@ -55,8 +55,7 @@ local function EnsureMacroFrameHandler()
 	macroFrameHandler:Hide()
 
 	-- set required data first
-	macroFrameHandler:SetAttribute("clicked-keybinds", "")
-	macroFrameHandler:SetAttribute("clicked-identifiers", "")
+	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, {})
 
 	-- register OnShow and OnHide handlers to ensure bindings are registered
 	macroFrameHandler:SetAttribute("_onshow", [[
@@ -90,33 +89,19 @@ local function EnsureMacroFrameHandler()
 			return
 		end
 
-		local keybinds = self:GetAttribute("clicked-keybinds")
-		local identifiers = self:GetAttribute("clicked-identifiers")
+		for i = 1, table.maxn(keybinds) do
+			local keybind = keybinds[i]
+			local identifier = identifiers[i]
 
-		if strlen(keybinds) > 0 then
-			keybinds = table.new(strsplit("\001", keybinds))
-			identifiers = table.new(strsplit("\001", identifiers))
-
-			for i = 1, table.maxn(keybinds) do
-				local keybind = keybinds[i]
-				local identifier = identifiers[i]
-
-				self:SetBindingClick(true, keybind, self, identifier)
-			end
+			self:SetBindingClick(true, keybind, self, identifier)
 		end
 	]])
 
 	-- unregister a binding
 	macroFrameHandler:SetAttribute("clicked-clear-bindings", [[
-		local keybinds = self:GetAttribute("clicked-keybinds")
-
-		if strlen(keybinds) > 0 then
-			keybinds = table.new(strsplit("\001", keybinds))
-
-			for i = 1, table.maxn(keybinds) do
-				local keybind = keybinds[i]
-				self:ClearBinding(keybind)
-			end
+		for i = 1, table.maxn(keybinds) do
+			local keybind = keybinds[i]
+			self:ClearBinding(keybind)
 		end
 	]])
 
@@ -140,19 +125,7 @@ end
 --- @param keybinds Keybind[]
 --- @param attributes string[]
 function Addon:UpdateMacroFrameHandler(keybinds, attributes)
-	local split = {
-		keybinds = {},
-		identifiers = {}
-	}
-
-	for _, keybind in ipairs(keybinds) do
-		table.insert(split.keybinds, keybind.key)
-		table.insert(split.identifiers, keybind.identifier)
-	end
-
-	macroFrameHandler:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
-	macroFrameHandler:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
-
+	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, keybinds)
 	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)
 	Addon:ApplyAttributesToFrame(macroFrameHandler)
 end
