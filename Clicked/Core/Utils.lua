@@ -1450,9 +1450,10 @@ function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 		]]
 	else
 		command = string.format([[
-			keybinds = table.new('%s')
-			identifiers = table.new('%s')
-		]], table.concat(keys, ", "), table.concat(identifiers, ", "))
+			keybinds = table.new(%s)
+			identifiers = table.new(%s)
+		]], "\"" .. table.concat(keys, "\", \"") .. "\"",
+		    "\"" .. table.concat(identifiers, "\", \"") .. "\"")
 	end
 
 	--- @diagnostic disable-next-line: undefined-field
