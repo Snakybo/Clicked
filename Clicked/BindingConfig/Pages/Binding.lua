@@ -228,6 +228,8 @@ function Addon.BindingConfig.BindingPage:Redraw()
 
 				Addon:ReloadBinding(target, "keybind")
 				Addon:ReloadBinding(target, "targets")
+
+				self:RedrawTab()
 			end
 
 			updateCb()

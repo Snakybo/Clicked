@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Add support for Midnight 12.0.0
 
+### Fixed
+
+* Fix various UI update issues
+
 ## [1.16.16] - 2025-10-12
 
 ### Added
