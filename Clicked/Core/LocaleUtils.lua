@@ -412,8 +412,10 @@ function Addon:GetLocalizedSpecializations(classNames)
 		local specs = LibTalentInfo:GetSpecializations(class)
 
 		for specIndex, spec in pairs(specs) do
-			items[specIndex] = Addon:GetTextureString(spec.name, spec.icon)
-			table.insert(order, specIndex)
+			if spec.name ~= nil and spec.icon ~= nil then
+				items[specIndex] = Addon:GetTextureString(spec.name, spec.icon)
+				table.insert(order, specIndex)
+			end
 		end
 	else
 		local max = 0
