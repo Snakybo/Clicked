@@ -20,7 +20,7 @@ local Addon = select(2, ...)
 --- @enum ExpansionLevel
 Addon.Expansion = {
 	CLASSIC = 1,
-	BC = 2,
+	TBC = 2,
 	WOTLK = 3,
 	CATA = 4,
 	MOP = 5,
@@ -83,7 +83,7 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.WOTLK
 elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.BC
+	Addon.EXPANSION_LEVEL = Addon.Expansion.TBC
 elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
 end

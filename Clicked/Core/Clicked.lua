@@ -280,7 +280,7 @@ local function UpdateEventHooks(self, method)
 		method(self, "RUNE_UPDATED", RUNE_UPDATED)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 	end
 

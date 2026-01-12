@@ -349,7 +349,7 @@ local config = {
 					"RAID"
 				}
 
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+				if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 					items["PVP"] = Addon.L["Battleground"]
 					items["ARENA"] = Addon.L["Arena"]
 

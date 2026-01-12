@@ -255,7 +255,7 @@ local function ConstructAction(binding, target)
 	AppendNegatableStringCondition(binding.load.channeling, "channeling")
 	AppendNegatableStringCondition(binding.load.bar, "bar", true)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
 	end

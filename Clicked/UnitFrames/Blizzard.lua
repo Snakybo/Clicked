@@ -79,7 +79,7 @@ function Addon:RegisterBlizzardUnitFrames()
 
 	HookUnitFrame(5, "Boss%dTargetFrame")
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		Clicked:RegisterClickCastFrame("FocusFrame")
 		Clicked:RegisterClickCastFrame("FocusFrameToT")
 	end

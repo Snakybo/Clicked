@@ -194,7 +194,7 @@ else
 		}
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		local DRUID = "DRUID"
 		table.insert(shapeshiftForms[DRUID], { 33891 }) -- Tree of Life
 		table.insert(shapeshiftForms[DRUID], { 40120, 33943 }) -- Swift Flight Form, Flight Form
