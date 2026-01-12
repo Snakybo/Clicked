@@ -13,6 +13,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Midnight 12.0.0
+* Add support for The War Within 11.2.7
+* Add support for Mists of Pandaria Classic 5.5.3
+* Add support for Classic 1.15.8
 
 ### Fixed
 
