@@ -463,7 +463,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(spell) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(spell)
 			else
 				local data = C_Spell.GetSpellInfo(spell)
@@ -513,7 +513,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(aura) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(aura)
 			else
 				local data = C_Spell.GetSpellInfo(aura)

@@ -131,7 +131,7 @@ function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 end
 
 function Addon:UpdateMacroFrameHandlerPressType()
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 		local value = not Addon.db.profile.options.onKeyDown
 		macroFrameHandler:SetAttribute("pressAndHoldAction", value)
 	end

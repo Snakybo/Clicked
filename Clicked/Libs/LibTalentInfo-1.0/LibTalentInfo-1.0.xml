@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="LibTalentInfo-1.0.lua"/>
 	<Script file="TalentDataClassic.lua"/>
+	<Script file="TalentDataTBC.lua"/>
 	<Script file="TalentDataCata.lua"/>
 	<Script file="TalentDataMoP.lua"/>
 	<Script file="TalentDataRetail.lua"/>

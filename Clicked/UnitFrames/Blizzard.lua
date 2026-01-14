@@ -88,7 +88,7 @@ function Addon:RegisterBlizzardUnitFrames()
 		HookUnitFrame(3, "ArenaEnemyFrame%d", "Blizzard_ArenaUI")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
