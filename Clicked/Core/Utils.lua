@@ -194,7 +194,7 @@ else
 		}
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		local DRUID = "DRUID"
 		table.insert(shapeshiftForms[DRUID], { 33891 }) -- Tree of Life
 		table.insert(shapeshiftForms[DRUID], { 40120, 33943 }) -- Swift Flight Form, Flight Form
@@ -463,7 +463,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(spell) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(spell)
 			else
 				local data = C_Spell.GetSpellInfo(spell)
@@ -513,7 +513,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(aura) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(aura)
 			else
 				local data = C_Spell.GetSpellInfo(aura)
@@ -1044,7 +1044,7 @@ function Addon:ShowTooltip(frame, text, subText, anchorPoint, anchorRelativePoin
 		tooltip:SetOwner(frame, "ANCHOR_NONE")
 		tooltip:ClearAllPoints()
 		tooltip:SetPoint(anchorPoint, frame, anchorRelativePoint)
-		tooltip:SetText(text, true)
+		tooltip:SetText(text, nil, nil, nil, nil, true)
 		tooltip:Show()
 	end)
 end
@@ -1425,4 +1425,37 @@ function Addon:CharAt(str, index)
 	assert(type(index) == "number", "bad argument #2, expected string but got " .. type(index))
 
 	return string.sub(str, index, index)
+end
+
+--- Set the `keybinds` and `identifiers` variables within the restricted environment of the frame.
+---
+--- @param frame Frame
+--- @param keybinds Keybind[]
+function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
+	local keys = {}
+	local identifiers = {}
+
+	for _, keybind in ipairs(keybinds) do
+		table.insert(keys, keybind.key)
+		table.insert(identifiers, keybind.identifier)
+	end
+
+	--- @type string
+	local command
+
+	if #keybinds == 0 then
+		command = [[
+			keybinds = table.new()
+			identifiers = table.new()
+		]]
+	else
+		command = string.format([[
+			keybinds = table.new(%s)
+			identifiers = table.new(%s)
+		]], "\"" .. table.concat(keys, "\", \"") .. "\"",
+		    "\"" .. table.concat(identifiers, "\", \"") .. "\"")
+	end
+
+	--- @diagnostic disable-next-line: undefined-field
+	frame:Execute(command)
 end

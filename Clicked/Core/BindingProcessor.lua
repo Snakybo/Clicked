@@ -255,7 +255,7 @@ local function ConstructAction(binding, target)
 	AppendNegatableStringCondition(binding.load.channeling, "channeling")
 	AppendNegatableStringCondition(binding.load.bar, "bar", true)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
 	end
@@ -1098,7 +1098,8 @@ function Addon:UpdateBindingLoadState(binding, causes)
 			local selected = condition.unpack(load)
 
 			if selected ~= nil then
-				local _, result = Addon:SafeCall(condition.test, selected)
+				local currentState = condition.state ~= nil and { select(2, Addon:SafeCall(condition.state)) } or {}
+				local _, result = Addon:SafeCall(condition.test, selected, unpack(currentState))
 				state[condition.id] = result
 			else
 				state[condition.id] = true

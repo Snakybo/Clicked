@@ -65,6 +65,7 @@ local function EnableKeyCapture(frame)
 
 	frame:EnableKeyboard(true)
 	frame:EnableMouseWheel(true)
+	frame:EnableGamePadButton(true)
 	frame:LockHighlight()
 
 	self.waitingForKey = true
@@ -76,6 +77,7 @@ local function DisableKeyCapture(frame)
 
 	frame:EnableKeyboard(false)
 	frame:EnableMouseWheel(false)
+	frame:EnableGamePadButton(false)
 	frame:UnlockHighlight()
 
 	self.waitingForKey = nil
@@ -217,6 +219,7 @@ local function Constructor()
 	button:SetScript("OnKeyDown", Keybinding_OnKeyDown)
 	button:SetScript("OnMouseDown", Keybinding_OnMouseDown)
 	button:SetScript("OnMouseWheel", Keybinding_OnMouseWheel)
+	button:SetScript("OnGamePadButtonDown", Keybinding_OnKeyDown)
 
 	--- @private
 	widget.BaseOnAcquire = widget.OnAcquire

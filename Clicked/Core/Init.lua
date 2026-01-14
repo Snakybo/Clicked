@@ -20,7 +20,7 @@ local Addon = select(2, ...)
 --- @enum ExpansionLevel
 Addon.Expansion = {
 	CLASSIC = 1,
-	BC = 2,
+	TBC = 2,
 	WOTLK = 3,
 	CATA = 4,
 	MOP = 5,
@@ -30,6 +30,7 @@ Addon.Expansion = {
 	SL = 9,
 	DF = 10,
 	TWW = 11,
+	MN = 12,
 }
 
 --- @type ExpansionLevel
@@ -71,7 +72,9 @@ function Addon:SafeCall(func, ...)
 	return false
 end
 
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and select(4, GetBuildInfo()) >= 120000 then
+	Addon.EXPANSION_LEVEL = Addon.Expansion.MN
+elseif WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.TWW
 elseif WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.MOP
@@ -80,7 +83,7 @@ elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
 elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.WOTLK
 elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.BC
+	Addon.EXPANSION_LEVEL = Addon.Expansion.TBC
 elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
 end

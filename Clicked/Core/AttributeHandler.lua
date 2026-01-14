@@ -144,7 +144,7 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	elseif command.action == Addon.CommandType.MACRO then
 		local attributeType = "type"
 
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF and not Addon.db.profile.options.onKeyDown then
+		if (Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC) and not Addon.db.profile.options.onKeyDown then -- HACK: Anniversary follows the modern API
 			attributeType = "typerelease"
 		end
 

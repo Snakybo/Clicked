@@ -82,89 +82,83 @@ local function GetBasicinfoString()
 	return table.concat(lines, "\n")
 end
 
+local function GetLoadConditionState()
+	local conditions = Addon.Condition.Registry:GetConditionSet("load")
+
+	local lines = {
+		"----- Load conditions -----"
+	}
+
+	for _, condition in ipairs(conditions.config) do
+		--- @cast condition LoadCondition
+
+		if condition.state ~= nil then
+			local state = { select(2, Addon:SafeCall(condition.state)) }
+
+			for i = 1, #state do
+				state[i] = tostring(state[i])
+			end
+
+			table.insert(lines, condition.id .. ": " .. table.concat(state, ", "))
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
 --- @return string
 local function GetLoadedBindings()
-	local lines = {}
+	local lines = {
+		"----- Loaded bindings -----"
+	}
 
-	for i, command in ipairs(data) do
-		if i > 1 then
-			table.insert(lines, "")
-		end
+	for _, command in ipairs(data) do
+		local info = {
+			"Key: " .. command.keybind,
+			"Hovercast: " .. tostring(command.hovercast),
+			"Action: " .. command.action,
+			"ID: " .. command.suffix
+		}
 
-		table.insert(lines, "----- Loaded binding " .. i .. " -----")
-		table.insert(lines, "Keybind: " .. command.keybind)
-		table.insert(lines, "Hovercast: " .. tostring(command.hovercast))
-		table.insert(lines, "Action: " .. command.action)
-		table.insert(lines, "Identifier: " .. command.suffix)
+		table.insert(lines, table.concat(info, ", "))
 
 		if type(command.data) == "string" then
 			local split = { strsplit("\n", command.data) }
 
-			if #split > 0 then
-				table.insert(lines, "")
-			end
-
 			for _, line in ipairs(split) do
-				table.insert(lines, line)
+				table.insert(lines, "  " .. line)
 			end
 		elseif type(command.data) == "boolean" then
-			table.insert(lines, "Combat: " .. tostring(command.data))
+			table.insert(lines, "  Combat: " .. tostring(command.data))
 		end
 	end
-
-	local function ParseAttributes(heading, attributes)
-		if attributes == nil then
-			return
-		end
-
-		local first = true
-
-		for attribute, value in pairs(attributes) do
-			if first then
-				table.insert(lines, "")
-				table.insert(lines, "----- " .. heading .. " -----")
-				first = false
-			end
-
-			local split = { strsplit("\n", value) }
-
-			for _, line in ipairs(split) do
-				table.insert(lines, attribute .. ": " .. line)
-			end
-		end
-	end
-
-	ParseAttributes("Macro Handler Attributes", data.macroHandler)
-	ParseAttributes("Hovercast Attributes", data.hovercast)
 
 	return table.concat(lines, "\n")
 end
 
 --- @return string
 local function GetUnloadedBindings()
-	local lines = {}
+	local lines = {
+		"----- Configured bindings -----"
+	}
 
-	for i, binding in Clicked:IterateConfiguredBindings() do
-		if i > 1 then
-			table.insert(lines, "")
-		end
-
-		table.insert(lines, "----- Unloaded binding " .. binding.uid .. " -----")
-		table.insert(lines, "Type: " .. binding.actionType)
-		table.insert(lines, "Keybind: " .. binding.keybind)
-		table.insert(lines, "Scope: " .. binding.scope)
+	for _, binding in Clicked:IterateConfiguredBindings() do
+		local info = {
+			"ID: " .. binding.uid,
+			"Type: " .. binding.actionType,
+			"Key: " .. binding.keybind,
+			"Scope: " .. binding.scope
+		}
 
 		local value = Addon:GetBindingValue(binding)
 		if value ~= nil then
-			table.insert(lines, "Action: " .. value)
+			table.insert(info, "Action: " .. value)
 		end
 
+		table.insert(lines, table.concat(info, ", "))
+
 		local loadState = Addon:GetCachedBindingState(binding)
-
 		if loadState ~= nil then
-			table.insert(lines, "")
-			table.insert(lines, "Load state:")
-
 			for event, state in pairs(loadState) do
 				table.insert(lines, "  " .. event .. " = " .. tostring(state))
 			end
@@ -237,6 +231,7 @@ local function UpdateStatusOutputText()
 
 	local text = {}
 	table.insert(text, GetBasicinfoString())
+	table.insert(text, GetLoadConditionState())
 	table.insert(text, GetLoadedBindings())
 	table.insert(text, GetUnloadedBindings())
 	table.insert(text, GetRegisteredClickCastFrames())

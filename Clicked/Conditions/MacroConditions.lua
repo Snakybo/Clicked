@@ -159,7 +159,7 @@ local config = {
 	},
 	{
 		id = "flying",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BC,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.TBC,
 		drawer = {
 			type = "select",
 			label = "Flying",
@@ -195,7 +195,7 @@ local config = {
 	},
 	{
 		id = "flyable",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BC,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.TBC,
 		drawer = {
 			type = "select",
 			label = "Flyable",

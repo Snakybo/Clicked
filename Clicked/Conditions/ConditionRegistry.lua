@@ -34,7 +34,8 @@
 
 --- @class LoadCondition : Condition
 --- @field public testOnEvents? string[]
---- @field public test fun(value: any):boolean
+--- @field public test fun(value: any, ...: any):boolean
+--- @field public state? fun():...: any
 
 --- @class RuntimeConditionSet
 --- @field public config Condition[]

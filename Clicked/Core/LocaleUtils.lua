@@ -71,8 +71,8 @@ do
 	AddRace(6, Addon.Expansion.CLASSIC) -- Tauren
 	AddRace(7, Addon.Expansion.CLASSIC) -- Gnome
 	AddRace(8, Addon.Expansion.CLASSIC) -- Troll
-	AddRace(10, Addon.Expansion.BC) -- BloodElf
-	AddRace(11, Addon.Expansion.BC) -- Draenei
+	AddRace(10, Addon.Expansion.TBC) -- BloodElf
+	AddRace(11, Addon.Expansion.TBC) -- Draenei
 	AddRace(9, Addon.Expansion.CATA) -- Goblin
 	AddRace(22, Addon.Expansion.CATA) -- Worgen
 	AddRace(24, Addon.Expansion.MOP) -- Pandaren
@@ -273,7 +273,7 @@ function Addon:GetLocalizedTargetUnits()
 		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
 		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
@@ -412,8 +412,10 @@ function Addon:GetLocalizedSpecializations(classNames)
 		local specs = LibTalentInfo:GetSpecializations(class)
 
 		for specIndex, spec in pairs(specs) do
-			items[specIndex] = Addon:GetTextureString(spec.name, spec.icon)
-			table.insert(order, specIndex)
+			if spec.name ~= nil and spec.icon ~= nil then
+				items[specIndex] = Addon:GetTextureString(spec.name, spec.icon)
+				table.insert(order, specIndex)
+			end
 		end
 	else
 		local max = 0

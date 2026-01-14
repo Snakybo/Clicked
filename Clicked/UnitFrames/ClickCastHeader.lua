@@ -44,8 +44,7 @@ function Addon:RegisterClickCastHeader()
 	ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
 	Addon.ClickCastHeader = ClickCastHeader
 
-	ClickCastHeader:SetAttribute("clicked-keybinds", "")
-	ClickCastHeader:SetAttribute("clicked-identifiers", "")
+	Addon:SetupRestrictedEnvironmentVariables(ClickCastHeader, {})
 
 	ClickCastHeader:SetAttribute("setup-keybinds", [[
 		if currentClickcastButton ~= nil then
@@ -54,33 +53,20 @@ function Addon:RegisterClickCastHeader()
 
 		currentClickcastButton = self
 
-		local keybinds = control:GetAttribute("clicked-keybinds")
-		local identifiers = control:GetAttribute("clicked-identifiers")
 		local button = self:GetAttribute("clicked-sidecar") or self
 
-		if strlen(keybinds) > 0 then
-			keybinds = table.new(strsplit("\001", keybinds))
-			identifiers = table.new(strsplit("\001", identifiers))
+		for i = 1, table.maxn(keybinds) do
+			local keybind = keybinds[i]
+			local identifier = identifiers[i]
 
-			for i = 1, table.maxn(keybinds) do
-				local keybind = keybinds[i]
-				local identifier = identifiers[i]
-
-				self:SetBindingClick(true, keybind, button, identifier)
-			end
+			self:SetBindingClick(true, keybind, button, identifier)
 		end
 	]])
 
 	ClickCastHeader:SetAttribute("clear-keybinds", [[
-		local keybinds = control:GetAttribute("clicked-keybinds")
-
-		if strlen(keybinds) > 0 then
-			keybinds = table.new(strsplit("\001", keybinds))
-
-			for i = 1, table.maxn(keybinds) do
-				local keybind = keybinds[i]
-				self:ClearBinding(keybind)
-			end
+		for i = 1, table.maxn(keybinds) do
+			local keybind = keybinds[i]
+			self:ClearBinding(keybind)
 		end
 
 		currentClickcastButton = nil
@@ -164,18 +150,7 @@ function Addon:UpdateClickCastHeader(keybinds)
 		return
 	end
 
-	local split = {
-		keybinds = {},
-		identifiers = {}
-	}
-
-	for _, keybind in ipairs(keybinds) do
-		table.insert(split.keybinds, keybind.key)
-		table.insert(split.identifiers, keybind.identifier)
-	end
-
-	Addon.ClickCastHeader:SetAttribute("clicked-keybinds", table.concat(split.keybinds, "\001"))
-	Addon.ClickCastHeader:SetAttribute("clicked-identifiers", table.concat(split.identifiers, "\001"))
+	Addon:SetupRestrictedEnvironmentVariables(Addon.ClickCastHeader, keybinds)
 
 	Addon.ClickCastHeader:Execute([[
 		local button = currentClickcastButton
