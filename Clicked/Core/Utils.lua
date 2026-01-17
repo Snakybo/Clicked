@@ -1436,8 +1436,11 @@ function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 	local identifiers = {}
 
 	for _, keybind in ipairs(keybinds) do
-		table.insert(keys, keybind.key)
-		table.insert(identifiers, keybind.identifier)
+		local key = string.gsub(keybind.key, "\\", "\\\\")
+		local identifier = string.gsub(keybind.identifier, "\\", "\\\\")
+
+		table.insert(keys, key)
+		table.insert(identifiers, identifier)
 	end
 
 	--- @type string
