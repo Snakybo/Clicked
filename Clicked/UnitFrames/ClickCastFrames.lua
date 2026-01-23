@@ -303,11 +303,7 @@ function Clicked:RegisterFrameClicks(frame, isUnitFrame)
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
-		if isUnitFrame then
-			frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
-		else
-			frame:RegisterForClicks("AnyDown", "AnyUp")
-		end
+		frame:RegisterForClicks("AnyDown", "AnyUp")
 	else
 		frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
 	end

@@ -13,10 +13,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix a Lua issue with tooltips on enemies [#287]
+* Fix the default unit menu right click not working [#288]
+
+> This is a temporary workaround and introduces some new issues:
+>
+> * In Burning Crusade Anniversay, a sound effect plays that sounds like you're opening the escape menu every time you cast a spell
+> * Pressing and holding down a button will cast it both on the down press, and on the up press
 
 ### Changed
 
-* Due to addon changes in Midnight, ability tooltips on enemies will no longer show in instances.
+* Due to addon changes in Midnight, ability tooltips on enemies will no longer show in instances
 
 ## [1.17.1] - 2026-01-17
 
@@ -1825,6 +1831,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#288]: https://github.com/Snakybo/Clicked/issues/288
 [#287]: https://github.com/Snakybo/Clicked/issues/287
 [#286]: https://github.com/Snakybo/Clicked/issues/286
 [#281]: https://github.com/Snakybo/Clicked/issues/281
