@@ -83,7 +83,7 @@ function Addon:ProcessFrameQueue()
 		registerClicksQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:RegisterFrameClicks(frame, true)
+			Clicked:RegisterFrameClicks(frame)
 		end
 	end
 end
@@ -211,7 +211,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 		Clicked:CreateSidecar(frame, nil)
 	end
 
-	Clicked:RegisterFrameClicks(frame, true)
+	Clicked:RegisterFrameClicks(frame)
 
 	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
 	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
@@ -291,8 +291,7 @@ end
 --- this too.
 ---
 --- @param frame Button The frame to register for clicks and scrollwheel events
---- @param isUnitFrame boolean Whether the frame is an unit frame
-function Clicked:RegisterFrameClicks(frame, isUnitFrame)
+function Clicked:RegisterFrameClicks(frame)
 	if frame == nil or frame.RegisterForClicks == nil then
 		return
 	end
