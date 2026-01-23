@@ -31,6 +31,7 @@ externals:
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
   Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
+  Libs/LibLog-1.0: https://github.com/Snakybo/LibLog-1.0
   Libs/LibMacroSyntaxHighlight-1.0: https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0
   Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
@@ -42,5 +43,6 @@ externals:
 move-folders:
   Clicked/Clicked: Clicked
   Clicked/ClickedMedia: ClickedMedia
+  Clicked/Libs/LibLog-1.0/LibLog-1.0: Clicked/Libs/LibLog-1.0
   Clicked/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked/Libs/LibMacroSyntaxHighlight-1.0
   Clicked/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked/Libs/LibTalentInfo-1.0

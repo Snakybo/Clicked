@@ -21,6 +21,7 @@ by downloading a recent release, and copying the libraries into your repository.
 * [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
 * [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 * [LibDeflate](https://github.com/SafeteeWoW/LibDeflate)
+* [LibLog-1.0](https://github.com/Snakybo/LibLog-1.0)
 * [LibMacroSyntaxHighlight-1.0](https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0)
 * [LibSharedMedia-3.0](https://www.wowace.com/projects/libsharedmedia-3-0)
 * [LibStub](https://www.wowace.com/projects/libstub)

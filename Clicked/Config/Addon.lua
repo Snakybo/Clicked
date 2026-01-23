@@ -17,6 +17,7 @@
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+local LibLog = LibStub("LibLog-1.0")
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -137,7 +138,10 @@ function AddonOptions:CreateOptionsTable()
 				get = function ()
 					return Addon.db.profile.options.autoBindActionBar
 				end
-			}
+			},
+			logLevel = Mixin(Clicked:GetLogLevelOptionObject(Addon.db.global), {
+				order = 600
+			})
 		}
 	}
 end
