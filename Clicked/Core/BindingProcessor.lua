@@ -753,8 +753,9 @@ function Clicked:GetBindingsForUnit(unit)
 	for k in pairs(Addon.TargetUnit) do
 		local u = Addon:GetWoWUnitFromUnit(k)
 
-		if u ~= nil and u ~= unit and UnitGUID(u) == UnitGUID(unit) then
-			units[u] = true
+		if u ~= nil and u ~= unit then
+			local unitIsUnit = UnitIsUnit(u, unit)
+			units[u] = not issecretvalue(unitIsUnit) and unitIsUnit
 		end
 	end
 

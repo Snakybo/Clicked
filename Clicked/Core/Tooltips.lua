@@ -112,7 +112,7 @@ local function OnTooltipSetUnit(self)
 	end
 
 	local unit = select(2, self:GetUnit())
-	if Addon:IsNilOrEmpty(unit) or lastTooltipUpdateTime == GetTime() then
+	if issecretvalue(unit) or Addon:IsNilOrEmpty(unit) or lastTooltipUpdateTime == GetTime() then
 		return
 	end
 
@@ -209,7 +209,7 @@ function Addon:AbilityTooltips_Refresh()
 	if not GameTooltip:IsForbidden() and GameTooltip:IsShown() and GetTime() ~= lastTooltipUpdateTime then
 		local _, unit = GameTooltip:GetUnit()
 
-		if not Addon:IsNilOrEmpty(unit) then
+		if not issecretvalue(unit) and not Addon:IsNilOrEmpty(unit) then
 			rebuild = true
 			GameTooltip:SetUnit(unit)
 		end

@@ -8,6 +8,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix a Lua issue with tooltips on enemies [#287]
+
+### Changed
+
+* Due to addon changes in Midnight, ability tooltips on enemies will no longer show in instances.
+
 ## [1.17.1] - 2026-01-17
 
 ### Fixed
@@ -1815,6 +1825,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#287]: https://github.com/Snakybo/Clicked/issues/287
 [#286]: https://github.com/Snakybo/Clicked/issues/286
 [#281]: https://github.com/Snakybo/Clicked/issues/281
 [#276]: https://github.com/Snakybo/Clicked/issues/276
