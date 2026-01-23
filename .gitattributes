@@ -1,5 +1,6 @@
 text auto
 
 *.lua text eol=crlf
+*.xml text eol=crlf
 
 *.png filter=lfs diff=lfs merge=lfs -text
