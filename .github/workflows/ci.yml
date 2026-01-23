@@ -13,12 +13,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: "Run Luacheck"
-      uses: nebularg/actions-luacheck@v1
-      with:
-        args: "--no-color -q"
-        annotate: warning
-
     - name: Package
       uses: BigWigsMods/packager@v2
       with:

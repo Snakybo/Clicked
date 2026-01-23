@@ -122,6 +122,7 @@
 	"Lua.diagnostics.disable": [
 		"deprecated",
 		"assign-type-mismatch"
-	]
-
+	],
+	"Lua.workspace.useGitIgnore": false,
+	"wowAPI.luals.defineKnownGlobals": false
 }
