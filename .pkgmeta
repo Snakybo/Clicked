@@ -8,13 +8,40 @@ ignore:
   - CHANGELOG.md
   - CONTRIBUTING.md
   - RECENT_CHANGES.md
-  - Utils
-  - Clicked/Definitions.lua
+  - "*/Definitions.lua"
+  - "*/Libs/LibDeflate/docs"
+  - "*/Libs/LibDeflate/examples"
+  - "*/Libs/LibDeflate/*.md"
 
 manual-changelog:
   filename: RECENT_CHANGES.md
   markup-type: markdown
 
+externals:
+  Libs/AceAddon-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceAddon-3.0
+  Libs/AceComm-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceComm-3.0
+  Libs/AceConfig-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConfig-3.0
+  Libs/AceConsole-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConsole-3.0
+  Libs/AceDB-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
+  Libs/AceDBOptions-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDBOptions-3.0
+  Libs/AceEvent-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceEvent-3.0
+  Libs/AceGUI-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceGUI-3.0
+  Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
+  Libs/AceSerializer-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceSerializer-3.0
+  Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+  Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
+  Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+  Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
+  Libs/LibMacroSyntaxHighlight-1.0: https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0
+  Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+  Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
+  Libs/LibTalentInfo-1.0: https://github.com/Snakybo/LibTalentInfo-1.0
+  Libs/TaintLess:
+    url: https://www.townlong-yak.com/addons.git/taintless
+    commit: default
+
 move-folders:
   Clicked/Clicked: Clicked
   Clicked/ClickedMedia: ClickedMedia
+  Clicked/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked/Libs/LibMacroSyntaxHighlight-1.0
+  Clicked/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked/Libs/LibTalentInfo-1.0

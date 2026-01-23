@@ -1,0 +1,40 @@
+<!--
+	Clicked, a World of Warcraft keybind manager.
+	Copyright (C) 2026 Kevin Krol
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Libs\LibStub\LibStub.lua"/>
+	<Include file="Libs\TaintLess\TaintLess.xml"/>
+	<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml"/>
+	<Include file="Libs\AceEvent-3.0\AceEvent-3.0.xml"/>
+	<Include file="Libs\AceDB-3.0\AceDB-3.0.xml"/>
+	<Include file="Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
+	<Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
+	<Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml"/>
+	<Include file="Libs\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
+	<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
+	<Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
+	<Include file="Libs\LibTalentInfo-1.0\LibTalentInfo-1.0.xml"/>
+	<Include file="Libs\LibMacroSyntaxHighlight-1.0\LibMacroSyntaxHighlight.xml"/>
+	<Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	<Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
+	<Script file="Libs\LibDeflate\LibDeflate.lua"/>
+</Ui>

@@ -1,6 +1,31 @@
-# Contributing to Clicked
+# Contributing
 
 Clicked uses a strict set of code standards and guidelines, this document will outline those as well as the high-level architecture of the addon.
+
+## Installation
+
+This library depends on the following other libraries, they are not included in this repository and must be downloaded manually. The easiest way to do so is
+by downloading a recent release, and copying the libraries into your repository.
+
+* [AceAddon-3.0](https://www.wowace.com/projects/ace3)
+* [AceComm-3.0](https://www.wowace.com/projects/ace3)
+* [AceConfig-3.0](https://www.wowace.com/projects/ace3)
+* [AceConsole-3.0](https://www.wowace.com/projects/ace3)
+* [AceDB-3.0](https://www.wowace.com/projects/ace3)
+* [AceDBOptions-3.0](https://www.wowace.com/projects/ace3)
+* [AceEvent-3.0](https://www.wowace.com/projects/ace3)
+* [AceGUI-3.0](https://www.wowace.com/projects/ace3)
+* [AceLocale-3.0](https://www.wowace.com/projects/ace3)
+* [AceSerializer-3.0](https://www.wowace.com/projects/ace3)
+* [CallbackHandler-1.0](https://www.wowace.com/projects/callbackhandler)
+* [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
+* [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
+* [LibDeflate](https://github.com/SafeteeWoW/LibDeflate)
+* [LibMacroSyntaxHighlight-1.0](https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0)
+* [LibSharedMedia-3.0](https://www.wowace.com/projects/libsharedmedia-3-0)
+* [LibStub](https://www.wowace.com/projects/libstub)
+* [LibTalentInfo-1.0](https://github.com/Snakybo/LibTalentInfo-1.0)
+* [TaintLess](https://www.townlong-yak.com/addons/taintless)
 
 ## Code standards
 

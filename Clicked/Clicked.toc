@@ -24,7 +24,7 @@
 ## X-Github: https://github.com/Snakybo/Clicked
 
 # Libraries, etc.
-Libs\Libs.xml
+Libs.xml
 Locales\Locales.xml
 Widgets\Widgets.xml
 Templates\Clicked.xml
