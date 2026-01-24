@@ -14,6 +14,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+-- Added in 12.0.0
+local issecretvalue = issecretvalue or function(val) return false end
+
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
