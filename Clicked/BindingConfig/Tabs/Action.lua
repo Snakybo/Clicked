@@ -702,7 +702,7 @@ end
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateSpellValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.SPELL then
-		error("Cannot set spell value for a binding that is not a spell binding")
+		return Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
 	end
 
 	value = string.trim(value)
@@ -726,7 +726,7 @@ end
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateItemValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.ITEM then
-		error("Cannot set item value for a binding that is not an item binding")
+		return Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
 	end
 
 	value = string.trim(value)
@@ -744,7 +744,7 @@ end
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateCancelAuraValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.CANCELAURA then
-		error("Cannot set cancelaura value for a binding that is not a cancelaura binding")
+		return Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
 	end
 
 	value = string.trim(value)

@@ -213,7 +213,7 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 						binding.keybind = ""
 					end
 				else
-					error("Unknown data type: " .. review.type)
+					return Clicked:LogFatal("Unknown data type: {dataType}", review.type)
 				end
 			end
 

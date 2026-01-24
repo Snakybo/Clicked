@@ -21,7 +21,6 @@ if not L then
 end
 
 L["Clicked"] = true
-L["Unable to register unit frame: %s"] = true
 L["Clicked is not compatible with %s and requires one of the two to be disabled."] = true
 L["Keep %s"] = true
 L["Upgraded profile from version %s to version %s"] = true
@@ -279,7 +278,7 @@ L["All"] = true
 L["External"] = true
 L["Filter bindings"] = true
 L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."] = true
-L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."] = true
+L["The generated macro for binding {name} is too long and will not function, please adjust your bindings."] = true
 L["Press any key or ESC to cancel"] = true
 L["%d loaded bindings"] = true
 L["+%d more"] = true

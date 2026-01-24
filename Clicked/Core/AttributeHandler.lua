@@ -19,6 +19,8 @@ local Addon = select(2, ...)
 
 local frameCache = {}
 
+local logger = Clicked:CreateSystemLogger("AttributeHandler")
+
 -- Local support functions
 
 --- @param frame table
@@ -151,6 +153,6 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 		CreateAttribute(register, prefix, attributeType, suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
-		error("Unhandled action type: " .. command.action)
+		logger:LogError("Unhandled action type: {actionType}", command.action)
 	end
 end

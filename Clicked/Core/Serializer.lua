@@ -20,6 +20,8 @@ local LibDeflate = LibStub("LibDeflate")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+local logger = Clicked:CreateSystemLogger("Serializer")
+
 -- Local support functions
 
 --- @param data table
@@ -39,7 +41,7 @@ end
 --- @param data ShareData
 local function RegisterGroup(data)
 	if data.type ~= "group" then
-		error("bad argument #1, expected group but got " .. data.type)
+		return logger:LogFatal("bad argument #1, expected group but got {type}", data.type)
 	end
 
 	local bindings = data.group.bindings
@@ -60,7 +62,7 @@ end
 --- @param data ShareData
 local function RegisterBinding(data)
 	if data.type ~= "binding" then
-		error("bad argument #1, expected binding but got " .. data.type)
+		return logger:LogFatal("bad argument #1, expected binding but got {type}", data.type)
 	end
 
 	data.binding.uid = nil
@@ -136,6 +138,7 @@ function Clicked:SerializeDataObject(obj)
 		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
 	end
 
+	logger:LogDebug("Serializing data object of type {type}", data.type)
 	return SerializeTable(data, true)
 end
 
@@ -172,6 +175,7 @@ function Clicked:SerializeProfile(profile, printable, full)
 		}
 	end
 
+	logger:LogDebug("Serializing profile, lightweight: {lightweight}", data.lightweight)
 	return SerializeTable(data, printable)
 end
 
@@ -235,6 +239,6 @@ function Clicked:Import(data)
 		return true
 	end
 
-	print("Unknown data type: " .. data.type)
+	logger:LogWarning("Unknown data type: {type}", data.type)
 	return false
 end

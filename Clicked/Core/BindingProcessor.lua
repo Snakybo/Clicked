@@ -120,6 +120,8 @@ local reloadTalentCacheDelayTicker = nil
 --- @type function[]
 local reloadTalentCacheCallbacks = {}
 
+local logger = Clicked:CreateSystemLogger("BindingProcessor")
+
 -- Local support functions
 
 --- @param action Action
@@ -461,10 +463,10 @@ local function ProcessBuckets()
 			if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
 				macroTooLongNotified[command.data] = true
 
-				local message = Addon.L["The generated macro for binding '%s' is too long and will not function, please adjust your bindings."]
+				local message = Addon.L["The generated macro for binding {name} is too long and will not function, please adjust your bindings."]
 				local name = Addon:GetBindingNameAndIcon(reference)
 
-				print(Addon:GetPrefixedAndFormattedString(message, name))
+				logger:LogWarning(message, name)
 			end
 		elseif reference.actionType == Clicked.ActionType.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
@@ -479,7 +481,7 @@ local function ProcessBuckets()
 				command.data = reference.load.combat.value
 			end
 		else
-			error("Unhandled binding type: " .. reference.actionType)
+			return logger:LogError("Unhandled binding type: {actionType}", reference.actionType)
 		end
 
 		return command
@@ -615,6 +617,8 @@ local function ReloadBindings(immediate)
 	end
 
 	local function DoReloadBindings()
+		logger:LogVerbose("Reloading bindings for causes: {causes}", pendingReloadCauses)
+
 		if reloadBindingsDelayTicker ~= nil then
 			reloadBindingsDelayTicker:Cancel()
 			reloadBindingsDelayTicker = nil
@@ -854,6 +858,12 @@ end
 function Addon:ReloadBindings(...)
 	local events = { ... }
 
+	if #events == 0 then
+		logger:LogDebug("Scheduling full binding reload")
+	else
+		logger:LogDebug("Scheduling binding reload for events: {events}", { ... })
+	end
+
 	ProcessReloadArguments({}, #events == 0, events, {})
 	ReloadBindings()
 
@@ -862,6 +872,8 @@ end
 
 --- Immediately fully reload all bindings.
 function Addon:ReloadBindingsImmediate()
+	logger:LogDebug("Scheduling full binding reload immediately")
+
 	ProcessReloadArguments({}, true, {}, {})
 	ReloadBindings(true)
 
@@ -876,6 +888,8 @@ end
 --- @param condition? string
 --- @overload fun(self:Clicked, binding:Binding, full:boolean)
 function Addon:ReloadBinding(binding, condition)
+	logger:LogDebug("Scheduling binding reload for binding with ID {uid} with condition {condition}", binding.uid, condition)
+
 	local conditions = {}
 	local full = false
 
@@ -895,6 +909,8 @@ end
 --- @param immediate? boolean
 function Addon:UpdateTalentCache(callback, immediate)
 	local function DoUpdateTalentCache()
+		logger:LogDebug("Updating talent cache")
+
 		if reloadTalentCacheDelayTicker ~= nil then
 			reloadTalentCacheDelayTicker:Cancel()
 			reloadTalentCacheDelayTicker = nil

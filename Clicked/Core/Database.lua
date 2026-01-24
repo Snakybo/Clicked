@@ -375,6 +375,12 @@ end
 ---
 --- @param obj? DataObject
 function Addon:UpdateLookupTable(obj)
+	if obj ~= nil then
+		Clicked:LogVerbose("Updating binding lookup table for {uid}", obj.uid)
+	else
+		Clicked:LogVerbose("Updating binding lookup table")
+	end
+
 	--- @type DataObject[]
 	local queue = {}
 	local clean = obj == nil
@@ -572,7 +578,7 @@ function Addon:ChangeDataObjectScope(item, scope)
 	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
 
 	if item.uid == nil then
-		error("Can only change the scope of a binding or group")
+		return Clicked:LogFatal("Can only change the scope of a binding or group")
 	end
 
 	if item.scope == scope then
@@ -694,8 +700,10 @@ function Addon:RegisterDataObject(object, scope)
 	local db = self:GetContainingDatabase(object)
 
 	if object.type == Clicked.DataObjectType.GROUP then
+		Clicked:LogDebug("Registering group {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.groups, object)
 	elseif object.type == Clicked.DataObjectType.BINDING then
+		Clicked:LogDebug("Registering binding {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.bindings, object)
 	end
 
@@ -757,6 +765,6 @@ function Addon:GetContainingDatabase(item)
 	elseif item.scope == Clicked.DataObjectScope.PROFILE then
 		return Addon.db.profile
 	else
-		error("Unknown binding scope " .. item.scope)
+		return Clicked:LogFatal("Unknown binding scope {scope}", item.scope)
 	end
 end

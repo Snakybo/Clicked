@@ -774,5 +774,5 @@ function Addon:GetLocalizedScope(scope)
 		return defaultProfiles[profile] or profile
 	end
 
-	error("Unknown binding scope: " .. scope)
+	Clicked:LogError("Unknown binding scope: {scope}", scope)
 end

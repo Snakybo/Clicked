@@ -22,8 +22,8 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
 
---- @class Clicked
-Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0")
+--- @class Clicked : AceAddon, AceEvent-3.0, LibLog-1.0.Logger
+Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0", "LibLog-1.0")
 Clicked.VERSION = C_AddOns.GetAddOnMetadata("Clicked", "Version")
 
 --@debug@
@@ -80,7 +80,7 @@ local function HandleChatCommand(input)
 	if #args == 0 then
 		if InCombatLockdown() then
 			openConfigOnCombatExit = true
-			print(Addon:AppendClickedMessagePrefix("Binding configuration will open once you leave combat."))
+			Clicked:LogWarning(Addon.L["Binding configuration will open once you leave combat."])
 		else
 			Addon.BindingConfig.Window:Open()
 		end
@@ -95,9 +95,9 @@ local function HandleChatCommand(input)
 			Addon.db.profile.options.ignoreSelfCastWarning = not Addon.db.profile.options.ignoreSelfCastWarning
 
 			if Addon.db.profile.options.ignoreSelfCastWarning then
-				print(Addon:GetPrefixedAndFormattedString(Addon.L["Disabled self-cast warning, type this command again to re-enable it."]))
+				Clicked:LogInfo(Addon.L["Disabled self-cast warning, type this command again to re-enable it."])
 			else
-				print(Addon:GetPrefixedAndFormattedString(Addon.L["Enabled self-cast warning, type this command again to disable it."]))
+				Clicked:LogInfo(Addon.L["Enabled self-cast warning, type this command again to disable it."])
 			end
 		end
 	end
@@ -106,6 +106,8 @@ end
 -- Event handlers
 
 local function PLAYER_REGEN_DISABLED()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_REGEN_DISABLED")
+
 	isPlayerInCombat = true
 	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
@@ -118,6 +120,8 @@ local function PLAYER_REGEN_DISABLED()
 end
 
 local function PLAYER_REGEN_ENABLED()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_REGEN_ENABLED")
+
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
@@ -134,6 +138,8 @@ local function PLAYER_REGEN_ENABLED()
 end
 
 local function PLAYER_ENTERING_WORLD()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_ENTERING_WORLD")
+
 	isInitialized = true
 
 	local isInitialLoadPending = false
@@ -153,6 +159,8 @@ local function PLAYER_ENTERING_WORLD()
 end
 
 local function ADDON_LOADED()
+	Clicked:LogVerbose("Received event {eventName}", "ADDON_LOADED")
+
 	Addon:ProcessFrameQueue()
 end
 
@@ -165,10 +173,14 @@ local function ZONE_CHANGED_INDOORS()
 end
 
 local function ZONE_CHANGED_NEW_AREA()
+	Clicked:LogVerbose("Received event {eventName}", "ZONE_CHANGED_NEW_AREA")
+
 	Addon:ReloadBindings("ZONE_CHANGED_NEW_AREA")
 end
 
 local function CHARACTER_POINTS_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "CHARACTER_POINTS_CHANGED")
+
 	Addon:UpdateTalentCache(function()
 		Addon:ReloadBindings("CHARACTER_POINTS_CHANGED")
 	end)
@@ -187,71 +199,101 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	end
 
 	if changed then
+		Clicked:LogVerbose("Received event {eventName}", "PLAYER_FLAGS_CHANGED")
+
 		Addon:ReloadBindings("PLAYER_FLAGS_CHANGED")
 	end
 end
 
 local function PLAYER_TALENT_UPDATE()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_TALENT_UPDATE")
+
 	Addon:UpdateTalentCache(function()
 		Addon:ReloadBindings("PLAYER_TALENT_UPDATE")
 	end)
 end
 
 local function PLAYER_PVP_TALENT_UPDATE()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_PVP_TALENT_UPDATE")
+
 	Addon:ReloadBindings("PLAYER_PVP_TALENT_UPDATE")
 end
 
 local function TRAIT_CONFIG_CREATED()
+	Clicked:LogVerbose("Received event {eventName}", "TRAIT_CONFIG_CREATED")
+
 	Addon:UpdateTalentCache(function()
 		Addon:ReloadBindings("TRAIT_CONFIG_CREATED")
 	end)
 end
 
 local function TRAIT_CONFIG_UPDATED()
+	Clicked:LogVerbose("Received event {eventName}", "TRAIT_CONFIG_UPDATED")
+
 	Addon:UpdateTalentCache(function()
 		Addon:ReloadBindings("TRAIT_CONFIG_UPDATED")
 	end)
 end
 
 local function PLAYER_FOCUS_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_FOCUS_CHANGED")
+
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function PLAYER_LEVEL_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_LEVEL_CHANGED")
+
 	Addon:ReloadBindings("PLAYER_LEVEL_CHANGED")
 end
 
 local function ACTIONBAR_SLOT_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "ACTIONBAR_SLOT_CHANGED")
+
 	if Addon.db.profile.options.autoBindActionBar then
 		Addon:ReloadBindings("ACTIONBAR_SLOT_CHANGED")
 	end
 end
 
 local function LEARNED_SPELL_IN_TAB()
+	Clicked:LogVerbose("Received event {eventName}", "LEARNED_SPELL_IN_TAB")
+
 	Addon:ReloadBindings("LEARNED_SPELL_IN_TAB")
 end
 
 local function LEARNED_SPELL_IN_SKILL_LINE()
+	Clicked:LogVerbose("Received event {eventName}", "LEARNED_SPELL_IN_SKILL_LINE")
+
 	Addon:ReloadBindings("LEARNED_SPELL_IN_SKILL_LINE")
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "PLAYER_EQUIPMENT_CHANGED")
+
 	Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
 end
 
 local function GROUP_ROSTER_UPDATE()
+	Clicked:LogVerbose("Received event {eventName}", "GROUP_ROSTER_UPDATE")
+
 	Addon:ReloadBindings("GROUP_ROSTER_UPDATE")
 end
 
 local function MODIFIER_STATE_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "MODIFIER_STATE_CHANGED")
+
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function UNIT_TARGET()
+	Clicked:LogVerbose("Received event {eventName}", "UNIT_TARGET")
+
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function RUNE_UPDATED()
+	Clicked:LogVerbose("Received event {eventName}", "RUNE_UPDATED")
+
 	Addon:ReloadBindings("RUNE_UPDATED")
 end
 
@@ -261,6 +303,8 @@ local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
 	if not success then
 		return
 	end
+
+	Clicked:LogVerbose("Received event {eventName}", "ITEM_DATA_LOAD_RESULT", itemId)
 
 	for _, binding in Clicked:IterateConfiguredBindings() do
 		if binding.actionType == Clicked.ActionType.ITEM and binding.action.itemValue == itemId then
@@ -332,6 +376,8 @@ function Clicked:OnInitialize()
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
 
+	self:SetLogLevelFromConfigTable(Addon.db.global)
+
 	Addon:UpgradeDatabase()
 
 	RegisterIcons()
@@ -352,7 +398,7 @@ end
 function Clicked:OnEnable()
 --@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
-	print(Addon:AppendClickedMessagePrefix("You are using a development version, download the latest release from " .. projectUrl))
+	Clicked:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
 --@end-debug@
 
 	UpdateEventHooks(self, self.RegisterEvent)
@@ -362,14 +408,22 @@ function Clicked:OnEnable()
 		local selfCastModifier = GetModifiedClick("SELFCAST")
 
 		if selfCastModifier ~= "NONE" then
-			local message = string.format(Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '%s' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: %s"], selfCastModifier, YELLOW_FONT_COLOR:WrapTextInColorCode("/clicked ignore-self-cast-warning"))
-			print(Addon:GetPrefixedAndFormattedString(message))
+			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the {key} key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
+			Clicked:LogWarning(message, selfCastModifier, "/clicked ignore-self-cast-warning")
 		end
 	end
 end
 
 function Clicked:OnDisable()
 	UpdateEventHooks(self, self.UnregisterEvent)
+end
+
+--- @param system string
+--- @return LibLog-1.0.Logger
+function Clicked:CreateSystemLogger(system)
+	return Clicked:ForLogContext({
+		system = system
+	})
 end
 
 -- Private addon API

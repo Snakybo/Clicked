@@ -42,7 +42,7 @@ function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 				C_AddOns.EnableAddOn(MEDIA_ADDON_NAME)
 				C_AddOns.LoadAddOn(MEDIA_ADDON_NAME)
 			else
-				error("Unable to load " .. MEDIA_ADDON_NAME ": " .. reason)
+				return Clicked:LogFatal("Unable to load {mediaAddonName}: {reason}", MEDIA_ADDON_NAME, reason)
 			end
 		end
 	end

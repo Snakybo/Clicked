@@ -35,6 +35,8 @@ local cachedAttributes = {}
 --- @type Button[]
 local sidecars = {}
 
+local logger = Clicked:CreateSystemLogger("ClickCast")
+
 -- Local support functions
 
 --- @param frame Button
@@ -139,7 +141,7 @@ end
 ---
 --- @param frame Button|string Either the frame to register, or the name of the frame that can be found in the global table.
 --- @param addon? string The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
---- @see Clicked:UnregisterClickCastFrame
+--- @see Clicked.UnregisterClickCastFrame
 function Clicked:RegisterClickCastFrame(frame, addon)
 	if frame == nil then
 		return
@@ -149,7 +151,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 
 	for _, existing in ipairs(frames) do
 		if existing == frame then
-			return
+			return logger:LogVerbose("Frame {frameName} has already been registered!", frame:GetName())
 		end
 	end
 
@@ -169,6 +171,12 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			addon = addon,
 			frame = frame
 		})
+
+		logger:WithLogContext({ unitFrameAddon = addon }, function(logger)
+			logger:LogVerbose("Delaying frame registration for {frameName} until combat ends or the addon is loaded", function()
+				return type(frame) == "string" and frame or frame:GetName()
+			end)
+		end)
 	end
 
 	if InCombatLockdown() or not Addon:IsInitialized() then
@@ -192,22 +200,23 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			frame = _G[name]
 
 			if frame == nil then
-				print(Addon:GetPrefixedAndFormattedString(Addon.L["Unable to register unit frame: %s"], name))
-				return
+				return logger:LogError("Unable to register frame: {frameName}", name)
 			end
 		end
 	end
 
+	local name = frame:GetName()
+
 	-- Skip anything that is not clickable
 	if frame.RegisterForClicks == nil then
-		return
+		return logger:LogDebug("Ignoring frame {frameName} because it does not have a RegisterForClicks function", name)
 	end
 
 	if Addon:IsFrameBlacklisted(frame) then
-		return
+		return logger:LogDebug("Ignoring frame {frameName} because it has been blacklisted", name)
 	end
 
-	if frame:GetName() == nil then
+	if name == nil then
 		Clicked:CreateSidecar(frame, nil)
 	end
 
@@ -220,12 +229,16 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	table.insert(frames, frame)
 
 	Addon.BlacklistOptions:RegisterFrame(frame)
+
+	if name ~= nil then
+		logger:LogVerbose("Registered frame {frameName}", name)
+	end
 end
 
 --- Unregister a registered click-cast enabled frame. See the documentation of `RegisterClickCastFrame` for more information.
 ---
 --- @param frame Button|string The frame to unregister
---- @see Clicked#RegisterClickCastFrame
+--- @see Clicked.RegisterClickCastFrame
 function Clicked:UnregisterClickCastFrame(frame)
 	if frame == nil then
 		return
@@ -236,8 +249,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 		frame = _G[name]
 
 		if frame == nil then
-			print(Addon:GetPrefixedAndFormattedString(Addon.L["Unable to unregister unit frame: %s"], name))
-			return
+			return logger:LogError("Unable to unregister frame: {frameName}", name)
 		end
 	end
 
@@ -284,6 +296,8 @@ function Clicked:UnregisterClickCastFrame(frame)
 	-- TODO: Unregister sidecar?
 
 	table.remove(frames, index)
+
+	logger:LogVerbose("Unregistered frame {frameName}", frame:GetName())
 end
 
 --- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on
@@ -335,6 +349,8 @@ function Clicked:CreateSidecar(frame, name)
 		frame:SetAttribute("clicked-name", name)
 
 		table.insert(sidecars, sidecar)
+
+		logger:LogVerbose("Created sidecar for frame {frameName}", name)
 
 		UpdateName(sidecar)
 		return sidecar
