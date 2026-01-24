@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix Lua error on Classic flavors due to `issecretvalue` missing
+* Fix a potential Lua error related to talent selection
 
 ## [1.17.2] - 2026-01-23
 

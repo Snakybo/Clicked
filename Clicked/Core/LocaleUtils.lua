@@ -134,16 +134,19 @@ local function GetTalentsForSpecialization(specId)
 			if node ~= nil and node.ID ~= 0 then
 				for _, talentId in ipairs(node.entryIDs) do
 					local entryInfo = C_Traits.GetEntryInfo(configId, talentId)
-					local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-					local spellName = Addon:StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
 
-					if not Addon:IsNilOrEmpty(spellName) then
-						table.insert(allTalents[specId], {
-							spellId = definitionInfo.spellID,
-							text = spellName,
-							icon = TalentButtonUtil.CalculateIconTexture(definitionInfo),
-							specId = specId
-						})
+					if entryInfo.definitionID ~= nil then
+						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+						local spellName = Addon:StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
+
+						if not Addon:IsNilOrEmpty(spellName) and definitionInfo.spellID ~= nil then
+							table.insert(allTalents[specId], {
+								spellId = definitionInfo.spellID,
+								text = spellName,
+								icon = TalentButtonUtil.CalculateIconTexture(definitionInfo),
+								specId = specId
+							})
+						end
 					end
 				end
 			end
