@@ -8,12 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.17.3] - 2026-01-25
 
 ### Fixed
 
 * Fix Lua error on Classic flavors due to `issecretvalue` missing
-* Fix a potential Lua error related to talent selection
+* Fix a potential Lua error related to talents
 
 ## [1.17.2] - 2026-01-23
 
@@ -1696,7 +1696,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.17.2...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.17.3...master
+[1.17.3]: https://github.com/Snakybo/Clicked/releases/tag/1.17.3
 [1.17.2]: https://github.com/Snakybo/Clicked/releases/tag/1.17.2
 [1.17.1]: https://github.com/Snakybo/Clicked/releases/tag/1.17.1
 [1.17.0]: https://github.com/Snakybo/Clicked/releases/tag/1.17.0
