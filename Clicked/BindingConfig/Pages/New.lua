@@ -51,7 +51,7 @@ end
 --- @param parent DataObject?
 --- @return Binding
 local function CreateBinding(type, parent)
-	local binding = Clicked:CreateBinding()
+	local binding = Clicked:CreateBinding(parent ~= nil and parent.scope or nil)
 
 	if type == ItemTemplate.BINDING_CAST_SPELL then
 		binding.actionType = Clicked.ActionType.SPELL

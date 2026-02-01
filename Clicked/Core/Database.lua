@@ -202,11 +202,12 @@ end
 --- Create a new binding. This will create and return a new binding, however it will not automatically reload the active bindings, after configuring the
 --- returned binding (to make it loadable), manually reload the active bindings using `ReloadBindings`.
 ---
+--- @param scope? DataObjectScope
 --- @return Binding
-function Clicked:CreateBinding()
+function Clicked:CreateBinding(scope)
 	local binding = Addon:GetNewBindingTemplate()
 
-	Addon:RegisterDataObject(binding)
+	Addon:RegisterDataObject(binding, scope)
 	return binding
 end
 
