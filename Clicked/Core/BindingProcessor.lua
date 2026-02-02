@@ -900,9 +900,9 @@ function Addon:UpdateTalentCache(callback, immediate)
 			reloadTalentCacheDelayTicker = nil
 		end
 
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-			wipe(talentCache)
+		wipe(talentCache)
 
+		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 			local configId = C_ClassTalents.GetActiveConfigID()
 			if configId == nil then
 				Addon:UpdateTalentCache()
@@ -923,29 +923,29 @@ function Addon:UpdateTalentCache(callback, immediate)
 
 				if nodeInfo.ID ~= 0 then
 					-- check if the node was manually selected by the player, the easy way
-					local isValid = nodeInfo.currentRank > 0
+					local isSelected = nodeInfo.currentRank > 0
 
 					-- check if the node was granted to the player automatically
-					if not isValid then
+					if not isSelected then
 						for _, conditionId in ipairs(nodeInfo.conditionIDs) do
 							local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
 
 							if conditionInfo ~= nil and conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
-								isValid = true
+								isSelected = true
 								break
 							end
 						end
 					end
 
 					-- check if the node is part of a hero talent tree that is currently selected
-					if isValid and nodeInfo.subTreeID then
+					if isSelected and nodeInfo.subTreeID then
 						local subTreeInfo = C_Traits.GetSubTreeInfo(configId, nodeInfo.subTreeID)
 						if not subTreeInfo.isActive then
-							isValid = false
+							isSelected = false
 						end
 					end
 
-					if isValid then
+					if isSelected then
 						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
 						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
 						local definitionInfo = entryInfo ~= nil and entryInfo.definitionID ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
@@ -958,8 +958,6 @@ function Addon:UpdateTalentCache(callback, immediate)
 				end
 			end
 		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-			wipe(talentCache)
-
 			for i = 1, MAX_NUM_TALENTS do
 				local info = C_SpecializationInfo.GetTalentInfo({
 					tier = math.ceil(i / MAX_NUM_TALENTS),
@@ -971,8 +969,6 @@ function Addon:UpdateTalentCache(callback, immediate)
 				end
 			end
 		else
-			wipe(talentCache)
-
 			for tab = 1, GetNumTalentTabs() do
 				for index = 1, GetNumTalents(tab) do
 					local name, _, _, _, rank  = GetTalentInfo(tab, index)
