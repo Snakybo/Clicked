@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for Midnight 12.0.1
+
 ### Fixed
 
 * Fix bindings created in the global scope not actually being global
