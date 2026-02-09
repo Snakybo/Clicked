@@ -28,9 +28,8 @@ local config = {
 			label = "Form / Stance",
 			negatable = true,
 			availableValues = function(class, specialization)
-				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedForms(specIds)
 				else
 					return Addon:GetLocalizedForms(class)

@@ -673,7 +673,7 @@ else
 	--- Get a localized list of all available classic shapeshift forms for the  given class names.
 	--- If the `classNames` parameter is `nil` it will return results for the player's current class.
 	---
-	--- @param classes? string[]
+	--- @param classes string[]
 	--- @return table<integer,string> items
 	--- @return integer[] order
 	function Addon:GetLocalizedForms(classes)
@@ -683,8 +683,7 @@ else
 		--- @type integer[]
 		local order = {}
 
-		if classes == nil then
-			classes = {}
+		if #classes == 0 then
 			classes[1] = select(2, UnitClass("player"))
 		end
 
@@ -735,13 +734,13 @@ else
 				end
 			-- Find specialization with the highest number of forms out of the selected specializations
 			else
-				for _, className in ipairs(classes) do
-					local forms = Addon:GetShapeshiftForms(className)
+			for _, className in ipairs(classes) do
+				local forms = Addon:GetShapeshiftForms(className)
 
-					if #forms > max then
-						max = #forms
-					end
+				if #forms > max then
+					max = #forms
 				end
+			end
 			end
 
 			-- start at 0 because [form:0] is no form

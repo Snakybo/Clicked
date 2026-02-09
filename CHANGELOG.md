@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix bindings created in the global scope not actually being global
+* Fix a Lua error with the stance/form selector on Burning Crusade Anniversary [#291]
 
 ## [1.17.3] - 2026-01-25
 
@@ -1846,6 +1847,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#291]: https://github.com/Snakybo/Clicked/issues/291
 [#288]: https://github.com/Snakybo/Clicked/issues/288
 [#287]: https://github.com/Snakybo/Clicked/issues/287
 [#286]: https://github.com/Snakybo/Clicked/issues/286
