@@ -32168,6 +32168,10 @@ local icons = {
 	[7670586] = "inv12_ability_alleria_silverstrikebarrage",
 	[7670587] = "inv12_ability_alleria_silvervulnerability",
 	[7670588] = "inv12_ability_alleria_voidstalkersting",
+	[7700743] = "inv_misc_selfiecamera_red_camera",
+	[7704166] = "inv_misc_red_thumbtack",
+	[7726459] = "spell_housing",
+	[7736246] = "inv_misc_landrosbox_01",
 }
 
 --- @type integer[]
@@ -64321,6 +64325,10 @@ local order = {
 	7670586,
 	7670587,
 	7670588,
+	7700743,
+	7704166,
+	7726459,
+	7736246,
 }
 
 --- @return table<integer,string>
