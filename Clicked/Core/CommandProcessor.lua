@@ -117,7 +117,7 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 
 	Addon:UpdateMacroFrameHandlerPressType()
-	Clicked:RegisterFrameClicks(macroFrameHandler, false)
+	Clicked:RegisterFrameClicks(macroFrameHandler)
 end
 
 -- Private addon API
