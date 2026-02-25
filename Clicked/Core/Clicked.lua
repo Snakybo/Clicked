@@ -141,6 +141,9 @@ local function PLAYER_ENTERING_WORLD()
 	Clicked:LogVerbose("Received event {eventName}", "PLAYER_ENTERING_WORLD")
 
 	isInitialized = true
+	playerFlagsCache = {
+		warMode = Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA and C_PvP.IsWarModeDesired() or false
+	}
 
 	local isInitialLoadPending = false
 
@@ -194,7 +197,7 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	local changed = false
 
 	if C_PvP.IsWarModeDesired() ~= playerFlagsCache.warMode then
-		playerFlagsCache.warMode = not playerFlagsCache.warMode
+		playerFlagsCache.warMode = C_PvP.IsWarModeDesired()
 		changed = true
 	end
 
