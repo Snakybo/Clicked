@@ -158,7 +158,7 @@ local function OnTooltipSetSpell(self)
 
 	local _, spellId = self:GetSpell()
 
-	if spellId == nil then
+	if spellId == nil or issecretvalue(spellId) then
 		return
 	end
 
