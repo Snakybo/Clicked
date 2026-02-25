@@ -1106,6 +1106,11 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
 	end
 
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
+		state.housing = not C_HouseEditor.IsHouseEditorActive()
+		Clicked:LogVerbose("Evaluated condition {condition} for binding {binding}: {value}", "housing", binding.uid, state.housing)
+	end
+
 	for _, condition in ipairs(conditions.config) do
 		--- @cast condition LoadCondition
 

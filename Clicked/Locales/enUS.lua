@@ -324,3 +324,5 @@ L["Prevent toggle"] = true
 L["Prevent the ability from being toggled off by repeatetly pressing the keybind."] = true
 L["Automatically bind all action bar abilities"] = true
 L["If enabled, all abilities on the action bar will automatically be appended to a binding on the same key, this will make Clicked fall back to the action bar when all other macro conditions are not met.\n\nNote that this only supports spells and items, not macros."] = true
+L["Disable bindings in house editor mode"] = true
+L["If enabled, bindings will be disabled whilst in the house editor."] = true

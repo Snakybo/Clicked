@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add option to disable bindings whilst in house edit mode (enabled by default)
+
 ### Fixed
 
 * Fix more issues with tooltips [#293]

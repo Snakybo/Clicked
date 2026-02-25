@@ -37,6 +37,7 @@
 --- @field public bindUnassignedModifiers boolean
 --- @field public autoBindActionBar boolean
 --- @field public ignoreSelfCastWarning boolean
+--- @field public disableInHouse boolean
 
 --- @class Profile.Options.Minimap
 --- @field public hide boolean

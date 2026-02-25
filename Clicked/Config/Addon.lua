@@ -139,8 +139,25 @@ function AddonOptions:CreateOptionsTable()
 					return Addon.db.profile.options.autoBindActionBar
 				end
 			},
+			disableInHouse = {
+				name = Addon.L["Disable bindings in house editor mode"],
+				desc = Addon.L["If enabled, bindings will be disabled whilst in the house editor."],
+				type = "toggle",
+				order = 600,
+				width = "full",
+				hidden = function()
+					return Addon.EXPANSION_LEVEL < Addon.Expansion.TWW
+				end,
+				set = function (_, val)
+					Addon.db.profile.options.disableInHouse = val
+					Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
+				end,
+				get = function ()
+					return Addon.db.profile.options.disableInHouse
+				end
+			},
 			logLevel = Mixin(Clicked:GetLogLevelOptionObject(Addon.db.global), {
-				order = 600
+				order = 700
 			})
 		}
 	}

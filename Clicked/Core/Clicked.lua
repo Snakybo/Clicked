@@ -35,6 +35,7 @@ end
 local isPlayerInCombat = false
 local isInitialized = false
 local openConfigOnCombatExit = false
+local wasHouseEditorActive = false
 
 --- @type table<string, boolean>
 local playerFlagsCache = {}
@@ -300,6 +301,15 @@ local function RUNE_UPDATED()
 	Addon:ReloadBindings("RUNE_UPDATED")
 end
 
+local function HOUSE_EDITOR_MODE_CHANGED()
+	Clicked:LogVerbose("Received event {eventName}", "HOUSE_EDITOR_MODE_CHANGED")
+
+	if Addon.db.profile.options.disableInHouse and C_HouseEditor.IsHouseEditorActive() ~= wasHouseEditorActive then
+		wasHouseEditorActive = C_HouseEditor.IsHouseEditorActive()
+		Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
+	end
+end
+
 --- @param itemId integer
 --- @param success boolean
 local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
@@ -355,6 +365,10 @@ local function UpdateEventHooks(self, method)
 		method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
 	else
 		method(self, "LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
+	end
+
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+		method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
 	end
 
 	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)

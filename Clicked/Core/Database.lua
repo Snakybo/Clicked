@@ -157,7 +157,8 @@ function Clicked:GetDatabaseDefaults()
 				minimap = {
 					hide = false
 				},
-				ignoreSelfCastWarning = false
+				ignoreSelfCastWarning = false,
+				disableInHouse = true
 			},
 			groups = {},
 			bindings = {},
