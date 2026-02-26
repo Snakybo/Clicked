@@ -150,7 +150,7 @@ function Clicked:GetDatabaseDefaults()
 		profile = {
 			version = nil,
 			options = {
-				onKeyDown = false,
+				onKeyDown = true,
 				tooltips = false,
 				bindUnassignedModifiers = false,
 				autoBindActionBar = false,

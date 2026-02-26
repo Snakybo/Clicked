@@ -52,6 +52,8 @@ local function EnsureMacroFrameHandler()
 	end
 
 	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate") --[[@as Button]]
+	macroFrameHandler:SetAttribute("useOnkeyDown", true)
+	macroFrameHandler:SetAttribute("pressAndHoldAction", true)
 	macroFrameHandler:Hide()
 
 	-- set required data first
@@ -116,7 +118,6 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 
-	Addon:UpdateMacroFrameHandlerPressType()
 	Clicked:RegisterFrameClicks(macroFrameHandler)
 end
 
@@ -128,13 +129,6 @@ function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, keybinds)
 	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)
 	Addon:ApplyAttributesToFrame(macroFrameHandler)
-end
-
-function Addon:UpdateMacroFrameHandlerPressType()
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
-		local value = not Addon.db.profile.options.onKeyDown
-		macroFrameHandler:SetAttribute("pressAndHoldAction", value)
-	end
 end
 
 --- @param commands Command[]

@@ -17,6 +17,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix more issues with tooltips [#293]
+* Fix remaining issues with click-casting from a recent patch
+
+### Changed
+
+* Turn the "cast on key down" on by default
 
 ## [1.17.4] - 2026-02-09
 

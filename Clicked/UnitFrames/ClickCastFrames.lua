@@ -226,6 +226,10 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
 	UpdateClickCastFrame(frame, cachedAttributes, setup, clear)
 
+	if frame:GetAttribute("*type2") == "menu" then
+		frame:SetAttribute("*type2", "togglemenu")
+	end
+
 	table.insert(frames, frame)
 
 	Addon.BlacklistOptions:RegisterFrame(frame)
@@ -315,13 +319,10 @@ function Clicked:RegisterFrameClicks(frame)
 		return
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
-		frame:RegisterForClicks("AnyDown", "AnyUp")
-	else
-		frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
-	end
-
+	frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
 	frame:EnableMouseWheel(true)
+
+	logger:LogVerbose("Registered clicks for frame {frameName}", frame:GetName())
 end
 
 --- Create a clickable sidecar, primarily for unamed frames such as the party frames.

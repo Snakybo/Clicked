@@ -17,6 +17,8 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
+local hasTypeRelease = Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC
+
 local frameCache = {}
 
 local logger = Clicked:CreateSystemLogger("AttributeHandler")
@@ -85,18 +87,9 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 
 	EnsureCache(frame)
 
-	local requiresGsub = not Addon.db.profile.options.onKeyDown and frame ~= _G[Addon.MACRO_FRAME_HANDLER_NAME]
-	local requiresMenu = frame:GetAttribute("*type2") == "menu"
-
 	for key, value in pairs(attributes) do
-		if requiresGsub then
-			key = string.gsub(key, "typerelease", "type")
-		end
-
-		-- Some unit frames use "menu" instead of "togglemenu", an easy way to make sure we use the correct variant is to look at *type2 and check whether that
-		-- is set to `menu`. If it is, we use "menu" instead.
-		if value == "togglemenu" and requiresMenu then
-			value = "menu"
+		if not Addon.db.profile.options.onKeyDown and hasTypeRelease and frame == _G[Addon.MACRO_FRAME_HANDLER_NAME] then
+			key = string.gsub(key, "^type", "typerelease")
 		end
 
 		frameCache[frame].pending[key] = value
@@ -117,12 +110,14 @@ function Addon:ApplyAttributesToFrame(frame)
 
 	for key in pairs(applied) do
 		if pending[key] == nil then
+			logger:LogVerbose("Clearing attribute {attribute} from frame {frameName}", key, frame:GetName())
 			frame:SetAttribute(key, nil)
 		end
 	end
 
 	for key, value in pairs(pending) do
 		if value ~= applied[key] then
+			logger:LogVerbose("Setting attribute {attribute} to {value} on {frameName}", key, value, frame:GetName())
 			frame:SetAttribute(key, value)
 		end
 	end
@@ -144,13 +139,7 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 		local value = IsCombatStatusValid(command.data) and "togglemenu" or ""
 		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MACRO then
-		local attributeType = "type"
-
-		if (Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC) and not Addon.db.profile.options.onKeyDown then -- HACK: Anniversary follows the modern API
-			attributeType = "typerelease"
-		end
-
-		CreateAttribute(register, prefix, attributeType, suffix, "macro")
+		CreateAttribute(register, prefix, "type", suffix, "macro")
 		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
 	else
 		logger:LogError("Unhandled action type: {actionType}", command.action)
