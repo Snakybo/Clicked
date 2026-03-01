@@ -425,7 +425,7 @@ function Clicked:OnEnable()
 		local selfCastModifier = GetModifiedClick("SELFCAST")
 
 		if selfCastModifier ~= "NONE" then
-			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the {key} key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
+			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '{key}' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
 			Clicked:LogWarning(message, selfCastModifier, "/clicked ignore-self-cast-warning")
 		end
 	end
