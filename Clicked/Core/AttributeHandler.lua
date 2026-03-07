@@ -21,7 +21,7 @@ local hasTypeRelease = Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPA
 
 local frameCache = {}
 
-local logger = Clicked:CreateSystemLogger("AttributeHandler")
+local logger = Clicked2:CreateSystemLogger("AttributeHandler")
 
 -- Local support functions
 

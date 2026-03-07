@@ -248,13 +248,13 @@ local function PopulateKeys()
 		end
 
 		if db.showOnlyLoadedBindings then
-			for _, binding in Clicked:IterateActiveBindings() do
+			for _, binding in Clicked2:IterateActiveBindings() do
 				if showGroup == GROUP_ALL or binding.parent == showGroup then
 					RegisterBinding(binding, true)
 				end
 			end
 		else
-			for _, binding in Clicked:IterateConfiguredBindings() do
+			for _, binding in Clicked2:IterateConfiguredBindings() do
 				if showGroup == GROUP_ALL or binding.parent == showGroup then
 					RegisterBinding(binding, Addon:TableContains(Addon:GetActiveBindings(), binding))
 				end
@@ -444,7 +444,7 @@ function KeyVisualizer:Open()
 			--- @type { id: string, name: string }[]
 			local order = {}
 
-			for _, group in Clicked:IterateGroups() do
+			for _, group in Clicked2:IterateGroups() do
 				items[group.uid] = Addon:GetTextureString(group.name, group.displayIcon)
 				table.insert(order, { id = group.uid, name = group.name })
 			end

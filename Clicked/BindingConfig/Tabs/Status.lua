@@ -102,7 +102,7 @@ function Addon.BindingConfig.BindingStatusTab:OnBindingReload(relevant, changed)
 			end
 		end
 
-		for _, other in Clicked:IterateActiveBindings() do
+		for _, other in Clicked2:IterateActiveBindings() do
 			if other.keybind == binding.keybind and tContains(changed, other.uid) then
 				self.controller:RedrawTab()
 				return
@@ -162,7 +162,7 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 
 	table.wipe(self.references)
 
-	for _, other in Clicked:IterateActiveBindings() do
+	for _, other in Clicked2:IterateActiveBindings() do
 		if other.keybind == binding.keybind then
 			local valid = false
 

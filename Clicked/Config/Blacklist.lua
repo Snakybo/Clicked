@@ -71,8 +71,8 @@ local BlacklistOptions = {}
 function BlacklistOptions:Initialize()
 	config = self:CreateOptionsTable()
 
-	AceConfig:RegisterOptionsTable("Clicked/Blacklist", config)
-	AceConfigDialog:AddToBlizOptions("Clicked/Blacklist", Addon.L["Frame Blacklist"], "Clicked")
+	AceConfig:RegisterOptionsTable("Clicked2/Blacklist", config)
+	AceConfigDialog:AddToBlizOptions("Clicked2/Blacklist", Addon.L["Frame Blacklist"], "Clicked2")
 
 	self:Refresh()
 end
@@ -109,7 +109,7 @@ end
 function BlacklistOptions:GetBlacklistGroupItems(group)
 	local result = {}
 
-	for _, frame in Clicked:IterateClickCastFrames() do
+	for _, frame in Clicked2:IterateClickCastFrames() do
 		if self:GetBlacklistGroup(frame) == group then
 			table.insert(result, frame:GetName())
 		end
@@ -119,7 +119,7 @@ function BlacklistOptions:GetBlacklistGroupItems(group)
 end
 
 function BlacklistOptions:Refresh()
-	for _, frame in Clicked:IterateClickCastFrames() do
+	for _, frame in Clicked2:IterateClickCastFrames() do
 		self:RegisterFrame(frame)
 	end
 
@@ -223,8 +223,8 @@ function BlacklistOptions:CreateOptionsTable()
 						self:SetSelectedItem(val, true)
 						self:SetDropdownItem(val, false)
 
-						Clicked:UnregisterClickCastFrame(val)
-						Clicked:ProcessActiveBindings()
+						Clicked2:UnregisterClickCastFrame(val)
+						Clicked2:ProcessActiveBindings()
 					end
 				end,
 				get = function()
@@ -318,8 +318,8 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 
 					self:SetDropdownItem(name, true)
 
-					Clicked:RegisterClickCastFrame(name)
-					Clicked:ProcessActiveBindings()
+					Clicked2:RegisterClickCastFrame(name)
+					Clicked2:ProcessActiveBindings()
 				end
 			end,
 			get = function()

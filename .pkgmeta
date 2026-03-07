@@ -1,4 +1,4 @@
-package-as: Clicked
+package-as: Clicked2
 enable-nolib-creation: no
 
 ignore:
@@ -41,8 +41,8 @@ externals:
     commit: default
 
 move-folders:
-  Clicked/Clicked: Clicked
-  Clicked/ClickedMedia: ClickedMedia
-  Clicked/Libs/LibLog-1.0/LibLog-1.0: Clicked/Libs/LibLog-1.0
-  Clicked/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked/Libs/LibMacroSyntaxHighlight-1.0
-  Clicked/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked/Libs/LibTalentInfo-1.0
+  Clicked2/Clicked: Clicked2
+  Clicked2/ClickedMedia: ClickedMedia2
+  Clicked2/Libs/LibLog-1.0/LibLog-1.0: Clicked2/Libs/LibLog-1.0
+  Clicked2/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked2/Libs/LibMacroSyntaxHighlight-1.0
+  Clicked2/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked2/Libs/LibTalentInfo-1.0

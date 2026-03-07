@@ -26,8 +26,8 @@ local Addon = select(2, ...)
 local AddonOptions = {}
 
 function AddonOptions:Initialize()
-	AceConfig:RegisterOptionsTable("Clicked", self:CreateOptionsTable())
-	AceConfigDialog:AddToBlizOptions("Clicked", Addon.L["Clicked"])
+	AceConfig:RegisterOptionsTable("Clicked2", self:CreateOptionsTable())
+	AceConfigDialog:AddToBlizOptions("Clicked2", Addon.L["Clicked2"])
 end
 
 --- @private
@@ -35,7 +35,7 @@ end
 function AddonOptions:CreateOptionsTable()
 	return {
 		type = "group",
-		name = Addon.L["Clicked"],
+		name = Addon.L["Clicked2"],
 		args = {
 			minimapIcon = {
 				name = Addon.L["Enable minimap icon"],
@@ -47,9 +47,9 @@ function AddonOptions:CreateOptionsTable()
 					Addon.db.profile.options.minimap.hide = not val
 
 					if val then
-						LibDBIcon:Show(Addon.L["Clicked"])
+						LibDBIcon:Show(Addon.L["Clicked2"])
 					else
-						LibDBIcon:Hide(Addon.L["Clicked"])
+						LibDBIcon:Hide(Addon.L["Clicked2"])
 					end
 				end,
 				get = function(_)
@@ -65,13 +65,13 @@ function AddonOptions:CreateOptionsTable()
 				hidden = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
 				set = function (_, val)
 					if val then
-						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
+						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
 					else
-						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked"])
+						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked2"])
 					end
 				end,
 				get = function(_)
-					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked"])
+					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked2"])
 				end
 			},
 			onKeyDown = {
@@ -83,12 +83,12 @@ function AddonOptions:CreateOptionsTable()
 				set = function(_, val)
 					Addon.db.profile.options.onKeyDown = val
 
-					for _, frame in Clicked:IterateClickCastFrames() do
-						Clicked:RegisterFrameClicks(frame)
+					for _, frame in Clicked2:IterateClickCastFrames() do
+						Clicked2:RegisterFrameClicks(frame)
 					end
 
-					Clicked:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME])
-					Clicked:ProcessActiveBindings()
+					Clicked2:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME])
+					Clicked2:ProcessActiveBindings()
 
 					Addon:ShowInformationPopup(Addon.L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
 				end,
@@ -117,7 +117,7 @@ function AddonOptions:CreateOptionsTable()
 				width = "full",
 				set = function (_, val)
 					Addon.db.profile.options.bindUnassignedModifiers = val
-					Clicked:ProcessActiveBindings()
+					Clicked2:ProcessActiveBindings()
 				end,
 				get = function ()
 					return Addon.db.profile.options.bindUnassignedModifiers
@@ -131,7 +131,7 @@ function AddonOptions:CreateOptionsTable()
 				width = "full",
 				set = function (_, val)
 					Addon.db.profile.options.autoBindActionBar = val
-					Clicked:ProcessActiveBindings()
+					Clicked2:ProcessActiveBindings()
 				end,
 				get = function ()
 					return Addon.db.profile.options.autoBindActionBar
@@ -154,7 +154,7 @@ function AddonOptions:CreateOptionsTable()
 					return Addon.db.profile.options.disableInHouse
 				end
 			},
-			logLevel = Mixin(Clicked:GetLogLevelOptionObject(Addon.db.global), {
+			logLevel = Mixin(Clicked2:GetLogLevelOptionObject(Addon.db.global), {
 				order = 700
 			})
 		}

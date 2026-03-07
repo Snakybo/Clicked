@@ -233,7 +233,7 @@ local function Constructor()
 	local upImage = up:CreateTexture(nil, "BACKGROUND")
 	upImage:SetSize(16, 16)
 	upImage:SetPoint("CENTER")
-	upImage:SetTexture([[Interface\Addons\Clicked\Media\Textures\ui_arrow_up.tga]])
+	upImage:SetTexture([[Interface\Addons\Clicked2\Media\Textures\ui_arrow_up.tga]])
 
 	local down = CreateFrame("Button", nil, frame)
 	down:SetSize(16, 16)
@@ -242,7 +242,7 @@ local function Constructor()
 	local downImage = down:CreateTexture(nil, "BACKGROUND")
 	downImage:SetSize(16, 16)
 	downImage:SetPoint("CENTER")
-	downImage:SetTexture([[Interface\Addons\Clicked\Media\Textures\ui_arrow_down.tga]])
+	downImage:SetTexture([[Interface\Addons\Clicked2\Media\Textures\ui_arrow_down.tga]])
 
 	local image = frame:CreateTexture(nil, "BACKGROUND")
 

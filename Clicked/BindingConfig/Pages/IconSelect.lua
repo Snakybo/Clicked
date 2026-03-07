@@ -19,7 +19,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local MEDIA_ADDON_NAME = "ClickedMedia"
+local MEDIA_ADDON_NAME = "ClickedMedia2"
 
 -- Private addon API
 
@@ -42,7 +42,7 @@ function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 				C_AddOns.EnableAddOn(MEDIA_ADDON_NAME)
 				C_AddOns.LoadAddOn(MEDIA_ADDON_NAME)
 			else
-				return Clicked:LogFatal("Unable to load {mediaAddonName}: {reason}", MEDIA_ADDON_NAME, reason)
+				return Clicked2:LogFatal("Unable to load {mediaAddonName}: {reason}", MEDIA_ADDON_NAME, reason)
 			end
 		end
 	end

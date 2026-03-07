@@ -51,7 +51,7 @@ local function FilterTargets(selected)
 	local containsIllegal = false
 
 	for _, uid in ipairs(selected) do
-		local obj = Clicked:GetByUid(uid)
+		local obj = Clicked2:GetByUid(uid)
 
 		if obj ~= nil then
 			allowedType = allowedType or obj.type
@@ -74,8 +74,8 @@ local function SortByName(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
 	local rightScope = Addon:GetScopeFromUid(right.uid)
 
-	local leftObj = Clicked:GetByUid(left.uid)
-	local rightObj = Clicked:GetByUid(right.uid)
+	local leftObj = Clicked2:GetByUid(left.uid)
+	local rightObj = Clicked2:GetByUid(right.uid)
 
 	leftScope = leftScope or leftObj ~= nil and leftObj.scope or 1
 	rightScope = rightScope or rightObj ~= nil and rightObj.scope or 1
@@ -99,7 +99,7 @@ local function SortByName(left, right)
 	end
 
 	if leftObj ~= nil and rightObj ~= nil then
-		if leftObj.type == Clicked.DataObjectType.GROUP and rightObj.type == Clicked.DataObjectType.GROUP then
+		if leftObj.type == Clicked2.DataObjectType.GROUP and rightObj.type == Clicked2.DataObjectType.GROUP then
 			--- @cast leftObj Group
 			--- @cast rightObj Group
 
@@ -111,7 +111,7 @@ local function SortByName(left, right)
 			if not left.isAnyChildEnabled and right.isAnyChildEnabled then
 				return false
 			end
-		elseif leftObj.type == Clicked.DataObjectType.BINDING and rightObj.type == Clicked.DataObjectType.BINDING then
+		elseif leftObj.type == Clicked2.DataObjectType.BINDING and rightObj.type == Clicked2.DataObjectType.BINDING then
 			--- @cast leftObj Binding
 			--- @cast rightObj Binding
 
@@ -144,8 +144,8 @@ local function SortByKey(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
 	local rightScope = Addon:GetScopeFromUid(right.uid)
 
-	local leftObj = Clicked:GetByUid(left.uid)
-	local rightObj = Clicked:GetByUid(right.uid)
+	local leftObj = Clicked2:GetByUid(left.uid)
+	local rightObj = Clicked2:GetByUid(right.uid)
 
 	leftScope = leftScope or leftObj ~= nil and leftObj.scope or 1
 	rightScope = rightScope or rightObj ~= nil and rightObj.scope or 1
@@ -169,7 +169,7 @@ local function SortByKey(left, right)
 	end
 
 	if leftObj ~= nil and rightObj ~= nil then
-		if leftObj.type == Clicked.DataObjectType.GROUP and rightObj.type == Clicked.DataObjectType.GROUP then
+		if leftObj.type == Clicked2.DataObjectType.GROUP and rightObj.type == Clicked2.DataObjectType.GROUP then
 			--- @cast leftObj Group
 			--- @cast rightObj Group
 
@@ -181,7 +181,7 @@ local function SortByKey(left, right)
 			if not left.isAnyChildEnabled and right.isAnyChildEnabled then
 				return false
 			end
-		elseif leftObj.type == Clicked.DataObjectType.BINDING and rightObj.type == Clicked.DataObjectType.BINDING then
+		elseif leftObj.type == Clicked2.DataObjectType.BINDING and rightObj.type == Clicked2.DataObjectType.BINDING then
 			--- @cast leftObj Binding
 			--- @cast rightObj Binding
 
@@ -358,7 +358,7 @@ function Addon.BindingConfig.Window:GetSelection()
 	local result = {}
 
 	for _, id in ipairs(self.treeStatus.selected) do
-		table.insert(result, Clicked:GetByUid(id))
+		table.insert(result, Clicked2:GetByUid(id))
 	end
 
 	return result
@@ -421,7 +421,7 @@ function Addon.BindingConfig.Window:RedrawPage()
 		Addon:SafeCall(impl.Redraw, impl)
 	end
 
-	self.frame:SetStatusText(string.format("%s | %s", Clicked.VERSION, Addon.db:GetCurrentProfile()))
+	self.frame:SetStatusText(string.format("%s | %s", Clicked2.VERSION, Addon.db:GetCurrentProfile()))
 end
 
 --- @private
@@ -646,28 +646,28 @@ function Addon.BindingConfig.Window:CreateFrame()
 		local id
 
 		if type == "item" then
-			actionType = Clicked.ActionType.ITEM
+			actionType = Clicked2.ActionType.ITEM
 			id = p2 --[[@as integer]]
 		elseif type == "spell" then
-			actionType = Clicked.ActionType.SPELL
+			actionType = Clicked2.ActionType.SPELL
 			id = p4 --[[@as integer]]
 		elseif type == "petaction" then
-			actionType = Clicked.ActionType.SPELL
+			actionType = Clicked2.ActionType.SPELL
 			id = p2 --[[@as integer]]
 		elseif type == "macro" then
-			actionType = Clicked.ActionType.MACRO
+			actionType = Clicked2.ActionType.MACRO
 			id = p2 --[[@as integer]]
 		end
 
 		if actionType ~= nil then
-			local binding = Clicked:CreateBinding()
+			local binding = Clicked2:CreateBinding()
 			binding.actionType = actionType
 
-			if binding.actionType == Clicked.ActionType.SPELL then
+			if binding.actionType == Clicked2.ActionType.SPELL then
 				binding.action.spellValue = id
-			elseif binding.actionType == Clicked.ActionType.ITEM then
+			elseif binding.actionType == Clicked2.ActionType.ITEM then
 				binding.action.itemValue = id
-			elseif binding.actionType == Clicked.ActionType.MACRO then
+			elseif binding.actionType == Clicked2.ActionType.MACRO then
 				local name, icon, content = GetMacroInfo(id)
 				binding.action.macroName = name
 				binding.action.macroIcon = icon
@@ -704,19 +704,19 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 		end
 	end
 
-	for _, group in Clicked:IterateGroups() do
+	for _, group in Clicked2:IterateGroups() do
 		local parent = Addon:GetScopeUid(group.scope)
 		hierarchy[parent] = hierarchy[parent] or {}
 		table.insert(hierarchy[parent], group)
 	end
 
-	for _, binding in Clicked:IterateConfiguredBindings() do
+	for _, binding in Clicked2:IterateConfiguredBindings() do
 		local parent = binding.parent or Addon:GetScopeUid(binding.scope)
 		hierarchy[parent] = hierarchy[parent] or {}
 		table.insert(hierarchy[parent], binding)
 	end
 
-	for _, scope in pairs(Clicked.DataObjectScope) do
+	for _, scope in pairs(Clicked2.DataObjectScope) do
 		local uid = Addon:GetScopeUid(scope)
 
 		--- @type ClickedTreeGroupItem
@@ -739,7 +739,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 				for _, item in ipairs(hierarchy[current]) do
 					existing[item.uid] = nil
 
-					if item.type == Clicked.DataObjectType.BINDING then
+					if item.type == Clicked2.DataObjectType.BINDING then
 						--- @cast item Binding
 
 						local title, icon = Addon:GetBindingNameAndIcon(item)
@@ -751,7 +751,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 								title = title,
 								subtitle = #item.keybind > 0 and Addon:SanitizeKeybind(item.keybind) or Addon.L["UNBOUND"],
 								icon = icon,
-								enabled = Clicked:IsBindingLoaded(item)
+								enabled = Clicked2:IsBindingLoaded(item)
 							}
 
 							self.treeItems[item.uid] = data
@@ -759,11 +759,11 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 							data.title = title
 							data.subtitle = #item.keybind > 0 and Addon:SanitizeKeybind(item.keybind) or Addon.L["UNBOUND"]
 							data.icon = icon
-							data.enabled = Clicked:IsBindingLoaded(item)
+							data.enabled = Clicked2:IsBindingLoaded(item)
 						end
 
 						table.insert(children, data)
-					elseif item.type == Clicked.DataObjectType.GROUP then
+					elseif item.type == Clicked2.DataObjectType.GROUP then
 						--- @cast item Group
 
 						local title, icon = Addon:GetGroupNameAndIcon(item)
@@ -847,7 +847,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		local targets = FilterTargets(selected)
 
 		if #targets > 0 then
-			self:SetPage(targets[1].type == Clicked.DataObjectType.BINDING and self.PAGE_BINDING or self.PAGE_GROUP)
+			self:SetPage(targets[1].type == Clicked2.DataObjectType.BINDING and self.PAGE_BINDING or self.PAGE_GROUP)
 		else
 			local page = self.pageStack[#self.pageStack].page
 
@@ -860,7 +860,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 	--- @param uid integer
 	--- @param button Button
 	local function OnButtonEnter(_, _, uid, button)
-		local obj = Clicked:GetByUid(uid)
+		local obj = Clicked2:GetByUid(uid)
 		if obj == nil then
 			return
 		end
@@ -868,7 +868,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		local text = ""
 		local subtext = nil
 
-		if obj.type == Clicked.DataObjectType.BINDING then
+		if obj.type == Clicked2.DataObjectType.BINDING then
 			--- @cast obj Binding
 
 			text = Addon:GetBindingNameAndIcon(obj)
@@ -895,12 +895,12 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 			subtext = subtext .. "\n"
 			subtext = subtext .. (self.treeItems[uid].enabled and Addon.L["Loaded"] or Addon.L["Unloaded"])
-		elseif obj.type == Clicked.DataObjectType.GROUP then
+		elseif obj.type == Clicked2.DataObjectType.GROUP then
 			--- @cast obj Group
 
 			text = Addon:GetGroupNameAndIcon(obj)
 
-			local bindings = Clicked:GetByParent(uid)
+			local bindings = Clicked2:GetByParent(uid)
 			local numLoaded = 0
 
 			for _, binding in ipairs(bindings) do
@@ -925,7 +925,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		local objects = {}
 
 		for _, id in ipairs(ids) do
-			local obj = Clicked:GetByUid(id)
+			local obj = Clicked2:GetByUid(id)
 
 			if obj ~= nil and (#objects == 0 or obj.type == objects[1].type) then
 				table.insert(objects, obj)
@@ -939,7 +939,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		local ref = objects[1]
 
 		MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
-			if ref.type == Clicked.DataObjectType.BINDING then
+			if ref.type == Clicked2.DataObjectType.BINDING then
 				--- @cast objects Binding[]
 				--- @cast ref Binding
 
@@ -948,7 +948,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 				end):SetEnabled(#objects == 1)
 
 				rootDescription:CreateButton(Addon.L["Paste Data"], function()
-					local source = Clicked:GetByUid(self.bindingCopyTarget) --[[@as Binding?]]
+					local source = Clicked2:GetByUid(self.bindingCopyTarget) --[[@as Binding?]]
 
 					if source ~= nil then
 						for _, binding in ipairs(objects) do
@@ -992,20 +992,20 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 									first = first or binding
 
 									-- When converting to any macro, try to fill in the macro name, value and icon
-									if type == Clicked.ActionType.MACRO and Addon:IsNilOrEmpty(binding.action.macroValue) then
+									if type == Clicked2.ActionType.MACRO and Addon:IsNilOrEmpty(binding.action.macroValue) then
 										local name = nil
 										local icon = nil
 										local format = nil
 
-										if binding.actionType == Clicked.ActionType.SPELL then
+										if binding.actionType == Clicked2.ActionType.SPELL then
 											name = C_Spell.GetSpellName(binding.action.spellValue)
 											icon = C_Spell.GetSpellTexture(binding.action.spellValue)
 											format = Addon.L["Cast %s"]
-										elseif binding.actionType == Clicked.ActionType.ITEM then
+										elseif binding.actionType == Clicked2.ActionType.ITEM then
 											name = C_Item.GetItemNameByID(binding.action.itemValue)
 											icon = C_Item.GetItemIconByID(binding.action.itemValue)
 											format = Addon.L["Use %s"]
-										elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+										elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 											name = C_Spell.GetSpellName(binding.action.auraName)
 											icon = C_Spell.GetSpellTexture(binding.action.auraName)
 											format = Addon.L["Cancel %s"]
@@ -1031,15 +1031,15 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 						end)
 					end
 
-					CreateOption(Clicked.ActionType.SPELL, Addon.L["Cast a spell"])
-					CreateOption(Clicked.ActionType.ITEM, Addon.L["Use an item"])
-					CreateOption(Clicked.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
-					CreateOption(Clicked.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
-					CreateOption(Clicked.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
-					CreateOption(Clicked.ActionType.MACRO, Addon.L["Run a macro"])
-					CreateOption(Clicked.ActionType.APPEND, Addon.L["Append a binding segment"])
+					CreateOption(Clicked2.ActionType.SPELL, Addon.L["Cast a spell"])
+					CreateOption(Clicked2.ActionType.ITEM, Addon.L["Use an item"])
+					CreateOption(Clicked2.ActionType.CANCELAURA, Addon.L["Cancel an aura"])
+					CreateOption(Clicked2.ActionType.UNIT_SELECT, Addon.L["Target the unit"])
+					CreateOption(Clicked2.ActionType.UNIT_MENU, Addon.L["Open the unit menu"])
+					CreateOption(Clicked2.ActionType.MACRO, Addon.L["Run a macro"])
+					CreateOption(Clicked2.ActionType.APPEND, Addon.L["Append a binding segment"])
 				end
-			elseif ref.type == Clicked.DataObjectType.GROUP then
+			elseif ref.type == Clicked2.DataObjectType.GROUP then
 				--- @cast objects Group[]
 				--- @cast ref Group
 
@@ -1093,8 +1093,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 					end
 				end
 
-				CreateOption(Clicked.DataObjectScope.GLOBAL, Addon.L["Global"])
-				CreateOption(Clicked.DataObjectScope.PROFILE, Addon.L["Profile"])
+				CreateOption(Clicked2.DataObjectScope.GLOBAL, Addon.L["Global"])
+				CreateOption(Clicked2.DataObjectScope.PROFILE, Addon.L["Profile"])
 			end
 
 			rootDescription:CreateButton(Addon.L["Share"], function()
@@ -1108,7 +1108,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 					end
 
 					for _, obj in ipairs(objects) do
-						Clicked:DeleteDataObject(obj)
+						Clicked2:DeleteDataObject(obj)
 					end
 				end
 
@@ -1121,13 +1121,13 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 					if #objects > 1 then
 						msg = string.format(Addon.L["Are you sure you want to delete these %d bindings and/or groups?"], #objects)
 					else
-						if ref.type == Clicked.DataObjectType.BINDING then
+						if ref.type == Clicked2.DataObjectType.BINDING then
 							--- @cast ref Binding
 							msg = Addon.L["Are you sure you want to delete this binding?"] .. "\n\n"
 							msg = msg .. ref.keybind .. " " .. Addon:GetBindingNameAndIcon(ref)
-						elseif ref.type == Clicked.DataObjectType.GROUP then
+						elseif ref.type == Clicked2.DataObjectType.GROUP then
 							--- @cast ref Group
-							local bindings = Clicked:GetByParent(ref.uid)
+							local bindings = Clicked2:GetByParent(ref.uid)
 
 							msg = Addon.L["Are you sure you want to delete this group and ALL bindings it contains? This will delete %s bindings."]:format(#bindings) .. "\n\n"
 							msg = msg .. Addon:GetGroupNameAndIcon(ref)

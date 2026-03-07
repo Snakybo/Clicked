@@ -36,13 +36,13 @@ local shareMessage = ""
 local ProfileOptions = {}
 
 function ProfileOptions:Initialize()
-	AceConfig:RegisterOptionsTable("Clicked/Profile", self:CreateOptionsTable())
-	AceConfigDialog:AddToBlizOptions("Clicked/Profile", Addon.L["Profiles"], "Clicked")
+	AceConfig:RegisterOptionsTable("Clicked2/Profile", self:CreateOptionsTable())
+	AceConfigDialog:AddToBlizOptions("Clicked2/Profile", Addon.L["Profiles"], "Clicked2")
 
 	AceComm:Embed(self)
 
-	if not C_ChatInfo.IsAddonMessagePrefixRegistered("Clicked") then
-		C_ChatInfo.RegisterAddonMessagePrefix("Clicked")
+	if not C_ChatInfo.IsAddonMessagePrefixRegistered("Clicked2") then
+		C_ChatInfo.RegisterAddonMessagePrefix("Clicked2")
 	end
 end
 
@@ -122,7 +122,7 @@ function ProfileOptions:CreateOptionsTable()
 				if not shareAckReceived then
 					shareBusy = false
 
-					AceConfigRegistry:NotifyChange("Clicked/Profile")
+					AceConfigRegistry:NotifyChange("Clicked2/Profile")
 					Addon:ShowInformationPopup(string.format(Addon.L["Unable to send a message to %s. Make sure that they are online, have allowed profile sharing, and are on the same realm or a connected realm."], shareTarget))
 				end
 			end
@@ -131,11 +131,11 @@ function ProfileOptions:CreateOptionsTable()
 
 			-- Just wait for the ACK timeout if we're currently in combat, to prevent stuttering
 			if not InCombatLockdown() then
-				shareMessage = Clicked:SerializeProfile(Addon.db.profile, false, false)
+				shareMessage = Clicked2:SerializeProfile(Addon.db.profile, false, false)
 				shareAckReceived = false
 
-				self:RegisterComm("Clicked", "OnCommReceived")
-				self:SendCommMessage("Clicked", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
+				self:RegisterComm("Clicked2", "OnCommReceived")
+				self:SendCommMessage("Clicked2", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
 			end
 
 			C_Timer.After(5, OnTimeout)
@@ -153,7 +153,7 @@ function ProfileOptions:CreateOptionsTable()
 			shareEnabled = value
 
 			if value then
-				self:RegisterComm("Clicked", "OnCommReceived")
+				self:RegisterComm("Clicked2", "OnCommReceived")
 			else
 				self:UnregisterAllComm()
 			end
@@ -196,7 +196,7 @@ function ProfileOptions:OnCommReceived(_, message, _, sender)
 
 	if message == "ShareRequest" then
 		if shareEnabled then
-			self:SendCommMessage("Clicked", "ShareRequestAck", "WHISPER", sender, "NORMAL")
+			self:SendCommMessage("Clicked2", "ShareRequestAck", "WHISPER", sender, "NORMAL")
 		end
 	elseif message == "ShareRequestAck" then
 		shareAckReceived = true
@@ -205,16 +205,16 @@ function ProfileOptions:OnCommReceived(_, message, _, sender)
 			self:UnregisterAllComm()
 		end
 
-		self:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", self.OnCommProgress, self)
+		self:SendCommMessage("Clicked2", shareMessage, "WHISPER", shareTarget, "NORMAL", self.OnCommProgress, self)
 	else
-		local success, data = Clicked:Deserialize(message, false)
+		local success, data = Clicked2:Deserialize(message, false)
 
 		Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE_COMM, data, sender)
 
 		shareEnabled = not success
 	end
 
-	AceConfigRegistry:NotifyChange("Clicked/Profile")
+	AceConfigRegistry:NotifyChange("Clicked2/Profile")
 end
 
 --- @private
@@ -228,7 +228,7 @@ function ProfileOptions:OnCommProgress(sent, total)
 		shareBusy = false
 	end
 
-	AceConfigRegistry:NotifyChange("Clicked/Profile")
+	AceConfigRegistry:NotifyChange("Clicked2/Profile")
 end
 
 Addon.ProfileOptions = ProfileOptions
