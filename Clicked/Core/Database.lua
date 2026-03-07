@@ -19,7 +19,7 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 -- Deprecated in 5.5.0
 local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 --- @enum DataObjectType

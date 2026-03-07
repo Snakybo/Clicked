@@ -35,7 +35,7 @@ Plain container that scrolls its content and doesn't grow in height.
 --- @field public numRows number?
 --- @field public numColumns number?
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedIconSelectorList", 1
