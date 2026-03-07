@@ -30,7 +30,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local SEARCH_FILTER_APPLY_DELAY = 0.1
