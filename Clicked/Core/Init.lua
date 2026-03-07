@@ -93,7 +93,7 @@ end
 --- @return boolean
 function Addon:IsDevelopmentBuild()
 --@debug@
-	if Clicked.VERSION == "development" then
+	if Clicked2.VERSION == "development" then
 		return true
 	end
 --@end-debug@

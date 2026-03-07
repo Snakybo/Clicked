@@ -23,7 +23,7 @@ Addon.Media = {
 	FONT_MONO = "JetBrains Mono Regular"
 }
 
-local basePath = [[Interface\AddOns\Clicked\Media\]]
+local basePath = [[Interface\AddOns\Clicked2\Media\]]
 local fontPath = basePath .. [[Fonts\]]
 
 LSM:Register("font", Addon.Media.FONT_MONO, fontPath .. "JetBrainsMonoNL-Regular.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)

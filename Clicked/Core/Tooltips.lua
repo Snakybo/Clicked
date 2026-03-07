@@ -126,7 +126,7 @@ local function OnTooltipSetUnit(self)
 	if rebuild then
 		rebuild = false
 
-		local bindings = Clicked:GetBindingsForUnit(unit)
+		local bindings = Clicked2:GetBindingsForUnit(unit)
 		table.sort(bindings, SortBindings)
 		table.wipe(lineCache)
 
@@ -165,8 +165,8 @@ local function OnTooltipSetSpell(self)
 	local addedEmptyLine = false
 
 	--- @type Binding
-	for _, binding in Clicked:IterateActiveBindings() do
-		if binding.actionType == Clicked.ActionType.SPELL and binding.action.spellValue == spellId then
+	for _, binding in Clicked2:IterateActiveBindings() do
+		if binding.actionType == Clicked2.ActionType.SPELL and binding.action.spellValue == spellId then
 			local text = string.format(Addon.L["Bound to %s"], Addon:SanitizeKeybind(binding.keybind))
 
 			if not addedEmptyLine then

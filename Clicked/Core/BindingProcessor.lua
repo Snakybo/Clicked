@@ -21,7 +21,7 @@ local issecretvalue = issecretvalue or function(val) return false end
 local Addon = select(2, ...)
 
 --- @enum ActionType
-Clicked.ActionType = {
+Clicked2.ActionType = {
 	SPELL = "SPELL",
 	ITEM = "ITEM",
 	MACRO = "MACRO",
@@ -120,7 +120,7 @@ local reloadTalentCacheDelayTicker = nil
 --- @type function[]
 local reloadTalentCacheCallbacks = {}
 
-local logger = Clicked:CreateSystemLogger("BindingProcessor")
+local logger = Clicked2:CreateSystemLogger("BindingProcessor")
 
 -- Local support functions
 
@@ -456,7 +456,7 @@ local function ProcessBuckets()
 
 		command.prefix, command.suffix = Addon:CreateAttributeIdentifier(command.keybind, command.hovercast)
 
-		if Addon:GetInternalBindingType(reference) == Clicked.ActionType.MACRO then
+		if Addon:GetInternalBindingType(reference) == Clicked2.ActionType.MACRO then
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 
@@ -468,13 +468,13 @@ local function ProcessBuckets()
 
 				logger:LogWarning(message, name)
 			end
-		elseif reference.actionType == Clicked.ActionType.UNIT_SELECT then
+		elseif reference.actionType == Clicked2.ActionType.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
 
 			if reference.load.combat.selected then
 				command.data = reference.load.combat.value
 			end
-		elseif reference.actionType == Clicked.ActionType.UNIT_MENU then
+		elseif reference.actionType == Clicked2.ActionType.UNIT_MENU then
 			command.action = Addon.CommandType.MENU
 
 			if reference.load.combat.selected then
@@ -639,7 +639,7 @@ local function ReloadBindings(immediate)
 			seen[binding.uid] = true
 		end
 
-		for _, binding in Clicked:IterateConfiguredBindings() do
+		for _, binding in Clicked2:IterateConfiguredBindings() do
 			if not seen[binding.uid] then
 				local isValid, wasValid = Addon:UpdateBindingLoadState(binding, pendingReloadCauses)
 
@@ -655,7 +655,7 @@ local function ReloadBindings(immediate)
 		wipe(pendingReloadCauses.binding)
 		wipe(pendingReloadCauses.conditions)
 
-		Clicked:ProcessActiveBindings()
+		Clicked2:ProcessActiveBindings()
 
 		Addon.BindingConfig.Window:OnBindingReload(changed)
 		Addon.KeyVisualizer:Redraw()
@@ -675,7 +675,7 @@ end
 --- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
 ---
 --- @param bindings? Binding|Binding[]
-function Clicked:ReloadBindings(bindings)
+function Clicked2:ReloadBindings(bindings)
 	if bindings == nil then
 		bindings = {}
 	elseif bindings[1] == nil then
@@ -688,7 +688,7 @@ function Clicked:ReloadBindings(bindings)
 	Addon:UpdateLookupTable()
 end
 
-function Clicked:ProcessActiveBindings()
+function Clicked2:ProcessActiveBindings()
 	if InCombatLockdown() then
 		return
 	end
@@ -702,7 +702,7 @@ end
 --- @param binding Binding The input binding, cannot be `nil` and must be a valid binding table
 --- @return string? hovercastTarget The first satisfied hovercast unit if any, `nil` otherwise. If this has a value it will always be `@mouseover`.
 --- @return string? regularTarget The first satisfied regular unit if any, `nil` otherwise.
-function Clicked:EvaluateBindingMacro(binding)
+function Clicked2:EvaluateBindingMacro(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	--- @type Binding[]
@@ -728,7 +728,7 @@ function Clicked:EvaluateBindingMacro(binding)
 end
 
 --- Iterate through all currently active bindings, this function can be used in a `for in` loop.
-function Clicked:IterateActiveBindings()
+function Clicked2:IterateActiveBindings()
 	return ipairs(activeBindings)
 end
 
@@ -745,7 +745,7 @@ end
 ---
 --- @param unit string
 --- @return Binding[]
-function Clicked:GetBindingsForUnit(unit)
+function Clicked2:GetBindingsForUnit(unit)
 	assert(type(unit) == "string", "bad argument #1, expected table but got " .. type(unit))
 
 	--- @type Binding[]
@@ -785,7 +785,7 @@ function Clicked:GetBindingsForUnit(unit)
 	--- @param binding Binding
 	--- @return boolean
 	local function IsBindingValidForUnit(binding)
-		if binding.actionType ~= Clicked.ActionType.SPELL and binding.actionType ~= Clicked.ActionType.ITEM then
+		if binding.actionType ~= Clicked2.ActionType.SPELL and binding.actionType ~= Clicked2.ActionType.ITEM then
 			return false
 		end
 
@@ -816,7 +816,7 @@ function Clicked:GetBindingsForUnit(unit)
 			local enabled = Addon:IsMacroCastEnabled(binding)
 
 			if enabled then
-				local _, target = Clicked:EvaluateBindingMacro(binding)
+				local _, target = Clicked2:EvaluateBindingMacro(binding)
 
 				if target ~= nil and units[target] then
 					return true
@@ -827,7 +827,7 @@ function Clicked:GetBindingsForUnit(unit)
 		return false
 	end
 
-	for _, binding in Clicked:IterateActiveBindings() do
+	for _, binding in Clicked2:IterateActiveBindings() do
 		if IsBindingValidForUnit(binding) then
 			table.insert(result, binding)
 		end
@@ -838,7 +838,7 @@ end
 
 --- @param binding Binding
 --- @return boolean
-function Clicked:IsBindingLoaded(binding)
+function Clicked2:IsBindingLoaded(binding)
 	for _, active in ipairs(activeBindings) do
 		if active.uid == binding.uid then
 			return true
@@ -1089,7 +1089,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 	local state = bindingStateCache[binding.uid] or {}
 	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
-	if wasValid and Clicked:GetByUid(binding.uid) == nil then
+	if wasValid and Clicked2:GetByUid(binding.uid) == nil then
 		bindingStateCache[binding.uid] = nil
 		return false, wasValid
 	end
@@ -1108,7 +1108,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
 		state.housing = not C_HouseEditor.IsHouseEditorActive()
-		Clicked:LogVerbose("Evaluated condition {condition} for binding {binding}: {value}", "housing", binding.uid, state.housing)
+		Clicked2:LogVerbose("Evaluated condition {condition} for binding {binding}: {value}", "housing", binding.uid, state.housing)
 	end
 
 	for _, condition in ipairs(conditions.config) do
@@ -1159,7 +1159,7 @@ function Addon:IsBindingValidForCurrentState(binding)
 			return false
 		end
 
-		if binding.actionType == Clicked.ActionType.SPELL and not IsSpellKnown(id) then
+		if binding.actionType == Clicked2.ActionType.SPELL and not IsSpellKnown(id) then
 			return false
 		end
 	end
@@ -1214,20 +1214,20 @@ end
 --- @param binding Binding
 --- @return string
 function Addon:GetInternalBindingType(binding)
-	if binding.actionType == Clicked.ActionType.SPELL then
-		return Clicked.ActionType.MACRO
+	if binding.actionType == Clicked2.ActionType.SPELL then
+		return Clicked2.ActionType.MACRO
 	end
 
-	if binding.actionType == Clicked.ActionType.ITEM then
-		return Clicked.ActionType.MACRO
+	if binding.actionType == Clicked2.ActionType.ITEM then
+		return Clicked2.ActionType.MACRO
 	end
 
-	if binding.actionType == Clicked.ActionType.APPEND then
-		return Clicked.ActionType.MACRO
+	if binding.actionType == Clicked2.ActionType.APPEND then
+		return Clicked2.ActionType.MACRO
 	end
 
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
-		return Clicked.ActionType.MACRO
+	if binding.actionType == Clicked2.ActionType.CANCELAURA then
+		return Clicked2.ActionType.MACRO
 	end
 
 	return binding.actionType
@@ -1313,7 +1313,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		end
 
 		for _, binding in ipairs(bindings) do
-			if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM or binding.actionType == Clicked.ActionType.CANCELAURA then
+			if binding.actionType == Clicked2.ActionType.SPELL or binding.actionType == Clicked2.ActionType.ITEM or binding.actionType == Clicked2.ActionType.CANCELAURA then
 				if binding.action.cancelQueuedSpell then
 					RegisterCommand(cancelQueuedSpell, binding)
 				end
@@ -1354,11 +1354,11 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		--- @param binding Binding
 		--- @return string|nil
 		local function GetPrefixForBinding(binding)
-			if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
+			if binding.actionType == Clicked2.ActionType.SPELL or binding.actionType == Clicked2.ActionType.ITEM then
 				return "/cast "
 			end
 
-			if binding.actionType == Clicked.ActionType.CANCELAURA then
+			if binding.actionType == Clicked2.ActionType.CANCELAURA then
 				return "/cancelaura "
 			end
 
@@ -1415,20 +1415,20 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				local nextActionIndex = 1
 
 				for _, binding in ipairs(group) do
-					if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
+					if binding.actionType == Clicked2.ActionType.SPELL or binding.actionType == Clicked2.ActionType.ITEM then
 						for _, action in ipairs(ConstructActions(binding, interactionType, actionBar)) do
 							table.insert(actions[order], action)
 
 							actionsSequence[action] = nextActionIndex
 							nextActionIndex = nextActionIndex + 1
 						end
-					elseif binding.actionType == Clicked.ActionType.MACRO then
+					elseif binding.actionType == Clicked2.ActionType.MACRO then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(macros[order], value)
-					elseif binding.actionType == Clicked.ActionType.APPEND then
+					elseif binding.actionType == Clicked2.ActionType.APPEND then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(appends[order], value)
-					elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+					elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 						local target = Addon:GetNewBindingTargetTemplate()
 						target.unit = Addon.TargetUnit.DEFAULT
 						target.hostility = Addon.TargetHostility.ANY

@@ -42,7 +42,7 @@ local data
 local function GetBasicinfoString()
 	local lines = {}
 
-	table.insert(lines, "Version: " .. Clicked.VERSION)
+	table.insert(lines, "Version: " .. Clicked2.VERSION)
 	table.insert(lines, "Data Version: " .. Addon.DATA_VERSION)
 	table.insert(lines, "Project ID: " .. WOW_PROJECT_ID)
 	table.insert(lines, "Race: " .. select(2, UnitRace("player")))
@@ -142,7 +142,7 @@ local function GetUnloadedBindings()
 		"----- Configured bindings -----"
 	}
 
-	for _, binding in Clicked:IterateConfiguredBindings() do
+	for _, binding in Clicked2:IterateConfiguredBindings() do
 		local info = {
 			"ID: " .. binding.uid,
 			"Type: " .. binding.actionType,
@@ -172,7 +172,7 @@ end
 local function GetRegisteredClickCastFrames()
 	local lines = {}
 
-	for _, clickCastFrame in Clicked:IterateClickCastFrames() do
+	for _, clickCastFrame in Clicked2:IterateClickCastFrames() do
 		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
 			local name = clickCastFrame:GetName()
 
@@ -196,7 +196,7 @@ end
 local function GetRegisteredClickCastSidecars()
 	local lines = {}
 
-	for _, sidecar in Clicked:IterateSidecars() do
+	for _, sidecar in Clicked2:IterateSidecars() do
 		local targetFrameName = sidecar:GetAttribute("clicked-name")
 
 		table.insert(lines, sidecar:GetName() .. (targetFrameName and " (for " .. targetFrameName .. ")" or ""))
@@ -216,10 +216,10 @@ local function GetSerializedProfileString()
 	local lines = {}
 
 	table.insert(lines, "----- Saved Global Variables -----")
-	table.insert(lines, Clicked:SerializeProfile(Addon.db.global, true, true))
+	table.insert(lines, Clicked2:SerializeProfile(Addon.db.global, true, true))
 	table.insert(lines, "")
 	table.insert(lines, "----- Saved Profile Variables -----")
-	table.insert(lines, Clicked:SerializeProfile(Addon.db.profile, true, true))
+	table.insert(lines, Clicked2:SerializeProfile(Addon.db.profile, true, true))
 
 	return table.concat(lines, "\n")
 end
