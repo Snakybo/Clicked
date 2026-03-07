@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-field, assign-type-mismatch, inject-field, missing-fields
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 Addon.DATA_VERSION = 13

@@ -19,7 +19,7 @@ local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecializ
 -- Deprecated in 5.5.0
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 --- @class SpellLibrary
