@@ -36,13 +36,13 @@ local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
 
-local BT_SPELL = Clicked.ActionType.SPELL
-local BT_ITEM = Clicked.ActionType.ITEM
-local BT_MACRO = Clicked.ActionType.MACRO
-local BT_UNIT_SELECT = Clicked.ActionType.UNIT_SELECT
-local BT_UNIT_MENU = Clicked.ActionType.UNIT_MENU
-local BT_APPEND = Clicked.ActionType.APPEND
-local BT_CANCELAURA = Clicked.ActionType.CANCELAURA
+local BT_SPELL = Clicked2.ActionType.SPELL
+local BT_ITEM = Clicked2.ActionType.ITEM
+local BT_MACRO = Clicked2.ActionType.MACRO
+local BT_UNIT_SELECT = Clicked2.ActionType.UNIT_SELECT
+local BT_UNIT_MENU = Clicked2.ActionType.UNIT_MENU
+local BT_APPEND = Clicked2.ActionType.APPEND
+local BT_CANCELAURA = Clicked2.ActionType.CANCELAURA
 
 --- @param bindings Binding[]
 --- @param bindingTypes string[]
@@ -149,7 +149,7 @@ Addon.BindingConfig.BindingPage = {
 
 				for _, binding in ipairs(FilterBindingsByActionType(bindings, bindingTypes)) do
 					-- TODO: Maybe we can retrieve this from the tree status?
-					if Clicked:IsBindingLoaded(binding) then
+					if Clicked2:IsBindingLoaded(binding) then
 						table.insert(result, binding)
 					end
 				end

@@ -111,9 +111,9 @@ function Addon:RegisterClickCastHeader()
 		end
 
 		if name == "export_register" then
-			Clicked:RegisterClickCastFrame(frameName)
+			Clicked2:RegisterClickCastFrame(frameName)
 		elseif name == "export_unregister" then
-			Clicked:UnregisterClickCastFrame(frameName)
+			Clicked2:UnregisterClickCastFrame(frameName)
 		end
 	end)
 
@@ -125,22 +125,22 @@ function Addon:RegisterClickCastHeader()
 	ClickCastFrames = setmetatable({}, {
 		__newindex = function(_, frame, options)
 			if options ~= nil and options ~= false then
-				Clicked:RegisterClickCastFrame(frame)
+				Clicked2:RegisterClickCastFrame(frame)
 			else
-				Clicked:UnregisterClickCastFrame(frame)
+				Clicked2:UnregisterClickCastFrame(frame)
 			end
 		end
 	})
 
 	for frame in pairs(originalClickCastFrames) do
-		Clicked:RegisterClickCastFrame(frame)
+		Clicked2:RegisterClickCastFrame(frame)
 	end
 
 	-- Hook into Clique because a lot of (older) addons are hardcoded to add Clique-support
 	Clique = {}
 	Clique.header = ClickCastHeader
 	Clique.UpdateRegisteredClicks = function(_, frame)
-		safecall(Clicked.RegisterFrameClicks, Clicked, frame, true)
+		safecall(Clicked2.RegisterFrameClicks, Clicked2, frame, true)
 	end
 end
 

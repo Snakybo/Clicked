@@ -118,7 +118,7 @@ local function EnsureMacroFrameHandler()
 	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
 	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
 
-	Clicked:RegisterFrameClicks(macroFrameHandler)
+	Clicked2:RegisterFrameClicks(macroFrameHandler)
 end
 
 -- Private addon API

@@ -47,10 +47,10 @@ function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 
 	if mode == Addon.BindingConfig.ExportStringModes.BINDING_GROUP then
 		--- @cast target DataObject
-		self.serialized = Clicked:SerializeDataObject(target)
+		self.serialized = Clicked2:SerializeDataObject(target)
 	elseif mode == Addon.BindingConfig.ExportStringModes.PROFILE then
 		--- @cast target Profile
-		self.serialized = Clicked:SerializeProfile(target, true, false)
+		self.serialized = Clicked2:SerializeProfile(target, true, false)
 	end
 end
 
@@ -73,10 +73,10 @@ function Addon.BindingConfig.ExportStringPage:Redraw()
 		if self.mode == Addon.BindingConfig.ExportStringModes.BINDING_GROUP then
 			--- @cast target DataObject
 
-			if target.type == Clicked.DataObjectType.BINDING then
+			if target.type == Clicked2.DataObjectType.BINDING then
 				--- @cast target Binding
 				widget:SetLabel(string.format(Addon.L["Exporting binding '%s'"], Addon:GetBindingNameAndIcon(target)))
-			elseif target.type == Clicked.DataObjectType.GROUP then
+			elseif target.type == Clicked2.DataObjectType.GROUP then
 				--- @cast target Group
 				widget:SetLabel(string.format(Addon.L["Exporting group '%s'"], target.name))
 			end

@@ -1,11 +1,11 @@
 ## Interface: 11508, 20505, 50503, 120000, 120001
-## Title: Clicked
+## Title: Clicked2
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
 ## Notes: Easy keybind and macro management
-## SavedVariables: ClickedDB
-## Group: Clicked
+## SavedVariables: Clicked2DB
+## Group: Clicked2
 ## Category-enUS: Action Bars
 ## Category-deDE: Aktionsleisten
 ## Category-esES: Barras de acción
@@ -27,7 +27,6 @@
 Libs.xml
 Locales\Locales.xml
 Widgets\Widgets.xml
-Templates\Clicked.xml
 
 # Core systems
 Core\Init.lua
@@ -49,6 +48,7 @@ Conditions\LoadConditions.lua
 Conditions\MacroConditions.lua
 
 # Unitframe and clickcast support
+#UnitFrames\ClickCastUnitTemplate.xml
 UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua

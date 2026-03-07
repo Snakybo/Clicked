@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "koKR")
+local L = LibStub("AceLocale-3.0"):NewLocale("Clicked2", "koKR")
 
 if not L then
 	return
@@ -54,7 +54,7 @@ L["Cast a spell on a unit frame"] = "유닛 프레임에 주문 시전"
 L["Cast on key down rather than key up"] = "클릭 시 주문 시전"
 L["Channeling"] = "정신 집중"
 L["Class"] = "직업"
-L["Clicked"] = true
+L["Clicked2"] = true
 L["Clicked Binding Configuration"] = "Clicked 단축키 구성"
 L["Clicked is not compatible with %s and requires one of the two to be disabled."] = "Clicked은 %s와 호환되지 않으며 두 가지 중 하나를 비활성화해야 합니다."
 L["Combat"] = "전투"

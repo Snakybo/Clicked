@@ -35,7 +35,7 @@ local cachedAttributes = {}
 --- @type Button[]
 local sidecars = {}
 
-local logger = Clicked:CreateSystemLogger("ClickCast")
+local logger = Clicked2:CreateSystemLogger("ClickCast")
 
 -- Local support functions
 
@@ -67,7 +67,7 @@ function Addon:ProcessFrameQueue()
 		unregisterQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:UnregisterClickCastFrame(frame)
+			Clicked2:UnregisterClickCastFrame(frame)
 		end
 	end
 
@@ -76,7 +76,7 @@ function Addon:ProcessFrameQueue()
 		registerQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:RegisterClickCastFrame(frame.frame, frame.addon)
+			Clicked2:RegisterClickCastFrame(frame.frame, frame.addon)
 		end
 	end
 
@@ -85,7 +85,7 @@ function Addon:ProcessFrameQueue()
 		registerClicksQueue = {}
 
 		for _, frame in ipairs(queue) do
-			Clicked:RegisterFrameClicks(frame)
+			Clicked2:RegisterFrameClicks(frame)
 		end
 	end
 end
@@ -142,7 +142,7 @@ end
 --- @param frame Button|string Either the frame to register, or the name of the frame that can be found in the global table.
 --- @param addon? string The name of the addon that has requested the frame, unless the frames are part of a load-on-demand addon, this can be nil.
 --- @see Clicked.UnregisterClickCastFrame
-function Clicked:RegisterClickCastFrame(frame, addon)
+function Clicked2:RegisterClickCastFrame(frame, addon)
 	if frame == nil then
 		return
 	end
@@ -217,10 +217,10 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	end
 
 	if name == nil then
-		Clicked:CreateSidecar(frame, nil)
+		Clicked2:CreateSidecar(frame, nil)
 	end
 
-	Clicked:RegisterFrameClicks(frame)
+	Clicked2:RegisterFrameClicks(frame)
 
 	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
 	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
@@ -243,7 +243,7 @@ end
 ---
 --- @param frame Button|string The frame to unregister
 --- @see Clicked.RegisterClickCastFrame
-function Clicked:UnregisterClickCastFrame(frame)
+function Clicked2:UnregisterClickCastFrame(frame)
 	if frame == nil then
 		return
 	end
@@ -309,7 +309,7 @@ end
 --- this too.
 ---
 --- @param frame Button The frame to register for clicks and scrollwheel events
-function Clicked:RegisterFrameClicks(frame)
+function Clicked2:RegisterFrameClicks(frame)
 	if frame == nil or frame.RegisterForClicks == nil then
 		return
 	end
@@ -330,7 +330,7 @@ end
 --- @param frame Button The frame to create a sidecar for
 --- @param name string? The human-readable name of the frame, since these frames are generally unamed, a custom name needs to be supploed
 --- @return Button sidecar
-function Clicked:CreateSidecar(frame, name)
+function Clicked2:CreateSidecar(frame, name)
 	local sidecarId = frame:GetAttribute("clicked-sidecar")
 
 	--- @param sidecar Button
@@ -364,7 +364,7 @@ function Clicked:CreateSidecar(frame, name)
 end
 
 --- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
-function Clicked:IterateClickCastFrames()
+function Clicked2:IterateClickCastFrames()
 	return ipairs(frames)
 end
 
@@ -372,6 +372,6 @@ end
 ---
 --- A sidecar is a custom overlay frame used when a registered frame does not have a name. A name is required for
 --- unit frame casting.
-function Clicked:IterateSidecars()
+function Clicked2:IterateSidecars()
 	return ipairs(sidecars)
 end
