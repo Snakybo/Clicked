@@ -410,6 +410,85 @@ function Clicked2:OnInitialize()
 
 	AceConsole:RegisterChatCommand("clicked2", HandleChatCommand)
 	AceConsole:RegisterChatCommand("cc2", HandleChatCommand)
+
+	--- @type Keybind2[]
+	local newDb = {
+		{
+			uid = 1,
+			priority = 0,
+			key = "SHIFT+F4",
+			type = 0,
+			sets = {
+				{
+					type = "use",
+					actions = {
+						{
+							id = 13
+						}
+					}
+				},
+				{
+					type = "cast",
+					actions = {
+						{
+							name = "Avenging Wrath"
+						}
+					}
+				}
+			}
+		},
+		{
+			uid = 2,
+			priority = 0,
+			key = "F",
+			type = 0,
+			sets = {
+				{
+					type = "cast",
+					actions = {
+						{
+							target = "@target",
+							flags = bit.bor(Clicked.UnitFlags.ALIVE, Clicked.UnitFlags.HOSTILE),
+							name = "Holy Shock"
+						}
+					}
+				}
+			}
+		},
+		{
+			uid = 3,
+			priority = 0,
+			key = "E",
+			type = 1,
+			sets = {
+				{
+					type = "cast",
+					actions = {
+						{
+							flags = bit.bor(Clicked.UnitFlags.ALIVE, Clicked.UnitFlags.FRIEND),
+							name = "Holy Shock"
+						}
+					}
+				}
+			}
+		},
+		{
+			uid = 4,
+			priority = 100,
+			key = "E",
+			type = 1,
+			sets = {
+				{
+					type = "use",
+					actions = {
+						{
+							id = 13
+						}
+					}
+				}
+			}
+		}
+	}
 end
 
 function Clicked2:OnEnable()

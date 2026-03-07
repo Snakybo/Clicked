@@ -16,6 +16,71 @@
 
 --- @meta
 
+--- @class Keybind2
+--- @field public key string
+--- @field public type ActionType
+--- @field public sets ActionSet[]
+
+--- @class ActionSet
+--- @field public type string
+--- @field public actions Action2[]
+
+--- @class Action2
+--- @field public flags? UnitFlags
+--- @field public load? LoadConditionSet
+--- @field public target? string
+
+--- @enum UnitFlags
+Clicked2.UnitFlags = {
+	ALIVE = 1,
+	DEAD = 2,
+	FRIEND = 4,
+	HOSTILE = 8
+}
+
+--- @class LoadConditionSet
+--- @field public never? LoadCondition
+--- @field public class? LoadCondition
+--- @field public race? LoadCondition
+--- @field public playerNameRealm? LoadCondition
+--- @field public combat? LoadCondition
+--- @field public spellKnown? LoadCondition
+--- @field public inGroup? LoadCondition
+--- @field public playerInGroup? LoadCondition
+--- @field public form? LoadCondition
+--- @field public pet? LoadCondition
+--- @field public stealth? LoadCondition
+--- @field public mounted? LoadCondition
+--- @field public outdoors? LoadCondition
+--- @field public swimming? LoadCondition
+--- @field public flying? LoadCondition
+--- @field public dynamicFlying? LoadCondition
+--- @field public flyable? LoadCondition
+--- @field public advancedFlyable? LoadCondition
+--- @field public instanceType? LoadCondition
+--- @field public zoneName? LoadCondition
+--- @field public equipped? LoadCondition
+--- @field public specialization? LoadCondition
+--- @field public specRole? LoadCondition
+--- @field public talent? LoadCondition
+--- @field public pvpTalent? LoadCondition
+--- @field public warMode? LoadCondition
+--- @field public channeling? LoadCondition
+--- @field public bonusbar? LoadCondition
+--- @field public bar? LoadCondition
+
+--- @class LoadCondition
+--- @field public state LoadConditionFlags
+--- @field public single? unknown
+--- @field public multiple? unknown[]
+
+--- @enum LoadConditionFlags
+Clicked2.LoadConditionFlags = {
+	ENABLED = 1,
+	NEGATED = 2,
+	MULTI = 4
+}
+
 --- @class Clicked : AceAddon, AceEvent-3.0
 --- @field public VERSION string
 
