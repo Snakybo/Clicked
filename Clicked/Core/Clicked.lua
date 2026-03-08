@@ -377,7 +377,7 @@ end
 function Clicked2:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
+	Addon.db = LibStub("AceDB-3.0"):New("Clicked2DB", self:GetDatabaseDefaults(), defaultProfile)
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
