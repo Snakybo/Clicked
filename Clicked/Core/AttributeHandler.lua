@@ -17,7 +17,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-local hasTypeRelease = Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC
+local hasTypeRelease = Addon.EXPANSION >= Addon.Expansion.DF or Addon.EXPANSION == Addon.Expansion.TBC
 
 local frameCache = {}
 
