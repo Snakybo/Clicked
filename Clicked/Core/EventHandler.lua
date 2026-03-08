@@ -32,7 +32,6 @@ local function PLAYER_REGEN_DISABLED()
 	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
 	Addon.BindingConfig.Window:Close()
-	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
@@ -45,7 +44,6 @@ local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
-	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
@@ -158,12 +156,6 @@ local function TRAIT_CONFIG_UPDATED()
 	end)
 end
 
-local function PLAYER_FOCUS_CHANGED()
-	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_FOCUS_CHANGED")
-
-	Addon:AbilityTooltips_Refresh()
-end
-
 local function PLAYER_LEVEL_CHANGED()
 	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_LEVEL_CHANGED")
 
@@ -200,18 +192,6 @@ local function GROUP_ROSTER_UPDATE()
 	Clicked2:LogVerbose("Received event {eventName}", "GROUP_ROSTER_UPDATE")
 
 	Addon:ReloadBindings("GROUP_ROSTER_UPDATE")
-end
-
-local function MODIFIER_STATE_CHANGED()
-	Clicked2:LogVerbose("Received event {eventName}", "MODIFIER_STATE_CHANGED")
-
-	Addon:AbilityTooltips_Refresh()
-end
-
-local function UNIT_TARGET()
-	Clicked2:LogVerbose("Received event {eventName}", "UNIT_TARGET")
-
-	Addon:AbilityTooltips_Refresh()
 end
 
 local function RUNE_UPDATED()
@@ -254,10 +234,6 @@ function Addon:RegisterEventHandlers()
 		Clicked2:RegisterEvent("RUNE_UPDATED", RUNE_UPDATED)
 	end
 
-	if Addon.EXPANSION >= Addon.Expansions.TBC then
-		Clicked2:RegisterEvent("PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-	end
-
 	if Addon.EXPANSION <= Addon.Expansions.CATA then
 		Clicked2:RegisterEvent("CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 	end
@@ -294,8 +270,6 @@ function Addon:RegisterEventHandlers()
 	Clicked2:RegisterEvent("ZONE_CHANGED", ZONE_CHANGED)
 	Clicked2:RegisterEvent("ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	Clicked2:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
-	Clicked2:RegisterEvent("MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
-	Clicked2:RegisterEvent("UNIT_TARGET", UNIT_TARGET)
 	Clicked2:RegisterEvent("ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
 	Clicked2:RegisterEvent("ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
 end

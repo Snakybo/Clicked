@@ -96,19 +96,6 @@ function AddonOptions:CreateOptionsTable()
 					return Addon.db.profile.options.onKeyDown
 				end
 			},
-			tooltips = {
-				name = Addon.L["Show abilities in unit tooltips"],
-				desc = Addon.L["If enabled unit tooltips will be augmented to show abilities and keybinds that can be used on the target."],
-				type = "toggle",
-				order = 300,
-				width = "full",
-				set = function(_, val)
-					Addon.db.profile.options.tooltips = val
-				end,
-				get = function()
-					return Addon.db.profile.options.tooltips
-				end
-			},
 			bindUnassignedModifiers = {
 				name = Addon.L["Bind unassigned modifier keys automatically"],
 				desc = Addon.L["If enabled, modifier key combinations that aren't bound will be bound to the main key, for example, binding 'Q' will also bind 'SHIFT-Q', 'AlT-Q', and 'CTRL-Q'."],

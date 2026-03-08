@@ -109,7 +109,6 @@ function Clicked2:OnInitialize()
 	Addon.ProfileOptions:Initialize()
 	Addon.BlacklistOptions:Initialize()
 	Addon:StatusOutput_Initialize()
-	Addon:AbilityTooltips_Initialize()
 
 	AceConsole:RegisterChatCommand("clicked2", HandleChatCommand)
 	AceConsole:RegisterChatCommand("cc2", HandleChatCommand)
