@@ -32,7 +32,6 @@
 
 --- @class Profile.Options
 --- @field public onKeyDown boolean
---- @field public tooltips boolean
 --- @field public minimap Profile.Options.Minimap
 --- @field public bindUnassignedModifiers boolean
 --- @field public autoBindActionBar boolean

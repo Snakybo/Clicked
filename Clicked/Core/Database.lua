@@ -151,7 +151,6 @@ function Clicked2:GetDatabaseDefaults()
 			version = nil,
 			options = {
 				onKeyDown = true,
-				tooltips = false,
 				bindUnassignedModifiers = false,
 				autoBindActionBar = false,
 				minimap = {
