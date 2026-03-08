@@ -277,12 +277,12 @@ function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, c
 		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansion.TBC then
 		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
 		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansion.CATA then
 		items[Addon.TargetUnit.ARENA_1] = Addon.L["Arena %s"]:format("1")
 		items[Addon.TargetUnit.ARENA_2] = Addon.L["Arena %s"]:format("2")
 		items[Addon.TargetUnit.ARENA_3] = Addon.L["Arena %s"]:format("3")

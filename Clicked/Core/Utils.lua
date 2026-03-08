@@ -42,7 +42,7 @@ local KEYBIND_ORDER_LIST = {
 local shapeshiftForms
 
 -- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ", ").." }, -- " ..a(b,", "))
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+if Addon.EXPANSION >= Addon.Expansion.DF then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
 		-- Holy Paladin
@@ -84,7 +84,7 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
 		[1453] = { 1784 },  -- Stealth
 	}
-elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+elseif Addon.EXPANSION >= Addon.Expansion.MOP then
 	--- @type { [integer]: integer[] }
 	shapeshiftForms = {
 		-- Holy Paladin
@@ -194,13 +194,13 @@ else
 		}
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansion.TBC then
 		local DRUID = "DRUID"
 		table.insert(shapeshiftForms[DRUID], { 33891 }) -- Tree of Life
 		table.insert(shapeshiftForms[DRUID], { 40120, 33943 }) -- Swift Flight Form, Flight Form
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
+	if Addon.EXPANSION >= Addon.Expansion.WOTLK then
 		local DEATHKNIGHT = "DEATHKNIGHT"
 		shapeshiftForms[DEATHKNIGHT] = {
 			{ 48266 }, -- Blood Presence
@@ -209,7 +209,7 @@ else
 		}
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansion.CATA then
 		local PALADIN = "PALADIN"
 		shapeshiftForms[PALADIN] = {
 			{ 465 }, -- Devotion Aura
@@ -463,7 +463,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(spell) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
+			if Addon.EXPANSION >= Addon.Expansion.TWW or Addon.EXPANSION == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(spell)
 			else
 				local data = C_Spell.GetSpellInfo(spell)
@@ -477,7 +477,7 @@ function Addon:GetBindingValue(binding)
 		if C_Spell.IsSpellDataCached(spell) then
 			local shouldAppendSubtext = false
 
-			if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank then
+			if Addon.EXPANSION <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank then
 				shouldAppendSubtext = true
 			elseif binding.action.spellIncludeSubtext then
 				shouldAppendSubtext = true
@@ -523,7 +523,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(aura) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
+			if Addon.EXPANSION >= Addon.Expansion.TWW or Addon.EXPANSION == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 				name = C_Spell.GetSpellName(aura)
 			else
 				local data = C_Spell.GetSpellInfo(aura)
@@ -725,7 +725,7 @@ function Addon:GetSpellInfo(input, addSubText)
 
 	local spell = C_Spell.GetSpellInfo(input)
 
-	if spell ~= nil and Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and addSubText and C_Spell.IsSpellDataCached(spell.spellID) then
+	if spell ~= nil and Addon.EXPANSION <= Addon.Expansion.WOTLK and addSubText and C_Spell.IsSpellDataCached(spell.spellID) then
 		local subtext = C_Spell.GetSpellSubtext(spell.spellID)
 
 		if not self:IsNilOrEmpty(subtext) then
@@ -907,7 +907,7 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+if Addon.EXPANSION >= Addon.Expansion.MOP then
 	--- Get all available shapeshift forms for the specified spec ID.
 	--- Note that this does not mean _currently available_ shapeshift forms,
 	--- just all possible shapeshift forms.
@@ -986,7 +986,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 		end
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION >= Addon.Expansion.DF then
 		if select(2, UnitClass("player")) == "DRUID" then
 			local specId = GetSpecializationInfo(GetSpecialization())
 			local all = Addon:GetShapeshiftForms(specId)
@@ -1094,7 +1094,7 @@ end
 --- @param specId integer
 --- @return integer?
 function Addon:GetSpecIndexFromId(specId)
-	if Addon.EXPANSION_LEVEL < Addon.Expansion.MOP then
+	if Addon.EXPANSION < Addon.Expansion.MOP then
 		return nil
 	end
 

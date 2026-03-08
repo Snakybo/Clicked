@@ -62,7 +62,7 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 101,
 				width = "full",
-				hidden = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
+				hidden = Addon.EXPANSION < Addon.Expansion.DF,
 				set = function (_, val)
 					if val then
 						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
@@ -144,7 +144,7 @@ function AddonOptions:CreateOptionsTable()
 				order = 600,
 				width = "full",
 				hidden = function()
-					return Addon.EXPANSION_LEVEL < Addon.Expansion.TWW
+					return Addon.EXPANSION < Addon.Expansion.TWW
 				end,
 				set = function (_, val)
 					Addon.db.profile.options.disableInHouse = val

@@ -373,7 +373,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			return hasRank
 		end)
 
-		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and anyHasRank then
+		if Addon.EXPANSION <= Addon.Expansion.WOTLK and anyHasRank then
 			local function OnClick()
 				for _, binding in ipairs(self.bindings) do
 					if binding.actionType == Clicked2.ActionType.SPELL and not binding.action.spellMaxRank then
