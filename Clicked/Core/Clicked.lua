@@ -15,30 +15,12 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceConsole = LibStub("AceConsole-3.0")
-local LibDataBroker = LibStub("LibDataBroker-1.1")
-local LibDBIcon = LibStub("LibDBIcon-1.0")
+
+--- @class SlashCommandHandler
+--- @field public HandleSlashCommand fun(self: SlashCommandHandler, args: string[]): boolean
 
 --- @class Addon
 local Addon = select(2, ...)
-
--- Local support functions
-
-local function RegisterIcons()
-	local iconData = LibDataBroker:NewDataObject("Clicked2", {
-		type = "launcher",
-		label = Addon.L["Clicked2"],
-		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
-		OnClick = function()
-			Addon.BindingConfig.Window:Open()
-		end,
-		OnTooltipShow = function(tooltip)
-			tooltip:AddLine(Addon.L["Clicked2"])
-		end
-	})
-
-	LibDBIcon:Register(Addon.L["Clicked2"], iconData, Addon.db.profile.options.minimap)
-	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
-end
 
 --- Parse a chat command input and handle it appropriately.
 ---
@@ -59,14 +41,16 @@ local function HandleChatCommand(input)
 		start = next
 	end
 
-	if #args == 0 then
-		if InCombatLockdown() then
-			openConfigOnCombatExit = true
-			Clicked2:LogWarning(Addon.L["Binding configuration will open once you leave combat."])
-		else
-			Addon.BindingConfig.Window:Open()
+	for _, module in Clicked2:IterateModules() do
+		if module.HandleSlashCommand ~= nil then
+			--- @cast module SlashCommandHandler
+
+			if module:HandleSlashCommand(args) then
+				return
+			end
 		end
-	elseif #args == 1 then
+	end
+	if #args == 1 then
 		if args[1] == "opt" or args[1] == "options" then
 			Addon:OpenSettingsMenu("Clicked2")
 		elseif args[1] == "dump" then
@@ -99,8 +83,6 @@ function Clicked2:OnInitialize()
 
 	Addon:RegisterEventHandlers()
 	Addon:UpgradeDatabase()
-
-	RegisterIcons()
 
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()

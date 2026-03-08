@@ -19,7 +19,6 @@ local Addon = select(2, ...)
 
 local isInitialized = false
 local isPlayerInCombat = false
-local openConfigOnCombatExit = false
 local wasHouseEditorActive = false
 
 --- @type table<string, boolean>
@@ -29,7 +28,6 @@ local function PLAYER_REGEN_DISABLED()
 	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_REGEN_DISABLED")
 
 	isPlayerInCombat = true
-	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
 	Addon.BindingConfig.Window:Close()
 
@@ -47,11 +45,6 @@ local function PLAYER_REGEN_ENABLED()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
-	end
-
-	if openConfigOnCombatExit then
-		Addon.BindingConfig.Window:Open()
-		openConfigOnCombatExit = false
 	end
 end
 

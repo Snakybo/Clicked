@@ -16,8 +16,10 @@
 
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local LibDBIcon = LibStub("LibDBIcon-1.0")
-local LibLog = LibStub("LibLog-1.0")
+
+--- @class OptionMenuDriver
+--- @field public GetOptionMenu fun(): string, string, string?
+--- @field public GetOptionTable fun(): table<string, AceConfig.OptionsTable>
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -33,47 +35,15 @@ end
 --- @private
 --- @return AceConfig.OptionsTable
 function AddonOptions:CreateOptionsTable()
+	local minimap = Clicked2:GetModule("Minimap") --[[@as MinimapModule]]
+
 	return {
 		type = "group",
 		name = Addon.L["Clicked2"],
 		args = {
-			minimapIcon = {
-				name = Addon.L["Enable minimap icon"],
-				desc = Addon.L["Enable or disable the minimap icon."],
-				type = "toggle",
-				order = 100,
-				width = "full",
-				set = function(_, val)
-					Addon.db.profile.options.minimap.hide = not val
-
-					if val then
-						LibDBIcon:Show(Addon.L["Clicked2"])
-					else
-						LibDBIcon:Hide(Addon.L["Clicked2"])
-					end
-				end,
-				get = function(_)
-					return not Addon.db.profile.options.minimap.hide
-				end
-			},
-			addonCompartmentButton = {
-				name = Addon.L["Enable addon compartment button"],
-				desc = Addon.L["Enable or disable the addon compartment button."],
-				type = "toggle",
-				order = 101,
-				width = "full",
-				hidden = Addon.EXPANSION < Addon.Expansions.DF,
-				set = function (_, val)
-					if val then
-						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
-					else
-						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked2"])
-					end
-				end,
-				get = function(_)
-					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked2"])
-				end
-			},
+			-- TODO: automatically construct option menus from these
+			minimapIcon = minimap:GetOptionTable().minimapIcon,
+			addonCompartmentButton = minimap:GetOptionTable().addonCompartmentButton,
 			onKeyDown = {
 				name = Addon.L["Cast on key down rather than key up"],
 				desc = Addon.L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."],
