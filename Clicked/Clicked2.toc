@@ -31,6 +31,7 @@ Widgets\Widgets.xml
 # Core systems
 Core\Init.lua
 Core\Clicked.lua
+Core\EventHandler.lua
 Core\Database.lua
 Core\AttributeHandler.lua
 Core\BindingProcessor.lua
