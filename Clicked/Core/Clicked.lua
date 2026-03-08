@@ -102,7 +102,6 @@ local function PLAYER_REGEN_DISABLED()
 	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
 
 	Addon.BindingConfig.Window:Close()
-	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
@@ -115,7 +114,6 @@ local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
-	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
@@ -228,12 +226,6 @@ local function TRAIT_CONFIG_UPDATED()
 	end)
 end
 
-local function PLAYER_FOCUS_CHANGED()
-	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_FOCUS_CHANGED")
-
-	Addon:AbilityTooltips_Refresh()
-end
-
 local function PLAYER_LEVEL_CHANGED()
 	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_LEVEL_CHANGED")
 
@@ -270,18 +262,6 @@ local function GROUP_ROSTER_UPDATE()
 	Clicked2:LogVerbose("Received event {eventName}", "GROUP_ROSTER_UPDATE")
 
 	Addon:ReloadBindings("GROUP_ROSTER_UPDATE")
-end
-
-local function MODIFIER_STATE_CHANGED()
-	Clicked2:LogVerbose("Received event {eventName}", "MODIFIER_STATE_CHANGED")
-
-	Addon:AbilityTooltips_Refresh()
-end
-
-local function UNIT_TARGET()
-	Clicked2:LogVerbose("Received event {eventName}", "UNIT_TARGET")
-
-	Addon:AbilityTooltips_Refresh()
 end
 
 local function RUNE_UPDATED()
@@ -326,10 +306,6 @@ local function UpdateEventHooks(self, method)
 		method(self, "RUNE_UPDATED", RUNE_UPDATED)
 	end
 
-	if Addon.EXPANSION >= Addon.Expansion.TBC then
-		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-	end
-
 	if Addon.EXPANSION <= Addon.Expansion.CATA then
 		method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 	end
@@ -366,8 +342,6 @@ local function UpdateEventHooks(self, method)
 	method(self, "ZONE_CHANGED", ZONE_CHANGED)
 	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
-	method(self, "MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
-	method(self, "UNIT_TARGET", UNIT_TARGET)
 	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
 	method(self, "ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
 end
@@ -395,7 +369,6 @@ function Clicked2:OnInitialize()
 	Addon.ProfileOptions:Initialize()
 	Addon.BlacklistOptions:Initialize()
 	Addon:StatusOutput_Initialize()
-	Addon:AbilityTooltips_Initialize()
 
 	AceConsole:RegisterChatCommand("clicked2", HandleChatCommand)
 	AceConsole:RegisterChatCommand("cc2", HandleChatCommand)
