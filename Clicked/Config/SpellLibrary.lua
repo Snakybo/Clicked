@@ -199,7 +199,7 @@ local function GetSpells_Classic()
 	local function ParseSpellBookItem(type, id, tabName, tabIcon, specId)
 		if not IsPassiveSpell(id) then
 			if type == "SPELL" or type == "FUTURESPELL" or type == "PETACTION" then
-				local spell = Addon:GetSpellInfo(id, Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK)
+				local spell = Addon:GetSpellInfo(id, Addon.EXPANSION <= Addon.Expansions.WOTLK)
 
 				if spell ~= nil then
 					--- @type SpellLibrarySpellResult
@@ -308,7 +308,7 @@ local function GetSpells()
 		return cached
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+	if Addon.EXPANSION >= Addon.Expansions.TWW then
 		cached = GetSpells_TWW()
 	else
 		cached = GetSpells_Classic()

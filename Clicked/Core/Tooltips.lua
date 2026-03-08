@@ -184,7 +184,7 @@ end
 function Addon:AbilityTooltips_Initialize()
 	-- Add a delay here to make sure we're the always at the bottom of the tooltip
 	C_Timer.After(1, function()
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+		if Addon.EXPANSION >= Addon.Expansions.DF then
 			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
 		else
 			GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
@@ -193,7 +193,7 @@ function Addon:AbilityTooltips_Initialize()
 		GameTooltip:HookScript("OnHide", OnTooltipHide)
 	end)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION >= Addon.Expansions.DF then
 		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, OnTooltipSetSpell)
 	else
 		GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)

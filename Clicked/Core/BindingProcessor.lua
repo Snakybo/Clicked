@@ -260,20 +260,20 @@ local function ConstructAction(binding, target)
 	AppendNegatableStringCondition(binding.load.channeling, "channeling")
 	AppendNegatableStringCondition(binding.load.bar, "bar", true)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansions.TBC then
 		AppendCondition(binding.load.flying, "flying")
 		AppendCondition(binding.load.flyable, "flyable")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansions.CATA then
 		AppendNegatableStringCondition(binding.load.bonusbar, "bonusbar")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION >= Addon.Expansions.DF then
 		AppendCondition(binding.load.advancedFlyable, "advflyable")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+	if Addon.EXPANSION >= Addon.Expansions.TWW then
 		AppendCondition(binding.load.dynamicFlying, "dynamicFlying")
 	end
 
@@ -918,7 +918,7 @@ function Addon:UpdateTalentCache(callback, immediate)
 
 		wipe(talentCache)
 
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+		if Addon.EXPANSION >= Addon.Expansions.DF then
 			local configId = C_ClassTalents.GetActiveConfigID()
 			if configId == nil then
 				Addon:UpdateTalentCache()
@@ -973,7 +973,7 @@ function Addon:UpdateTalentCache(callback, immediate)
 					end
 				end
 			end
-		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+		elseif Addon.EXPANSION >= Addon.Expansions.MOP then
 			for i = 1, MAX_NUM_TALENTS do
 				local info = C_SpecializationInfo.GetTalentInfo({
 					tier = math.ceil(i / MAX_NUM_TALENTS),
@@ -1106,7 +1106,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
+	if Addon.EXPANSION >= Addon.Expansions.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
 		state.housing = not C_HouseEditor.IsHouseEditorActive()
 		Clicked2:LogVerbose("Evaluated condition {condition} for binding {binding}: {value}", "housing", binding.uid, state.housing)
 	end

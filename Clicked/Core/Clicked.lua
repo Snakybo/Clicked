@@ -20,17 +20,6 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 
 --- @class Addon
 local Addon = select(2, ...)
-Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked2") --[[@as table<string,string>]]
-
---- @class Clicked : AceAddon, AceEvent-3.0, LibLog-1.0.Logger
-Clicked2 = LibStub("AceAddon-3.0"):NewAddon("Clicked2", "AceEvent-3.0", "LibLog-1.0")
-Clicked2.VERSION = C_AddOns.GetAddOnMetadata("Clicked2", "Version")
-
---@debug@
-if Clicked2.VERSION == "@project-version@" then
-	Clicked2.VERSION = "development"
-end
---@end-debug@
 
 local isPlayerInCombat = false
 local isInitialized = false
@@ -143,7 +132,7 @@ local function PLAYER_ENTERING_WORLD()
 
 	isInitialized = true
 	playerFlagsCache = {
-		warMode = Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA and C_PvP.IsWarModeDesired() or false
+		warMode = Addon.EXPANSION >= Addon.Expansions.BFA and C_PvP.IsWarModeDesired() or false
 	}
 
 	local isInitialLoadPending = false
@@ -333,41 +322,41 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
 	method(self, "PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
 
-	if Addon.EXPANSION_LEVEL == Addon.Expansion.CLASSIC then
+	if Addon.EXPANSION == Addon.Expansions.CLASSIC then
 		method(self, "RUNE_UPDATED", RUNE_UPDATED)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansions.TBC then
 		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
 	end
 
-	if Addon.EXPANSION_LEVEL <= Addon.Expansion.CATA then
+	if Addon.EXPANSION <= Addon.Expansions.CATA then
 		method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
+	if Addon.EXPANSION >= Addon.Expansions.WOTLK then
 		method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
+	if Addon.EXPANSION >= Addon.Expansions.BFA then
 		method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
 		method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION >= Addon.Expansions.DF then
 		method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
 		method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	end
 
 	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
+	if Addon.EXPANSION >= Addon.Expansions.TWW or Addon.EXPANSION == Addon.Expansions.TBC then -- HACK: Anniversary follows the modern API
 		method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
 	else
 		method(self, "LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+	if Addon.EXPANSION >= Addon.Expansions.TWW then
 		method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
 	end
 
@@ -500,7 +489,7 @@ function Clicked2:OnEnable()
 	UpdateEventHooks(self, self.RegisterEvent)
 
 	-- self-cast warning
-	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION >= Addon.Expansions.DF then
 		local selfCastModifier = GetModifiedClick("SELFCAST")
 
 		if selfCastModifier ~= "NONE" then

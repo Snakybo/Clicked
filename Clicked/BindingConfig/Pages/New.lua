@@ -291,10 +291,10 @@ local function ImportActionbar()
 				binding.load.class.selected = 1
 				binding.load.class.single = select(2, UnitClass("player"))
 
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+				if Addon.EXPANSION >= Addon.Expansions.MOP then
 					binding.load.specialization.selected = 1
 					binding.load.specialization.single = GetSpecialization()
-				elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+				elseif Addon.EXPANSION >= Addon.Expansions.CATA then
 					binding.load.specialization.selected = 1
 					binding.load.specialization.single = GetPrimaryTalentTree()
 				end
@@ -380,7 +380,7 @@ function Addon.BindingConfig.NewPage:Redraw()
 
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+	if Addon.EXPANSION >= Addon.Expansions.MOP then
 		local label = AceGUI:Create("Label") --[[@as AceGUILabel]]
 		label:SetText(Addon.L["Import class abilities per specialization"])
 		label:SetRelativeWidth(0.79)

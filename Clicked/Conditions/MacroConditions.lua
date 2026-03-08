@@ -28,7 +28,7 @@ local config = {
 			label = "Form / Stance",
 			negatable = true,
 			availableValues = function(class, specialization)
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+				if Addon.EXPANSION >= Addon.Expansions.MOP then
 					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedForms(specIds)
 				else
@@ -158,7 +158,7 @@ local config = {
 	},
 	{
 		id = "flying",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.TBC,
+		disabled = Addon.EXPANSION < Addon.Expansions.TBC,
 		drawer = {
 			type = "select",
 			label = "Flying",
@@ -176,7 +176,7 @@ local config = {
 	},
 	{
 		id = "dynamicFlying",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
+		disabled = Addon.EXPANSION < Addon.Expansions.DF,
 		drawer = {
 			type = "select",
 			label = "Skyriding",
@@ -194,7 +194,7 @@ local config = {
 	},
 	{
 		id = "flyable",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.TBC,
+		disabled = Addon.EXPANSION < Addon.Expansions.TBC,
 		drawer = {
 			type = "select",
 			label = "Flyable",
@@ -212,7 +212,7 @@ local config = {
 	},
 	{
 		id = "advancedFlyable",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
+		disabled = Addon.EXPANSION < Addon.Expansions.DF,
 		drawer = {
 			type = "select",
 			label = "Advanced flyable",
@@ -230,7 +230,7 @@ local config = {
 	},
 	{
 		id = "bonusbar",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
+		disabled = Addon.EXPANSION < Addon.Expansions.CATA,
 		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",

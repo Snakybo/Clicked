@@ -107,11 +107,11 @@ local function EnsureMacroFrameHandler()
 		end
 	]])
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
+	if Addon.EXPANSION >= Addon.Expansions.WOTLK then
 		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+	if Addon.EXPANSION >= Addon.Expansions.MOP then
 		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
 	end
 

@@ -44,17 +44,17 @@ local allPvpTalents = {}
 
 do
 	--- @param race integer
-	--- @param expansion ExpansionLevel
+	--- @param expansion Expansions
 	local function AddRace(race, expansion)
-		if Addon.EXPANSION_LEVEL >= expansion then
+		if Addon.EXPANSION >= expansion then
 			table.insert(allRaces, race)
 		end
 	end
 
 	--- @param class string
-	--- @param expansion ExpansionLevel
+	--- @param expansion Expansions
 	local function AddClass(class, expansion)
-		if Addon.EXPANSION_LEVEL >= expansion then
+		if Addon.EXPANSION >= expansion then
 			table.insert(allClasses, class)
 		end
 	end
@@ -63,45 +63,45 @@ do
 	-- for example Pandaran has three race IDs: 24, 25, 26 for neutral, alliance and horde respectively, but we
 	-- only need to register 24 as they all have the same englishRaceName.
 
-	AddRace(1, Addon.Expansion.CLASSIC) -- Human
-	AddRace(2, Addon.Expansion.CLASSIC) -- Orc
-	AddRace(3, Addon.Expansion.CLASSIC) -- Dwarf
-	AddRace(4, Addon.Expansion.CLASSIC) -- NightElf
-	AddRace(5, Addon.Expansion.CLASSIC) -- Scourge
-	AddRace(6, Addon.Expansion.CLASSIC) -- Tauren
-	AddRace(7, Addon.Expansion.CLASSIC) -- Gnome
-	AddRace(8, Addon.Expansion.CLASSIC) -- Troll
-	AddRace(10, Addon.Expansion.TBC) -- BloodElf
-	AddRace(11, Addon.Expansion.TBC) -- Draenei
-	AddRace(9, Addon.Expansion.CATA) -- Goblin
-	AddRace(22, Addon.Expansion.CATA) -- Worgen
-	AddRace(24, Addon.Expansion.MOP) -- Pandaren
-	AddRace(27, Addon.Expansion.BFA) -- Nightborne
-	AddRace(28, Addon.Expansion.BFA) -- HighmountainTauren
-	AddRace(29, Addon.Expansion.BFA) -- VoidElf
-	AddRace(30, Addon.Expansion.BFA) -- LightforgedDraenei
-	AddRace(31, Addon.Expansion.BFA) -- ZandalariTroll
-	AddRace(32, Addon.Expansion.BFA) -- KulTiran
-	AddRace(34, Addon.Expansion.BFA) -- DarkIronDwarf
-	AddRace(35, Addon.Expansion.BFA) -- Vulpera
-	AddRace(36, Addon.Expansion.BFA) -- MagharOrc
-	AddRace(37, Addon.Expansion.BFA) -- Mechagnome
-	AddRace(52, Addon.Expansion.DF) -- Dracthyr
-	AddRace(84, Addon.Expansion.TWW) -- EarthenDwarf
+	AddRace(1, Addon.Expansions.CLASSIC) -- Human
+	AddRace(2, Addon.Expansions.CLASSIC) -- Orc
+	AddRace(3, Addon.Expansions.CLASSIC) -- Dwarf
+	AddRace(4, Addon.Expansions.CLASSIC) -- NightElf
+	AddRace(5, Addon.Expansions.CLASSIC) -- Scourge
+	AddRace(6, Addon.Expansions.CLASSIC) -- Tauren
+	AddRace(7, Addon.Expansions.CLASSIC) -- Gnome
+	AddRace(8, Addon.Expansions.CLASSIC) -- Troll
+	AddRace(10, Addon.Expansions.TBC) -- BloodElf
+	AddRace(11, Addon.Expansions.TBC) -- Draenei
+	AddRace(9, Addon.Expansions.CATA) -- Goblin
+	AddRace(22, Addon.Expansions.CATA) -- Worgen
+	AddRace(24, Addon.Expansions.MOP) -- Pandaren
+	AddRace(27, Addon.Expansions.BFA) -- Nightborne
+	AddRace(28, Addon.Expansions.BFA) -- HighmountainTauren
+	AddRace(29, Addon.Expansions.BFA) -- VoidElf
+	AddRace(30, Addon.Expansions.BFA) -- LightforgedDraenei
+	AddRace(31, Addon.Expansions.BFA) -- ZandalariTroll
+	AddRace(32, Addon.Expansions.BFA) -- KulTiran
+	AddRace(34, Addon.Expansions.BFA) -- DarkIronDwarf
+	AddRace(35, Addon.Expansions.BFA) -- Vulpera
+	AddRace(36, Addon.Expansions.BFA) -- MagharOrc
+	AddRace(37, Addon.Expansions.BFA) -- Mechagnome
+	AddRace(52, Addon.Expansions.DF) -- Dracthyr
+	AddRace(84, Addon.Expansions.TWW) -- EarthenDwarf
 
-	AddClass("WARRIOR", Addon.Expansion.CLASSIC)
-	AddClass("PALADIN", Addon.Expansion.CLASSIC)
-	AddClass("HUNTER", Addon.Expansion.CLASSIC)
-	AddClass("ROGUE", Addon.Expansion.CLASSIC)
-	AddClass("PRIEST", Addon.Expansion.CLASSIC)
-	AddClass("SHAMAN", Addon.Expansion.CLASSIC)
-	AddClass("MAGE", Addon.Expansion.CLASSIC)
-	AddClass("WARLOCK", Addon.Expansion.CLASSIC)
-	AddClass("DRUID", Addon.Expansion.CLASSIC)
-	AddClass("DEATHKNIGHT", Addon.Expansion.WOTLK)
-	AddClass("MONK", Addon.Expansion.MOP)
-	AddClass("DEMONHUNTER", Addon.Expansion.LEGION)
-	AddClass("EVOKER", Addon.Expansion.DF)
+	AddClass("WARRIOR", Addon.Expansions.CLASSIC)
+	AddClass("PALADIN", Addon.Expansions.CLASSIC)
+	AddClass("HUNTER", Addon.Expansions.CLASSIC)
+	AddClass("ROGUE", Addon.Expansions.CLASSIC)
+	AddClass("PRIEST", Addon.Expansions.CLASSIC)
+	AddClass("SHAMAN", Addon.Expansions.CLASSIC)
+	AddClass("MAGE", Addon.Expansions.CLASSIC)
+	AddClass("WARLOCK", Addon.Expansions.CLASSIC)
+	AddClass("DRUID", Addon.Expansions.CLASSIC)
+	AddClass("DEATHKNIGHT", Addon.Expansions.WOTLK)
+	AddClass("MONK", Addon.Expansions.MOP)
+	AddClass("DEMONHUNTER", Addon.Expansions.LEGION)
+	AddClass("EVOKER", Addon.Expansions.DF)
 end
 
 --- Attempt to retrieve cached talent data for the specified specialization.
@@ -276,12 +276,12 @@ function Addon:GetLocalizedTargetUnits()
 		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansions.TBC then
 		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
 		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansions.CATA then
 		items[Addon.TargetUnit.ARENA_1] = Addon.L["Arena %s"]:format("1")
 		items[Addon.TargetUnit.ARENA_2] = Addon.L["Arena %s"]:format("2")
 		items[Addon.TargetUnit.ARENA_3] = Addon.L["Arena %s"]:format("3")
@@ -447,7 +447,7 @@ function Addon:GetLocalizedSpecializations(classNames)
 	return items, order
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+if Addon.EXPANSION >= Addon.Expansions.DF then
 	--- Get a localized list of all available talents for the
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
@@ -483,7 +483,7 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 
 		return result
 	end
-elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+elseif Addon.EXPANSION >= Addon.Expansions.CATA then
 	--- Get a localized list of all available talents for the
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
@@ -598,7 +598,7 @@ function Addon:GetLocalizedPvPTalents(specializations)
 	return result
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+if Addon.EXPANSION >= Addon.Expansions.MOP then
 	--- Get a localized list of all available shapeshift forms for the given specialization IDs.
 	--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
 	---

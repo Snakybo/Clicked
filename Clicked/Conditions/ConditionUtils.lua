@@ -162,7 +162,7 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 
 	if #specIndices == 0 then
 		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+			if Addon.EXPANSION >= Addon.Expansions.MOP then
 				specIndices[1] = GetSpecialization()
 			else
 				specIndices[1] = GetPrimaryTalentTree()

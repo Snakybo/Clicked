@@ -179,7 +179,7 @@ local function UpgradeLegacy(profile, from)
 				value = "ACTIVE"
 			}
 
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
+			if Addon.EXPANSION >= Addon.Expansions.BFA then
 				binding.load.pvpTalent = {
 					selected = 0,
 					single = 1,
@@ -690,7 +690,7 @@ local function UpgradeLegacy(profile, from)
 	-- 1.8.0 to 1.8.1
 	if string.sub(from, 1, 5) == "1.8.0" then
 		for _, binding in ipairs(profile.bindings) do
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+			if Addon.EXPANSION >= Addon.Expansions.DF then
 				if binding.load.talent.selected ~= 0 then
 					binding.load.class.selected = 1
 					binding.load.specialization.selected = 1
@@ -729,7 +729,7 @@ local function Upgrade(db, from)
 		for _, binding in ipairs(db.bindings) do
 			binding.action.cancelForm = false
 
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+			if Addon.EXPANSION >= Addon.Expansions.DF then
 				binding.load.talent = {
 					selected = false,
 					entries = {
@@ -783,7 +783,7 @@ local function Upgrade(db, from)
 
 	if from < 6 then
 		for _, binding in ipairs(db.bindings) do
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+			if Addon.EXPANSION >= Addon.Expansions.DF then
 				if #binding.load.talent.entries > 1 and binding.load.talent.entries[1].operation == "OR" then
 					binding.load.talent.entries[1].operation = "AND"
 				end
@@ -806,7 +806,7 @@ local function Upgrade(db, from)
 
 	if from < 7 then
 		for _, binding in ipairs(db.bindings) do
-			if Addon.EXPANSION_LEVEL <= Addon.Expansion.CATA then
+			if Addon.EXPANSION <= Addon.Expansions.CATA then
 				binding.load.talent = {
 					selected = false,
 					entries = {
@@ -818,7 +818,7 @@ local function Upgrade(db, from)
 					}
 				}
 
-				if Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC then
+				if Addon.EXPANSION > Addon.Expansions.CLASSIC then
 					Addon:ShowInformationPopup("Clicked: Binding talent load options have been reset, sorry for the inconvenience.")
 				end
 			end

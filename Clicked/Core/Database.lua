@@ -537,12 +537,12 @@ function Addon:GetNewBindingTemplate()
 		}
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+	if Addon.EXPANSION >= Addon.Expansions.MOP then
 		local specIndex = GetSpecialization()
 		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
 		template.load.specRole = GetTriStateLoadOptionTemplate(specIndex)
-	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	elseif Addon.EXPANSION >= Addon.Expansions.CATA then
 		--- @type number
 		local specIndex = GetPrimaryTalentTree()
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)

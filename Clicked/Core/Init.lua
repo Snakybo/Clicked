@@ -14,11 +14,25 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+--- @class Clicked : AceAddon, AceEvent-3.0, LibLog-1.0.Logger
+Clicked2 = LibStub("AceAddon-3.0"):NewAddon("Clicked2", "AceEvent-3.0", "LibLog-1.0")
+Clicked2.VERSION = C_AddOns.GetAddOnMetadata("Clicked2", "Version")
+
+Clicked2:LogVerbose("Initializing Clicked")
+
+--@debug@
+if Clicked2.VERSION == "@project-version@" then
+	Clicked2.VERSION = "development"
+	Clicked2:LogVerbose("Detected development version")
+end
+--@end-debug@
+
 --- @class Addon
 local Addon = select(2, ...)
+Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked2")
 
---- @enum ExpansionLevel
-Addon.Expansion = {
+--- @enum Expansions
+Addon.Expansions = {
 	CLASSIC = 1,
 	TBC = 2,
 	WOTLK = 3,
@@ -33,59 +47,65 @@ Addon.Expansion = {
 	MN = 12,
 }
 
---- @type ExpansionLevel
-Addon.EXPANSION_LEVEL = nil
+do
+	--- @type { [Expansions]: { min: integer, max: integer } }
+	local interfaceVersionMap ={
+		[Addon.Expansions.CLASSIC] = { min = 10000, max = 20000 },
+		[Addon.Expansions.TBC] = { min = 20000, max = 30000 },
+		[Addon.Expansions.WOTLK] = { min = 30000, max = 40000 },
+		[Addon.Expansions.CATA] = { min = 40000, max = 50000 },
+		[Addon.Expansions.MOP] = { min = 50000, max = 60000 },
+		[Addon.Expansions.TWW] = { min = 110000, max = 120000 },
+		[Addon.Expansions.MN] = { min = 120000, max = 130000 },
+	}
 
----@debug@
--- luacheck: ignore
----@diagnostic disable-next-line: lowercase-global
-function dump(o)
-	if type(o) == 'table' then
-		local s = '{ '
-		for k,v in pairs(o) do
-			if type(k) ~= 'number' then k = '"'..k..'"' end
-			-- luacheck: ignore
-			s = s .. '['..k..'] = ' .. dump(v) .. ','
+	local interfaceVersion = select(4, GetBuildInfo())
+
+	--- @param projectId integer
+	--- @param range { min: integer, max: integer }
+	--- @return boolean
+	local function IsExpansion(projectId, range)
+		if WOW_PROJECT_ID ~= projectId then
+			return false
 		end
-		return s .. '} '
-	else
-		return tostring(o)
+
+		return interfaceVersion >= range.min and interfaceVersion < range.max
 	end
-end
----@end-debug@
 
---- @param err any
---- @return function
-local function errorhandler(err)
-	return geterrorhandler()(err)
+	--- @return Expansions
+	local function GetExpansionLevel()
+		if IsExpansion(WOW_PROJECT_MAINLINE, interfaceVersionMap[Addon.Expansions.MN]) then
+			return Addon.Expansions.MN
+		elseif IsExpansion(WOW_PROJECT_MISTS_CLASSIC, interfaceVersionMap[Addon.Expansions.MOP]) then
+			return Addon.Expansions.MOP
+		elseif IsExpansion(WOW_PROJECT_CATACLYSM_CLASSIC, interfaceVersionMap[Addon.Expansions.CATA]) then
+			return Addon.Expansions.CATA
+		elseif IsExpansion(WOW_PROJECT_WRATH_CLASSIC, interfaceVersionMap[Addon.Expansions.WOTLK]) then
+			return Addon.Expansions.WOTLK
+		elseif IsExpansion(WOW_PROJECT_BURNING_CRUSADE_CLASSIC, interfaceVersionMap[Addon.Expansions.TBC]) then
+			return Addon.Expansions.TBC
+		elseif IsExpansion(WOW_PROJECT_CLASSIC, interfaceVersionMap[Addon.Expansions.CLASSIC]) then
+			return Addon.Expansions.CLASSIC
+		end
+
+		return Clicked2:LogFatal("Unable to determine expansion level for game flavor {projectId} and interface version {interfaceVersion}",
+			WOW_PROJECT_ID, interfaceVersion)
+	end
+
+	Addon.EXPANSION = GetExpansionLevel()
+	Clicked2:LogVerbose("Detected expansion {expansion}", Addon.EXPANSION)
 end
 
---- @param func? function
+--- @param func? fun(...): ...
 --- @param ... any
 --- @return boolean status
 --- @return ...
 function Addon:SafeCall(func, ...)
 	if func ~= nil then
-		return xpcall(func, errorhandler, ...)
+		return xpcall(func, geterrorhandler(), ...)
 	end
 
 	return false
-end
-
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and select(4, GetBuildInfo()) >= 120000 then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.MN
-elseif WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.TWW
-elseif WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.MOP
-elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.CATA
-elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.WOTLK
-elseif WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.TBC
-elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
 end
 
 --- Check if the user is running a development build of the addon.
@@ -97,5 +117,6 @@ function Addon:IsDevelopmentBuild()
 		return true
 	end
 --@end-debug@
+
 	return false
 end
