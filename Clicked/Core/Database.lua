@@ -412,7 +412,7 @@ function Addon:UpdateLookupTable(obj)
 	local function UpdateLookupTable(tbl, key, value)
 		if not clean then
 			for _, array in pairs(tbl) do
-				if Addon:TableRemoveItem(array, value) then
+				if Addon.TableRemoveItem(array, value) then
 					break
 				end
 			end
@@ -428,7 +428,7 @@ function Addon:UpdateLookupTable(obj)
 	--- @param value DataObject
 	local function DeleteFromLookupTable(tbl, value)
 		for _, array in pairs(tbl) do
-			if Addon:TableRemoveItem(array, value) then
+			if Addon.TableRemoveItem(array, value) then
 				break
 			end
 		end
@@ -441,7 +441,7 @@ function Addon:UpdateLookupTable(obj)
 		if tContains(lookupTable.deleted, current.uid) then
 			lookupTable.uid[current.uid] = nil
 
-			Addon:TableRemoveItem(lookupTable.deleted, current.uid)
+			Addon.TableRemoveItem(lookupTable.deleted, current.uid)
 
 			if current.type == Clicked2.DataObjectType.BINDING then
 				--- @cast current Binding
@@ -614,16 +614,16 @@ function Addon:ChangeDataObjectScope(item, scope)
 
 		if scope == Clicked2.DataObjectScope.PROFILE and current.type == Clicked2.DataObjectType.GROUP then
 			table.insert(Addon.db.profile.groups, current)
-			Addon:TableRemoveItem(Addon.db.global.groups, current)
+			Addon.TableRemoveItem(Addon.db.global.groups, current)
 		elseif scope == Clicked2.DataObjectScope.GLOBAL and current.type == Clicked2.DataObjectType.GROUP then
 			table.insert(Addon.db.global.groups, current)
-			Addon:TableRemoveItem(Addon.db.profile.groups, current)
+			Addon.TableRemoveItem(Addon.db.profile.groups, current)
 		elseif scope == Clicked2.DataObjectScope.PROFILE and current.type == Clicked2.DataObjectType.BINDING then
 			table.insert(Addon.db.profile.bindings, current)
-			Addon:TableRemoveItem(Addon.db.global.bindings, current)
+			Addon.TableRemoveItem(Addon.db.global.bindings, current)
 		elseif scope == Clicked2.DataObjectScope.GLOBAL and current.type == Clicked2.DataObjectType.BINDING then
 			table.insert(Addon.db.global.bindings, current)
-			Addon:TableRemoveItem(Addon.db.profile.bindings, current)
+			Addon.TableRemoveItem(Addon.db.profile.bindings, current)
 		end
 
 		self:UpdateLookupTable(current)

@@ -152,7 +152,7 @@ local function BuildLayout(layout, size)
 	for _, key in ipairs(keys) do
 		local widget = AceGUI:Create("ClickedKeyVisualizerButton") --[[@as ClickedKeyVisualizerButton]]
 		widget:SetKey(GetOveride(key))
-		widget:SetVisible(Addon:TableContains(visible, key:GetId()))
+		widget:SetVisible(Addon.TableContainsItem(visible, key:GetId()))
 
 		tree:AddChild(widget)
 		buttonCache[key:GetId()] = widget
@@ -256,7 +256,7 @@ local function PopulateKeys()
 		else
 			for _, binding in Clicked2:IterateConfiguredBindings() do
 				if showGroup == GROUP_ALL or binding.parent == showGroup then
-					RegisterBinding(binding, Addon:TableContains(Addon:GetActiveBindings(), binding))
+					RegisterBinding(binding, Addon.TableContainsItem(Addon:GetActiveBindings(), binding))
 				end
 			end
 		end
@@ -451,7 +451,7 @@ function KeyVisualizer:Open()
 
 			table.sort(order, function(a, b) return a.name < b.name end)
 
-			order = Addon:TableSelect(order, function(v) return v.id end)
+			order = Addon.TableSelect(order, function(v) return v.id end)
 			table.insert(order, 1, GROUP_ALL)
 			table.insert(order, 2, GROUP_EXT)
 

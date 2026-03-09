@@ -292,7 +292,7 @@ local function Button_OnDragStop(button)
 				local parent = groupItem or scopeItem
 
 				if item ~= nil and item ~= parent then
-					Addon:TableRemoveItem(item.parent.children, item)
+					Addon.TableRemoveItem(item.parent.children, item)
 					table.insert(parent.children, item)
 
 					updateItem = updateItem or parent
@@ -301,7 +301,7 @@ local function Button_OnDragStop(button)
 				--- @cast obj Group
 
 				if item ~= nil and item ~= scopeItem then
-					Addon:TableRemoveItem(item.parent.children, item)
+					Addon.TableRemoveItem(item.parent.children, item)
 					table.insert(scopeItem.children, item)
 
 					updateItem = scopeItem
@@ -701,7 +701,7 @@ function Methods:Select(uid, force)
 	--- @type integer[]
 	local selected = type(uid) == "table" and uid or { uid }
 
-	if force or not Addon:TableEquivalent(status.selected, selected) then
+	if force or not Addon.TableEquivalent(status.selected, selected) then
 		status.selected = selected
 
 		self:RefreshTree(true)
@@ -766,7 +766,7 @@ function Methods:UpdateLines()
 	--- @param child ClickedTreeGroupItem
 	--- @return boolean
 	local function IsChildSelected(child)
-		return Addon:TableContains(status.selected, child.uid)
+		return Addon.TableContainsItem(status.selected, child.uid)
 	end
 
 	--- @param children ClickedTreeGroupRuntimeItem[]
