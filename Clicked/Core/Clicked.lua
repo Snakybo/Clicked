@@ -84,14 +84,6 @@ function Clicked2:OnInitialize()
 	Addon:RegisterEventHandlers()
 	Addon:UpgradeDatabase()
 
-	Addon:RegisterClickCastHeader()
-	Addon:RegisterBlizzardUnitFrames()
-
-	Addon.AddonOptions:Initialize()
-	Addon.ProfileOptions:Initialize()
-	Addon.BlacklistOptions:Initialize()
-	Addon:StatusOutput_Initialize()
-
 	AceConsole:RegisterChatCommand("clicked2", HandleChatCommand)
 	AceConsole:RegisterChatCommand("cc2", HandleChatCommand)
 end
@@ -101,6 +93,11 @@ function Clicked2:OnEnable()
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
 	self:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
 --@end-debug@
+
+	Addon.AddonOptions:Initialize()
+	Addon.ProfileOptions:Initialize()
+	Addon.BlacklistOptions:Initialize()
+	Addon:StatusOutput_Initialize()
 end
 
 --- @param system string

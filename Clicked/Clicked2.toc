@@ -39,8 +39,13 @@ Core\CommandProcessor.lua
 Core\Utils.lua
 Core\LocaleUtils.lua
 Core\StringUtils.lua
+Core\TableUtils.lua
 Core\Serializer.lua
 Core\Upgrader.lua
+
+ClickCast\ClickCast.lua
+ClickCast\ClickCastHeader.lua
+ClickCast\GlobalCastHeader.lua
 
 Modules\ConfigWindow.lua
 Modules\Minimap.lua
@@ -52,7 +57,6 @@ Conditions\MacroConditions.lua
 
 # Unitframe and clickcast support
 #UnitFrames\ClickCastUnitTemplate.xml
-UnitFrames\ClickCastHeader.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua
 

@@ -41,8 +41,6 @@ local function PLAYER_REGEN_ENABLED()
 
 	isPlayerInCombat = false
 
-	Addon:ProcessFrameQueue()
-
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
 	end
@@ -58,7 +56,6 @@ local function PLAYER_ENTERING_WORLD()
 
 	local isInitialLoadPending = false
 
-	Addon:ProcessFrameQueue()
 	Addon:UpdateTalentCache(function()
 		isInitialLoadPending = true
 		Addon:ReloadBindingsImmediate()
@@ -70,12 +67,6 @@ local function PLAYER_ENTERING_WORLD()
 	end
 
 	Addon:RequestItemLoadForBindings()
-end
-
-local function ADDON_LOADED()
-	Clicked2:LogVerbose("Received event {eventName}", "ADDON_LOADED")
-
-	Addon:ProcessFrameQueue()
 end
 
 local function ZONE_CHANGED()
@@ -259,7 +250,6 @@ function Addon:RegisterEventHandlers()
 
 	Clicked2:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	Clicked2:RegisterEvent("GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
-	Clicked2:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
 	Clicked2:RegisterEvent("ZONE_CHANGED", ZONE_CHANGED)
 	Clicked2:RegisterEvent("ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	Clicked2:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
