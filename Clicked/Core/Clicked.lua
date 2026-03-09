@@ -99,18 +99,8 @@ end
 function Clicked2:OnEnable()
 --@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
-	Clicked2:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
+	self:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
 --@end-debug@
-
-	-- self-cast warning
-	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION >= Addon.Expansions.DF then
-		local selfCastModifier = GetModifiedClick("SELFCAST")
-
-		if selfCastModifier ~= "NONE" then
-			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '{key}' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
-			Clicked2:LogWarning(message, selfCastModifier, "/clicked ignore-self-cast-warning")
-		end
-	end
 end
 
 --- @param system string
