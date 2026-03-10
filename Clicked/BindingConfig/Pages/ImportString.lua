@@ -25,7 +25,7 @@ local Addon = select(2, ...)
 --- @return ExportProfile|ShareData|string
 local function OnTextChanged(mode, text)
 	if mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
-		local success, data = Clicked:Deserialize(text, true)
+		local success, data = Clicked2:Deserialize(text, true)
 
 		if not success then
 			return false, data --[[@as string]]
@@ -37,7 +37,7 @@ local function OnTextChanged(mode, text)
 
 		return true, data --[[@as ShareData]]
 	elseif mode == Addon.BindingConfig.ImportStringModes.PROFILE then
-		local success, data = Clicked:Deserialize(text, true)
+		local success, data = Clicked2:Deserialize(text, true)
 
 		if not success then
 			return false, data --[[@as string]]
@@ -213,12 +213,12 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 						binding.keybind = ""
 					end
 				else
-					return Clicked:LogFatal("Unknown data type: {dataType}", review.type)
+					return Clicked2:LogFatal("Unknown data type: {dataType}", review.type)
 				end
 			end
 
 			local type = review.type
-			Clicked:Import(review)
+			Clicked2:Import(review)
 
 			if type == "group" then
 				Addon.BindingConfig.Window:Select(review.group.uid)

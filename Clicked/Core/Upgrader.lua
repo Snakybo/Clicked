@@ -336,7 +336,7 @@ local function UpgradeLegacy(profile, from)
 				end
 			end
 
-			if binding.type == Clicked.ActionType.MACRO then
+			if binding.type == Clicked2.ActionType.MACRO then
 				while #regular > 0 do
 					table.remove(regular, 1)
 				end
@@ -376,7 +376,7 @@ local function UpgradeLegacy(profile, from)
 				itemValue = binding.actions.item.value,
 				macroValue = binding.actions.macro.value,
 				macroMode = binding.actions.macro.mode,
-				interrupt = binding.type == Clicked.ActionType.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked.ActionType.ITEM and binding.actions.item.interruptCurrentCast or false,
+				interrupt = binding.type == Clicked2.ActionType.SPELL and binding.actions.spell.interruptCurrentCast or binding.type == Clicked2.ActionType.ITEM and binding.actions.item.interruptCurrentCast or false,
 				allowStartAttack = true
 			}
 
@@ -457,7 +457,7 @@ local function UpgradeLegacy(profile, from)
 			binding.action.macroName = Addon.L["Run custom macro"]
 			binding.action.macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
-			if binding.type == Clicked.ActionType.MACRO then
+			if binding.type == Clicked2.ActionType.MACRO then
 				binding.action.macroName = binding.cache.displayName
 				binding.action.macroIcon = binding.cache.displayIcon
 			end
@@ -522,7 +522,7 @@ local function UpgradeLegacy(profile, from)
 		end
 
 		for _, binding in ipairs(profile.bindings) do
-			if binding.type == Clicked.ActionType.MACRO then
+			if binding.type == Clicked2.ActionType.MACRO then
 				if binding.action.macroMode == "FIRST" then
 					for _, other in GetRelatedBindings(binding) do
 						other.action.executionOrder = other.action.executionOrder + 1

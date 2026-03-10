@@ -29,7 +29,7 @@ local function HookUnitFrame(count, names, addon)
 
 	for _, name in ipairs(names) do
 		for i = 1, count do
-			Clicked:RegisterClickCastFrame(string.format(name, i), addon)
+			Clicked2:RegisterClickCastFrame(string.format(name, i), addon)
 		end
 	end
 end
@@ -40,7 +40,7 @@ local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
 
 	Addon.BlacklistOptions:SetBlacklistGroup(frame, parent:GetName())
-	Clicked:RegisterClickCastFrame(frame)
+	Clicked2:RegisterClickCastFrame(frame)
 end
 
 --- @param frame Button
@@ -66,22 +66,22 @@ local function HookCompactUnitFrame(frame)
 	end
 
 	HookCompactUnitFramePart(frame, name .. "CenterStatusIcon")
-	Clicked:RegisterClickCastFrame(frame)
+	Clicked2:RegisterClickCastFrame(frame)
 end
 
 -- Private addon API
 
 function Addon:RegisterBlizzardUnitFrames()
-	Clicked:RegisterClickCastFrame("PlayerFrame")
-	Clicked:RegisterClickCastFrame("PetFrame")
-	Clicked:RegisterClickCastFrame("TargetFrame")
-	Clicked:RegisterClickCastFrame("TargetFrameToT")
+	Clicked2:RegisterClickCastFrame("PlayerFrame")
+	Clicked2:RegisterClickCastFrame("PetFrame")
+	Clicked2:RegisterClickCastFrame("TargetFrame")
+	Clicked2:RegisterClickCastFrame("TargetFrameToT")
 
 	HookUnitFrame(5, "Boss%dTargetFrame")
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-		Clicked:RegisterClickCastFrame("FocusFrame")
-		Clicked:RegisterClickCastFrame("FocusFrameToT")
+		Clicked2:RegisterClickCastFrame("FocusFrame")
+		Clicked2:RegisterClickCastFrame("FocusFrameToT")
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
@@ -92,11 +92,11 @@ function Addon:RegisterBlizzardUnitFrames()
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-			Clicked:RegisterClickCastFrame(frame)
-			Clicked:RegisterClickCastFrame(frame.PetFrame)
+			Clicked2:RegisterClickCastFrame(frame)
+			Clicked2:RegisterClickCastFrame(frame.PetFrame)
 
-			Clicked:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
-			Clicked:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
+			Clicked2:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
+			Clicked2:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
 
 			partyFrameIndex = partyFrameIndex + 1
 		end

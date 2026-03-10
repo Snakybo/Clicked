@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "itIT")
+local L = LibStub("AceLocale-3.0"):NewLocale("Clicked2", "itIT")
 
 if not L then
 	return

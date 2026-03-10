@@ -24,15 +24,15 @@ local Helpers = Addon.BindingConfig.Helpers
 --- @param binding Binding
 --- @param value string|integer
 local function SetBindingValue(binding, value)
-	if binding.actionType == Clicked.ActionType.SPELL then
+	if binding.actionType == Clicked2.ActionType.SPELL then
 		--- @cast value integer
 		binding.action.spellValue = value
 		Addon:ReloadBinding(binding, "value")
-	elseif binding.actionType == Clicked.ActionType.ITEM then
+	elseif binding.actionType == Clicked2.ActionType.ITEM then
 		--- @cast value integer
 		binding.action.itemValue = value
 		Addon:ReloadBinding(binding, "value")
-	elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+	elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 		binding.action.auraName = value
 		Addon:ReloadBinding(binding, "value")
 	end
@@ -41,11 +41,11 @@ end
 --- @param binding Binding
 --- @return string|integer?
 local function GetRawBindingValue(binding)
-	if binding.actionType == Clicked.ActionType.SPELL then
+	if binding.actionType == Clicked2.ActionType.SPELL then
 		return binding.action.spellValue
-	elseif binding.actionType == Clicked.ActionType.ITEM then
+	elseif binding.actionType == Clicked2.ActionType.ITEM then
 		return binding.action.itemValue
-	elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+	elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 		return binding.action.auraName
 	end
 
@@ -96,8 +96,8 @@ function Addon.BindingConfig.BindingActionTab:OnBindingReload(relevant, changed)
 		end
 	end
 
-	for _, other in Clicked:IterateActiveBindings() do
-		if other.keybind == self.bindings[1].keybind and other.actionType ~= Clicked.ActionType.MACRO and tContains(changed, other.uid) then
+	for _, other in Clicked2:IterateActiveBindings() do
+		if other.keybind == self.bindings[1].keybind and other.actionType ~= Clicked2.ActionType.MACRO and tContains(changed, other.uid) then
 			self.controller:RedrawTab()
 			return
 		end
@@ -132,11 +132,11 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			end
 
 			for _, binding in ipairs(self.bindings) do
-				if binding.actionType == Clicked.ActionType.SPELL then
+				if binding.actionType == Clicked2.ActionType.SPELL then
 					self:UpdateSpellValue(binding, value)
-				elseif binding.actionType == Clicked.ActionType.ITEM then
+				elseif binding.actionType == Clicked2.ActionType.ITEM then
 					self:UpdateItemValue(binding, value)
-				elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+				elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 					self:UpdateCancelAuraValue(binding, value)
 				end
 			end
@@ -175,11 +175,11 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 				--- @param name string
 				local function UpdateValue(name)
 					for _, binding in ipairs(self.bindings) do
-						if binding.actionType == Clicked.ActionType.SPELL and type == "spell" then
+						if binding.actionType == Clicked2.ActionType.SPELL and type == "spell" then
 							SetBindingValue(binding, linkId)
-						elseif binding.actionType == Clicked.ActionType.ITEM and type == "item" then
+						elseif binding.actionType == Clicked2.ActionType.ITEM and type == "item" then
 							SetBindingValue(binding, linkId)
-						elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+						elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 							SetBindingValue(binding, name)
 						end
 					end
@@ -226,17 +226,17 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			if hasMixedTypes then
 				table.insert(lines, Addon.L["Target spell, item, or aura"])
 			else
-				if self.bindings[1].actionType == Clicked.ActionType.SPELL then
+				if self.bindings[1].actionType == Clicked2.ActionType.SPELL then
 					table.insert(lines, Addon.L["Target spell"])
 					table.insert(lines, Addon.L["Enter the spell name or spell ID."])
 					table.insert(lines, "")
 					table.insert(lines, Addon.L["You can also shift-click a spell in your spellbook or talent window to auto-fill."])
-				elseif self.bindings[1].actionType == Clicked.ActionType.ITEM then
+				elseif self.bindings[1].actionType == Clicked2.ActionType.ITEM then
 					table.insert(lines, Addon.L["Target item"])
 					table.insert(lines, Addon.L["Enter an item name, item ID, or equipment slot number."])
 					table.insert(lines, "")
 					table.insert(lines, Addon.L["You can also shift-click an item from your bags to auto-fill."])
-				elseif self.bindings[1].actionType == Clicked.ActionType.CANCELAURA then
+				elseif self.bindings[1].actionType == Clicked2.ActionType.CANCELAURA then
 					table.insert(lines, Addon.L["Target aura"])
 					table.insert(lines, Addon.L["Enter the aura name or spell ID."])
 					table.insert(lines, "")
@@ -249,7 +249,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 
 		local widget
 
-		if not hasMixedTypes and self.bindings[1].actionType == Clicked.ActionType.SPELL then
+		if not hasMixedTypes and self.bindings[1].actionType == Clicked2.ActionType.SPELL then
 			local function CreateOptions()
 				--- @type ClickedAutoFillEditBox.Option[]
 				local result = {}
@@ -324,9 +324,9 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 			ticker = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
 				GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
 
-				if actionType == Clicked.ActionType.SPELL or actionType == Clicked.ActionType.CANCELAURA then
+				if actionType == Clicked2.ActionType.SPELL or actionType == Clicked2.ActionType.CANCELAURA then
 					GameTooltip:SetSpellByID(id)
-				elseif actionType == Clicked.ActionType.ITEM then
+				elseif actionType == Clicked2.ActionType.ITEM then
 					GameTooltip:SetItemByID(id)
 				end
 
@@ -344,9 +344,9 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		--- @type integer
 		local icon
 
-		if actionType == Clicked.ActionType.SPELL or actionType == Clicked.ActionType.CANCELAURA then
+		if actionType == Clicked2.ActionType.SPELL or actionType == Clicked2.ActionType.CANCELAURA then
 			icon = C_Spell.GetSpellTexture(id)
-		elseif actionType == Clicked.ActionType.ITEM then
+		elseif actionType == Clicked2.ActionType.ITEM then
 			icon = C_Item.GetItemIconByID(id) --[[@as integer]]
 		end
 
@@ -364,7 +364,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 
 	do
 		local anyHasRank = FindInTableIf(self.bindings, function(binding)
-			if binding.actionType ~= Clicked.ActionType.SPELL then
+			if binding.actionType ~= Clicked2.ActionType.SPELL then
 				return false
 			end
 
@@ -376,7 +376,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and anyHasRank then
 			local function OnClick()
 				for _, binding in ipairs(self.bindings) do
-					if binding.actionType == Clicked.ActionType.SPELL and not binding.action.spellMaxRank then
+					if binding.actionType == Clicked2.ActionType.SPELL and not binding.action.spellMaxRank then
 						binding.action.spellMaxRank = true
 						Addon:ReloadBinding(binding)
 					end
@@ -427,19 +427,19 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 		--- @param right Binding
 		--- @return boolean
 		local function SortFunc(left, right)
-			if left.actionType ~= Clicked.ActionType.APPEND and right.actionType == Clicked.ActionType.APPEND then
+			if left.actionType ~= Clicked2.ActionType.APPEND and right.actionType == Clicked2.ActionType.APPEND then
 				return true
 			end
 
-			if left.actionType == Clicked.ActionType.APPEND and right.actionType ~= Clicked.ActionType.APPEND then
+			if left.actionType == Clicked2.ActionType.APPEND and right.actionType ~= Clicked2.ActionType.APPEND then
 				return false
 			end
 
 			return left.uid < right.uid
 		end
 
-		for _, other in Clicked:IterateActiveBindings() do
-			if other.keybind == self.bindings[1].keybind and other.actionType ~= Clicked.ActionType.MACRO then
+		for _, other in Clicked2:IterateActiveBindings() do
+			if other.keybind == self.bindings[1].keybind and other.actionType ~= Clicked2.ActionType.MACRO then
 				local id = other.action.executionOrder
 
 				if groups[id] == nil then
@@ -513,9 +513,9 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 					--- @param b Binding
 					--- @return string?
 					local function GetType(b)
-						if b.actionType == Clicked.ActionType.SPELL or b.actionType == Clicked.ActionType.ITEM then
+						if b.actionType == Clicked2.ActionType.SPELL or b.actionType == Clicked2.ActionType.ITEM then
 							return "cast"
-						elseif b.actionType == Clicked.ActionType.CANCELAURA then
+						elseif b.actionType == Clicked2.ActionType.CANCELAURA then
 							return "cancelaura"
 						end
 
@@ -577,8 +577,8 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 		--- @type Binding[]
 		local setBy = {}
 
-		for _, other in ipairs(Clicked:GetByKey(binding.keybind)) do
-			if other ~= binding and Clicked:IsBindingLoaded(other) then
+		for _, other in ipairs(Clicked2:GetByKey(binding.keybind)) do
+			if other ~= binding and Clicked2:IsBindingLoaded(other) then
 				if other.action[option] then
 					table.insert(setBy, other)
 				end
@@ -637,7 +637,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 				return true
 			else
 				local _, loaded = FindInTableIf(self.bindings, function(binding)
-					return Clicked:IsBindingLoaded(binding)
+					return Clicked2:IsBindingLoaded(binding)
 				end)
 
 				if loaded ~= nil and IsSharedDataSet(loaded, key) then
@@ -701,8 +701,8 @@ end
 --- @param binding Binding
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateSpellValue(binding, value)
-	if binding.actionType ~= Clicked.ActionType.SPELL then
-		return Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
+	if binding.actionType ~= Clicked2.ActionType.SPELL then
+		return Clicked2:LogFatal("Cannot set spell value for a binding that is not a spell binding")
 	end
 
 	value = string.trim(value)
@@ -725,8 +725,8 @@ end
 --- @param binding Binding
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateItemValue(binding, value)
-	if binding.actionType ~= Clicked.ActionType.ITEM then
-		return Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
+	if binding.actionType ~= Clicked2.ActionType.ITEM then
+		return Clicked2:LogFatal("Cannot set item value for a binding that is not an item binding")
 	end
 
 	value = string.trim(value)
@@ -743,8 +743,8 @@ end
 --- @param binding Binding
 --- @param value string
 function Addon.BindingConfig.BindingActionTab:UpdateCancelAuraValue(binding, value)
-	if binding.actionType ~= Clicked.ActionType.CANCELAURA then
-		return Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
+	if binding.actionType ~= Clicked2.ActionType.CANCELAURA then
+		return Clicked2:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
 	end
 
 	value = string.trim(value)

@@ -758,11 +758,11 @@ end
 
 --- @param scope DataObjectScope
 function Addon:GetLocalizedScope(scope)
-	if scope == Clicked.DataObjectScope.GLOBAL then
+	if scope == Clicked2.DataObjectScope.GLOBAL then
 		return Addon.L["Global"]
 	end
 
-	if scope == Clicked.DataObjectScope.PROFILE then
+	if scope == Clicked2.DataObjectScope.PROFILE then
 		local defaultProfiles = {
 			["Default"] = Addon.L["Default"],
 			[Addon.db.keys.char] = Addon.db.keys.char,
@@ -774,5 +774,5 @@ function Addon:GetLocalizedScope(scope)
 		return defaultProfiles[profile] or profile
 	end
 
-	Clicked:LogError("Unknown binding scope: {scope}", scope)
+	Clicked2:LogError("Unknown binding scope: {scope}", scope)
 end

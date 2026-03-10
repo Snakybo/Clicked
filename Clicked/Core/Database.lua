@@ -23,13 +23,13 @@ local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecializ
 local Addon = select(2, ...)
 
 --- @enum DataObjectType
-Clicked.DataObjectType = {
+Clicked2.DataObjectType = {
 	BINDING = 1,
 	GROUP = 2
 }
 
 --- @enum DataObjectScope
-Clicked.DataObjectScope = {
+Clicked2.DataObjectScope = {
 	PROFILE = 1,
 	GLOBAL = 2
 }
@@ -133,7 +133,7 @@ end
 --- Get the default values for a Clicked profile.
 ---
 --- @return AceDBObject-3.0
-function Clicked:GetDatabaseDefaults()
+function Clicked2:GetDatabaseDefaults()
 	local database = {
 		global = {
 			version = nil,
@@ -170,13 +170,13 @@ function Clicked:GetDatabaseDefaults()
 end
 
 --- Reload the database, this should be called after high-level profile changes have been made, such as switching the active profile, or importing a proifle.
-function Clicked:ReloadDatabase()
+function Clicked2:ReloadDatabase()
 	Addon:UpgradeDatabase()
 
 	if Addon.db.profile.options.minimap.hide then
-		LibDBIcon:Hide("Clicked")
+		LibDBIcon:Hide("Clicked2")
 	else
-		LibDBIcon:Show("Clicked")
+		LibDBIcon:Show("Clicked2")
 	end
 
 	Addon.BlacklistOptions:Refresh()
@@ -187,11 +187,11 @@ end
 --- Create a new binding group. Groups are purely cosmetic and have no additional impact on binding functionality.
 ---
 --- @return Group
-function Clicked:CreateGroup()
+function Clicked2:CreateGroup()
 	--- @type Group
 	--- @diagnostic disable-next-line: missing-fields
 	local group = {
-		type = Clicked.DataObjectType.GROUP,
+		type = Clicked2.DataObjectType.GROUP,
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
@@ -205,7 +205,7 @@ end
 ---
 --- @param scope? DataObjectScope
 --- @return Binding
-function Clicked:CreateBinding(scope)
+function Clicked2:CreateBinding(scope)
 	local binding = Addon:GetNewBindingTemplate()
 
 	Addon:RegisterDataObject(binding, scope)
@@ -216,7 +216,7 @@ end
 ---
 --- @param object DataObject
 --- @returns boolean
-function Clicked:DeleteDataObject(object)
+function Clicked2:DeleteDataObject(object)
 	assert(type(object) == "table", "bad argument #1, expected table but got " .. type(object))
 
 	local function Delete(tbl, uid)
@@ -241,16 +241,16 @@ function Clicked:DeleteDataObject(object)
 		local current = table.remove(queue, 1)
 		local db = Addon:GetContainingDatabase(current)
 
-		if current.type == Clicked.DataObjectType.GROUP then
+		if current.type == Clicked2.DataObjectType.GROUP then
 			if Delete(db.groups, current.uid) then
 				table.insert(lookupTable.deleted, object.uid)
 				table.insert(deleted, current)
 
-				for _, binding in ipairs(Clicked:GetByParent(current.uid)) do
+				for _, binding in ipairs(Clicked2:GetByParent(current.uid)) do
 					table.insert(queue, binding)
 				end
 			end
-		elseif current.type == Clicked.DataObjectType.BINDING then
+		elseif current.type == Clicked2.DataObjectType.BINDING then
 			if Delete(db.bindings, current.uid) then
 				table.insert(lookupTable.deleted, object.uid)
 				table.insert(deleted, current)
@@ -259,10 +259,10 @@ function Clicked:DeleteDataObject(object)
 	end
 
 	for _, current in ipairs(deleted) do
-		if current.type == Clicked.DataObjectType.BINDING then
+		if current.type == Clicked2.DataObjectType.BINDING then
 			--- @cast current Binding
 			Addon:ReloadBinding(current)
-		elseif current.type == Clicked.DataObjectType.GROUP then
+		elseif current.type == Clicked2.DataObjectType.GROUP then
 			Addon:UpdateLookupTable(current)
 			Addon.BindingConfig.Window:RedrawTree()
 		end
@@ -275,7 +275,7 @@ end
 ---
 --- @param identifier? integer
 --- @return DataObject?
-function Clicked:GetByUid(identifier)
+function Clicked2:GetByUid(identifier)
 	if identifier == nil then
 		return nil
 	end
@@ -285,7 +285,7 @@ end
 
 --- @param key? string
 --- @return Binding[]
-function Clicked:GetByKey(key)
+function Clicked2:GetByKey(key)
 	if key == nil then
 		return {}
 	end
@@ -295,7 +295,7 @@ end
 
 --- @param scope DataObjectScope
 --- @return DataObject[]
-function Clicked:GetByScope(scope)
+function Clicked2:GetByScope(scope)
 	return lookupTable.scope[scope] or {}
 end
 
@@ -303,7 +303,7 @@ end
 ---
 --- @param identifier? integer
 --- @return Binding[]
-function Clicked:GetByParent(identifier)
+function Clicked2:GetByParent(identifier)
 	if identifier == nil then
 		return {}
 	end
@@ -315,12 +315,12 @@ end
 ---
 --- @param type ActionType
 --- @return Binding[]
-function Clicked:GetByActionType(type)
+function Clicked2:GetByActionType(type)
 	return lookupTable.actionType[type] or {}
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
-function Clicked:IterateGroups()
+function Clicked2:IterateGroups()
 	--- @type Group[]
 	local result = {}
 
@@ -339,7 +339,7 @@ end
 
 --- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
 --- can be used in a `for in` loop.
-function Clicked:IterateConfiguredBindings()
+function Clicked2:IterateConfiguredBindings()
 	--- @type Binding[]
 	local result = {}
 
@@ -359,7 +359,7 @@ end
 --@debug@
 
 --- @param from string
-function Clicked:UpgradeDatabase(from)
+function Clicked2:UpgradeDatabase(from)
 	Addon:UpgradeDatabase(from)
 	Addon:ReloadBindings()
 end
@@ -377,9 +377,9 @@ end
 --- @param obj? DataObject
 function Addon:UpdateLookupTable(obj)
 	if obj ~= nil then
-		Clicked:LogVerbose("Updating binding lookup table for {uid}", obj.uid)
+		Clicked2:LogVerbose("Updating binding lookup table for {uid}", obj.uid)
 	else
-		Clicked:LogVerbose("Updating binding lookup table")
+		Clicked2:LogVerbose("Updating binding lookup table")
 	end
 
 	--- @type DataObject[]
@@ -394,11 +394,11 @@ function Addon:UpdateLookupTable(obj)
 		table.wipe(lookupTable.scope)
 		table.wipe(lookupTable.deleted)
 
-		for _, configured in Clicked:IterateConfiguredBindings() do
+		for _, configured in Clicked2:IterateConfiguredBindings() do
 			table.insert(queue, configured)
 		end
 
-		for _, group in Clicked:IterateGroups() do
+		for _, group in Clicked2:IterateGroups() do
 			table.insert(queue, group)
 		end
 	else
@@ -443,7 +443,7 @@ function Addon:UpdateLookupTable(obj)
 
 			Addon:TableRemoveItem(lookupTable.deleted, current.uid)
 
-			if current.type == Clicked.DataObjectType.BINDING then
+			if current.type == Clicked2.DataObjectType.BINDING then
 				--- @cast current Binding
 				DeleteFromLookupTable(lookupTable.keybind, current)
 				DeleteFromLookupTable(lookupTable.parent, current)
@@ -454,7 +454,7 @@ function Addon:UpdateLookupTable(obj)
 		else
 			lookupTable.uid[current.uid] = current
 
-			if current.type == Clicked.DataObjectType.BINDING then
+			if current.type == Clicked2.DataObjectType.BINDING then
 				--- @cast current Binding
 				UpdateLookupTable(lookupTable.keybind, current.keybind, current)
 				UpdateLookupTable(lookupTable.parent, current.parent, current)
@@ -471,8 +471,8 @@ function Addon:GetNewBindingTemplate()
 	--- @type Binding
 	--- @diagnostic disable-next-line: missing-fields
 	local template = {
-		actionType = Clicked.ActionType.SPELL,
-		type = Clicked.DataObjectType.BINDING,
+		actionType = Clicked2.ActionType.SPELL,
+		type = Clicked2.DataObjectType.BINDING,
 		keybind = "",
 		parent = nil,
 		action = {
@@ -579,7 +579,7 @@ function Addon:ChangeDataObjectScope(item, scope)
 	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
 
 	if item.uid == nil then
-		return Clicked:LogFatal("Can only change the scope of a binding or group")
+		return Clicked2:LogFatal("Can only change the scope of a binding or group")
 	end
 
 	if item.scope == scope then
@@ -593,34 +593,34 @@ function Addon:ChangeDataObjectScope(item, scope)
 		--- @type DataObject
 		local current = table.remove(queue, 1)
 
-		if current.type == Clicked.DataObjectType.GROUP then
+		if current.type == Clicked2.DataObjectType.GROUP then
 			--- @cast current Group
-			for _, binding in ipairs(Clicked:GetByParent(current.uid)) do
+			for _, binding in ipairs(Clicked2:GetByParent(current.uid)) do
 				table.insert(queue, binding)
 			end
 		end
 
 		current.scope = scope
 
-		if current.type == Clicked.DataObjectType.BINDING then
+		if current.type == Clicked2.DataObjectType.BINDING then
 			--- @cast current Binding
-			local parent = Clicked:GetByUid(current.parent)
+			local parent = Clicked2:GetByUid(current.parent)
 
 			if parent ~= nil and parent.scope ~= scope then
 				current.parent = nil
 			end
 		end
 
-		if scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.GROUP then
+		if scope == Clicked2.DataObjectScope.PROFILE and current.type == Clicked2.DataObjectType.GROUP then
 			table.insert(Addon.db.profile.groups, current)
 			Addon:TableRemoveItem(Addon.db.global.groups, current)
-		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.GROUP then
+		elseif scope == Clicked2.DataObjectScope.GLOBAL and current.type == Clicked2.DataObjectType.GROUP then
 			table.insert(Addon.db.global.groups, current)
 			Addon:TableRemoveItem(Addon.db.profile.groups, current)
-		elseif scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.BINDING then
+		elseif scope == Clicked2.DataObjectScope.PROFILE and current.type == Clicked2.DataObjectType.BINDING then
 			table.insert(Addon.db.profile.bindings, current)
 			Addon:TableRemoveItem(Addon.db.global.bindings, current)
-		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.BINDING then
+		elseif scope == Clicked2.DataObjectScope.GLOBAL and current.type == Clicked2.DataObjectType.BINDING then
 			table.insert(Addon.db.global.bindings, current)
 			Addon:TableRemoveItem(Addon.db.profile.bindings, current)
 		end
@@ -638,7 +638,7 @@ end
 function Addon:ChangeDataObjectParent(item, parent)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 
-	if item.type ~= Clicked.DataObjectType.BINDING then
+	if item.type ~= Clicked2.DataObjectType.BINDING then
 		return
 	end
 
@@ -652,7 +652,7 @@ function Addon:ChangeDataObjectParent(item, parent)
 	else
 		--- @cast parent integer?
 		item.parent = parent
-		parentObject = Clicked:GetByUid(parent) --[[@as Group?]]
+		parentObject = Clicked2:GetByUid(parent) --[[@as Group?]]
 	end
 
 	if parentObject ~= nil and item.scope ~= parentObject.scope then
@@ -682,7 +682,7 @@ function Addon:ReplaceBindingContents(original, replacement)
 	replacement.uid = original.uid
 	replacement.keybind = original.keybind
 
-	for index, binding in Clicked:IterateConfiguredBindings() do
+	for index, binding in Clicked2:IterateConfiguredBindings() do
 		if binding.uid == original.uid then
 			Addon.db.profile.bindings[index] = replacement
 			break
@@ -696,15 +696,15 @@ function Addon:RegisterDataObject(object, scope)
 	assert(type(object) == "table", "bad argument #1, expected table but got " .. type(object))
 
 	object.uid = object.uid or self:GetNextUid()
-	object.scope = scope or Clicked.DataObjectScope.PROFILE
+	object.scope = scope or Clicked2.DataObjectScope.PROFILE
 
 	local db = self:GetContainingDatabase(object)
 
-	if object.type == Clicked.DataObjectType.GROUP then
-		Clicked:LogDebug("Registering group {uid} in scope {scope}", object.uid, object.scope)
+	if object.type == Clicked2.DataObjectType.GROUP then
+		Clicked2:LogDebug("Registering group {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.groups, object)
-	elseif object.type == Clicked.DataObjectType.BINDING then
-		Clicked:LogDebug("Registering binding {uid} in scope {scope}", object.uid, object.scope)
+	elseif object.type == Clicked2.DataObjectType.BINDING then
+		Clicked2:LogDebug("Registering binding {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.bindings, object)
 	end
 
@@ -726,13 +726,13 @@ function Addon:CloneDataObject(original)
 		return clone
 	end
 
-	if original.type == Clicked.DataObjectType.GROUP then
+	if original.type == Clicked2.DataObjectType.GROUP then
 		--- @cast original Group
 		local clone = Clone(original)
 		clone.name = clone.name .. " - " .. Addon.L["copy"]
 		self:RegisterDataObject(clone, original.scope)
 
-		for _, binding in ipairs(Clicked:GetByParent(original.uid)) do
+		for _, binding in ipairs(Clicked2:GetByParent(original.uid)) do
 			local cloneBinding = Clone(binding)
 			cloneBinding.parent = clone.uid
 			cloneBinding.keybind = ""
@@ -742,7 +742,7 @@ function Addon:CloneDataObject(original)
 		end
 
 		return clone
-	elseif original.type == Clicked.DataObjectType.BINDING then
+	elseif original.type == Clicked2.DataObjectType.BINDING then
 		--- @cast original Binding
 		local clone = Clone(original)
 		clone.keybind = ""
@@ -761,11 +761,11 @@ end
 function Addon:GetContainingDatabase(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 
-	if item.scope == Clicked.DataObjectScope.GLOBAL then
+	if item.scope == Clicked2.DataObjectScope.GLOBAL then
 		return Addon.db.global
-	elseif item.scope == Clicked.DataObjectScope.PROFILE then
+	elseif item.scope == Clicked2.DataObjectScope.PROFILE then
 		return Addon.db.profile
 	else
-		return Clicked:LogFatal("Unknown binding scope {scope}", item.scope)
+		return Clicked2:LogFatal("Unknown binding scope {scope}", item.scope)
 	end
 end

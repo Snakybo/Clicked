@@ -14,13 +14,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "enUS", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("Clicked2", "enUS", true)
 
 if not L then
 	return
 end
 
-L["Clicked"] = true
+L["Clicked2"] = true
 L["Clicked is not compatible with %s and requires one of the two to be disabled."] = true
 L["Keep %s"] = true
 L["Upgraded profile from version %s to version %s"] = true
