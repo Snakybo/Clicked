@@ -232,7 +232,7 @@ local function Button_OnDragStop(button)
 	local newParent = nil
 
 	--- @type DataObjectScope
-	local newScope = Clicked.DataObjectScope.PROFILE
+	local newScope = Clicked2.DataObjectScope.PROFILE
 
 	--- @type ClickedTreeGroupRuntimeItem
 	--- @diagnostic disable-next-line: assign-type-mismatch
@@ -252,17 +252,17 @@ local function Button_OnDragStop(button)
 				scopeItem = self.treeLookup[btn.uid]
 				break
 			else
-				local obj = Clicked:GetByUid(btn.uid)
+				local obj = Clicked2:GetByUid(btn.uid)
 
 				if obj ~= nil then
 					newScope = obj.scope
 					scopeItem = self.treeLookup[Addon:GetScopeUid(newScope)]
 
-					if obj.type == Clicked.DataObjectType.BINDING then
+					if obj.type == Clicked2.DataObjectType.BINDING then
 						--- @cast obj Binding
 						newParent = obj.parent
 						groupItem = self.treeLookup[obj.parent or Addon:GetScopeUid(newScope)]
-					elseif obj.type == Clicked.DataObjectType.GROUP then
+					elseif obj.type == Clicked2.DataObjectType.GROUP then
 						--- @cast obj Group
 						newParent = obj.uid
 						groupItem = self.treeLookup[obj.uid]
@@ -275,7 +275,7 @@ local function Button_OnDragStop(button)
 	end
 
 	for _, uid in ipairs(status.dragging) do
-		local obj = Clicked:GetByUid(uid)
+		local obj = Clicked2:GetByUid(uid)
 
 		if obj ~= nil then
 			local item = self.treeLookup[uid]
@@ -284,7 +284,7 @@ local function Button_OnDragStop(button)
 				Addon:ChangeDataObjectScope(obj, newScope)
 			end
 
-			if obj.type == Clicked.DataObjectType.BINDING then
+			if obj.type == Clicked2.DataObjectType.BINDING then
 				--- @cast obj Binding
 
 				Addon:ChangeDataObjectParent(obj, newParent)
@@ -297,7 +297,7 @@ local function Button_OnDragStop(button)
 
 					updateItem = updateItem or parent
 				end
-			elseif obj.type == Clicked.DataObjectType.GROUP then
+			elseif obj.type == Clicked2.DataObjectType.GROUP then
 				--- @cast obj Group
 
 				if item ~= nil and item ~= scopeItem then

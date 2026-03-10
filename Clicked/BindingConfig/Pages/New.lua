@@ -41,7 +41,7 @@ local ItemTemplate = {
 
 --- @return Group
 local function CreateGroup()
-	local group = Clicked:CreateGroup()
+	local group = Clicked2:CreateGroup()
 
 	Addon.BindingConfig.Window:RedrawTree()
 	return group
@@ -51,33 +51,33 @@ end
 --- @param parent DataObject?
 --- @return Binding
 local function CreateBinding(type, parent)
-	local binding = Clicked:CreateBinding(parent ~= nil and parent.scope or nil)
+	local binding = Clicked2:CreateBinding(parent ~= nil and parent.scope or nil)
 
 	if type == ItemTemplate.BINDING_CAST_SPELL then
-		binding.actionType = Clicked.ActionType.SPELL
+		binding.actionType = Clicked2.ActionType.SPELL
 	elseif type == ItemTemplate.BINDING_CAST_SPELL_CLICKCAST then
-		binding.actionType = Clicked.ActionType.SPELL
+		binding.actionType = Clicked2.ActionType.SPELL
 		binding.targets.hovercastEnabled = true
 		binding.targets.regularEnabled = false
 	elseif type == ItemTemplate.BINDING_USE_ITEM then
-		binding.actionType = Clicked.ActionType.ITEM
+		binding.actionType = Clicked2.ActionType.ITEM
 	elseif type == ItemTemplate.BINDING_RUN_MACRO then
-		binding.actionType = Clicked.ActionType.MACRO
+		binding.actionType = Clicked2.ActionType.MACRO
 	elseif type == ItemTemplate.BINDING_RUN_MACRO_APPEND then
-		binding.actionType = Clicked.ActionType.APPEND
+		binding.actionType = Clicked2.ActionType.APPEND
 	elseif type == ItemTemplate.BINDING_CANCELAURA then
-		binding.actionType = Clicked.ActionType.CANCELAURA
+		binding.actionType = Clicked2.ActionType.CANCELAURA
 	elseif type == ItemTemplate.BINDING_UNIT_TARGET then
-		binding.actionType = Clicked.ActionType.UNIT_SELECT
+		binding.actionType = Clicked2.ActionType.UNIT_SELECT
 	elseif type == ItemTemplate.BINDING_UNIT_MENU then
-		binding.actionType = Clicked.ActionType.UNIT_MENU
+		binding.actionType = Clicked2.ActionType.UNIT_MENU
 	end
 
 	if parent ~= nil then
-		if parent.type == Clicked.DataObjectType.BINDING then
+		if parent.type == Clicked2.DataObjectType.BINDING then
 			--- @cast parent Binding
 			binding.parent = parent.parent
-		elseif parent.type == Clicked.DataObjectType.GROUP then
+		elseif parent.type == Clicked2.DataObjectType.GROUP then
 			binding.parent = parent.uid
 		end
 	end
@@ -91,7 +91,7 @@ local function CreateActionBarBindingCache()
 	--- @type { [string]: Binding[] }
 	local result = {}
 
-	for _, binding in Clicked:IterateConfiguredBindings() do
+	for _, binding in Clicked2:IterateConfiguredBindings() do
 		result[binding.keybind] = result[binding.keybind] or {}
 		table.insert(result[binding.keybind], binding)
 	end
@@ -104,8 +104,8 @@ local function CreateMacroBindingCache()
 	--- @type { name: string, content: string }[]
 	local result = {}
 
-	for _, binding in Clicked:IterateConfiguredBindings() do
-		if binding.actionType == Clicked.ActionType.MACRO then
+	for _, binding in Clicked2:IterateConfiguredBindings() do
+		if binding.actionType == Clicked2.ActionType.MACRO then
 			table.insert(result, {
 				name = binding.action.macroName,
 				content = binding.action.macroValue
@@ -123,17 +123,17 @@ local function DoesActionBarBindingExist(cache, spell)
 	local collection = cache[key] or {}
 
 	for _, binding in ipairs(collection) do
-		if spell.type == "SPELL" and binding.actionType == Clicked.ActionType.SPELL then
+		if spell.type == "SPELL" and binding.actionType == Clicked2.ActionType.SPELL then
 			--- @cast spell SpellLibrarySpellResult
 			if binding.action.spellValue == spell.spellId then
 				return true
 			end
-		elseif spell.type == "ITEM" and binding.actionType == Clicked.ActionType.ITEM then
+		elseif spell.type == "ITEM" and binding.actionType == Clicked2.ActionType.ITEM then
 			--- @cast spell SpellLibraryItemResult
 			if binding.action.itemValue == spell.itemId then
 				return true
 			end
-		elseif spell.type == "MACRO" and binding.actionType == Clicked.ActionType.MACRO then
+		elseif spell.type == "MACRO" and binding.actionType == Clicked2.ActionType.MACRO then
 			--- @cast spell SpellLibraryMacroResult
 			if binding.action.macroName == spell.name and binding.action.macroValue == spell.content then
 				return true
@@ -165,14 +165,14 @@ local function FindGroupId(name, icon, disableAutoCreate)
 		return nil
 	end
 
-	for _, group in Clicked:IterateGroups() do
+	for _, group in Clicked2:IterateGroups() do
 		if group.name == name and group.displayIcon == icon then
 			return group.uid
 		end
 	end
 
 	if not disableAutoCreate and name ~= nil and icon ~= nil then
-		local group = Clicked:CreateGroup()
+		local group = Clicked2:CreateGroup()
 		group.name = name
 		group.displayIcon = icon
 		return group.uid
@@ -184,7 +184,7 @@ end
 --- @param spell SpellLibrarySpellResult
 --- @param parent? integer
 local function DoesSpellBookBindingExist(spell, parent)
-	for _, binding in ipairs(Clicked:GetByActionType(Clicked.ActionType.SPELL)) do
+	for _, binding in ipairs(Clicked2:GetByActionType(Clicked2.ActionType.SPELL)) do
 		if binding.action.spellValue == spell.spellId and binding.parent == parent then
 			return true
 		end
@@ -207,10 +207,10 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 			table.insert(genericSpells, spell)
 		else
 			if not DoesSpellBookBindingExist(spell, FindGroupId(spell.tabName, spell.tabIcon, true)) then
-				local binding = Clicked:CreateBinding()
+				local binding = Clicked2:CreateBinding()
 				table.insert(result, binding)
 
-				binding.actionType = Clicked.ActionType.SPELL
+				binding.actionType = Clicked2.ActionType.SPELL
 				binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
 				binding.action.spellValue = spell.spellId
 
@@ -246,10 +246,10 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 		for _, spell in ipairs(genericSpells) do
 			for _, spec in ipairs(specs) do
 				if not DoesSpellBookBindingExist(spell, spec.groupId) then
-					local binding = Clicked:CreateBinding()
+					local binding = Clicked2:CreateBinding()
 					table.insert(result, binding)
 
-					binding.actionType = Clicked.ActionType.SPELL
+					binding.actionType = Clicked2.ActionType.SPELL
 					binding.parent = spec.groupId
 					binding.action.spellValue = spell.spellId
 
@@ -277,7 +277,7 @@ local function ImportActionbar()
 
 	for _, spell in ipairs(Addon.SpellLibrary:GetActionBarSpells()) do
 		if not DoesActionBarBindingExist(cache, spell) then
-			local binding = Clicked:CreateBinding()
+			local binding = Clicked2:CreateBinding()
 			table.insert(result, binding)
 
 			if spell.key ~= nil then
@@ -299,15 +299,15 @@ local function ImportActionbar()
 					binding.load.specialization.single = GetPrimaryTalentTree()
 				end
 
-				binding.actionType = Clicked.ActionType.SPELL
+				binding.actionType = Clicked2.ActionType.SPELL
 				binding.action.spellValue = spell.spellId
 			elseif spell.type == "ITEM" then
 				--- @cast spell SpellLibraryItemResult
-				binding.actionType = Clicked.ActionType.ITEM
+				binding.actionType = Clicked2.ActionType.ITEM
 				binding.action.itemValue = spell.itemId
 			elseif spell.type == "MACRO" then
 				--- @cast spell SpellLibraryMacroResult
-				binding.actionType = Clicked.ActionType.MACRO
+				binding.actionType = Clicked2.ActionType.MACRO
 				binding.action.macroName = spell.name
 				binding.action.macroIcon = spell.icon
 				binding.action.macroValue = spell.content
@@ -332,10 +332,10 @@ local function ImportMacros()
 
 	for _, spell in ipairs(Addon.SpellLibrary:GetMacroSpells()) do
 		if not DoesMacroBindingExist(cache, spell) then
-			local binding = Clicked:CreateBinding()
+			local binding = Clicked2:CreateBinding()
 			table.insert(result, binding)
 
-			binding.actionType = Clicked.ActionType.MACRO
+			binding.actionType = Clicked2.ActionType.MACRO
 			binding.action.macroName = spell.name
 			binding.action.macroIcon = spell.icon
 			binding.action.macroValue = spell.content

@@ -86,7 +86,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 		--- @param binding Binding
 		--- @return boolean
 		local function CanEnableRegularTargetMode(binding)
-			local disallowed = { Clicked.ActionType.UNIT_SELECT, Clicked.ActionType.UNIT_MENU }
+			local disallowed = { Clicked2.ActionType.UNIT_SELECT, Clicked2.ActionType.UNIT_MENU }
 
 			if Addon:IsRestrictedKeybind(binding.keybind) or tContains(disallowed, binding.actionType) then
 				return false

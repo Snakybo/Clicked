@@ -91,10 +91,10 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 		--- @type string
 		local name
 
-		if obj.type == Clicked.DataObjectType.BINDING then
+		if obj.type == Clicked2.DataObjectType.BINDING then
 			--- @cast obj Binding
 			name = Addon:GetBindingNameAndIcon(obj)
-		elseif obj.type == Clicked.DataObjectType.GROUP then
+		elseif obj.type == Clicked2.DataObjectType.GROUP then
 			--- @cast obj Group
 			name = Addon:GetGroupNameAndIcon(obj)
 		end

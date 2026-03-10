@@ -292,7 +292,7 @@ end
 
 StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	text = "",
-	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked"]),
+	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked2"]),
 	button2 = "",
 	OnShow = function(self)
 		-- deprecated in 11.2.0
@@ -309,7 +309,7 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 		ReloadUI()
 	end,
 	OnCancel = function()
-		C_AddOns.DisableAddOn("Clicked")
+		C_AddOns.DisableAddOn("Clicked2")
 		ReloadUI()
 	end,
 	timeout = 0,
@@ -453,7 +453,7 @@ end
 function Addon:GetBindingValue(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.actionType == Clicked.ActionType.SPELL then
+	if binding.actionType == Clicked2.ActionType.SPELL then
 		local spell = binding.action.spellValue
 		if spell == nil then
 			return nil
@@ -495,7 +495,7 @@ function Addon:GetBindingValue(binding)
 		return name
 	end
 
-	if binding.actionType == Clicked.ActionType.ITEM then
+	if binding.actionType == Clicked2.ActionType.ITEM then
 		local item = binding.action.itemValue
 		if item == nil then
 			return nil
@@ -513,7 +513,7 @@ function Addon:GetBindingValue(binding)
 		return item
 	end
 
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
+	if binding.actionType == Clicked2.ActionType.CANCELAURA then
 		local aura = binding.action.auraName
 		if aura == nil then
 			return nil
@@ -537,11 +537,11 @@ function Addon:GetBindingValue(binding)
 		return name
 	end
 
-	if binding.actionType == Clicked.ActionType.MACRO or binding.actionType == Clicked.ActionType.APPEND then
+	if binding.actionType == Clicked2.ActionType.MACRO or binding.actionType == Clicked2.ActionType.APPEND then
 		return binding.action.macroValue
 	end
 
-	if binding.actionType == Clicked.ActionType.UNIT_SELECT or binding.actionType == Clicked.ActionType.UNIT_MENU then
+	if binding.actionType == Clicked2.ActionType.UNIT_SELECT or binding.actionType == Clicked2.ActionType.UNIT_MENU then
 		return binding.actionType
 	end
 
@@ -555,7 +555,7 @@ end
 function Addon:GetSimpleSpellOrItemInfo(binding)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
-	if binding.actionType == Clicked.ActionType.SPELL then
+	if binding.actionType == Clicked2.ActionType.SPELL then
 		local spell = Addon:GetSpellInfo(binding.action.spellValue, not binding.action.spellMaxRank)
 		if spell == nil then
 			return nil, nil, nil
@@ -564,7 +564,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 		return spell.name, spell.iconID, spell.spellID
 	end
 
-	if binding.actionType == Clicked.ActionType.ITEM then
+	if binding.actionType == Clicked2.ActionType.ITEM then
 		local name, _, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
 
 		if name == nil then
@@ -574,7 +574,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 		return name, icon, self:GetItemId(name)
 	end
 
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
+	if binding.actionType == Clicked2.ActionType.CANCELAURA then
 		local spell = Addon:GetSpellInfo(binding.action.auraName, true)
 		if spell == nil then
 			return nil, nil, nil
@@ -611,8 +611,8 @@ function Addon:GetBindingNameAndIcon(binding)
 	--- @type string|integer
 	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
-	if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
-		local label = binding.actionType == Clicked.ActionType.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
+	if binding.actionType == Clicked2.ActionType.SPELL or binding.actionType == Clicked2.ActionType.ITEM then
+		local label = binding.actionType == Clicked2.ActionType.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
 
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
@@ -624,7 +624,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(spellIcon) then
 			icon = spellIcon --[[@as string|integer]]
 		end
-	elseif binding.actionType == Clicked.ActionType.MACRO or binding.actionType == Clicked.ActionType.APPEND then
+	elseif binding.actionType == Clicked2.ActionType.MACRO or binding.actionType == Clicked2.ActionType.APPEND then
 		if Addon:IsNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
 		else
@@ -634,7 +634,7 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(binding.action.macroIcon) then
 			icon = binding.action.macroIcon
 		end
-	elseif binding.actionType == Clicked.ActionType.CANCELAURA then
+	elseif binding.actionType == Clicked2.ActionType.CANCELAURA then
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
 
@@ -645,9 +645,9 @@ function Addon:GetBindingNameAndIcon(binding)
 		if IsValidIcon(spellIcon) then
 			icon = spellIcon --[[@as string|integer]]
 		end
-	elseif binding.actionType == Clicked.ActionType.UNIT_SELECT then
+	elseif binding.actionType == Clicked2.ActionType.UNIT_SELECT then
 		name = Addon.L["Target the unit"]
-	elseif binding.actionType == Clicked.ActionType.UNIT_MENU then
+	elseif binding.actionType == Clicked2.ActionType.UNIT_MENU then
 		name = Addon.L["Open the unit menu"]
 	end
 
@@ -869,11 +869,11 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 
 	do
 		if leftCanLoad == nil then
-			leftCanLoad = Clicked:IsBindingLoaded(left)
+			leftCanLoad = Clicked2:IsBindingLoaded(left)
 		end
 
 		if rightCanLoad == nil then
-			rightCanLoad = Clicked:IsBindingLoaded(right)
+			rightCanLoad = Clicked2:IsBindingLoaded(right)
 		end
 
 		if leftCanLoad and not rightCanLoad then
@@ -1202,7 +1202,7 @@ end
 --- @param binding Binding
 --- @return boolean
 function Addon:IsHovercastEnabled(binding)
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
+	if binding.actionType == Clicked2.ActionType.CANCELAURA then
 		return false
 	end
 
@@ -1214,11 +1214,11 @@ end
 --- @param binding Binding
 --- @return boolean
 function Addon:IsMacroCastEnabled(binding)
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
+	if binding.actionType == Clicked2.ActionType.CANCELAURA then
 		return true
 	end
 
-	if binding.actionType == Clicked.ActionType.UNIT_MENU or binding.actionType == Clicked.ActionType.UNIT_SELECT then
+	if binding.actionType == Clicked2.ActionType.UNIT_MENU or binding.actionType == Clicked2.ActionType.UNIT_SELECT then
 		return false
 	end
 
@@ -1295,7 +1295,7 @@ end
 --- @param message string
 --- @return string
 function Addon:AppendClickedMessagePrefix(message)
-	return Addon:GetColorizedString(Addon.L["Clicked"], "ffe31919") .. ": " .. message
+	return Addon:GetColorizedString(Addon.L["Clicked2"], "ffe31919") .. ": " .. message
 end
 
 --- Run `string.format` on the specified string, and prefix the resulting string with `Clicked:`.

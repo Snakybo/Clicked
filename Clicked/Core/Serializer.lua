@@ -20,7 +20,7 @@ local LibDeflate = LibStub("LibDeflate")
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-local logger = Clicked:CreateSystemLogger("Serializer")
+local logger = Clicked2:CreateSystemLogger("Serializer")
 
 -- Local support functions
 
@@ -66,7 +66,7 @@ local function RegisterBinding(data)
 	end
 
 	data.binding.uid = nil
-	Addon:RegisterDataObject(data.binding, Clicked.DataObjectScope.PROFILE)
+	Addon:RegisterDataObject(data.binding, Clicked2.DataObjectScope.PROFILE)
 	Addon:ReloadBinding(data.binding, true)
 end
 
@@ -98,7 +98,7 @@ local function RegisterProfile(data)
 		Addon.db.profile[key] = data[key]
 	end
 
-	Clicked:ReloadDatabase()
+	Clicked2:ReloadDatabase()
 end
 
 -- Public addon API
@@ -109,13 +109,13 @@ end
 --- @return string
 --- @see Clicked#SerializeGroup
 --- @see Clicked#Deserialize
-function Clicked:SerializeDataObject(obj)
+function Clicked2:SerializeDataObject(obj)
 	assert(type(obj) == "table", "bad argument #1, expected table but got " .. type(obj))
 
 	--- @type ShareData
 	local data
 
-	if obj.type == Clicked.DataObjectType.BINDING then
+	if obj.type == Clicked2.DataObjectType.BINDING then
 		--- @cast obj Binding
 
 		data = {
@@ -126,7 +126,7 @@ function Clicked:SerializeDataObject(obj)
 
 		-- Clear user-specific data
 		data.binding.parent = nil
-	elseif obj.type == Clicked.DataObjectType.GROUP then
+	elseif obj.type == Clicked2.DataObjectType.GROUP then
 		--- @cast obj Group
 
 		data = {
@@ -135,7 +135,7 @@ function Clicked:SerializeDataObject(obj)
 			group = CopyTable(obj) --[[@as ShareData.Group]]
 		}
 
-		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
+		data.group.bindings = CopyTable(Clicked2:GetByParent(obj.uid))
 	end
 
 	logger:LogDebug("Serializing data object of type {type}", data.type)
@@ -150,7 +150,7 @@ end
 --- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
 --- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
 --- @return string
-function Clicked:SerializeProfile(profile, printable, full)
+function Clicked2:SerializeProfile(profile, printable, full)
 	assert(type(profile) == "table", "bad argument #1, expected table but got " .. type(profile))
 	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
 	assert(type(full == "boolean"), "bad argument #3, expected boolean but got " .. type(full))
@@ -188,7 +188,7 @@ end
 --- @param printable boolean
 --- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
 --- @return ShareData|ExportProfile|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
-function Clicked:Deserialize(encoded, printable)
+function Clicked2:Deserialize(encoded, printable)
 	local compressed
 
 	if printable then
@@ -224,7 +224,7 @@ end
 ---
 --- @param data ShareData|ExportProfile
 --- @return boolean
-function Clicked:Import(data)
+function Clicked2:Import(data)
 	if data.type == "group" then
 		--- @cast data ShareData
 		RegisterGroup(data)

@@ -1,12 +1,12 @@
-## Interface: 11508
-## Title: ClickedMedia
+## Interface: 20505
+## Title: ClickedMedia2
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
 ## Notes: Icon data for Clicked.
-## Dependencies: Clicked
+## Dependencies: Clicked2
 ## LoadOnDemand: 1
-## Group: Clicked
+## Group: Clicked2
 ## Category-enUS: Media
 ## Category-deDE: Medien
 ## Category-esES: Medios
@@ -19,4 +19,4 @@
 ## Category-zhCN: 材质
 ## Category-zhTW: 材質
 
-MediaClassic.lua
+MediaTBC.lua

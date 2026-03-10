@@ -22,7 +22,7 @@ Support functions
 --- @param callback fun(frame: Frame)
 --- @return Button
 local function CreateButton(parent, texture, callback)
-	texture = [[Interface\AddOns\Clicked\Media\Textures\]] .. texture .. ".tga"
+	texture = [[Interface\AddOns\Clicked2\Media\Textures\]] .. texture .. ".tga"
 
 	local frame = CreateFrame("Button", nil, parent)
 	frame:SetScript("OnClick", callback)

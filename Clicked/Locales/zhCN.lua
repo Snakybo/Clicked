@@ -14,13 +14,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "zhCN")
+local L = LibStub("AceLocale-3.0"):NewLocale("Clicked2", "zhCN")
 
 if not L then
 	return
 end
 
-L["Clicked"] = "Clicked"
+L["Clicked2"] = "Clicked"
 L["Unable to register unit frame: %s"] = "无法注册单位框架: %s"
 L["Clicked is not compatible with %s and requires one of the two to be disabled."] = "Clicked 和 %s 不兼容，请禁用其中一个插件."
 L["Keep %s"] = "保留 %s"
