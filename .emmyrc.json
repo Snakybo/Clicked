@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json",
+  "codeAction": {
+    "insertSpace": true
+  },
+  "diagnostics": {
+    "disable": [
+		"global-in-non-module"
+    ],
+	"severity": {
+		"invert-if": "hint"
+	}
+  },
+  "signature": {
+    "detailSignatureHelper": true
+  },
+  "runtime": {
+    "extensions": [
+      ".lua"
+    ],
+    "version": "Lua5.1"
+  },
+  "workspace": {
+    "ignoreDir": [
+      ".github",
+      ".vscode"
+    ],
+    "library": [
+      "./Clicked/Libs",
+      "../../.wow-annotations/Core",
+      "../../.wow-annotations/FrameXML",
+      "../LibLog-1.0",
+      "../LibMacroSyntaxHighlight-1.0",
+      "../LibTalentInfo-1.0"
+	]
+  }
+}

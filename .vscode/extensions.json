@@ -1,7 +1,7 @@
 {
 	"recommendations": [
-		"sumneko.lua",
-		"Ketho.wow-api",
+		"tangzx.emmylua",
+		"CppCXY.emmylua-codestyle",
 		"stanzilla.vscode-wow-toc"
 	]
 }
