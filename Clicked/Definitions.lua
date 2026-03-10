@@ -19,6 +19,9 @@
 --- @class AddonOptionsProvider
 --- @field public GetAddonOptions fun(self: AddonOptionsProvider): table<string, AceConfig.OptionsTable>
 
+--- @class SlashCommandHandler
+--- @field public HandleSlashCommand fun(self: SlashCommandHandler, args: string[]): boolean
+
 --- @class Profile
 --- @field public version integer
 --- @field public options Profile.Options

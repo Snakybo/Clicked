@@ -41,6 +41,7 @@ Core\StringUtils.lua
 Core\Serializer.lua
 Core\Upgrader.lua
 
+Modules\ConfigWindow.lua
 Modules\Minimap.lua
 
 Conditions\ConditionRegistry.lua
