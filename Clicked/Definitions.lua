@@ -16,12 +16,8 @@
 
 --- @meta
 
---- @class Clicked : AceAddon, AceEvent-3.0
---- @field public VERSION string
-
---- @class Addon : AceEvent-3.0
---- @field public L table<string,string>
---- @field public db AceDBObject-3.0
+--- @class AddonOptionsProvider
+--- @field public GetAddonOptions fun(self: AddonOptionsProvider): table<string, AceConfig.OptionsTable>
 
 --- @class Profile
 --- @field public version integer
