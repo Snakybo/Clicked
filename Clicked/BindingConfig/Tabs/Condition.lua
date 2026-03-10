@@ -25,7 +25,7 @@
 --- @field public Draw? fun(self: BindingConditionDrawer)
 --- @field public Update? fun(self: BindingConditionDrawer)
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 Addon.BindingConfig = Addon.BindingConfig or {}

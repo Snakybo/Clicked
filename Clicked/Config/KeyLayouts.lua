@@ -16,7 +16,7 @@
 
 ---@diagnostic disable: missing-fields
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 --- @class KeyButton
