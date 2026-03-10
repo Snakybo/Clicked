@@ -81,14 +81,6 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
-		elseif args[1] == "ignore-self-cast-warning" then
-			Addon.db.profile.options.ignoreSelfCastWarning = not Addon.db.profile.options.ignoreSelfCastWarning
-
-			if Addon.db.profile.options.ignoreSelfCastWarning then
-				Clicked2:LogInfo(Addon.L["Disabled self-cast warning, type this command again to re-enable it."])
-			else
-				Clicked2:LogInfo(Addon.L["Enabled self-cast warning, type this command again to disable it."])
-			end
 		end
 	end
 end
@@ -377,20 +369,10 @@ end
 function Clicked2:OnEnable()
 --@debug@
 	local projectUrl = "https://www.curseforge.com/wow/addons/clicked"
-	Clicked2:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
+	self:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
 --@end-debug@
 
 	UpdateEventHooks(self, self.RegisterEvent)
-
-	-- self-cast warning
-	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION >= Addon.Expansion.DF then
-		local selfCastModifier = GetModifiedClick("SELFCAST")
-
-		if selfCastModifier ~= "NONE" then
-			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '{key}' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
-			Clicked2:LogWarning(message, selfCastModifier, "/clicked ignore-self-cast-warning")
-		end
-	end
 end
 
 function Clicked2:OnDisable()

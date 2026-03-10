@@ -7,3 +7,4 @@ This document contains a temporary changelog to keep track of changes made in ve
 ### Removed
 
 * Remove the ability tooltips module, as Midnight has severely handicapped the feature
+* Remove the self-cast button conflict warning
