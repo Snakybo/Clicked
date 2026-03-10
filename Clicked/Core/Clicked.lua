@@ -21,7 +21,6 @@ local Addon = select(2, ...)
 
 local isPlayerInCombat = false
 local isInitialized = false
-local openConfigOnCombatExit = false
 local wasHouseEditorActive = false
 
 --- @type table<string, boolean>
@@ -37,23 +36,25 @@ local function HandleChatCommand(input)
 
 	while true do
 		local arg, next = AceConsole:GetArgs(input, 1, start)
-		table.insert(args, arg)
 
 		if next == 1e9 then
 			break
 		end
 
+		table.insert(args, arg)
 		start = next
 	end
 
-	if #args == 0 then
-		if InCombatLockdown() then
-			openConfigOnCombatExit = true
-			Clicked2:LogWarning(Addon.L["Binding configuration will open once you leave combat."])
-		else
-			Addon.BindingConfig.Window:Open()
+	for _, module in Clicked2:IterateModules() do
+		--- @cast module SlashCommandHandler
+		local handler = module.HandleSlashCommand
+
+		if type(handler) == "function" and handler(module, args) then
+			return
 		end
-	elseif #args == 1 then
+	end
+
+	if #args == 1 then
 		if args[1] == "opt" or args[1] == "options" then
 			Addon:OpenSettingsMenu("Clicked2")
 		elseif args[1] == "dump" then
@@ -78,9 +79,6 @@ local function PLAYER_REGEN_DISABLED()
 	Clicked2:LogVerbose("Received event {eventName}", "PLAYER_REGEN_DISABLED")
 
 	isPlayerInCombat = true
-	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
-
-	Addon.BindingConfig.Window:Close()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
@@ -96,11 +94,6 @@ local function PLAYER_REGEN_ENABLED()
 
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
-	end
-
-	if openConfigOnCombatExit then
-		Addon.BindingConfig.Window:Open()
-		openConfigOnCombatExit = false
 	end
 end
 
