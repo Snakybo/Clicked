@@ -16,8 +16,6 @@
 
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local LibDBIcon = LibStub("LibDBIcon-1.0")
-local LibLog = LibStub("LibLog-1.0")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -33,47 +31,10 @@ end
 --- @private
 --- @return AceConfig.OptionsTable
 function AddonOptions:CreateOptionsTable()
-	return {
+	local result = {
 		type = "group",
 		name = Addon.L["Clicked2"],
 		args = {
-			minimapIcon = {
-				name = Addon.L["Enable minimap icon"],
-				desc = Addon.L["Enable or disable the minimap icon."],
-				type = "toggle",
-				order = 100,
-				width = "full",
-				set = function(_, val)
-					Addon.db.profile.options.minimap.hide = not val
-
-					if val then
-						LibDBIcon:Show(Addon.L["Clicked2"])
-					else
-						LibDBIcon:Hide(Addon.L["Clicked2"])
-					end
-				end,
-				get = function(_)
-					return not Addon.db.profile.options.minimap.hide
-				end
-			},
-			addonCompartmentButton = {
-				name = Addon.L["Enable addon compartment button"],
-				desc = Addon.L["Enable or disable the addon compartment button."],
-				type = "toggle",
-				order = 101,
-				width = "full",
-				hidden = Addon.EXPANSION < Addon.Expansion.DF,
-				set = function (_, val)
-					if val then
-						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
-					else
-						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked2"])
-					end
-				end,
-				get = function(_)
-					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked2"])
-				end
-			},
 			onKeyDown = {
 				name = Addon.L["Cast on key down rather than key up"],
 				desc = Addon.L["This option will make bindings trigger on the 'down' portion of a button press rather than the 'up' portion."],
@@ -130,9 +91,7 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 600,
 				width = "full",
-				hidden = function()
-					return Addon.EXPANSION < Addon.Expansion.TWW
-				end,
+				hidden = Addon.EXPANSION < Addon.Expansion.TWW,
 				set = function (_, val)
 					Addon.db.profile.options.disableInHouse = val
 					Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
@@ -146,6 +105,19 @@ function AddonOptions:CreateOptionsTable()
 			})
 		}
 	}
+
+	for _, module in Clicked2:IterateModules() do
+		--- @cast module AceModule|AddonOptionsProvider
+		local handler = module.GetAddonOptions
+
+		if type(handler) == "function" then
+			for key, option in pairs(handler(module)) do
+				result.args[module.moduleName .. "_" .. key] = option
+			end
+		end
+	end
+
+	return result
 end
 
 Addon.AddonOptions = AddonOptions

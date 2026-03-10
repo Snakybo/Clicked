@@ -15,8 +15,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceConsole = LibStub("AceConsole-3.0")
-local LibDataBroker = LibStub("LibDataBroker-1.1")
-local LibDBIcon = LibStub("LibDBIcon-1.0")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -28,25 +26,6 @@ local wasHouseEditorActive = false
 
 --- @type table<string, boolean>
 local playerFlagsCache = {}
-
--- Local support functions
-
-local function RegisterIcons()
-	local iconData = LibDataBroker:NewDataObject("Clicked2", {
-		type = "launcher",
-		label = Addon.L["Clicked2"],
-		icon = "Interface\\Icons\\inv_misc_punchcards_yellow",
-		OnClick = function()
-			Addon.BindingConfig.Window:Open()
-		end,
-		OnTooltipShow = function(tooltip)
-			tooltip:AddLine(Addon.L["Clicked2"])
-		end
-	})
-
-	LibDBIcon:Register(Addon.L["Clicked2"], iconData, Addon.db.profile.options.minimap)
-	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
-end
 
 --- Parse a chat command input and handle it appropriately.
 ---
@@ -359,8 +338,6 @@ function Clicked2:OnInitialize()
 	self:SetLogLevelFromConfigTable(Addon.db.global)
 
 	Addon:UpgradeDatabase()
-
-	RegisterIcons()
 
 	Addon:RegisterClickCastHeader()
 	Addon:RegisterBlizzardUnitFrames()
