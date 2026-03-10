@@ -79,16 +79,16 @@ function Addon:RegisterBlizzardUnitFrames()
 
 	HookUnitFrame(5, "Boss%dTargetFrame")
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansion.TBC then
 		Clicked2:RegisterClickCastFrame("FocusFrame")
 		Clicked2:RegisterClickCastFrame("FocusFrameToT")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansion.CATA then
 		HookUnitFrame(3, "ArenaEnemyFrame%d", "Blizzard_ArenaUI")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
+	if Addon.EXPANSION >= Addon.Expansion.DF or Addon.EXPANSION == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do

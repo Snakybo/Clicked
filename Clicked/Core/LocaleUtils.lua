@@ -44,17 +44,17 @@ local allPvpTalents = {}
 
 do
 	--- @param race integer
-	--- @param expansion ExpansionLevel
+	--- @param expansion Expansion
 	local function AddRace(race, expansion)
-		if Addon.EXPANSION_LEVEL >= expansion then
+		if Addon.EXPANSION >= expansion then
 			table.insert(allRaces, race)
 		end
 	end
 
 	--- @param class string
-	--- @param expansion ExpansionLevel
+	--- @param expansion Expansion
 	local function AddClass(class, expansion)
-		if Addon.EXPANSION_LEVEL >= expansion then
+		if Addon.EXPANSION >= expansion then
 			table.insert(allClasses, class)
 		end
 	end
@@ -276,12 +276,12 @@ function Addon:GetLocalizedTargetUnits()
 		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION >= Addon.Expansion.TBC then
 		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
 		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION >= Addon.Expansion.CATA then
 		items[Addon.TargetUnit.ARENA_1] = Addon.L["Arena %s"]:format("1")
 		items[Addon.TargetUnit.ARENA_2] = Addon.L["Arena %s"]:format("2")
 		items[Addon.TargetUnit.ARENA_3] = Addon.L["Arena %s"]:format("3")
@@ -447,7 +447,7 @@ function Addon:GetLocalizedSpecializations(classNames)
 	return items, order
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+if Addon.EXPANSION >= Addon.Expansion.DF then
 	--- Get a localized list of all available talents for the
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
@@ -483,7 +483,7 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 
 		return result
 	end
-elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+elseif Addon.EXPANSION >= Addon.Expansion.CATA then
 	--- Get a localized list of all available talents for the
 	--- given specialization IDs. If the `specializations` parameter
 	--- is `nil` it will return results for the player's current specialization.
@@ -598,7 +598,7 @@ function Addon:GetLocalizedPvPTalents(specializations)
 	return result
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+if Addon.EXPANSION >= Addon.Expansion.MOP then
 	--- Get a localized list of all available shapeshift forms for the given specialization IDs.
 	--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
 	---

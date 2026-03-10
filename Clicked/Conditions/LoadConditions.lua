@@ -130,9 +130,9 @@ local config = {
 			end
 		},
 		dependencies = { "class" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
+		disabled = Addon.EXPANSION < Addon.Expansion.CATA,
 		init = function()
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+			if Addon.EXPANSION >= Addon.Expansion.MOP then
 				local specIndex = GetSpecialization()
 				return Utils.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
 			else
@@ -143,7 +143,7 @@ local config = {
 		testOnEvents = { "PLAYER_TALENT_UPDATE" },
 		--- @return integer
 		state = function()
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+			if Addon.EXPANSION >= Addon.Expansion.MOP then
 				local specIndex = GetSpecialization()
 				return specIndex == 5 and 1 or specIndex
 			end
@@ -173,7 +173,7 @@ local config = {
 				}
 			end
 		},
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.MOP,
+		disabled = Addon.EXPANSION < Addon.Expansion.MOP,
 		init = function()
 			local role = GetSpecializationRole(GetSpecialization()) or "DAMAGER"
 			return Utils.CreateMultiselectLoadOption(role)
@@ -198,7 +198,7 @@ local config = {
 			--- @param class string[]
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+				if Addon.EXPANSION >= Addon.Expansion.CATA then
 					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedTalents(specIds)
 				else
@@ -254,7 +254,7 @@ local config = {
 			end
 		},
 		dependencies = { "class", "specialization" },
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
+		disabled = Addon.EXPANSION < Addon.Expansion.BFA,
 		init = function()
 			return Utils.CreateTalentLoadOption("")
 		end,
@@ -315,7 +315,7 @@ local config = {
 				}, { true, false}
 			end
 		},
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
+		disabled = Addon.EXPANSION < Addon.Expansion.BFA,
 		init = function()
 			return Utils.CreateLoadOption(true)
 		end,
@@ -349,7 +349,7 @@ local config = {
 					"RAID"
 				}
 
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+				if Addon.EXPANSION >= Addon.Expansion.TBC then
 					items["PVP"] = Addon.L["Battleground"]
 					items["ARENA"] = Addon.L["Arena"]
 
@@ -357,7 +357,7 @@ local config = {
 					table.insert(order, "ARENA")
 				end
 
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
+				if Addon.EXPANSION >= Addon.Expansion.MOP then
 					items["SCENARIO"] = Addon.L["Scenario"]
 					table.insert(order, 2, "SCENARIO")
 				end
@@ -448,7 +448,7 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
-		testOnEvents = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC and
+		testOnEvents = Addon.EXPANSION > Addon.Expansion.CLASSIC and
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "LEARNED_SPELL_IN_SKILL_LINE" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		--- @return integer
@@ -589,7 +589,7 @@ local config = {
 				return result
 			end
 		},
-		disabled = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or C_Engraving == nil,
+		disabled = Addon.EXPANSION > Addon.Expansion.CLASSIC or C_Engraving == nil,
 		init = function()
 			return Utils.CreateLoadOption("")
 		end,
