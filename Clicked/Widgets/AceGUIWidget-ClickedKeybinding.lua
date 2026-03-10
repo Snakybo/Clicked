@@ -9,7 +9,7 @@ Set Keybindings in the Config UI.
 
 --- @class ClickedKeybinding : AceGUIKeybinding
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedKeybinding", 3

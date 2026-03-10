@@ -17,7 +17,7 @@
 local AceGUI = LibStub("AceGUI-3.0")
 local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 -- Private addon API

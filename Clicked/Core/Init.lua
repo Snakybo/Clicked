@@ -28,7 +28,7 @@ if Clicked2.VERSION == "@project-version@" then
 end
 --@end-debug@
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked2")
 

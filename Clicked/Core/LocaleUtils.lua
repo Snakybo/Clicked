@@ -27,7 +27,7 @@ local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetS
 
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- @type integer[]

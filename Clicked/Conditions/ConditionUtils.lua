@@ -39,7 +39,7 @@ local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 -- Deprecated in 5.5.0
 local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 -- Private addon API

@@ -14,8 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
+
+--- @class ClickCastHeader : Frame, SecureHandlerBaseTemplate, SecureHandlerAttributeTemplate
 
 --- @param frame Button
 --- @param attributes table<string,string>
@@ -39,7 +41,8 @@ local Prototype = {}
 function Prototype:OnInitialize()
 	-- This is mostly based on Clique, mainly to ensure it will works with any addons that integrate with Clique directly, such as oUF.
 
-	Addon.clickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
+	--- @diagnostic disable-next-line: generic-constraint-mismatch
+	Addon.clickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate") --[[@as ClickCastHeader]]
 	Addon.clickCastHeader:SetAttribute("setup-keybinds", [[
 		if currentClickcastButton ~= nil then
 			control:RunFor(currentClickcastButton, control:GetAttribute("clear-keybinds"))

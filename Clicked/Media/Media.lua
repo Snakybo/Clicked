@@ -16,7 +16,7 @@
 
 local LSM = LibStub("LibSharedMedia-3.0");
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 Addon.Media = {

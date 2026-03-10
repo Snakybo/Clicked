@@ -17,7 +17,7 @@
 local AceSerializer = LibStub("AceSerializer-3.0")
 local LibDeflate = LibStub("LibDeflate")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local logger = Clicked2:CreateSystemLogger("Serializer")

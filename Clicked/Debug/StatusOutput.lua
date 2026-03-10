@@ -21,7 +21,7 @@ local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecializ
 -- Deprecated in 5.5.0
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- @type Frame

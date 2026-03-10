@@ -16,7 +16,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local MEDIA_ADDON_NAME = "ClickedMedia"

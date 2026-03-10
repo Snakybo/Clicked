@@ -42,7 +42,7 @@
 --- @field public map table<string, Condition>
 --- @field public dependencyGraph table<string, string[]>
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- @param config Condition[]

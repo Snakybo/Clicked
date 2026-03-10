@@ -18,7 +18,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 --- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string[]
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local MIXED_TEXT_COLOR =  BLUE_FONT_COLOR

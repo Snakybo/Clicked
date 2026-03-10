@@ -15,7 +15,7 @@ Adds OnFocusGained and OnFocusLost callbacks.
 --- @field private tooltipHeader? string
 --- @field private tooltipSubtext? string
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedSearchBox", 2

@@ -21,7 +21,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 --- @field public GetOptionMenu fun(): string, string, string?
 --- @field public GetOptionTable fun(): table<string, AceConfig.OptionsTable>
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- @class AddonOptions

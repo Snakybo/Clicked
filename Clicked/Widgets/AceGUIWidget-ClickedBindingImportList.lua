@@ -34,7 +34,7 @@
 --- @class ClickedBindingImportList.GroupItem : ClickedTreeGroupItem
 --- @field public group Group
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedBindingImportList", 1

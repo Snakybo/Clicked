@@ -11,7 +11,7 @@
 --- @field private visible boolean
 --- @field private highlight boolean
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedKeyVisualizerButton", 1

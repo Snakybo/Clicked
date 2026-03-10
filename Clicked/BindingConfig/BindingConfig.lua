@@ -30,7 +30,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local SEARCH_FILTER_APPLY_DELAY = 0.1
@@ -733,7 +733,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 
 		while #queue > 0 do
 			local current = table.remove(queue, 1)
-			local children = self.treeItems[current].children --[[@as ClickedTreeGroupItem[]]
+			local children = self.treeItems[current].children --[[@as ClickedTreeGroupItem[] ]]
 
 			if hierarchy[current] ~= nil then
 				for _, item in ipairs(hierarchy[current]) do

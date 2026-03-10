@@ -19,7 +19,7 @@ local AceConsole = LibStub("AceConsole-3.0")
 --- @class SlashCommandHandler
 --- @field public HandleSlashCommand fun(self: SlashCommandHandler, args: string[]): boolean
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- Parse a chat command input and handle it appropriately.

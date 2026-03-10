@@ -17,7 +17,7 @@
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 --- @class MinimapModule : AceModule, LibLog-1.0.Logger, OptionMenuDriver

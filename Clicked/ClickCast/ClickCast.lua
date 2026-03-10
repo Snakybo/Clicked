@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class Addon
+--- @class (partial) Addon
 local Addon = select(2, ...)
 
 local HAS_TYPE_RELEASE = Addon.EXPANSION >= Addon.Expansions.DF or Addon.EXPANSION == Addon.Expansions.TBC
@@ -107,11 +107,9 @@ function Prototype:UpdateRestrictedEnvironment(frame, keybinds)
 		command = string.format([[
 			keybinds = table.new(%s)
 			identifiers = table.new(%s)
-		]], "\"" .. table.concat(keys, "\", \"") .. "\"",
-		    "\"" .. table.concat(identifiers, "\", \"") .. "\"")
+		]], "\"" .. table.concat(keys, "\", \"") .. "\"", "\"" .. table.concat(identifiers, "\", \"") .. "\"")
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	frame:Execute(command)
 end
 
