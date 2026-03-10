@@ -19,7 +19,7 @@
 --- @class Clicked : AceAddon, AceEvent-3.0
 --- @field public VERSION string
 
---- @class ClickedInternal : AceEvent-3.0
+--- @class Addon : AceEvent-3.0
 --- @field public L table<string,string>
 --- @field public db AceDBObject-3.0
 

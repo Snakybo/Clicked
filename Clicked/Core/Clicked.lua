@@ -18,7 +18,7 @@ local AceConsole = LibStub("AceConsole-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked2") --[[@as table<string,string>]]
 

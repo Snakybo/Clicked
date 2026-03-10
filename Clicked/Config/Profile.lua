@@ -20,7 +20,7 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
 local AceComm = LibStub("AceComm-3.0")
 
---- @class ClickedInternal : AceComm-3.0
+--- @class Addon : AceComm-3.0
 local Addon = select(2, ...)
 
 -- Share to target player
