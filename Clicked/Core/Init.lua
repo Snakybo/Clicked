@@ -18,6 +18,7 @@
 Clicked2 = LibStub("AceAddon-3.0"):NewAddon("Clicked2", "AceEvent-3.0", "LibLog-1.0")
 Clicked2.VERSION = C_AddOns.GetAddOnMetadata("Clicked2", "Version")
 
+Clicked2:SetDefaultModuleLibraries("LibLog-1.0")
 Clicked2:LogVerbose("Initializing Clicked")
 
 --@debug@
