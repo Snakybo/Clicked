@@ -39,7 +39,7 @@ end
 local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
 
-	Addon.BlacklistOptions:SetBlacklistGroup(frame, parent:GetName())
+	Clicked2:SetBlacklistGroup(frame, parent:GetName())
 	Clicked2:RegisterClickCastFrame(frame)
 end
 
