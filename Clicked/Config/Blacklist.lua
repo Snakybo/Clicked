@@ -20,129 +20,68 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 --- @class Addon
 local Addon = select(2, ...)
 
+local GROUP_ATTRIBUTE_KEY = "clicked-blacklist-group"
+
+--- @type { [string]: { name: string, patterns: string[] } }
 local UNIT_FRAME_ADDON_MAPPING = {
 	["ElvUI"] = {
 		name = Addon:GetColorizedString(Addon.L["ElvUI"], "ff1784d1"),
-		"ElvUF_*"
+		patterns = {
+			"ElvUF_*"
+		}
 	},
 	["Grid2"] = {
 		name = Addon.L["Grid2"],
-		"Grid2*"
+		patterns = {
+			"Grid2*"
+		}
 	},
 	["Vuhdo"] = {
 		name = Addon:GetColorizedString(Addon.L["VuhDo"], "ffffe566"),
-		"Vd%dH%d*"
+		patterns = {
+			"Vd%dH%d*"
+		}
 	},
 	["Gladius"] = {
 		name = "Gladius",
-		"GladiusButtonarena%d"
+		patterns = {
+			"GladiusButtonarena%d"
+		}
 	},
 	["GladiusEx"] = {
 		name = "GladiusEx",
-		"GladiusExSecureButtonarena%d",
-		"GladiusExSecureButtonparty%d"
+		patterns = {
+			"GladiusExSecureButtonarena%d",
+			"GladiusExSecureButtonparty%d"
+		}
 	},
 	["Blizzard"] = {
 		name = "Blizzard",
-		"Boss%dTargetFrame",
-		"CompactRaidFrame%d",
-		"CompactArenaFrameMember%d",
-		"CompactArenaFramePet%d",
-		"CompactPartyFrameMember%d",
-		"CompactPartyFramePet%d",
-		"FocusFrame",
-		"FocusFrameToT",
-		"PetFrame",
-		"PlayerFrame",
-		"PartyMemberFrame%d",
-		"TargetFrame",
-		"TargetFrameToT"
+		patterns = {
+			"Boss%dTargetFrame",
+			"CompactRaidFrame%d",
+			"CompactArenaFrameMember%d",
+			"CompactArenaFramePet%d",
+			"CompactPartyFrameMember%d",
+			"CompactPartyFramePet%d",
+			"FocusFrame",
+			"FocusFrameToT",
+			"PetFrame",
+			"PlayerFrame",
+			"PartyMemberFrame%d",
+			"TargetFrame",
+			"TargetFrameToT"
+		}
 	}
 }
 
-local config
-local values = {}
+--- @class BlacklistModule : ClickedModule, AceEvent-3.0
+local Prototype = {}
 
--- Local support functions
-
---- @class BlacklistOptions
-local BlacklistOptions = {}
-
-function BlacklistOptions:Initialize()
-	config = self:CreateOptionsTable()
-
-	AceConfig:RegisterOptionsTable("Clicked2/Blacklist", config)
-	AceConfigDialog:AddToBlizOptions("Clicked2/Blacklist", Addon.L["Frame Blacklist"], "Clicked2")
-
-	self:Refresh()
-end
-
---- Set the name of the blacklist group the frame belongs to.
----
---- @param frame Frame
---- @return string?
-function BlacklistOptions:SetBlacklistGroup(frame, group)
-	frame:SetAttribute("clicked-blacklist-group", group)
-end
-
---- Get the name of the blacklist group the frame belongs to.
----
---- @param frame Frame
---- @return string?
-function BlacklistOptions:GetBlacklistGroup(frame)
-	local group = frame:GetAttribute("clicked-blacklist-group")
-
-	if group ~= nil then
-		return group
-	end
-
-	if frame.GetName then
-		return frame:GetName()
-	end
-
-	return nil
-end
-
---- Get the names of all frames within a blacklist group
---- @param group any
---- @return string[]
-function BlacklistOptions:GetBlacklistGroupItems(group)
-	local result = {}
-
-	for _, frame in Clicked2:IterateClickCastFrames() do
-		if self:GetBlacklistGroup(frame) == group then
-			table.insert(result, frame:GetName())
-		end
-	end
-
-	return result
-end
-
-function BlacklistOptions:Refresh()
-	for _, frame in Clicked2:IterateClickCastFrames() do
-		self:RegisterFrame(frame)
-	end
-
-	for name, state in pairs(Addon.db.profile.blacklist) do
-		self:SetSelectedItem(name, state)
-		self:SetDropdownItem(name, not state)
-	end
-end
-
---- @param frame Frame
-function BlacklistOptions:RegisterFrame(frame)
-	local group = self:GetBlacklistGroup(frame)
-
-	if group ~= nil then
-		self:SetSelectedItem(group, Addon.db.profile.blacklist[group])
-		self:SetDropdownItem(group, not Addon.db.profile.blacklist[group])
-	end
-end
-
---- @private
---- @return AceConfig.OptionsTable
-function BlacklistOptions:CreateOptionsTable()
-	return {
+--- @protected
+function Prototype:OnInitialize()
+	--- @type AceConfig.OptionsTable
+	self.config = {
 		type = "group",
 		name = Addon.L["Frame Blacklist"],
 		args = {
@@ -177,9 +116,10 @@ function BlacklistOptions:CreateOptionsTable()
 				width = "full",
 				order = 10,
 				values = function()
+					--- @type table<string, string>
 					local result = {}
 
-					for source, frames in pairs(values) do
+					for source, frames in pairs(self.values) do
 						result[source] = "s|" .. source
 
 						for _, frame in ipairs(frames) do
@@ -196,21 +136,25 @@ function BlacklistOptions:CreateOptionsTable()
 					return result
 				end,
 				sorting = function()
+					--- @type string[]
 					local result = {}
-					local current = 1
 
-					table.sort(values)
+					local sources = {}
+					for source in pairs(self.values) do
+						table.insert(sources, source)
+					end
 
-					for source, frames in pairs(values) do
-						result[current] = source
+					table.sort(sources)
 
-						table.sort(frames)
+					for _, source in ipairs(sources) do
+						table.insert(result, source)
 
-						for i, frame in ipairs(frames) do
-							result[current + i] = frame
+						local children = CopyTable(self.values[source])
+						table.sort(children)
+
+						for _, frame in ipairs(children) do
+							table.insert(result, frame)
 						end
-
-						current = current + #frames + 1
 					end
 
 					return result
@@ -238,14 +182,66 @@ function BlacklistOptions:CreateOptionsTable()
 			}
 		}
 	}
+
+	--- @type table<string, string[]>
+	self.values = {}
+
+	self:RegisterMessage("CLICKED_DATABASE_RELOADED", self.CLICKED_DATABASE_RELOADED, self)
+	self:RegisterMessage("CLICKED_CLICKCAST_FRAME_REGISTERED", self.CLICKED_CLICKCAST_FRAME_REGISTERED, self)
+
+	AceConfig:RegisterOptionsTable("Clicked2/Blacklist", self.config)
+	AceConfigDialog:AddToBlizOptions("Clicked2/Blacklist", Addon.L["Frame Blacklist"], "Clicked2")
+
+	self:Refresh()
+
+	self:LogDebug("Initialized blacklist module")
+end
+
+--- @private
+--- @param group string
+--- @return string[]
+function Prototype:GetBlacklistGroupItems(group)
+	--- @type string[]
+	local result = {}
+
+	for _, frame in Clicked2:IterateClickCastFrames() do
+		if frame:GetName() ~= group and Clicked2:GetBlacklistGroup(frame) == group then
+			table.insert(result, frame:GetName())
+		end
+	end
+
+	return result
+end
+
+--- @private
+function Prototype:Refresh()
+	for _, frame in Clicked2:IterateClickCastFrames() do
+		self:RegisterFrame(frame)
+	end
+
+	for name, state in pairs(Addon.db.profile.blacklist) do
+		self:SetSelectedItem(name, state)
+		self:SetDropdownItem(name, not state)
+	end
+end
+
+--- @private
+--- @param frame Frame
+function Prototype:RegisterFrame(frame)
+	local group = Clicked2:GetBlacklistGroup(frame)
+
+	if group ~= nil then
+		self:SetSelectedItem(group, Addon.db.profile.blacklist[group])
+		self:SetDropdownItem(group, not Addon.db.profile.blacklist[group])
+	end
 end
 
 --- @private
 --- @param name string
 --- @return string
-function BlacklistOptions:GetUnitFrameSource(name)
+function Prototype:GetUnitFrameSource(name)
 	for source, frames in pairs(UNIT_FRAME_ADDON_MAPPING) do
-		for _, frame in ipairs(frames) do
+		for _, frame in ipairs(frames.patterns) do
 			if string.match(name, frame) then
 				return UNIT_FRAME_ADDON_MAPPING[source].name
 			end
@@ -258,13 +254,13 @@ end
 --- @private
 --- @param name string
 --- @param enabled boolean
-function BlacklistOptions:SetDropdownItem(name, enabled)
+function Prototype:SetDropdownItem(name, enabled)
 	local source = self:GetUnitFrameSource(name)
 	local index = 0
 
-	values[source] = values[source] or {}
+	self.values[source] = self.values[source] or {}
 
-	for i, item in ipairs(values[source]) do
+	for i, item in ipairs(self.values[source]) do
 		if item == name then
 			index = i
 			break
@@ -272,17 +268,17 @@ function BlacklistOptions:SetDropdownItem(name, enabled)
 	end
 
 	if enabled and index == 0 then
-		table.insert(values[source], name)
+		table.insert(self.values[source], name)
 	elseif not enabled and index > 0 then
-		table.remove(values[source], index)
+		table.remove(self.values[source], index)
 	end
 end
 
 --- @private
 --- @param name string
 --- @param enabled boolean
-function BlacklistOptions:SetSelectedItem(name, enabled)
-	local args = config.args
+function Prototype:SetSelectedItem(name, enabled)
+	local args = self.config.args
 
 	if enabled then
 		args[name] = {
@@ -331,4 +327,36 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 	end
 end
 
-Addon.BlacklistOptions = BlacklistOptions
+--- @private
+function Prototype:CLICKED_DATABASE_RELOADED()
+	self:Refresh()
+end
+
+--- @private
+function Prototype:CLICKED_CLICKCAST_FRAME_REGISTERED(_, frame)
+	self:RegisterFrame(frame)
+end
+
+--- @param frame Frame
+--- @param group? string
+function Clicked2:SetBlacklistGroup(frame, group)
+	frame:SetAttribute(GROUP_ATTRIBUTE_KEY, group)
+end
+
+--- @param frame Frame
+--- @return string?
+function Clicked2:GetBlacklistGroup(frame)
+	local group = frame:GetAttribute(GROUP_ATTRIBUTE_KEY)
+	if group ~= nil then
+		return group
+	end
+
+	if frame.GetName then
+		return frame:GetName()
+	end
+
+	return nil
+end
+
+--- @type BlacklistModule
+Addon.Blacklist = Clicked2:NewModule("Blacklist", Prototype, "AceEvent-3.0")

@@ -232,7 +232,7 @@ function Clicked2:RegisterClickCastFrame(frame, addon)
 
 	table.insert(frames, frame)
 
-	Addon.BlacklistOptions:RegisterFrame(frame)
+	Clicked2:SendMessage("CLICKED_CLICKCAST_FRAME_REGISTERED", frame)
 
 	if name ~= nil then
 		logger:LogVerbose("Registered frame {frameName}", name)
