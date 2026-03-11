@@ -22,6 +22,8 @@
 --- @class SlashCommandHandler
 --- @field public HandleSlashCommand fun(self: SlashCommandHandler, args: string[]): boolean
 
+--- @class ClickedModule : AceModule, LibLog-1.0.Logger
+
 --- @class Profile
 --- @field public version integer
 --- @field public options Profile.Options

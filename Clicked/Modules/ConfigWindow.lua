@@ -17,7 +17,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
---- @class ConfigWindowModule : AceModule, AceEvent-3.0, LibLog-1.0.Logger, SlashCommandHandler
+--- @class ConfigWindowModule : ClickedModule, AceEvent-3.0, SlashCommandHandler
 local Prototype = {}
 
 --- @protected
