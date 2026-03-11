@@ -178,7 +178,8 @@ function Clicked2:ReloadDatabase()
 		LibDBIcon:Show("Clicked2")
 	end
 
-	Addon.BlacklistOptions:Refresh()
+	Clicked2:SendMessage("CLICKED_DATABASE_RELOADED")
+
 	Addon:RequestItemLoadForBindings()
 	Addon:ReloadBindings()
 end
