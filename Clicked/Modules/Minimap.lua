@@ -20,7 +20,7 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 --- @class Addon
 local Addon = select(2, ...)
 
---- @class MinimapModule : AceModule, LibLog-1.0.Logger, AddonOptionsProvider
+--- @class MinimapModule : ClickedModule, AddonOptionsProvider
 local Prototype = {}
 
 --- @protected
