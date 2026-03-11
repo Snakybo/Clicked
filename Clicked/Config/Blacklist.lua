@@ -167,7 +167,7 @@ function Prototype:OnInitialize()
 						self:SetSelectedItem(val, true)
 						self:SetDropdownItem(val, false)
 
-						Clicked2:UnregisterClickCastFrame(val)
+						Addon.ClickCast:UnregisterFrame(val)
 						Clicked2:ProcessActiveBindings()
 					end
 				end,
@@ -197,6 +197,19 @@ function Prototype:OnInitialize()
 	self:LogDebug("Initialized blacklist module")
 end
 
+--- @param frame Frame
+--- @return boolean
+function Prototype:IsFrameBlacklisted(frame)
+	if frame == nil then
+		return false
+	end
+
+	local blacklist = Addon.db.profile.blacklist
+	local name = frame:GetName()
+
+	return blacklist[name]
+end
+
 --- @private
 --- @param group string
 --- @return string[]
@@ -204,7 +217,7 @@ function Prototype:GetBlacklistGroupItems(group)
 	--- @type string[]
 	local result = {}
 
-	for _, frame in Clicked2:IterateClickCastFrames() do
+	for _, frame in Addon.ClickCast:IterateFrames() do
 		if frame:GetName() ~= group and Clicked2:GetBlacklistGroup(frame) == group then
 			table.insert(result, frame:GetName())
 		end
@@ -215,7 +228,7 @@ end
 
 --- @private
 function Prototype:Refresh()
-	for _, frame in Clicked2:IterateClickCastFrames() do
+	for _, frame in Addon.ClickCast:IterateFrames() do
 		self:RegisterFrame(frame)
 	end
 
@@ -314,7 +327,7 @@ function Prototype:SetSelectedItem(name, enabled)
 
 					self:SetDropdownItem(name, true)
 
-					Clicked2:RegisterClickCastFrame(name)
+					Addon.ClickCast:RegisterFrame(name)
 					Clicked2:ProcessActiveBindings()
 				end
 			end,
@@ -337,6 +350,9 @@ function Prototype:CLICKED_CLICKCAST_FRAME_REGISTERED(_, frame)
 	self:RegisterFrame(frame)
 end
 
+--- @type BlacklistModule
+Addon.Blacklist = Clicked2:NewModule("Blacklist", Prototype, "AceEvent-3.0")
+
 --- @param frame Frame
 --- @param group? string
 function Clicked2:SetBlacklistGroup(frame, group)
@@ -357,6 +373,3 @@ function Clicked2:GetBlacklistGroup(frame)
 
 	return nil
 end
-
---- @type BlacklistModule
-Addon.Blacklist = Clicked2:NewModule("Blacklist", Prototype, "AceEvent-3.0")

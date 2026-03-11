@@ -17,25 +17,9 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-local hasTypeRelease = Addon.EXPANSION >= Addon.Expansion.DF or Addon.EXPANSION == Addon.Expansion.TBC
-
-local frameCache = {}
-
 local logger = Clicked2:CreateSystemLogger("AttributeHandler")
 
 -- Local support functions
-
---- @param frame table
-local function EnsureCache(frame)
-	if frameCache[frame] ~= nil then
-		return
-	end
-
-	frameCache[frame] = {
-		pending = {},
-		applied = {}
-	}
-end
 
 --- @param register table<string,string>
 --- @param prefix string
@@ -77,51 +61,6 @@ local function IsCombatStatusValid(data)
 end
 
 -- Private addon API
-
---- @param frame table
---- @param attributes table<string,string>
-function Addon:SetPendingFrameAttributes(frame, attributes)
-	if frame == nil then
-		return
-	end
-
-	EnsureCache(frame)
-
-	for key, value in pairs(attributes) do
-		if not Addon.db.profile.options.onKeyDown and hasTypeRelease and frame == _G[Addon.MACRO_FRAME_HANDLER_NAME] then
-			key = string.gsub(key, "^type", "typerelease")
-		end
-
-		frameCache[frame].pending[key] = value
-	end
-end
-
---- @param frame Frame
-function Addon:ApplyAttributesToFrame(frame)
-	if frame == nil or frameCache[frame] == nil then
-		return
-	end
-
-	local applied = frameCache[frame].applied
-	local pending = frameCache[frame].pending
-
-	frameCache[frame].applied = pending
-	frameCache[frame].pending = {}
-
-	for key in pairs(applied) do
-		if pending[key] == nil then
-			logger:LogVerbose("Clearing attribute {attribute} from frame {frameName}", key, frame:GetName())
-			frame:SetAttribute(key, nil)
-		end
-	end
-
-	for key, value in pairs(pending) do
-		if value ~= applied[key] then
-			logger:LogVerbose("Setting attribute {attribute} to {value} on {frameName}", key, value, frame:GetName())
-			frame:SetAttribute(key, value)
-		end
-	end
-end
 
 --- @param register table<string,string>
 --- @param command Command

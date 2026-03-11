@@ -29,7 +29,7 @@ local function HookUnitFrame(count, names, addon)
 
 	for _, name in ipairs(names) do
 		for i = 1, count do
-			Clicked2:RegisterClickCastFrame(string.format(name, i), addon)
+			Addon.ClickCast:RegisterFrame(string.format(name, i), addon)
 		end
 	end
 end
@@ -40,7 +40,7 @@ local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
 
 	Clicked2:SetBlacklistGroup(frame, parent:GetName())
-	Clicked2:RegisterClickCastFrame(frame)
+	Addon.ClickCast:RegisterFrame(frame)
 end
 
 --- @param frame Button
@@ -66,22 +66,22 @@ local function HookCompactUnitFrame(frame)
 	end
 
 	HookCompactUnitFramePart(frame, name .. "CenterStatusIcon")
-	Clicked2:RegisterClickCastFrame(frame)
+	Addon.ClickCast:RegisterFrame(frame)
 end
 
 -- Private addon API
 
 function Addon:RegisterBlizzardUnitFrames()
-	Clicked2:RegisterClickCastFrame("PlayerFrame")
-	Clicked2:RegisterClickCastFrame("PetFrame")
-	Clicked2:RegisterClickCastFrame("TargetFrame")
-	Clicked2:RegisterClickCastFrame("TargetFrameToT")
+	Addon.ClickCast:RegisterFrame("PlayerFrame")
+	Addon.ClickCast:RegisterFrame("PetFrame")
+	Addon.ClickCast:RegisterFrame("TargetFrame")
+	Addon.ClickCast:RegisterFrame("TargetFrameToT")
 
 	HookUnitFrame(5, "Boss%dTargetFrame")
 
 	if Addon.EXPANSION >= Addon.Expansion.TBC then
-		Clicked2:RegisterClickCastFrame("FocusFrame")
-		Clicked2:RegisterClickCastFrame("FocusFrameToT")
+		Addon.ClickCast:RegisterFrame("FocusFrame")
+		Addon.ClickCast:RegisterFrame("FocusFrameToT")
 	end
 
 	if Addon.EXPANSION >= Addon.Expansion.CATA then
@@ -92,11 +92,11 @@ function Addon:RegisterBlizzardUnitFrames()
 		local partyFrameIndex = 1
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-			Clicked2:RegisterClickCastFrame(frame)
-			Clicked2:RegisterClickCastFrame(frame.PetFrame)
+			Addon.ClickCast:RegisterFrame(frame)
+			Addon.ClickCast:RegisterFrame(frame.PetFrame)
 
-			Clicked2:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
-			Clicked2:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
+			Addon.ClickCast:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
+			Addon.ClickCast:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
 
 			partyFrameIndex = partyFrameIndex + 1
 		end

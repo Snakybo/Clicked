@@ -90,8 +90,6 @@ local function PLAYER_REGEN_ENABLED()
 
 	isPlayerInCombat = false
 
-	Addon:ProcessFrameQueue()
-
 	if Addon:IsCombatProcessRequired() then
 		Clicked2:ProcessActiveBindings()
 	end
@@ -107,7 +105,6 @@ local function PLAYER_ENTERING_WORLD()
 
 	local isInitialLoadPending = false
 
-	Addon:ProcessFrameQueue()
 	Addon:UpdateTalentCache(function()
 		isInitialLoadPending = true
 		Addon:ReloadBindingsImmediate()
@@ -119,12 +116,6 @@ local function PLAYER_ENTERING_WORLD()
 	end
 
 	Addon:RequestItemLoadForBindings()
-end
-
-local function ADDON_LOADED()
-	Clicked2:LogVerbose("Received event {eventName}", "ADDON_LOADED")
-
-	Addon:ProcessFrameQueue()
 end
 
 local function ZONE_CHANGED()
@@ -310,7 +301,6 @@ local function UpdateEventHooks(self, method)
 
 	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	method(self, "GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
-	method(self, "ADDON_LOADED", ADDON_LOADED)
 	method(self, "ZONE_CHANGED", ZONE_CHANGED)
 	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
@@ -331,9 +321,6 @@ function Clicked2:OnInitialize()
 	self:SetLogLevelFromConfigTable(Addon.db.global)
 
 	Addon:UpgradeDatabase()
-
-	Addon:RegisterClickCastHeader()
-	Addon:RegisterBlizzardUnitFrames()
 
 	Addon.AddonOptions:Initialize()
 	Addon.ProfileOptions:Initialize()

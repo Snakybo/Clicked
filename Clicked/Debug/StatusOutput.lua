@@ -172,12 +172,12 @@ end
 local function GetRegisteredClickCastFrames()
 	local lines = {}
 
-	for _, clickCastFrame in Clicked2:IterateClickCastFrames() do
+	for _, clickCastFrame in Addon.ClickCast:IterateFrames() do
 		if clickCastFrame ~= nil and clickCastFrame.GetName ~= nil then
 			local name = clickCastFrame:GetName()
 
 			if name ~= nil then
-				local blacklisted = Addon:IsFrameBlacklisted(clickCastFrame)
+				local blacklisted = Addon.Blacklist:IsFrameBlacklisted(clickCastFrame)
 				table.insert(lines, name .. (blacklisted and " (blacklisted)" or ""))
 			end
 		end
@@ -196,7 +196,7 @@ end
 local function GetRegisteredClickCastSidecars()
 	local lines = {}
 
-	for _, sidecar in Clicked2:IterateSidecars() do
+	for _, sidecar in Addon.ClickCast:IterateSidecars() do
 		local targetFrameName = sidecar:GetAttribute("clicked-name")
 
 		table.insert(lines, sidecar:GetName() .. (targetFrameName and " (for " .. targetFrameName .. ")" or ""))

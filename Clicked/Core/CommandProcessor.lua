@@ -17,119 +17,12 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
-
---- @type Button
-local macroFrameHandler
-
 --- @type boolean
 local requiresCombatProcess = false
 
 -- Local support functions
 
---- @param frame Frame
---- @param state string
---- @param condition string
-local function CreateStateDriverAttribute(frame, state, condition)
-	frame:SetAttribute("_onstate-" .. state, [[
-		if not self:IsShown() then
-			return
-		end
-
-		if newstate == "enabled" then
-			self:RunAttribute("clicked-clear-bindings")
-		else
-			self:RunAttribute("clicked-register-bindings")
-		end
-	]])
-
-	RegisterStateDriver(frame, state, condition)
-end
-
-local function EnsureMacroFrameHandler()
-	if macroFrameHandler ~= nil then
-		return
-	end
-
-	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate") --[[@as Button]]
-	macroFrameHandler:SetAttribute("useOnkeyDown", true)
-	macroFrameHandler:SetAttribute("pressAndHoldAction", true)
-	macroFrameHandler:Hide()
-
-	-- set required data first
-	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, {})
-
-	-- register OnShow and OnHide handlers to ensure bindings are registered
-	macroFrameHandler:SetAttribute("_onshow", [[
-		self:RunAttribute("clicked-register-bindings")
-	]])
-
-	macroFrameHandler:SetAttribute("_onhide", [[
-		self:RunAttribute("clicked-clear-bindings")
-	]])
-
-	-- attempt to register a binding, this will also check if the binding
-	-- is currently allowed to be active (e.g. not in a vehicle or pet battle)
-	macroFrameHandler:SetAttribute("clicked-register-bindings", [[
-		if not self:IsShown() then
-			return
-		end
-
-		if self:GetAttribute("state-petbattle") == "enabled" then
-			return
-		end
-
-		if self:GetAttribute("state-vehicleui") == "enabled" then
-			return
-		end
-
-		if self:GetAttribute("state-possessbar") == "enabled" then
-			return
-		end
-
-		if self:GetAttribute("state-overridebar") == "enabled" then
-			return
-		end
-
-		for i = 1, table.maxn(keybinds) do
-			local keybind = keybinds[i]
-			local identifier = identifiers[i]
-
-			self:SetBindingClick(true, keybind, self, identifier)
-		end
-	]])
-
-	-- unregister a binding
-	macroFrameHandler:SetAttribute("clicked-clear-bindings", [[
-		for i = 1, table.maxn(keybinds) do
-			local keybind = keybinds[i]
-			self:ClearBinding(keybind)
-		end
-	]])
-
-	if Addon.EXPANSION >= Addon.Expansion.WOTLK then
-		CreateStateDriverAttribute(macroFrameHandler, "vehicleui", "[vehicleui] enabled; disabled")
-	end
-
-	if Addon.EXPANSION >= Addon.Expansion.MOP then
-		CreateStateDriverAttribute(macroFrameHandler, "petbattle", "[petbattle] enabled; disabled")
-	end
-
-	CreateStateDriverAttribute(macroFrameHandler, "possessbar", "[possessbar] enabled; disabled")
-	CreateStateDriverAttribute(macroFrameHandler, "overridebar", "[overridebar] enabled; disabled")
-
-	Clicked2:RegisterFrameClicks(macroFrameHandler)
-end
-
 -- Private addon API
-
---- @param keybinds Keybind[]
---- @param attributes string[]
-function Addon:UpdateMacroFrameHandler(keybinds, attributes)
-	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, keybinds)
-	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)
-	Addon:ApplyAttributesToFrame(macroFrameHandler)
-end
 
 --- @param commands Command[]
 function Addon:ProcessCommands(commands)
@@ -149,10 +42,7 @@ function Addon:ProcessCommands(commands)
 	--- @type table<string,string>
 	local newMacroFrameHandlerAttributes = {}
 
-	EnsureMacroFrameHandler()
-
 	-- Unregister all current keybinds
-	macroFrameHandler:Hide()
 	requiresCombatProcess = false
 
 	for _, command in ipairs(commands) do
@@ -195,14 +85,10 @@ function Addon:ProcessCommands(commands)
 	end
 
 	Addon:StatusOutput_UpdateMacroHandlerAttributes(newMacroFrameHandlerAttributes)
-	Addon:UpdateMacroFrameHandler(newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
-
-	-- Register all new keybinds
-	macroFrameHandler:Show()
-
 	Addon:StatusOutput_UpdateHovercastAttributes(newClickCastFrameAttributes)
-	Addon:UpdateClickCastHeader(newClickCastFrameKeybinds)
-	Addon:UpdateClickCastFrames(newClickCastFrameAttributes)
+
+	Clicked2:SendMessage("CLICKED_GLOBAL_CAST_ATTRIBUTES_CHANGED", newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
+	Clicked2:SendMessage("CLICKED_CLICK_CAST_ATTRIBUTES_CHANGED", newClickCastFrameKeybinds, newClickCastFrameAttributes)
 end
 
 --- Get whether re-procesing of active bindings should happen when entering and leaving combat.

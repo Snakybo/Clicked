@@ -24,6 +24,10 @@
 
 --- @class ClickedModule : AceModule, LibLog-1.0.Logger
 
+--- @class ClickCastHeader : Frame, SecureHandlerBaseTemplate, SecureHandlerAttributeTemplate
+
+--- @class GlobalCastHeader : Button, SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerShowHideTemplate
+
 --- @class Profile
 --- @field public version integer
 --- @field public options Profile.Options

@@ -44,11 +44,11 @@ function AddonOptions:CreateOptionsTable()
 				set = function(_, val)
 					Addon.db.profile.options.onKeyDown = val
 
-					for _, frame in Clicked2:IterateClickCastFrames() do
-						Clicked2:RegisterFrameClicks(frame)
+					for _, frame in Addon.ClickCast:IterateFrames() do
+						Addon.ClickCast:RegisterClicks(frame)
 					end
 
-					Clicked2:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME])
+					Addon.ClickCast:RegisterClicks(Addon.GlobalCast.frame)
 					Clicked2:ProcessActiveBindings()
 
 					Addon:ShowInformationPopup(Addon.L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
