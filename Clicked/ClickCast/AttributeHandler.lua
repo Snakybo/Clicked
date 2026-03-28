@@ -37,6 +37,8 @@ function Prototype:ApplyAttributes(frame, attributes)
 		return
 	end
 
+	Addon.Perf.StartSegment("AttributeHandler_ApplyAttributes")
+
 	--- @type table<string, string>
 	local pending = {}
 
@@ -67,11 +69,15 @@ function Prototype:ApplyAttributes(frame, attributes)
 	end
 
 	self.frameCache[frame] = pending
+
+	Addon.Perf.StopSegment("AttributeHandler_ApplyAttributes")
 end
 
 --- @param frame Frame
 --- @param keybinds? Keybind[]
 function Prototype:UpdateRestrictedEnvironment(frame, keybinds)
+	Addon.Perf.StartSegment("AttributeHandler_UpdateRestrictedEnvironment")
+
 	--- @type string[]
 	local keys = {}
 
@@ -106,6 +112,8 @@ function Prototype:UpdateRestrictedEnvironment(frame, keybinds)
 
 	--- @diagnostic disable-next-line: undefined-field
 	frame:Execute(command)
+
+	Addon.Perf.StopSegment("AttributeHandler_UpdateRestrictedEnvironment")
 end
 
 --- @type AttributeHandlerModule

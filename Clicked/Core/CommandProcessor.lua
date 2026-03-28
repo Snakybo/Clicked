@@ -14,6 +14,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local LibLog = LibStub("LibLog-1.0")
+
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -87,8 +89,18 @@ function Addon:ProcessCommands(commands)
 	Addon:StatusOutput_UpdateMacroHandlerAttributes(newMacroFrameHandlerAttributes)
 	Addon:StatusOutput_UpdateHovercastAttributes(newClickCastFrameAttributes)
 
+	Addon.Perf.Restart()
+
 	Clicked2:SendMessage("CLICKED_GLOBAL_CAST_ATTRIBUTES_CHANGED", newMacroFrameHandlerKeybinds, newMacroFrameHandlerAttributes)
 	Clicked2:SendMessage("CLICKED_CLICK_CAST_ATTRIBUTES_CHANGED", newClickCastFrameKeybinds, newClickCastFrameAttributes)
+
+	Addon.Perf.Stop()
+
+	if Clicked2:IsLogLevelEnabled(LibLog.LogLevel.ERROR) then
+		Clicked2:PushLogProperty("perf", Addon.Perf.GetResult)
+		Clicked2:LogError("Processed commands in {duration:.2f}ms", Addon.Perf.GetDuration())
+		Clicked2:PopLogProperty("perf")
+	end
 end
 
 --- Get whether re-procesing of active bindings should happen when entering and leaving combat.

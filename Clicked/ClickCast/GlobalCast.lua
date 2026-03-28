@@ -114,12 +114,16 @@ end
 
 --- @private
 function Prototype:CLICKED_GLOBAL_CAST_ATTRIBUTES_CHANGED(_, keybinds, newAttributes)
+	Addon.Perf.StartSegment("GlobalCast_EventHandler")
+
 	self.frame:Hide()
 
 	Addon.AttributeHandler:UpdateRestrictedEnvironment(self.frame, keybinds)
 	Addon.AttributeHandler:ApplyAttributes(self.frame, newAttributes)
 
 	self.frame:Show()
+
+	Addon.Perf.StopSegment("GlobalCast_EventHandler")
 end
 
 --- @type GlobalCastModule

@@ -66,6 +66,8 @@ Config\Blacklist.lua
 Config\KeyLayouts.lua
 Config\KeyVisualizer.lua
 Config\SpellLibrary.lua
+
+Debug\Monitor.lua
 Debug\StatusOutput.lua
 
 BindingConfig\Helpers.lua

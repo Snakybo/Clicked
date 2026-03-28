@@ -397,6 +397,8 @@ end
 --- @param setup? string
 --- @param clear? string
 function Prototype:UpdateClickCastFrame(frame, attributes, setup, clear)
+	Addon.Perf.StartSegment("ClickCast_UpdateClickCastFrame")
+
 	Addon.AttributeHandler:ApplyAttributes(frame, attributes)
 
 	if self.frame ~= nil then
@@ -408,6 +410,8 @@ function Prototype:UpdateClickCastFrame(frame, attributes, setup, clear)
 		self.frame:WrapScript(frame, "OnEnter", setup)
 		self.frame:WrapScript(frame, "OnLeave", clear)
 	end
+
+	Addon.Perf.StopSegment("ClickCast_UpdateClickCastFrame")
 end
 
 --- @private
@@ -429,6 +433,8 @@ end
 
 --- @private
 function Prototype:CLICKED_CLICK_CAST_ATTRIBUTES_CHANGED(_, keybinds, newAttributes)
+	Addon.Perf.StartSegment("ClickCast_EventHandler")
+
 	self.frame:Execute([[
 		local button = currentClickcastButton
 
@@ -454,6 +460,8 @@ function Prototype:CLICKED_CLICK_CAST_ATTRIBUTES_CHANGED(_, keybinds, newAttribu
 	end
 
 	self.attributes = newAttributes
+
+	Addon.Perf.StopSegment("ClickCast_EventHandler")
 end
 
 --- @type ClickCastModule
