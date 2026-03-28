@@ -16,13 +16,133 @@
 
 --- @meta
 
---- @class AddonOptionsProvider
---- @field public GetAddonOptions fun(self: AddonOptionsProvider): table<string, AceConfig.OptionsTable>
+--- @class DBSchema : AceDB.Schema
+--- @field public global DBSchema.Global
+--- @field public profile DBSchema.Profile
 
---- @class SlashCommandHandler
---- @field public HandleSlashCommand fun(self: SlashCommandHandler, args: string[]): boolean
+--- @class DBSchema.Global
+--- @field public options DBSchema.Global.Options
+--- @field public keyVisualizer DBSchema.Global.KeyVisualizer
+--- @field public blacklist string[]
+--- @field public nextUid integer
+--- @field public logLevel LibLog-1.0.LogLevel
+--- @field public version string
+--- @field public groups Group2[]
+--- @field public keybinds Keybind2[]
 
---- @class ClickedModule : AceModule, LibLog-1.0.Logger
+--- @class DBSchema.Global.Options
+--- @field public onKeyDown boolean
+--- @field public minimap LibDBIcon.button.DB
+--- @field public bindUnassignedModifiers boolean
+--- @field public autoBindActionBar boolean
+--- @field public disableInHouse boolean
+
+--- @class DBSchema.Global.KeyVisualizer
+--- @field public lastKeyboardLayout? KeyboardLayout
+--- @field public lastKeyboardSize? KeyboardSize
+--- @field public showOnlyLoadedBindings boolean
+--- @field public highlightEmptyKeys boolean
+
+--- @class DBSchema.Profile
+--- @field public version string
+--- @field public groups Group2[]
+--- @field public keybinds Keybind2[]
+
+--- @class Group2
+--- @field public uid integer
+--- @field public name string
+--- @field public icon string
+
+--- @class Keybind2
+--- @field public uid integer
+--- @field public priority integer
+--- @field public parent? integer
+--- @field public key string
+--- @field public type ActionType2
+--- @field public sets ActionSet[]
+
+--- @enum ActionType2
+Clicked2.ActionType2 = {
+	GLOBAL = 0,
+	CLICKCAST = 1
+}
+
+--- @class ActionSet
+--- @field public type string
+--- @field public actions Action2[]
+
+--- @class Action2
+--- @field public flags UnitFlags
+--- @field public load LoadConditionSet
+--- @field public target? string
+
+--- @enum UnitFlags
+Clicked2.UnitFlags = {
+	ALIVE = 1,
+	DEAD = 2,
+	FRIEND = 4,
+	HOSTILE = 8
+}
+
+--- @class LoadConditionSet
+--- @field public never? LoadCondition
+--- @field public class? LoadCondition
+--- @field public race? LoadCondition
+--- @field public playerNameRealm? LoadCondition
+--- @field public combat? LoadCondition
+--- @field public spellKnown? LoadCondition
+--- @field public inGroup? LoadCondition
+--- @field public playerInGroup? LoadCondition
+--- @field public form? LoadCondition
+--- @field public pet? LoadCondition
+--- @field public stealth? LoadCondition
+--- @field public mounted? LoadCondition
+--- @field public outdoors? LoadCondition
+--- @field public swimming? LoadCondition
+--- @field public flying? LoadCondition
+--- @field public dynamicFlying? LoadCondition
+--- @field public flyable? LoadCondition
+--- @field public advancedFlyable? LoadCondition
+--- @field public instanceType? LoadCondition
+--- @field public zoneName? LoadCondition
+--- @field public equipped? LoadCondition
+--- @field public specialization? LoadCondition
+--- @field public specRole? LoadCondition
+--- @field public talent? LoadCondition
+--- @field public pvpTalent? LoadCondition
+--- @field public warMode? LoadCondition
+--- @field public channeling? LoadCondition
+--- @field public bonusbar? LoadCondition
+--- @field public bar? LoadCondition
+
+--- @class LoadCondition
+--- @field public state LoadConditionFlags
+--- @field public single? unknown
+--- @field public multiple? unknown[]
+
+--- @enum LoadConditionFlags
+Clicked2.LoadConditionFlags = {
+	ENABLED = 1,
+	NEGATED = 2,
+	MULTI = 4
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --- @class Profile
 --- @field public version integer
@@ -30,18 +150,6 @@
 --- @field public groups Group[]
 --- @field public bindings Binding[]
 --- @field public blacklist table<string,boolean>
-
---- @class Profile.Options
---- @field public onKeyDown boolean
---- @field public minimap Profile.Options.Minimap
---- @field public bindUnassignedModifiers boolean
---- @field public autoBindActionBar boolean
---- @field public ignoreSelfCastWarning boolean
---- @field public disableInHouse boolean
-
---- @class Profile.Options.Minimap
---- @field public hide boolean
---- @field public minimapPos number
 
 --- @class DataObject
 --- @field public uid integer
