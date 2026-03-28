@@ -39,7 +39,10 @@ Core\Utils.lua
 Core\LocaleUtils.lua
 Core\StringUtils.lua
 Core\Serializer.lua
-Core\Upgrader.lua
+
+Data\Data.xml
+
+Actions\Actions.xml
 
 Modules\ConfigWindow.lua
 Modules\Minimap.lua
