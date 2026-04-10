@@ -344,10 +344,10 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 		end
 	end,
 	OnAccept = function(self)
-		Addon:SafeCall(self.data.onAccept)
+		Addon.SafeCall(self.data.onAccept)
 	end,
 	OnCancel = function(self)
-		Addon:SafeCall(self.data.onCancel)
+		Addon.SafeCall(self.data.onCancel)
 	end,
 	timeout = 0,
 	whileDead = true,

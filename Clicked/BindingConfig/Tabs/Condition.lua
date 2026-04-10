@@ -59,7 +59,7 @@ function Addon.BindingConfig.BindingConditionTab:Redraw()
 		if drawer ~= nil then
 			self.drawers[condition.id] = drawer
 
-			Addon:SafeCall(drawer.Draw, drawer)
+			Addon.SafeCall(drawer.Draw, drawer)
 		end
 	end
 end
@@ -72,7 +72,7 @@ function Addon.BindingConfig.BindingConditionTab:RedrawItem(condition)
 		return
 	end
 
-	Addon:SafeCall(drawer.Update, drawer)
+	Addon.SafeCall(drawer.Update, drawer)
 end
 
 --- @private
@@ -144,7 +144,7 @@ function Addon.BindingConfig.BindingConditionTab:GetAvailableValues(condition)
 		end
 	end
 
-	local result = { Addon:SafeCall(condition.drawer.availableValues, SafeUnpack(dependencies)) }
+	local result = { Addon.SafeCall(condition.drawer.availableValues, SafeUnpack(dependencies)) }
 	table.remove(result, 1)
 
 	return SafeUnpack(result)

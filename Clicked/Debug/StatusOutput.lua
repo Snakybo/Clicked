@@ -93,7 +93,7 @@ local function GetLoadConditionState()
 		--- @cast condition LoadCondition
 
 		if condition.state ~= nil then
-			local state = { select(2, Addon:SafeCall(condition.state)) }
+			local state = { select(2, Addon.SafeCall(condition.state)) }
 
 			for i = 1, #state do
 				state[i] = tostring(state[i])

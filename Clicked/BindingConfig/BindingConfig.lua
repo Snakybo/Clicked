@@ -418,7 +418,7 @@ function Addon.BindingConfig.Window:RedrawPage()
 		local impl = self.pages[currentPage]
 
 		self.treeWidget:ReleaseChildren()
-		Addon:SafeCall(impl.Redraw, impl)
+		Addon.SafeCall(impl.Redraw, impl)
 	end
 
 	self.frame:SetStatusText(string.format("%s | %s", Clicked2.VERSION, Addon.db:GetCurrentProfile()))
@@ -439,7 +439,7 @@ function Addon.BindingConfig.Window:HandleOnBindingReload()
 
 		if currentPage ~= nil then
 			local impl = self.pages[currentPage]
-			Addon:SafeCall(impl.OnBindingReload, impl, isRelevantReload, changed)
+			Addon.SafeCall(impl.OnBindingReload, impl, isRelevantReload, changed)
 		end
 	end
 end
@@ -571,7 +571,7 @@ function Addon.BindingConfig.Window:ActivatePage()
 
 	if currentPage ~= nil then
 		local page = self.pages[currentPage]
-		Addon:SafeCall(page.Hide, page)
+		Addon.SafeCall(page.Hide, page)
 
 		page.controller = nil
 		page.container = nil
@@ -588,7 +588,7 @@ function Addon.BindingConfig.Window:ActivatePage()
 	impl.container = self.treeWidget
 	impl.targets = FilterTargets(self.treeStatus.selected)
 
-	Addon:SafeCall(impl.Show, impl, unpack(newPage.payload or {}))
+	Addon.SafeCall(impl.Show, impl, unpack(newPage.payload or {}))
 	self:RedrawPage()
 
 	if #self.pageStack == 1 and not impl.keepTreeSelection then
@@ -621,7 +621,7 @@ function Addon.BindingConfig.Window:CreateFrame()
 
 		if currentPage ~= nil then
 			local page = self.pages[currentPage]
-			Addon:SafeCall(page.Hide, page)
+			Addon.SafeCall(page.Hide, page)
 
 			page.controller = nil
 			page.container = nil

@@ -90,7 +90,7 @@ AceGUI:RegisterLayout("ClickedKeys", function(content, children)
 		end
 	end
 
-	Addon:SafeCall(content.obj.LayoutFinished, content.obj, totalWidth, totalHeight)
+	Addon.SafeCall(content.obj.LayoutFinished, content.obj, totalWidth, totalHeight)
 end)
 
 --[[-----------------------------------------------------------------------------
