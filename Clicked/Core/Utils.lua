@@ -474,11 +474,21 @@ function Addon:GetBindingValue(binding)
 			name = spell
 		end
 
-		if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank and C_Spell.IsSpellDataCached(spell) then
-			local rank = C_Spell.GetSpellSubtext(spell)
+		if C_Spell.IsSpellDataCached(spell) then
+			local shouldAppendSubtext = false
 
-			if not self:IsNilOrEmpty(rank) then
-				name = string.format("%s(%s)", name, rank)
+			if Addon.EXPANSION_LEVEL <= Addon.Expansion.WOTLK and not binding.action.spellMaxRank then
+				shouldAppendSubtext = true
+			elseif binding.action.spellIncludeSubtext then
+				shouldAppendSubtext = true
+			end
+
+			if shouldAppendSubtext then
+				local rank = C_Spell.GetSpellSubtext(spell)
+
+				if not self:IsNilOrEmpty(rank) then
+					name = string.format("%s(%s)", name, rank)
+				end
 			end
 		end
 

@@ -484,6 +484,7 @@ function Addon:GetNewBindingTemplate()
 			auraName = "",
 			executionOrder = 1,
 			spellMaxRank = false,
+			spellIncludeSubtext = false,
 			interrupt = false,
 			startAutoAttack = false,
 			startPetAttack = false,
