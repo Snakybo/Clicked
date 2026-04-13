@@ -675,6 +675,10 @@ function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
 		group:AddChild(widget)
 	end
 
+	if FindInTableIf(self.bindings, function(binding) return binding.actionType == Clicked.ActionType.SPELL end) then
+		CreateCheckbox(Addon.L["Include spell subtext"], Addon.L["Append the spell subtext to the cast command, e.g. Whirling Surge(Skyriding). Enable this if the spell does not cast without it."], "spellIncludeSubtext")
+	end
+
 	CreateCheckbox(Addon.L["Interrupt current cast"], Addon.L["Allow this binding to cancel any spells that are currently being cast."], "interrupt")
 	CreateCheckbox(Addon.L["Start auto attacks"], Addon.L["Allow this binding to start auto attacks, useful for any damaging abilities."], "startAutoAttack")
 	CreateCheckbox(Addon.L["Start pet attacks"], Addon.L["Allow this binding to start pet attacks."], "startPetAttack")

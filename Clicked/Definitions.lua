@@ -78,6 +78,7 @@
 --- @field public stopSpellTarget boolean
 --- @field public executionOrder integer
 --- @field public spellMaxRank boolean
+--- @field public spellIncludeSubtext boolean
 --- @field public startAutoAttack boolean
 --- @field public startPetAttack boolean
 --- @field public cancelQueuedSpell boolean
