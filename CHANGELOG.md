@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+* Add option to add subtext to spells, useful for spells that have the same name as other spells, such as skyriding abilities (by [2huBrulee])
+
 ## [1.17.6] - 2026-03-10
 
 ### Fixed
@@ -108,7 +114,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for Mists of Pandaria Classic 5.5.0
 * Add talent load condition to Classic Era
 * Improve stance selector when multiple specializations are selected
-* Update Korean translations (by [007bb](https://www.curseforge.com/members/007bb))
+* Update Korean translations (by [007bb])
 
 ## [1.16.13] - 2025-04-26
 
@@ -2013,3 +2019,5 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [m33shoq]: https://github.com/m33shoq
 [Gateswong]: https://github.com/Gateswong
 [KyrosKrane]: https://github.com/KyrosKrane
+[007bb]: https://www.curseforge.com/members/007bb
+[2huBrulee]: https://github.com/2huBrulee
