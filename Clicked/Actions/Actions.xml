@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+	<Script file="ActionLibrary.lua"/>
+	<Script file="AppendAction.lua"/>
+	<Script file="CancelAuraAction.lua"/>
+	<Script file="CancelFormAction.lua"/>
+	<Script file="CancelQueuedSpellAction.lua"/>
+	<Script file="CastAction.lua"/>
+	<Script file="MacroAction.lua"/>
+	<Script file="PetAttackAction.lua"/>
+	<Script file="StartAttackAction.lua"/>
+	<Script file="StopCastingAction.lua"/>
+	<Script file="StopSpellTargetAction.lua"/>
+	<Script file="TargetAction.lua"/>
+	<Script file="UnitMenuAction.lua"/>
+	<Script file="UseAction.lua"/>
+</Ui>

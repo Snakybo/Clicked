@@ -21,10 +21,13 @@ local LibDBIcon = LibStub("LibDBIcon-1.0")
 local Addon = select(2, ...)
 
 --- @class MinimapModule : ClickedModule, AddonOptionsProvider
+--- @field private options LibDBIcon.button.DB
 local Prototype = {}
 
 --- @protected
 function Prototype:OnInitialize()
+	self.options = Addon.GlobalOptions:GetMinimapOptions()
+
 	local iconData = LibDataBroker:NewDataObject("Clicked2", {
 		type = "launcher",
 		label = Addon.L["Clicked2"],
@@ -37,7 +40,7 @@ function Prototype:OnInitialize()
 		end
 	})
 
-	LibDBIcon:Register(Addon.L["Clicked2"], iconData, Addon.db.profile.options.minimap)
+	LibDBIcon:Register(Addon.L["Clicked2"], iconData, self.options)
 	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked2"])
 
 	self:LogDebug("Initialized minimap module")
@@ -47,7 +50,7 @@ end
 function Prototype:SetMinimapButtonEnabled(enabled)
 	self:LogDebug("Set minimap button visibility to {visible}", enabled)
 
-	Addon.db.profile.options.minimap.hide = not enabled
+	self.options.hide = not enabled
 
 	if enabled then
 		LibDBIcon:Show(Addon.L["Clicked2"])
@@ -69,7 +72,7 @@ end
 
 --- @return boolean
 function Prototype:IsMinimapButtonEnabled()
-	return not Addon.db.profile.options.minimap.hide
+	return not self.options.hide
 end
 
 --- @return boolean

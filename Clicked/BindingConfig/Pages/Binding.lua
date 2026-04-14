@@ -168,7 +168,7 @@ function Addon.BindingConfig.BindingPage:Hide()
 
 	if currentTab ~= nil then
 		local tab = self.tabs[currentTab].implementation
-		Addon:SafeCall(tab.Hide, tab)
+		Addon.SafeCall(tab.Hide, tab)
 
 		tab.container = nil
 		tab.bindings = nil
@@ -259,7 +259,7 @@ function Addon.BindingConfig.BindingPage:OnBindingReload(relevant, changed)
 
 	if currentTab ~= nil then
 		local impl = self.tabs[currentTab].implementation
-		Addon:SafeCall(impl.OnBindingReload, impl, relevant, changed)
+		Addon.SafeCall(impl.OnBindingReload, impl, relevant, changed)
 	end
 end
 
@@ -288,7 +288,7 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 			self.scrollFrame:ReleaseChildren()
 		end
 
-		Addon:SafeCall(impl.Redraw, impl)
+		Addon.SafeCall(impl.Redraw, impl)
 
 		if createScrollFrame then
 			self.tabWidget:AddChild(self.scrollFrame)
@@ -309,7 +309,7 @@ function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
 
 	if currentTab ~= nil then
 		local tab = self.tabs[currentTab].implementation
-		Addon:SafeCall(tab.Hide, tab)
+		Addon.SafeCall(tab.Hide, tab)
 
 		tab.container = nil
 		tab.bindings = nil
@@ -325,7 +325,7 @@ function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
 	impl.bindings = self.filteredTargets[group] or self.targets
 	impl.controller = self
 
-	Addon:SafeCall(impl.Show, impl)
+	Addon.SafeCall(impl.Show, impl)
 	self:RedrawTab(true)
 end
 
@@ -430,7 +430,7 @@ function Addon.BindingConfig.BindingPage:FilterBindings()
 
 	for id, tab in pairs(self.tabs) do
 		if tab.filter ~= nil then
-			local _, filtered = Addon:SafeCall(tab.filter, self.targets)
+			local _, filtered = Addon.SafeCall(tab.filter, self.targets)
 			self.filteredTargets[id] = filtered
 		end
 	end

@@ -344,10 +344,10 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 		end
 	end,
 	OnAccept = function(self)
-		Addon:SafeCall(self.data.onAccept)
+		Addon.SafeCall(self.data.onAccept)
 	end,
 	OnCancel = function(self)
-		Addon:SafeCall(self.data.onCancel)
+		Addon.SafeCall(self.data.onCancel)
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -1340,90 +1340,6 @@ function Addon:GetScopeFromUid(uid)
 	end
 
 	return nil
-end
-
---- Check if the table contains the specified value.
----
---- @generic T
---- @param tbl T[]
---- @param element T
---- @return boolean
-function Addon:TableContains(tbl, element)
-	for i = 1, #tbl do
-		if tbl[i] == element then
-			return true
-		end
-	end
-
-	return false
-end
-
---- Remove the specified element from the table.
----
---- @generic T
---- @param tbl T[]
---- @param element T
---- @return boolean `true` if the element was removed; `false` otherwise.
-function Addon:TableRemoveItem(tbl, element)
-	for i = 1, #tbl do
-		if tbl[i] == element then
-			table.remove(tbl, i)
-			return true
-		end
-	end
-
-	return false
-end
-
---- Check if the two arrays are equivalent. This will return `true` if the arrays are functionally the same, but are not necessarily in the same order.
----
---- @generic T
---- @param tbl1 T[]
---- @param tbl2 T[]
---- @return boolean `true` if the arrays are equivalent; `false` otherwise.
-function Addon:TableEquivalent(tbl1, tbl2)
-	if #tbl1 ~= #tbl2 then
-		return false
-	end
-
-	--- @type table<any,boolean>
-	local set = {}
-
-	for i = 1, #tbl1 do
-		local element = tbl1[i]
-		set[element] = true
-	end
-
-	for i = 1, #tbl2 do
-		local element = tbl2[i]
-
-		if set[element] == nil then
-			return false
-		end
-	end
-
-	return true
-end
-
---- Construct a table containing only the specified elements.
----
---- @generic T
---- @generic U
---- @param tbl T[]
---- @param selector fun(item: T): U
---- @return U[]
-function Addon:TableSelect(tbl, selector)
-	local result = {}
-
-	for i = 1, #tbl do
-		local value = selector(tbl[i])
-
-		if value ~= nil then
-			table.insert(result, value)
-		end
-	end
-
-	return result
 end
 
 --- Get the character at the specified index in the string.

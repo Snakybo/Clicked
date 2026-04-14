@@ -106,7 +106,7 @@ end
 --- @param ... any
 --- @return boolean status
 --- @return ...
-function Addon:SafeCall(func, ...)
+function Addon.SafeCall(func, ...)
 	if func ~= nil then
 		return xpcall(func, geterrorhandler(), ...)
 	end
