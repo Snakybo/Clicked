@@ -333,6 +333,7 @@ function Prototype:CLICKED_DATABASE_RELOADED()
 end
 
 --- @private
+--- @param frame Frame
 function Prototype:CLICKED_CLICKCAST_FRAME_REGISTERED(_, frame)
 	self:RegisterFrame(frame)
 end

@@ -165,7 +165,7 @@ end
 
 --- @private
 --- @param db DBSchema
-function Prototype:CLICKED_DB_RELOADED(db)
+function Prototype:CLICKED_DB_RELOADED(_, db)
 	table.wipe(self.registry)
 	table.wipe(self.uidIndex)
 

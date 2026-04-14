@@ -22,6 +22,8 @@ local Prototype = {}
 
 --- @return LibDBIcon.button.DB
 function Prototype:GetMinimapOptions()
+	Addon.Datastore:Load()
+
 	return Addon.db.global.options.minimap
 end
 

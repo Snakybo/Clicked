@@ -187,7 +187,7 @@ end
 
 --- @private
 --- @param keybind Keybind2
-function Prototype:CLICKED_KEYBIND_CREATED(keybind)
+function Prototype:CLICKED_KEYBIND_CREATED(_, keybind)
 	if keybind.scope == Clicked2.Scope.VIRTUAL then
 		return self:LogVerbose("Ignoring virtual keybind with ID {uid}", keybind.uid)
 	end
@@ -203,7 +203,7 @@ end
 
 --- @private
 --- @param uid integer
-function Prototype:CLICKED_KEYBIND_DELETED(uid)
+function Prototype:CLICKED_KEYBIND_DELETED(_, uid)
 	--- @param keybind Keybind2
 	local function Predicate(keybind)
 		return keybind.uid == uid
@@ -218,7 +218,9 @@ function Prototype:CLICKED_KEYBIND_DELETED(uid)
 	end
 end
 
-function Prototype:CLICKED_GROUP_CREATED(group)
+--- @private
+--- @param group Group
+function Prototype:CLICKED_GROUP_CREATED(_, group)
 	if group.scope == Clicked2.Scope.VIRTUAL then
 		return self:LogVerbose("Ignoring virtual group with ID {uid}", group.uid)
 	end
@@ -232,7 +234,9 @@ function Prototype:CLICKED_GROUP_CREATED(group)
 	end
 end
 
-function Prototype:CLICKED_GROUP_DELETED(uid)
+--- @private
+--- @param uid integer
+function Prototype:CLICKED_GROUP_DELETED(_, uid)
 	--- @param group Group
 	local function Predicate(group)
 		return group.uid == uid
