@@ -61,7 +61,8 @@ function Prototype:Create(factory, parent)
 		parent = parent,
 		uid = Clicked2:GetNextUid(),
 		flags = 0,
-		load = {}
+		load = {},
+		conditionals = {}
 	}
 
 	if type(factory) == "string" then
@@ -98,9 +99,11 @@ function Prototype:Clone(action, parent)
 
 	local originalParent = action.parent
 	local originalLoad = action.load
+	local originalConditionals = action.conditionals
 
 	action.parent = nil
 	action.load = {}
+	action.conditionals = {}
 
 	local success, result = pcall(function()
 		local result = CopyTable(action) --[[@as Action2]]
@@ -113,6 +116,12 @@ function Prototype:Clone(action, parent)
 			end
 		end
 
+		for k, v in pairs(originalConditionals) do
+			if Prototype.HasLoadConditionEnabledFlag(v.state) then
+				result.conditionals[k] = CopyTable(v)
+			end
+		end
+
 		table.insert(result.parent.actions, result)
 		self.uidIndex[result.uid] = result
 
@@ -122,6 +131,7 @@ function Prototype:Clone(action, parent)
 
 	action.parent = originalParent
 	action.load = originalLoad
+	action.conditionals = originalConditionals
 
 	if not success then
 		error(result)

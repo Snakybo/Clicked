@@ -91,12 +91,14 @@
 --- @field public typeOverride? string
 --- @field public flags UnitFlags
 --- @field public load LoadConditionSet
---- @field public target? string
+--- @field public conditionals MacroConditionSet
+--- @field public unit? string
 
 --- @class ActionUpdate
 --- @field public flags? UnitFlags
 --- @field public load? LoadConditionSet
---- @field public target? string
+--- @field public conditionals? MacroConditionSet
+--- @field public unit? string
 
 --- @class LoadConditionSet
 --- @field public never? LoadCondition
@@ -107,6 +109,14 @@
 --- @field public spellKnown? LoadCondition
 --- @field public inGroup? LoadCondition
 --- @field public playerInGroup? LoadCondition
+--- @field public instanceType? LoadCondition
+--- @field public specialization? LoadCondition
+--- @field public specRole? LoadCondition
+--- @field public talent? LoadCondition
+--- @field public pvpTalent? LoadCondition
+--- @field public warMode? LoadCondition
+
+--- @class MacroConditionSet
 --- @field public form? LoadCondition
 --- @field public pet? LoadCondition
 --- @field public stealth? LoadCondition
@@ -117,14 +127,8 @@
 --- @field public dynamicFlying? LoadCondition
 --- @field public flyable? LoadCondition
 --- @field public advancedFlyable? LoadCondition
---- @field public instanceType? LoadCondition
 --- @field public zoneName? LoadCondition
 --- @field public equipped? LoadCondition
---- @field public specialization? LoadCondition
---- @field public specRole? LoadCondition
---- @field public talent? LoadCondition
---- @field public pvpTalent? LoadCondition
---- @field public warMode? LoadCondition
 --- @field public channeling? LoadCondition
 --- @field public bonusbar? LoadCondition
 --- @field public bar? LoadCondition
