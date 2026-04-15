@@ -692,6 +692,11 @@ local function UpgradeV2(globalDb, db, scope, from)
 			globalDb.nextUid = 1
 		end
 
+		if scope == "PROFILE" then
+			globalDb.options = globalDb.options or db.options
+			db.options = nil
+		end
+
 		db.keybinds = {}
 
 		for _, group in ipairs(db.groups) do
@@ -776,6 +781,8 @@ local function UpgradeV2(globalDb, db, scope, from)
 		end
 
 		db.bindings = nil
+		db.options.tooltips = nil
+		db.options.ignoreSelfCastWarning = nil
 	end
 end
 
