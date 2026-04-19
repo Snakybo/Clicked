@@ -256,6 +256,9 @@ local function UpgradeV2(globalDb, db, scope, from)
 		local FLAG_UNIT_FRIEND = 4
 		local FLAG_UNIT_HOSTILE = 8
 
+		local TYPE_CLICKCAST = 2
+		local TYPE_GLOBAL = 1
+
 		local groups = {}
 		local keybinds = {}
 		local sets = {}
@@ -281,16 +284,21 @@ local function UpgradeV2(globalDb, db, scope, from)
 			interrupt = "StopCastingAction"
 		}
 
+		--- @return integer
 		local function GetNextUid()
 			local result = globalDb.nextUid or 0
 			globalDb.nextUid = result + 1
 			return result
 		end
 
+		--- @param binding any
+		--- @param type integer
+		--- @return Keybind2
 		local function GetOrAddKeybind(binding, type)
 			local id = type .. " " .. (binding.parent or "0") .. " " .. binding.keybind
 
 			if keybinds[id] == nil then
+				--- @type Keybind2
 				keybinds[id] = {
 					uid = GetNextUid(),
 					parent = binding.parent ~= nil and groups[binding.parent] or nil,
@@ -306,10 +314,14 @@ local function UpgradeV2(globalDb, db, scope, from)
 			return keybinds[id]
 		end
 
+		--- @param binding any
+		--- @param keybind Keybind2
+		--- @return ActionSet
 		local function GetOrAddSet(binding, keybind)
 			local id = binding.uid .. " " .. binding.actionType .. " " .. keybind.type .. " " .. binding.action.executionOrder
 
 			if sets[id] == nil then
+			--- @type ActionSet
 				sets[id] = {
 					parent = keybind,
 					uid = GetNextUid(),
@@ -328,7 +340,10 @@ local function UpgradeV2(globalDb, db, scope, from)
 			return sets[id]
 		end
 
-		local function GetOrAddOptionSet(binding, keybind, option)
+		--- @param keybind Keybind2
+		--- @param option string
+		--- @return ActionSet
+		local function GetOrAddOptionSet(keybind, option)
 			for i = 1, #keybind.sets do
 				local set = keybind.sets[i]
 
@@ -337,6 +352,7 @@ local function UpgradeV2(globalDb, db, scope, from)
 				end
 			end
 
+			--- @type ActionSet
 			local set = {
 				parent = keybind,
 				uid = GetNextUid(),
@@ -350,56 +366,70 @@ local function UpgradeV2(globalDb, db, scope, from)
 			return set
 		end
 
-		local function CreateFlags(target)
-			if target.unit == nil or target.unit == "DEFAULT" then
+		--- @param flags any
+		--- @return integer
+		local function CreateFlags(flags)
+			if flags.unit == nil or flags.unit == "DEFAULT" then
 				return 0
 			end
 
-			local flags = FLAG_NONE
+			local result = FLAG_NONE
 
-			if target.vitals == "ALIVE" then
-				flags = bit.bor(flags, FLAG_UNIT_ALIVE)
-			elseif target.vitals == "DEAD" then
-				flags = bit.bor(flags, FLAG_UNIT_DEAD)
+			if flags.vitals == "ALIVE" then
+				result = bit.bor(result, FLAG_UNIT_ALIVE)
+			elseif flags.vitals == "DEAD" then
+				result = bit.bor(result, FLAG_UNIT_DEAD)
 			end
 
-			if target.hostility == "HELP" then
-				flags = bit.bor(flags, FLAG_UNIT_FRIEND)
-			elseif target.hostility == "HARM" then
-				flags = bit.bor(flags, FLAG_UNIT_HOSTILE)
+			if flags.hostility == "HELP" then
+				result = bit.bor(result, FLAG_UNIT_FRIEND)
+			elseif flags.hostility == "HARM" then
+				result = bit.bor(result, FLAG_UNIT_HOSTILE)
 			end
 
-			return flags
+			return result
 		end
 
-		local function CreateLoadConditions(binding)
+		--- @param binding any
+		--- @param macro boolean
+		--- @return LoadConditionSet|MacroConditionSet
+		local function CreateLoadConditions(binding, macro)
+			--- @param value boolean
+			--- @return LoadCondition?
 			local function FromBoolean(value)
 				if not value then
 					return nil
 				end
 
+				--- @type LoadCondition
 				return {
 					state = value and FLAG_LOAD_ENABLED or FLAG_NONE,
 					single = value
 				}
 			end
 
+			--- @param value any
+			--- @return LoadCondition?
 			local function FromLoadOption(value)
 				if not value.selected then
 					return nil
 				end
 
+				--- @type LoadCondition
 				return {
 					state = value.selected and FLAG_LOAD_ENABLED or FLAG_NONE,
 					single = value.value
 				}
 			end
 
+			--- @param value any
+			--- @return LoadCondition?
 			local function FromTriStateLoadOption(value)
 				if value.selected == 0 then
 					return nil
 				end
 
+				--- @type LoadCondition
 				local result = {
 					state = value.selected > 0 and FLAG_LOAD_ENABLED or FLAG_NONE,
 					single = value.single,
@@ -419,6 +449,8 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return result
 			end
 
+			--- @param value any
+			--- @return LoadCondition?
 			local function FromNegatableTriStateLoadOption(value)
 				local result = FromTriStateLoadOption(value)
 
@@ -429,11 +461,14 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return result
 			end
 
+			--- @param value any
+			--- @return LoadCondition?
 			local function FromMultiFieldLoadOption(value)
 				if not value.selected then
 					return nil
 				end
 
+				--- @type LoadCondition
 				local result = {
 					state = value.selected and FLAG_LOAD_ENABLED or FLAG_NONE,
 					multiple = {{}}
@@ -451,11 +486,14 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return result
 			end
 
+			--- @param value any
+			--- @return LoadCondition?
 			local function FromNegatableStringLoadOption(value)
 				if not value.selected then
 					return nil
 				end
 
+				--- @type LoadCondition
 				local result = {
 					state = value.selected and FLAG_LOAD_ENABLED or FLAG_NONE,
 					single = value.value
@@ -468,49 +506,65 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return result
 			end
 
-			return {
-				never = FromBoolean(binding.load.never),
-				class = FromTriStateLoadOption(binding.load.class),
-				race = FromTriStateLoadOption(binding.load.race),
-				playerNameRealm = FromLoadOption(binding.load.playerNameRealm),
-				combat = FromLoadOption(binding.load.combat),
-				spellKnown = FromLoadOption(binding.load.spellKnown),
-				inGroup = FromLoadOption(binding.load.inGroup),
-				playerInGroup = FromLoadOption(binding.load.playerInGroup),
-				form = FromNegatableTriStateLoadOption(binding.load.form),
-				pet = FromLoadOption(binding.load.pet),
-				stealth = FromLoadOption(binding.load.stealth),
-				mounted = FromLoadOption(binding.load.mounted),
-				outdoors = FromLoadOption(binding.load.outdoors),
-				swimming = FromLoadOption(binding.load.swimming),
-				flying = FromLoadOption(binding.load.flying),
-				dynamicFlying = FromLoadOption(binding.load.dynamicFlying),
-				flyable = FromLoadOption(binding.load.flyable),
-				advancedFlyable = FromLoadOption(binding.load.advancedFlyable),
-				instanceType = FromTriStateLoadOption(binding.load.instanceType),
-				zoneName = FromLoadOption(binding.load.zoneName),
-				equipped = FromLoadOption(binding.load.equipped),
-				specialization = FromTriStateLoadOption(binding.load.specialization),
-				specRole = FromTriStateLoadOption(binding.load.specRole),
-				talent = FromMultiFieldLoadOption(binding.load.talent),
-				pvpTalent = FromMultiFieldLoadOption(binding.load.pvpTalent),
-				warMode = FromLoadOption(binding.load.warMode),
-				channeling = FromNegatableStringLoadOption(binding.load.channeling),
-				bonusbar = FromNegatableStringLoadOption(binding.load.bonusbar),
-				bar = FromNegatableStringLoadOption(binding.load.bar),
-			}
+			if macro then
+				--- @type MacroConditionSet
+				return {
+					form = FromNegatableTriStateLoadOption(binding.load.form),
+					pet = FromLoadOption(binding.load.pet),
+					stealth = FromLoadOption(binding.load.stealth),
+					mounted = FromLoadOption(binding.load.mounted),
+					outdoors = FromLoadOption(binding.load.outdoors),
+					swimming = FromLoadOption(binding.load.swimming),
+					flying = FromLoadOption(binding.load.flying),
+					dynamicFlying = FromLoadOption(binding.load.dynamicFlying),
+					flyable = FromLoadOption(binding.load.flyable),
+					advancedFlyable = FromLoadOption(binding.load.advancedFlyable),
+					zoneName = FromLoadOption(binding.load.zoneName),
+					equipped = FromLoadOption(binding.load.equipped),
+					channeling = FromNegatableStringLoadOption(binding.load.channeling),
+					bonusbar = FromNegatableStringLoadOption(binding.load.bonusbar),
+					bar = FromNegatableStringLoadOption(binding.load.bar)
+				}
+			else
+				--- @type LoadConditionSet
+				return {
+					never = FromBoolean(binding.load.never),
+					class = FromTriStateLoadOption(binding.load.class),
+					race = FromTriStateLoadOption(binding.load.race),
+					playerNameRealm = FromLoadOption(binding.load.playerNameRealm),
+					combat = FromLoadOption(binding.load.combat),
+					spellKnown = FromLoadOption(binding.load.spellKnown),
+					inGroup = FromLoadOption(binding.load.inGroup),
+					playerInGroup = FromLoadOption(binding.load.playerInGroup),
+					specialization = FromTriStateLoadOption(binding.load.specialization),
+					instanceType = FromTriStateLoadOption(binding.load.instanceType),
+					specRole = FromTriStateLoadOption(binding.load.specRole),
+					talent = FromMultiFieldLoadOption(binding.load.talent),
+					pvpTalent = FromMultiFieldLoadOption(binding.load.pvpTalent),
+					warMode = FromLoadOption(binding.load.warMode)
+				}
+			end
 		end
 
-		local function CreateAction(set, binding, flags, target)
+		--- @param set ActionSet
+		--- @param binding any
+		--- @param flags any
+		--- @param unit? string
+		--- @return Action2
+		local function CreateAction(set, binding, flags, unit)
+			--- @type Action2
 			local action = {
 				parent = set,
 				uid = GetNextUid(),
 				flags = CreateFlags(flags),
-				load = CreateLoadConditions(binding),
-				target = target
+				load = CreateLoadConditions(binding, false),
+				conditionals = CreateLoadConditions(binding, true),
+				unit = unit
 			}
 
 			if binding.actionType == "SPELL" then
+				--- @cast action CastAction
+
 				if type(binding.action.spellValue) == "number" then
 					action.spellName = C_Spell.GetSpellName(binding.action.spellValue)
 					action.spellId = binding.action.spellValue
@@ -533,6 +587,8 @@ local function UpgradeV2(globalDb, db, scope, from)
 					action.spellFlags = bit.bor(action.spellFlags, FLAG_SPELL_PREVENT_TOGGLE)
 				end
 			elseif binding.actionType == "ITEM" then
+				--- @cast action UseAction
+
 				if type(binding.action.itemValue) == "number" then
 					local item
 
@@ -554,12 +610,18 @@ local function UpgradeV2(globalDb, db, scope, from)
 					action.itemId = C_Item.GetItemIDForItemInfo(binding.action.itemValue) or 0
 				end
 			elseif binding.actionType == "MACRO" then
+				--- @cast action MacroAction
+
 				action.macroName = binding.action.macroName
 				action.macroIcon = binding.action.macroIcon
 				action.macroText = binding.action.macroValue
 			elseif binding.actionType == "CANCELAURA" then
+				--- @cast action CancelAuraAction
+
 				action.auraName = binding.action.auraName
 			elseif binding.actionType == "APPEND" then
+				--- @cast action AppendAction
+
 				action.typeOverride = "AppendAction"
 				action.appendText = binding.action.macroValue
 			end
@@ -567,27 +629,42 @@ local function UpgradeV2(globalDb, db, scope, from)
 			return action
 		end
 
-		local function CreateOptionAction(set, binding, flags, target)
+		--- @param set ActionSet
+		--- @param binding any
+		--- @param flags any
+		--- @param unit? string
+		--- @return Action2
+		local function CreateOptionAction(set, binding, flags, unit)
+			--- @type Action2
 			local action = {
 				parent = set,
 				uid = GetNextUid(),
 				flags = CreateFlags(flags),
-				load = CreateLoadConditions(binding),
-				target = target
+				load = CreateLoadConditions(binding, false),
+				conditionals = CreateLoadConditions(binding, true),
+				unit = unit
 			}
 
 			return action
 		end
 
+		--- @param actions Action2[]
 		local function SortActions(actions)
+			--- @param action Action2
+			--- @return boolean
 			local function HasHostility(action)
 				return bit.band(action.flags, bit.bor(FLAG_UNIT_FRIEND, FLAG_UNIT_HOSTILE)) > 0
 			end
 
+			--- @param action Action2
+			--- @return boolean
 			local function HasVitals(action)
 				return bit.band(action.flags, bit.bor(FLAG_UNIT_ALIVE, FLAG_UNIT_DEAD)) > 0
 			end
 
+			--- @param action Action2
+			--- @param key string
+			--- @return boolean
 			local function HasLoad(action, key)
 				if action.load[key] == nil then
 					return false
@@ -596,6 +673,9 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return bit.band(action.load[key].state, FLAG_LOAD_ENABLED) > 0
 			end
 
+			--- @param action Action2
+			--- @param key string
+			--- @return string
 			local function GetLoad(action, key)
 				if not HasLoad(action, key) then
 					return ""
@@ -614,12 +694,15 @@ local function UpgradeV2(globalDb, db, scope, from)
 				return tostring(action.load[key].single)
 			end
 
+			--- @param left Action2
+			--- @param right Action2
+			--- @return boolean
 			local function SortFunc(left, right)
 				--- @type { left: any, right: any, value: any, comparison: "eq"|"gt"|"neq" }[]
 				local priority = {
 					-- 1. Mouseover targets always come first
-					{ left = left.target, right = right.target, value = "@mouseover", comparison = "eq" },
-					{ left = left.target, right = right.target, value = "@mouseovertarget", comparison = "eq" },
+					{ left = left.unit, right = right.unit, value = "@mouseover", comparison = "eq" },
+					{ left = left.unit, right = right.unit, value = "@mouseovertarget", comparison = "eq" },
 
 					-- 2. Macro conditions take precedence over actions that don't specify them explicitly
 					{ left = HasHostility(left), right = HasHostility(right), value = true, comparison = "eq" },
@@ -641,9 +724,9 @@ local function UpgradeV2(globalDb, db, scope, from)
 					-- 3. Any actions that do not meet any of the criteria in this list will be placed here
 
 					-- 4. The player, cursor, and default targets will always come last
-					{ left = left.target, right = right.target, value = nil, comparison = "neq" },
-					{ left = left.target, right = right.target, value = "@cursor", comparison = "neq" },
-					{ left = left.target, right = right.target, value = "@player", comparison = "neq" },
+					{ left = left.unit, right = right.unit, value = nil, comparison = "neq" },
+					{ left = left.unit, right = right.unit, value = "@cursor", comparison = "neq" },
+					{ left = left.unit, right = right.unit, value = "@player", comparison = "neq" },
 				}
 
 				for _, item in ipairs(priority) do
@@ -713,14 +796,14 @@ local function UpgradeV2(globalDb, db, scope, from)
 
 		for _, binding in ipairs(db.bindings) do
 			if binding.targets.hovercastEnabled then
-				local keybind = GetOrAddKeybind(binding, 2)
+				local keybind = GetOrAddKeybind(binding, TYPE_CLICKCAST)
 				local target = Mixin({}, binding.targets.hovercast, {
 					unit = "MOUSEOVER"
 				})
 
 				for k in pairs(optionTypeMap) do
 					if binding.action[k] then
-						local optionSet = GetOrAddOptionSet(binding, keybind, k)
+						local optionSet = GetOrAddOptionSet(keybind, k)
 						local optionAction = CreateOptionAction(optionSet, binding, target, "@mouseover")
 
 						table.insert(optionSet.actions, optionAction)
@@ -752,12 +835,12 @@ local function UpgradeV2(globalDb, db, scope, from)
 					CURSOR = "@cursor"
 				}
 
-				local keybind = GetOrAddKeybind(binding, 1)
+				local keybind = GetOrAddKeybind(binding, TYPE_GLOBAL)
 
 				for k in pairs(optionTypeMap) do
 					if binding.action[k] then
 						for _, target in ipairs(binding.targets.regular) do
-							local optionSet = GetOrAddOptionSet(binding, keybind, k)
+							local optionSet = GetOrAddOptionSet(keybind, k)
 							local optionAction = CreateOptionAction(optionSet, binding, target, target.unit ~= nil and targetMap[target.unit] or nil)
 
 							table.insert(optionSet.actions, optionAction)

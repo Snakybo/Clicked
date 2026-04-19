@@ -51,13 +51,16 @@ local function GetDatabaseDefaults()
 
 	local action = {
 		--- @type Action2
-		["**"] = Mixin({
+		["**"] = {
 			parent = nil,
 			uid = nil,
 			flags = 0,
-			load = loadConditionSet
-		}, Clicked2.ActionLibrary:GetDatabaseDefaults())
+			load = loadConditionSet,
+			conditionals = loadConditionSet
+		}
 	}
+
+	action["**"] = Mixin(action["**"], Clicked2.ActionLibrary:GetDatabaseDefaults())
 
 	local actionSet = {
 	--- @type ActionSet
