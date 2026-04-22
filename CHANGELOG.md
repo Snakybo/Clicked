@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for Midnight 12.0.5
 * Add support for Wrath of the Lich King (Titan) 3.80.1
 
+### Fixed
+
+* Workaround compact unit frame Lua errors in 12.0.5, pending a proper fix
+
 ## [1.17.6] - 2026-03-10
 
 ### Fixed

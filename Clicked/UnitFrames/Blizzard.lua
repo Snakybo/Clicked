@@ -39,11 +39,15 @@ end
 local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
 
+	if frame == nil then
+		return
+	end
+
 	Addon.BlacklistOptions:SetBlacklistGroup(frame, parent:GetName())
 	Clicked:RegisterClickCastFrame(frame)
 end
 
---- @param frame Button
+--- @param frame CompactUnitFrameTemplate|{maxBuffs: number, maxDebuffs: number, maxDispelDebuffs: number}
 local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
 		return
@@ -59,13 +63,21 @@ local function HookCompactUnitFrame(frame)
 		return
 	end
 
-	for i = 1, 3 do
+	for i = 1, frame.maxBuffs do
 		HookCompactUnitFramePart(frame, name .. "Buff" .. i)
+	end
+
+	for i = 1, frame.maxDebuffs do
 		HookCompactUnitFramePart(frame, name .. "Debuff" .. i)
+	end
+
+	for i = 1, frame.maxDispelDebuffs do
 		HookCompactUnitFramePart(frame, name .. "DispelDebuff" .. i)
 	end
 
 	HookCompactUnitFramePart(frame, name .. "CenterStatusIcon")
+	HookCompactUnitFramePart(frame, name .. "Icon")
+
 	Clicked:RegisterClickCastFrame(frame)
 end
 
