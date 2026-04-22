@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add option to add subtext to spells, useful for spells that have the same name as other spells, such as skyriding abilities (by [2huBrulee])
+* Add support for Midnight 12.0.5
 
 ## [1.17.6] - 2026-03-10
 

@@ -1,5 +1,5 @@
-## Interface: 120001
-## Title: ClickedMedia2
+## Interface: 120005
+## Title: Clicked2Media
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
 ## Version: @project-version@
