@@ -251,22 +251,6 @@ local function HOUSE_EDITOR_MODE_CHANGED()
 	end
 end
 
---- @param itemId integer
---- @param success boolean
-local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
-	if not success then
-		return
-	end
-
-	Clicked2:LogVerbose("Received event {eventName}", "ITEM_DATA_LOAD_RESULT", itemId)
-
-	for _, binding in Clicked2:IterateConfiguredBindings() do
-		if binding.actionType == Clicked2.ActionType.ITEM and binding.action.itemValue == itemId then
-			Addon:ReloadBinding(binding, "value")
-		end
-	end
-end
-
 --- @param self AceEvent-3.0
 --- @param method fun(self: AceEvent-3.0, event: WowEvent, callback: function|string)
 local function UpdateEventHooks(self, method)
@@ -314,7 +298,6 @@ local function UpdateEventHooks(self, method)
 	method(self, "ZONE_CHANGED", ZONE_CHANGED)
 	method(self, "ZONE_CHANGED_INDOORS", ZONE_CHANGED_INDOORS)
 	method(self, "ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
-	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
 	method(self, "ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
 end
 
@@ -371,7 +354,17 @@ function Addon:RequestItemLoadForBindings()
 			local itemId = tonumber(binding.action.itemValue)
 
 			if itemId ~= nil then
-				C_Item.RequestLoadItemDataByID(itemId)
+				local item
+
+				if itemId >= INVSLOT_FIRST_EQUIPPED and itemId <= INVSLOT_LAST_EQUIPPED then
+					item = Item:CreateFromEquipmentSlot(itemId)
+				else
+					item = Item:CreateFromItemID(itemId)
+				end
+
+				item:ContinueOnItemLoad(function()
+					Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
+				end)
 			end
 		end
 	end
