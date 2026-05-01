@@ -92,14 +92,6 @@ local function HandleChatCommand(input)
 			Addon:StatusOutput_Open()
 		elseif (args[1] == "viz" or args[1] == "visualizer") then
 			Addon.KeyVisualizer:Open()
-		elseif args[1] == "ignore-self-cast-warning" then
-			Addon.db.profile.options.ignoreSelfCastWarning = not Addon.db.profile.options.ignoreSelfCastWarning
-
-			if Addon.db.profile.options.ignoreSelfCastWarning then
-				Clicked:LogInfo(Addon.L["Disabled self-cast warning, type this command again to re-enable it."])
-			else
-				Clicked:LogInfo(Addon.L["Enabled self-cast warning, type this command again to disable it."])
-			end
 		end
 	end
 end
@@ -403,15 +395,8 @@ function Clicked:OnEnable()
 
 	UpdateEventHooks(self, self.RegisterEvent)
 
-	-- self-cast warning
-	if not Addon.db.profile.options.ignoreSelfCastWarning and Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-		local selfCastModifier = GetModifiedClick("SELFCAST")
-
-		if selfCastModifier ~= "NONE" then
-			local message = Addon.L["The behavior of the self-cast modifier has changed in Dragonflight, bindings using the '{key}' key modifier may not work correctly. It is recommended to disable it by setting it to 'NONE' in the options menu. You can disable this warning by typing: {command}"]
-			Clicked:LogWarning(message, selfCastModifier, "/clicked ignore-self-cast-warning")
-		end
-	end
+	SetModifiedClick("SELFCAST", "NONE")
+	SetModifiedClick("FOCUSCAST", "NONE")
 end
 
 function Clicked:OnDisable()
