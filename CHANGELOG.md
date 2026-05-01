@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Improve equipped item detection upon first load
 
+### Fixed
+
+* Forcefully disable self-cast and focus-cast in order to hopefully fix an issue where bindings do not cast (correctly)
+
 ## [1.17.7] - 2026-04-22
 
 ### Added
