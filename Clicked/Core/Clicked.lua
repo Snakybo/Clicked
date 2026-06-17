@@ -427,9 +427,11 @@ function Addon:RequestItemLoadForBindings()
 					item = Item:CreateFromItemID(itemId)
 				end
 
-				item:ContinueOnItemLoad(function()
-					Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
-				end)
+				if not item:IsItemEmpty() then
+					item:ContinueOnItemLoad(function()
+						Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
+					end)
+				end
 			end
 		end
 	end
