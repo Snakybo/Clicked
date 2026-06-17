@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Midnight 12.0.7
+* Add support for Mists of Pandaria Classic 5.5.4
 
 ### Fixed
 
