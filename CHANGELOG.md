@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix Lua error when opening the keyboard visualizer with the ElvUI skin [#311]
+* Fix Lua error when logging in on Mists of Pandaria Classic
 
 ## [1.17.8] - 2026-05-01
 

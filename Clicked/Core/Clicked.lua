@@ -337,7 +337,7 @@ local function UpdateEventHooks(self, method)
 
 	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC then -- HACK: Anniversary follows the modern API
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
 		method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
 	else
 		method(self, "LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
