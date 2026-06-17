@@ -175,7 +175,7 @@ local function Initialize()
 			end
 
 			local actionbars = elv:GetModule("ActionBars")
-			local font, size, flags, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
+			local font, size, flags, _, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
 
 			widget.keyName:SetPoint("TOP", 0, -3)
 			widget.keyName:SetFont(font, size, flags)
