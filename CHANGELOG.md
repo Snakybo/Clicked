@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for Midnight 12.0.7
+
 ### Fixed
 
 * Fix Lua error when opening the keyboard visualizer with the ElvUI skin [#311]
