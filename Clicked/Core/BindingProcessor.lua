@@ -287,7 +287,7 @@ local function ConstructAction(binding, target)
 	end
 
 	if target ~= nil then
-		if binding.actionType ~= Clicked.ActionType.UNIT_MENU then
+		if not Addon:IsRestrictedAction(binding.actionType) then
 			if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
 				action.unit = Addon.TargetUnit.MOUSEOVER
 			else
@@ -1310,11 +1310,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				return "/cancelaura "
 			end
 
-			if binding.actionType == Clicked.ActionType.UNIT_SELECT then
-				return "/tar "
-			end
-
-			if binding.actionType == Clicked.ActionType.UNIT_MENU then
+			if binding.actionType == Clicked.ActionType.UNIT_SELECT or binding.actionType == Clicked.ActionType.UNIT_MENU then
 				return "/click "
 			end
 
