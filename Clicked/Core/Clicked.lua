@@ -106,10 +106,6 @@ local function PLAYER_REGEN_DISABLED()
 
 	Addon.BindingConfig.Window:Close()
 	Addon:AbilityTooltips_Refresh()
-
-	if Addon:IsCombatProcessRequired() then
-		Clicked:ProcessActiveBindings()
-	end
 end
 
 local function PLAYER_REGEN_ENABLED()
@@ -119,10 +115,6 @@ local function PLAYER_REGEN_ENABLED()
 
 	Addon:ProcessFrameQueue()
 	Addon:AbilityTooltips_Refresh()
-
-	if Addon:IsCombatProcessRequired() then
-		Clicked:ProcessActiveBindings()
-	end
 
 	if openConfigOnCombatExit then
 		Addon.BindingConfig.Window:Open()

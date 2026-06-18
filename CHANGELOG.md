@@ -8,6 +8,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+* Reworked menu and target binding logic, they now use macros and function similarly to regular spell bindings, they can also be combined on the same key as other bindings.
+
+### Fixed
+
+* Fix an issue with target and menu bindings on Midnight 12.0.7 [#312]
+
 ## [1.17.9] - 2026-06-17
 
 ### Added

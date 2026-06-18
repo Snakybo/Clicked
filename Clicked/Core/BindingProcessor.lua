@@ -287,10 +287,12 @@ local function ConstructAction(binding, target)
 	end
 
 	if target ~= nil then
-		if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
-			action.unit = Addon.TargetUnit.MOUSEOVER
-		else
-			action.unit = target.unit
+		if binding.actionType ~= Clicked.ActionType.UNIT_MENU then
+			if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
+				action.unit = Addon.TargetUnit.MOUSEOVER
+			else
+				action.unit = target.unit
+			end
 		end
 
 		if target.hostility ~= Addon.TargetHostility.ANY then
@@ -455,33 +457,15 @@ local function ProcessBuckets()
 		}
 
 		command.prefix, command.suffix = Addon:CreateAttributeIdentifier(command.keybind, command.hovercast)
+		command.data = Addon:GetMacroForBindings(bindings, interactionType)
 
-		if Addon:GetInternalBindingType(reference) == Clicked.ActionType.MACRO then
-			command.action = Addon.CommandType.MACRO
-			command.data = Addon:GetMacroForBindings(bindings, interactionType)
+		if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
+			macroTooLongNotified[command.data] = true
 
-			if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
-				macroTooLongNotified[command.data] = true
+			local message = Addon.L["The generated macro for binding {name} is too long and will not function, please adjust your bindings."]
+			local name = Addon:GetBindingNameAndIcon(reference)
 
-				local message = Addon.L["The generated macro for binding {name} is too long and will not function, please adjust your bindings."]
-				local name = Addon:GetBindingNameAndIcon(reference)
-
-				logger:LogWarning(message, name)
-			end
-		elseif reference.actionType == Clicked.ActionType.UNIT_SELECT then
-			command.action = Addon.CommandType.TARGET
-
-			if reference.load.combat.selected then
-				command.data = reference.load.combat.value
-			end
-		elseif reference.actionType == Clicked.ActionType.UNIT_MENU then
-			command.action = Addon.CommandType.MENU
-
-			if reference.load.combat.selected then
-				command.data = reference.load.combat.value
-			end
-		else
-			return logger:LogError("Unhandled binding type: {actionType}", reference.actionType)
+			logger:LogWarning(message, name)
 		end
 
 		return command
@@ -512,20 +496,6 @@ end
 
 --- @param bindings Binding[]
 local function GenerateBuckets(bindings)
-	--- @param bucket table<string,Binding>
-	--- @param binding Binding
-	local function Insert(bucket, binding)
-		if #bucket == 0 then
-			table.insert(bucket, binding)
-		else
-			local reference = bucket[1]
-
-			if Addon:GetInternalBindingType(binding) == Addon:GetInternalBindingType(reference) then
-				table.insert(bucket, binding)
-			end
-		end
-	end
-
 	wipe(hovercastBucket)
 	wipe(regularBucket)
 
@@ -544,14 +514,14 @@ local function GenerateBuckets(bindings)
 		if Addon:IsHovercastEnabled(binding) then
 			for _, key in ipairs(keys) do
 				hovercastBucket[key] = hovercastBucket[key] or {}
-				Insert(hovercastBucket[key], binding)
+				table.insert(hovercastBucket[key], binding)
 			end
 		end
 
 		if Addon:IsMacroCastEnabled(binding) then
 			for _, key in ipairs(keys) do
 				regularBucket[key] = regularBucket[key] or {}
-				Insert(regularBucket[key], binding)
+				table.insert(regularBucket[key], binding)
 			end
 		end
 	end
@@ -1211,28 +1181,6 @@ function Addon:IsBindingValidForCurrentState(binding)
 	return true
 end
 
---- @param binding Binding
---- @return string
-function Addon:GetInternalBindingType(binding)
-	if binding.actionType == Clicked.ActionType.SPELL then
-		return Clicked.ActionType.MACRO
-	end
-
-	if binding.actionType == Clicked.ActionType.ITEM then
-		return Clicked.ActionType.MACRO
-	end
-
-	if binding.actionType == Clicked.ActionType.APPEND then
-		return Clicked.ActionType.MACRO
-	end
-
-	if binding.actionType == Clicked.ActionType.CANCELAURA then
-		return Clicked.ActionType.MACRO
-	end
-
-	return binding.actionType
-end
-
 --- Construct a valid macro that correctly prioritizes all specified bindings.
 --- It will prioritize bindings in the following order:
 ---
@@ -1362,6 +1310,14 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				return "/cancelaura "
 			end
 
+			if binding.actionType == Clicked.ActionType.UNIT_SELECT then
+				return "/tar "
+			end
+
+			if binding.actionType == Clicked.ActionType.UNIT_MENU then
+				return "/click "
+			end
+
 			return nil
 		end
 
@@ -1414,15 +1370,16 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 
 				local nextActionIndex = 1
 
-				for _, binding in ipairs(group) do
-					if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
-						for _, action in ipairs(ConstructActions(binding, interactionType, actionBar)) do
-							table.insert(actions[order], action)
+				--- @param action Action
+				local function AddAction(action)
+					table.insert(actions[order], action)
 
-							actionsSequence[action] = nextActionIndex
-							nextActionIndex = nextActionIndex + 1
-						end
-					elseif binding.actionType == Clicked.ActionType.MACRO then
+					actionsSequence[action] = nextActionIndex
+					nextActionIndex = nextActionIndex + 1
+				end
+
+				for _, binding in ipairs(group) do
+					if binding.actionType == Clicked.ActionType.MACRO then
 						local value = Addon:GetBindingValue(binding)
 						table.insert(macros[order], value)
 					elseif binding.actionType == Clicked.ActionType.APPEND then
@@ -1434,12 +1391,11 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 						target.hostility = Addon.TargetHostility.ANY
 						target.vitals = Addon.TargetVitals.ANY
 
-						local action = ConstructAction(binding, target)
-
-						table.insert(actions[order], action)
-
-						actionsSequence[action] = nextActionIndex
-						nextActionIndex = nextActionIndex + 1
+						AddAction(ConstructAction(binding, target))
+					else
+						for _, action in ipairs(ConstructActions(binding, interactionType, actionBar)) do
+							AddAction(action)
+						end
 					end
 				end
 			end
