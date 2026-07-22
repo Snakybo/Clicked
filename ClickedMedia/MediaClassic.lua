@@ -6317,6 +6317,7 @@ local icons = {
 	[626007] = "classicon_warlock",
 	[626008] = "classicon_warrior",
 	[894556] = "xp_icon",
+	[939375] = "wow_store",
 	[1109508] = "inv_sword_2h_artifactashbringer_d_01",
 	[1120721] = "wow_token01",
 	[1121394] = "wow_token02",
@@ -6363,6 +6364,7 @@ local icons = {
 	[5934896] = "inv_stave_2h_druid_a_01",
 	[5934898] = "inv_stave_2h_druid_a_02",
 	[6725876] = "inv_pvpwarhorse_scarlet",
+	[7455463] = "ui_shop",
 }
 
 --- @type integer[]
@@ -12665,6 +12667,7 @@ local order = {
 	626007,
 	626008,
 	894556,
+	939375,
 	1109508,
 	1120721,
 	1121394,
@@ -12711,6 +12714,7 @@ local order = {
 	5934896,
 	5934898,
 	6725876,
+	7455463,
 }
 
 --- @return table<integer,string>
