@@ -18,14 +18,10 @@
 local Addon = select(2, ...)
 
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
-Addon.TARGET_BUTTON_NAME = "ClickedTargetBtn"
 Addon.MENU_BUTTON_NAME = "ClickedMenuBtn"
 
 --- @type Button
 local macroFrameHandler
-
---- @type Button
-local targetButton
 
 ---@type Button
 local menuButton
@@ -55,12 +51,6 @@ local function EnsureMacroFrameHandler()
 	if macroFrameHandler ~= nil then
 		return
 	end
-
-	targetButton = CreateFrame("Button", Addon.TARGET_BUTTON_NAME, UIParent, "SecureActionButtonTemplate")
-    targetButton:SetAttribute("type", "target")
-    targetButton:SetAttribute("unit", "mouseover")
-    targetButton:SetAttribute("useOnKeyDown", false)
-    targetButton:RegisterForClicks("AnyUp", "AnyDown")
 
     menuButton = CreateFrame("Button", Addon.MENU_BUTTON_NAME, UIParent, "SecureActionButtonTemplate")
     menuButton:SetAttribute("type", "togglemenu")

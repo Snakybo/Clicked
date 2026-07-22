@@ -542,7 +542,7 @@ function Addon:GetBindingValue(binding)
 	end
 
 	if binding.actionType == Clicked.ActionType.UNIT_SELECT then
-		return Addon.TARGET_BUTTON_NAME
+		return " " -- ugly hack to make it load
 	end
 
 	if binding.actionType == Clicked.ActionType.UNIT_MENU then
