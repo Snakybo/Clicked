@@ -50,6 +50,7 @@ Conditions\MacroConditions.lua
 
 # Unitframe and clickcast support
 UnitFrames\ClickCastHeader.lua
+UnitFrames\ClickCastSidecars.lua
 UnitFrames\ClickCastFrames.lua
 UnitFrames\Blizzard.lua
 

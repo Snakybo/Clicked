@@ -88,6 +88,7 @@ function AddonOptions:CreateOptionsTable()
 					end
 
 					Clicked:RegisterFrameClicks(_G[Addon.MACRO_FRAME_HANDLER_NAME])
+					Addon:UpdateSidecarClickDirection()
 					Clicked:ProcessActiveBindings()
 
 					Addon:ShowInformationPopup(Addon.L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])

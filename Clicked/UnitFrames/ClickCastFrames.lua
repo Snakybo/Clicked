@@ -32,20 +32,21 @@ local registerClicksQueue = {}
 --- @type table<string,string>
 local cachedAttributes = {}
 
---- @type Button[]
-local sidecars = {}
-
 local logger = Clicked:CreateSystemLogger("ClickCast")
 
 -- Local support functions
 
 --- @param frame Button
+--- @param sidecar Sidecar
 --- @param attributes table<string,string>
 --- @param setup string
 --- @param clear string
-local function UpdateClickCastFrame(frame, attributes, setup, clear)
-	Addon:SetPendingFrameAttributes(frame, attributes)
-	Addon:ApplyAttributesToFrame(frame)
+local function UpdateClickCastFrame(frame, sidecar, attributes, setup, clear)
+	Addon:SetPendingFrameAttributes(sidecar.btnFrame, attributes)
+	Addon:ApplyAttributesToFrame(sidecar.btnFrame)
+
+	Addon:SetPendingFrameAttributes(sidecar.keyFrame, attributes)
+	Addon:ApplyAttributesToFrame(sidecar.keyFrame)
 
 	if Addon.ClickCastHeader ~= nil then
 		Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
@@ -96,10 +97,15 @@ function Addon:UpdateClickCastFrames(newAtributes)
 	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
 
 	for _, frame in ipairs(frames) do
-		UpdateClickCastFrame(frame, newAtributes, setup, clear)
+		local sidecar = Addon:GetSidecar(frame)
+		if sidecar ~= nil then
+			UpdateClickCastFrame(frame, sidecar, newAtributes, setup, clear)
+		end
 	end
 
 	cachedAttributes = newAtributes
+
+	Addon:ReapplySidecars()
 end
 
 --- @param frame Frame
@@ -216,19 +222,13 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 		return logger:LogDebug("Ignoring frame {frameName} because it has been blacklisted", name)
 	end
 
-	if name == nil then
-		Clicked:CreateSidecar(frame, nil)
-	end
-
 	Clicked:RegisterFrameClicks(frame)
+
+	local sidecar = Addon:GetOrCreateSidecar(frame)
 
 	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
 	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
-	UpdateClickCastFrame(frame, cachedAttributes, setup, clear)
-
-	if frame:GetAttribute("*type2") == "menu" then
-		frame:SetAttribute("*type2", "togglemenu")
-	end
+	UpdateClickCastFrame(frame, sidecar, cachedAttributes, setup, clear)
 
 	table.insert(frames, frame)
 
@@ -291,17 +291,20 @@ function Clicked:UnregisterClickCastFrame(frame)
 		return
 	end
 
-	Addon:SetPendingFrameAttributes(frame, {})
-	Addon:ApplyAttributesToFrame(frame)
+	local sidecar = Addon:GetSidecar(frame)
+	if sidecar ~= nil then
+		Addon:SetPendingFrameAttributes(sidecar, {})
+		Addon:ApplyAttributesToFrame(sidecar.btnFrame)
+	end
 
 	Addon.ClickCastHeader:UnwrapScript(frame, "OnEnter")
 	Addon.ClickCastHeader:UnwrapScript(frame, "OnLeave")
 
-	-- TODO: Unregister sidecar?
+	Addon:RemoveSidecar(frame)
 
 	table.remove(frames, index)
 
-	logger:LogVerbose("Unregistered frame {frameName}", frame:GetName())
+	logger:LogVerbose("Unregistered frame {frameName}", frame:GetName() or "<unnamed>")
 end
 
 --- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on
@@ -325,53 +328,18 @@ function Clicked:RegisterFrameClicks(frame)
 	logger:LogVerbose("Registered clicks for frame {frameName}", frame:GetName())
 end
 
---- Create a clickable sidecar, primarily for unamed frames such as the party frames.
----
---- @param frame Button The frame to create a sidecar for
---- @param name string? The human-readable name of the frame, since these frames are generally unamed, a custom name needs to be supploed
---- @return Button sidecar
-function Clicked:CreateSidecar(frame, name)
-	local sidecarId = frame:GetAttribute("clicked-sidecar")
-
-	--- @param sidecar Button
-	local function UpdateName(sidecar)
-		if name ~= nil then
-			sidecar:SetAttribute("clicked-name", name)
-		end
+--- @param frame Button The frame to name.
+--- @param name string A human-readable label for the frame.
+function Clicked:SetFrameDisplayName(frame, name)
+	local sidecar = Addon:GetSidecar(frame)
+	if sidecar == nil then
+		return
 	end
 
-	if sidecarId == nil then
-		local frameName = "ClickedSidecar" .. tostring(#sidecars + 1)
-
-		local sidecar = CreateFrame("Button", frameName, frame, "SecureUnitButtonTemplate") --[[@as Button]]
-		sidecar:SetAttribute("useparent*", true)
-
-		frame:SetAttribute("clicked-sidecar", frameName)
-		frame:SetAttribute("clicked-name", name)
-
-		table.insert(sidecars, sidecar)
-
-		logger:LogVerbose("Created sidecar for frame {frameName}", name)
-
-		UpdateName(sidecar)
-		return sidecar
-	end
-
-	local sidecar = _G[sidecarId]
-	UpdateName(sidecar)
-
-	return sidecar
+	sidecar.name = name
 end
 
 --- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
 function Clicked:IterateClickCastFrames()
 	return ipairs(frames)
-end
-
---- Iterate through all registered click-cast sidecars. This function can be used in a `for in` loop.
----
---- A sidecar is a custom overlay frame used when a registered frame does not have a name. A name is required for
---- unit frame casting.
-function Clicked:IterateSidecars()
-	return ipairs(sidecars)
 end

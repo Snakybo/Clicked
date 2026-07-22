@@ -53,7 +53,10 @@ function Addon:RegisterClickCastHeader()
 
 		currentClickcastButton = self
 
-		local button = self:GetAttribute("clicked-sidecar") or self
+		local button = self:GetAttribute("clicked-key-sidecar")
+		if button == nil then
+			return
+		end
 
 		for i = 1, table.maxn(keybinds) do
 			local keybind = keybinds[i]

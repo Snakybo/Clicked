@@ -200,6 +200,8 @@ function Addon:ProcessCommands(commands)
 	-- Register all new keybinds
 	macroFrameHandler:Show()
 
+	Addon:CreateSidecarAttributeAliases(newClickCastFrameAttributes)
+
 	Addon:StatusOutput_UpdateHovercastAttributes(newClickCastFrameAttributes)
 	Addon:UpdateClickCastHeader(newClickCastFrameKeybinds)
 	Addon:UpdateClickCastFrames(newClickCastFrameAttributes)

@@ -8,6 +8,16 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix an issue with target and menu bindings on Midnight 12.0.7 (contd.) [#313]
+
+### Removed
+
+* Remove the ability to add macro conditionals from target and unit menu bindings, sadly it doesn't quite work with the new game changes, sorry!
+
 ## [1.17.11] - 2026-06-18
 
 ### Added
@@ -1932,6 +1942,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#313]: https://github.com/Snakybo/Clicked/issues/313
+[#312]: https://github.com/Snakybo/Clicked/issues/312
 [#311]: https://github.com/Snakybo/Clicked/issues/311
 [#294]: https://github.com/Snakybo/Clicked/issues/294
 [#293]: https://github.com/Snakybo/Clicked/issues/293

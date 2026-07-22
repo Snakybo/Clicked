@@ -105,10 +105,10 @@ function Addon:RegisterBlizzardUnitFrames()
 
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
 			Clicked:RegisterClickCastFrame(frame)
-			Clicked:RegisterClickCastFrame(frame.PetFrame)
+			Clicked:SetFrameDisplayName(frame, "PartyMemberFrame" .. partyFrameIndex)
 
-			Clicked:CreateSidecar(frame, "PartyMemberFrame" .. partyFrameIndex)
-			Clicked:CreateSidecar(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
+			Clicked:RegisterClickCastFrame(frame.PetFrame)
+			Clicked:SetFrameDisplayName(frame.PetFrame, "PartyMemberFrame" .. partyFrameIndex .. "PetFrame")
 
 			partyFrameIndex = partyFrameIndex + 1
 		end
@@ -117,4 +117,12 @@ function Addon:RegisterBlizzardUnitFrames()
 	end
 
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", HookCompactUnitFrame)
+
+	if _G.CompactUnitFrame_SetUnit ~= nil then
+		hooksecurefunc("CompactUnitFrame_SetUnit", function(frame)
+			if frame ~= nil and Addon:GetSidecar(frame) ~= nil then
+				Addon:ReapplySidecar(frame)
+			end
+		end)
+	end
 end

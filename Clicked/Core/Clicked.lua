@@ -118,6 +118,7 @@ local function PLAYER_REGEN_ENABLED()
 	isPlayerInCombat = false
 
 	Addon:ProcessFrameQueue()
+	Addon:ProcessSidecarQueue()
 	Addon:AbilityTooltips_Refresh()
 
 	if Addon:IsCombatProcessRequired() then
@@ -141,6 +142,8 @@ local function PLAYER_ENTERING_WORLD()
 	local isInitialLoadPending = false
 
 	Addon:ProcessFrameQueue()
+	Addon:ReapplySidecars()
+
 	Addon:UpdateTalentCache(function()
 		isInitialLoadPending = true
 		Addon:ReloadBindingsImmediate()

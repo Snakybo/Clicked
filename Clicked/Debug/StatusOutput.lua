@@ -196,10 +196,11 @@ end
 local function GetRegisteredClickCastSidecars()
 	local lines = {}
 
-	for _, sidecar in Clicked:IterateSidecars() do
-		local targetFrameName = sidecar:GetAttribute("clicked-name")
+	for clickCastFrame, sidecar in Clicked:IterateSidecars() do
+		local displayName = sidecar.name or (clickCastFrame.GetName ~= nil and clickCastFrame:GetName())
 
-		table.insert(lines, sidecar:GetName() .. (targetFrameName and " (for " .. targetFrameName .. ")" or ""))
+		table.insert(lines, sidecar.btnFrame:GetName() .. (displayName and " (for " .. displayName .. ")" or ""))
+		table.insert(lines, sidecar.keyFrame:GetName() .. (displayName and " (for " .. displayName .. ")" or ""))
 	end
 
 	table.sort(lines)
