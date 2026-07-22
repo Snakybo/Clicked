@@ -463,12 +463,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(spell) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-				name = C_Spell.GetSpellName(spell)
-			else
-				local data = C_Spell.GetSpellInfo(spell)
-				name = data ~= nil and data.name or nil
-			end
+			name = C_Spell.GetSpellName(spell)
 		else
 			--- @cast spell string
 			name = spell
@@ -523,12 +518,7 @@ function Addon:GetBindingValue(binding)
 		local name
 
 		if type(aura) == "number" then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-				name = C_Spell.GetSpellName(aura)
-			else
-				local data = C_Spell.GetSpellInfo(aura)
-				name = data ~= nil and data.name or nil
-			end
+			name = C_Spell.GetSpellName(aura)
 		else
 			--- @cast aura string
 			name = aura

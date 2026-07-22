@@ -339,12 +339,7 @@ local function UpdateEventHooks(self, method)
 	end
 
 	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-		method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
-	else
-		method(self, "LEARNED_SPELL_IN_TAB", LEARNED_SPELL_IN_TAB)
-	end
+	method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
 		method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
