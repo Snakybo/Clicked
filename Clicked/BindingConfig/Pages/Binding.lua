@@ -92,6 +92,15 @@ Addon.BindingConfig.BindingPage = {
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},
+		action_unit = {
+			title = "Action",
+			order = 2,
+			implementation = CreateFromMixins(Addon.BindingConfig.BindingUnitActionTab),
+			filter = function(bindings)
+				local bindingTypes = { BT_UNIT_SELECT, BT_UNIT_MENU }
+				return FilterBindingsByActionType(bindings, bindingTypes)
+			end
+		},
 		macro = {
 			title = "Macro",
 			order = 3,
@@ -124,7 +133,7 @@ Addon.BindingConfig.BindingPage = {
 				content = Addon.Condition.Registry:GetConditionSet("macro")
 			}),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_CANCELAURA, BT_UNIT_SELECT, BT_UNIT_MENU }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_CANCELAURA }
 				return FilterBindingsByActionType(bindings, bindingTypes)
 			end
 		},
@@ -133,7 +142,7 @@ Addon.BindingConfig.BindingPage = {
 			order = 30,
 			implementation = CreateFromMixins(Addon.BindingConfig.BindingStatusTab),
 			filter = function(bindings)
-				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA, BT_UNIT_SELECT, BT_UNIT_MENU }
+				local bindingTypes = { BT_SPELL, BT_ITEM, BT_MACRO, BT_APPEND, BT_CANCELAURA }
 
 				--- @type Binding[]
 				local result = {}
@@ -216,10 +225,6 @@ function Addon.BindingConfig.BindingPage:Redraw()
 		local function OnKeyChanged(widget, _, key)
 			for _, target in ipairs(self.targets) do
 				target.keybind = key
-
-				if Addon:IsRestrictedKeybind(key) then
-					target.targets.hovercastEnabled = true
-				end
 
 				Addon:ReloadBinding(target, "keybind")
 				Addon:ReloadBinding(target, "targets")

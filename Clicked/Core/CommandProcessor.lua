@@ -18,13 +18,12 @@
 local Addon = select(2, ...)
 
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
-Addon.MENU_BUTTON_NAME = "ClickedMenuBtn"
 
 --- @type Button
 local macroFrameHandler
 
----@type Button
-local menuButton
+--- @type boolean
+local requiresCombatProcess = false
 
 -- Local support functions
 
@@ -51,12 +50,6 @@ local function EnsureMacroFrameHandler()
 	if macroFrameHandler ~= nil then
 		return
 	end
-
-    menuButton = CreateFrame("Button", Addon.MENU_BUTTON_NAME, UIParent, "SecureActionButtonTemplate")
-    menuButton:SetAttribute("type", "togglemenu")
-    menuButton:SetAttribute("unit", "mouseover")
-    menuButton:SetAttribute("useOnKeyDown", false)
-    menuButton:RegisterForClicks("AnyUp", "AnyDown")
 
 	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate") --[[@as Button]]
 	macroFrameHandler:SetAttribute("useOnkeyDown", true)
@@ -160,6 +153,7 @@ function Addon:ProcessCommands(commands)
 
 	-- Unregister all current keybinds
 	macroFrameHandler:Hide()
+	requiresCombatProcess = false
 
 	for _, command in ipairs(commands) do
 		local attributes = {}
@@ -194,6 +188,10 @@ function Addon:ProcessCommands(commands)
 		for attribute, value in pairs(attributes) do
 			targetAttributes[attribute] = value
 		end
+
+		if (command.action == Addon.CommandType.TARGET or command.action == Addon.CommandType.MENU) and command.data ~= nil then
+			requiresCombatProcess = true
+		end
 	end
 
 	Addon:StatusOutput_UpdateMacroHandlerAttributes(newMacroFrameHandlerAttributes)
@@ -205,4 +203,11 @@ function Addon:ProcessCommands(commands)
 	Addon:StatusOutput_UpdateHovercastAttributes(newClickCastFrameAttributes)
 	Addon:UpdateClickCastHeader(newClickCastFrameKeybinds)
 	Addon:UpdateClickCastFrames(newClickCastFrameAttributes)
+end
+
+--- Get whether re-procesing of active bindings should happen when entering and leaving combat.
+---
+---@return boolean
+function Addon:IsCombatProcessRequired()
+	return requiresCombatProcess
 end

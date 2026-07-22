@@ -69,12 +69,8 @@ local function CreateBinding(type, parent)
 		binding.actionType = Clicked.ActionType.CANCELAURA
 	elseif type == ItemTemplate.BINDING_UNIT_TARGET then
 		binding.actionType = Clicked.ActionType.UNIT_SELECT
-		binding.targets.hovercastEnabled = true
-		binding.targets.regularEnabled = false
 	elseif type == ItemTemplate.BINDING_UNIT_MENU then
 		binding.actionType = Clicked.ActionType.UNIT_MENU
-		binding.targets.hovercastEnabled = true
-		binding.targets.regularEnabled = false
 	end
 
 	if parent ~= nil then

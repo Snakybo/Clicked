@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 14
+Addon.DATA_VERSION = 13
 
 local upgradeData = {}
 
@@ -921,14 +921,6 @@ local function Upgrade(db, from)
 		table.sort(orphans, function(a, b) return a > b end)
 		for _, i in ipairs(orphans) do
 			table.remove(db.bindings, i)
-		end
-	end
-
-	if from < 14 then
-		for _, binding in ipairs(db.bindings) do
-			if binding.actionType == "UNIT_MENU" or binding.actionType == "UNIT_SELECT" or binding.keybind == "BUTTON1" or binding.keybind == "BUTTON2" then
-				binding.targets.hovercastEnabled = true
-			end
 		end
 	end
 end

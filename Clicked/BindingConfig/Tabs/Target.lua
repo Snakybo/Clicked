@@ -30,19 +30,6 @@ Addon.BindingConfig.BindingTargetTab = {}
 
 --- @protected
 function Addon.BindingConfig.BindingTargetTab:Redraw()
-	--- @param binding Binding
-	--- @return boolean
-	local function CanToggleRegularTargetMode(binding)
-		return not Addon:IsRestrictedKeybind(binding.keybind) and not Addon:IsRestrictedAction(binding.actionType)
-	end
-
-	--- @param binding Binding
-	--- @return boolean
-	local function CanToggleUnitFrameTargetMode(binding)
-		return not Addon:IsRestrictedKeybind(binding.keybind) and not Addon:IsRestrictedAction(binding.actionType)
-	end
-
-
 	-- hovercast
 	do
 		--- @param binding Binding
@@ -60,29 +47,17 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 		--- @param value boolean
 		local function OnValueChanged(_, _, value)
 			for _, binding in ipairs(self.bindings) do
-				if CanToggleUnitFrameTargetMode(binding) then
-					binding.targets.hovercastEnabled = value
-					Addon:ReloadBinding(binding, "targets")
-				end
+				binding.targets.hovercastEnabled = value
+				Addon:ReloadBinding(binding, "targets")
 			end
 
 			self.controller:RedrawTab()
 		end
 
 		do
-			local canInteract = false
-
-			for _, binding in ipairs(self.bindings) do
-				if CanToggleUnitFrameTargetMode(binding) then
-					canInteract = true
-					break
-				end
-			end
-
 			local widget = AceGUI:Create("ClickedToggleHeading") --[[@as ClickedToggleHeading]]
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnValueChanged", OnValueChanged)
-			widget:SetDisabled(not canInteract)
 
 			Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Unit frame"], GetEnabledState)
 
@@ -108,7 +83,19 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 
 	-- regular
 	do
-		if FindInTableIf(self.bindings, CanToggleRegularTargetMode) ~= nil then
+		--- @param binding Binding
+		--- @return boolean
+		local function CanEnableRegularTargetMode(binding)
+			local disallowed = { Clicked.ActionType.UNIT_SELECT, Clicked.ActionType.UNIT_MENU }
+
+			if Addon:IsRestrictedKeybind(binding.keybind) or tContains(disallowed, binding.actionType) then
+				return false
+			end
+
+			return true
+		end
+
+		if FindInTableIf(self.bindings, CanEnableRegularTargetMode) ~= nil then
 			--- @param binding Binding
 			--- @return string
 			local function ValueSelector(binding)
@@ -124,7 +111,7 @@ function Addon.BindingConfig.BindingTargetTab:Redraw()
 			--- @param value boolean
 			local function OnValueChanged(_, _, value)
 				for _, binding in ipairs(self.bindings) do
-					if CanToggleRegularTargetMode(binding) then
+					if CanEnableRegularTargetMode(binding) then
 						binding.targets.regularEnabled = value
 						Addon:ReloadBinding(binding, "targets")
 					end

@@ -541,12 +541,8 @@ function Addon:GetBindingValue(binding)
 		return binding.action.macroValue
 	end
 
-	if binding.actionType == Clicked.ActionType.UNIT_SELECT then
-		return " " -- ugly hack to make it load
-	end
-
-	if binding.actionType == Clicked.ActionType.UNIT_MENU then
-		return Addon.MENU_BUTTON_NAME
+	if binding.actionType == Clicked.ActionType.UNIT_SELECT or binding.actionType == Clicked.ActionType.UNIT_MENU then
+		return binding.actionType
 	end
 
 	return nil
@@ -1133,12 +1129,6 @@ function Addon:IsRestrictedKeybind(keybind)
 	return keybind == "BUTTON1" or keybind == "BUTTON2"
 end
 
---- @param type ActionType
---- @return boolean
-function Addon:IsRestrictedAction(type)
-	return type == Clicked.ActionType.UNIT_MENU or type == Clicked.ActionType.UNIT_SELECT
-end
-
 --- Check if the specified keybind is a mouse button. This will also
 --- return `true` if the mouse button has been modified with alt/shift/ctrl.
 ---
@@ -1228,7 +1218,7 @@ function Addon:IsMacroCastEnabled(binding)
 		return true
 	end
 
-	if Addon:IsRestrictedAction(binding.actionType) then
+	if binding.actionType == Clicked.ActionType.UNIT_MENU or binding.actionType == Clicked.ActionType.UNIT_SELECT then
 		return false
 	end
 
