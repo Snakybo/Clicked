@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for Classic Era 1.15.9
+* Add support for The Burning Crusade Anniversary 2.5.6
 
 ### Fixed
 
