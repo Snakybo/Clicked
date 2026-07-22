@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add support for Classic Era 1.15.9
+
 ### Fixed
 
 * Fix an issue with target and menu bindings on Midnight 12.0.7 (contd.) [#313]
@@ -141,7 +145,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for The War Within 11.2.7
 * Add support for Mists of Pandaria Classic 5.5.3
 * Add support for The Burning Crusade Anniversary 2.5.5
-* Add support for Classic 1.15.8
+* Add support for Classic Era 1.15.8
 
 ### Fixed
 
@@ -455,14 +459,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Add support for The War Within 11.0.0
-* Add support for Classic 1.15.3
+* Add support for Classic Era 1.15.3
 * Add Dynamic Flying macro condition
 * Add message when a generated macro is too long to be used
 * Add auto-completion to the spell name input field, containing all spells in the spellbook
 * Add the ability to drag spells from the spellbook into the spell name input field
 * Add icons from The War Within 11.0.2 to icon picker
 * Add icons from Cataclysm Classic 4.4.0 to icon picker
-* Add icons from Classic 1.15.3 to icon picker
+* Add icons from Classic Era 1.15.3 to icon picker
 * Update PvP talent data
 
 ### Fixed
@@ -973,7 +977,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add support for TBC Classic 2.5.3
 * Update talent data for WoW 9.2.0
 * Update icons for WoW 9.2.0
-* Update icons for WoW Classic 1.14.2
+* Update icons for WoW Classic Era 1.14.2
 * Update icons for WoW Burning Crusade Classic 2.5.3
 * Desaturate group icons when all bindings in a group are disabled [#91]
 * Sort groups with active bindings above groups without [#91]
@@ -994,7 +998,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Update talent data for WoW 9.1.5
 * Update icons for WoW 9.1.5
 * Update icons for Burning Crusade Classic 2.5.2
-* Update icons for WoW Classic 1.14.0
+* Update icons for WoW Classic Era 1.14.0
 
 ## [1.6.5] - 2021-09-29
 
