@@ -226,6 +226,10 @@ function Addon.BindingConfig.BindingPage:Redraw()
 			for _, target in ipairs(self.targets) do
 				target.keybind = key
 
+				if Addon:IsRestrictedKeybind(key) then
+					target.targets.hovercastEnabled = true
+				end
+
 				Addon:ReloadBinding(target, "keybind")
 				Addon:ReloadBinding(target, "targets")
 
