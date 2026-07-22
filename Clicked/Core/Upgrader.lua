@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 14
+Addon.DATA_VERSION = 15
 
 local upgradeData = {}
 
@@ -723,8 +723,11 @@ local function UpgradeLegacy(profile, from)
 end
 
 --- @param db table
+--- @param global table
 --- @param from integer
-local function Upgrade(db, from)
+--- @param type "profile"|"global"
+--- @param cache table
+local function Upgrade(db, global, from, type, cache)
 	if from < 2 then
 		for _, binding in ipairs(db.bindings) do
 			binding.action.cancelForm = false
@@ -931,6 +934,162 @@ local function Upgrade(db, from)
 			end
 		end
 	end
+
+	if from < 15 then
+		for _, binding in ipairs(db.bindings) do
+			if binding.actionType == "UNIT_SELECT" then
+				cache["15_foundTargetBinding"] = true
+			elseif binding.actionType == "UNIT_MENU" then
+				cache["15_foundMenuBinding"] = true
+			end
+		end
+
+		Clicked:LogInfo("{type} Found target={foundTarget}, found menu={foundMenu}", type, cache["15_foundTargetBinding"], cache["15_foundMenuBinding"])
+
+		if type == "profile" then
+			local function GetLoadOptionTemplate(default)
+				local template = {
+					selected = false,
+					value = default
+				}
+
+				return template
+			end
+
+			local function GetNegatableLoadOptionTemplate()
+				return GetLoadOptionTemplate(true)
+			end
+
+			local function GetTriStateLoadOptionTemplate(default)
+				local template = {
+					selected = 0,
+					single = default,
+					multiple = {
+						default
+					}
+				}
+
+				return template
+			end
+
+			local function GetNegatableTriStateLoadOptionTemplate(default)
+				local template = GetTriStateLoadOptionTemplate(default)
+				template.negated = false
+
+				return template
+			end
+
+			local function GetMultiFieldLoadOptionTemplate(default)
+				--- @type Binding.MutliFieldLoadOption
+				local template = {
+					selected = false,
+					entries = {
+						{
+							operation = "AND",
+							negated = false,
+							value = default
+						}
+					}
+				}
+
+				return template
+			end
+
+			local function GetNegatableStringLoadOptionTemplate()
+				local template = {
+					selected = false,
+					negated = false,
+					value = ""
+				}
+
+				return template
+			end
+
+			local function CreateBinding(type, key)
+				local uid = global.nextUid
+				global.nextUid = global.nextUid + 1
+
+				return {
+					uid = uid,
+					actionType = type,
+					type = 1,
+					scope = 1,
+					keybind = key,
+					action = {
+						spellValue = "",
+						itemValue = "",
+						macroValue = "",
+						macroName = Addon.L["Run custom macro"],
+						macroIcon = [[Interface\ICONS\INV_Misc_QuestionMark]],
+						auraName = "",
+						executionOrder = 1,
+						spellMaxRank = false,
+						spellIncludeSubtext = false,
+						interrupt = false,
+						startAutoAttack = false,
+						startPetAttack = false,
+						stopSpellTarget = true,
+						cancelQueuedSpell = false,
+						cancelForm = false,
+						targetUnitAfterCast = false,
+						preventToggle = false
+					},
+					targets = {
+						hovercast = {
+							hostility = Addon.TargetHostility.ANY,
+							vitals = Addon.TargetVitals.ANY
+						},
+						regular = {
+							Addon:GetNewBindingTargetTemplate()
+						},
+						hovercastEnabled = true,
+						regularEnabled = false
+					},
+					load = {
+						never = false,
+						class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
+						race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
+						playerNameRealm = GetLoadOptionTemplate(UnitName("player") --[[@as string]]),
+						combat = GetNegatableLoadOptionTemplate(),
+						spellKnown = GetLoadOptionTemplate(""),
+						inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
+						playerInGroup = GetLoadOptionTemplate(""),
+						form = GetNegatableTriStateLoadOptionTemplate(1),
+						pet = GetNegatableLoadOptionTemplate(),
+						stealth = GetNegatableLoadOptionTemplate(),
+						mounted = GetNegatableLoadOptionTemplate(),
+						outdoors = GetNegatableLoadOptionTemplate(),
+						swimming = GetNegatableLoadOptionTemplate(),
+						instanceType = GetTriStateLoadOptionTemplate("NONE"),
+						zoneName = GetLoadOptionTemplate(""),
+						equipped = GetLoadOptionTemplate(""),
+						bonusbar = GetNegatableStringLoadOptionTemplate(),
+						bar = GetNegatableStringLoadOptionTemplate(),
+						channeling = GetNegatableStringLoadOptionTemplate(),
+						flying = GetNegatableLoadOptionTemplate(),
+						dynamicFlying = GetNegatableLoadOptionTemplate(),
+						flyable = GetNegatableLoadOptionTemplate(),
+						advancedFlyable = GetNegatableLoadOptionTemplate(),
+						specialization = GetTriStateLoadOptionTemplate(1),
+						specRole = GetTriStateLoadOptionTemplate(""),
+						talent = GetMultiFieldLoadOptionTemplate(""),
+						pvpTalent = GetMultiFieldLoadOptionTemplate(""),
+						warMode = GetNegatableLoadOptionTemplate()
+					}
+				}
+			end
+
+			if not cache["15_foundTargetBinding"] then
+				local binding = CreateBinding("UNIT_SELECT", "BUTTON1")
+				table.insert(db.bindings, binding)
+			end
+
+			if not cache["15_foundMenuBinding"] then
+				local binding = CreateBinding("UNIT_MENU", "BUTTON2")
+				table.insert(db.bindings, binding)
+			end
+		end
+	end
 end
 
 -- Private addon API
@@ -952,11 +1111,13 @@ function Addon:UpgradeDatabase(from)
 
 	table.wipe(upgradeData)
 
+	local cache = {}
+
 	if not Addon.DISABLE_GLOBAL_SCOPE then
 		local src = from or Addon.db.global.version or Addon.DATA_VERSION
 
 		if type(src) == "number" then
-			safecall(Upgrade, Addon.db.global, src)
+			safecall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
 			Addon.db.global.version = Addon.DATA_VERSION
 		end
 	end
@@ -1007,7 +1168,7 @@ function Addon:UpgradeDatabase(from)
 			src = Addon.db.profile.version
 		end
 
-		safecall(Upgrade, Addon.db.profile, src)
+		safecall(Upgrade, Addon.db.profile, Addon.db.global, src, "profile", cache)
 		Addon.db.profile.version = Addon.DATA_VERSION
 	end
 end

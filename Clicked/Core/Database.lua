@@ -74,6 +74,7 @@ end
 local function GetNegatableLoadOptionTemplate()
 	return GetLoadOptionTemplate(true)
 end
+
 --- @param default number|string
 --- @return Binding.TriStateLoadOption
 local function GetTriStateLoadOptionTemplate(default)
