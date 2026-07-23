@@ -944,8 +944,6 @@ local function Upgrade(db, global, from, type, cache)
 			end
 		end
 
-		Clicked:LogInfo("{type} Found target={foundTarget}, found menu={foundMenu}", type, cache["15_foundTargetBinding"], cache["15_foundMenuBinding"])
-
 		if type == "profile" then
 			local function GetLoadOptionTemplate(default)
 				local template = {
