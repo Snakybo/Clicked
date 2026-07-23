@@ -16,11 +16,6 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
--- Deprecated in 5.5.0
-local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -239,7 +234,7 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 		local specs = {}
 
 		for i = 1, GetNumSpecializations() do
-			local _, name, _, icon = GetSpecializationInfo(i)
+			local _, name, _, icon = C_SpecializationInfo.GetSpecializationInfo(i)
 
 			table.insert(specs, {
 				specId = i,
@@ -297,7 +292,7 @@ local function ImportActionbar()
 
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 					binding.load.specialization.selected = 1
-					binding.load.specialization.single = GetSpecialization()
+					binding.load.specialization.single = C_SpecializationInfo.GetSpecialization()
 				elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 					binding.load.specialization.selected = 1
 					binding.load.specialization.single = GetPrimaryTalentTree()

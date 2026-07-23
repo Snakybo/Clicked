@@ -20,11 +20,6 @@ local LocalizedClassList = LocalizedClassList or function()  -- Deprecated in 10
 	return classes
 end
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
--- Deprecated in 5.5.0
-local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
-
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
 --- @class ClickedInternal
@@ -461,7 +456,7 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 
 		if specializations == nil then
 			specializations = {}
-			specializations[1] = GetSpecializationInfo(GetSpecialization())
+			specializations[1] = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 		end
 
 		--- @type table<string,boolean>
@@ -497,7 +492,7 @@ elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 
 		if specializations == nil then
 			specializations = {}
-			specializations[1] = GetSpecializationInfo(GetSpecialization())
+			specializations[1] = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 		end
 
 		--- @type table<string,boolean>
@@ -575,7 +570,7 @@ function Addon:GetLocalizedPvPTalents(specializations)
 
 	if specializations == nil then
 		specializations = {}
-		specializations[1] = GetSpecializationInfo(GetSpecialization())
+		specializations[1] = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 	end
 
 	--- @type table<string,boolean>

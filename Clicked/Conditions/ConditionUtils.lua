@@ -36,9 +36,6 @@
 
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -163,7 +160,7 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 	if #specIndices == 0 then
 		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-				specIndices[1] = GetSpecialization()
+				specIndices[1] = C_SpecializationInfo.GetSpecialization()
 			else
 				specIndices[1] = GetPrimaryTalentTree()
 			end

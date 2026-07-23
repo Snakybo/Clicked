@@ -16,11 +16,6 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
--- Deprecated in 5.5.0
-local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -978,7 +973,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 		if select(2, UnitClass("player")) == "DRUID" then
-			local specId = GetSpecializationInfo(GetSpecialization())
+			local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 			local all = Addon:GetShapeshiftForms(specId)
 			local available = {}
 			local result = {}
@@ -1089,7 +1084,7 @@ function Addon:GetSpecIndexFromId(specId)
 	end
 
 	for i = 1, GetNumSpecializations() do
-		local id = GetSpecializationInfo(i)
+		local id = C_SpecializationInfo.GetSpecializationInfo(i)
 
 		if id == specId then
 			return i

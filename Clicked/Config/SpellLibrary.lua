@@ -14,11 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
--- Deprecated in 5.5.0
-local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -110,7 +105,7 @@ local function GetSpells_TWW()
 	for i = 1, C_SpellBook.GetNumSpellBookSkillLines() do
 		local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
 
-		if tab.specID == GetSpecializationInfo(GetSpecialization()) then
+		if tab.specID == C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization()) then
 			activeTabName = tab.name
 			activetabIcon = tab.iconID
 		end

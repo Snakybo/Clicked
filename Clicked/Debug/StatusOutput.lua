@@ -16,11 +16,6 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
--- Deprecated in 5.5.0
-local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -55,7 +50,7 @@ local function GetBasicinfoString()
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-		local id, name = GetSpecializationInfo(GetSpecialization())
+		local id, name = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
 	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		local id, name = GetTalentTabInfo(GetPrimaryTalentTree())

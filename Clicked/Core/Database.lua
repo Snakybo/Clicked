@@ -16,9 +16,6 @@
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
-
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
@@ -540,7 +537,7 @@ function Addon:GetNewBindingTemplate()
 	}
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-		local specIndex = GetSpecialization()
+		local specIndex = C_SpecializationInfo.GetSpecialization()
 		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
 		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
 		template.load.specRole = GetTriStateLoadOptionTemplate(specIndex)

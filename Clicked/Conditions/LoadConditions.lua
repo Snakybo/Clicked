@@ -17,9 +17,6 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
--- Deprecated in 5.5.0
-local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
-
 local Utils = Addon.Condition.Utils
 
 --- @type LoadCondition[]
@@ -133,7 +130,7 @@ local config = {
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
 		init = function()
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-				local specIndex = GetSpecialization()
+				local specIndex = C_SpecializationInfo.GetSpecialization()
 				return Utils.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
 			else
 				return Utils.CreateMultiselectLoadOption(GetPrimaryTalentTree())
@@ -144,7 +141,7 @@ local config = {
 		--- @return integer
 		state = function()
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-				local specIndex = GetSpecialization()
+				local specIndex = C_SpecializationInfo.GetSpecialization()
 				return specIndex == 5 and 1 or specIndex
 			end
 
@@ -175,14 +172,14 @@ local config = {
 		},
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.MOP,
 		init = function()
-			local role = GetSpecializationRole(GetSpecialization()) or "DAMAGER"
+			local role = GetSpecializationRole(C_SpecializationInfo.GetSpecialization()) or "DAMAGER"
 			return Utils.CreateMultiselectLoadOption(role)
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "PLAYER_TALENT_UPDATE" },
-		--- @return integer
+		--- @return string
 		state = function()
-			return GetSpecializationRole(GetSpecialization())
+			return GetSpecializationRole(C_SpecializationInfo.GetSpecialization())
 		end,
 		--- @param value string[]
 		--- @param role string
@@ -213,8 +210,8 @@ local config = {
 		end,
 		unpack = Utils.UnpackTalentLoadOption,
 		testOnEvents = { "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" },
-		--- @return integer
 		--- @param value TalentLoadOptionEntry[][]
+		--- @return boolean
 		test = function(value)
 			if not Addon:IsTalentCacheReady() then
 				return false
