@@ -10,6 +10,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ## [Unreleased]
 
+### Added
+
+* Add Haranir to race dropdown
+
 ### Fixed
 
 * Remove debug log that was accidentally left in the code

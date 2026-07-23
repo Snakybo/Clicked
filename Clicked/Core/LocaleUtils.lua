@@ -88,6 +88,7 @@ do
 	AddRace(37, Addon.Expansion.BFA) -- Mechagnome
 	AddRace(52, Addon.Expansion.DF) -- Dracthyr
 	AddRace(84, Addon.Expansion.TWW) -- EarthenDwarf
+	AddRace(86, Addon.Expansion.MN)  -- Haranir
 
 	AddClass("WARRIOR", Addon.Expansion.CLASSIC)
 	AddClass("PALADIN", Addon.Expansion.CLASSIC)
