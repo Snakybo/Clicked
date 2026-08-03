@@ -364,7 +364,8 @@ function Clicked:OnInitialize()
 	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
-	Addon.db.RegisterCallback(self, "OnProfileReset", "ReloadDatabase")
+	Addon.db.RegisterCallback(self, "OnProfileReset", "InitializeDatabase")
+	Addon.db.RegisterCallback(self, "OnNewProfile", "InitializeDatabase")
 
 	self:SetLogLevelFromConfigTable(Addon.db.global)
 

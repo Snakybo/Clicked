@@ -167,8 +167,38 @@ function Clicked:GetDatabaseDefaults()
 	return database
 end
 
+function Clicked:InitializeDatabase()
+	self:LogDebug("Initializing database")
+
+	Addon.db.profile.version = Addon.DATA_VERSION
+
+	local target = self:CreateBinding()
+	target.actionType = Clicked.ActionType.UNIT_SELECT
+	target.keybind = "BUTTON1"
+	target.targets.hovercastEnabled = true
+	target.targets.regularEnabled = false
+	Addon:ReloadBinding(target, true)
+
+	local menu = self:CreateBinding()
+	menu.actionType = Clicked.ActionType.UNIT_MENU
+	menu.keybind = "BUTTON2"
+	menu.targets.hovercastEnabled = true
+	menu.targets.regularEnabled = false
+	Addon:ReloadBinding(menu, true)
+
+	if Addon.db.profile.options.minimap.hide then
+		LibDBIcon:Hide("Clicked")
+	else
+		LibDBIcon:Show("Clicked")
+	end
+
+	Addon.BlacklistOptions:Refresh()
+end
+
 --- Reload the database, this should be called after high-level profile changes have been made, such as switching the active profile, or importing a proifle.
 function Clicked:ReloadDatabase()
+	self:LogDebug("Reloading database")
+
 	Addon:UpgradeDatabase()
 
 	if Addon.db.profile.options.minimap.hide then
