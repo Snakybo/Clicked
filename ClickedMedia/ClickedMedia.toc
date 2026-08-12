@@ -1,4 +1,4 @@
-## Interface: 120007
+## Interface: 11509, 20506, 38001, 50504, 120100
 ## Title: ClickedMedia
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
@@ -19,4 +19,8 @@
 ## Category-zhCN: 材质
 ## Category-zhTW: 材質
 
-MediaRetail.lua
+[AllowLoadGameType mainline] MediaRetail.lua
+[AllowLoadGameType mists] MediaMists.lua
+[AllowLoadGameType wrath] MediaWrath.lua
+[AllowLoadGameType tbc] MediaTBC.lua
+[AllowLoadGameType vanilla] MediaClassic.lua

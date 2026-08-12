@@ -88,13 +88,11 @@ function Methods:SetDisabled(disabled)
 	if disabled then
 		self.frame:Disable()
 		self.label:SetTextColor(0.5, 0.5, 0.5)
-
-		SetDesaturation(self.check, true)
+		self.check:SetDesaturated(true)
 	else
 		self.frame:Enable()
 		self.label:SetTextColor(1, 1, 1)
-
-		SetDesaturation(self.check, false)
+		self.check:SetDesaturated(false)
 	end
 end
 
@@ -105,10 +103,10 @@ function Methods:SetValue(value)
 	self.checked = value
 
 	if value then
-		SetDesaturation(check, false)
+		check:SetDesaturated(false)
 		check:Show()
 	else
-		SetDesaturation(check, false)
+		check:SetDesaturated(false)
 		check:Hide()
 	end
 
