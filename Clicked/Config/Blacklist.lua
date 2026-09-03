@@ -60,6 +60,9 @@ local UNIT_FRAME_ADDON_MAPPING = {
 	}
 }
 
+--- @type table<string, string>
+local frameGroupMap = {}
+
 local config
 local values = {}
 
@@ -80,9 +83,10 @@ end
 --- Set the name of the blacklist group the frame belongs to.
 ---
 --- @param frame Frame
---- @return string?
 function BlacklistOptions:SetBlacklistGroup(frame, group)
-	frame:SetAttribute("clicked-blacklist-group", group)
+	if frame.GetName ~= nil then
+		frameGroupMap[frame:GetName()] = group
+	end
 end
 
 --- Get the name of the blacklist group the frame belongs to.
@@ -90,17 +94,16 @@ end
 --- @param frame Frame
 --- @return string?
 function BlacklistOptions:GetBlacklistGroup(frame)
-	local group = frame:GetAttribute("clicked-blacklist-group")
+	if frame.GetName == nil then
+		return nil
+	end
 
+	local group = frameGroupMap[frame:GetName()]
 	if group ~= nil then
 		return group
 	end
 
-	if frame.GetName then
-		return frame:GetName()
-	end
-
-	return nil
+	return frame:GetName()
 end
 
 --- Get the names of all frames within a blacklist group
