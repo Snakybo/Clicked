@@ -12,7 +12,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Fixed
 
-* Fix a Lua error with forbidden frames
+* Fix a Lua error with forbidden frames [#315]
+* Fix items without the "item equipped" load condition not always being loaded
+
 ## [1.17.15] - 2026-08-12
 
 ### Added
@@ -1980,6 +1982,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#315]: https://github.com/Snakybo/Clicked/issues/315
 [#313]: https://github.com/Snakybo/Clicked/issues/313
 [#312]: https://github.com/Snakybo/Clicked/issues/312
 [#311]: https://github.com/Snakybo/Clicked/issues/311

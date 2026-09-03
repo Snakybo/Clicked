@@ -1071,6 +1071,14 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		return false
 	end
 
+	local function ShouldPerformItemStateCheck()
+		if binding.actionType ~= Clicked.ActionType.ITEM then
+			return false
+		end
+
+		return ShouldPerformStateCheck("PLAYER_EQUIPMENT_CHANGED")
+	end
+
 	local function IsStateValid(state)
 		if state == nil then
 			return false
@@ -1102,13 +1110,12 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
 	end
 
-	if ShouldPerformStateCheck("value") then
+	if ShouldPerformStateCheck("value") or ShouldPerformItemStateCheck() then
 		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
 		state.housing = not C_HouseEditor.IsHouseEditorActive()
-		Clicked:LogVerbose("Evaluated condition {condition} for binding {binding}: {value}", "housing", binding.uid, state.housing)
 	end
 
 	for _, condition in ipairs(conditions.config) do

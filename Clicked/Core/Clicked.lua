@@ -40,6 +40,9 @@ local wasHouseEditorActive = false
 --- @type table<string, boolean>
 local playerFlagsCache = {}
 
+--- @type table<integer, boolean>
+local itemCache = {}
+
 -- Local support functions
 
 local function RegisterIcons()
@@ -305,6 +308,17 @@ local function HOUSE_EDITOR_MODE_CHANGED()
 	end
 end
 
+local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
+	if not success then
+		return
+	end
+
+	if not itemCache[itemId] then
+		itemCache[itemId] = true
+		Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
+	end
+end
+
 --- @param self AceEvent-3.0
 --- @param method fun(self: AceEvent-3.0, event: WowEvent, callback: function|string)
 local function UpdateEventHooks(self, method)
@@ -354,6 +368,7 @@ local function UpdateEventHooks(self, method)
 	method(self, "MODIFIER_STATE_CHANGED", MODIFIER_STATE_CHANGED)
 	method(self, "UNIT_TARGET", UNIT_TARGET)
 	method(self, "ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
+	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
 end
 
 -- Public addon API
@@ -413,24 +428,37 @@ end
 -- Private addon API
 
 function Addon:RequestItemLoadForBindings()
+	--- @type table<integer, boolean>
+	local seen = {}
+
 	for _, binding in Clicked:IterateConfiguredBindings() do
 		if binding.actionType == Clicked.ActionType.ITEM then
 			local itemId = tonumber(binding.action.itemValue)
 
-			if itemId ~= nil then
-				local item
+			if itemId ~= nil and not seen[itemId] then
+				seen[itemId] = true
 
 				if itemId >= INVSLOT_FIRST_EQUIPPED and itemId <= INVSLOT_LAST_EQUIPPED then
-					item = Item:CreateFromEquipmentSlot(itemId)
-				else
-					item = Item:CreateFromItemID(itemId)
-				end
+					local location = ItemLocation:CreateFromEquipmentSlot(itemId)
 
-				if not item:IsItemEmpty() then
-					item:ContinueOnItemLoad(function()
-						Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
-					end)
+					if location:IsValid() then
+						C_Item.RequestLoadItemData(location)
+					end
+				else
+					C_Item.RequestLoadItemDataByID(itemId)
 				end
+			end
+		end
+	end
+
+	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		if not seen[i] then
+			seen[i] = true
+
+			local location = ItemLocation:CreateFromEquipmentSlot(i)
+
+			if location:IsValid() then
+				C_Item.RequestLoadItemData(location)
 			end
 		end
 	end
