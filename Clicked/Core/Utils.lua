@@ -493,7 +493,11 @@ function Addon:GetBindingValue(binding)
 
 		if type(item) == "number" then
 			if item < 20 then
-				item = GetInventoryItemID("player", item) or item
+				item = GetInventoryItemID("player", item)
+
+				if item == nil then
+					return nil
+				end
 			end
 
 			return C_Item.GetItemNameByID(item)

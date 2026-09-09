@@ -134,7 +134,9 @@ local function PLAYER_REGEN_ENABLED()
 	end
 end
 
-local function PLAYER_ENTERING_WORLD()
+--- @param isInitialLogin boolean
+--- @param isReloadingUi boolean
+local function PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
 	Clicked:LogVerbose("Received event {eventName}", "PLAYER_ENTERING_WORLD")
 
 	isInitialized = true
@@ -142,22 +144,24 @@ local function PLAYER_ENTERING_WORLD()
 		warMode = Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA and C_PvP.IsWarModeDesired() or false
 	}
 
-	local isInitialLoadPending = false
-
 	Addon:ProcessFrameQueue()
 	Addon:ReapplySidecars()
 
-	Addon:UpdateTalentCache(function()
-		isInitialLoadPending = true
-		Addon:ReloadBindingsImmediate()
-	end, true)
+	if isInitialLogin or isReloadingUi then
+		local isInitialLoadPending = false
 
-	-- Reload immediately in case we are about to be in combat
-	if not isInitialLoadPending then
-		Addon:ReloadBindingsImmediate()
+		Addon:UpdateTalentCache(function()
+			isInitialLoadPending = true
+			Addon:ReloadBindingsImmediate()
+		end, true)
+
+		-- Reload immediately in case we are about to be in combat
+		if not isInitialLoadPending then
+			Addon:ReloadBindingsImmediate()
+		end
+
+		Addon:RequestItemLoadForBindings()
 	end
-
-	Addon:RequestItemLoadForBindings()
 end
 
 local function ADDON_LOADED()

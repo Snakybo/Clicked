@@ -1026,7 +1026,7 @@ end
 function Addon:UpdateBindingLoadState(binding, causes)
 	local cachedState = bindingStateCache[binding.uid]
 
-	--- @param condition string
+	--- @param condition? string
 	--- @param events? string[]
 	--- @return boolean
 	local function ShouldPerformStateCheck(condition, events)
@@ -1076,7 +1076,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 			return false
 		end
 
-		return ShouldPerformStateCheck("PLAYER_EQUIPMENT_CHANGED")
+		return ShouldPerformStateCheck(nil, { "PLAYER_EQUIPMENT_CHANGED" })
 	end
 
 	local function IsStateValid(state)
