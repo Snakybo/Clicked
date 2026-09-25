@@ -918,7 +918,7 @@ function Addon:UpdateTalentCache(callback, immediate)
 
 		wipe(talentCache)
 
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon:IsForever() then
 			local configId = C_ClassTalents.GetActiveConfigID()
 			if configId == nil then
 				Addon:UpdateTalentCache()

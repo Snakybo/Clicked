@@ -72,10 +72,18 @@ function Addon:SafeCall(func, ...)
 	return false
 end
 
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and select(4, GetBuildInfo()) >= 120000 then
+function Addon:IsStandard()
+	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and LE_EXPANSION_LEVEL_CURRENT > LE_EXPANSION_CLASSIC
+end
+
+function Addon:IsForever()
+	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_CLASSIC
+end
+
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and Addon:IsStandard() then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.MN
-elseif WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-	Addon.EXPANSION_LEVEL = Addon.Expansion.TWW
+elseif WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and Addon:IsForever() then
+	Addon.EXPANSION_LEVEL = Addon.Expansion.CLASSIC
 elseif WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 	Addon.EXPANSION_LEVEL = Addon.Expansion.MOP
 elseif WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then

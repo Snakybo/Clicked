@@ -303,7 +303,7 @@ local function GetSpells()
 		return cached
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW or Addon:IsForever() then
 		cached = GetSpells_TWW()
 	else
 		cached = GetSpells_Classic()

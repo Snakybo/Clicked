@@ -329,40 +329,17 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_REGEN_DISABLED", PLAYER_REGEN_DISABLED)
 	method(self, "PLAYER_REGEN_ENABLED", PLAYER_REGEN_ENABLED)
 	method(self, "PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
-
-	if Addon.EXPANSION_LEVEL == Addon.Expansion.CLASSIC then
-		method(self, "RUNE_UPDATED", RUNE_UPDATED)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-		method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-	end
-
-	if Addon.EXPANSION_LEVEL <= Addon.Expansion.CATA then
-		method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
-		method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.BFA then
-		method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
-		method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-		method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
-		method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
-	end
-
+	method(self, "RUNE_UPDATED", RUNE_UPDATED)
+	method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
+	method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
+	method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
+	method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
+	method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
+	method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
+	method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
 	method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-		method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
-	end
-
+	method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
 	method(self, "PLAYER_EQUIPMENT_CHANGED", PLAYER_EQUIPMENT_CHANGED)
 	method(self, "GROUP_ROSTER_UPDATE", GROUP_ROSTER_UPDATE)
 	method(self, "ADDON_LOADED", ADDON_LOADED)
@@ -373,6 +350,23 @@ local function UpdateEventHooks(self, method)
 	method(self, "UNIT_TARGET", UNIT_TARGET)
 	method(self, "ACTIONBAR_SLOT_CHANGED", ACTIONBAR_SLOT_CHANGED)
 	method(self, "ITEM_DATA_LOAD_RESULT", ITEM_DATA_LOAD_RESULT)
+end
+
+--- @param self AceEvent-3.0
+--- @param event WowEvent
+--- @param callback function|string
+local function RegisterEvent(self, event, callback)
+	if C_EventUtils.IsEventValid(event) then
+		self:RegisterEvent(event, callback)
+	end
+end
+
+--- @param self AceEvent-3.0
+--- @param event WowEvent
+local function UnregisterEvent(self, event, callback)
+	if C_EventUtils.IsEventValid(event) then
+		self:UnregisterEvent(event)
+	end
 end
 
 -- Public addon API
@@ -411,14 +405,14 @@ function Clicked:OnEnable()
 	Clicked:LogWarning("You are using a development version, download the latest release from {url}", projectUrl)
 --@end-debug@
 
-	UpdateEventHooks(self, self.RegisterEvent)
+	UpdateEventHooks(self, RegisterEvent)
 
 	SetModifiedClick("SELFCAST", "NONE")
 	SetModifiedClick("FOCUSCAST", "NONE")
 end
 
 function Clicked:OnDisable()
-	UpdateEventHooks(self, self.UnregisterEvent)
+	UpdateEventHooks(self, UnregisterEvent)
 end
 
 --- @param system string
