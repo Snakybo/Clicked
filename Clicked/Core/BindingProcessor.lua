@@ -265,7 +265,7 @@ local function ConstructAction(binding, target)
 		AppendCondition(binding.load.flyable, "flyable")
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA or Addon:IsForever() then
 		AppendNegatableStringCondition(binding.load.bonusbar, "bonusbar")
 	end
 

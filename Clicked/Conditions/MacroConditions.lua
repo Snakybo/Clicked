@@ -230,7 +230,7 @@ local config = {
 	},
 	{
 		id = "bonusbar",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA,
+		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.CATA and not Addon:IsForever(),
 		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",
