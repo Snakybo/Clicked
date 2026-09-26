@@ -352,6 +352,40 @@ local config = {
 		end
 	},
 	{
+		id = "ruleset",
+		drawer = {
+			type = "multiselect",
+			label = "Ruleset",
+			availableValues = function()
+				return {
+					NORMAL = Addon.L["Normal"],
+					PVP = Addon.L["PvP"],
+					RP = Addon.L["RP"],
+					HARDCORE = Addon.L["Hardcore"]
+				}, {
+					"NORMAL",
+					"PVP",
+					"RP",
+					"HARDCORE"
+				}
+			end
+		},
+		disabled = not Addon:IsForever(),
+		init = function()
+			return Utils.CreateMultiselectLoadOption(Addon:GetRuleset())
+		end,
+		unpack = Utils.UnpackMultiselectLoadOption,
+		--- @return string
+		state = function()
+			return Addon:GetRuleset()
+		end,
+		--- @param value string[]
+		--- @param current string
+		test = function(value, current)
+			return tContains(value, current)
+		end
+	},
+	{
 		id = "instanceType",
 		drawer = {
 			type = "multiselect",

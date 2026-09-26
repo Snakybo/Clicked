@@ -562,9 +562,14 @@ function Addon:GetNewBindingTemplate()
 			specRole = GetTriStateLoadOptionTemplate(""),
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
-			warMode = GetNegatableLoadOptionTemplate()
+			warMode = GetNegatableLoadOptionTemplate(),
+			ruleset = GetTriStateLoadOptionTemplate("NORMAL")
 		}
 	}
+
+	if Addon:IsForever() then
+		template.load.ruleset = GetTriStateLoadOptionTemplate(Addon:GetRuleset())
+	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		local specIndex = C_SpecializationInfo.GetSpecialization()

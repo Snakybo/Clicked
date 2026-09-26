@@ -3,7 +3,7 @@
 --- @class ClickedInternal
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 15
+Addon.DATA_VERSION = 16
 
 local upgradeData = {}
 
@@ -1086,6 +1086,18 @@ local function Upgrade(db, global, from, type, cache)
 				local binding = CreateBinding("UNIT_MENU", "BUTTON2")
 				table.insert(db.bindings, binding)
 			end
+		end
+	end
+
+	if from < 16 then
+		for _, binding in ipairs(db.bindings) do
+			binding.load.ruleset = binding.load.ruleset or {
+				selected = 0,
+				single = "NORMAL",
+				multiple = {
+					"NORMAL"
+				}
+			}
 		end
 	end
 end

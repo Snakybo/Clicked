@@ -1484,3 +1484,22 @@ function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 	--- @diagnostic disable-next-line: undefined-field
 	frame:Execute(command)
 end
+
+--- Get the ruleset of the current character, on WoW Forever a character is on a Normal, PvP, RP or Hardcore megarealm.
+---
+--- @return string
+function Addon:GetRuleset()
+	local ruleset;
+
+	if C_GameRules.IsHardcoreActive() then
+		ruleset = "HARDCORE"
+	elseif Enum.GameRule.RPRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.RPRuleset) then
+		ruleset = "RP"
+	elseif Enum.GameRule.PvPRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.PvPRuleset) then
+		ruleset = "PVP"
+	else
+		ruleset = "NORMAL"
+	end
+
+	return ruleset
+end
