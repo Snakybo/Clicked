@@ -558,6 +558,41 @@ local config = {
 		end
 	},
 	{
+		id = "groupRole",
+		drawer = {
+			type = "multiselect",
+			label = "Group role",
+			availableValues = function()
+				return {
+					NONE = Addon.L["No role"],
+					DAMAGER = Addon.L["DPS"],
+					TANK = Addon.L["Tank"],
+					HEALER = Addon.L["Healer"]
+				}, {
+					"NONE",
+					"DAMAGER",
+					"TANK",
+					"HEALER"
+				}
+			end
+		},
+		disabled = not Addon:IsForever(),
+		init = function()
+			return Utils.CreateMultiselectLoadOption(UnitGroupRolesAssigned("player"))
+		end,
+		unpack = Utils.UnpackMultiselectLoadOption,
+		testOnEvents = { "PLAYER_ROLES_ASSIGNED", "GROUP_ROSTER_UPDATE" },
+		--- @return string
+		state = function()
+			return UnitGroupRolesAssigned("player")
+		end,
+		--- @param value string[]
+		--- @param role string
+		test = function(value, role)
+			return tContains(value, role)
+		end
+	},
+	{
 		id = "playerInGroup",
 		--- @type InputDrawerConfig
 		drawer = {

@@ -1099,6 +1099,16 @@ local function Upgrade(db, global, from, type, cache)
 				}
 			}
 		end
+
+		for _, binding in ipairs(db.bindings) do
+			binding.load.groupRole = binding.load.groupRole or {
+				selected = 0,
+				single = "NONE",
+				multiple = {
+					"NONE"
+				}
+			}
+		end
 	end
 end
 

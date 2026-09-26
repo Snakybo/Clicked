@@ -563,12 +563,14 @@ function Addon:GetNewBindingTemplate()
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
 			warMode = GetNegatableLoadOptionTemplate(),
-			ruleset = GetTriStateLoadOptionTemplate("NORMAL")
+			ruleset = GetTriStateLoadOptionTemplate("NORMAL"),
+			groupRole = GetTriStateLoadOptionTemplate("NONE")
 		}
 	}
 
 	if Addon:IsForever() then
 		template.load.ruleset = GetTriStateLoadOptionTemplate(Addon:GetRuleset())
+		template.load.groupRole = GetTriStateLoadOptionTemplate(UnitGroupRolesAssigned("player"))
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
