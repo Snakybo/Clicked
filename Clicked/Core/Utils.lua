@@ -844,6 +844,23 @@ function Addon:IsNilOrEmpty(value)
 	return false
 end
 
+--- Get the name of the player, on WoW Forever this is the first and last name separated by a space when the player has a last name.
+---
+--- @return string
+function Addon:GetPlayerName()
+	if not self:IsForever() then
+		return (UnitName("player")) --[[@as string]]
+	end
+
+	local name, surname = UnitNameUnmodified("player")
+
+	if self:IsNilOrEmpty(surname) then
+		return name
+	end
+
+	return name .. " " .. surname
+end
+
 --- Compare two bindings, for use in a comparison function such as `table.sort`
 --- This function is stable and will return the opposite result if called with inverted parameters
 ---

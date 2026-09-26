@@ -44,21 +44,44 @@ local config = {
 		drawer = { --- @type InputDrawerConfig
 			type = "input",
 			negatable = false,
-			label = "Player Name-Realm"
+			label = Addon:IsForever() and "Player Name" or "Player Name-Realm",
+			tooltip = Addon:IsForever() and {
+				string.format(Addon.L["Enter a first name, or a first and last name. Use an asterisk (%s) to match any first or last name, for example:"], "|r*|cffffffff"),
+				"",
+				string.format(Addon.L["%s will be active on any character named %s"], "|rAnduin|cffffffff", "Anduin"),
+				string.format(Addon.L["%s will be active on %s only"], "|rAnduin Wrynn|cffffffff", "Anduin Wrynn"),
+				string.format(Addon.L["%s will be active on any character with the last name %s"], "|r* Wrynn|cffffffff", "Wrynn")
+			} or nil
 		},
 		init = function()
-			return Utils.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
+			if Addon:IsForever() then
+				return Utils.CreateLoadOption(Addon:GetPlayerName())
+			else
+				return Utils.CreateLoadOption(Addon:GetPlayerName() .. "-" .. GetRealmName())
+			end
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		--- @return string, string
 		state = function()
-			return UnitName("player"), GetRealmName()
+			return Addon:GetPlayerName(), GetRealmName() or ""
 		end,
 		--- @param value string
-		--- @param name string
+		--- @param fullName string
 		--- @param realm string
-		test = function(value, name, realm)
-			return value == name or value == name .. "-" .. realm
+		test = function(value, fullName, realm)
+			local name, surname = string.match(fullName, "^(%S+) (%S+)$")
+			name = name or fullName
+
+			if value == name or value == name .. "-" .. realm then
+				return true
+			end
+
+			if surname == nil then
+				return false
+			end
+
+			local first, last = string.match(value, "^(%S+)%s+(%S+)$")
+			return first ~= nil and (first == "*" or first == name) and (last == "*" or last == surname)
 		end
 	},
 	{

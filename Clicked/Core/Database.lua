@@ -537,7 +537,7 @@ function Addon:GetNewBindingTemplate()
 			never = false,
 			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
 			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(UnitName("player") --[[@as string]]),
+			playerNameRealm = GetLoadOptionTemplate(Addon:GetPlayerName()),
 			combat = GetNegatableLoadOptionTemplate(),
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
