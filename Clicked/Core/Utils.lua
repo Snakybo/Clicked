@@ -161,7 +161,14 @@ else
 			{ 71 }, -- Defensive Stance
 			{ 2458 } -- Beserker Stance
 		},
-		PALADIN = {
+		PALADIN = Addon:IsForever() and {
+			{ 465 }, -- Devotion Aura
+			{ 7294 }, -- Retribution Aura
+			{ 19746 }, -- Concentration Aura
+			{ 19876 }, -- Shadow Resistance Aura
+			{ 19888 }, -- Frost Resistance Aura
+			{ 19891 } -- Fire Resistance Aura
+		} or {
 			{ 27149 }, -- Devotion Aura
 			{ 27150 }, -- Retribution Aura
 			{ 19746 }, -- Concentration Aura
