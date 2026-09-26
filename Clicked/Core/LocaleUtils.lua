@@ -46,6 +46,15 @@ do
 		end
 	end
 
+	--- Forever-only races cannot be gated by expansion level.
+	---
+	--- @param race integer
+	local function AddForeverRace(race)
+		if Addon:IsForever() then
+			table.insert(allRaces, race)
+		end
+	end
+
 	--- @param class string
 	--- @param expansion ExpansionLevel
 	local function AddClass(class, expansion)
@@ -84,6 +93,7 @@ do
 	AddRace(52, Addon.Expansion.DF) -- Dracthyr
 	AddRace(84, Addon.Expansion.TWW) -- EarthenDwarf
 	AddRace(86, Addon.Expansion.MN)  -- Haranir
+	AddForeverRace(95) -- Skyborne
 
 	AddClass("WARRIOR", Addon.Expansion.CLASSIC)
 	AddClass("PALADIN", Addon.Expansion.CLASSIC)
@@ -377,7 +387,7 @@ function Addon:GetLocalizedRaces()
 		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
 
 		if raceInfo ~= nil then
-			items[raceInfo.clientFileString] = raceInfo.raceName
+			items[raceInfo.clientFileString] = rawget(Addon.L, raceInfo.clientFileString) or raceInfo.raceName
 			table.insert(order, raceInfo.clientFileString)
 		end
 	end
