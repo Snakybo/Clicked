@@ -39,12 +39,12 @@ local function GetBasicinfoString()
 
 	table.insert(lines, "Version: " .. Clicked.VERSION)
 	table.insert(lines, "Data Version: " .. Addon.DATA_VERSION)
-	table.insert(lines, "Project ID: " .. WOW_PROJECT_ID)
+	table.insert(lines, "Project ID: " .. WOW_PROJECT_ID .. (Addon:IsForever() and " (Forever)" or ""))
 	table.insert(lines, "Race: " .. select(2, UnitRace("player")))
 	table.insert(lines, "Level: " .. UnitLevel("player"))
 	table.insert(lines, "Class: " .. select(2, UnitClass("player")))
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon:IsForever() then
 		local configId =  C_ClassTalents.GetActiveConfigID()
 		table.insert(lines, "Talents: " .. (configId ~= nil and C_Traits.GenerateImportString(configId) or "unknown"))
 	end
