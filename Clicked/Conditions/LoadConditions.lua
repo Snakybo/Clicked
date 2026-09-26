@@ -445,7 +445,7 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
-		testOnEvents = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC and
+		testOnEvents = (Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or Addon:IsForever()) and
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "LEARNED_SPELL_IN_SKILL_LINE" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		--- @return integer
