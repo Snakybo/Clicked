@@ -67,10 +67,16 @@ local function GetSpells_TWW()
 		if not spell.isPassive then
 			if spell.itemType == Enum.SpellBookItemType.Spell or spell.itemType == Enum.SpellBookItemType.FutureSpell or spell.itemType == Enum.SpellBookItemType.PetAction then
 				if spell.spellID ~= nil then
+					local name = spell.name
+
+					if Addon:IsForever() and not Addon:IsNilOrEmpty(spell.subName) then
+						name = string.format("%s(%s)", name, spell.subName)
+					end
+
 					--- @type SpellLibrarySpellResult
 					result[spell.spellID] = {
 						type = "SPELL",
-						name = spell.name,
+						name = name,
 						spellId = spell.spellID,
 						icon = spell.iconID,
 						tabName = tab and tab.name,
