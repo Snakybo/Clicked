@@ -62,7 +62,7 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 101,
 				width = "full",
-				hidden = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
+				hidden = Addon.EXPANSION_LEVEL < Addon.Expansion.DF and not Addon:IsForever(),
 				set = function (_, val)
 					if val then
 						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
