@@ -17,6 +17,9 @@
 --- @class ClickedMedia
 ClickedMedia = ClickedMedia or {}
 
+--- @class ClickedMediaInternal
+local Addon = select(2, ...)
+
 --- @type table<integer,string>
 local icons = {
 	[132089] = "ability_ambush",
@@ -32023,6 +32026,7 @@ local icons = {
 	[7569835] = "inv_cape_pvp12season2_d_01_red",
 	[7569837] = "inv_tabard_pvp12season2_d_01_blue",
 	[7569838] = "inv_tabard_pvp12season2_d_01_red",
+	[7570145] = "inv_companionroc",
 	[7570980] = "inv_mothpet2_yellow",
 	[7576051] = "inv_mace_2h_ulatek_d_01",
 	[7578207] = "inv_12_jewelryandtrinkets_desecratedchalice",
@@ -64766,6 +64770,7 @@ local order = {
 	7569835,
 	7569837,
 	7569838,
+	7570145,
 	7570980,
 	7576051,
 	7578207,
@@ -65503,8 +65508,7 @@ local order = {
 	7979957,
 }
 
---- @return table<integer,string>
---- @return integer[]
-function ClickedMedia:GetIcons()
-	return icons, order
-end
+Addon:SetProvider({
+	icons = icons,
+	order = order
+})

@@ -17,6 +17,9 @@
 --- @class ClickedMedia
 ClickedMedia = ClickedMedia or {}
 
+--- @class ClickedMediaInternal
+local Addon = select(2, ...)
+
 --- @type table<integer,string>
 local icons = {
 	[132089] = "ability_ambush",
@@ -7943,8 +7946,7 @@ local order = {
 	7455463,
 }
 
---- @return table<integer,string>
---- @return integer[]
-function ClickedMedia:GetIcons()
-	return icons, order
-end
+Addon:SetProvider({
+	icons = icons,
+	order = order
+})
