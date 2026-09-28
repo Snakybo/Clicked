@@ -1,4 +1,4 @@
-## Interface: 11509, 20506, 38001, 50504, 120100
+## Interface: 120100, 50504, 40402, 30405, 20506, 16001, 11509
 ## Title: ClickedMedia
 ## IconTexture: Interface\Icons\inv_misc_punchcards_yellow
 ## Author: Snakybo
