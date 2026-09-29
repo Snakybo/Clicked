@@ -8,11 +8,14 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
-## [Unreleased]
+## [1.18.0] - 2026-09-29
 
 ### Added
 
-* Add support for Forever
+* Add support for Forever [#317] (mostly by [yannlugrin])
+* Add last name support to the player-name load condition [#317] (by [yannlugrin])
+* Add ruleset load condition [#317] (by [yannlugrin])
+* Add group role load condition [#317] (by [yannlugrin])
 
 ## [1.17.17] - 2026-09-09
 
@@ -1838,7 +1841,9 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Initial public release
 
-[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.17.16...master
+[Unreleased]: https://github.com/Snakybo/Clicked/compare/1.18.0...master
+[1.18.0]: https://github.com/Snakybo/Clicked/releases/tag/1.18.0
+[1.17.17]: https://github.com/Snakybo/Clicked/releases/tag/1.17.17
 [1.17.16]: https://github.com/Snakybo/Clicked/releases/tag/1.17.16
 [1.17.15]: https://github.com/Snakybo/Clicked/releases/tag/1.17.15
 [1.17.14]: https://github.com/Snakybo/Clicked/releases/tag/1.17.14
@@ -1995,6 +2000,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#317]: https://github.com/Snakybo/Clicked/issues/317
 [#315]: https://github.com/Snakybo/Clicked/issues/315
 [#313]: https://github.com/Snakybo/Clicked/issues/313
 [#312]: https://github.com/Snakybo/Clicked/issues/312
