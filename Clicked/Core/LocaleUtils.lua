@@ -46,6 +46,15 @@ do
 		end
 	end
 
+	--- Forever-only races cannot be gated by expansion level.
+	---
+	--- @param race integer
+	local function AddForeverRace(race)
+		if Addon:IsForever() then
+			table.insert(allRaces, race)
+		end
+	end
+
 	--- @param class string
 	--- @param expansion ExpansionLevel
 	local function AddClass(class, expansion)
@@ -84,6 +93,7 @@ do
 	AddRace(52, Addon.Expansion.DF) -- Dracthyr
 	AddRace(84, Addon.Expansion.TWW) -- EarthenDwarf
 	AddRace(86, Addon.Expansion.MN)  -- Haranir
+	AddForeverRace(95) -- Skyborne
 
 	AddClass("WARRIOR", Addon.Expansion.CLASSIC)
 	AddClass("PALADIN", Addon.Expansion.CLASSIC)
@@ -109,7 +119,7 @@ local function GetTalentsForSpecialization(specId)
 		return allTalents[specId]
 	end
 
-	C_ClassTalents.InitializeViewLoadout(specId, 70)
+	C_ClassTalents.InitializeViewLoadout(specId, GetMaxLevelForLatestExpansion())
 	C_ClassTalents.ViewLoadout({})
 
 	local configId = Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID
@@ -272,7 +282,7 @@ function Addon:GetLocalizedTargetUnits()
 		Addon.TargetUnit.PARTY_5
 	}
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC or Addon:IsForever() then
 		items[Addon.TargetUnit.FOCUS] = Addon.L["Focus"]
 		table.insert(order, 7, Addon.TargetUnit.FOCUS)
 	end
@@ -377,7 +387,7 @@ function Addon:GetLocalizedRaces()
 		local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
 
 		if raceInfo ~= nil then
-			items[raceInfo.clientFileString] = raceInfo.raceName
+			items[raceInfo.clientFileString] = rawget(Addon.L, raceInfo.clientFileString) or raceInfo.raceName
 			table.insert(order, raceInfo.clientFileString)
 		end
 	end
@@ -472,6 +482,60 @@ if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
 					if not found[talent.text] then
 						found[talent.text] = true
 						table.insert(result, talents[i])
+					end
+				end
+			end
+		end
+
+		return result
+	end
+elseif Addon:IsForever() then
+	--- Get a localized list of all available talents for the
+	--- given classes. If the `classes` parameter is `nil` it will
+	--- return results for the player's class.
+	---
+	--- @param classes? string[]
+	--- @return TalentInfo[]
+	function Addon:GetLocalizedTalents(classes)
+		--- @type TalentInfo[]
+		local result = {}
+
+		if classes == nil then
+			classes = {}
+			classes[1] = select(2, UnitClass("player"))
+		end
+
+		--- @type table<string,integer>
+		local classIds = {}
+
+		for classId = 1, GetNumClasses() do
+			local _, classFile = GetClassInfo(classId)
+
+			if classFile ~= nil then
+				classIds[classFile] = classId
+			end
+		end
+
+		--- @type table<string,boolean>
+		local found = {}
+
+		for _, class in ipairs(classes) do
+			local classId = classIds[class]
+			local specId = classId ~= nil and GetSpecializationInfoForClassID(classId, 1) or nil
+			local talents = specId ~= nil and GetTalentsForSpecialization(specId) or nil
+
+			if talents ~= nil then
+				for i = 1, #talents do
+					local talent = talents[i]
+
+					-- the hidden specialization is not selectable, don't expose it
+					if not found[talent.text] then
+						found[talent.text] = true
+						table.insert(result, {
+							spellId = talent.spellId,
+							text = talent.text,
+							icon = talent.icon
+						})
 					end
 				end
 			end

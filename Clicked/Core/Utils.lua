@@ -161,7 +161,14 @@ else
 			{ 71 }, -- Defensive Stance
 			{ 2458 } -- Beserker Stance
 		},
-		PALADIN = {
+		PALADIN = Addon:IsForever() and {
+			{ 465 }, -- Devotion Aura
+			{ 7294 }, -- Retribution Aura
+			{ 19746 }, -- Concentration Aura
+			{ 19876 }, -- Shadow Resistance Aura
+			{ 19888 }, -- Frost Resistance Aura
+			{ 19891 } -- Fire Resistance Aura
+		} or {
 			{ 27149 }, -- Devotion Aura
 			{ 27150 }, -- Retribution Aura
 			{ 19746 }, -- Concentration Aura
@@ -844,6 +851,23 @@ function Addon:IsNilOrEmpty(value)
 	return false
 end
 
+--- Get the name of the player, on WoW Forever this is the first and last name separated by a space when the player has a last name.
+---
+--- @return string
+function Addon:GetPlayerName()
+	if not self:IsForever() then
+		return (UnitName("player")) --[[@as string]]
+	end
+
+	local name, surname = UnitNameUnmodified("player")
+
+	if self:IsNilOrEmpty(surname) then
+		return name
+	end
+
+	return name .. " " .. surname
+end
+
 --- Compare two bindings, for use in a comparison function such as `table.sort`
 --- This function is stable and will return the opposite result if called with inverted parameters
 ---
@@ -1466,4 +1490,23 @@ function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 
 	--- @diagnostic disable-next-line: undefined-field
 	frame:Execute(command)
+end
+
+--- Get the ruleset of the current character, on WoW Forever a character is on a Normal, PvP, RP or Hardcore megarealm.
+---
+--- @return string
+function Addon:GetRuleset()
+	local ruleset;
+
+	if C_GameRules.IsHardcoreActive() then
+		ruleset = "HARDCORE"
+	elseif Enum.GameRule.RPRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.RPRuleset) then
+		ruleset = "RP"
+	elseif Enum.GameRule.PvPRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.PvPRuleset) then
+		ruleset = "PVP"
+	else
+		ruleset = "NORMAL"
+	end
+
+	return ruleset
 end

@@ -113,6 +113,8 @@
 --- @field public talent Binding.TriStateLoadOption|Binding.MutliFieldLoadOption
 --- @field public pvpTalent Binding.MutliFieldLoadOption
 --- @field public warMode Binding.LoadOption
+--- @field public ruleset Binding.TriStateLoadOption
+--- @field public groupRole Binding.TriStateLoadOption
 --- @field public channeling Binding.NegatableStringLoadOption
 --- @field public bonusbar Binding.NegatableStringLoadOption
 --- @field public bar Binding.NegatableStringLoadOption
@@ -214,3 +216,11 @@
 --- @field public type "profile"
 --- @field private options nil
 --- @field private blacklist nil
+
+-- Add missing definitions for Enum.GameRule in Forever
+--- @diagnostic disable-next-line: duplicate-doc-alias
+--- @enum Enum.GameRule
+Enum.GameRule = {
+	PvPRuleset = nil,
+	RPRuleset = nil
+}

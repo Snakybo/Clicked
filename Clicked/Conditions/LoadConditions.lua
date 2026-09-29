@@ -44,21 +44,44 @@ local config = {
 		drawer = { --- @type InputDrawerConfig
 			type = "input",
 			negatable = false,
-			label = "Player Name-Realm"
+			label = Addon:IsForever() and "Player Name" or "Player Name-Realm",
+			tooltip = Addon:IsForever() and {
+				string.format(Addon.L["Enter a first name, or a first and last name. Use an asterisk (%s) to match any first or last name, for example:"], "|r*|cffffffff"),
+				"",
+				string.format(Addon.L["%s will be active on any character named %s"], "|rAnduin|cffffffff", "Anduin"),
+				string.format(Addon.L["%s will be active on %s only"], "|rAnduin Wrynn|cffffffff", "Anduin Wrynn"),
+				string.format(Addon.L["%s will be active on any character with the last name %s"], "|r* Wrynn|cffffffff", "Wrynn")
+			} or nil
 		},
 		init = function()
-			return Utils.CreateLoadOption(UnitName("player") .. "-" .. GetRealmName())
+			if Addon:IsForever() then
+				return Utils.CreateLoadOption(Addon:GetPlayerName())
+			else
+				return Utils.CreateLoadOption(Addon:GetPlayerName() .. "-" .. GetRealmName())
+			end
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		--- @return string, string
 		state = function()
-			return UnitName("player"), GetRealmName()
+			return Addon:GetPlayerName(), GetRealmName() or ""
 		end,
 		--- @param value string
-		--- @param name string
+		--- @param fullName string
 		--- @param realm string
-		test = function(value, name, realm)
-			return value == name or value == name .. "-" .. realm
+		test = function(value, fullName, realm)
+			local name, surname = string.match(fullName, "^(%S+) (%S+)$")
+			name = name or fullName
+
+			if value == name or value == name .. "-" .. realm then
+				return true
+			end
+
+			if surname == nil then
+				return false
+			end
+
+			local first, last = string.match(value, "^(%S+)%s+(%S+)$")
+			return first ~= nil and (first == "*" or first == name) and (last == "*" or last == surname)
 		end
 	},
 	{
@@ -329,6 +352,40 @@ local config = {
 		end
 	},
 	{
+		id = "ruleset",
+		drawer = {
+			type = "multiselect",
+			label = "Ruleset",
+			availableValues = function()
+				return {
+					NORMAL = Addon.L["Normal"],
+					PVP = Addon.L["PvP"],
+					RP = Addon.L["RP"],
+					HARDCORE = Addon.L["Hardcore"]
+				}, {
+					"NORMAL",
+					"PVP",
+					"RP",
+					"HARDCORE"
+				}
+			end
+		},
+		disabled = not Addon:IsForever(),
+		init = function()
+			return Utils.CreateMultiselectLoadOption(Addon:GetRuleset())
+		end,
+		unpack = Utils.UnpackMultiselectLoadOption,
+		--- @return string
+		state = function()
+			return Addon:GetRuleset()
+		end,
+		--- @param value string[]
+		--- @param current string
+		test = function(value, current)
+			return tContains(value, current)
+		end
+	},
+	{
 		id = "instanceType",
 		drawer = {
 			type = "multiselect",
@@ -445,7 +502,7 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
-		testOnEvents = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC and
+		testOnEvents = (Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or Addon:IsForever()) and
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "LEARNED_SPELL_IN_SKILL_LINE" } or
 			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		--- @return integer
@@ -498,6 +555,41 @@ local config = {
 			end
 
 			return true
+		end
+	},
+	{
+		id = "groupRole",
+		drawer = {
+			type = "multiselect",
+			label = "Group role",
+			availableValues = function()
+				return {
+					NONE = Addon.L["No role"],
+					DAMAGER = Addon.L["DPS"],
+					TANK = Addon.L["Tank"],
+					HEALER = Addon.L["Healer"]
+				}, {
+					"NONE",
+					"DAMAGER",
+					"TANK",
+					"HEALER"
+				}
+			end
+		},
+		disabled = not Addon:IsForever(),
+		init = function()
+			return Utils.CreateMultiselectLoadOption(UnitGroupRolesAssigned("player"))
+		end,
+		unpack = Utils.UnpackMultiselectLoadOption,
+		testOnEvents = { "PLAYER_ROLES_ASSIGNED", "GROUP_ROSTER_UPDATE" },
+		--- @return string
+		state = function()
+			return UnitGroupRolesAssigned("player")
+		end,
+		--- @param value string[]
+		--- @param role string
+		test = function(value, role)
+			return tContains(value, role)
 		end
 	},
 	{

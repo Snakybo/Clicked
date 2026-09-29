@@ -537,7 +537,7 @@ function Addon:GetNewBindingTemplate()
 			never = false,
 			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
 			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(UnitName("player") --[[@as string]]),
+			playerNameRealm = GetLoadOptionTemplate(Addon:GetPlayerName()),
 			combat = GetNegatableLoadOptionTemplate(),
 			spellKnown = GetLoadOptionTemplate(""),
 			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
@@ -562,9 +562,16 @@ function Addon:GetNewBindingTemplate()
 			specRole = GetTriStateLoadOptionTemplate(""),
 			talent = GetMultiFieldLoadOptionTemplate(""),
 			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
-			warMode = GetNegatableLoadOptionTemplate()
+			warMode = GetNegatableLoadOptionTemplate(),
+			ruleset = GetTriStateLoadOptionTemplate("NORMAL"),
+			groupRole = GetTriStateLoadOptionTemplate("NONE")
 		}
 	}
+
+	if Addon:IsForever() then
+		template.load.ruleset = GetTriStateLoadOptionTemplate(Addon:GetRuleset())
+		template.load.groupRole = GetTriStateLoadOptionTemplate(UnitGroupRolesAssigned("player"))
+	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		local specIndex = C_SpecializationInfo.GetSpecialization()
