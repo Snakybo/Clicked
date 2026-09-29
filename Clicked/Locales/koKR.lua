@@ -162,6 +162,7 @@ L["Sending profile to %s, progress %d/%d (%d%%)"] = "%s에게 프로필을 보�
 L["Share"] = "공유"
 L["Show abilities in unit tooltips"] = "유닛 툴팁에 능력 표시"
 L["Single"] = "단일 선택"
+L["Skyborne"] = "스카이본"
 L["Specialization %s"] = "%s 전문화"
 L["Spell known"] = "알려진 주문"
 L["Stance %s"] = "태세 %s"
