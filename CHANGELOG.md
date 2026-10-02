@@ -15,6 +15,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add French localization [#318] (by [yannlugrin])
 * Add Skyborne localization [#319] (by [yannlugrin])
 
+### Fixed
+
+* Fix Lua errors on new Forever beta update [#321]
+
 ## [1.18.0] - 2026-09-29
 
 ### Added
@@ -2007,6 +2011,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#321]: https://github.com/Snakybo/Clicked/issues/321
 [#319]: https://github.com/Snakybo/Clicked/pull/319
 [#318]: https://github.com/Snakybo/Clicked/pull/318
 [#317]: https://github.com/Snakybo/Clicked/pull/317
