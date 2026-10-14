@@ -141,7 +141,7 @@ function Addon.BindingConfig.ImportStringPage:Redraw()
 					--- @cast data ShareData
 
 					if data.type == "group" then
-						self.importText = string.format(Addon.L["Importing group '%s' with %d bindings"], data.group.name, #data.group.bindings)
+						self.importText = string.format(Addon.L["Importing group '%s' with %s bindings"], data.group.name, tostring(#data.group.bindings))
 					elseif data.type == "binding" then
 						self.importText = string.format(Addon.L["Importing binding '%s'"], Addon:GetBindingNameAndIcon(data.binding))
 					end

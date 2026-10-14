@@ -13,10 +13,12 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "zhCN", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("Clicked", "zhCN")
+
 if not L then
-return
+	return
 end
+
 L["Clicked"] = "Clicked"
 L["Clicked is not compatible with %s and requires one of the two to be disabled."] = "%s 与 Clicked 不兼容，必须禁用其中一项。"
 L["Keep %s"] = "保留 %s"
@@ -254,7 +256,7 @@ L["Exporting binding '%s'"] = "正在导出绑定 '%s'"
 L["Exporting group '%s'"] = "正在导出分组 '%s'"
 L["Exporting profile '%s'"] = "正在导出配置文件 '%s'"
 L["Importing binding '%s'"] = "正在导入绑定 '%s'"
-L["Importing group '%s' with %d bindings"] = "正在导入包含 %d 个绑定的分组 '%s'"
+L["Importing group '%s' with %s bindings"] = "正在导入包含 %s 个绑定的分组 '%s'"
 L["Importing %d groups with a total of %d bindings"] = "正在导入 %d 个分组，共 %d 个绑定"
 L["Import keybinds"] = "导入按键绑定"
 L["Invalid import string: Expected a binding or group"] = "无效的导入字符串：应为绑定或分组"

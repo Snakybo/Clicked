@@ -8,6 +8,12 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * The MINOR component is used whenever a version has backwards-compatible profile changes. This also indicates that the user can not switch back to a previous MINOR version without using a backup.
 * The PATCH component is used for versions that do not contain profile format changes. Users can freely switch between PATCH versions without risk of data loss.
 
+## [Unreleased]
+
+### Added
+
+* Update Chinese localization [#322] (by [jokeycn])
+
 ## [1.18.2] - 2026-10-14
 
 ### Added
@@ -858,7 +864,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Update Chinese translations (by Jokey)
+* Update Chinese translations (by [jokeycn])
 * Update Evoker talent data
 
 ### Fixed
@@ -974,7 +980,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Switch to single addon package release mode
-* Update Chinese translations (by Jokey)
+* Update Chinese translations (by [jokeycn])
 * Add support for Shadowlands 9.2.7
 
 ### Fixed
@@ -1043,7 +1049,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Update icons for WoW Burning Crusade Classic 2.5.3
 * Desaturate group icons when all bindings in a group are disabled [#91]
 * Sort groups with active bindings above groups without [#91]
-* Update Chinese translations (by Jokey)
+* Update Chinese translations (by [jokeycn])
 
 ## [1.6.7] - 2021-11-12
 
@@ -1082,7 +1088,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Update Chinese translations (by Jokey)
+* Update Chinese translations (by [jokeycn])
 
 ## [1.6.2] - 2021-07-12
 
@@ -1182,7 +1188,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 ### Added
 
-* Add Chinese translations (by Jokey)
+* Add Chinese translations (by [jokeycn])
 
 ### Changed
 
@@ -2019,6 +2025,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [0.4.0]: https://github.com/Snakybo/Clicked/releases/tag/0.4.0
 [0.3.0]: https://github.com/Snakybo/Clicked/releases/tag/0.3.0
 
+[#322]: https://github.com/Snakybo/Clicked/issues/322
 [#321]: https://github.com/Snakybo/Clicked/issues/321
 [#319]: https://github.com/Snakybo/Clicked/pull/319
 [#318]: https://github.com/Snakybo/Clicked/pull/318
@@ -2167,3 +2174,4 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [KyrosKrane]: https://github.com/KyrosKrane
 [007bb]: https://www.curseforge.com/members/007bb
 [2huBrulee]: https://github.com/2huBrulee
+[jokeycn]: https://github.com/jokeycn
