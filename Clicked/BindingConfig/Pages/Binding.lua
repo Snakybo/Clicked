@@ -31,7 +31,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers

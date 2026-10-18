@@ -21,7 +21,7 @@
 --- @field public name? string
 --- @field public isApplyPending? boolean
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local NOOP = "__noop"

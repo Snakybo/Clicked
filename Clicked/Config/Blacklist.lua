@@ -17,7 +17,7 @@
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local UNIT_FRAME_ADDON_MAPPING = {

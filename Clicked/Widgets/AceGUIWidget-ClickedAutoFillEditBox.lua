@@ -33,7 +33,7 @@ EditBox Widget
 -- Deprecated in 11.0.0
 local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedAutoFillEditBox", 1

@@ -16,7 +16,7 @@
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 --- @enum DataObjectType

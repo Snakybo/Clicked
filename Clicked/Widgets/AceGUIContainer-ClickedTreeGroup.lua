@@ -39,7 +39,7 @@ Container that uses a tree control to switch between groups.
 --- @field public subtitle FontString
 --- @field public selected boolean
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 local Type, Version = "ClickedTreeGroup", 1

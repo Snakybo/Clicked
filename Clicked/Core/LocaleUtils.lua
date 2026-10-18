@@ -22,7 +22,7 @@ end
 
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
 
---- @class ClickedInternal
+--- @class Addon
 local Addon = select(2, ...)
 
 --- @type integer[]
