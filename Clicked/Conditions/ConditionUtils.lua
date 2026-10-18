@@ -189,3 +189,13 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 
 	return result
 end
+
+--- @param classNames string[]
+--- @return string[]
+function Addon.Condition.Utils.GetRelevantClassFileNames(classNames)
+	if #classNames == 0 then
+		classNames[1] = select(2, UnitClass("player"))
+	end
+
+	return classNames
+end

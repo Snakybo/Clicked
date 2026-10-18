@@ -21,6 +21,7 @@ local LocalizedClassList = LocalizedClassList or function()  -- Deprecated in 10
 end
 
 local LibTalentInfo = LibStub("LibTalentInfo-1.0")
+local LibShapeshift = LibStub("LibShapeshift-1.0")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -658,163 +659,86 @@ function Addon:GetLocalizedPvPTalents(specializations)
 	return result
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-	--- Get a localized list of all available shapeshift forms for the given specialization IDs.
-	--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
-	---
-	--- @param specializations integer[]
-	--- @return table<integer,string> items
-	--- @return integer[] order
-	function Addon:GetLocalizedForms(specializations)
-		--- @type table<integer,string>
-		local items = {
-			Addon.L["None"]
-		}
+--- Get a localized list of all available shapeshift forms for the given specialization IDs.
+--- If the `specializations` parameter is `nil` it will return results for the player's current specialization.
+---
+--- @param specIdsOrClassFileNames integer[]|string[]
+--- @return table<integer,string> items
+--- @return integer[] order
+function Addon:GetLocalizedForms(specIdsOrClassFileNames)
+	--- @type table<integer,string>
+	local items = {
+		Addon.L["None"]
+	}
 
-		--- @type integer[]
-		local order = {
-			1
-		}
+	--- @type integer[]
+	local order = {
+		1
+	}
 
-		if #specializations == 1 then
-			local specId = specializations[1]
+	if #specIdsOrClassFileNames == 1 then
+		local specIdOrClassFileName = specIdsOrClassFileNames[1]
 
-			for _, spellId in Addon:IterateShapeshiftForms(specId) do
-				local spell = Addon:GetSpellInfo(spellId, true)
-				local key = #order + 1
+		for _, spellIds in LibShapeshift:IterateForms(specIdOrClassFileName) do
+			local targetSpellId = spellIds[#spellIds]
+			local key = #order + 1
 
-				local icon = spell ~= nil and spell.iconID or nil
+			-- Find first available form to set name
+			for _, spellId in ipairs(spellIds) do
+				if IsSpellKnown(spellId) then
+					targetSpellId = spellId
+					break
+				end
+			end
+
+			local spell = Addon:GetSpellInfo(targetSpellId, false)
+			local icon = spell ~= nil and spell.iconID or nil
+			local name = spell ~= nil and spell.name or nil
+
+			items[key] = Addon:GetTextureString(name, icon)
+			table.insert(order, key)
+		end
+	else
+		--- @type { [integer]: { name: string, icon: integer, seen: integer }}
+		local found = {}
+
+		for _, specIdOrClassFileName in ipairs(specIdsOrClassFileNames) do
+			for index, spellIds in ipairs(LibShapeshift:GetForms(specIdOrClassFileName)) do
+				local spell = Addon:GetSpellInfo(spellIds[#spellIds], true)
 				local name = spell ~= nil and spell.name or nil
+				local icon = spell ~= nil and spell.iconID or nil
 
-				items[key] = Addon:GetTextureString(name, icon)
-				table.insert(order, key)
-			end
-		else
-			--- @type { [integer]: { name: string, icon: integer, seen: integer }}
-			local found = {}
+				local current = found[index]
 
-			for _, spec in ipairs(specializations) do
-				for index, spellId in ipairs(Addon:GetShapeshiftForms(spec)) do
-					local spell = Addon:GetSpellInfo(spellId, true)
-					local name = spell ~= nil and spell.name or nil
-					local icon = spell ~= nil and spell.iconID or nil
-
-					local current = found[index]
-
-					if current == nil then
-						found[index] = {
-							name = name,
-							icon = icon,
-							seen = 1
-						}
-					elseif current.name == name and current.icon == icon then
-						current.seen = current.seen + 1
-					end
+				if current == nil then
+					found[index] = {
+						name = name,
+						icon = icon,
+						seen = 1
+					}
+				elseif current.name == name and current.icon == icon then
+					current.seen = current.seen + 1
 				end
-			end
-
-			for i = 1, #found do
-				local key = #order + 1
-				local current = found[i]
-
-				if current.seen == #specializations then
-					items[key] = Addon:GetTextureString(current.name, current.icon)
-				else
-					items[key] = string.format(Addon.L["Stance %s"], i)
-				end
-
-				table.insert(order, key)
 			end
 		end
 
-		return items, order
-	end
-else
-	--- Get a localized list of all available classic shapeshift forms for the  given class names.
-	--- If the `classNames` parameter is `nil` it will return results for the player's current class.
-	---
-	--- @param classes string[]
-	--- @return table<integer,string> items
-	--- @return integer[] order
-	function Addon:GetLocalizedForms(classes)
-		--- @type table<integer,string>
-		local items = {}
+		for i = 1, #found do
+			local key = #order + 1
+			local current = found[i]
 
-		--- @type integer[]
-		local order = {}
-
-		if #classes == 0 then
-			classes[1] = select(2, UnitClass("player"))
-		end
-
-		if #classes == 1 then
-			local className = classes[1]
-			local defaultForm = Addon.L["None"]
-
-			if className == "DRUID" then
-				defaultForm = Addon.L["Humanoid Form"]
-			end
-
-			do
-				local key = #order + 1
-
-				items[key] = defaultForm
-				table.insert(order, key)
-			end
-
-			for _, spellIds in Addon:IterateShapeshiftForms(className) do
-				local key = #order + 1
-				local targetSpellId = spellIds[#spellIds]
-
-				-- Find first available form to set name
-				for _, spellId in ipairs(spellIds) do
-					if IsSpellKnown(spellId) then
-						targetSpellId = spellId
-						break
-					end
-				end
-
-				local spell = Addon:GetSpellInfo(targetSpellId, false)
-				local icon = spell ~= nil and spell.iconID or nil
-				local name = spell ~= nil and spell.name or nil
-
-				items[key] = Addon:GetTextureString(name, icon)
-
-				table.insert(order, key)
-			end
-		else
-			local max = 0
-
-			-- Find specialization with the highest number of forms
-			if #classes == 0 then
-				for _, forms in Addon:IterateShapeshiftClasses() do
-					if #forms > max then
-						max = #forms
-					end
-				end
-			-- Find specialization with the highest number of forms out of the selected specializations
+			if current.seen == #specIdsOrClassFileNames then
+				items[key] = Addon:GetTextureString(current.name, current.icon)
 			else
-			for _, className in ipairs(classes) do
-				local forms = Addon:GetShapeshiftForms(className)
-
-				if #forms > max then
-					max = #forms
-				end
-			end
-			end
-
-			-- start at 0 because [form:0] is no form
-			for i = 0, max do
-				local key = #order + 1
-
 				items[key] = string.format(Addon.L["Stance %s"], i)
-				table.insert(order, key)
 			end
-		end
 
-		return items, order
+			table.insert(order, key)
+		end
 	end
+
+	return items, order
 end
+
 
 --- @param scope DataObjectScope
 function Addon:GetLocalizedScope(scope)

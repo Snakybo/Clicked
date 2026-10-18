@@ -36,6 +36,7 @@ externals:
   Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
   Libs/LibTalentInfo-1.0: https://github.com/Snakybo/LibTalentInfo-1.0
+  Libs/LibShapeshift-1.0: https://github.com/Snakybo/LibShapeshift-1.0
   Libs/TaintLess:
     url: https://www.townlong-yak.com/addons.git/taintless
     commit: default
@@ -46,3 +47,4 @@ move-folders:
   Clicked/Libs/LibLog-1.0/LibLog-1.0: Clicked/Libs/LibLog-1.0
   Clicked/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked/Libs/LibMacroSyntaxHighlight-1.0
   Clicked/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked/Libs/LibTalentInfo-1.0
+  Clicked/Libs/LibShapeshift-1.0/LibShapeshift-1.0: Clicked/Libs/LibShapeshift-1.0

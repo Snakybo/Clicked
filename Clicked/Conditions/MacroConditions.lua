@@ -32,7 +32,8 @@ local config = {
 					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 					return Addon:GetLocalizedForms(specIds)
 				else
-					return Addon:GetLocalizedForms(class)
+					local classFileNames = Utils.GetRelevantClassFileNames(class)
+					return Addon:GetLocalizedForms(classFileNames)
 				end
 			end
 		},

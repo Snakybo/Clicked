@@ -15,6 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceGUI = LibStub("AceGUI-3.0")
+local LibShapeshift = LibStub("LibShapeshift-1.0")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -32,195 +33,6 @@ local KEYBIND_ORDER_LIST = {
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	"TAB", "CAPSLOCK", "INSERT", "DELETE", "HOME", "END", "PAGEUP", "PAGEDOWN", "[", "]", "\\", ";", "'", ",", ".", "/"
 }
-
---- @type { [integer]: integer[] } | { [string]: integer[][] }
-local shapeshiftForms
-
--- /run local a,b,c=table.concat,{},{};for d=1,GetNumShapeshiftForms() do local _,_,_,f=GetShapeshiftFormInfo(d);local e=C_Spell.GetSpellInfo(f).name;b[#b+1]=e;c[#c+1]=f;end print("{ "..a(c, ", ").." }, -- " ..a(b,", "))
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-	--- @type { [integer]: integer[] }
-	shapeshiftForms = {
-		-- Holy Paladin
-		-- Protection Paladin
-		-- Retribution Paladin
-		-- Initial Paladin
-		[65] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[66] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[70] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-		[1451] = { 32223, 465, 183435, 317920 }, -- Crusader Aura, Devotion Aura, Retribution Aura, Concentration Aura
-
-		-- Arms Warrior
-		-- Fury Warrior
-		-- Protection Warrior
-		[71] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-		[72] = { 386196 }, -- Beserker Stance
-		[73] = { 386208, 386164 }, -- Defensive Stance, Battle Stance
-
-		-- Balance Druid
-		-- Feral Druid
-		-- Guardian Druid
-		-- Restoration Druid
-		-- Initial Druid
-		[102] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-		[103] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-		[104] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-		[105] = { 5487, 768, 783, 24858, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Moonkin Form, Treant Form, Mount Form
-		[1447] = { 5487, 768, 783, 114282, 210053 }, -- Bear Form, Cat Form, Travel Form, Treant Form, Mount Form
-
-		-- Shadow Priest
-		[258] = { 232698 }, -- Shadowform
-
-		-- Assassination Rogue
-		-- Outlaw Rogue
-		-- Subtlety Rogue
-		-- Initial Rogue
-		[259] = { 1784 }, -- Stealth
-		[260] = { 1784 }, -- Stealth
-		[261] = { 1784, 185422 }, -- Stealth, Shadow Dance
-		[1453] = { 1784 },  -- Stealth
-	}
-elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-	--- @type { [integer]: integer[] }
-	shapeshiftForms = {
-		-- Holy Paladin
-		-- Protection Paladin
-		-- Retribution Paladin
-		-- Initial Paladin
-		[65] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
-		[66] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
-		[70] = { 31801, 20154, 20164, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Justice, Seal of Insight
-		[1451] = { 31801, 20154, 20165 }, -- Seal of Truth, Seal of Righteousness, Seal of Insight
-
-		-- Arms Warrior
-		-- Fury Warrior
-		-- Protection Warrior
-		-- Initial Warrior
-		[71] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
-		[72] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
-		[73] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
-		[1446] = { 2457, 71, 2458 }, -- Battle Stance, Defensive Stance, Berserker Stance
-
-		-- Balance Druid
-		-- Feral Druid
-		-- Guardian Druid
-		-- Restoration Druid
-		-- Initial Druid
-		[102] = { 5487, 1066, 768, 783, 24858, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Moonkin Form, Swift Flight Form
-		[103] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
-		[104] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
-		[105] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
-		[1447] = { 5487, 1066, 768, 783, 40120 }, -- Bear Form, Aquatic Form, Cat Form, Travel Form, Swift Flight Form
-
-		-- Beast Mastery Hunter
-		-- Marksmanship Hunter
-		-- Survival Hunter
-		-- Initial Hunter
-		[253] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
-		[254] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
-		[255] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
-		[1448] = { 13165, 5118, 13159 }, -- Aspect of the Hawk, Aspect of the Cheetah, Aspect of the Pack
-
-		-- Assassination Rogue
-		-- Outlaw Rogue
-		-- Subtlety Rogue
-		-- Initial Rogue
-		[259] = { 1784 }, -- Stealth
-		[260] = { 1784 }, -- Stealth
-		[261] = { 1784, 51713 }, -- Stealth, Shadow Dance
-		[1453] = { 1784 }, -- Stealth
-
-		-- Shadow Priest
-		[258] = { 15473 }, -- Shadowform
-
-		-- Demonology Warlock
-		[266] = { 103958 }, -- Metamorphosis
-
-		-- Blood Death Knight
-		-- Frost Death Knight
-		-- Unholy Death Knight
-		-- Initial Death Knight
-		[250] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
-		[251] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
-		[252] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
-		[1455] = { 48263, 48266, 48265 }, -- Blood Presence, Frost Presence, Unholy Presence
-
-		-- Brewmaster Monk
-		-- Windwalker Monk
-		-- Mistweaver Monk
-		-- Initial Monk
-		[268] = { 115069, 103985 }, -- Stance of the Sturdy Ox, Stance of the Fierce Tiger
-		[269] = { 103985 }, -- Stance of the Fierce Tiger
-		[270] = { 115070, 103985 }, -- Stance of the Wise Serpent, Stance of the Fierce Tiger
-		[1450] = { 103985 }, -- Stance of the Fierce Tiger
-	}
-else
-	--- @type { [string]: integer[][] }
-	shapeshiftForms = {
-		WARRIOR = {
-			{ 2457 }, -- Battle Stance
-			{ 71 }, -- Defensive Stance
-			{ 2458 } -- Beserker Stance
-		},
-		PALADIN = Addon:IsForever() and {
-			{ 465 }, -- Devotion Aura
-			{ 7294 }, -- Retribution Aura
-			{ 19746 }, -- Concentration Aura
-			{ 19876 }, -- Shadow Resistance Aura
-			{ 19888 }, -- Frost Resistance Aura
-			{ 19891 } -- Fire Resistance Aura
-		} or {
-			{ 27149 }, -- Devotion Aura
-			{ 27150 }, -- Retribution Aura
-			{ 19746 }, -- Concentration Aura
-			{ 27151 }, -- Shadow Resistance Aura
-			{ 27152 }, -- Frost Resistance Aura
-			{ 27153 }, -- Fire Resistance Aura
-			{ 32223 } -- Crusader Aura
-		},
-		HUNTER = {},
-		ROGUE = {
-			{ 1784 } -- Stealth
-		},
-		PRIEST = {
-			{ 15473 } -- Shadowform
-		},
-		SHAMAN = {},
-		MAGE = {},
-		WARLOCK = {},
-		DRUID = {
-			{ 9634, 5487 }, -- Dire Bear Form, Bear Form
-			{ 1066 }, -- Aquatic Form
-			{ 768 }, -- Cat Form
-			{ 783 }, -- Travel Form
-			{ 24858 }, -- Moonkin Form
-		}
-	}
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-		local DRUID = "DRUID"
-		table.insert(shapeshiftForms[DRUID], { 33891 }) -- Tree of Life
-		table.insert(shapeshiftForms[DRUID], { 40120, 33943 }) -- Swift Flight Form, Flight Form
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.WOTLK then
-		local DEATHKNIGHT = "DEATHKNIGHT"
-		shapeshiftForms[DEATHKNIGHT] = {
-			{ 48266 }, -- Blood Presence
-			{ 48263 }, -- Frost Presence
-			{ 48265 } -- Unholy Presence
-		}
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-		local PALADIN = "PALADIN"
-		shapeshiftForms[PALADIN] = {
-			{ 465 }, -- Devotion Aura
-			{ 7294 }, -- Retribution Aura
-			{ 19746 }, -- Concentration Aura
-			{ 32223 } -- Crusader Aura
-		}
-	end
-end
 
 --- @type string[]
 local modifierKeyCombinations = {}
@@ -920,68 +732,6 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
-if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-	--- Get all available shapeshift forms for the specified spec ID.
-	--- Note that this does not mean _currently available_ shapeshift forms,
-	--- just all possible shapeshift forms.
-	---
-	--- It is important that we use this instead of `GetNumShapeshiftForms` and
-	--- `GetShapeshiftFormInfo` as those will dynamically change depending on what
-	--- the player currently knows, which can vary depending on talents or level.
-	---
-	--- To ensure that shapeshift form data does not get corrupted when switching
-	--- talents, we store all available shapeshift forms manually.
-	---
-	--- @param specId integer
-	--- @return integer[]
-	function Addon:GetShapeshiftForms(specId)
-		local forms = shapeshiftForms[specId] or {}
-		return { unpack(forms) }
-	end
-
-	--- Iterate through all available shapeshift specalizations.
-	function Addon:IterateShapeshiftSpecs()
-		return pairs(shapeshiftForms)
-	end
-
-	--- Iterate through all available shapeshift forms for the specified specialization.
-	---
-	--- @param specId integer
-	function Addon:IterateShapeshiftForms(specId)
-		return ipairs(shapeshiftForms[specId] or {})
-	end
-else
-	--- Get all available shapeshift forms for the specified class name.
-	--- Note that this does not mean _currently available_ shapeshift forms,
-	--- just all possible shapeshift forms.
-	---
-	--- It is important that we use this instead of `GetNumShapeshiftForms` and
-	--- `GetShapeshiftFormInfo` as those will dynamically change depending on what
-	--- the player currently knows, which can vary depending on talents or level.
-	---
-	--- To ensure that shapeshift form data does not get corrupted when switching
-	--- talents, we store all available shapeshift forms manually.
-	---
-	--- @param class string
-	--- @return integer[][]
-	function Addon:GetShapeshiftForms(class)
-		local forms = shapeshiftForms[class] or {}
-		return { unpack(forms) }
-	end
-
-	--- Iterate through all available shapeshift classes.
-	function Addon:IterateShapeshiftClasses()
-		return pairs(shapeshiftForms)
-	end
-
-	--- Iterate through all available shapeshift forms for the specified class.
-	---
-	--- @param class string
-	function Addon:IterateShapeshiftForms(class)
-		return ipairs(shapeshiftForms[class])
-	end
-end
-
 ---@param binding Binding
 ---@return integer[]
 function Addon:GetAvailableShapeshiftForms(binding)
@@ -999,44 +749,45 @@ function Addon:GetAvailableShapeshiftForms(binding)
 		end
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-		if select(2, UnitClass("player")) == "DRUID" then
-			local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
-			local all = Addon:GetShapeshiftForms(specId)
-			local available = {}
-			local result = {}
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF and select(2, UnitClass("player")) == "DRUID" then
+		local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
+		local all = LibShapeshift:GetForms(specId)
+		local available = {}
+		local result = {}
 
-			for _, spellId in ipairs(all) do
+		for _, spellIds in ipairs(all) do
+			for _, spellId in ipairs(spellIds) do
 				if IsSpellKnown(spellId) then
 					table.insert(available, spellId)
+					break
 				end
 			end
-
-			for i = 1, #forms do
-				local formId = forms[i]
-
-				-- 0 is [form:0] aka humanoid
-				if formId == 0 then
-					table.insert(result, formId)
-
-					-- Incarnation: Tree of Life does not show up as a shapeshift form,
-					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-
-					if IsSpellKnown(33891) then
-						table.insert(result, GetNumShapeshiftForms() + 1)
-					end
-				else
-					for j = 1, #available do
-						if available[j] == all[formId] then
-							table.insert(result, j)
-							break
-						end
-					end
-				end
-			end
-
-			forms = result
 		end
+
+		for i = 1, #forms do
+			local formId = forms[i]
+
+			-- 0 is [form:0] aka humanoid
+			if formId == 0 then
+				table.insert(result, formId)
+
+				-- Incarnation: Tree of Life does not show up as a shapeshift form,
+				-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+
+				if IsSpellKnown(33891) then
+					table.insert(result, GetNumShapeshiftForms() + 1)
+				end
+			else
+				for j = 1, #available do
+					if available[j] == all[formId] then
+						table.insert(result, j)
+						break
+					end
+				end
+			end
+		end
+
+		forms = result
 	end
 
 	return forms
