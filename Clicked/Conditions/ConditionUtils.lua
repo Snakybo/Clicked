@@ -181,7 +181,9 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 		for j = 1, #specIndices do
 			local specIndex = specIndices[j]
 
-			table.insert(result, specs[specIndex].id)
+			if specs[specIndex] ~= nil then
+				table.insert(result, specs[specIndex].id)
+			end
 		end
 	end
 

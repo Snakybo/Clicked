@@ -16,6 +16,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add syntax highlighting to custom macros [#98]
 * Add macro length indicator to custom macros
 
+### Fixed
+
+* Fix Lua error when selecting forms if multiple classes are selected
+
 ## [1.18.2] - 2026-10-14
 
 ### Added
