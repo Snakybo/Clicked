@@ -207,12 +207,36 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 
 	-- macro text
 	do
+		--- @param text string
+		--- @return string
+		local function GetLabelText(text)
+			if #self.bindings == 1 then
+				local MAX_MACRO_LENGTH = 255
+				local label = Addon.L["Macro text (%d/%d)"]
+
+				return string.format(label, strlenutf8(text), MAX_MACRO_LENGTH)
+			end
+
+			return Addon.L["Macro text"]
+		end
+
+
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
 			return binding.action.macroValue
 		end
 
+		--- @return string
+		local function TooltipSelector()
+			return GetLabelText(self.bindings[1].action.macroValue)
+		end
+
+		--- @param widget ColoredMacroEditBox
+		--- @param value string
+		local function OnTextChanged(widget, _, value)
+			widget:SetLabel(GetLabelText(value))
+		end
 
 		--- @param value string
 		local function OnEnterPressed(_, _, value)
@@ -224,12 +248,15 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			end
 		end
 
-		local widget = AceGUI:Create("ClickedMultiLineEditBox") --[[@as AceGUIMultiLineEditBox]]
+
+		local widget = AceGUI:Create("ColoredMacroEditBox") --[[@as ColoredMacroEditBox]]
 		widget:SetFullWidth(true)
 		widget:SetNumLines(10)
+
+		widget:SetCallback("OnTextChanged", OnTextChanged)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
-		Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Macro text"])
+		Helpers:HandleWidget(widget, self.bindings, ValueSelector, TooltipSelector)
 
 		Addon.Media:UseMonoFont(widget)
 

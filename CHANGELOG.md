@@ -13,6 +13,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Added
 
 * Update Chinese localization [#322] (by [jokeycn])
+* Add syntax highlighting to custom macros [#98]
+* Add macro length indicator to custom macros
 
 ## [1.18.2] - 2026-10-14
 
@@ -2111,6 +2113,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#102]: https://github.com/Snakybo/Clicked/issues/102
 [#101]: https://github.com/Snakybo/Clicked/issues/101
 [#100]: https://github.com/Snakybo/Clicked/issues/100
+[#98]: https://github.com/Snakybo/Clicked/issues/98
 [#97]: https://github.com/Snakybo/Clicked/issues/97
 [#91]: https://github.com/Snakybo/Clicked/issues/91
 [#90]: https://github.com/Snakybo/Clicked/issues/90

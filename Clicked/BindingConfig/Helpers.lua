@@ -16,7 +16,7 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string[]
+--- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string|string[]
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -161,8 +161,10 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 		local lines
 
 		if type(tooltip) == "function" then
-			lines = tooltip(widget)
-		elseif type(tooltip) == "table" then
+			tooltip = tooltip(widget)
+		end
+
+		if type(tooltip) == "table" then
 			lines = tooltip
 		else
 			lines = { tooltip }
@@ -214,8 +216,9 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue(GetRawValue())
 				widget:SetLabelColor(WHITE_FONT_COLOR)
 			end
-		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" then
-			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox
+		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" or
+			   widget.type == "ColoredMacroEditBox" then
+			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox|ClickedMultiLineEditBox|ColoredMacroEditBox
 
 			widget:SetLabel(label)
 

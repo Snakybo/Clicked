@@ -15,7 +15,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceGUI = LibStub("AceGUI-3.0")
-local LibMacroSyntaxHighlight = LibStub("LibMacroSyntaxHighlight-1.0")
 
 --- @class ClickedInternal
 local Addon = select(2, ...)
@@ -134,9 +133,7 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 			label = RED_FONT_COLOR:WrapTextInColorCode(label)
 		end
 
-		text = LibMacroSyntaxHighlight:Colorize(text)
-
-		local widget = AceGUI:Create("MultiLineEditBox") --[[@as AceGUIMultiLineEditBox]]
+		local widget = AceGUI:Create("ColoredMacroEditBox") --[[@as ColoredMacroEditBox]]
 		widget:SetLabel(label)
 		widget:SetText(text)
 		widget:SetFullWidth(true)
