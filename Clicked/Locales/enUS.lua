@@ -341,3 +341,4 @@ L["Automatically bind all action bar abilities"] = true
 L["If enabled, all abilities on the action bar will automatically be appended to a binding on the same key, this will make Clicked fall back to the action bar when all other macro conditions are not met.\n\nNote that this only supports spells and items, not macros."] = true
 L["Disable bindings in house editor mode"] = true
 L["If enabled, bindings will be disabled whilst in the house editor."] = true
+L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."] = true

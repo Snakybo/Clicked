@@ -20,6 +20,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix Lua error when selecting forms if multiple classes are selected
 
+### Changed
+
+* Support up to two years of profile upgrades, instead of forever
+
 ## [1.18.2] - 2026-10-14
 
 ### Added
