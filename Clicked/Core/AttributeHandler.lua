@@ -88,7 +88,7 @@ function Addon:SetPendingFrameAttributes(frame, attributes)
 	EnsureCache(frame)
 
 	for key, value in pairs(attributes) do
-		if not Addon.db.profile.options.onKeyDown and hasTypeRelease and frame == _G[Addon.MACRO_FRAME_HANDLER_NAME] then
+		if not Addon.db.global.options.onKeyDown and hasTypeRelease and frame == _G[Addon.MACRO_FRAME_HANDLER_NAME] then
 			key = string.gsub(key, "^type", "typerelease")
 		end
 

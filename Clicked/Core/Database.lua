@@ -130,37 +130,41 @@ end
 
 --- Get the default values for a Clicked profile.
 ---
---- @return AceDBObject-3.0
+--- @return DBSchema
 function Clicked:GetDatabaseDefaults()
+	--- @type DBSchema
 	local database = {
 		global = {
 			version = nil,
 			groups = {},
 			bindings = {},
 			nextUid = 1,
-			keyVisualizer = {
-				lastKeyboardLayout = nil,
-				lastKeyboardSize = nil,
-				showOnlyLoadedBindings = true,
-				highlightEmptyKeys = false
-			}
-		},
-		profile = {
-			version = nil,
 			options = {
 				onKeyDown = true,
 				tooltips = false,
 				bindUnassignedModifiers = false,
 				autoBindActionBar = false,
 				minimap = {
-					hide = false
+					hide = false,
+					lock = false,
+					minimapPos = 0
 				},
 				ignoreSelfCastWarning = false,
 				disableInHouse = true
 			},
+			keyVisualizer = {
+				lastKeyboardLayout = nil,
+				lastKeyboardSize = nil,
+				showOnlyLoadedBindings = true,
+				highlightEmptyKeys = false
+			},
+			logLevel = "INFO",
+			blacklist = {},
+		},
+		profile = {
+			version = nil,
 			groups = {},
 			bindings = {},
-			blacklist = {},
 		}
 	}
 
@@ -186,7 +190,7 @@ function Clicked:InitializeDatabase()
 	menu.targets.regularEnabled = false
 	Addon:ReloadBinding(menu, true)
 
-	if Addon.db.profile.options.minimap.hide then
+	if Addon.db.global.options.minimap.hide then
 		LibDBIcon:Hide("Clicked")
 	else
 		LibDBIcon:Show("Clicked")
@@ -201,7 +205,7 @@ function Clicked:ReloadDatabase()
 
 	Addon:UpgradeDatabase()
 
-	if Addon.db.profile.options.minimap.hide then
+	if Addon.db.global.options.minimap.hide then
 		LibDBIcon:Hide("Clicked")
 	else
 		LibDBIcon:Show("Clicked")

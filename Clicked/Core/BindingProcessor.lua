@@ -533,7 +533,7 @@ local function GenerateBuckets(bindings)
 		--- @type string[]
 		local keys = { binding.keybind }
 
-		if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(keys[1]) then
+		if Addon.db.global.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(keys[1]) then
 			local withModifiers = Addon:GetUnusedModifierKeyKeybinds(keys[1], bindings)
 
 			for i = 1, #withModifiers do
@@ -1114,7 +1114,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
 	end
 
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.profile.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
+	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.global.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
 		state.housing = not C_HouseEditor.IsHouseEditorActive()
 	end
 
@@ -1410,7 +1410,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		do
 			local actionBar = {}
 
-			if not ignoreActionBar and Addon.db.profile.options.autoBindActionBar and interactionType == Addon.InteractionType.REGULAR then
+			if not ignoreActionBar and Addon.db.global.options.autoBindActionBar and interactionType == Addon.InteractionType.REGULAR then
 				actionBar = Addon.SpellLibrary:GetActionBarSpells()
 			end
 

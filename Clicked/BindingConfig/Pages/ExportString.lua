@@ -31,13 +31,13 @@ Addon.BindingConfig.ExportStringModes = {
 
 --- @class BindingConfigExportStringPage : BindingConfigPage
 --- @field private mode BindingConfigExportStringPageMode
---- @field private target DataObject|Profile
+--- @field private target DataObject|DBSchema.Profile
 --- @field private serialized string
 Addon.BindingConfig.ExportStringPage = {}
 
 --- @protected
 --- @param mode BindingConfigExportStringPageMode
---- @param target DataObject|Profile
+--- @param target DataObject|DBSchema.Profile
 function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 	assert(mode ~= nil)
 	assert(target ~= nil)
@@ -49,7 +49,7 @@ function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 		--- @cast target DataObject
 		self.serialized = Clicked:SerializeDataObject(target)
 	elseif mode == Addon.BindingConfig.ExportStringModes.PROFILE then
-		--- @cast target Profile
+		--- @cast target DBSchema.Profile
 		self.serialized = Clicked:SerializeProfile(target, true, false)
 	end
 end
@@ -81,7 +81,7 @@ function Addon.BindingConfig.ExportStringPage:Redraw()
 				widget:SetLabel(string.format(Addon.L["Exporting group '%s'"], target.name))
 			end
 		elseif self.mode == Addon.BindingConfig.ExportStringModes.PROFILE then
-			--- @cast target Profile
+			--- @cast target DBSchema.Profile
 			widget:SetLabel(string.format(Addon.L["Exporting profile '%s'"], Addon.db:GetCurrentProfile()))
 		end
 

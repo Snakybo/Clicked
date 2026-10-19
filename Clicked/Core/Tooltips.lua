@@ -94,7 +94,7 @@ end
 ---
 --- @return boolean
 local function IsTooltipModuleEnabled()
-	return Addon.db.profile.options.tooltips
+	return Addon.db.global.options.tooltips
 end
 
 --- @param left Binding

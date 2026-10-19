@@ -148,8 +148,8 @@ function Addon:GetOrCreateSidecar(frame)
 	local key = CreateFrame("Button", keyName, frame, "SecureActionButtonTemplate") --[[@as Button]]
 	key:SetAttribute("useparent-unit", true)
 	key:SetAttribute("useparent-unitsuffix", true)
-	key:SetAttribute("useOnKeyDown", Addon.db.profile.options.onKeyDown and true or false)
-	key:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+	key:SetAttribute("useOnKeyDown", Addon.db.global.options.onKeyDown and true or false)
+	key:RegisterForClicks(Addon.db.global.options.onKeyDown and "AnyDown" or "AnyUp")
 
 	Clicked:LogVerbose("Created sidecar {sidecarId} for frame {frameName}", nextId, frame:GetName() or "<unnamed>")
 
@@ -244,7 +244,7 @@ function Addon:UpdateSidecarClickDirection()
 		return
 	end
 
-	local onKeyDown = Addon.db.profile.options.onKeyDown and true or false
+	local onKeyDown = Addon.db.global.options.onKeyDown and true or false
 
 	for _, sidecar in pairs(sidecars) do
 		sidecar.keyFrame:SetAttribute("useOnKeyDown", onKeyDown)

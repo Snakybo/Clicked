@@ -126,7 +126,7 @@ function BlacklistOptions:Refresh()
 		self:RegisterFrame(frame)
 	end
 
-	for name, state in pairs(Addon.db.profile.blacklist) do
+	for name, state in pairs(Addon.db.global.blacklist) do
 		self:SetSelectedItem(name, state)
 		self:SetDropdownItem(name, not state)
 	end
@@ -137,8 +137,8 @@ function BlacklistOptions:RegisterFrame(frame)
 	local group = self:GetBlacklistGroup(frame)
 
 	if group ~= nil then
-		self:SetSelectedItem(group, Addon.db.profile.blacklist[group])
-		self:SetDropdownItem(group, not Addon.db.profile.blacklist[group])
+		self:SetSelectedItem(group, Addon.db.global.blacklist[group])
+		self:SetDropdownItem(group, not Addon.db.global.blacklist[group])
 	end
 end
 
@@ -221,7 +221,7 @@ function BlacklistOptions:CreateOptionsTable()
 				itemControl = "Clicked-Blacklist-Dropdown-Item",
 				set = function(_, val)
 					if val ~= "_NIL_" then
-						Addon.db.profile.blacklist[val] = true
+						Addon.db.global.blacklist[val] = true
 
 						self:SetSelectedItem(val, true)
 						self:SetDropdownItem(val, false)
@@ -316,7 +316,7 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 			order = 30,
 			set = function(_, value)
 				if not value then
-					Addon.db.profile.blacklist[name] = nil
+					Addon.db.global.blacklist[name] = nil
 					args[name] = nil
 
 					self:SetDropdownItem(name, true)
@@ -326,7 +326,7 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 				end
 			end,
 			get = function()
-				return Addon.db.profile.blacklist[name] or false
+				return Addon.db.global.blacklist[name] or false
 			end
 		}
 	else

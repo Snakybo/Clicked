@@ -57,8 +57,8 @@ local function GetBasicinfoString()
 		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
 	end
 
-	table.insert(lines, "Press Mode: " .. (Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp"))
-	table.insert(lines, "Autogen: " .. (Addon.db.profile.options.bindUnassignedModifiers and "True" or "False"))
+	table.insert(lines, "Press Mode: " .. (Addon.db.global.options.onKeyDown and "AnyDown" or "AnyUp"))
+	table.insert(lines, "Autogen: " .. (Addon.db.global.options.bindUnassignedModifiers and "True" or "False"))
 
 	table.insert(lines, "")
 

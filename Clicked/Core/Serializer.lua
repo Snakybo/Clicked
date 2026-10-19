@@ -146,7 +146,7 @@ end
 --- will only serialize the `bindings` and `groups` of a profile, however the `full` parameter can be specified to serialize the entire profile, including all
 --- user settings.
 ---
---- @param profile Profile The profile to serialize.
+--- @param profile DBSchema.Profile The profile to serialize.
 --- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
 --- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
 --- @return string

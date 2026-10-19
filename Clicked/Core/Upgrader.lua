@@ -3,7 +3,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 16
+Addon.DATA_VERSION = 17
 
 local upgradeData = {}
 
@@ -247,6 +247,18 @@ local function Upgrade(db, global, from, type, cache)
 					"NONE"
 				}
 			}
+		end
+	end
+
+	if from < 17 then -- 2026-10-19
+		if type == "profile" and global.options == nil then
+			global.options = db.options
+			global.blacklist = db.blacklist
+		end
+
+		if type == "profile" then
+			db.options = nil
+			db.blacklist = nil
 		end
 	end
 end

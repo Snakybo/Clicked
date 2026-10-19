@@ -115,7 +115,7 @@ function Addon:IsFrameBlacklisted(frame)
 		return false
 	end
 
-	local blacklist = Addon.db.profile.blacklist
+	local blacklist = Addon.db.global.blacklist
 	local name = frame:GetName()
 
 	return blacklist[name]
@@ -322,7 +322,7 @@ function Clicked:RegisterFrameClicks(frame)
 		return
 	end
 
-	frame:RegisterForClicks(Addon.db.profile.options.onKeyDown and "AnyDown" or "AnyUp")
+	frame:RegisterForClicks(Addon.db.global.options.onKeyDown and "AnyDown" or "AnyUp")
 	frame:EnableMouseWheel(true)
 
 	logger:LogVerbose("Registered clicks for frame {frameName}", frame:GetName())

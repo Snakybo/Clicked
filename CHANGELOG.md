@@ -15,6 +15,8 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Update Chinese localization [#322] (by [jokeycn])
 * Add syntax highlighting to custom macros [#98]
 * Add macro length indicator to custom macros
+* Store addon options globally instead of per profile
+* Store blacklist options globally instead of per profile
 
 ### Fixed
 

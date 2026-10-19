@@ -44,7 +44,7 @@ function AddonOptions:CreateOptionsTable()
 				order = 100,
 				width = "full",
 				set = function(_, val)
-					Addon.db.profile.options.minimap.hide = not val
+					Addon.db.global.options.minimap.hide = not val
 
 					if val then
 						LibDBIcon:Show(Addon.L["Clicked"])
@@ -53,7 +53,7 @@ function AddonOptions:CreateOptionsTable()
 					end
 				end,
 				get = function(_)
-					return not Addon.db.profile.options.minimap.hide
+					return not Addon.db.global.options.minimap.hide
 				end
 			},
 			addonCompartmentButton = {
@@ -81,7 +81,7 @@ function AddonOptions:CreateOptionsTable()
 				order = 200,
 				width = "full",
 				set = function(_, val)
-					Addon.db.profile.options.onKeyDown = val
+					Addon.db.global.options.onKeyDown = val
 
 					for _, frame in Clicked:IterateClickCastFrames() do
 						Clicked:RegisterFrameClicks(frame)
@@ -94,7 +94,7 @@ function AddonOptions:CreateOptionsTable()
 					Addon:ShowInformationPopup(Addon.L["If you are using custom unit frames you may have to adjust a setting within the unit frame configuration panel to enable support for this, and potentially even a UI reload."])
 				end,
 				get = function()
-					return Addon.db.profile.options.onKeyDown
+					return Addon.db.global.options.onKeyDown
 				end
 			},
 			tooltips = {
@@ -104,10 +104,10 @@ function AddonOptions:CreateOptionsTable()
 				order = 300,
 				width = "full",
 				set = function(_, val)
-					Addon.db.profile.options.tooltips = val
+					Addon.db.global.options.tooltips = val
 				end,
 				get = function()
-					return Addon.db.profile.options.tooltips
+					return Addon.db.global.options.tooltips
 				end
 			},
 			bindUnassignedModifiers = {
@@ -117,11 +117,11 @@ function AddonOptions:CreateOptionsTable()
 				order = 400,
 				width = "full",
 				set = function (_, val)
-					Addon.db.profile.options.bindUnassignedModifiers = val
+					Addon.db.global.options.bindUnassignedModifiers = val
 					Clicked:ProcessActiveBindings()
 				end,
 				get = function ()
-					return Addon.db.profile.options.bindUnassignedModifiers
+					return Addon.db.global.options.bindUnassignedModifiers
 				end
 			},
 			autoBindActionBar = {
@@ -131,11 +131,11 @@ function AddonOptions:CreateOptionsTable()
 				order = 500,
 				width = "full",
 				set = function (_, val)
-					Addon.db.profile.options.autoBindActionBar = val
+					Addon.db.global.options.autoBindActionBar = val
 					Clicked:ProcessActiveBindings()
 				end,
 				get = function ()
-					return Addon.db.profile.options.autoBindActionBar
+					return Addon.db.global.options.autoBindActionBar
 				end
 			},
 			disableInHouse = {
@@ -148,11 +148,11 @@ function AddonOptions:CreateOptionsTable()
 					return Addon.EXPANSION_LEVEL < Addon.Expansion.TWW
 				end,
 				set = function (_, val)
-					Addon.db.profile.options.disableInHouse = val
+					Addon.db.global.options.disableInHouse = val
 					Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
 				end,
 				get = function ()
-					return Addon.db.profile.options.disableInHouse
+					return Addon.db.global.options.disableInHouse
 				end
 			},
 			logLevel = Mixin(Clicked:GetLogLevelOptionObject(Addon.db.global), {

@@ -201,7 +201,7 @@ function Addon.BindingConfig.BindingPage:Redraw()
 				return false
 			end
 
-			if Addon.db.profile.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(self.targets[1].keybind) then
+			if Addon.db.global.options.bindUnassignedModifiers and Addon:IsUnmodifiedKeybind(self.targets[1].keybind) then
 				return #Addon:GetUnusedModifierKeyKeybinds(self.targets[1].keybind, Addon:GetActiveBindings()) > 0
 			end
 

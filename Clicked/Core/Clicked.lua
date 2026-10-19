@@ -58,7 +58,7 @@ local function RegisterIcons()
 		end
 	})
 
-	LibDBIcon:Register(Addon.L["Clicked"], iconData, Addon.db.profile.options.minimap)
+	LibDBIcon:Register(Addon.L["Clicked"], iconData, Addon.db.global.options.minimap)
 	LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
 end
 
@@ -256,7 +256,7 @@ end
 local function ACTIONBAR_SLOT_CHANGED()
 	Clicked:LogVerbose("Received event {eventName}", "ACTIONBAR_SLOT_CHANGED")
 
-	if Addon.db.profile.options.autoBindActionBar then
+	if Addon.db.global.options.autoBindActionBar then
 		Addon:ReloadBindings("ACTIONBAR_SLOT_CHANGED")
 	end
 end
@@ -306,7 +306,7 @@ end
 local function HOUSE_EDITOR_MODE_CHANGED()
 	Clicked:LogVerbose("Received event {eventName}", "HOUSE_EDITOR_MODE_CHANGED")
 
-	if Addon.db.profile.options.disableInHouse and C_HouseEditor.IsHouseEditorActive() ~= wasHouseEditorActive then
+	if Addon.db.global.options.disableInHouse and C_HouseEditor.IsHouseEditorActive() ~= wasHouseEditorActive then
 		wasHouseEditorActive = C_HouseEditor.IsHouseEditorActive()
 		Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
 	end
@@ -374,7 +374,7 @@ end
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
+	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile) --[[@as AceDBObject-3.0|DBSchema]]
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "InitializeDatabase")

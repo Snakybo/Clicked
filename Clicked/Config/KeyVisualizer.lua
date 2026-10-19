@@ -72,13 +72,7 @@ local function GetTreeLayout()
 	return result
 end
 
---- @class KeyVisualizerDb
---- @field public lastKeyboardLayout? KeyboardLayout
---- @field public lastKeyboardSize? KeyboardSize
---- @field public showOnlyLoadedBindings boolean
---- @field public highlightEmptyKeys boolean
-
---- @return KeyVisualizerDb
+--- @return DBSchema.Global.KeyVisualizer
 local function GetDb()
 	return Addon.db.global.keyVisualizer
 end

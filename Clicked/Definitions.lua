@@ -19,25 +19,39 @@
 --- @class Clicked : AceAddon, AceEvent-3.0
 --- @field public VERSION string
 
---- @class Profile
+--- @class DBSchema : AceDB.Schema
+--- @field public profile DBSchema.Profile
+--- @field public global DBSchema.Global
+
+--- @class DBSchema.Profile
 --- @field public version integer
---- @field public options Profile.Options
 --- @field public groups Group[]
 --- @field public bindings Binding[]
+
+--- @class DBSchema.Global
+--- @field public version integer
+--- @field public nextUid integer
+--- @field public groups Group[]
+--- @field public bindings Binding[]
+--- @field public options DBSchema.Global.Options
+--- @field public keyVisualizer DBSchema.Global.KeyVisualizer
+--- @field public logLevel LibLog-1.0.LogLevel
 --- @field public blacklist table<string,boolean>
 
---- @class Profile.Options
+--- @class DBSchema.Global.Options
 --- @field public onKeyDown boolean
 --- @field public tooltips boolean
---- @field public minimap Profile.Options.Minimap
+--- @field public minimap LibDBIcon.button.DB
 --- @field public bindUnassignedModifiers boolean
 --- @field public autoBindActionBar boolean
 --- @field public ignoreSelfCastWarning boolean
 --- @field public disableInHouse boolean
 
---- @class Profile.Options.Minimap
---- @field public hide boolean
---- @field public minimapPos number
+--- @class DBSchema.Global.KeyVisualizer
+--- @field public lastKeyboardLayout? KeyboardLayout
+--- @field public lastKeyboardSize? KeyboardSize
+--- @field public showOnlyLoadedBindings boolean
+--- @field public highlightEmptyKeys boolean
 
 --- @class DataObject
 --- @field public uid integer
@@ -207,11 +221,9 @@
 --- @class ShareData.Group : Group
 --- @field public bindings Binding[]
 
---- @class ExportProfile : Profile
+--- @class ExportProfile : DBSchema.Profile
 --- @field public lightweight boolean
 --- @field public type "profile"
---- @field private options nil
---- @field private blacklist nil
 
 -- Add missing definitions for Enum.GameRule in Forever
 --- @diagnostic disable-next-line: duplicate-doc-alias
