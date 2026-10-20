@@ -32,11 +32,11 @@ externals:
   Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
   Libs/LibLog-1.0: https://github.com/Snakybo/LibLog-1.0
-  Libs/LibMacroSyntaxHighlight-1.0: https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0
+  Libs/LibChroMacro: https://github.com/Snakybo/LibChroMacro
   Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
-  Libs/LibTalentInfo-1.0: https://github.com/Snakybo/LibTalentInfo-1.0
-  Libs/LibShapeshift-1.0: https://github.com/Snakybo/LibShapeshift-1.0
+  Libs/LibTalentTome: https://github.com/Snakybo/LibTalentTome
+  Libs/LibStanceDance: https://github.com/Snakybo/LibStanceDance
   Libs/TaintLess:
     url: https://www.townlong-yak.com/addons.git/taintless
     commit: default
@@ -45,6 +45,6 @@ move-folders:
   Clicked/Clicked: Clicked
   Clicked/ClickedMedia: ClickedMedia
   Clicked/Libs/LibLog-1.0/LibLog-1.0: Clicked/Libs/LibLog-1.0
-  Clicked/Libs/LibMacroSyntaxHighlight-1.0/LibMacroSyntaxHighlight-1.0: Clicked/Libs/LibMacroSyntaxHighlight-1.0
-  Clicked/Libs/LibTalentInfo-1.0/LibTalentInfo-1.0: Clicked/Libs/LibTalentInfo-1.0
-  Clicked/Libs/LibShapeshift-1.0/LibShapeshift-1.0: Clicked/Libs/LibShapeshift-1.0
+  Clicked/Libs/LibChroMacro/LibChroMacro: Clicked/Libs/LibChroMacro
+  Clicked/Libs/LibTalentTome/LibTalentTome: Clicked/Libs/LibTalentTome
+  Clicked/Libs/LibStanceDance/LibStanceDance: Clicked/Libs/LibStanceDance

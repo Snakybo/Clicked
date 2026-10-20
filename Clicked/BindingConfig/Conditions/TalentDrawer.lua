@@ -46,6 +46,23 @@ local function TalentValueSelector(load)
 	return Helpers.IGNORE_VALUE
 end
 
+--- @param talents LibTalentTome.Talent[]
+--- @return ClickedAutoFillEditBox.Option[]
+local function CreateValues(talents)
+	--- @type ClickedAutoFillEditBox.Option[]
+	local result = {}
+
+	for _, talent in ipairs(talents) do
+		table.insert(result, {
+			text = talent.name,
+			icon = talent.icon,
+			spellId = talent.spellId
+		})
+	end
+
+	return result
+end
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingTalentConditionDrawer : BindingConditionDrawer
@@ -53,7 +70,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private miniTalentRow? ClickedSimpleGroup
 --- @field private inputFields? ClickedAutoFillEditBox[]
 --- @field private status { expand?: boolean }
---- @field private talents TalentInfo[]
+--- @field private talents LibTalentTome.Talent[]
 --- @field private hasMixedValues boolean
 local Drawer = {}
 
@@ -126,7 +143,7 @@ function Drawer:Update()
 
 	if self.inputFields ~= nil then
 		for _, inputField in ipairs(self.inputFields) do
-			inputField:SetValues(self.talents)
+			inputField:SetValues(CreateValues(self.talents))
 			inputField:SetInputError(not self:DoesTalentExist(inputField:GetText()))
 		end
 	end
@@ -191,7 +208,7 @@ function Drawer:DrawMiniTalentRow()
 					if talent.spellId ~= nil then
 						GameTooltip:SetSpellByID(talent.spellId)
 					else
-						GameTooltip:SetText(talent.text)
+						GameTooltip:SetText(talent.name)
 					end
 
 					GameTooltip:Show()
@@ -351,7 +368,7 @@ function Drawer:DrawTalentSelect()
 			local widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
 			widget:SetText(entry.value)
 			widget:SetInputError(not self:DoesTalentExist(entry.value))
-			widget:SetValues(self.talents)
+			widget:SetValues(CreateValues(self.talents))
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnSelect", OnSelect)
 
@@ -454,7 +471,7 @@ end
 --- @return boolean
 function Drawer:DoesTalentExist(name)
 	for _, item in ipairs(self.talents) do
-		if item.text == name then
+		if item.name == name then
 			return true
 		end
 	end
@@ -464,10 +481,10 @@ end
 
 --- @private
 --- @param name string
---- @return TalentInfo?
+--- @return LibTalentTome.Talent?
 function Drawer:GetTalentInfo(name)
 	for _, talent in ipairs(self.talents) do
-		if talent.text == name then
+		if talent.name == name then
 			return talent
 		end
 	end

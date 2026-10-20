@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceGUI = LibStub("AceGUI-3.0")
-local LibShapeshift = LibStub("LibShapeshift-1.0")
+local LibStanceDance = LibStub("LibStanceDance")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -751,7 +751,7 @@ function Addon:GetAvailableShapeshiftForms(binding)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF and select(2, UnitClass("player")) == "DRUID" then
 		local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
-		local all = LibShapeshift:GetForms(specId)
+		local all = LibStanceDance:GetForms(specId)
 		local available = {}
 		local result = {}
 

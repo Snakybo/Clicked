@@ -217,8 +217,8 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetLabelColor(WHITE_FONT_COLOR)
 			end
 		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" or
-			   widget.type == "ColoredMacroEditBox" then
-			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox|ClickedMultiLineEditBox|ColoredMacroEditBox
+			   widget.type == "ChroMacroEditBox" then
+			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox|ClickedMultiLineEditBox|ChroMacroEditBox
 
 			widget:SetLabel(label)
 

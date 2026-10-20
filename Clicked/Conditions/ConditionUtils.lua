@@ -34,7 +34,7 @@
 --- @field public negated? boolean
 --- @field public value any
 
-local LibTalentInfo = LibStub("LibTalentInfo-1.0")
+local LibTalentTome = LibStub("LibTalentTome")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -135,19 +135,6 @@ function Addon.Condition.Utils.UnpackTalentLoadOption(option)
 end
 
 --- @param classNames string[]
---- @return string[]
-function Addon.Condition.Utils.GetRelevantClasses(classNames)
-	local result = CopyTable(classNames)
-
-	if #classNames == 0 then
-		local classFileName = select(2, UnitClass("player"))
-		table.insert(result, classFileName)
-	end
-
-	return result
-end
-
---- @param classNames string[]
 --- @param specIndices integer[]
 --- @return integer[]
 function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndices)
@@ -159,43 +146,35 @@ function Addon.Condition.Utils.GetRelevantSpecializationIds(classNames, specIndi
 
 	if #specIndices == 0 then
 		if #classNames == 1 and classNames[1] == select(2, UnitClass("player")) then
-			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-				specIndices[1] = C_SpecializationInfo.GetSpecialization()
+			if Addon.EXPANSION_LEVEL < Addon.Expansion.MOP then
+				local numSpecs = LibTalentTome:GetNumSpecializations(classNames[1])
+
+				for i = 1, numSpecs do
+					specIndices[i] = i
+				end
 			else
-				specIndices[1] = GetPrimaryTalentTree()
+				specIndices[1] = C_SpecializationInfo.GetSpecialization()
 			end
 		else
-			for _, class in ipairs(classNames) do
-				local specs = LibTalentInfo:GetSpecializations(class)
+			for i = 1, #classNames do
+				local numSpecs = LibTalentTome:GetNumSpecializations(classNames[i])
 
-				for specIndex in ipairs(specs) do
-					table.insert(specIndices, specIndex)
+				for j = 1, numSpecs do
+					specIndices[j] = j
 				end
 			end
 		end
 	end
 
 	for i = 1, #classNames do
-		local specs = LibTalentInfo:GetSpecializations(classNames[i])
-
 		for j = 1, #specIndices do
-			local specIndex = specIndices[j]
+			local spec = LibTalentTome:GetSpecializationAt(classNames[i], specIndices[j])
 
-			if specs[specIndex] ~= nil then
-				table.insert(result, specs[specIndex].id)
+			if spec ~= nil and not spec.initial then
+				table.insert(result, spec.id)
 			end
 		end
 	end
 
 	return result
-end
-
---- @param classNames string[]
---- @return string[]
-function Addon.Condition.Utils.GetRelevantClassFileNames(classNames)
-	if #classNames == 0 then
-		classNames[1] = select(2, UnitClass("player"))
-	end
-
-	return classNames
 end

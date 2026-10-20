@@ -22,10 +22,11 @@ by downloading a recent release, and copying the libraries into your repository.
 * [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 * [LibDeflate](https://github.com/SafeteeWoW/LibDeflate)
 * [LibLog-1.0](https://github.com/Snakybo/LibLog-1.0)
-* [LibMacroSyntaxHighlight-1.0](https://github.com/Snakybo/LibMacroSyntaxHighlight-1.0)
+* [LibChroMacro](https://github.com/Snakybo/LibChroMacro)
 * [LibSharedMedia-3.0](https://www.wowace.com/projects/libsharedmedia-3-0)
 * [LibStub](https://www.wowace.com/projects/libstub)
-* [LibTalentInfo-1.0](https://github.com/Snakybo/LibTalentInfo-1.0)
+* [LibTalentTome](https://github.com/Snakybo/LibTalentTome)
+* [LibStanceDance](https://github.com/Snakybo/LibStanceDance)
 * [TaintLess](https://www.townlong-yak.com/addons/taintless)
 
 ## Code standards

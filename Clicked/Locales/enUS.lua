@@ -133,7 +133,6 @@ L["Normal"] = true
 L["PvP"] = true
 L["RP"] = true
 L["Hardcore"] = true
-L["Skyborne"] = true
 L["Specialization %s"] = true
 L["Talent %s/%s"] = true
 L["PvP Talent %s"] = true

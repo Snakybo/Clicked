@@ -17,6 +17,8 @@
 --- @class Addon
 local Addon = select(2, ...)
 
+local LibTalentTome = LibStub("LibTalentTome")
+
 --- @class SpellLibrary
 Addon.SpellLibrary = {}
 
@@ -60,6 +62,8 @@ local function GetSpells_TWW()
 
 	--- @type string?, integer?
 	local activeTabName, activetabIcon
+
+	local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
 
 	--- @param spell SpellBookItemInfo
 	--- @param tab? SpellBookSkillLineInfo
@@ -111,7 +115,7 @@ local function GetSpells_TWW()
 	for i = 1, C_SpellBook.GetNumSpellBookSkillLines() do
 		local tab = C_SpellBook.GetSpellBookSkillLineInfo(i)
 
-		if tab.specID == C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization()) then
+		if tab.specID == specId then
 			activeTabName = tab.name
 			activetabIcon = tab.iconID
 		end
@@ -151,35 +155,34 @@ local function GetSpells_TWW()
 		end
 	end
 
-	for _, talent in ipairs(Addon:GetLocalizedTalents()) do
+	for _, talent in ipairs(LibTalentTome:GetTalents(specId)) do
 		if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
 			if result[talent.spellId] == nil then
 				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {
 					type = "SPELL",
-					name = talent.text,
+					name = talent.name,
 					spellId = talent.spellId,
 					icon = talent.icon,
 					tabName = activeTabName,
 					tabIcon = activetabIcon,
-					specId = talent.specId
+					specId = specId
 				}
 			end
 		end
 	end
 
-	for _, talent in ipairs(Addon:GetLocalizedPvPTalents()) do
-		if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
+	for _, talent in ipairs(LibTalentTome:GetPvpTalents(specId)) do
+		if not C_Spell.IsSpellPassive(talent.spellId) then
 			if result[talent.spellId] == nil then
-				--- @type SpellLibrarySpellResult
 				result[talent.spellId] = {
 					type = "SPELL",
-					name = talent.text,
+					name = talent.name,
 					spellId = talent.spellId,
 					icon = talent.icon,
 					tabName = activeTabName,
 					tabIcon = activetabIcon,
-					specId = talent.specId
+					specId = specId
 				}
 			end
 		end

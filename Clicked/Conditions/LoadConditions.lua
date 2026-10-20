@@ -17,6 +17,8 @@
 --- @class Addon
 local Addon = select(2, ...)
 
+local LibTalentTome = LibStub("LibTalentTome")
+
 local Utils = Addon.Condition.Utils
 
 --- @type LoadCondition[]
@@ -90,7 +92,20 @@ local config = {
 			type = "multiselect",
 			label = "Race",
 			availableValues = function()
-				return Addon:GetLocalizedRaces()
+				--- @type table<string, string>
+				local items = {}
+
+				--- @type string[]
+				local order = {}
+
+				for _, race in ipairs(LibTalentTome:GetUniqueRaces()) do
+					items[race.fileName] = race.name
+					table.insert(order, race.fileName)
+				end
+
+				table.sort(order)
+
+				return items, order
 			end
 		},
 		init = function()
@@ -115,7 +130,21 @@ local config = {
 			type = "multiselect",
 			label = "Class",
 			availableValues = function()
-				return Addon:GetLocalizedClasses()
+				--- @type table<string, string>
+				local items = {}
+
+				--- @type string[]
+				local order = {}
+
+				for _, class in ipairs(LibTalentTome:GetClasses()) do
+					local _, _, _, color = GetClassColor(class.fileName)
+					items[class.fileName] = string.format("|c%s%s|r", color, class.name)
+					table.insert(order, class.fileName)
+				end
+
+				table.sort(order)
+
+				return items, order
 			end
 		},
 		init = function()
@@ -142,11 +171,49 @@ local config = {
 			label = "Talent specialization",
 			--- @param class string[]
 			availableValues = function(class)
+				--- @type table<integer, string>
+				local items = {}
+
+				--- @type integer[]
+				local order = {}
+
 				if #class == 0 then
 					class[1] = select(2, UnitClass("player"))
 				end
 
-				return Addon:GetLocalizedSpecializations(class)
+				if #class == 1 then
+					local specs = LibTalentTome:GetSpecializations(class[1])
+
+					for index, spec in pairs(specs) do
+						if not spec.initial then
+							items[index] = Addon:GetTextureString(spec.name, spec.icon)
+							table.insert(order, index)
+						end
+					end
+				else
+					local max = 0
+
+					-- Find class with the most specializations out of all available classes
+					if #class == 0 then
+						for _, current in ipairs(LibTalentTome:GetClasses()) do
+							max = math.max(max, LibTalentTome:GetNumSpecializations(current))
+						end
+					-- Find class with the most specializations out of the selected classes
+					else
+						for i = 1, #class do
+							max = math.max(max, LibTalentTome:GetNumSpecializations(class[i]))
+						end
+					end
+
+					for i = 1, max do
+						local key = i
+
+						items[key] = string.format(Addon.L["Specialization %s"], i)
+						table.insert(order, key)
+					end
+				end
+
+				return items, order
 			end
 		},
 		dependencies = { "class" },
@@ -218,13 +285,24 @@ local config = {
 			--- @param class string[]
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-					return Addon:GetLocalizedTalents(specIds)
-				else
-					local classes = Utils.GetRelevantClasses(class)
-					return Addon:GetLocalizedTalents(classes)
+				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
+
+				--- @type LibTalentTome.Talent[]
+				local result = {}
+
+				--- @type table<string, boolean>
+				local seen = {}
+
+				for _, specId in ipairs(specIds) do
+					for _, talent in ipairs(LibTalentTome:GetTalents(specId)) do
+						if not seen[talent.name] then
+							seen[talent.name] = true
+							table.insert(result, talent)
+						end
+					end
 				end
+
+				return result
 			end
 		},
 		dependencies = { "class", "specialization" },
@@ -270,7 +348,23 @@ local config = {
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
 				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-				return Addon:GetLocalizedPvPTalents(specIds)
+
+				--- @type LibTalentTome.Talent[]
+				local result = {}
+
+				--- @type table<string, boolean>
+				local seen = {}
+
+				for _, specId in ipairs(specIds) do
+					for _, talent in ipairs(LibTalentTome:GetPvpTalents(specId)) do
+						if not seen[talent.name] then
+							seen[talent.name] = true
+							table.insert(result, talent)
+						end
+					end
+				end
+
+				return result
 			end
 		},
 		dependencies = { "class", "specialization" },

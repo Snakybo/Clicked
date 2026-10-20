@@ -21,7 +21,6 @@ EditBox Widget
 --- @field public text string
 --- @field public icon integer
 --- @field public spellId integer?
---- @field public value any
 --- @field public custom boolean?
 
 --- @class ClickedAutoFillEditBox.Match : ClickedAutoFillEditBox.Option

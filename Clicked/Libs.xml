@@ -16,8 +16,7 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
 	<Script file="Libs\LibStub\LibStub.lua"/>
 	<Include file="Libs\TaintLess\TaintLess.xml"/>
 	<Include file="Libs\LibLog-1.0\LibLog-1.0.xml"/>
@@ -33,9 +32,9 @@
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
 	<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
 	<Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
-	<Include file="Libs\LibTalentInfo-1.0\LibTalentInfo-1.0.xml"/>
-	<Include file="Libs\LibShapeshift-1.0\LibShapeshift-1.0.xml"/>
-	<Include file="Libs\LibMacroSyntaxHighlight-1.0\LibMacroSyntaxHighlight.xml"/>
+	<Include file="Libs\LibTalentTome\LibTalentTome.xml"/>
+	<Include file="Libs\LibStanceDance\LibStanceDance.xml"/>
+	<Include file="Libs\LibChroMacro\LibChroMacro.xml"/>
 	<Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 	<Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
 	<Script file="Libs\LibDeflate\LibDeflate.lua"/>

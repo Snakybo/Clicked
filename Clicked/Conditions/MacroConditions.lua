@@ -17,6 +17,8 @@
 --- @class Addon
 local Addon = select(2, ...)
 
+local LibStanceDance = LibStub("LibStanceDance")
+
 local Utils = Addon.Condition.Utils
 
 --- @type Condition[]
@@ -28,13 +30,51 @@ local config = {
 			label = "Form / Stance",
 			negatable = true,
 			availableValues = function(class, specialization)
-				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-					local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
-					return Addon:GetLocalizedForms(specIds)
-				else
-					local classFileNames = Utils.GetRelevantClassFileNames(class)
-					return Addon:GetLocalizedForms(classFileNames)
+				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
+
+				--- @type table<integer, string>
+				local items = {
+					Addon.L["None"]
+				}
+
+				--- @type integer[]
+				local order = {
+					1
+				}
+
+				--- @type table<integer, { name: string, icon: integer, seen: integer }>
+				local forms = {}
+
+				for _, specId in ipairs(specIds) do
+					for i, form in ipairs(LibStanceDance:GetForms(specId)) do
+						local current = forms[i]
+
+						if current == nil then
+							forms[i] = {
+								name = form.name,
+								icon = form.icon,
+								seen = 1
+							}
+						elseif current.name == form.name and current.icon == form.icon then
+							current.seen = current.seen + 1
+						end
+					end
 				end
+
+				for i = 1, #forms do
+					local key = #order + 1
+					local current = forms[i]
+
+					if current.seen == #specIds then
+						items[key] = Addon:GetTextureString(current.name, current.icon)
+					else
+						items[key] = string.format(Addon.L["Stance %s"], i)
+					end
+
+					table.insert(order, key)
+				end
+
+				return items, order
 			end
 		},
 		dependencies = { "class", "specialization" },

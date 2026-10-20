@@ -133,7 +133,7 @@ function Addon.BindingConfig.BindingStatusTab:RedrawPage()
 			label = RED_FONT_COLOR:WrapTextInColorCode(label)
 		end
 
-		local widget = AceGUI:Create("ColoredMacroEditBox") --[[@as ColoredMacroEditBox]]
+		local widget = AceGUI:Create("ChroMacroEditBox") --[[@as ChroMacroEditBox]]
 		widget:SetLabel(label)
 		widget:SetText(text)
 		widget:SetFullWidth(true)

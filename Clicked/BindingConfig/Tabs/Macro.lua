@@ -232,7 +232,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			return GetLabelText(self.bindings[1].action.macroValue)
 		end
 
-		--- @param widget ColoredMacroEditBox
+		--- @param widget ChroMacroEditBox
 		--- @param value string
 		local function OnTextChanged(widget, _, value)
 			widget:SetLabel(GetLabelText(value))
@@ -249,7 +249,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		end
 
 
-		local widget = AceGUI:Create("ColoredMacroEditBox") --[[@as ColoredMacroEditBox]]
+		local widget = AceGUI:Create("ChroMacroEditBox") --[[@as ChroMacroEditBox]]
 		widget:SetFullWidth(true)
 		widget:SetNumLines(10)
 
