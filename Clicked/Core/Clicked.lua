@@ -15,8 +15,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local AceConsole = LibStub("AceConsole-3.0")
+local AceDB = LibStub("AceDB-3.0")
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+local LibTalentTome = LibStub("LibTalentTome")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -148,18 +150,7 @@ local function PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
 	Addon:ReapplySidecars()
 
 	if isInitialLogin or isReloadingUi then
-		local isInitialLoadPending = false
-
-		Addon:UpdateTalentCache(function()
-			isInitialLoadPending = true
-			Addon:ReloadBindingsImmediate()
-		end, true)
-
-		-- Reload immediately in case we are about to be in combat
-		if not isInitialLoadPending then
-			Addon:ReloadBindingsImmediate()
-		end
-
+		Addon:ReloadBindingsImmediate()
 		Addon:RequestItemLoadForBindings()
 	end
 end
@@ -184,14 +175,6 @@ local function ZONE_CHANGED_NEW_AREA()
 	Addon:ReloadBindings("ZONE_CHANGED_NEW_AREA")
 end
 
-local function CHARACTER_POINTS_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "CHARACTER_POINTS_CHANGED")
-
-	Addon:UpdateTalentCache(function()
-		Addon:ReloadBindings("CHARACTER_POINTS_CHANGED")
-	end)
-end
-
 local function PLAYER_FLAGS_CHANGED(_, unit)
 	if unit ~= "player" then
 		return
@@ -209,36 +192,6 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 
 		Addon:ReloadBindings("PLAYER_FLAGS_CHANGED")
 	end
-end
-
-local function PLAYER_TALENT_UPDATE()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_TALENT_UPDATE")
-
-	Addon:UpdateTalentCache(function()
-		Addon:ReloadBindings("PLAYER_TALENT_UPDATE")
-	end)
-end
-
-local function PLAYER_PVP_TALENT_UPDATE()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_PVP_TALENT_UPDATE")
-
-	Addon:ReloadBindings("PLAYER_PVP_TALENT_UPDATE")
-end
-
-local function TRAIT_CONFIG_CREATED()
-	Clicked:LogVerbose("Received event {eventName}", "TRAIT_CONFIG_CREATED")
-
-	Addon:UpdateTalentCache(function()
-		Addon:ReloadBindings("TRAIT_CONFIG_CREATED")
-	end)
-end
-
-local function TRAIT_CONFIG_UPDATED()
-	Clicked:LogVerbose("Received event {eventName}", "TRAIT_CONFIG_UPDATED")
-
-	Addon:UpdateTalentCache(function()
-		Addon:ReloadBindings("TRAIT_CONFIG_UPDATED")
-	end)
 end
 
 local function PLAYER_FOCUS_CHANGED()
@@ -323,6 +276,20 @@ local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
 	end
 end
 
+--- @param event LibTalentTome.CallbackEvent
+local function ON_ACTIVE_TALENTS_CHANGED(event)
+	Clicked:LogVerbose("Received event {eventName}", event)
+
+	Addon:ReloadBindings("ActiveTalentsChanged")
+end
+
+--- @param event LibTalentTome.CallbackEvent
+local function ON_ACTIVE_PVP_TALENTS_CHANGED(event)
+	Clicked:LogVerbose("Received event {eventName}", event)
+
+	Addon:ReloadBindings("ActivePvpTalentsChanged")
+end
+
 --- @param self AceEvent-3.0
 --- @param method fun(self: AceEvent-3.0, event: WowEvent, callback: function|string)
 local function UpdateEventHooks(self, method)
@@ -331,12 +298,7 @@ local function UpdateEventHooks(self, method)
 	method(self, "PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)
 	method(self, "RUNE_UPDATED", RUNE_UPDATED)
 	method(self, "PLAYER_FOCUS_CHANGED", PLAYER_FOCUS_CHANGED)
-	method(self, "CHARACTER_POINTS_CHANGED", CHARACTER_POINTS_CHANGED)
-	method(self, "PLAYER_TALENT_UPDATE", PLAYER_TALENT_UPDATE)
 	method(self, "PLAYER_FLAGS_CHANGED", PLAYER_FLAGS_CHANGED)
-	method(self, "PLAYER_PVP_TALENT_UPDATE", PLAYER_PVP_TALENT_UPDATE)
-	method(self, "TRAIT_CONFIG_CREATED", TRAIT_CONFIG_CREATED)
-	method(self, "TRAIT_CONFIG_UPDATED", TRAIT_CONFIG_UPDATED)
 	method(self, "PLAYER_LEVEL_CHANGED", PLAYER_LEVEL_CHANGED)
 	method(self, "LEARNED_SPELL_IN_SKILL_LINE", LEARNED_SPELL_IN_SKILL_LINE)
 	method(self, "HOUSE_EDITOR_MODE_CHANGED", HOUSE_EDITOR_MODE_CHANGED)
@@ -374,11 +336,14 @@ end
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	Addon.db = LibStub("AceDB-3.0"):New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile) --[[@as AceDBObject-3.0|DBSchema]]
+	Addon.db = AceDB:New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile) --[[@as AceDBObject-3.0|DBSchema]]
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "InitializeDatabase")
 	Addon.db.RegisterCallback(self, "OnNewProfile", "InitializeDatabase")
+
+	LibTalentTome.RegisterCallback(self, "ActiveTalentsChanged", ON_ACTIVE_TALENTS_CHANGED)
+	LibTalentTome.RegisterCallback(self, "ActivePvpTalentsChanged", ON_ACTIVE_PVP_TALENTS_CHANGED)
 
 	self:SetLogLevelFromConfigTable(Addon.db.global)
 

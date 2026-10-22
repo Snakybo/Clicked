@@ -109,16 +109,9 @@ local pendingReloadCauses = {
 }
 
 --- @type table<string,boolean>
-local talentCache = {}
-
---- @type table<string,boolean>
 local macroTooLongNotified = {}
 
 local reloadBindingsDelayTicker = nil
-local reloadTalentCacheDelayTicker = nil
-
---- @type function[]
-local reloadTalentCacheCallbacks = {}
 
 local logger = Clicked:CreateSystemLogger("BindingProcessor")
 
@@ -905,116 +898,6 @@ function Addon:ReloadBinding(binding, condition)
 	Addon:UpdateLookupTable(binding)
 end
 
---- @param callback? fun()
---- @param immediate? boolean
-function Addon:UpdateTalentCache(callback, immediate)
-	local function DoUpdateTalentCache()
-		logger:LogDebug("Updating talent cache")
-
-		if reloadTalentCacheDelayTicker ~= nil then
-			reloadTalentCacheDelayTicker:Cancel()
-			reloadTalentCacheDelayTicker = nil
-		end
-
-		wipe(talentCache)
-
-		if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon:IsForever() then
-			local configId = C_ClassTalents.GetActiveConfigID()
-			if configId == nil then
-				Addon:UpdateTalentCache()
-				return
-			end
-
-			local configInfo = C_Traits.GetConfigInfo(configId)
-			if configInfo == nil then
-				Addon:UpdateTalentCache()
-				return
-			end
-
-			local treeId = configInfo.treeIDs[1]
-			local nodes = C_Traits.GetTreeNodes(treeId)
-
-			for _, nodeId in ipairs(nodes) do
-				local nodeInfo = C_Traits.GetNodeInfo(configId, nodeId)
-
-				if nodeInfo.ID ~= 0 then
-					-- check if the node was manually selected by the player, the easy way
-					local isSelected = nodeInfo.currentRank > 0
-
-					-- check if the node was granted to the player automatically
-					if not isSelected then
-						for _, conditionId in ipairs(nodeInfo.conditionIDs) do
-							local conditionInfo = C_Traits.GetConditionInfo(configId, conditionId)
-
-							if conditionInfo ~= nil and conditionInfo.isMet and conditionInfo.ranksGranted ~= nil and conditionInfo.ranksGranted > 0 then
-								isSelected = true
-								break
-							end
-						end
-					end
-
-					-- check if the node is part of a hero talent tree that is currently selected
-					if isSelected and nodeInfo.subTreeID then
-						local subTreeInfo = C_Traits.GetSubTreeInfo(configId, nodeInfo.subTreeID)
-						if not subTreeInfo.isActive then
-							isSelected = false
-						end
-					end
-
-					if isSelected then
-						local entryId = nodeInfo.activeEntry ~= nil and nodeInfo.activeEntry.entryID or 0
-						local entryInfo = entryId ~= nil and C_Traits.GetEntryInfo(configId, entryId) or nil
-						local definitionInfo = entryInfo ~= nil and entryInfo.definitionID ~= nil and C_Traits.GetDefinitionInfo(entryInfo.definitionID) or nil
-
-						if definitionInfo ~= nil then
-							local name = StripColorCodes(TalentUtil.GetTalentNameFromInfo(definitionInfo))
-							talentCache[name] = true
-						end
-					end
-				end
-			end
-		elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-			for i = 1, MAX_NUM_TALENTS do
-				local info = C_SpecializationInfo.GetTalentInfo({
-					tier = math.ceil(i / MAX_NUM_TALENTS),
-					column = (i - 1) % MAX_NUM_TALENTS + 1
-				})
-
-				if info ~= nil then
-					talentCache[info.name] = info.selected
-				end
-			end
-		else
-			for tab = 1, GetNumTalentTabs() do
-				for index = 1, GetNumTalents(tab) do
-					local name, _, _, _, rank  = GetTalentInfo(tab, index)
-
-					if name ~= nil then
-						talentCache[name] = rank > 0
-					end
-				end
-			end
-		end
-
-		local callbacks = CopyTable(reloadTalentCacheCallbacks)
-		wipe(reloadTalentCacheCallbacks)
-
-		for _, cb in ipairs(callbacks) do
-			cb()
-		end
-	end
-
-	if callback ~= nil then
-		table.insert(reloadTalentCacheCallbacks, callback)
-	end
-
-	if immediate then
-		DoUpdateTalentCache()
-	elseif reloadTalentCacheDelayTicker == nil then
-		reloadTalentCacheDelayTicker = C_Timer.NewTimer(0, DoUpdateTalentCache)
-	end
-end
-
 --- Check if the specified binding is currently active based on the configuration
 --- provided in the binding's Load Options, and whether the binding is actually
 --- valid (it has a keybind and an action to perform)
@@ -1527,15 +1410,4 @@ end
 --- @return Binding[]
 function Addon:GetActiveBindings()
 	return activeBindings
-end
-
---- @param name string
---- @return boolean
-function Addon:IsTalentSelected(name)
-	return talentCache[name] == true
-end
-
---- @return boolean
-function Addon:IsTalentCacheReady()
-	return next(talentCache) ~= nil
 end

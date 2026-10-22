@@ -227,7 +227,7 @@ local config = {
 			end
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
-		testOnEvents = { "PLAYER_TALENT_UPDATE" },
+		testOnEvents = { "ActiveTalentsChanged" },
 		--- @return integer
 		state = function()
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
@@ -266,7 +266,7 @@ local config = {
 			return Utils.CreateMultiselectLoadOption(role)
 		end,
 		unpack = Utils.UnpackMultiselectLoadOption,
-		testOnEvents = { "PLAYER_TALENT_UPDATE" },
+		testOnEvents = { "ActiveTalentsChanged" },
 		--- @return string
 		state = function()
 			return GetSpecializationRole(C_SpecializationInfo.GetSpecialization())
@@ -310,11 +310,11 @@ local config = {
 			return Utils.CreateTalentLoadOption("")
 		end,
 		unpack = Utils.UnpackTalentLoadOption,
-		testOnEvents = { "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED" },
+		testOnEvents = { "ActiveTalentsChanged" },
 		--- @param value TalentLoadOptionEntry[][]
 		--- @return boolean
 		test = function(value)
-			if not Addon:IsTalentCacheReady() then
+			if not LibTalentTome:AreTalentsInitialized() then
 				return false
 			end
 
@@ -323,9 +323,9 @@ local config = {
 
 				for _, talent in ipairs(compound) do
 					local name = talent.value
-					local selected = Addon:IsTalentSelected(name)
+					local selected = LibTalentTome:GetActiveTalentByName(name)
 
-					if #name > 0 and (selected and talent.negated or not selected and not talent.negated) then
+					if #name > 0 and (selected ~= nil and talent.negated or selected == nil and not talent.negated) then
 						valid = false
 						break
 					end
@@ -347,6 +347,10 @@ local config = {
 			--- @param class string[]
 			--- @param specialization integer[]
 			availableValues = function(class, specialization)
+				if not LibTalentTome:ArePvpTalentsInitialized() then
+					return false
+
+				end
 				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 
 				--- @type LibTalentTome.Talent[]
@@ -373,37 +377,17 @@ local config = {
 			return Utils.CreateTalentLoadOption("")
 		end,
 		unpack = Utils.UnpackTalentLoadOption,
-		testOnEvents = { "PLAYER_PVP_TALENT_UPDATE" },
+		testOnEvents = { "ActivePvpTalentsChanged" },
 		--- @param value TalentLoadOptionEntry[][]
 		test = function(value)
-			local cache = {}
-
-			do
-				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1);
-
-				if slotInfo ~= nil and slotInfo.availableTalentIDs then
-					for _, id in ipairs(slotInfo.availableTalentIDs) do
-						local _, name, _, selected, _, _, _, _, _, known, grantedByAura = GetPvpTalentInfoByID(id)
-
-						if selected or known or grantedByAura then
-							cache[name] = true
-						end
-					end
-				end
-			end
-
-			if next(cache) == nil then
-				return false
-			end
-
 			for _, compound in ipairs(value) do
 				local valid = true
 
 				for _, talent in ipairs(compound) do
 					local name = talent.value
-					local selected = cache[name]
+					local selected = LibTalentTome:GetActivePvpTalentByName(name)
 
-					if #name > 0 and (selected and talent.negated or not selected and not talent.negated) then
+					if #name > 0 and (selected ~= nil and talent.negated or selected == nil and not talent.negated) then
 						valid = false
 						break
 					end
@@ -596,9 +580,7 @@ local config = {
 			return Utils.CreateLoadOption("")
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
-		testOnEvents = (Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or Addon:IsForever()) and
-			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "LEARNED_SPELL_IN_SKILL_LINE" } or
-			{ "PLAYER_TALENT_UPDATE", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "TRAIT_CONFIG_CREATED", "TRAIT_CONFIG_UPDATED", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
+		testOnEvents = { "ActiveTalentsChanged", "ActivePvpTalentsChanged", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "LEARNED_SPELL_IN_SKILL_LINE", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		--- @return integer
 		test = function(value)
 			local spell = C_Spell.GetSpellInfo(value)
