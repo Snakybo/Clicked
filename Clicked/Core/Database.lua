@@ -409,9 +409,9 @@ end
 --- @param obj? DataObject
 function Addon:UpdateLookupTable(obj)
 	if obj ~= nil then
-		Clicked:LogVerbose("Updating binding lookup table for {uid}", obj.uid)
+		Clicked:LogTrace("Updating binding lookup table for {uid}", obj.uid)
 	else
-		Clicked:LogVerbose("Updating binding lookup table")
+		Clicked:LogTrace("Updating binding lookup table")
 	end
 
 	--- @type DataObject[]

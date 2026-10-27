@@ -110,14 +110,14 @@ function Addon:ApplyAttributesToFrame(frame)
 
 	for key in pairs(applied) do
 		if pending[key] == nil then
-			logger:LogVerbose("Clearing attribute {attribute} from frame {frameName}", key, frame:GetName())
+			logger:LogTrace("Clearing attribute {attribute} from frame {frameName}", key, frame:GetName())
 			frame:SetAttribute(key, nil)
 		end
 	end
 
 	for key, value in pairs(pending) do
 		if value ~= applied[key] then
-			logger:LogVerbose("Setting attribute {attribute} to {value} on {frameName}", key, value, frame:GetName())
+			logger:LogTrace("Setting attribute {attribute} to {value} on {frameName}", key, value, frame:GetName())
 			frame:SetAttribute(key, value)
 		end
 	end

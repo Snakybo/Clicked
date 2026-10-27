@@ -151,7 +151,7 @@ function Addon:GetOrCreateSidecar(frame)
 	key:SetAttribute("useOnKeyDown", Addon.db.global.options.onKeyDown and true or false)
 	key:RegisterForClicks(Addon.db.global.options.onKeyDown and "AnyDown" or "AnyUp")
 
-	Clicked:LogVerbose("Created sidecar {sidecarId} for frame {frameName}", nextId, frame:GetName() or "<unnamed>")
+	Clicked:LogTrace("Created sidecar {sidecarId} for frame {frameName}", nextId, frame:GetName() or "<unnamed>")
 
 	--- @type Sidecar
 	sidecar = {

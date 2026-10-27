@@ -31,7 +31,7 @@ externals:
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
   Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
-  Libs/LibLog-1.0: https://github.com/Snakybo/LibLog-1.0
+  Libs/LibLog: https://github.com/Snakybo/LibLog
   Libs/LibChroMacro: https://github.com/Snakybo/LibChroMacro
   Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
@@ -44,7 +44,7 @@ externals:
 move-folders:
   Clicked/Clicked: Clicked
   Clicked/ClickedMedia: ClickedMedia
-  Clicked/Libs/LibLog-1.0/LibLog-1.0: Clicked/Libs/LibLog-1.0
+  Clicked/Libs/LibLog/LibLog: Clicked/Libs/LibLog
   Clicked/Libs/LibChroMacro/LibChroMacro: Clicked/Libs/LibChroMacro
   Clicked/Libs/LibTalentTome/LibTalentTome: Clicked/Libs/LibTalentTome
   Clicked/Libs/LibStanceDance/LibStanceDance: Clicked/Libs/LibStanceDance

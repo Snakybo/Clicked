@@ -24,9 +24,9 @@ local LibTalentTome = LibStub("LibTalentTome")
 local Addon = select(2, ...)
 Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
 
---- @class Clicked : AceAddon, AceEvent-3.0, LibLog-1.0.Logger
-Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0", "LibLog-1.0")
 Clicked.VERSION = C_AddOns.GetAddOnMetadata("Clicked", "Version")
+--- @class Clicked : AceAddon, AceEvent-3.0, LibLog.Logger
+Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0", "LibLog")
 
 --@debug@
 if Clicked.VERSION == "@project-version@" then

@@ -35,7 +35,7 @@
 --- @field public bindings Binding[]
 --- @field public options DBSchema.Global.Options
 --- @field public keyVisualizer DBSchema.Global.KeyVisualizer
---- @field public logLevel LibLog-1.0.LogLevel
+--- @field public logLevel LibLog.LogLevel
 --- @field public blacklist table<string,boolean>
 
 --- @class DBSchema.Global.Options

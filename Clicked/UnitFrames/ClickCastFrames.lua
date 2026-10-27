@@ -157,7 +157,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 
 	for _, existing in ipairs(frames) do
 		if existing == frame then
-			return logger:LogVerbose("Frame {frameName} has already been registered!", frame:GetName())
+			return logger:LogTrace("Frame {frameName} has already been registered!", frame:GetName())
 		end
 	end
 
@@ -179,7 +179,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 		})
 
 		logger:WithLogContext({ unitFrameAddon = addon }, function(logger)
-			logger:LogVerbose("Delaying frame registration for {frameName} until combat ends or the addon is loaded", function()
+			logger:LogTrace("Delaying frame registration for {frameName} until combat ends or the addon is loaded", function()
 				return type(frame) == "string" and frame or frame:GetName()
 			end)
 		end)
@@ -235,7 +235,7 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 	Addon.BlacklistOptions:RegisterFrame(frame)
 
 	if name ~= nil then
-		logger:LogVerbose("Registered frame {frameName}", name)
+		logger:LogTrace("Registered frame {frameName}", name)
 	end
 end
 
@@ -304,7 +304,7 @@ function Clicked:UnregisterClickCastFrame(frame)
 
 	table.remove(frames, index)
 
-	logger:LogVerbose("Unregistered frame {frameName}", frame:GetName() or "<unnamed>")
+	logger:LogTrace("Unregistered frame {frameName}", frame:GetName() or "<unnamed>")
 end
 
 --- Ensure that a frame is registered for mouse clicks and scrollwheel events. This will override the `RegisterForClicks` and `EnableMouseWheel` properties on
@@ -325,7 +325,7 @@ function Clicked:RegisterFrameClicks(frame)
 	frame:RegisterForClicks(Addon.db.global.options.onKeyDown and "AnyDown" or "AnyUp")
 	frame:EnableMouseWheel(true)
 
-	logger:LogVerbose("Registered clicks for frame {frameName}", frame:GetName())
+	logger:LogTrace("Registered clicks for frame {frameName}", frame:GetName())
 end
 
 --- @param frame Button The frame to name.

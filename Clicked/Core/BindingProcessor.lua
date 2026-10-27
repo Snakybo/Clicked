@@ -610,7 +610,7 @@ local function ReloadBindings(immediate)
 	end
 
 	local function DoReloadBindings()
-		logger:LogVerbose("Reloading bindings for causes: {causes}", pendingReloadCauses)
+		logger:LogTrace("Reloading bindings for causes: {causes}", pendingReloadCauses)
 
 		if reloadBindingsDelayTicker ~= nil then
 			reloadBindingsDelayTicker:Cancel()
