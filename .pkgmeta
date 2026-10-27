@@ -3,6 +3,9 @@ enable-nolib-creation: no
 
 ignore:
   - .editorconfig
+  - .gitattributes
+  - .gitignore
+  - .wowluarc.json
   - README.md
   - CHANGELOG.md
   - CONTRIBUTING.md

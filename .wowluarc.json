@@ -1,0 +1,23 @@
+{
+	"addonRoot": true,
+	"library": ["Clicked/Libs/"],
+	"diagnostics": {
+		"enable": [
+			"need-check-nil",
+			"nil-index",
+			"implicit-nil-return",
+			"invalid-op",
+			"incomplete-signature-doc",
+			"missing-param-annotation",
+			"missing-return-annotation",
+			"unknown-param-type",
+			"unknown-return-type",
+			"unknown-field-type",
+			"unknown-local-type"
+		]
+	},
+	"globals": {
+		"read": ["ElvUI", "ElvUISpellBookTooltip", "LibStub"],
+		"write": ["Clicked", "ClickedMedia", "Clique", "ClickCastHeader", "ClickCastFrames"]
+	}
+}

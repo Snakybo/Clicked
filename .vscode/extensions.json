@@ -1,7 +1,5 @@
 {
 	"recommendations": [
-		"sumneko.lua",
-		"Ketho.wow-api",
-		"stanzilla.vscode-wow-toc"
+		"TradeSkillMaster.wowlua-ls"
 	]
 }
