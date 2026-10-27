@@ -1,48 +1,42 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-A heading with a checkbox
+A talent icon widget, similar to AceGUI's icon widget, but without a label and
+customizable vertex colors.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
+local TYPE, VERSION = "ClickedTalentIcon", 2
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+	return
+end
+
 --- @alias AceGUIWidgetType
 --- | "ClickedTalentIcon"
 
 --- @class ClickedTalentIcon : AceGUIWidget
---- @field private frame Button
---- @field private image Texture
-
-local Type, Version = "ClickedTalentIcon", 1
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
-	return
-end
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-
-local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
-end
-
-local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
-end
-
-local function Button_OnClick(frame, button)
-	frame.obj:Fire("OnClick", button)
-	AceGUI:ClearFocus()
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedTalentIcon
-local Methods = {}
+--- @field public frame Button&{obj: self}
+--- @field protected label FontString&{obj: self}
+--- @field protected image Texture&{obj: self}
+local ClickedTalentIcon = {}
 
 --- @protected
-function Methods:OnAcquire()
+function ClickedTalentIcon:OnAcquire()
 	self:SetHeight(110)
 	self:SetWidth(110)
 	self:SetImage(nil)
@@ -50,7 +44,7 @@ function Methods:OnAcquire()
 	self:SetColor(1, 1, 1, 1)
 end
 
-function Methods:SetImage(path, ...)
+function ClickedTalentIcon:SetImage(path, ...)
 	local image = self.image
 	image:SetTexture(path)
 
@@ -64,7 +58,7 @@ function Methods:SetImage(path, ...)
 	end
 end
 
-function Methods:SetImageSize(width, height)
+function ClickedTalentIcon:SetImageSize(width, height)
 	self.image:SetWidth(width)
 	self.image:SetHeight(height)
 end
@@ -73,21 +67,37 @@ end
 --- @param g number
 --- @param b number
 --- @param a number
-function Methods:SetColor(r, g, b, a)
+function ClickedTalentIcon:SetColor(r, g, b, a)
 	self.image:SetVertexColor(r, g, b, a)
 end
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
+--- @protected
+--- @param frame Frame&{obj: ClickedTalentIcon}
+function ClickedTalentIcon.Frame_OnEnter(frame)
+	frame.obj:Fire("OnEnter")
+end
+
+--- @protected
+--- @param frame Frame&{obj: ClickedTalentIcon}
+function ClickedTalentIcon.Frame_OnLeave(frame)
+	frame.obj:Fire("OnLeave")
+end
+
+--- @protected
+--- @param frame Frame&{obj: ClickedTalentIcon}
+function ClickedTalentIcon.Frame_OnClick(frame, button)
+	frame.obj:Fire("OnClick", button)
+	AceGUI:ClearFocus()
+end
+
 local function Constructor()
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
 
 	frame:EnableMouse(true)
-	frame:SetScript("OnEnter", Control_OnEnter)
-	frame:SetScript("OnLeave", Control_OnLeave)
-	frame:SetScript("OnClick", Button_OnClick)
+	frame:SetScript("OnEnter", ClickedTalentIcon.Frame_OnEnter)
+	frame:SetScript("OnLeave", ClickedTalentIcon.Frame_OnLeave)
+	frame:SetScript("OnClick", ClickedTalentIcon.Frame_OnClick)
 
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlight")
 	label:SetPoint("BOTTOMLEFT")
@@ -101,18 +111,22 @@ local function Constructor()
 	image:SetHeight(64)
 	image:SetPoint("TOP", 0, -5)
 
+	--- @class ClickedTalentIcon
 	local widget = {
 		label = label,
 		image = image,
 		frame = frame,
-		type  = Type
+		type  = TYPE
 	}
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedTalentIcon) do
 		widget[method] = func
 	end
+
+	widget.label.obj = widget
+	widget.image.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

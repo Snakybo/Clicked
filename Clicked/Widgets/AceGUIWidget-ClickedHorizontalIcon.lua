@@ -1,47 +1,41 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-Icon Widget
+A simple icon with a horizontal label.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
+local TYPE, VERSION = "ClickedHorizontalIcon", 2
+local AceGUI = LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+	return
+end
+
 --- @alias AceGUIWidgetType
 --- | "ClickedHorizontalIcon"
 
 --- @class ClickedHorizontalIcon : AceGUIWidget
---- @field private image Texture
---- @field private label FontString
-
-local Type, Version = "ClickedHorizontalIcon", 1
-local AceGUI = LibStub("AceGUI-3.0", true)
-
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
-	return
-end
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
-end
-
-local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
-end
-
-local function Button_OnClick(frame, button)
-	frame.obj:Fire("OnClick", button)
-	AceGUI:ClearFocus()
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedHorizontalIcon
-local Methods = {}
+--- @field public frame Button&{obj: self}
+--- @field protected image Texture&{obj: self}
+--- @field protected label FontString&{obj: self}
+local ClickedHorizontalIcon = {}
 
 --- @protected
-function Methods:OnAcquire()
+function ClickedHorizontalIcon:OnAcquire()
 	self:SetHeight(16)
 	self:SetWidth(110)
 	self:SetLabel()
@@ -50,7 +44,7 @@ function Methods:OnAcquire()
 end
 
 --- @param text? string
-function Methods:SetLabel( text)
+function ClickedHorizontalIcon:SetLabel( text)
 	if text and text ~= "" then
 		self.label:Show()
 		self.label:SetText(text)
@@ -61,7 +55,7 @@ end
 
 --- @param path? string
 --- @param ... number
-function Methods:SetImage(path, ...)
+function ClickedHorizontalIcon:SetImage(path, ...)
 	local image = self.image
 
 	image:SetTexture(path)
@@ -79,22 +73,39 @@ end
 
 --- @param width number
 --- @param height number
-function Methods:SetImageSize(width, height)
+function ClickedHorizontalIcon:SetImageSize(width, height)
 	self.image:SetWidth(width)
 	self.image:SetHeight(height)
 end
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
+--- @protected
+--- @param frame Button&{obj: ClickedHorizontalIcon}
+function ClickedHorizontalIcon.Frame_OnEnter(frame)
+	frame.obj:Fire("OnEnter")
+end
+
+--- @protected
+--- @param frame Button&{obj: ClickedHorizontalIcon}
+function ClickedHorizontalIcon.Frame_OnLeave(frame)
+	frame.obj:Fire("OnLeave")
+end
+
+--- @protected
+--- @param frame Button&{obj: ClickedHorizontalIcon}
+--- @param button string
+function ClickedHorizontalIcon.Frame_OnClick(frame, button)
+	frame.obj:Fire("OnClick", button)
+	AceGUI:ClearFocus()
+end
+
 local function Constructor()
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
 
 	frame:EnableMouse(true)
-	frame:SetScript("OnEnter", Control_OnEnter)
-	frame:SetScript("OnLeave", Control_OnLeave)
-	frame:SetScript("OnClick", Button_OnClick)
+	frame:SetScript("OnEnter", ClickedHorizontalIcon.Frame_OnEnter)
+	frame:SetScript("OnLeave", ClickedHorizontalIcon.Frame_OnLeave)
+	frame:SetScript("OnClick", ClickedHorizontalIcon.Frame_OnClick)
 
 	local image = frame:CreateTexture(nil, "BACKGROUND")
 	image:SetWidth(64)
@@ -107,18 +118,22 @@ local function Constructor()
 	label:SetJustifyV("MIDDLE")
 	label:SetHeight(18)
 
+	--- @class ClickedHorizontalIcon
 	local widget = {
 		label = label,
 		image = image,
 		frame = frame,
-		type = Type
+		type = TYPE
 	}
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedHorizontalIcon) do
 		widget[method] = func
 	end
+
+	widget.image.obj = widget
+	widget.label.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

@@ -1,34 +1,45 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-TabGroup Container
-Container that uses tabs on top to switch between groups.
+A small extension to the AceGUI TabGroup container, which allows for automatic
+re-selection of tabs once they become available again.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
---- @alias AceGUIWidgetType
---- | "ClickedTabGroup"
-
-local Type, Version = "ClickedTabGroup", 2
+local TYPE, VERSION = "ClickedTabGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
+--- @alias AceGUIWidgetType
+--- | "ClickedTabGroup"
 
 --- @class ClickedTabGroup : AceGUITabGroup
-local Methods = {}
+local ClickedTabGroup = {}
 
 --- @param tabs AceGUITabGroupTab[]
-function Methods:SetTabs(tabs)
-	self:BaseSetTabs(tabs)
+function ClickedTabGroup:SetTabs(tabs)
+	self:TabGroupSetTabs(tabs)
 
 	local status = self.status or self.localstatus
 
 	for _, v in ipairs(self.tabs) do
-		--- @diagnostic disable-next-line: undefined-field
+		---@diagnostic disable-next-line: undefined-field
 		v:SetSelected(v.value == status.selected)
 	end
 end
@@ -39,17 +50,17 @@ Constructor
 
 local function Constructor()
 	--- @class ClickedTabGroup
-	local widget = AceGUI:Create("TabGroup") --[[@as AceGUITabGroup]]
-	widget.type = Type
+	local widget = AceGUI:Create("TabGroup")
+	widget.type = TYPE
 
 	--- @private
-	widget.BaseSetTabs = widget.SetTabs
+	widget.TabGroupSetTabs = widget.SetTabs
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedTabGroup) do
 		widget[method] = func
 	end
 
 	return AceGUI:RegisterAsContainer(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

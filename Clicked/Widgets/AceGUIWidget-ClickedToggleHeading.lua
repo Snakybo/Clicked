@@ -1,68 +1,48 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-A heading with a checkbox
+A heading similar to AceGUI's Heading widget, but with an in-line togglable checkbox.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
+local TYPE, VERSION = "ClickedToggleHeading", 2
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+	return
+end
+
 --- @alias AceGUIWidgetType
 --- | "ClickedToggleHeading"
 
 --- @class ClickedToggleHeading : AceGUIWidget
---- @field private frame Button
---- @field private label FontString
---- @field private checkbg Texture
---- @field private check Texture
---- @field private highlight Texture
---- @field private left Texture
---- @field private right Texture
---- @field private center Texture
-
-local Type, Version = "ClickedToggleHeading", 1
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
-	return
-end
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
-end
-
-local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
-end
-
-local function CheckBox_OnMouseDown()
-	AceGUI:ClearFocus()
-end
-
-local function CheckBox_OnMouseUp(frame)
-	local self = frame.obj
-
-	if not self.disabled then
-		self:ToggleChecked()
-
-		if self.checked then
-			PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
-		else -- for both nil and false (tristate)
-			PlaySound(857) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF
-		end
-
-		self:Fire("OnValueChanged", self.checked)
-	end
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedToggleHeading
-local Methods = {}
+--- @field public frame Button&{obj: self}
+--- @field protected label FontString&{obj: self}
+--- @field protected checkbg Texture&{obj: self}
+--- @field protected check Texture&{obj: self}
+--- @field protected highlight Texture&{obj: self}
+--- @field protected left Texture&{obj: self}
+--- @field protected right Texture&{obj: self}
+--- @field protected center Texture&{obj: self}
+--- @field protected disabled boolean
+--- @field protected checked boolean
+local ClickedToggleHeading = {}
 
 --- @protected
-function Methods:OnAcquire()
+function ClickedToggleHeading:OnAcquire()
 	self:SetHeight(24)
 	self:SetText("")
 	self:SetValue(false)
@@ -71,7 +51,7 @@ function Methods:OnAcquire()
 end
 
 --- @param text string
-function Methods:SetText(text)
+function ClickedToggleHeading:SetText(text)
 	self.label:SetText(text)
 
 	if text and text ~= "" then
@@ -82,7 +62,7 @@ function Methods:SetText(text)
 end
 
 --- @param disabled boolean
-function Methods:SetDisabled(disabled)
+function ClickedToggleHeading:SetDisabled(disabled)
 	self.disabled = disabled
 
 	if disabled then
@@ -97,7 +77,7 @@ function Methods:SetDisabled(disabled)
 end
 
 --- @param value boolean
-function Methods:SetValue(value)
+function ClickedToggleHeading:SetValue(value)
 	local check = self.check
 
 	self.checked = value
@@ -114,31 +94,64 @@ function Methods:SetValue(value)
 end
 
 --- @param color ColorMixin
-function Methods:SetLabelColor(color)
+function ClickedToggleHeading:SetLabelColor(color)
 	self.label:SetTextColor(color:GetRGBA())
 end
 
 --- @return boolean
-function Methods:GetValue()
+function ClickedToggleHeading:GetValue()
 	return self.checked
 end
 
-function Methods:ToggleChecked()
+function ClickedToggleHeading:ToggleChecked()
 	self:SetValue(not self:GetValue())
 end
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
+--- @protected
+--- @param frame Frame&{obj: ClickedToggleHeading}
+function ClickedToggleHeading.Frame_OnEnter(frame)
+	frame.obj:Fire("OnEnter")
+end
+
+--- @protected
+--- @param frame Frame&{obj: ClickedToggleHeading}
+function ClickedToggleHeading.Frame_OnLeave(frame)
+	frame.obj:Fire("OnLeave")
+end
+
+--- @protected
+--- @param frame Frame&{obj: ClickedToggleHeading}
+function ClickedToggleHeading.Frame_OnMouseDown(frame)
+	AceGUI:ClearFocus()
+end
+
+--- @protected
+--- @param frame Frame&{obj: ClickedToggleHeading}
+function ClickedToggleHeading.Frame_OnMouseUp(frame)
+	local self = frame.obj
+
+	if not self.disabled then
+		self:ToggleChecked()
+
+		if self.checked then
+			PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
+		else -- for both nil and false (tristate)
+			PlaySound(857) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF
+		end
+
+		self:Fire("OnValueChanged", self.checked)
+	end
+end
+
 local function Constructor()
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
 
 	frame:EnableMouse(true)
-	frame:SetScript("OnEnter", Control_OnEnter)
-	frame:SetScript("OnLeave", Control_OnLeave)
-	frame:SetScript("OnMouseDown", CheckBox_OnMouseDown)
-	frame:SetScript("OnMouseUp", CheckBox_OnMouseUp)
+	frame:SetScript("OnEnter", ClickedToggleHeading.Frame_OnEnter)
+	frame:SetScript("OnLeave", ClickedToggleHeading.Frame_OnLeave)
+	frame:SetScript("OnMouseDown", ClickedToggleHeading.Frame_OnMouseDown)
+	frame:SetScript("OnMouseUp", ClickedToggleHeading.Frame_OnMouseUp)
 
 	local checkbg = frame:CreateTexture(nil, "ARTWORK")
 	checkbg:SetWidth(24)
@@ -182,23 +195,34 @@ local function Constructor()
 	center:SetTexture(137057) -- Interface\\Tooltips\\UI-Tooltip-Border
 	center:SetTexCoord(0.81, 0.94, 0.5, 1)
 
+	--- @class ClickedToggleHeading
 	local widget = {
-		frame      = frame,
-		label  = label,
+		frame     = frame,
+		label     = label,
 		checkbg   = checkbg,
 		check     = check,
 		highlight = highlight,
 		left      = left,
 		right     = right,
 		center    = center,
-		type       = Type
+		checked   = false,
+		disabled  = false,
+		type      = TYPE
 	}
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedToggleHeading) do
 		widget[method] = func
 	end
+
+	widget.checkbg.obj = widget
+	widget.label.obj = widget
+	widget.check.obj = widget
+	widget.highlight.obj = widget
+	widget.left.obj = widget
+	widget.right.obj = widget
+	widget.center.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

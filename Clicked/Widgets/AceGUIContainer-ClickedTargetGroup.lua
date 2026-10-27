@@ -1,21 +1,29 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-Reorderable inline group widget
+A reorderable container for managing target groups
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
---- @alias AceGUIWidgetType
---- | "ClickedTargetGroup"
-
-local Type, Version = "ClickedTargetGroup", 1
+local TYPE, VERSION = "ClickedTargetGroup", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
-
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
 
 --- @param parent Frame
 --- @param texture string
@@ -36,28 +44,18 @@ local function CreateButton(parent, texture, callback)
 	return frame
 end
 
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function MoveDown_OnClick(frame)
-	frame.obj:Fire("OnMoveDown")
-	AceGUI:ClearFocus()
-end
+--- @alias AceGUIWidgetType
+--- | "ClickedTargetGroup"
 
-local function MoveUp_OnClick(frame)
-	frame.obj:Fire("OnMoveUp")
-	AceGUI:ClearFocus()
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedTargetGroup
-local Methods = {}
+--- @class ClickedTargetGroup : AceGUIContainer
+--- @field public frame Frame&{obj: self}
+--- @field public content Frame&{obj: self}
+--- @field protected moveUp Button&{obj: self}
+--- @field protected moveDown Button&{obj: self}
+local ClickedTargetGroup = {}
 
 --- @protected
-function Methods:OnAcquire()
+function ClickedTargetGroup:OnAcquire()
 	self:SetWidth(300)
 	self:SetHeight(100)
 	self:SetMoveUpButton(false)
@@ -65,7 +63,7 @@ function Methods:OnAcquire()
 end
 
 --- @param enabled boolean
-function Methods:SetMoveUpButton(enabled)
+function ClickedTargetGroup:SetMoveUpButton(enabled)
 	if enabled then
 		self.moveUp:Show()
 	else
@@ -74,7 +72,7 @@ function Methods:SetMoveUpButton(enabled)
 end
 
 --- @param enabled boolean
-function Methods:SetMoveDownButton(enabled)
+function ClickedTargetGroup:SetMoveDownButton(enabled)
 	if enabled then
 		self.moveDown:Show()
 	else
@@ -83,14 +81,15 @@ function Methods:SetMoveDownButton(enabled)
 end
 
 --- @protected
---- @param height number
-function Methods:LayoutFinished(_, height)
+--- @param width number?
+--- @param height number?
+function ClickedTargetGroup:LayoutFinished(width, height)
 	self:SetHeight(height or 0)
 end
 
 --- @protected
 --- @param width number
-function Methods:OnWidthSet(width)
+function ClickedTargetGroup:OnWidthSet(width)
 	local content = self.content
 	content:SetWidth(width)
 	content.width = width
@@ -98,22 +97,37 @@ end
 
 --- @protected
 --- @param height number
-function Methods:OnHeightSet(height)
+function ClickedTargetGroup:OnHeightSet(height)
 	local content = self.content
 	content:SetHeight(height)
 	content.height = height
 end
 
---[[ Constructor ]]--
+--- @protected
+--- @param frame Frame&{obj: ClickedTargetGroup}
+function ClickedTargetGroup.MoveDown_OnClick(frame)
+	frame.obj:Fire("OnMoveDown")
+	AceGUI:ClearFocus()
+end
 
+--- @protected
+--- @param frame Frame&{obj: ClickedTargetGroup}
+function ClickedTargetGroup.MoveUp_OnClick(frame)
+	frame.obj:Fire("OnMoveUp")
+	AceGUI:ClearFocus()
+end
+
+--[[-----------------------------------------------------------------------------
+Constructor
+-------------------------------------------------------------------------------]]
 local function Constructor()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	local moveUp = CreateButton(frame, "ui_arrow_up", MoveUp_OnClick)
+	local moveUp = CreateButton(frame, "ui_arrow_up", ClickedTargetGroup.MoveUp_OnClick)
 	moveUp:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -16, 0)
 
-	local moveDown = CreateButton(frame, "ui_arrow_down", MoveDown_OnClick)
+	local moveDown = CreateButton(frame, "ui_arrow_down", ClickedTargetGroup.MoveDown_OnClick)
 	moveDown:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
 
 	-- Container Support
@@ -121,23 +135,23 @@ local function Constructor()
 	content:SetPoint("TOPLEFT", 0, 0)
 	content:SetPoint("BOTTOMRIGHT")
 
-	--- @class ClickedTargetGroup : AceGUIContainer
+	--- @class ClickedTargetGroup
 	local widget = {
 		frame = frame,
 		content = content,
 		moveUp = moveUp,
 		moveDown = moveDown,
-		type = Type
+		type = TYPE
 	}
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedTargetGroup) do
 		widget[method] = func
 	end
 
-	--- @diagnostic disable-next-line: inject-field
-	moveDown.obj, moveUp.obj = widget, widget
+	moveDown.obj = widget
+	moveUp.obj = widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

@@ -1,78 +1,68 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-InteractiveLabel Widget
+A reorderable label widget with up and down buttons for reordering, customizable
+text, and optional image support.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
+local TYPE, VERSION = "ClickedReorderableLabel", 2
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+	return
+end
+
 --- @alias AceGUIWidgetType
 --- | "ClickedReorderableLabel"
 
 --- @class ClickedReorderableLabel : AceGUIWidget
---- @field private label FontString
---- @field private image Texture
---- @field private up Button
---- @field private down Button
---- @field private resizing boolean
---- @field private imageShown boolean
-
-local Type, Version = "ClickedReorderableLabel", 1
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
-
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-
-local function Label_OnClick(frame, button)
-	frame.obj:Fire("OnClick", button)
-	AceGUI:ClearFocus()
-end
-
-local function MoveUp_OnClick(frame)
-	frame.obj:Fire("OnMoveUp")
-	AceGUI:ClearFocus()
-end
-
-local function MoveDown_OnClick(frame)
-	frame.obj:Fire("OnMoveDown")
-	AceGUI:ClearFocus()
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedReorderableLabel
-local Methods = {}
+--- @field public frame Button&{obj: self}
+--- @field protected label FontString&{obj: self}
+--- @field protected image Texture&{obj: self}
+--- @field protected up Button&{obj: self}
+--- @field protected down Button&{obj: self}
+--- @field protected resizing boolean
+--- @field protected imageShown boolean
+local ClickedReorderableLabel = {}
 
 --- @protected
-function Methods:OnAcquire()
-	-- set the flag to stop constant size updates
+function ClickedReorderableLabel:OnAcquire()
 	self.resizing = true
-	-- height is set dynamically by the text and image size
+
 	self:SetWidth(200)
 	self:SetText()
 	self:SetImage(nil)
 	self:SetImageSize(16, 16)
 	self:SetColor()
-	self:SetFontObject()
+	self:SetFontObject(nil)
 	self:SetJustifyH("LEFT")
 	self:SetJustifyV("TOP")
 
-	self.resizing = nil
+	self.resizing = false
 	self:UpdateAnchor()
 end
 
 --- @protected
-function Methods:OnWidthSet()
+function ClickedReorderableLabel:OnWidthSet()
 	self:UpdateAnchor()
 end
 
 --- @param text? string
-function Methods:SetText(text)
+function ClickedReorderableLabel:SetText(text)
 	self.label:SetText(text)
 	self:UpdateAnchor()
 end
@@ -80,16 +70,17 @@ end
 --- @param r? number
 --- @param g? number
 --- @param b? number
-function Methods:SetColor(r, g, b)
-	if not (r and g and b) then
-		r, g, b = 1, 1, 1
-	end
+function ClickedReorderableLabel:SetColor(r, g, b)
+	r = r or 1
+	g = g or 1
+	b = b or 1
+
 	self.label:SetVertexColor(r, g, b)
 end
 
 --- @param path? string|number
 --- @param ... number
-function Methods:SetImage(path, ...)
+function ClickedReorderableLabel:SetImage(path, ...)
 	local image = self.image
 
 	image:SetTexture(path)
@@ -103,7 +94,7 @@ function Methods:SetImage(path, ...)
 			image:SetTexCoord(0, 1, 0, 1)
 		end
 	else
-		self.imageShown = nil
+		self.imageShown = false
 	end
 
 	self:UpdateAnchor()
@@ -112,36 +103,36 @@ end
 --- @param font any
 --- @param height any
 --- @param flags any
-function Methods:SetFont(font, height, flags)
+function ClickedReorderableLabel:SetFont(font, height, flags)
 	self.label:SetFont(font, height, flags)
 	self:UpdateAnchor()
 end
 
 --- @param font any
-function Methods:SetFontObject(font)
+function ClickedReorderableLabel:SetFontObject(font)
 	self:SetFont((font or GameFontHighlightSmall):GetFont())
 end
 
 --- @param width number
 --- @param height number
-function Methods:SetImageSize(width, height)
+function ClickedReorderableLabel:SetImageSize(width, height)
 	self.image:SetWidth(width)
 	self.image:SetHeight(height)
 	self:UpdateAnchor()
 end
 
 --- @param justifyH JustifyHorizontal
-function Methods:SetJustifyH(justifyH)
+function ClickedReorderableLabel:SetJustifyH(justifyH)
 	self.label:SetJustifyH(justifyH)
 end
 
 --- @param justifyV JustifyVertical
-function Methods:SetJustifyV(justifyV)
+function ClickedReorderableLabel:SetJustifyV(justifyV)
 	self.label:SetJustifyV(justifyV)
 end
 
 --- @param enabled boolean
-function Methods:SetMoveUpButton(enabled)
+function ClickedReorderableLabel:SetMoveUpButton(enabled)
 	if enabled then
 		self.up:Show()
 	else
@@ -155,7 +146,7 @@ function Methods:SetMoveUpButton(enabled)
 end
 
 --- @param enabled boolean
-function Methods:SetMoveDownButton(enabled)
+function ClickedReorderableLabel:SetMoveDownButton(enabled)
 	if enabled then
 		self.down:Show()
 	else
@@ -168,8 +159,8 @@ function Methods:SetMoveDownButton(enabled)
 	end)
 end
 
---- @private
-function Methods:UpdateAnchor()
+--- @protected
+function ClickedReorderableLabel:UpdateAnchor()
 	if self.resizing then return end
 	local frame = self.frame
 	local width = frame:GetWidth() or 0
@@ -213,22 +204,41 @@ function Methods:UpdateAnchor()
 	self.resizing = true
 	frame:SetHeight(height)
 	frame.height = height --- @diagnostic disable-line: inject-field
-	self.resizing = nil
+	self.resizing = false
 end
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
+--- @protected
+--- @param frame Button&{obj: ClickedReorderableLabel}
+--- @param button string
+function ClickedReorderableLabel.Frame_OnClick(frame, button)
+	frame.obj:Fire("OnClick", button)
+	AceGUI:ClearFocus()
+end
+
+--- @protected
+--- @param frame Button&{obj: ClickedReorderableLabel}
+function ClickedReorderableLabel.Up_OnClick(frame)
+	frame.obj:Fire("OnMoveUp")
+	AceGUI:ClearFocus()
+end
+
+--- @protected
+--- @param frame Button&{obj: ClickedReorderableLabel}
+function ClickedReorderableLabel.Down_OnClick(frame)
+	frame.obj:Fire("OnMoveDown")
+	AceGUI:ClearFocus()
+end
+
 local function Constructor()
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
 
 	frame:EnableMouse(true)
-	frame:SetScript("OnMouseDown", Label_OnClick)
+	frame:SetScript("OnMouseDown", ClickedReorderableLabel.Frame_OnClick)
 
 	local up = CreateFrame("Button", nil, frame)
 	up:SetSize(16, 16)
-	up:SetScript("OnClick", MoveUp_OnClick)
+	up:SetScript("OnClick", ClickedReorderableLabel.Up_OnClick)
 
 	local upImage = up:CreateTexture(nil, "BACKGROUND")
 	upImage:SetSize(16, 16)
@@ -237,7 +247,7 @@ local function Constructor()
 
 	local down = CreateFrame("Button", nil, frame)
 	down:SetSize(16, 16)
-	down:SetScript("OnClick", MoveDown_OnClick)
+	down:SetScript("OnClick", ClickedReorderableLabel.Down_OnClick)
 
 	local downImage = down:CreateTexture(nil, "BACKGROUND")
 	downImage:SetSize(16, 16)
@@ -248,23 +258,28 @@ local function Constructor()
 
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlightSmall")
 
+	--- @class ClickedReorderableLabel
 	local widget = {
-		label = label,
-		image = image,
-		up = up,
-		down = down,
-		frame = frame,
-		type = Type
+		label      = label,
+		image      = image,
+		up         = up,
+		down       = down,
+		frame      = frame,
+		imageShown = false,
+		resizing   = false,
+		type       = TYPE
 	}
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedReorderableLabel) do
 		widget[method] = func
 	end
 
-	up.obj = widget
-	down.obj = widget
+	widget.up.obj = widget
+	widget.down.obj = widget
+	widget.image.obj = widget
+	widget.label.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

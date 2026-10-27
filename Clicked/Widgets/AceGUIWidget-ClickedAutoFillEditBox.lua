@@ -1,20 +1,41 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-EditBox Widget
+A simple edit box with auto-fill and text completion capabilities.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
+-- Deprecated in 11.0.0
+local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
+
+--- @class Addon
+local Addon = select(2, ...)
+
+local TYPE, VERSION = "ClickedAutoFillEditBox", 2
+local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+	return
+end
+
+local ATTACH_ABOVE = "above"
+local ATTACH_BELOW = "below"
+
 --- @alias AceGUIWidgetType
 --- | "ClickedAutoFillEditBox"
-
---- @class ClickedAutoFillEditBox : AceGUIEditBox
---- @field private values ClickedAutoFillEditBox.Option[]
---- @field private buttons Button[]
---- @field private selected integer
---- @field private selectedOption ClickedAutoFillEditBox.Option?
---- @field private numButtons integer
---- @field private highlight boolean
---- @field private isInputError boolean
---- @field private pullout Frame
 
 --- @class ClickedAutoFillEditBox.Option
 --- @field public prefix string?
@@ -28,216 +49,30 @@ EditBox Widget
 
 --- @class ClickedAutoFillEditBox.Button : Button
 --- @field public icon Texture
+--- @field public obj ClickedAutoFillEditBox.Match
 
--- Deprecated in 11.0.0
-local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
-
---- @class Addon
-local Addon = select(2, ...)
-
-local Type, Version = "ClickedAutoFillEditBox", 1
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
-	return
-end
-
-local ATTACH_ABOVE = "above"
-local ATTACH_BELOW = "below"
-
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
-
---- comment
----
---- @param input string
---- @param match string
---- @param caseSensitive boolean
---- @return number
-local function ScoreMatch(input, match, caseSensitive)
-	return 1 - Addon.StringUtils:GetAverageDistance(input, match, caseSensitive)
-end
-
---- Find and sort matches of the input string.
----
---- @param text string
---- @param values ClickedAutoFillEditBox.Option[]
---- @return ClickedAutoFillEditBox.Match[]
-local function FindMatches(text, values)
-	if text == nil or text == "" or #values == 0 then
-		return {}
-	end
-
-	--- @type ClickedAutoFillEditBox.Match[]
-	local matches = {}
-
-	for _, value in ipairs(values) do
-		--- @cast value ClickedAutoFillEditBox.Match
-		value.score = ScoreMatch(text, value.text, false)
-		table.insert(matches, value)
-	end
-
-	--- @param l ClickedAutoFillEditBox.Match
-	--- @param r ClickedAutoFillEditBox.Match
-	--- @return boolean
-	local function SortFunc(l, r)
-		-- Sort by scores
-		if l.score > r.score then
-			return true
-		end
-
-		if l.score < r.score then
-			return false
-		end
-
-		-- Sort alphabetically
-		return l.text < r.text
-	end
-
-	table.sort(matches, SortFunc)
-
-	for i = #matches, 1, -1 do
-		if matches[i].score < 0.5 then
-			table.remove(matches, i)
-		end
-	end
-
-	return matches
-end
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function EditBox_OnTabPressed(frame)
-	local self = frame.obj
-
-	self:MoveCursor(IsShiftKeyDown() and -1 or 1)
-end
-
-local function EditBox_OnArrowPressed(frame, key)
-	local self = frame.obj
-
-	if key == "UP" then
-		return self:MoveCursor(-1);
-	elseif key == "DOWN" then
-		return self:MoveCursor(1);
-	end
-end
-
-local function EditBox_OnEnterPressed(frame)
-	local self = frame.obj
-
-	if self:IsAutoCompleteBoxVisible() then
-		self:HideAutoCompleteBox()
-		self:SelectButton(self:GetSelectedButton())
-	else
-		local text = self:GetText()
-
-		if strlenutf8(text) == 0 then
-			self:Select("")
-		else
-			self:Select(self.strict and self.selectedOption or text)
-		end
-	end
-
-	self.BaseOnTextChanged(frame)
-end
-
-local function EditBox_OnTextChanged(frame, userInput)
-	local self = frame.obj
-
-	self.BaseOnTextChanged(frame)
-
-	if userInput then
-		self:ShowPrediction()
-	end
-
-	self:UpdateHighlight()
-end
-
-local function EditBox_OnReceiveDrag(frame)
-	local self = frame.obj
-	local type, id, info = GetCursorInfo()
-	local name
-
-	if type == "item" then
-		name = info
-	elseif type == "spell" then
-		--- @cast id number
-		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
-	elseif type == "petaction" then
-		--- @cast id number
-		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
-	end
-
-	if name then
-		self:SetText(name)
-		self:Fire("OnEnterPressed", name)
-		ClearCursor()
-		AceGUI:ClearFocus()
-	end
-end
-
-local function EditBox_OnEscapePressed(frame)
-	local self = frame.obj
-
-	self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
-	AceGUI:ClearFocus()
-end
-
-local function EditBox_OnChar(frame, text)
-	local self = frame.obj
-
-	if IsLeftShiftKeyDown() and text == " " then
-		frame:SetText(self.lasttext)
-		self:ShowAll()
-	end
-end
-
-local function EditBox_OnFocusGained(frame)
-	local self = frame.obj
-
-	self.BaseOnFocusGained(frame)
-
-	if strlenutf8(self:GetText()) == 0 then
-		self:ShowAll()
-	else
-		self:ShowPrediction()
-	end
-end
-
-local function EditBox_OnFocusLost(frame)
-	local self = frame.obj
-
-	if strlenutf8(self:GetText()) == 0 then
-		self:SetText("")
-	elseif self:IsAutoCompleteBoxVisible() then
-		self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
-	end
-
-	local function CloseWhenAble()
-		if not IsMouseButtonDown("LeftButton") then
-			self:HideAutoCompleteBox()
-			return
-		end
-
-		C_Timer.After(0.01, CloseWhenAble)
-	end
-
-	CloseWhenAble()
-end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedAutoFillEditBox
+--- @class ClickedAutoFillEditBox : AceGUIEditBox
+--- @field public frame Frame&{obj: self}
+--- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
+--- @field protected values ClickedAutoFillEditBox.Option[]
+--- @field protected lasttext string
+--- @field protected tempValue integer?
+--- @field protected buttons ClickedAutoFillEditBox.Button[]
+--- @field protected selected integer
+--- @field protected selectedOption ClickedAutoFillEditBox.Option?
+--- @field protected matches ClickedAutoFillEditBox.Match[]
+--- @field protected numButtons integer
+--- @field protected offset integer
+--- @field protected highlight boolean
+--- @field protected isInputError boolean
+--- @field protected isShowingAll boolean
+--- @field protected strict boolean
+--- @field protected pullout Frame
 local Methods = {}
 
 --- @protected
 function Methods:OnAcquire()
-	self:BaseOnAcquire()
+	self:EditBoxOnAcquire()
 
 	self.values = {}
 	self.tempValue = nil
@@ -261,7 +96,7 @@ end
 
 --- @protected
 function Methods:OnRelease()
-	self:BaseOnRelease()
+	self:EditBoxOnRelease()
 	self:HideAutoCompleteBox()
 end
 
@@ -369,7 +204,7 @@ function Methods:SetText(text)
 		text = "|cffff1a1a" .. text .. "|r"
 	end
 
-	self:BaseSetText(text)
+	self:EditBoxSetText(text)
 end
 
 --- @param strict boolean
@@ -377,10 +212,10 @@ function Methods:SetStrictMode(strict)
 	self.strict = strict
 end
 
---- @private
+--- @protected
 --- @return ClickedAutoFillEditBox.Button
 function Methods:CreateButton()
-	local type = Type .. "Button"
+	local type = TYPE .. "Button"
 	local num = AceGUI:GetNextWidgetNum(type)
 
 	local button = CreateFrame("Button", type .. num, self.pullout, "AutoCompleteButtonTemplate") --[[@as ClickedAutoFillEditBox.Button]]
@@ -413,7 +248,7 @@ function Methods:CreateButton()
 	return button
 end
 
---- @private
+--- @protected
 function Methods:UpdateButtons()
 	local function CreateMoreButton(index)
 		local button = self.buttons[index]
@@ -421,7 +256,7 @@ function Methods:UpdateButtons()
 		button:SetText("...")
 		button:Disable()
 
-		button.icon:SetTexture(nil) --- @diagnostic disable-line: undefined-field
+		button.icon:SetTexture(nil)
 	end
 
 	local matches = self:GetMatches()
@@ -454,7 +289,7 @@ function Methods:UpdateButtons()
 			end
 		end
 
-		button.obj = matches[matchIndex] --- @diagnostic disable-line: inject-field
+		button.obj = matches[matchIndex]
 		local text = matches[matchIndex].text
 		local prefix = matches[matchIndex].prefix
 
@@ -488,17 +323,17 @@ function Methods:UpdateButtons()
 	end
 end
 
---- @private
---- @param button? Button
+--- @protected
+--- @param button? ClickedAutoFillEditBox.Button
 function Methods:SelectButton(button)
 	if button == nil then
 		return
 	end
 
-	self:Select(button.obj) ---@diagnostic disable-line: undefined-field
+	self:Select(button.obj)
 end
 
---- @private
+--- @protected
 function Methods:HideAutoCompleteBox()
 	if not self:IsAutoCompleteBoxVisible() then
 		return
@@ -506,10 +341,10 @@ function Methods:HideAutoCompleteBox()
 
 	self.pullout:ClearAllPoints()
 	self.pullout:Hide()
-	self.pullout.attachTo = nil --- @diagnostic disable-line: inject-field
+	self.pullout.attachTo = nil
 end
 
---- @private
+--- @protected
 --- @param height integer
 --- @return string
 function Methods:FindAttachmentPoint(height)
@@ -520,7 +355,7 @@ function Methods:FindAttachmentPoint(height)
 	return ATTACH_BELOW
 end
 
---- @private
+--- @protected
 function Methods:ShowPrediction()
 	local text =  self:GetText()
 
@@ -558,7 +393,7 @@ function Methods:ShowPrediction()
 		-- 	end
 		-- end
 
-		local matches = FindMatches(text, options)
+		local matches = self:FindMatches(text, options)
 
 		if #matches > 0 then
 			self.isShowingAll = false
@@ -570,7 +405,7 @@ function Methods:ShowPrediction()
 	end
 end
 
---- @private
+--- @protected
 function Methods:ShowAll()
 	if #self:GetValues() == 0 then
 		return
@@ -599,7 +434,7 @@ function Methods:ShowAll()
 	self:ShowPullout()
 end
 
---- @private
+--- @protected
 function Methods:ShowPullout()
 	local matchCount = #self:GetMatches()
 
@@ -624,7 +459,7 @@ function Methods:ShowPullout()
 			pullout:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT")
 		end
 
-		pullout.attachTo = attachTo --- @diagnostic disable-line: inject-field
+		pullout.attachTo = attachTo
 	end
 
 	if not self:IsAutoCompleteBoxVisible() then
@@ -635,7 +470,7 @@ function Methods:ShowPullout()
 	pullout:Show()
 end
 
---- @private
+--- @protected
 function Methods:UpdateHighlight()
 	for i = 1, #self.buttons do
 		self.buttons[i]:UnlockHighlight()
@@ -676,16 +511,16 @@ end
 
 --- @return string
 function Methods:GetText()
-	return Addon:StripColorCodes(self:BaseGetText())
+	return Addon:StripColorCodes(self:EditBoxGetText())
 end
 
---- @private
+--- @protected
 --- @return boolean
 function Methods:IsAutoCompleteBoxVisible()
 	return self.pullout:IsShown()
 end
 
---- @private
+--- @protected
 --- @param matches ClickedAutoFillEditBox.Match[]
 function Methods:SetMatches(matches)
 	self.matches = matches
@@ -693,11 +528,12 @@ function Methods:SetMatches(matches)
 end
 
 --- @private
+--- @return ClickedAutoFillEditBox.Match[]
 function Methods:GetMatches()
 	return self.matches
 end
 
---- @private
+--- @protected
 --- @param offset integer
 function Methods:SetOffset(offset)
 	if offset < 0 then
@@ -710,12 +546,13 @@ function Methods:SetOffset(offset)
 	self:UpdateButtons()
 end
 
---- @private
+--- @protected
+--- @return integer
 function Methods:GetOffset()
 	return self.offset
 end
 
---- @private
+--- @protected
 --- @return integer
 function Methods:GetFirstVisibleButtonIndex()
 	for i = 1, #self.buttons do
@@ -727,7 +564,7 @@ function Methods:GetFirstVisibleButtonIndex()
 	return 0
 end
 
---- @private
+--- @protected
 --- @return integer
 function Methods:GetLastVisibleButtonIndex()
 	for i = #self.buttons, 1, -1 do
@@ -739,8 +576,8 @@ function Methods:GetLastVisibleButtonIndex()
 	return 0
 end
 
---- @private
---- @return Button
+--- @protected
+--- @return ClickedAutoFillEditBox.Button
 function Methods:GetSelectedButton()
 	local selected = self:GetSelectedIndex()
 
@@ -751,7 +588,7 @@ function Methods:GetSelectedButton()
 	return self.buttons[self:GetFirstVisibleButtonIndex()]
 end
 
---- @private
+--- @protected
 --- @param direction integer
 function Methods:MoveCursor(direction)
 	if self:IsAutoCompleteBoxVisible() then
@@ -767,13 +604,210 @@ function Methods:MoveCursor(direction)
 	end
 end
 
+--- @protected
+--- @param input string
+--- @param match string
+--- @param caseSensitive boolean
+--- @return number
+function Methods:ScoreMatch(input, match, caseSensitive)
+	return 1 - Addon.StringUtils:GetAverageDistance(input, match, caseSensitive)
+end
+
+--- Find and sort matches of the input string.
+---
+--- @protected
+--- @param text string
+--- @param values ClickedAutoFillEditBox.Option[]
+--- @return ClickedAutoFillEditBox.Match[]
+function Methods:FindMatches(text, values)
+	if text == nil or text == "" or #values == 0 then
+		return {}
+	end
+
+	--- @type ClickedAutoFillEditBox.Match[]
+	local matches = {}
+
+	for _, value in ipairs(values) do
+		--- @cast value ClickedAutoFillEditBox.Match
+		value.score = self:ScoreMatch(text, value.text, false)
+		table.insert(matches, value)
+	end
+
+	--- @param l ClickedAutoFillEditBox.Match
+	--- @param r ClickedAutoFillEditBox.Match
+	--- @return boolean
+	local function SortFunc(l, r)
+		-- Sort by scores
+		if l.score > r.score then
+			return true
+		end
+
+		if l.score < r.score then
+			return false
+		end
+
+		-- Sort alphabetically
+		return l.text < r.text
+	end
+
+	table.sort(matches, SortFunc)
+
+	for i = #matches, 1, -1 do
+		if matches[i].score < 0.5 then
+			table.remove(matches, i)
+		end
+	end
+
+	return matches
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnTabPressed(frame)
+	local self = frame.obj
+
+	self:MoveCursor(IsShiftKeyDown() and -1 or 1)
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+--- @param key string
+function Methods.EditBox_OnArrowPressed(frame, key)
+	local self = frame.obj
+
+	if key == "UP" then
+		self:MoveCursor(-1);
+	elseif key == "DOWN" then
+		self:MoveCursor(1);
+	end
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnEnterPressed(frame)
+	local self = frame.obj
+
+	if self:IsAutoCompleteBoxVisible() then
+		self:HideAutoCompleteBox()
+		self:SelectButton(self:GetSelectedButton())
+	else
+		local text = self:GetText()
+
+		if strlenutf8(text) == 0 then
+			self:Select("")
+		else
+			self:Select(self.strict and self.selectedOption or text)
+		end
+	end
+
+	self.EditBoxOnEnterPressed(frame)
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+--- @param userInput boolean
+function Methods.EditBox_OnTextChanged(frame, userInput)
+	local self = frame.obj
+
+	self.EditBoxOnTextChanged(frame, userInput)
+
+	if userInput then
+		self:ShowPrediction()
+	end
+
+	self:UpdateHighlight()
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnReceiveDrag(frame)
+	local self = frame.obj
+	local type, id, info = GetCursorInfo()
+	local name
+
+	if type == "item" then
+		name = info
+	elseif type == "spell" then
+		--- @cast id number
+		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
+	elseif type == "petaction" then
+		--- @cast id number
+		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
+	end
+
+	if name then
+		self:SetText(tostring(name))
+		self:Fire("OnEnterPressed", name)
+		ClearCursor()
+		AceGUI:ClearFocus()
+	end
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnEscapePressed(frame)
+	local self = frame.obj
+
+	self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
+	AceGUI:ClearFocus()
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+--- @param text string
+function Methods.EditBox_OnChar(frame, text)
+	local self = frame.obj
+
+	if IsLeftShiftKeyDown() and text == " " then
+		frame:SetText(self.lasttext)
+		self:ShowAll()
+	end
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnFocusGained(frame)
+	local self = frame.obj
+
+	self.EditBoxOnFocusGained(frame)
+
+	if strlenutf8(self:GetText()) == 0 then
+		self:ShowAll()
+	else
+		self:ShowPrediction()
+	end
+end
+
+--- @protected
+--- @param frame EditBox&InputBoxTemplate&{obj: ClickedAutoFillEditBox}
+function Methods.EditBox_OnFocusLost(frame)
+	local self = frame.obj
+
+	if strlenutf8(self:GetText()) == 0 then
+		self:SetText("")
+	elseif self:IsAutoCompleteBoxVisible() then
+		self:SetText(self.selectedOption ~= nil and self.selectedOption.text or "")
+	end
+
+	local function CloseWhenAble()
+		if not IsMouseButtonDown("LeftButton") then
+			self:HideAutoCompleteBox()
+			return
+		end
+
+		C_Timer.After(0.01, CloseWhenAble)
+	end
+
+	CloseWhenAble()
+end
+
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
 	--- @class ClickedAutoFillEditBox
 	local widget = AceGUI:Create("EditBox")
-	widget.type = Type
+	widget.type = TYPE
 
 	widget.values = {}
 	widget.matches = {}
@@ -788,29 +822,29 @@ local function Constructor()
 	widget.isShowingAll = false
 
 	--- @private
-	widget.BaseOnAcquire = widget.OnAcquire
+	widget.EditBoxOnAcquire = widget.OnAcquire
 	--- @private
-	widget.BaseOnRelease = widget.OnRelease
+	widget.EditBoxOnRelease = widget.OnRelease
 	--- @private
-	widget.BaseSetText = widget.SetText
+	widget.EditBoxSetText = widget.SetText
 	--- @private
-	widget.BaseGetText = widget.GetText
+	widget.EditBoxGetText = widget.GetText
 	--- @private
-	widget.BaseOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
+	widget.EditBoxOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
 	--- @private
-	widget.BaseOnEnterPressed = widget.editbox:GetScript("OnEnterPressed")
+	widget.EditBoxOnEnterPressed = widget.editbox:GetScript("OnEnterPressed")
 	--- @private
-	widget.BaseOnTextChanged = widget.editbox:GetScript("OnTextChanged")
+	widget.EditBoxOnTextChanged = widget.editbox:GetScript("OnTextChanged")
 
-	widget.editbox:SetScript("OnTabPressed", EditBox_OnTabPressed)
-	widget.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
-	widget.editbox:SetScript("OnTextChanged", EditBox_OnTextChanged)
-	widget.editbox:SetScript("OnReceiveDrag", EditBox_OnReceiveDrag)
-	widget.editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
-	widget.editbox:SetScript("OnArrowPressed", EditBox_OnArrowPressed)
-	widget.editbox:SetScript("OnChar", EditBox_OnChar)
-	widget.editbox:SetScript("OnEditFocusGained", EditBox_OnFocusGained)
-	widget.editbox:SetScript("OnEditFocusLost", EditBox_OnFocusLost)
+	widget.editbox:SetScript("OnTabPressed",  Methods.EditBox_OnTabPressed)
+	widget.editbox:SetScript("OnEnterPressed", Methods.EditBox_OnEnterPressed)
+	widget.editbox:SetScript("OnTextChanged", Methods.EditBox_OnTextChanged)
+	widget.editbox:SetScript("OnReceiveDrag", Methods.EditBox_OnReceiveDrag)
+	widget.editbox:SetScript("OnEscapePressed", Methods.EditBox_OnEscapePressed)
+	widget.editbox:SetScript("OnArrowPressed", Methods.EditBox_OnArrowPressed)
+	widget.editbox:SetScript("OnChar", Methods.EditBox_OnChar)
+	widget.editbox:SetScript("OnEditFocusGained", Methods.EditBox_OnFocusGained)
+	widget.editbox:SetScript("OnEditFocusLost", Methods.EditBox_OnFocusLost)
 	widget.editbox:SetAltArrowKeyMode(false)
 
 	local pullout = CreateFrame("Frame", nil, UIParent, "TooltipBackdropTemplate") --[[@as Frame]]
@@ -830,4 +864,4 @@ local function Constructor()
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

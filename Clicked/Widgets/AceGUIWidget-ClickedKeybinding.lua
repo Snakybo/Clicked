@@ -1,39 +1,100 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-Clicked Keybinding Widget
-Set Keybindings in the Config UI.
+A keybinding widget, similar to the standard AceGUI keybinding widget, but
+allows for binding of BUTTON1 and BUTTON2, as well as a nicer user experience
+where the button has to be activated prior to listening for inputs.
 -------------------------------------------------------------------------------]]
-
---- @diagnostic disable-next-line: duplicate-doc-alias
---- @alias AceGUIWidgetType
---- | "ClickedKeybinding"
-
---- @class ClickedKeybinding : AceGUIKeybinding
 
 --- @class Addon
 local Addon = select(2, ...)
 
-local Type, Version = "ClickedKeybinding", 3
+local TYPE, VERSION = "ClickedKeybinding", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
+--- @alias AceGUIWidgetType
+--- | "ClickedKeybinding"
 
-local ignoreKeys = {
+--- @class ClickedKeybinding : AceGUIKeybinding
+--- @field public frame Frame&{obj: self}
+--- @field protected button Button&UIPanelButtonTemplate&{obj: self}
+--- @field protected label FontString&{obj: self}
+--- @field protected msgframe Frame&BackdropTemplate&{obj: self}
+--- @field protected alignoffset integer
+--- @field protected key string
+--- @field protected hasMarker boolean
+--- @field protected waitingForKey boolean
+--- @field protected lastClickTime number
+local ClickedKeybinding = {}
+
+ClickedKeybinding.IGNORE_KEYS = {
 	["UNKNOWN"] = true,
 	["LSHIFT"] = true, ["LCTRL"] = true, ["LALT"] = true, ["LMETA"] = true,
 	["RSHIFT"] = true, ["RCTRL"] = true, ["RALT"] = true, ["RMETA"] = true,
 	["SHIFT"] = true, ["CTRL"] = true, ["ALT"] = true, ["META"] = true
 }
 
+--- @protected
+function ClickedKeybinding:OnAcquire()
+	self:KeybindingOnAcquire()
+	self.key = ""
+	self.hasMarker = false
+end
+
+--- @param key string
+function ClickedKeybinding:SetKey(key)
+	self.key = key
+	self:UpdateText()
+end
+
+--- @return string
+function ClickedKeybinding:GetKey()
+	return self.key
+end
+
+--- @param marker boolean
+function ClickedKeybinding:SetMarker(marker)
+	self.hasMarker = marker
+	self:UpdateText()
+end
+
+--- @protected
+function ClickedKeybinding:UpdateText()
+	local key = self.key
+	local hasMarker = self.hasMarker
+	local button = self.button
+
+	if (key or "") == "" then
+		button:SetText(NOT_BOUND)
+		button:SetNormalFontObject("GameFontNormal")
+	else
+		button:SetText(hasMarker and (key .. "*") or key)
+		button:SetNormalFontObject("GameFontHighlight")
+	end
+end
+
 --- @param key string
 --- @return string?
-local function GenerateChord(key)
-	if ignoreKeys[key] then
+function ClickedKeybinding:GenerateChord(key)
+	if self.IGNORE_KEYS[key] then
 		return nil
 	end
 
@@ -60,69 +121,66 @@ local function GenerateChord(key)
 	return table.concat(chord, "-")
 end
 
-local function EnableKeyCapture(frame)
-	local self = frame.obj
-
-	frame:EnableKeyboard(true)
-	frame:EnableMouseWheel(true)
-	frame:EnableGamePadButton(true)
-	frame:LockHighlight()
+--- @protected
+function ClickedKeybinding:EnableKeyCapture()
+	self.button:EnableKeyboard(true)
+	self.button:EnableMouseWheel(true)
+	self.button:EnableGamePadButton(true)
+	self.button:LockHighlight()
 
 	self.waitingForKey = true
 	self.button:SetText(Addon.L["Press any key or ESC to cancel"])
 end
 
-local function DisableKeyCapture(frame)
-	local self = frame.obj
+--- @protected
+function ClickedKeybinding:DisableKeyCapture()
+	self.button:EnableKeyboard(false)
+	self.button:EnableMouseWheel(false)
+	self.button:EnableGamePadButton(false)
+	self.button:UnlockHighlight()
 
-	frame:EnableKeyboard(false)
-	frame:EnableMouseWheel(false)
-	frame:EnableGamePadButton(false)
-	frame:UnlockHighlight()
-
-	self.waitingForKey = nil
+	self.waitingForKey = false
 	self.lastClickTime = GetTime()
 	self:UpdateText()
 end
 
-local function SetKey(self, key)
-	self:SetKey(key)
-	self:Fire("OnKeyChanged", key)
-end
-
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
-local function Keybinding_OnClick(frame, button)
+--- @protected
+--- @param frame Button&UIPanelButtonTemplate&{obj: ClickedKeybinding}
+--- @param button string
+function ClickedKeybinding.Button_OnClick(frame, button)
 	local self = frame.obj
 	local passed = GetTime() - (self.lastClickTime or 0)
 
 	if button == "LeftButton" then
 		if not self.waitingForKey and passed > 0.01 then
-			EnableKeyCapture(frame)
+			self:EnableKeyCapture()
 		end
 	elseif button == "RightButton" then
 		if not self.waitingForKey and passed > 0.01 then
-			SetKey(self, "")
+			self:SetKey("")
+			self:Fire("OnKeyChanged", "")
 		end
 	end
 
 	AceGUI:ClearFocus()
 end
 
-local function Keybinding_OnKeyDown(frame, key)
+--- @protected
+--- @param frame Button&UIPanelButtonTemplate&{obj: ClickedKeybinding}
+--- @param key string
+function ClickedKeybinding.Button_OnKeyDown(frame, key)
 	local self = frame.obj
 
 	if self.waitingForKey then
 		if key == "ESCAPE" then
-			DisableKeyCapture(frame)
+			self:DisableKeyCapture()
 			return
 		end
 
-		local chord = GenerateChord(key)
+		local chord = self:GenerateChord(key)
 
 		if chord ~= nil then
-			DisableKeyCapture(frame)
+			self:DisableKeyCapture()
 
 			if not self.disabled then
 				self:SetKey(chord)
@@ -132,7 +190,10 @@ local function Keybinding_OnKeyDown(frame, key)
 	end
 end
 
-local function Keybinding_OnMouseDown(frame, button)
+--- @protected
+--- @param frame Button&UIPanelButtonTemplate&{obj: ClickedKeybinding}
+--- @param button string
+function ClickedKeybinding.Button_OnMouseDown(frame, button)
 	if button == "LeftButton" then
 		button = "BUTTON1"
 	elseif button == "RightButton" then
@@ -143,10 +204,13 @@ local function Keybinding_OnMouseDown(frame, button)
 		button = string.upper(button)
 	end
 
-	Keybinding_OnKeyDown(frame, button)
+	ClickedKeybinding.Button_OnKeyDown(frame, button)
 end
 
-local function Keybinding_OnMouseWheel(frame, direction)
+--- @protected
+--- @param frame Button&UIPanelButtonTemplate&{obj: ClickedKeybinding}
+--- @param direction integer
+function ClickedKeybinding.Button_OnMouseWheel(frame, direction)
 	local button
 
 	if direction >= 0 then
@@ -155,80 +219,32 @@ local function Keybinding_OnMouseWheel(frame, direction)
 		button = "MOUSEWHEELDOWN"
 	end
 
-	Keybinding_OnKeyDown(frame, button)
+	ClickedKeybinding.Button_OnKeyDown(frame, button)
 end
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
-
---- @class ClickedKeybinding
-local Methods = {}
-
---- @protected
-function Methods:OnAcquire()
-	self:BaseOnAcquire()
-	self.key = ""
-	self.hasMarker = false
-end
-
---- @param key string
-function Methods:SetKey(key)
-	self.key = key
-	self:UpdateText()
-end
-
---- @return string
-function Methods:GetKey()
-	return self.key
-end
-
---- @param marker boolean
-function Methods:SetMarker(marker)
-	self.hasMarker = marker
-	self:UpdateText()
-end
-
---- @private
-function Methods:UpdateText()
-	local key = self.key
-	local hasMarker = self.hasMarker
-	local button = self.button
-
-	if (key or "") == "" then
-		button:SetText(NOT_BOUND)
-		button:SetNormalFontObject("GameFontNormal")
-	else
-		button:SetText(hasMarker and (key .. "*") or key)
-		button:SetNormalFontObject("GameFontHighlight")
-	end
-end
-
-
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
 
 local function Constructor()
 	--- @class ClickedKeybinding
 	local widget = AceGUI:Create("Keybinding")
-	widget.type = Type
+	widget.type = TYPE
 
 	local button = widget.button
-	button:SetScript("OnClick", Keybinding_OnClick)
-	button:SetScript("OnKeyDown", Keybinding_OnKeyDown)
-	button:SetScript("OnMouseDown", Keybinding_OnMouseDown)
-	button:SetScript("OnMouseWheel", Keybinding_OnMouseWheel)
-	button:SetScript("OnGamePadButtonDown", Keybinding_OnKeyDown)
+	button:SetScript("OnClick", ClickedKeybinding.Button_OnClick)
+	button:SetScript("OnKeyDown", ClickedKeybinding.Button_OnKeyDown)
+	button:SetScript("OnMouseDown", ClickedKeybinding.Button_OnMouseDown)
+	button:SetScript("OnMouseWheel", ClickedKeybinding.Button_OnMouseWheel)
+	button:SetScript("OnGamePadButtonDown", ClickedKeybinding.Button_OnKeyDown)
 
 	--- @private
-	widget.BaseOnAcquire = widget.OnAcquire
+	widget.KeybindingOnAcquire = widget.OnAcquire
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedKeybinding) do
 		widget[method] = func
 	end
+
+	widget.label.obj = widget
+	widget.msgframe.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

@@ -1,60 +1,63 @@
+-- Clicked, a World of Warcraft keybind manager.
+-- Copyright (C) 2026 Kevin Krol
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 --[[-----------------------------------------------------------------------------
-TabGroup Container
-Container that uses tabs on top to switch between groups.
+A small extension to the standard AceGUI CheckBox widget that adds support
+for customizing the label color.
 -------------------------------------------------------------------------------]]
 
---- @diagnostic disable-next-line: duplicate-doc-alias
---- @alias AceGUIWidgetType
---- | "ClickedCheckBox"
-
-local Type, Version = "ClickedCheckBox", 1
+local TYPE, VERSION = "ClickedCheckBox", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
-if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
+if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
-
-
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
+--- @alias AceGUIWidgetType
+--- | "ClickedCheckBox"
 
 --- @class ClickedCheckBox : AceGUICheckBox
-local Methods = {}
+local ClickedCheckBox = {}
 
-function Methods:OnAcquire()
-	self:BaseOnAcquire()
+--- @protected
+function ClickedCheckBox:OnAcquire()
+	self:CheckBoxOnAcquire()
 
 	self:SetLabelColor(WHITE_FONT_COLOR)
 	self:SetLabel("")
 end
 
 --- @param color ColorMixin
-function Methods:SetLabelColor(color)
+function ClickedCheckBox:SetLabelColor(color)
 	self.text:SetTextColor(color:GetRGBA())
 end
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
-
 local function Constructor()
 	--- @class ClickedCheckBox
-	local widget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
-	widget.type = Type
+	local widget = AceGUI:Create("CheckBox")
+	widget.type = TYPE
 
 	--- @private
-	widget.BaseOnAcquire = widget.OnAcquire
+	widget.CheckBoxOnAcquire = widget.OnAcquire
 
-	for method, func in pairs(Methods) do
+	for method, func in pairs(ClickedCheckBox) do
 		widget[method] = func
 	end
 
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)
