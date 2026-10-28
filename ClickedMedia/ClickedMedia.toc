@@ -7,7 +7,7 @@
 ## Dependencies: Clicked
 ## LoadOnDemand: 1
 ## Group: Clicked
-## Category-enUS: Media
+## Category: Media
 ## Category-deDE: Medien
 ## Category-esES: Medios
 ## Category-esMX: Medios

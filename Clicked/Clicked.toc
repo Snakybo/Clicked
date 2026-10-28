@@ -6,13 +6,13 @@
 ## Notes: Easy keybind and macro management
 ## SavedVariables: ClickedDB
 ## Group: Clicked
-## Category-enUS: Action Bars
+## Category: Action Bars
 ## Category-deDE: Aktionsleisten
 ## Category-esES: Barras de acción
 ## Category-esMX: Barras de acción
 ## Category-frFR: Barres d’action
 ## Category-itIT: Barre delle azioni
-## Category-koKR: 행동 단축바
+## Category-koKR: 액션 바
 ## Category-ptBR: Barras de ação
 ## Category-ruRU: Панели команд
 ## Category-zhCN: 动作条
