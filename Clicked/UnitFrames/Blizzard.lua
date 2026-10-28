@@ -34,7 +34,7 @@ local function HookUnitFrame(count, names, addon)
 	end
 end
 
---- @param parent Button
+--- @param parent Frame
 --- @param name string
 local function HookCompactUnitFramePart(parent, name)
 	local frame = _G[name]
@@ -47,7 +47,7 @@ local function HookCompactUnitFramePart(parent, name)
 	Clicked:RegisterClickCastFrame(frame)
 end
 
---- @param frame CompactUnitFrameTemplate|{maxBuffs: number, maxDebuffs: number, maxDispelDebuffs: number}
+--- @param frame CompactUnitFrameTemplate&{maxBuffs: number, maxDebuffs: number, maxDispelDebuffs: number}
 local function HookCompactUnitFrame(frame)
 	if frame == nil or frame:IsForbidden() then
 		return

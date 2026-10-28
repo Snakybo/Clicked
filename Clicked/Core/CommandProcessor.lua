@@ -51,7 +51,7 @@ local function EnsureMacroFrameHandler()
 		return
 	end
 
-	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate") --[[@as Button]]
+	macroFrameHandler = CreateFrame("Button", Addon.MACRO_FRAME_HANDLER_NAME, UIParent, "SecureActionButtonTemplate,SecureHandlerStateTemplate,SecureHandlerShowHideTemplate")
 	macroFrameHandler:SetAttribute("useOnkeyDown", true)
 	macroFrameHandler:SetAttribute("pressAndHoldAction", true)
 	macroFrameHandler:Hide()

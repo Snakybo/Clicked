@@ -40,7 +40,7 @@ local SEARCH_FILTER_APPLY_DELAY = 0.1
 --- @return boolean
 local function FilterTargets(selected)
 	if #selected == 0 then
-		return selected, false
+		return {}, false
 	end
 
 	--- @type DataObject[]
@@ -67,8 +67,8 @@ local function FilterTargets(selected)
 	return result, containsIllegal
 end
 
---- @param left ClickedTreeGroupRuntimeItem
---- @param right ClickedTreeGroupRuntimeItem
+--- @param left ClickedTreeGroup.RuntimeItem
+--- @param right ClickedTreeGroup.RuntimeItem
 --- @return boolean
 local function SortByName(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
@@ -137,8 +137,8 @@ local function SortByName(left, right)
 	return left.uid < right.uid
 end
 
---- @param left ClickedTreeGroupRuntimeItem
---- @param right ClickedTreeGroupRuntimeItem
+--- @param left ClickedTreeGroup.RuntimeItem
+--- @param right ClickedTreeGroup.RuntimeItem
 --- @return boolean
 local function SortByKey(left, right)
 	local leftScope = Addon:GetScopeFromUid(left.uid)
@@ -205,20 +205,20 @@ end
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigWindow
---- @field private frame? ClickedFrame
+--- @field private frame ClickedFrame!
 --- @field private pages { [string]: BindingConfigPage }
 --- @field private pageStack { page: string, payload: any[] }[]
---- @field private currentPage? string
+--- @field private currentPage string?
 --- @field private sortMode "key"|"name"
---- @field private tree ClickedTreeGroupItem[]
---- @field private treeItems { [integer]: ClickedTreeGroupItem }
---- @field private treeStatus ClickedTreeGroupStatus
---- @field private redrawTimer? TimerCallback
---- @field private bindingCopyTarget? integer
+--- @field private tree ClickedTreeGroup.Item[]
+--- @field private treeItems { [integer]: ClickedTreeGroup.Item }
+--- @field private treeStatus ClickedTreeGroup.Status
+--- @field private redrawTimer TimerCallback?
+--- @field private bindingCopyTarget integer?
 --- @field private reloadedBindings integer[]
 --- @field private treeWidget ClickedTreeGroup
---- @field private pendingSelection? integer|integer[]
-Addon.BindingConfig.Window = {
+--- @field private pendingSelection (integer|integer[])?
+local BindingConfig = {
 	PAGE_BINDING = "binding",
 	PAGE_EXPORT_STRING = "exportString",
 	PAGE_GROUP = "group",
@@ -236,12 +236,17 @@ Addon.BindingConfig.Window = {
 	pageStack = {},
 	sortMode = "key",
 	tree = {},
+	treeWidget = nil,
 	treeItems = {},
-	treeStatus = {},
+	treeStatus = {
+		scrollValue = 0,
+		dragging = {},
+		selected = {},
+	},
 	reloadedBindings = {}
 }
 
-function Addon.BindingConfig.Window:Open()
+function BindingConfig:Open()
 	if self:IsOpen() then
 		return
 	end
@@ -254,7 +259,7 @@ function Addon.BindingConfig.Window:Open()
 	self:CreateTreeFrame()
 end
 
-function Addon.BindingConfig.Window:Close()
+function BindingConfig:Close()
 	if not self:IsOpen() then
 		return
 	end
@@ -266,13 +271,13 @@ function Addon.BindingConfig.Window:Close()
 end
 
 --- @return boolean
-function Addon.BindingConfig.Window:IsOpen()
+function BindingConfig:IsOpen()
 	return self.frame ~= nil and self.frame:IsVisible()
 end
 
 --- @param page string|BindingConfigPage
 --- @param ... any
-function Addon.BindingConfig.Window:SetPage(page, ...)
+function BindingConfig:SetPage(page, ...)
 	local target = self:GetPage(page)
 	if target == nil then
 		return
@@ -286,7 +291,7 @@ end
 
 --- @param page string|BindingConfigPage
 --- @param ... any
-function Addon.BindingConfig.Window:PushPage(page, ...)
+function BindingConfig:PushPage(page, ...)
 	local target = self:GetPage(page)
 	if target == nil then
 		return
@@ -304,7 +309,7 @@ function Addon.BindingConfig.Window:PushPage(page, ...)
 end
 
 --- @param page? string|BindingConfigPage
-function Addon.BindingConfig.Window:PopPage(page)
+function BindingConfig:PopPage(page)
 	local target = self:GetPage(page)
 
 	if #self.pageStack == 1 then
@@ -336,7 +341,7 @@ end
 
 --- @param uid integer|integer[]
 --- @param enqueue? boolean
-function Addon.BindingConfig.Window:Select(uid, enqueue)
+function BindingConfig:Select(uid, enqueue)
 	if not self:IsOpen() then
 		return
 	end
@@ -349,7 +354,7 @@ function Addon.BindingConfig.Window:Select(uid, enqueue)
 end
 
 --- @return DataObject[]
-function Addon.BindingConfig.Window:GetSelection()
+function BindingConfig:GetSelection()
 	if not self:IsOpen() then
 		return {}
 	end
@@ -358,14 +363,17 @@ function Addon.BindingConfig.Window:GetSelection()
 	local result = {}
 
 	for _, id in ipairs(self.treeStatus.selected) do
-		table.insert(result, Clicked:GetByUid(id))
+		local obj = Clicked:GetByUid(id)
+		if obj ~= nil then
+			table.insert(result, obj)
+		end
 	end
 
 	return result
 end
 
 --- @param changed Binding[]
-function Addon.BindingConfig.Window:OnBindingReload(changed)
+function BindingConfig:OnBindingReload(changed)
 	if not self:IsOpen() then
 		return
 	end
@@ -374,7 +382,7 @@ function Addon.BindingConfig.Window:OnBindingReload(changed)
 	self:RedrawTree()
 end
 
-function Addon.BindingConfig.Window:RedrawTree()
+function BindingConfig:RedrawTree()
 	if not self:IsOpen() or self.redrawTimer ~= nil then
 		return
 	end
@@ -411,7 +419,7 @@ function Addon.BindingConfig.Window:RedrawTree()
 	end)
 end
 
-function Addon.BindingConfig.Window:RedrawPage()
+function BindingConfig:RedrawPage()
 	local currentPage = self.currentPage
 
 	if currentPage ~= nil then
@@ -425,7 +433,7 @@ function Addon.BindingConfig.Window:RedrawPage()
 end
 
 --- @private
-function Addon.BindingConfig.Window:HandleOnBindingReload()
+function BindingConfig:HandleOnBindingReload()
 	if #self.reloadedBindings > 0 then
 		--- @type integer[]
 		local changed = CopyTable(self.reloadedBindings)
@@ -445,7 +453,7 @@ function Addon.BindingConfig.Window:HandleOnBindingReload()
 end
 
 --- @private
-function Addon.BindingConfig.Window:DrawHeader()
+function BindingConfig:DrawHeader()
 	-- create binding button
 	do
 		local function OnClick()
@@ -560,7 +568,7 @@ function Addon.BindingConfig.Window:DrawHeader()
 end
 
 --- @private
-function Addon.BindingConfig.Window:ActivatePage()
+function BindingConfig:ActivatePage()
 	-- If the window is not open, open it first, we'll get back here a second time
 	if not self:IsOpen() then
 		self:Open()
@@ -599,7 +607,7 @@ end
 --- @private
 --- @param page? string|BindingConfigPage
 --- @return string?
-function Addon.BindingConfig.Window:GetPage(page)
+function BindingConfig:GetPage(page)
 	if type(page) == "string" then
 		return page
 	end
@@ -614,7 +622,7 @@ function Addon.BindingConfig.Window:GetPage(page)
 end
 
 --- @private
-function Addon.BindingConfig.Window:CreateFrame()
+function BindingConfig:CreateFrame()
 	--- @param container AceGUIContainer
 	local function OnClose(container)
 		local currentPage = self.currentPage
@@ -690,7 +698,7 @@ function Addon.BindingConfig.Window:CreateFrame()
 end
 
 --- @private
-function Addon.BindingConfig.Window:CreateOrUpdateTree()
+function BindingConfig:CreateOrUpdateTree()
 	table.wipe(self.tree)
 
 	--- @type { [integer]: DataObject[] }
@@ -719,21 +727,21 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 	for _, scope in pairs(Clicked.DataObjectScope) do
 		local uid = Addon:GetScopeUid(scope)
 
-		--- @type ClickedTreeGroupItem
+		--- @type ClickedTreeGroup.Item
 		self.treeItems[uid] = self.treeItems[uid] or {
 			uid = uid,
 			title = Addon:GetLocalizedScope(scope),
 			children = {}
 		}
 
-		table.wipe(self.treeItems[uid].children)
+		table.wipe(self.treeItems[uid].children or {})
 
 		--- @type integer[]
 		local queue = { uid }
 
 		while #queue > 0 do
 			local current = table.remove(queue, 1)
-			local children = self.treeItems[current].children --[[@as ClickedTreeGroupItem[]]
+			local children = self.treeItems[current].children
 
 			if hierarchy[current] ~= nil then
 				for _, item in ipairs(hierarchy[current]) do
@@ -741,7 +749,6 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 
 					if item.type == Clicked.DataObjectType.BINDING then
 						--- @cast item Binding
-
 						local title, icon = Addon:GetBindingNameAndIcon(item)
 
 						local data = self.treeItems[item.uid]
@@ -765,10 +772,9 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 						table.insert(children, data)
 					elseif item.type == Clicked.DataObjectType.GROUP then
 						--- @cast item Group
-
 						local title, icon = Addon:GetGroupNameAndIcon(item)
 
-						--- @type ClickedTreeGroupItem
+						--- @type ClickedTreeGroup.Item
 						local data = self.treeItems[item.uid]
 						if data == nil then
 							data = {
@@ -782,7 +788,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 						else
 							data.title = title
 							data.icon = icon
-							table.wipe(data.children)
+							table.wipe(data.children or {})
 						end
 
 						table.insert(children, data)
@@ -796,7 +802,7 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 	end
 
 	for uid in pairs(existing) do
-		local item = self.treeItems[uid] --[[@as ClickedTreeGroupRuntimeItem]]
+		local item = self.treeItems[uid]
 
 		if item.parent ~= nil then
 			for i = 1, #item.parent.children do
@@ -812,14 +818,14 @@ function Addon.BindingConfig.Window:CreateOrUpdateTree()
 end
 
 --- @private
-function Addon.BindingConfig.Window:CreateTreeFrame()
+function BindingConfig:CreateTreeFrame()
 	--- @return integer[]
 	local function FindSelectedItems()
 		if #self.treeStatus.selected > 0 then
 			return self.treeStatus.selected
 		end
 
-		--- @type ClickedTreeGroupItem[]
+		--- @type ClickedTreeGroup.Item[]
 		local queue = { }
 
 		for _, item in ipairs(self.tree) do
@@ -827,7 +833,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		end
 
 		while #queue > 0 do
-			--- @type ClickedTreeGroupItem
+			--- @type ClickedTreeGroup.Item
 			local current = table.remove(queue, 1)
 
 			if current.uid > 0 then
@@ -866,11 +872,10 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 		end
 
 		local text = ""
-		local subtext = nil
+		local subtext = ""
 
 		if obj.type == Clicked.DataObjectType.BINDING then
 			--- @cast obj Binding
-
 			text = Addon:GetBindingNameAndIcon(obj)
 
 			subtext = Addon.L["Targets"] .. "\n"
@@ -897,7 +902,6 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 			subtext = subtext .. (self.treeItems[uid].enabled and Addon.L["Loaded"] or Addon.L["Unloaded"])
 		elseif obj.type == Clicked.DataObjectType.GROUP then
 			--- @cast obj Group
-
 			text = Addon:GetGroupNameAndIcon(obj)
 
 			local bindings = Clicked:GetByParent(uid)
@@ -974,6 +978,8 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 				do
 					local submenu = rootDescription:CreateButton(Addon.L["Convert to"])
 
+					--- @param type string
+					--- @param label string
 					local function CreateOption(type, label)
 						local isAvailable = FindInTableIf(objects, function(obj)
 							return obj.actionType == type
@@ -983,6 +989,7 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 							return
 						end
 
+						--- @cast objects Binding[]
 						submenu:CreateButton(label, function()
 							--- @type Binding
 							local first
@@ -1173,3 +1180,5 @@ function Addon.BindingConfig.Window:CreateTreeFrame()
 
 	self.frame:AddChild(self.treeWidget)
 end
+
+Addon.BindingConfig.Window = BindingConfig

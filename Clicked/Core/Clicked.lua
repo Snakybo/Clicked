@@ -22,11 +22,11 @@ local LibTalentTome = LibStub("LibTalentTome")
 
 --- @class Addon
 local Addon = select(2, ...)
-Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked") --[[@as table<string,string>]]
+Addon.L = LibStub("AceLocale-3.0"):GetLocale("Clicked")
 
-Clicked.VERSION = C_AddOns.GetAddOnMetadata("Clicked", "Version")
 --- @class Clicked : AceAddon, AceEvent-3.0, LibLog.Logger
 Clicked = LibStub("AceAddon-3.0"):NewAddon("Clicked", "AceEvent-3.0", "LibLog")
+Clicked.VERSION = C_AddOns.GetAddOnMetadata("Clicked", "Version") --[[@as string]]
 
 --@debug@
 if Clicked.VERSION == "@project-version@" then
@@ -104,7 +104,7 @@ end
 -- Event handlers
 
 local function PLAYER_REGEN_DISABLED()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_REGEN_DISABLED")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_REGEN_DISABLED")
 
 	isPlayerInCombat = true
 	openConfigOnCombatExit = Addon.BindingConfig.Window:IsOpen()
@@ -118,7 +118,7 @@ local function PLAYER_REGEN_DISABLED()
 end
 
 local function PLAYER_REGEN_ENABLED()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_REGEN_ENABLED")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_REGEN_ENABLED")
 
 	isPlayerInCombat = false
 
@@ -139,7 +139,7 @@ end
 --- @param isInitialLogin boolean
 --- @param isReloadingUi boolean
 local function PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_ENTERING_WORLD")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_ENTERING_WORLD")
 
 	isInitialized = true
 	playerFlagsCache = {
@@ -156,7 +156,7 @@ local function PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
 end
 
 local function ADDON_LOADED()
-	Clicked:LogVerbose("Received event {eventName}", "ADDON_LOADED")
+	Clicked:LogTrace("Received event {eventName}", "ADDON_LOADED")
 
 	Addon:ProcessFrameQueue()
 end
@@ -170,7 +170,7 @@ local function ZONE_CHANGED_INDOORS()
 end
 
 local function ZONE_CHANGED_NEW_AREA()
-	Clicked:LogVerbose("Received event {eventName}", "ZONE_CHANGED_NEW_AREA")
+	Clicked:LogTrace("Received event {eventName}", "ZONE_CHANGED_NEW_AREA")
 
 	Addon:ReloadBindings("ZONE_CHANGED_NEW_AREA")
 end
@@ -188,26 +188,26 @@ local function PLAYER_FLAGS_CHANGED(_, unit)
 	end
 
 	if changed then
-		Clicked:LogVerbose("Received event {eventName}", "PLAYER_FLAGS_CHANGED")
+		Clicked:LogTrace("Received event {eventName}", "PLAYER_FLAGS_CHANGED")
 
 		Addon:ReloadBindings("PLAYER_FLAGS_CHANGED")
 	end
 end
 
 local function PLAYER_FOCUS_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_FOCUS_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_FOCUS_CHANGED")
 
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function PLAYER_LEVEL_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_LEVEL_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_LEVEL_CHANGED")
 
 	Addon:ReloadBindings("PLAYER_LEVEL_CHANGED")
 end
 
 local function ACTIONBAR_SLOT_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "ACTIONBAR_SLOT_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "ACTIONBAR_SLOT_CHANGED")
 
 	if Addon.db.global.options.autoBindActionBar then
 		Addon:ReloadBindings("ACTIONBAR_SLOT_CHANGED")
@@ -215,49 +215,49 @@ local function ACTIONBAR_SLOT_CHANGED()
 end
 
 local function LEARNED_SPELL_IN_TAB()
-	Clicked:LogVerbose("Received event {eventName}", "LEARNED_SPELL_IN_TAB")
+	Clicked:LogTrace("Received event {eventName}", "LEARNED_SPELL_IN_TAB")
 
 	Addon:ReloadBindings("LEARNED_SPELL_IN_TAB")
 end
 
 local function LEARNED_SPELL_IN_SKILL_LINE()
-	Clicked:LogVerbose("Received event {eventName}", "LEARNED_SPELL_IN_SKILL_LINE")
+	Clicked:LogTrace("Received event {eventName}", "LEARNED_SPELL_IN_SKILL_LINE")
 
 	Addon:ReloadBindings("LEARNED_SPELL_IN_SKILL_LINE")
 end
 
 local function PLAYER_EQUIPMENT_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "PLAYER_EQUIPMENT_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "PLAYER_EQUIPMENT_CHANGED")
 
 	Addon:ReloadBindings("PLAYER_EQUIPMENT_CHANGED")
 end
 
 local function GROUP_ROSTER_UPDATE()
-	Clicked:LogVerbose("Received event {eventName}", "GROUP_ROSTER_UPDATE")
+	Clicked:LogTrace("Received event {eventName}", "GROUP_ROSTER_UPDATE")
 
 	Addon:ReloadBindings("GROUP_ROSTER_UPDATE")
 end
 
 local function MODIFIER_STATE_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "MODIFIER_STATE_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "MODIFIER_STATE_CHANGED")
 
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function UNIT_TARGET()
-	Clicked:LogVerbose("Received event {eventName}", "UNIT_TARGET")
+	Clicked:LogTrace("Received event {eventName}", "UNIT_TARGET")
 
 	Addon:AbilityTooltips_Refresh()
 end
 
 local function RUNE_UPDATED()
-	Clicked:LogVerbose("Received event {eventName}", "RUNE_UPDATED")
+	Clicked:LogTrace("Received event {eventName}", "RUNE_UPDATED")
 
 	Addon:ReloadBindings("RUNE_UPDATED")
 end
 
 local function HOUSE_EDITOR_MODE_CHANGED()
-	Clicked:LogVerbose("Received event {eventName}", "HOUSE_EDITOR_MODE_CHANGED")
+	Clicked:LogTrace("Received event {eventName}", "HOUSE_EDITOR_MODE_CHANGED")
 
 	if Addon.db.global.options.disableInHouse and C_HouseEditor.IsHouseEditorActive() ~= wasHouseEditorActive then
 		wasHouseEditorActive = C_HouseEditor.IsHouseEditorActive()
@@ -278,14 +278,14 @@ end
 
 --- @param event LibTalentTome.CallbackEvent
 local function ON_ACTIVE_TALENTS_CHANGED(event)
-	Clicked:LogVerbose("Received event {eventName}", event)
+	Clicked:LogTrace("Received event {eventName}", event)
 
 	Addon:ReloadBindings("ActiveTalentsChanged")
 end
 
 --- @param event LibTalentTome.CallbackEvent
 local function ON_ACTIVE_PVP_TALENTS_CHANGED(event)
-	Clicked:LogVerbose("Received event {eventName}", event)
+	Clicked:LogTrace("Received event {eventName}", event)
 
 	Addon:ReloadBindings("ActivePvpTalentsChanged")
 end
@@ -316,7 +316,7 @@ end
 
 --- @param self AceEvent-3.0
 --- @param event WowEvent
---- @param callback function|string
+--- @param callback function
 local function RegisterEvent(self, event, callback)
 	if C_EventUtils.IsEventValid(event) then
 		self:RegisterEvent(event, callback)
@@ -336,7 +336,7 @@ end
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
-	Addon.db = AceDB:New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile) --[[@as AceDBObject-3.0|DBSchema]]
+	Addon.db = AceDB:New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileReset", "InitializeDatabase")
@@ -381,7 +381,7 @@ function Clicked:OnDisable()
 end
 
 --- @param system string
---- @return LibLog-1.0.Logger
+--- @return LibLog.Logger
 function Clicked:CreateSystemLogger(system)
 	return Clicked:ForLogContext({
 		system = system

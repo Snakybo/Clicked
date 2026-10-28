@@ -132,15 +132,20 @@ function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 		return
 	end
 
+	local data = command.data
+
 	if command.action == Addon.CommandType.TARGET then
-		local value = IsCombatStatusValid(command.data) and "target" or ""
+		--- @cast data boolean
+		local value = IsCombatStatusValid(data) and "target" or ""
 		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MENU then
-		local value = IsCombatStatusValid(command.data) and "togglemenu" or ""
+		--- @cast data boolean
+		local value = IsCombatStatusValid(data) and "togglemenu" or ""
 		CreateAttribute(register, prefix, "type", suffix, value)
 	elseif command.action == Addon.CommandType.MACRO then
+		--- @cast data string
 		CreateAttribute(register, prefix, "type", suffix, "macro")
-		CreateAttribute(register, prefix, "macrotext", suffix, command.data)
+		CreateAttribute(register, prefix, "macrotext", suffix, data)
 	else
 		logger:LogError("Unhandled action type: {actionType}", command.action)
 	end

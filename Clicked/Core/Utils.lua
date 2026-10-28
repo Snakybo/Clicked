@@ -398,20 +398,20 @@ end
 --- @return string name
 --- @return string|number icon
 function Addon:GetBindingNameAndIcon(binding)
-	local function IsValidIcon(icon)
+	--- @param icon string|integer|nil
+	--- @return string|integer|nil
+	local function GetValidIcon(icon)
 		if icon == nil then
-			return false
+			return nil
 		end
 
 		if type(icon) == "string" and #icon == 0 then
-			return false
+			return nil
+		elseif type(icon) == "number" and icon <= 0 then
+			return nil
 		end
 
-		if tonumber(icon) ~= nil and tonumber(icon) <= 0 then
-			return false
-		end
-
-		return true
+		return icon
 	end
 
 	local name = ""
@@ -429,9 +429,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			name = string.format(label, spellName or value)
 		end
 
-		if IsValidIcon(spellIcon) then
-			icon = spellIcon --[[@as string|integer]]
-		end
+		icon = GetValidIcon(spellIcon) or icon
 	elseif binding.actionType == Clicked.ActionType.MACRO or binding.actionType == Clicked.ActionType.APPEND then
 		if Addon:IsNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
@@ -439,9 +437,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			name = binding.action.macroName
 		end
 
-		if IsValidIcon(binding.action.macroIcon) then
-			icon = binding.action.macroIcon
-		end
+		icon = GetValidIcon(binding.action.macroIcon) or icon
 	elseif binding.actionType == Clicked.ActionType.CANCELAURA then
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
@@ -450,9 +446,7 @@ function Addon:GetBindingNameAndIcon(binding)
 			name = string.format(Addon.L["Cancel %s"], spellName or value)
 		end
 
-		if IsValidIcon(spellIcon) then
-			icon = spellIcon --[[@as string|integer]]
-		end
+		icon = GetValidIcon(spellIcon) or icon
 	elseif binding.actionType == Clicked.ActionType.UNIT_SELECT then
 		name = Addon.L["Target the unit"]
 	elseif binding.actionType == Clicked.ActionType.UNIT_MENU then
@@ -751,43 +745,50 @@ function Addon:GetAvailableShapeshiftForms(binding)
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF and select(2, UnitClass("player")) == "DRUID" then
 		local specId = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
-		local all = LibStanceDance:GetForms(specId)
-		local available = {}
-		local result = {}
 
-		for _, spellIds in ipairs(all) do
-			for _, spellId in ipairs(spellIds) do
-				if IsSpellKnown(spellId) then
-					table.insert(available, spellId)
-					break
-				end
-			end
-		end
+		if specId ~= nil then
+			local all = LibStanceDance:GetForms(specId)
 
-		for i = 1, #forms do
-			local formId = forms[i]
+			--- @type integer[]
+			local available = {}
 
-			-- 0 is [form:0] aka humanoid
-			if formId == 0 then
-				table.insert(result, formId)
+			--- @type integer[]
+			local result = {}
 
-				-- Incarnation: Tree of Life does not show up as a shapeshift form,
-				-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
-
-				if IsSpellKnown(33891) then
-					table.insert(result, GetNumShapeshiftForms() + 1)
-				end
-			else
-				for j = 1, #available do
-					if available[j] == all[formId] then
-						table.insert(result, j)
+			for _, spellIds in ipairs(all) do
+				for _, spellId in ipairs(spellIds) do
+					if C_SpellBook.IsSpellKnown(spellId) then
+						table.insert(available, spellId)
 						break
 					end
 				end
 			end
-		end
 
-		forms = result
+			for i = 1, #forms do
+				local formId = forms[i]
+
+				-- 0 is [form:0] aka humanoid
+				if formId == 0 then
+					table.insert(result, formId)
+
+					-- Incarnation: Tree of Life does not show up as a shapeshift form,
+					-- but it will always be NUM_SHAPESHIFT_FORMS + 1 (See: #9)
+
+					if C_SpellBook.IsSpellKnown(33891) then
+						table.insert(result, GetNumShapeshiftForms() + 1)
+					end
+				else
+					for j = 1, #available do
+						if available[j] == all[formId].spellId then
+							table.insert(result, j)
+							break
+						end
+					end
+				end
+			end
+
+			forms = result
+		end
 	end
 
 	return forms
@@ -932,7 +933,7 @@ end
 ---
 --- @param keybind string
 --- @param bindings Binding[]
---- @returns string[]
+--- @return string[]
 function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
 	local combinations = {}
 
@@ -1018,7 +1019,7 @@ function Addon:CanUnitBeHostile(unit)
 		[Addon.TargetUnit.MOUSEOVER_TARGET] = true
 	}
 
-	return valid[unit] == true
+	return unit ~= nil and valid[unit] == true
 end
 
 --- Check if a binding's target unit supports `dead` and `nodead` modifiers.
@@ -1047,7 +1048,7 @@ function Addon:CanUnitBeDead(unit)
 		[Addon.TargetUnit.MOUSEOVER_TARGET] = true
 	}
 
-	return valid[unit] == true
+	return unit ~= nil and valid[unit] == true
 end
 
 --- Colorize the specified string. This will enclose the string
@@ -1092,7 +1093,7 @@ end
 ---
 --- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
 ---
---- @param scope DataObjectScope
+--- @param scope integer
 --- @return integer
 function Addon:GetScopeUid(scope)
 	return -100 + scope
@@ -1103,7 +1104,7 @@ end
 --- This is mainly a hack to allow us to treat a scope in the same manner as a binding in the binding list.
 ---
 --- @param uid integer
---- @return DataObjectScope?
+--- @return integer?
 function Addon:GetScopeFromUid(uid)
 	if uid < 0 then
 		return uid + 100
@@ -1202,7 +1203,7 @@ end
 --- @param index integer
 function Addon:CharAt(str, index)
 	assert(type(str) == "string", "bad argument #1, expected string but got " .. type(str))
-	assert(type(index) == "number", "bad argument #2, expected string but got " .. type(index))
+	assert(type(index) == "number", "bad argument #2, expected number but got " .. type(index))
 
 	return string.sub(str, index, index)
 end
@@ -1239,7 +1240,6 @@ function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 		    "\"" .. table.concat(identifiers, "\", \"") .. "\"")
 	end
 
-	--- @diagnostic disable-next-line: undefined-field
 	frame:Execute(command)
 end
 
@@ -1249,7 +1249,7 @@ end
 function Addon:GetRuleset()
 	local ruleset;
 
-	if C_GameRules.IsHardcoreActive() then
+	if Enum.GameRule.HardcoreRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.HardcoreRuleset) then
 		ruleset = "HARDCORE"
 	elseif Enum.GameRule.RPRuleset ~= nil and C_GameRules.IsGameRuleActive(Enum.GameRule.RPRuleset) then
 		ruleset = "RP"

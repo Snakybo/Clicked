@@ -26,7 +26,7 @@ local registerQueue = {}
 --- @type Button[]
 local unregisterQueue = {}
 
---- @type { frame: Button, addon: string }[]
+--- @type Button[]
 local registerClicksQueue = {}
 
 --- @type table<string,string>
@@ -340,6 +340,9 @@ function Clicked:SetFrameDisplayName(frame, name)
 end
 
 --- Iterate through all registered click-cast enabled frames. This function can be used in a `for in` loop.
+--- @return fun(table: Button[], i?: integer): number, Button
+--- @return Button[]
+--- @return number
 function Clicked:IterateClickCastFrames()
 	return ipairs(frames)
 end

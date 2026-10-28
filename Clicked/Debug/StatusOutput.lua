@@ -28,7 +28,7 @@ local frame
 --- @type ClickedReadOnlyMultilineEditBox
 local editbox
 
---- @type { hovercast: table<string,string>, macroHandler: table<string,string>, timestamp: number }
+--- @type { hovercast: table<string,string>, macroHandler: table<string,string>, commands: Command[], timestamp: number }
 local data
 
 -- Local support functions
@@ -51,7 +51,10 @@ local function GetBasicinfoString()
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 		local id, name = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization())
-		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
+
+		if id ~= nil and name ~= nil then
+			table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
+		end
 	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
 		local id, name = GetTalentTabInfo(GetPrimaryTalentTree())
 		table.insert(lines, "Specialization: " .. id .. " (" .. name .. ")")
@@ -107,12 +110,12 @@ local function GetLoadedBindings()
 		"----- Loaded bindings -----"
 	}
 
-	for _, command in ipairs(data) do
+	for _, command in ipairs(data.commands) do
 		local info = {
 			"Key: " .. command.keybind,
 			"Hovercast: " .. tostring(command.hovercast),
-			"Action: " .. command.action,
-			"ID: " .. command.suffix
+			"Action: " .. (command.action or ""),
+			"ID: " .. (command.suffix or "")
 		}
 
 		table.insert(lines, table.concat(info, ", "))
@@ -140,9 +143,9 @@ local function GetUnloadedBindings()
 	for _, binding in Clicked:IterateConfiguredBindings() do
 		local info = {
 			"ID: " .. binding.uid,
-			"Type: " .. binding.actionType,
+			"Type: " .. tostring(binding.actionType),
 			"Key: " .. binding.keybind,
-			"Scope: " .. binding.scope
+			"Scope: " .. tostring(binding.scope)
 		}
 
 		local value = Addon:GetBindingValue(binding)
@@ -247,6 +250,8 @@ local function UpdateLastUpdatedTime()
 	C_Timer.After(1, UpdateLastUpdatedTime)
 end
 
+--- @param state string
+--- @param condition string
 local function CreateStateDriver(state, condition)
 	RegisterStateDriver(driver, state, condition)
 	driver:SetAttribute("_onstate-" .. state, [[ self:CallMethod("UpdateStatusOutputText") ]])
@@ -296,11 +301,15 @@ end
 
 --- @param commands Command[]
 function Addon:StatusOutput_HandleCommandsGenerated(commands)
-	data = {}
-	data.timestamp = GetTime()
+	data = {
+		macroHandler = {},
+		hovercast = {},
+		commands = {},
+		timestamp = GetTime(),
+	}
 
 	for i, command in ipairs(commands) do
-		data[i] = command
+		data.commands[i] = command
 	end
 
 	if frame ~= nil and frame:IsVisible() then

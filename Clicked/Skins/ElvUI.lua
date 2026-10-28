@@ -14,9 +14,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @diagnostic disable: undefined-field
---- @diagnostic disable: inject-field
---- @diagnostic disable: invisible
+---@diagnostic disable: undefined-field
+---@diagnostic disable: inject-field
+---@diagnostic disable: invisible
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -94,6 +94,7 @@ local function Initialize()
 	--- @diagnostic disable-next-line: duplicate-set-field
 	AceGUI.RegisterAsWidget = function(self, widget)
 		if widget.type == "ClickedToggleHeading" then
+			--- @cast widget ClickedToggleHeading
 			widget.checkbg:CreateBackdrop()
 			widget.checkbg.backdrop:SetInside(widget.checkbg, 4, 4)
 			widget.checkbg.backdrop:SetFrameLevel(widget.checkbg.backdrop:GetFrameLevel() + 1)
@@ -118,9 +119,11 @@ local function Initialize()
 			widget.checkbg.SetTexture = elv.noop
 			widget.highlight.SetTexture = elv.noop
 		elseif widget.type == "ClickedAutoFillEditBox" then
+			--- @cast widget ClickedAutoFillEditBox
 			widget.pullout:StripTextures()
 			widget.pullout:SetTemplate("Transparent")
-		elseif  widget.type == "ClickedBindingImportList" then
+		elseif widget.type == "ClickedBindingImportList" then
+			--- @cast widget ClickedBindingImportList
 			local function RefreshTree(w, fromOnUpdate)
 				w.OrignalRefreshTree(w, fromOnUpdate)
 
@@ -163,6 +166,7 @@ local function Initialize()
 			widget.treeframe:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
 		elseif widget.type == "ClickedKeyVisualizerButton" then
+			--- @cast widget ClickedKeyVisualizerButton
 			widget.frame:StripTextures()
 			widget.frame:SetTemplate("Transparent")
 
@@ -207,6 +211,7 @@ local function Initialize()
 	--- @diagnostic disable-next-line: duplicate-set-field
 	AceGUI.RegisterAsContainer = function(self, widget)
 		if widget.type == "ClickedSimpleGroup" then
+			--- @cast widget ClickedSimpleGroup
 			-- Undo everything done by ElvUI
 			widget.frame:SetTemplate("NoBackdrop")
 			widget.frame:SetBackdropColor(0, 0, 0, 0)
@@ -216,6 +221,7 @@ local function Initialize()
 			widget.content:SetPoint("TOPLEFT")
 			widget.content:SetPoint("BOTTOMRIGHT")
 		elseif widget.type == "ClickedTreeGroup" then
+			--- @cast widget ClickedTreeGroup
 			widget.content:GetParent():SetTemplate("Transparent")
 			widget.treeFrame:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)

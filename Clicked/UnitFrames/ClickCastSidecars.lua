@@ -278,6 +278,8 @@ function Addon:RemoveSidecar(frame)
 	table.insert(pool, sidecar)
 end
 
+--- @return fun(table: table<Button, Sidecar>, index?: Button): Button, Sidecar
+--- @return table<Button, Sidecar>
 function Clicked:IterateSidecars()
 	return pairs(sidecars)
 end

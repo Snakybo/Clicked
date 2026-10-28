@@ -879,7 +879,7 @@ end
 ---
 --- @param binding Binding
 --- @param condition? string
---- @overload fun(self:Clicked, binding:Binding, full:boolean)
+--- @overload fun(binding:Binding, full:boolean)
 function Addon:ReloadBinding(binding, condition)
 	logger:LogDebug("Scheduling binding reload for binding with ID {uid} with condition {condition}", binding.uid, condition)
 

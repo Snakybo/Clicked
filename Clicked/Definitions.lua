@@ -129,16 +129,16 @@
 --- @field public bonusbar Binding.NegatableStringLoadOption
 --- @field public bar Binding.NegatableStringLoadOption
 
---- @class Binding.LoadOption
+--- @class Binding.LoadOption<T>
 --- @field public selected boolean
---- @field public value string|boolean
+--- @field public value T
 
---- @class Binding.TriStateLoadOption
+--- @class Binding.TriStateLoadOption<T>
 --- @field public selected integer
---- @field public single number|string
---- @field public multiple number[]|string[]
+--- @field public single T
+--- @field public multiple T[]
 
---- @class Binding.NegatableTriStateLoadOption : Binding.TriStateLoadOption
+--- @class Binding.NegatableTriStateLoadOption<T> : Binding.TriStateLoadOption<T>
 --- @field public negated boolean
 
 --- @class Binding.MutliFieldLoadOption
@@ -210,7 +210,7 @@
 --- @field public icon integer
 --- @field public specId integer
 
---- @alias ShareType "group"|"binding
+--- @alias ShareType "group"|"binding"
 
 --- @class ShareData
 --- @field public version integer

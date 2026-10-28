@@ -25,8 +25,8 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingInputConditionDrawer : BindingConditionDrawer
 --- @field private checkbox ClickedCheckBox
---- @field private editbox? ClickedEditBox|ClickedAutoFillEditBox
---- @field private negated? ClickedCheckBox
+--- @field private editbox ClickedEditBox?|ClickedAutoFillEditBox?
+--- @field private negated ClickedCheckBox?
 local Drawer = {}
 
 --- @protected

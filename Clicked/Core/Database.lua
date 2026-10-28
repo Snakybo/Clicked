@@ -15,6 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local LibDBIcon = LibStub("LibDBIcon-1.0")
+local LibLog = LibStub("LibLog")
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -55,10 +56,11 @@ local lookupTable = {
 
 -- Local support functions
 
---- @param default string|boolean
---- @return Binding.LoadOption
+--- @generic T
+--- @param default T
+--- @return Binding.LoadOption<T>
 local function GetLoadOptionTemplate(default)
-	--- @type Binding.LoadOption
+	--- @type Binding.LoadOption<T>
 	local template = {
 		selected = false,
 		value = default
@@ -72,10 +74,11 @@ local function GetNegatableLoadOptionTemplate()
 	return GetLoadOptionTemplate(true)
 end
 
---- @param default number|string
---- @return Binding.TriStateLoadOption
+--- @generic T
+--- @param default T
+--- @return Binding.TriStateLoadOption<T>
 local function GetTriStateLoadOptionTemplate(default)
-	--- @type Binding.TriStateLoadOption
+	--- @type Binding.TriStateLoadOption<T>
 	local template = {
 		selected = 0,
 		single = default,
@@ -87,10 +90,12 @@ local function GetTriStateLoadOptionTemplate(default)
 	return template
 end
 
---- @param default number|string
---- @return Binding.NegatableTriStateLoadOption
+--- @generic T
+--- @param default T
+--- @return Binding.NegatableTriStateLoadOption<T>
 local function GetNegatableTriStateLoadOptionTemplate(default)
-	local template = GetTriStateLoadOptionTemplate(default) --[[@as Binding.NegatableTriStateLoadOption]]
+	--- @type Binding.NegatableTriStateLoadOption<T>
+	local template = GetTriStateLoadOptionTemplate(default)
 	template.negated = false
 
 	return template
@@ -158,7 +163,7 @@ function Clicked:GetDatabaseDefaults()
 				showOnlyLoadedBindings = true,
 				highlightEmptyKeys = false
 			},
-			logLevel = "INFO",
+			logLevel = LibLog.LogLevel.INFO,
 			blacklist = {},
 		},
 		profile = {
@@ -221,9 +226,10 @@ end
 --- @return Group
 function Clicked:CreateGroup()
 	--- @type Group
-	--- @diagnostic disable-next-line: missing-fields
 	local group = {
 		type = Clicked.DataObjectType.GROUP,
+		scope = nil,
+		uid = nil,
 		name = Addon.L["New Group"],
 		displayIcon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 	}
@@ -247,7 +253,7 @@ end
 --- Delete a data object and all children.
 ---
 --- @param object DataObject
---- @returns boolean
+--- @return DataObject[]
 function Clicked:DeleteDataObject(object)
 	assert(type(object) == "table", "bad argument #1, expected table but got " .. type(object))
 
@@ -275,7 +281,7 @@ function Clicked:DeleteDataObject(object)
 
 		if current.type == Clicked.DataObjectType.GROUP then
 			if Delete(db.groups, current.uid) then
-				table.insert(lookupTable.deleted, object.uid)
+				table.insert(lookupTable.deleted, current.uid)
 				table.insert(deleted, current)
 
 				for _, binding in ipairs(Clicked:GetByParent(current.uid)) do
@@ -284,7 +290,7 @@ function Clicked:DeleteDataObject(object)
 			end
 		elseif current.type == Clicked.DataObjectType.BINDING then
 			if Delete(db.bindings, current.uid) then
-				table.insert(lookupTable.deleted, object.uid)
+				table.insert(lookupTable.deleted, current.uid)
 				table.insert(deleted, current)
 			end
 		end
@@ -371,6 +377,9 @@ end
 
 --- Iterate through all configured bindings, this will also include any bindings avaialble in the current profile that are not currently loaded. This function
 --- can be used in a `for in` loop.
+--- @return fun(table: Binding[], i?: integer): number, Binding
+--- @return Binding[]
+--- @return number
 function Clicked:IterateConfiguredBindings()
 	--- @type Binding[]
 	local result = {}
@@ -390,7 +399,7 @@ end
 
 --@debug@
 
---- @param from string
+--- @param from integer
 function Clicked:UpgradeDatabase(from)
 	Addon:UpgradeDatabase(from)
 	Addon:ReloadBindings()
@@ -501,12 +510,13 @@ end
 --- @return Binding
 function Addon:GetNewBindingTemplate()
 	--- @type Binding
-	--- @diagnostic disable-next-line: missing-fields
 	local template = {
 		actionType = Clicked.ActionType.SPELL,
 		type = Clicked.DataObjectType.BINDING,
 		keybind = "",
 		parent = nil,
+		scope = nil,
+		uid = nil,
 		action = {
 			spellValue = "",
 			itemValue = "",

@@ -40,13 +40,11 @@ function Addon:RegisterClickCastHeader()
 	-- This is mostly based on Clique, mainly to ensure it will continue
 	-- working with any addons that integrate with Clique directly, such as oUF.
 
-	--- @type table
-	ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
-	Addon.ClickCastHeader = ClickCastHeader
+	Addon.ClickCastHeader = CreateFrame("Frame", "ClickCastHeader", UIParent, "SecureHandlerBaseTemplate,SecureHandlerAttributeTemplate")
 
-	Addon:SetupRestrictedEnvironmentVariables(ClickCastHeader, {})
+	Addon:SetupRestrictedEnvironmentVariables(Addon.ClickCastHeader, {})
 
-	ClickCastHeader:SetAttribute("setup-keybinds", [[
+	Addon.ClickCastHeader:SetAttribute("setup-keybinds", [[
 		if currentClickcastButton ~= nil then
 			control:RunFor(currentClickcastButton, control:GetAttribute("clear-keybinds"))
 		end
@@ -66,7 +64,7 @@ function Addon:RegisterClickCastHeader()
 		end
 	]])
 
-	ClickCastHeader:SetAttribute("clear-keybinds", [[
+	Addon.ClickCastHeader:SetAttribute("clear-keybinds", [[
 		for i = 1, table.maxn(keybinds) do
 			local keybind = keybinds[i]
 			self:ClearBinding(keybind)
@@ -75,27 +73,27 @@ function Addon:RegisterClickCastHeader()
 		currentClickcastButton = nil
 	]])
 
-	ClickCastHeader:SetAttribute("clickcast_register", [[
+	Addon.ClickCastHeader:SetAttribute("clickcast_register", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_register", frame)
 	]])
 
-	ClickCastHeader:SetAttribute("clickcast_unregister", [[
+	Addon.ClickCastHeader:SetAttribute("clickcast_unregister", [[
 		local frame = self:GetAttribute("clickcast_button")
 		self:SetAttribute("export_unregister", frame)
 	]])
 
-	ClickCastHeader:SetAttribute("clickcast_onenter", [[
+	Addon.ClickCastHeader:SetAttribute("clickcast_onenter", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("setup-keybinds"))
 	]])
 
-	ClickCastHeader:SetAttribute("clickcast_onleave", [[
+	Addon.ClickCastHeader:SetAttribute("clickcast_onleave", [[
 		local frame = self:GetParent():GetFrameRef("clickcast_header")
 		frame:RunFor(self, frame:GetAttribute("clear-keybinds"))
 	]])
 
-	ClickCastHeader:SetAttribute("_onattributechanged", [[
+	Addon.ClickCastHeader:SetAttribute("_onattributechanged", [[
 		local button = currentClickcastButton
 
 		if name == "unit-exists" and value == "false" and button ~= nil then
@@ -106,7 +104,7 @@ function Addon:RegisterClickCastHeader()
 		end
 	]])
 
-	ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
+	Addon.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
 		local frameName = value and value.GetName and value:GetName()
 
 		if frameName == nil then
@@ -120,7 +118,7 @@ function Addon:RegisterClickCastHeader()
 		end
 	end)
 
-	RegisterAttributeDriver(ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
+	RegisterAttributeDriver(Addon.ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
 
 	-- Hook into the global ClickCastFrames table
 	local originalClickCastFrames = ClickCastFrames or {}
@@ -138,6 +136,8 @@ function Addon:RegisterClickCastHeader()
 	for frame in pairs(originalClickCastFrames) do
 		Clicked:RegisterClickCastFrame(frame)
 	end
+
+	ClickCastHeader = Addon.ClickCastHeader
 
 	-- Hook into Clique because a lot of (older) addons are hardcoded to add Clique-support
 	Clique = {}
