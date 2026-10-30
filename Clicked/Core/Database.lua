@@ -148,7 +148,6 @@ function Clicked:GetDatabaseDefaults()
 					lock = false,
 					minimapPos = 0
 				},
-				ignoreSelfCastWarning = false,
 				disableInHouse = true
 			},
 			keyVisualizer = {

@@ -44,7 +44,6 @@
 --- @field public minimap LibDBIcon.button.DB
 --- @field public bindUnassignedModifiers boolean
 --- @field public autoBindActionBar boolean
---- @field public ignoreSelfCastWarning boolean
 --- @field public disableInHouse boolean
 
 --- @class DBSchema.Global.KeyVisualizer
