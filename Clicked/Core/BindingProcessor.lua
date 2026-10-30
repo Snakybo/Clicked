@@ -214,9 +214,8 @@ end
 --- @return Action
 local function ConstructAction(binding, target)
 	--- @type Action
-	--- @diagnostic disable-next-line: missing-fields
 	local action = {
-		ability = Addon:GetBindingValue(binding) --[[@as string|integer]],
+		ability = Addon:GetBindingValue(binding, true) --[[@as string|integer]],
 		type = binding.actionType
 	}
 

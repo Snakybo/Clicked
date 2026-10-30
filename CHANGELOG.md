@@ -27,6 +27,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Support up to two years of profile upgrades, instead of forever
 * Use `/use` for item bindings instead of `/cast`
 * Remove automatic load logic for item bindings, use the "Item Equipped" load condition instead
+* Use item IDs instead of names in macros, reducing macro length
 
 ## [1.18.2] - 2026-10-14
 

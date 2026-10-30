@@ -263,8 +263,9 @@ function Addon:GetWoWUnitFromUnit(unit, addPrefix)
 end
 
 --- @param binding Binding
+--- @param short? boolean
 --- @return string?
-function Addon:GetBindingValue(binding)
+function Addon:GetBindingValue(binding, short)
 	assert(type(binding) == "table", "bad argument #1, expected table but got " .. type(binding))
 
 	if binding.actionType == Clicked.ActionType.SPELL then
@@ -299,6 +300,8 @@ function Addon:GetBindingValue(binding)
 					name = string.format("%s(%s)", name, rank)
 				end
 			end
+		else
+			C_Spell.RequestLoadSpellData(spell)
 		end
 
 		return name
@@ -310,7 +313,7 @@ function Addon:GetBindingValue(binding)
 			return nil
 		end
 
-		if type(item) == "number" then
+		if not short and type(item) == "number" then
 			if item < 20 then
 				item = GetInventoryItemID("player", item)
 
@@ -320,6 +323,12 @@ function Addon:GetBindingValue(binding)
 			end
 
 			return C_Item.GetItemNameByID(item)
+		elseif short and type(item) == "number" then
+			if item < NUM_INVSLOTS then
+				return tostring(item)
+			end
+
+			return "item:" .. tostring(item)
 		end
 
 		--- @cast item string
@@ -419,17 +428,26 @@ function Addon:GetBindingNameAndIcon(binding)
 	--- @type string|integer
 	local icon = "Interface\\ICONS\\INV_Misc_QuestionMark"
 
-	if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
-		local label = binding.actionType == Clicked.ActionType.SPELL and Addon.L["Cast %s"] or Addon.L["Use %s"]
-
+	if binding.actionType == Clicked.ActionType.SPELL then
 		local spellName, spellIcon = Addon:GetSimpleSpellOrItemInfo(binding)
 		local value = Addon:GetBindingValue(binding)
 
 		if spellName ~= nil or value ~= nil then
-			name = string.format(label, spellName or value)
+			name = string.format(Addon.L["Cast %s"], spellName or value)
 		end
 
 		icon = GetValidIcon(spellIcon) or icon
+	elseif binding.actionType == Clicked.ActionType.ITEM then
+		local itemName, itemIcon = Addon:GetSimpleSpellOrItemInfo(binding)
+		local value = Addon:GetBindingValue(binding)
+
+		if itemName ~= nil or value ~= nil then
+			name = string.format(Addon.L["Use %s"], itemName or value)
+		elseif not Addon:IsNilOrEmpty(binding.action.itemValue) then
+			name = string.format(Addon.L["Use %s"], binding.action.itemValue)
+		end
+
+		icon = GetValidIcon(itemIcon) or icon
 	elseif binding.actionType == Clicked.ActionType.MACRO or binding.actionType == Clicked.ActionType.APPEND then
 		if Addon:IsNilOrEmpty(binding.action.macroName) then
 			name = Addon.L["Run custom macro"]
