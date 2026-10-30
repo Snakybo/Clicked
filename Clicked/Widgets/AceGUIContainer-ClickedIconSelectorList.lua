@@ -22,7 +22,7 @@ time to improve performance.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedIconSelectorList", 2
+local TYPE, VERSION = "ClickedIconSelectorList", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -49,16 +49,15 @@ local ICON_SIZE = 32
 --- @class ClickedIconSelectorList : AceGUIContainer
 --- @field protected status ClickedIconSelectorList.Status?
 --- @field protected localstatus ClickedIconSelectorList.Status
---- @field protected scrollframe ScrollFrame&{obj: ClickedIconSelectorList}
+--- @field protected scrollframe ScrollFrame&{obj: self}
 --- @field protected buttons AceGUIIcon[]
 --- @field protected icons string[]
 --- @field protected order integer[]
 --- @field protected loadQueue ClickedIconSelectorList.LoadQueue[]
---- @field protected scrollbar Slider&{obj: ClickedIconSelectorList}
+--- @field protected scrollbar Slider&{obj: self}
 --- @field protected searchHandler ClickedSearchBox?
 --- @field protected content Frame
 --- @field protected frame Frame
---- @field protected iconLoader Frame&{obj: ClickedIconSelectorList}
 --- @field protected originalWidth number
 --- @field protected type string
 --- @field protected updateLock boolean?
@@ -67,9 +66,12 @@ local ClickedIconSelectorList = {}
 
 --- @protected
 function ClickedIconSelectorList:OnAcquire()
-	self:SetScroll(0)
+	self.localstatus = { scrollvalue = 0, contentHeight = 0, numRows = 0, numColumns = 0 }
+	self.updateLock = false
+	self.originalWidth = 0
+	self.scrollframe:SetPoint("BOTTOMRIGHT")
 	self.scrollframe:SetScript("OnUpdate", ClickedIconSelectorList.ScrollFrame_OnUpdate)
-	self.iconLoader:SetScript("OnUpdate", ClickedIconSelectorList.IconLoader_Update)
+	self:SetScroll(0)
 end
 
 --- @protected
@@ -80,21 +82,14 @@ function ClickedIconSelectorList:OnRelease()
 		self.searchHandler:SetCallback("SearchTermChanged", function() end)
 	end
 
-	self.searchHandler = nil
-
-	for k in pairs(self.localstatus) do
-		self.localstatus[k] = nil
-	end
-
-	self.buttons = {}
 	self.icons = {}
 	self.order = {}
-	self.loadQueue = {}
-	self.scrollframe:SetPoint("BOTTOMRIGHT")
-	self.scrollbar:Hide()
-	self.iconLoader:SetScript("OnUpdate", nil)
+
+	wipe(self.buttons)
+	wipe(self.loadQueue)
+
 	self.scrollBarShown = nil
-	self.content.height, self.content.width, self.content.original_width = nil, nil, nil --- @diagnostic disable-line: inject-field
+	self.searchHandler = nil
 end
 
 --- @param value number
@@ -145,7 +140,7 @@ end
 --- @param icons string[]
 --- @param order integer[]
 function ClickedIconSelectorList:SetIcons(icons, order)
-	self.icons = icons
+	self.icons =  icons
 	self.order = order
 
 	self:FixScroll()
@@ -205,7 +200,7 @@ function ClickedIconSelectorList:RefreshIcons()
 		local button = self.buttons[i]
 
 		if button == nil then
-			button = AceGUI:Create("Icon") --[[@as AceGUIIcon]]
+			button = AceGUI:Create("Icon")
 			button:SetImageSize(ICON_SIZE, ICON_SIZE)
 			button:SetWidth(ICON_SIZE + 4)
 			button:SetHeight(ICON_SIZE)
@@ -250,7 +245,7 @@ function ClickedIconSelectorList:FixScroll()
 		self.scrollbar:Show()
 		self.scrollframe:SetPoint("BOTTOMRIGHT", -20, 0)
 		if self.originalWidth ~= 0 then
-			self.content.width = self.originalWidth - 20 --- @diagnostic disable-line: inject-field
+			self.content.width = self.originalWidth - 20
 		end
 		self:DoLayout()
 	end
@@ -279,7 +274,7 @@ end
 --- @param width integer
 function ClickedIconSelectorList:OnWidthSet(width)
 	local content = self.content
-	content.width = width - (self.scrollBarShown and 20 or 0) --- @diagnostic disable-line: inject-field
+	content.width = width - (self.scrollBarShown and 20 or 0)
 	self.originalWidth = width
 end
 
@@ -287,39 +282,14 @@ end
 --- @param height integer
 function ClickedIconSelectorList:OnHeightSet(height)
 	local content = self.content
-	content.height = height --- @diagnostic disable-line: inject-field
+	content.height = height
 end
 
---- @protected
---- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
---- @param value number
-function ClickedIconSelectorList.ScrollFrame_OnMouseWheel(frame, value)
-	frame.obj:MoveScroll(value)
-end
 
---- @protected
---- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
-function ClickedIconSelectorList.ScrollFrame_OnUpdate(frame)
-	frame:SetScript("OnUpdate", nil)
-	frame.obj:FixScroll()
-end
-
---- @protected
---- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
-function ClickedIconSelectorList.ScrollFrame_OnSizeChanged(frame)
-	frame:SetScript("OnUpdate", ClickedIconSelectorList.ScrollFrame_OnUpdate)
-end
-
---- @protected
---- @param frame Slider&UIPanelScrollBarTemplate&{obj: ClickedIconSelectorList}
---- @param value number
-function ClickedIconSelectorList.ScrollBar_OnScrollValueChanged(frame, value)
-	frame.obj:SetScroll(value)
-end
 
 --- @protected
 --- @param frame Frame&{obj: ClickedIconSelectorList}
-function ClickedIconSelectorList.IconLoader_Update(frame)
+function ClickedIconSelectorList.Frame_Update(frame)
 	local self = frame.obj
 	local status = self.status or self.localstatus
 
@@ -350,12 +320,47 @@ function ClickedIconSelectorList.IconLoader_Update(frame)
 	end
 end
 
+--- @protected
+--- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
+--- @param value number
+function ClickedIconSelectorList.ScrollFrame_OnMouseWheel(frame, value)
+	frame.obj:MoveScroll(value)
+end
+
+--- @protected
+--- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
+function ClickedIconSelectorList.ScrollFrame_OnUpdate(frame)
+	frame:SetScript("OnUpdate", nil)
+	frame.obj:FixScroll()
+end
+
+--- @protected
+--- @param frame ScrollFrame&{obj: ClickedIconSelectorList}
+function ClickedIconSelectorList.ScrollFrame_OnSizeChanged(frame)
+	frame:SetScript("OnUpdate", ClickedIconSelectorList.ScrollFrame_OnUpdate)
+end
+
+--- @protected
+--- @param frame Slider&UIPanelScrollBarTemplate&{obj: ClickedIconSelectorList}
+--- @param value number
+function ClickedIconSelectorList.ScrollBar_OnScrollValueChanged(frame, value)
+	frame.obj:SetScroll(value)
+end
+
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
-	local frame = CreateFrame("Frame", nil, UIParent)
+	--- @class ClickedIconSelectorList
+	local widget = {}
+	widget.type = TYPE
+
 	local num = AceGUI:GetNextWidgetNum(TYPE)
+
+	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:Hide()
+	frame:SetScript("OnUpdate", ClickedIconSelectorList.Frame_Update)
+	frame.obj = widget
 
 	local scrollframe = CreateFrame("ScrollFrame", nil, frame)
 	scrollframe:SetPoint("TOPLEFT")
@@ -363,6 +368,7 @@ local function Constructor()
 	scrollframe:EnableMouseWheel(true)
 	scrollframe:SetScript("OnMouseWheel", ClickedIconSelectorList.ScrollFrame_OnMouseWheel)
 	scrollframe:SetScript("OnSizeChanged", ClickedIconSelectorList.ScrollFrame_OnSizeChanged)
+	scrollframe.obj = widget
 
 	local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollFrame%dScrollBar"):format(num), scrollframe, "UIPanelScrollBarTemplate")
 	scrollbar:SetPoint("TOPLEFT", scrollframe, "TOPRIGHT", 4, -16)
@@ -373,9 +379,10 @@ local function Constructor()
 	scrollbar:SetWidth(16)
 	scrollbar:Hide()
 	scrollbar:SetScript("OnValueChanged", ClickedIconSelectorList.ScrollBar_OnScrollValueChanged)
+	scrollbar.obj = widget
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-	scrollbg:SetAllPoints(scrollbar --[[@as ScriptRegion]])
+	scrollbg:SetAllPoints(scrollbar)
 	scrollbg:SetColorTexture(0, 0, 0, 0.4)
 
 	--Container Support
@@ -383,8 +390,7 @@ local function Constructor()
 	content:SetPoint("TOPLEFT")
 	content:SetPoint("TOPRIGHT")
 	content:SetHeight(400)
-
-	local iconLoader = CreateFrame("Frame", nil, UIParent)
+	content.obj = widget
 
 	-- Respect ElvUI skinning
 	if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
@@ -396,36 +402,18 @@ local function Constructor()
 		end
 	end
 
-	--- @class ClickedIconSelectorList
-	local widget = {
-		localstatus = {
-			scrollvalue = 0,
-			contentHeight = 0,
-			numRows = 0,
-			numColumns = 0
-		},
-		scrollframe = scrollframe,
-		buttons = {},
-		icons = {},
-		order = {},
-		loadQueue = {},
-		scrollbar = scrollbar,
-		searchHandler = nil,
-		content = content,
-		frame = frame,
-		iconLoader = iconLoader,
-		originalWidth = 0,
-		updateLock = false,
-		type = TYPE
-	}
+	widget.frame = frame
+	widget.content = content
+	widget.scrollframe = scrollframe
+	widget.scrollbar = scrollbar
+	widget.buttons = {}
+	widget.icons = {}
+	widget.order = {}
+	widget.loadQueue = {}
 
 	for method, func in pairs(ClickedIconSelectorList) do
 		widget[method] = func
 	end
-
-	scrollframe.obj = widget
-	scrollbar.obj = widget
-	iconLoader.obj = widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end

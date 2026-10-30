@@ -14,8 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
----@diagnostic disable: missing-fields
-
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -23,12 +21,12 @@ local Addon = select(2, ...)
 --- @field private id? string
 --- @field public key? string
 --- @field public abbreviation? string
---- @field public x? integer
---- @field public y? integer
---- @field public xOffset? integer
---- @field public yOffset? integer
---- @field public width? integer
---- @field public height? integer
+--- @field public x? number
+--- @field public y? number
+--- @field public xOffset? number
+--- @field public yOffset? number
+--- @field public width? number
+--- @field public height? number
 --- @field public relativeTo? string
 --- @field public overrides? table<KeyboardSize,KeyButton>
 --- @field public disabled? boolean
@@ -548,7 +546,7 @@ function KeyLayouts:GetKeyboardLayouts()
 end
 
 --- @param layout KeyboardLayout
---- @return string[]
+--- @return KeyboardSize[]
 function KeyLayouts:GetKeyboardSizes(layout)
 	local result = {}
 

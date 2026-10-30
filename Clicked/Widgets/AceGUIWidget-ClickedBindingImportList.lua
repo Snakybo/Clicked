@@ -21,7 +21,7 @@ A scrollable list that shows pending imports.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedBindingImportList", 2
+local TYPE, VERSION = "ClickedBindingImportList", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -65,7 +65,7 @@ end
 
 --- @class ClickedBindingImportList : AceGUIWidget
 --- @field public frame Frame&{obj: self}
---- @field protected lines table
+--- @field protected lines ClickedBindingImportList.Line[]
 --- @field protected buttons ClickedBindingImportList.Button[]
 --- @field protected status ClickedBindingImportList.Status?
 --- @field protected localstatus ClickedBindingImportList.Status
@@ -81,6 +81,7 @@ local ClickedBindingImportList = {}
 function ClickedBindingImportList:OnAcquire()
 	self.frame:SetScript("OnUpdate", ClickedBindingImportList.Frame_OnUpdate)
 
+	self.localstatus = { scrollvalue = 0, groups = {} }
 	self.showScroll = true
 	self.showKeybinds = true
 end
@@ -91,18 +92,6 @@ function ClickedBindingImportList:OnRelease()
 	self.tree = nil
 
 	self.frame:SetScript("OnUpdate", nil)
-
-	for k, v in pairs(self.localstatus) do
-		if k == "groups" then
-			for k2 in pairs(v) do
-				v[k2] = nil
-			end
-		else
-			self.localstatus[k] = nil
-		end
-	end
-
-	self.localstatus.scrollvalue = 0
 end
 
 --- @param fromOnUpdate? boolean
@@ -251,7 +240,6 @@ function ClickedBindingImportList:CreateButton()
 	button.keybind = keybind
 
 	button:SetHeight(28)
-
 	button:SetScript("OnClick", nil)
 	button:SetScript("OnDoubleClick", nil)
 	button:SetScript("OnEnter",nil)
@@ -428,10 +416,10 @@ function ClickedBindingImportList:UpdateButton(button, line, canExpand, isExpand
 end
 
 --- @protected
---- @param v ClickedBindingImportList.BindingItem|ClickedBindingImportList.GroupItem
+--- @param v ClickedBindingImportList.Item
 --- @param tree ClickedBindingImportList.Item[]
 --- @param level integer
---- @param parent ClickedBindingImportList.Line
+--- @param parent? ClickedBindingImportList.Line
 --- @return ClickedBindingImportList.Line
 function ClickedBindingImportList:AddLine(v, tree, level, parent)
 	local line = ClickedBindingImportList.CreateLine()
@@ -444,10 +432,12 @@ function ClickedBindingImportList:AddLine(v, tree, level, parent)
 	line.showKeybinds = self.showKeybinds
 
 	if v.binding ~= nil then
+		--- @cast v ClickedBindingImportList.BindingItem
 		line.binding = v.binding
 		line.keybind = v.keybind
 		line.identifier = v.binding.uid
 	else
+		--- @cast v ClickedBindingImportList.GroupItem
 		line.group = v.group
 		line.identifier = v.group.uid
 	end
@@ -506,7 +496,7 @@ function ClickedBindingImportList.Frame_OnUpdate(frame)
 end
 
 --- @protected
---- @param frame Button&{obj: ClickedBindingImportList}
+--- @param frame Button&{button: ClickedBindingImportList.Button}
 function ClickedBindingImportList.Expand_OnClick(frame)
 	local button = frame.button
 	local self = button.obj
@@ -559,6 +549,10 @@ local PaneBackdrop  = {
 }
 
 local function Constructor()
+	--- @class ClickedBindingImportList
+	local widget = {}
+	widget.type = TYPE
+
 	local num = AceGUI:GetNextWidgetNum(TYPE)
 	local frame = CreateFrame("Frame", nil, UIParent)
 
@@ -572,6 +566,7 @@ local function Constructor()
 	treeframe:SetScript("OnUpdate", ClickedBindingImportList.Frame_OnUpdate)
 	treeframe:SetScript("OnSizeChanged", ClickedBindingImportList.Tree_OnSizeChanged)
 	treeframe:SetScript("OnMouseWheel", ClickedBindingImportList.Treeframe_OnMouseWheel)
+	treeframe.obj = widget
 
 	local scrollbar = CreateFrame("Slider", ("ClickedBindingImportList%dScrollBar"):format(num), treeframe, "UIPanelScrollBarTemplate")
 	scrollbar:SetScript("OnValueChanged", nil)
@@ -582,30 +577,21 @@ local function Constructor()
 	scrollbar:SetValue(0)
 	scrollbar:SetWidth(16)
 	scrollbar:SetScript("OnValueChanged", ClickedBindingImportList.Scrollbar_OnValueChanged)
+	scrollbar.obj = widget
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
 	scrollbg:SetAllPoints(scrollbar --[[@as ScriptRegion]])
 	scrollbg:SetColorTexture(0,0,0,0.4)
 
-	--- @class ClickedBindingImportList
-	local widget = {
-		frame        = frame,
-		lines        = {},
-		buttons      = {},
-		localstatus  = { scrollvalue = 0, groups = {} },
-		treeframe    = treeframe,
-		scrollbar    = scrollbar,
-		showScroll   = true,
-		showKeybinds = true,
-		type         = TYPE
-	}
+	widget.frame = frame
+	widget.treeframe = treeframe
+	widget.scrollbar = scrollbar
+	widget.lines = {}
+	widget.buttons = {}
 
 	for method, func in pairs(ClickedBindingImportList) do
 		widget[method] = func
 	end
-
-	treeframe.obj = widget
-	scrollbar.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

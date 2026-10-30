@@ -34,7 +34,7 @@ end
 --- @field contentHeight? integer
 
 --- @class ClickedKeyVisualizerTreeGroup : AceGUITreeGroup
---- @field public localstatus ClickedKeyVisualizerTreeGroup.Status
+--- @field protected localstatus ClickedKeyVisualizerTreeGroup.Status
 --- @field protected status? ClickedKeyVisualizerTreeGroup.Status
 local ClickedKeyVisualizerTreeGroup = {}
 

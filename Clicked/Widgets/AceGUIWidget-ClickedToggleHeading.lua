@@ -144,8 +144,13 @@ function ClickedToggleHeading.Frame_OnMouseUp(frame)
 end
 
 local function Constructor()
+	--- @class ClickedToggleHeading
+	local widget = {}
+	widget.type = TYPE
+
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
+	frame.obj = widget
 
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", ClickedToggleHeading.Frame_OnEnter)
@@ -158,21 +163,25 @@ local function Constructor()
 	checkbg:SetHeight(24)
 	checkbg:SetPoint("LEFT", 14, -1)
 	checkbg:SetTexture(130755) -- Interface\\Buttons\\UI-CheckBox-Up
+	checkbg.obj = widget
 
 	local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	label:SetPoint("TOP")
 	label:SetPoint("BOTTOM")
 	label:SetJustifyH("CENTER")
 	label:SetHeight(18)
+	label.obj = widget
 
 	local check = frame:CreateTexture(nil, "OVERLAY")
 	check:SetAllPoints(checkbg)
 	check:SetTexture(130751) -- Interface\\Buttons\\UI-CheckBox-Check
+	check.obj = widget
 
 	local highlight = frame:CreateTexture(nil, "HIGHLIGHT")
 	highlight:SetTexture(130753) -- Interface\\Buttons\\UI-CheckBox-Highlight
 	highlight:SetBlendMode("ADD")
 	highlight:SetAllPoints(checkbg)
+	highlight.obj = widget
 
 	local left = frame:CreateTexture(nil, "BACKGROUND")
 	left:SetHeight(8)
@@ -180,6 +189,7 @@ local function Constructor()
 	left:SetPoint("RIGHT", checkbg, "LEFT", -3, 0)
 	left:SetTexture(137057) -- Interface\\Tooltips\\UI-Tooltip-Border
 	left:SetTexCoord(0.81, 0.94, 0.5, 1)
+	left.obj = widget
 
 	local right = frame:CreateTexture(nil, "BACKGROUND")
 	right:SetHeight(8)
@@ -187,6 +197,7 @@ local function Constructor()
 	right:SetPoint("LEFT", label, "RIGHT", 5, 0)
 	right:SetTexture(137057) -- Interface\\Tooltips\\UI-Tooltip-Border
 	right:SetTexCoord(0.81, 0.94, 0.5, 1)
+	right.obj = widget
 
 	local center = frame:CreateTexture(nil, "BACKGROUND")
 	center:SetHeight(8)
@@ -194,35 +205,24 @@ local function Constructor()
 	center:SetPoint("RIGHT", label, "LEFT", -5, 1)
 	center:SetTexture(137057) -- Interface\\Tooltips\\UI-Tooltip-Border
 	center:SetTexCoord(0.81, 0.94, 0.5, 1)
+	center.obj = widget
 
-	--- @class ClickedToggleHeading
-	local widget = {
-		frame     = frame,
-		label     = label,
-		checkbg   = checkbg,
-		check     = check,
-		highlight = highlight,
-		left      = left,
-		right     = right,
-		center    = center,
-		checked   = false,
-		disabled  = false,
-		type      = TYPE
-	}
+	widget.frame = frame
+	widget.label = label
+	widget.checkbg = checkbg
+	widget.check = check
+	widget.highlight = highlight
+	widget.left = left
+	widget.right = right
+	widget.center = center
 
 	for method, func in pairs(ClickedToggleHeading) do
 		widget[method] = func
 	end
 
-	widget.checkbg.obj = widget
-	widget.label.obj = widget
-	widget.check.obj = widget
-	widget.highlight.obj = widget
-	widget.left.obj = widget
-	widget.right.obj = widget
-	widget.center.obj = widget
-
 	return AceGUI:RegisterAsWidget(widget)
 end
+
+
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

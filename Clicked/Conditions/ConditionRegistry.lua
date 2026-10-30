@@ -35,7 +35,7 @@
 --- @class LoadCondition : Condition
 --- @field public testOnEvents? string[]
 --- @field public test fun(value: any, ...: any):boolean
---- @field public state? fun():...: any
+--- @field public state? fun():...
 
 --- @class RuntimeConditionSet
 --- @field public config Condition[]
@@ -73,13 +73,15 @@ Addon.Condition = Addon.Condition or {}
 
 --- @class ConditionRegistry
 --- @field private registry table<string, RuntimeConditionSet>
-Addon.Condition.Registry = {
+local ConditionRegistry = {
 	registry = {}
 }
 
+Addon.Condition.Registry = ConditionRegistry
+
 --- @param id string
 --- @param config Condition[]
-function Addon.Condition.Registry:RegisterConditionConfig(id, config)
+function ConditionRegistry:RegisterConditionConfig(id, config)
 	local enabled = {}
 	local map = {}
 
@@ -99,14 +101,14 @@ end
 
 --- @param id string
 --- @return RuntimeConditionSet
-function Addon.Condition.Registry:GetConditionSet(id)
+function ConditionRegistry:GetConditionSet(id)
 	local result = self.registry[id]
 	assert(result, "Condition set with ID " .. id .. " does not exist")
 	return result
 end
 
 --- @return RuntimeConditionSet[]
-function Addon.Condition.Registry:GetConditionSets()
+function ConditionRegistry:GetConditionSets()
 	--- @type RuntimeConditionSet[]
 	local result = {}
 
@@ -119,7 +121,7 @@ end
 
 --- @param id string
 --- @return Condition?
-function Addon.Condition.Registry:GetConditionById(id)
+function ConditionRegistry:GetConditionById(id)
 	for _, set in pairs(self.registry) do
 		local condition = set.map[id]
 

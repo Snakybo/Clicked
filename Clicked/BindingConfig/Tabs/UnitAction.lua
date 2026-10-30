@@ -26,10 +26,12 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigUnitActionTab : BindingConfigTab
-Addon.BindingConfig.BindingUnitActionTab = {}
+local BindingUnitActionTab = {}
+
+Addon.BindingConfig.BindingUnitActionTab = BindingUnitActionTab
 
 --- @protected
-function Addon.BindingConfig.BindingUnitActionTab:Redraw()
+function BindingUnitActionTab:Redraw()
 	-- combat
 	do
 		local items = {
@@ -81,7 +83,7 @@ function Addon.BindingConfig.BindingUnitActionTab:Redraw()
 			self.controller:RedrawTab()
 		end
 
-		local widget = AceGUI:Create("ClickedDropdown") --[[@as AceGUIDropdown]]
+		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetList(items, order)
 		widget:SetFullWidth(true)
@@ -99,7 +101,7 @@ function Addon.BindingConfig.BindingUnitActionTab:Redraw()
 		end)
 
 		if not hide then
-			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local widget = AceGUI:Create("Label")
 			widget:SetText("\n" .. Addon.L["Combat state checks for this binding require additional processing when entering and leaving combat and may cause slight performance degradation."] .. "\n")
 			widget:SetFullWidth(true)
 

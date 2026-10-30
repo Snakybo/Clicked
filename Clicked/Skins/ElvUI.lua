@@ -14,9 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
----@diagnostic disable: undefined-field
----@diagnostic disable: inject-field
----@diagnostic disable: invisible
+--- @diagnostic disable: undefined-field, inject-field, invisible, unknown-local-type
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -24,6 +22,7 @@ if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) == 0 then
 	return
 end
 
+--- @param self ClickedTreeGroup
 --- @param scrollToSelection? boolean
 --- @param fromOnUpdate? boolean
 local function ClickedTreeGroup_RefreshTree(self, scrollToSelection, fromOnUpdate)
@@ -81,17 +80,19 @@ local function ClickedTreeGroup_RefreshTree(self, scrollToSelection, fromOnUpdat
 end
 
 local function Initialize()
-	local elv = unpack(ElvUI);
-	if elv == nil or not elv.private.skins or not elv.private.skins.ace3Enable then
+	local E = unpack(ElvUI);
+	if E == nil or not E.private.skins or not E.private.skins.ace3Enable then
 		return
 	end
 
 	local originalRegisterAsWidget = AceGUI.RegisterAsWidget
 	local originalRegisterAsContainer = AceGUI.RegisterAsContainer
 
-	local skins = elv:GetModule("Skins")
+	local skins = E:GetModule("Skins")
 
-	--- @diagnostic disable-next-line: duplicate-set-field
+	--- @param self AceGUI-3.0
+	--- @param widget AceGUIWidget
+	--- @return AceGUIWidget
 	AceGUI.RegisterAsWidget = function(self, widget)
 		if widget.type == "ClickedToggleHeading" then
 			--- @cast widget ClickedToggleHeading
@@ -104,20 +105,20 @@ local function Initialize()
 
 			hooksecurefunc(widget, "SetDisabled", skins.Ace3_CheckBoxSetDisabled)
 
-			if elv.private.skins.checkBoxSkin then
+			if E.private.skins.checkBoxSkin then
 				skins.Ace3_CheckBoxSetDesaturated(widget.check, widget.check:GetDesaturation())
 				hooksecurefunc(widget.check, "SetDesaturated", skins.Ace3_CheckBoxSetDesaturated)
 
 				widget.checkbg.backdrop:SetInside(widget.checkbg, 5, 5)
 				widget.check:SetInside(widget.checkbg.backdrop)
-				widget.check:SetTexture(elv.Media.Textures.Melli)
-				widget.check.SetTexture = elv.noop
+				widget.check:SetTexture(E.Media.Textures.Melli)
+				widget.check.SetTexture = E.noop
 			else
 				widget.check:SetOutside(widget.checkbg.backdrop, 3, 3)
 			end
 
-			widget.checkbg.SetTexture = elv.noop
-			widget.highlight.SetTexture = elv.noop
+			widget.checkbg.SetTexture = E.noop
+			widget.highlight.SetTexture = E.noop
 		elseif widget.type == "ClickedAutoFillEditBox" then
 			--- @cast widget ClickedAutoFillEditBox
 			widget.pullout:StripTextures()
@@ -127,7 +128,7 @@ local function Initialize()
 			local function RefreshTree(w, fromOnUpdate)
 				w.OrignalRefreshTree(w, fromOnUpdate)
 
-				if not elv.private.skins.ace3Enable then
+				if not E.private.skins.ace3Enable then
 					return
 				end
 
@@ -146,14 +147,14 @@ local function Initialize()
 						end
 
 						if groupstatus[lines[i].identifier] then
-							button.toggle:SetNormalTexture(elv.Media.Textures.Minus)
-							button.toggle:SetPushedTexture(elv.Media.Textures.Minus)
+							button.toggle:SetNormalTexture(E.Media.Textures.Minus)
+							button.toggle:SetPushedTexture(E.Media.Textures.Minus)
 						else
-							button.toggle:SetNormalTexture(elv.Media.Textures.Plus)
-							button.toggle:SetPushedTexture(elv.Media.Textures.Plus)
+							button.toggle:SetNormalTexture(E.Media.Textures.Plus)
+							button.toggle:SetPushedTexture(E.Media.Textures.Plus)
 						end
 
-						button.toggle:SetHighlightTexture(elv.ClearTexture)
+						button.toggle:SetHighlightTexture(E.ClearTexture)
 					end
 				end
 			end
@@ -178,7 +179,7 @@ local function Initialize()
 				widget.image:RemoveMaskTexture(widget.backgroundMask)
 			end
 
-			local actionbars = elv:GetModule("ActionBars")
+			local actionbars = E:GetModule("ActionBars")
 			local font, size, flags, _, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
 
 			widget.keyName:SetPoint("TOP", 0, -3)
@@ -208,7 +209,9 @@ local function Initialize()
 		return originalRegisterAsWidget(self, widget)
 	end
 
-	--- @diagnostic disable-next-line: duplicate-set-field
+	--- @param self AceGUI-3.0
+	--- @param widget AceGUIContainer
+	--- @return AceGUIContainer
 	AceGUI.RegisterAsContainer = function(self, widget)
 		if widget.type == "ClickedSimpleGroup" then
 			--- @cast widget ClickedSimpleGroup
@@ -222,7 +225,12 @@ local function Initialize()
 			widget.content:SetPoint("BOTTOMRIGHT")
 		elseif widget.type == "ClickedTreeGroup" then
 			--- @cast widget ClickedTreeGroup
-			widget.content:GetParent():SetTemplate("Transparent")
+			local parent = widget.content:GetParent()
+
+			if parent ~= nil then
+				parent:SetTemplate("Transparent")
+			end
+
 			widget.treeFrame:SetTemplate("Transparent")
 			skins:HandleScrollBar(widget.scrollbar)
 
@@ -239,10 +247,18 @@ end
 if ElvUI ~= nil then
 	Initialize()
 else
-	local function OnEvent(self, event, arg1)
-		if event == "ADDON_LOADED" and arg1 == "ElvUI" then
-			Initialize()
-			self:UnregisterEvent("ADDON_LOADED")
+	--- @param self Frame
+	--- @param event FrameEvent
+	--- @param ... any
+	local function OnEvent(self, event, ...)
+		if event == "ADDON_LOADED" then
+			--- @type string
+			local addon = ...
+
+			if addon == "ElvUI" then
+				Initialize()
+				self:UnregisterEvent("ADDON_LOADED")
+			end
 		end
 	end
 

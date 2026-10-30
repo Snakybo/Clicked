@@ -34,23 +34,25 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field public content RuntimeConditionSet
 --- @field private drawers table<string, BindingConditionDrawer>
 --- @field private status table
-Addon.BindingConfig.BindingConditionTab = {
+local BindingConditionTab = {
 	drawers = {},
 	status = {}
-}
+} --[[@as BindingConfigConditionTab]]
+
+Addon.BindingConfig.BindingConditionTab = BindingConditionTab
 
 --- @protected
-function Addon.BindingConfig.BindingConditionTab:Show()
+function BindingConditionTab:Show()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingConditionTab:Hide()
+function BindingConditionTab:Hide()
 	table.wipe(self.drawers)
 	table.wipe(self.status)
 end
 
 --- @protected
-function Addon.BindingConfig.BindingConditionTab:Redraw()
+function BindingConditionTab:Redraw()
 	table.wipe(self.drawers)
 
 	for _, condition in ipairs(self.content.config) do
@@ -66,7 +68,7 @@ end
 
 --- @private
 --- @param condition string
-function Addon.BindingConfig.BindingConditionTab:RedrawItem(condition)
+function BindingConditionTab:RedrawItem(condition)
 	local drawer = self.drawers[condition]
 	if drawer == nil then
 		return
@@ -78,7 +80,7 @@ end
 --- @private
 --- @param condition Condition
 --- @return BindingConditionDrawer?
-function Addon.BindingConfig.BindingConditionTab:CreateDrawer(condition)
+function BindingConditionTab:CreateDrawer(condition)
 	local template = Addon.BindingConfig.BindingConditionDrawers[condition.drawer.type]
 	if template == nil then
 		return nil
@@ -95,7 +97,8 @@ function Addon.BindingConfig.BindingConditionTab:CreateDrawer(condition)
 		requestAvailableValues = function()
 			return self:GetAvailableValues(condition)
 		end,
-		requestRedraw = function(dependendsOnly) --- @param dependendsOnly? boolean
+		--- @param dependendsOnly? boolean
+		requestRedraw = function(dependendsOnly)
 			if dependendsOnly then
 				local graph = self.content.dependencyGraph[condition.id]
 
@@ -113,7 +116,7 @@ end
 
 --- @private
 --- @param condition Condition
-function Addon.BindingConfig.BindingConditionTab:GetAvailableValues(condition)
+function BindingConditionTab:GetAvailableValues(condition)
 	--- @type any[]
 	local dependencies = {}
 

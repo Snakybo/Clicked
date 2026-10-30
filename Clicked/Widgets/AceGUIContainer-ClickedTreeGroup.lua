@@ -21,7 +21,7 @@ A tree group container that displays bindings.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedTreeGroup", 2
+local TYPE, VERSION = "ClickedTreeGroup", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
@@ -86,6 +86,8 @@ local ClickedTreeGroup = {}
 
 --- @protected
 function ClickedTreeGroup:OnAcquire()
+	self.localstatus = { selected = {}, dragging = {}, scrollValue = 0 }
+
 	self.frame:SetScript("OnUpdate", ClickedTreeGroup.Frame_OnUpdate)
 end
 
@@ -97,7 +99,6 @@ function ClickedTreeGroup:OnRelease()
 	self.sortMethod = nil
 	self.filter = nil
 	self.frame:SetScript("OnUpdate", nil)
-	self.localstatus = { selected = {}, dragging = {}, scrollValue = 0 }
 
 	table.wipe(self.lines)
 	table.wipe(self.treeLookup)
@@ -962,7 +963,7 @@ function ClickedTreeGroup.Button_OnDragStop(button)
 
 				local parent = groupItem or scopeItem
 
-				if item ~= nil and item ~= parent then
+				if item ~= nil and item ~= parent and item.parent ~= nil then
 					Addon:TableRemoveItem(item.parent.children, item)
 					table.insert(parent.children, item)
 
@@ -971,7 +972,7 @@ function ClickedTreeGroup.Button_OnDragStop(button)
 			elseif obj.type == Clicked.DataObjectType.GROUP then
 				--- @cast obj Group
 
-				if item ~= nil and item ~= scopeItem then
+				if item ~= nil and item ~= scopeItem and item.parent ~= nil then
 					Addon:TableRemoveItem(item.parent.children, item)
 					table.insert(scopeItem.children, item)
 
@@ -1050,6 +1051,10 @@ local PaneBackdrop  = {
 }
 
 local function Constructor()
+	--- @class (exact) ClickedTreeGroup
+	local widget = {}
+	widget.type = TYPE
+
 	local num = AceGUI:GetNextWidgetNum(TYPE)
 	local frame = CreateFrame("Frame", nil, UIParent)
 
@@ -1063,6 +1068,7 @@ local function Constructor()
 	treeFrame:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeFrame:SetScript("OnSizeChanged", ClickedTreeGroup.TreeFrame_OnSizeChanged)
 	treeFrame:SetScript("OnMouseWheel", ClickedTreeGroup.TreeFrame_OnMouseWheel)
+	treeFrame.obj = widget
 
 	local scrollbar = CreateFrame("Slider", ("AceConfigDialogTreeGroup%dScrollBar"):format(num), treeFrame, "UIPanelScrollBarTemplate")
 	scrollbar:SetScript("OnValueChanged", nil)
@@ -1073,9 +1079,10 @@ local function Constructor()
 	scrollbar:SetValue(0)
 	scrollbar:SetWidth(16)
 	scrollbar:SetScript("OnValueChanged", ClickedTreeGroup.Scrollbar_OnValueChanged)
+	scrollbar.obj = widget
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-	scrollbg:SetAllPoints(scrollbar --[[@as ScriptRegion]])
+	scrollbg:SetAllPoints(scrollbar)
 	scrollbg:SetColorTexture(0,0,0,0.4)
 
 	local border = CreateFrame("Frame", nil, frame, "BackdropTemplate")
@@ -1090,26 +1097,18 @@ local function Constructor()
 	content:SetPoint("TOPLEFT", 10, -10)
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
-	--- @class ClickedTreeGroup
-	local widget = {
-		frame = frame,
-		lines = {},
-		buttons = {},
-		treeLookup = {},
-		localstatus = { selected = {}, dragging = {}, scrollValue = 0 },
-		treeFrame = treeFrame,
-		scrollbar = scrollbar,
-		border = border,
-		content = content,
-		type = TYPE
-	}
+	widget.frame = frame
+	widget.treeFrame = treeFrame
+	widget.scrollbar = scrollbar
+	widget.border = border
+	widget.content = content
+	widget.lines = {}
+	widget.buttons = {}
+	widget.treeLookup = {}
 
 	for method, func in pairs(ClickedTreeGroup) do
 		widget[method] = func
 	end
-
-	treeFrame.obj = widget
-	scrollbar.obj = widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end

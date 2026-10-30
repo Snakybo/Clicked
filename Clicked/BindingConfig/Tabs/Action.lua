@@ -59,12 +59,14 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @class BindingConfigActionTab : BindingConfigTab
 --- @field private loadCallback? function
 --- @field private references integer[]
-Addon.BindingConfig.BindingActionTab = {
+local BindingActionTab = {
 	references = {}
-}
+} --[[@as BindingConfigActionTab]]
+
+Addon.BindingConfig.BindingActionTab = BindingActionTab
 
 --- @protected
-function Addon.BindingConfig.BindingActionTab:Hide()
+function BindingActionTab:Hide()
 	if self.loadCallback ~= nil then
 		self.loadCallback()
 		self.loadCallback = nil
@@ -74,7 +76,7 @@ function Addon.BindingConfig.BindingActionTab:Hide()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingActionTab:Redraw()
+function BindingActionTab:Redraw()
 	self:RedrawTargetSpell()
 	self:RedrawActionGroups()
 	self:RedrawKeyOptions()
@@ -83,7 +85,7 @@ end
 --- @protected
 --- @param relevant boolean
 --- @param changed integer[]
-function Addon.BindingConfig.BindingActionTab:OnBindingReload(relevant, changed)
+function BindingActionTab:OnBindingReload(relevant, changed)
 	if relevant then
 		self.controller:RedrawTab()
 		return
@@ -105,7 +107,7 @@ function Addon.BindingConfig.BindingActionTab:OnBindingReload(relevant, changed)
 end
 
 --- @private
-function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
+function BindingActionTab:RedrawTargetSpell()
 	local id = tonumber(GetRawBindingValue(self.bindings[1]))
 	local hasMixedValues
 
@@ -207,7 +209,6 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 				end
 			elseif widget.type == "ClickedAutoFillEditBox" then
 				--- @cast widget ClickedAutoFillEditBox
-
 				local option = GetAutoFillOptionFromInput(value)
 
 				if option ~= nil then
@@ -352,7 +353,6 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 
 		local widget = AceGUI:Create("ClickedHorizontalIcon") --[[@as ClickedHorizontalIcon]]
 		widget:SetLabel(tostring(id))
-		--- @diagnostic disable-next-line: param-type-mismatch
 		widget:SetImage(icon)
 		widget:SetImageSize(16, 16)
 		widget:SetRelativeWidth(0.15)
@@ -385,7 +385,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 				self.controller:RedrawTab()
 			end
 
-			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			local widget = AceGUI:Create("Button")
 			widget:SetText(Addon.L["Remove rank"])
 			widget:SetCallback("OnClick", OnClick)
 			widget:SetFullWidth(true)
@@ -396,7 +396,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawTargetSpell()
 end
 
 --- @private
-function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
+function BindingActionTab:RedrawActionGroups()
 	-- Only show action groups if all bindings have the same keybind as the UI just wouldn't make sense otherwise
 	for i = 2, #self.bindings do
 		if self.bindings[i].keybind ~= self.bindings[1].keybind then
@@ -404,7 +404,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 		end
 	end
 
-	local title = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+	local title = AceGUI:Create("Heading")
 	title:SetFullWidth(true)
 	title:SetText(Addon.L["Action Groups"])
 
@@ -463,7 +463,7 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 		for _, id in ipairs(order) do
 			local bindings = groups[id]
 
-			local header = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local header = AceGUI:Create("Label")
 			header:SetText(string.format(Addon.L["Group %d"], id))
 			header:SetFontObject(GameFontHighlight)
 
@@ -556,8 +556,8 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 end
 
 --- @private
-function Addon.BindingConfig.BindingActionTab:RedrawKeyOptions()
-	local title = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+function BindingActionTab:RedrawKeyOptions()
+	local title = AceGUI:Create("Heading")
 	title:SetFullWidth(true)
 	title:SetText(Addon.L["Options"])
 
@@ -706,7 +706,7 @@ end
 --- @private
 --- @param binding Binding
 --- @param value string
-function Addon.BindingConfig.BindingActionTab:UpdateSpellValue(binding, value)
+function BindingActionTab:UpdateSpellValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.SPELL then
 		return Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
 	end
@@ -730,7 +730,7 @@ end
 --- @private
 --- @param binding Binding
 --- @param value string
-function Addon.BindingConfig.BindingActionTab:UpdateItemValue(binding, value)
+function BindingActionTab:UpdateItemValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.ITEM then
 		return Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
 	end
@@ -748,7 +748,7 @@ end
 --- @private
 --- @param binding Binding
 --- @param value string
-function Addon.BindingConfig.BindingActionTab:UpdateCancelAuraValue(binding, value)
+function BindingActionTab:UpdateCancelAuraValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.CANCELAURA then
 		return Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
 	end

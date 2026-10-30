@@ -275,7 +275,7 @@ function Addon:StatusOutput_Initialize()
 		CreateStateDriver("petbattle", "[petbattle] enabled; disabled")
 	end
 
-	driver.UpdateStatusOutputText = UpdateStatusOutputText --- @diagnostic disable-line: inject-field
+	driver.UpdateStatusOutputText = UpdateStatusOutputText
 end
 
 function Addon:StatusOutput_Open()
@@ -283,7 +283,7 @@ function Addon:StatusOutput_Open()
 		return
 	end
 
-	frame = AceGUI:Create("Frame") --[[@as AceGUIFrame]]
+	frame = AceGUI:Create("Frame")
 	frame:SetTitle("Clicked Data Dump")
 	frame:SetLayout("Fill")
 

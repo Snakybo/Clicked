@@ -20,7 +20,7 @@
 --- @field public negated? boolean
 
 --- @class MultiselectLoadOption
---- @field public selected `0`|`1`|`2`
+--- @field public selected 0|1|2
 --- @field public single any
 --- @field public multiple any[]
 --- @field public negated? boolean

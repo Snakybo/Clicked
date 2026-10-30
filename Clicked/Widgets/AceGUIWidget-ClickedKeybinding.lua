@@ -23,7 +23,7 @@ where the button has to be activated prior to listening for inputs.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedKeybinding", 4
+local TYPE, VERSION = "ClickedKeybinding", 5
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -36,8 +36,8 @@ end
 --- @class ClickedKeybinding : AceGUIKeybinding
 --- @field public frame Frame&{obj: self}
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
---- @field protected label FontString&{obj: self}
---- @field protected msgframe Frame&BackdropTemplate&{obj: self}
+--- @field protected label FontString
+--- @field protected msgframe Frame&BackdropTemplate
 --- @field protected alignoffset integer
 --- @field protected key string
 --- @field protected hasMarker boolean
@@ -227,6 +227,9 @@ local function Constructor()
 	local widget = AceGUI:Create("Keybinding")
 	widget.type = TYPE
 
+	--- @private
+	widget.KeybindingOnAcquire = widget.OnAcquire
+
 	local button = widget.button
 	button:SetScript("OnClick", ClickedKeybinding.Button_OnClick)
 	button:SetScript("OnKeyDown", ClickedKeybinding.Button_OnKeyDown)
@@ -234,15 +237,9 @@ local function Constructor()
 	button:SetScript("OnMouseWheel", ClickedKeybinding.Button_OnMouseWheel)
 	button:SetScript("OnGamePadButtonDown", ClickedKeybinding.Button_OnKeyDown)
 
-	--- @private
-	widget.KeybindingOnAcquire = widget.OnAcquire
-
 	for method, func in pairs(ClickedKeybinding) do
 		widget[method] = func
 	end
-
-	widget.label.obj = widget
-	widget.msgframe.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

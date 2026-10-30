@@ -230,7 +230,7 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 
 
 	if importClassAbilitiesPerSpec and #genericSpells > 0 then
-		--- @type { specId: integer, groupId: integer }[]
+		--- @type { specId: integer, groupId: integer? }[]
 		local specs = {}
 
 		for i = 1, GetNumSpecializations() do
@@ -357,20 +357,22 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigNewPage : BindingConfigPage
 --- @field private importClassAbilitiesPerSpec boolean
-Addon.BindingConfig.NewPage = {
+local NewPage = {
 	keepTreeSelection = true,
 	importClassAbilitiesPerSpec = false
-}
+} --[[@as BindingConfigNewPage]]
+
+Addon.BindingConfig.NewPage = NewPage
 
 --- @protected
-function Addon.BindingConfig.NewPage:Redraw()
-	local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
+function NewPage:Redraw()
+	local scrollFrame = AceGUI:Create("ScrollFrame")
 	scrollFrame:SetLayout("Flow")
 	scrollFrame:SetFullWidth(true)
 	scrollFrame:SetFullHeight(true)
 
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetText(Addon.L["Quick start"])
 		widget:SetFontObject(GameFontHighlightLarge)
 		widget:SetFullWidth(true)
@@ -380,7 +382,7 @@ function Addon.BindingConfig.NewPage:Redraw()
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_SPELLBOOK, Addon.L["Automatically import from spellbook"])
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-		local label = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local label = AceGUI:Create("Label")
 		label:SetText(Addon.L["Import class abilities per specialization"])
 		label:SetRelativeWidth(0.79)
 		scrollFrame:AddChild(label)
@@ -400,7 +402,7 @@ function Addon.BindingConfig.NewPage:Redraw()
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.IMPORT_MACROS, Addon.L["Automatically import from macros"])
 
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetText("\n" .. Addon.L["Create a new binding"])
 		widget:SetFontObject(GameFontHighlightLarge)
 		widget:SetFullWidth(true)
@@ -416,7 +418,7 @@ function Addon.BindingConfig.NewPage:Redraw()
 	self:CreateTemplateButton(scrollFrame, ItemTemplate.BINDING_UNIT_MENU, Addon.L["Open the unit menu"])
 
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetText("\n" .. Addon.L["Advanced binding types"])
 		widget:SetFontObject(GameFontHighlightLarge)
 		widget:SetFullWidth(true)
@@ -433,9 +435,9 @@ end
 --- @param container AceGUIContainer
 --- @param type integer
 --- @param label string
-function Addon.BindingConfig.NewPage:CreateTemplateButton(container, type, label)
+function NewPage:CreateTemplateButton(container, type, label)
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetText(label)
 		widget:SetFontObject(GameFontHighlight)
 		widget:SetRelativeWidth(0.79)
@@ -448,7 +450,7 @@ function Addon.BindingConfig.NewPage:CreateTemplateButton(container, type, label
 			self:CreateItem(type)
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Create"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.2)
@@ -459,7 +461,7 @@ end
 
 --- @private
 --- @param type integer
-function Addon.BindingConfig.NewPage:CreateItem(type)
+function NewPage:CreateItem(type)
 	--- @type DataObject?
 	local target = nil
 

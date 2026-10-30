@@ -52,7 +52,7 @@ function ProfileOptions:CreateOptionsTable()
 	local options = AceDBOptions:GetOptionsTable(Addon.db)
 
 	-- Enhance profile options page with import/export buttons
-	options.plugins = options.plugins or {} --- @diagnostic disable-line: inject-field
+	options.plugins = options.plugins or {}
 	options.plugins["AceDBShare"] = {}
 
 	local plugin = options.plugins["AceDBShare"]

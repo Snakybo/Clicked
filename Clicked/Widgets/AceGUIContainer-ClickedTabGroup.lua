@@ -39,7 +39,6 @@ function ClickedTabGroup:SetTabs(tabs)
 	local status = self.status or self.localstatus
 
 	for _, v in ipairs(self.tabs) do
-		---@diagnostic disable-next-line: undefined-field
 		v:SetSelected(v.value == status.selected)
 	end
 end

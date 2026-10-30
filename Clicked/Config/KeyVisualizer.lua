@@ -62,7 +62,7 @@ local function GetTreeLayout()
 		for _, size in ipairs(Addon.KeyLayouts:GetKeyboardSizes(layout)) do
 			table.insert(item.children, {
 				value = size,
-				text = size .. "%"
+				text = tostring(size) .. "%"
 			})
 		end
 
@@ -152,7 +152,6 @@ local function BuildLayout(layout, size)
 		buttonCache[key:GetId()] = widget
 	end
 
-	--- @diagnostic disable-next-line: invisible
 	local oldWidth = frame.frame:GetWidth()
 	local width = math.max(tree:GetTreeWidth() + tree:GetContentWidth() + 54, MIN_FRAME_WIDTH)
 	frame:SetWidth(width)
@@ -160,11 +159,9 @@ local function BuildLayout(layout, size)
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
 
 	if point == "CENTER" or point == "TOP" or point == "BOTTOM" then
-		--- @diagnostic disable-next-line: invisible
 		local xOffset = (frame.frame:GetWidth() - oldWidth) / 2
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	elseif point == "RIGHT" or point == "TOPRIGHT" or point == "BOTTOMRIGHT" then
-		--- @diagnostic disable-next-line: invisible
 		local xOffset = (frame.frame:GetWidth() - oldWidth)
 		frame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs)
 	end
@@ -384,7 +381,7 @@ function KeyVisualizer:Open()
 
 			buttonCache = nil
 
-			frame = nil --- @diagnostic disable-line: cast-local-type
+			frame = nil
 		end
 
 		frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]
@@ -397,7 +394,7 @@ function KeyVisualizer:Open()
 	end
 
 	do
-		local line = AceGUI:Create("InlineGroup") --[[@as AceGUIInlineGroup]]
+		local line = AceGUI:Create("InlineGroup")
 		line:SetFullWidth(true)
 		line:SetLayout("Table")
 		line:SetUserData("table", {
@@ -406,7 +403,7 @@ function KeyVisualizer:Open()
 		})
 
 		do
-			local widget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			local widget = AceGUI:Create("CheckBox")
 			widget:SetLabel(Addon.L["Show only loaded bindings"])
 			widget:SetValue(GetDb().showOnlyLoadedBindings)
 			widget:SetCallback("OnValueChanged", function(_, _, value)
@@ -418,7 +415,7 @@ function KeyVisualizer:Open()
 		end
 
 		do
-			local widget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			local widget = AceGUI:Create("CheckBox")
 			widget:SetLabel(Addon.L["Highlight empty keys"])
 			widget:SetValue(GetDb().highlightEmptyKeys)
 			widget:SetCallback("OnValueChanged", function(_, _, value)
@@ -436,20 +433,20 @@ function KeyVisualizer:Open()
 				[GROUP_EXT] = Addon.L["External"]
 			}
 			--- @type { id: string, name: string }[]
-			local order = {}
+			local groups = {}
 
 			for _, group in Clicked:IterateGroups() do
 				items[group.uid] = Addon:GetTextureString(group.name, group.displayIcon)
-				table.insert(order, { id = group.uid, name = group.name })
+				table.insert(groups, { id = group.uid, name = group.name })
 			end
 
-			table.sort(order, function(a, b) return a.name < b.name end)
+			table.sort(groups, function(a, b) return a.name < b.name end)
 
-			order = Addon:TableSelect(order, function(v) return v.id end)
+			local order = Addon:TableSelect(groups, function(v) return v.id end)
 			table.insert(order, 1, GROUP_ALL)
 			table.insert(order, 2, GROUP_EXT)
 
-			local widget = AceGUI:Create("Dropdown") --[[@as AceGUIDropdown]]
+			local widget = AceGUI:Create("Dropdown")
 			widget:SetLabel(Addon.L["Filter bindings"])
 			widget:SetList(items, order)
 			widget:SetValue(GROUP_ALL)
@@ -462,14 +459,14 @@ function KeyVisualizer:Open()
 		end
 
 		do
-			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local widget = AceGUI:Create("Label")
 			widget:SetText("")
 
 			line:AddChild(widget)
 		end
 
 		do
-			showCtrlWidget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			showCtrlWidget = AceGUI:Create("CheckBox")
 			showCtrlWidget:SetLabel(Addon:SanitizeKeybind("CTRL"))
 			showCtrlWidget:SetValue(showCtrl)
 			showCtrlWidget:SetCallback("OnValueChanged", function(_, _, value)
@@ -481,7 +478,7 @@ function KeyVisualizer:Open()
 		end
 
 		do
-			showAltWidget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			showAltWidget = AceGUI:Create("CheckBox")
 			showAltWidget:SetLabel(Addon:SanitizeKeybind("ALT"))
 			showAltWidget:SetValue(showAlt)
 			showAltWidget:SetCallback("OnValueChanged", function(_, _, value)
@@ -493,7 +490,7 @@ function KeyVisualizer:Open()
 		end
 
 		do
-			showShiftWidget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			showShiftWidget = AceGUI:Create("CheckBox")
 			showShiftWidget:SetLabel(Addon:SanitizeKeybind("SHIFT"))
 			showShiftWidget:SetValue(showShift)
 			showShiftWidget:SetCallback("OnValueChanged", function(_, _, value)
@@ -505,7 +502,7 @@ function KeyVisualizer:Open()
 		end
 
 		do
-			showMetaWidget = AceGUI:Create("CheckBox") --[[@as AceGUICheckBox]]
+			showMetaWidget = AceGUI:Create("CheckBox")
 			showMetaWidget:SetLabel(Addon:SanitizeKeybind("META"))
 			showMetaWidget:SetValue(showMeta)
 			showMetaWidget:SetCallback("OnValueChanged", function(_, _, value)

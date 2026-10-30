@@ -19,7 +19,7 @@ An extension of the standard AceGUI editbox widget with additional functionality
 related to drag-and-drop.
 -------------------------------------------------------------------------------]]
 
-local TYPE, VERSION = "ClickedEditBox", 2
+local TYPE, VERSION = "ClickedEditBox", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -32,7 +32,7 @@ end
 --- @class ClickedEditBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
---- @field protected label FontString&{obj: self}
+--- @field protected label FontString
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
 --- @field protected startText string
 --- @field protected lasttext string
@@ -148,6 +148,11 @@ local function Constructor()
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
 
+	--- @private
+	widget.EditBoxOnAcquire = widget.OnAcquire
+	--- @private
+	widget.EditBoxSetText = widget.SetText
+
 	widget.editbox:SetScript("OnEnterPressed", ClickedEditBox.EditBox_OnEnterPressed)
 	widget.editbox:SetScript("OnTextChanged", ClickedEditBox.EditBox_OnTextChanged)
 	widget.editbox:SetScript("OnReceiveDrag", ClickedEditBox.EditBox_OnReceiveDrag)
@@ -155,12 +160,6 @@ local function Constructor()
 	widget.editbox:SetScript("OnEditFocusGained", ClickedEditBox.EditBox_OnFocusGained)
 
 	widget.button:SetScript("OnClick", ClickedEditBox.Button_OnClick)
-
-	--- @private
-	widget.EditBoxOnAcquire = widget.OnAcquire
-
-	--- @private
-	widget.EditBoxSetText = widget.SetText
 
 	for method, func in pairs(ClickedEditBox) do
 		widget[method] = func

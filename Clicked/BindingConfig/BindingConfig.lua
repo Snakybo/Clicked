@@ -460,7 +460,7 @@ function BindingConfig:DrawHeader()
 			self:SetPage(self.PAGE_NEW)
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["New"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
@@ -474,7 +474,7 @@ function BindingConfig:DrawHeader()
 			self:SetPage(self.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.BINDING_GROUP)
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Import"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)
@@ -535,7 +535,7 @@ function BindingConfig:DrawHeader()
 			self.treeWidget:RefreshTree()
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(self.sortMode == "key" and Addon.L["Key"] or Addon.L["ABC"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetWidth(75)
@@ -545,7 +545,7 @@ function BindingConfig:DrawHeader()
 
 	-- Spacer
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetText("")
 
 		line:AddChild(widget)
@@ -558,7 +558,7 @@ function BindingConfig:DrawHeader()
 			Addon.KeyVisualizer:Open()
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Show on keyboard"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetAutoWidth(true)

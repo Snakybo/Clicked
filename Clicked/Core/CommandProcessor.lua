@@ -124,7 +124,7 @@ end
 -- Private addon API
 
 --- @param keybinds Keybind[]
---- @param attributes string[]
+--- @param attributes table<string,string>
 function Addon:UpdateMacroFrameHandler(keybinds, attributes)
 	Addon:SetupRestrictedEnvironmentVariables(macroFrameHandler, keybinds)
 	Addon:SetPendingFrameAttributes(macroFrameHandler, attributes)

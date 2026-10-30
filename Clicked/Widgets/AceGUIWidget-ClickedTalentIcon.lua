@@ -91,8 +91,13 @@ function ClickedTalentIcon.Frame_OnClick(frame, button)
 end
 
 local function Constructor()
+	--- @class ClickedTalentIcon
+	local widget = {}
+	widget.type = TYPE
+
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
+	frame.obj = widget
 
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", ClickedTalentIcon.Frame_OnEnter)
@@ -105,26 +110,21 @@ local function Constructor()
 	label:SetJustifyH("CENTER")
 	label:SetJustifyV("TOP")
 	label:SetHeight(18)
+	label.obj = widget
 
 	local image = frame:CreateTexture(nil, "BACKGROUND")
 	image:SetWidth(64)
 	image:SetHeight(64)
 	image:SetPoint("TOP", 0, -5)
+	image.obj = widget
 
-	--- @class ClickedTalentIcon
-	local widget = {
-		label = label,
-		image = image,
-		frame = frame,
-		type  = TYPE
-	}
+	widget.frame = frame
+	widget.label = label
+	widget.image = image
 
 	for method, func in pairs(ClickedTalentIcon) do
 		widget[method] = func
 	end
-
-	widget.label.obj = widget
-	widget.image.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

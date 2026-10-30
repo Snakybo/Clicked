@@ -57,7 +57,6 @@ function Addon.BindingConfig.Helpers:RegisterTooltip(widget, text)
 			lines = { text }
 		end
 
-		--- @diagnostic disable-next-line: invisible
 		Addon:ShowTooltip(widget.frame, lines[1], #lines > 1 and table.concat(lines, "\n", 2) or nil)
 	end
 
@@ -172,7 +171,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 		local hasMixedValues, mixedValueText = self:GetMixedValues(targets, valueSelector)
 
-		if hasMixedValues then
+		if hasMixedValues and mixedValueText ~= nil then
 			table.insert(lines, "")
 			table.insert(lines, mixedValueText)
 		end
@@ -250,11 +249,9 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 				-- assume it's an array if `[1]` is not nil
 				if widget:GetMultiselect() and value[1] ~= nil then
-					--- @diagnostic disable-next-line: undefined-field
 					for _, item in widget.pullout:IterateItems() do
 						local id = item.userdata.value
 
-						--- @diagnostic disable-next-line: param-type-mismatch
 						widget:SetItemValue(id, tContains(value, id))
 					end
 				else
@@ -387,7 +384,7 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 	end
 
 	do
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetRelativeWidth(0.5)
 		container:AddChild(widget)
 	end
@@ -445,7 +442,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	--- @type boolean
 	local hasMixedValues
 
-	--- @param state `0`|`1`|`2`
+	--- @param state 0|1|2
 	--- @return boolean?
 	local function IndexToValue(state)
 		if state == 1 then
@@ -458,7 +455,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	end
 
 	--- @param value? boolean
-	--- @return `0`|`1`|`2`
+	--- @return 0|1|2
 	local function ValueToIndex(value)
 		if value == false then
 			return 0
@@ -545,7 +542,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	local isAnyEnabled = FindInTableIf(bindings, function(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[fieldName] or condition.init()
-		return load.selected > 0
+		return load.selected ~= 0
 	end) ~= nil
 
 	if isAnyEnabled then

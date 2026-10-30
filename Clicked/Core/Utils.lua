@@ -874,7 +874,7 @@ end
 
 --- Get the specialization index from the specified spec ID.
 ---
---- @param specId integer
+--- @param specId? integer
 --- @return integer?
 function Addon:GetSpecIndexFromId(specId)
 	if Addon.EXPANSION_LEVEL < Addon.Expansion.MOP then
@@ -1228,7 +1228,7 @@ end
 
 --- Set the `keybinds` and `identifiers` variables within the restricted environment of the frame.
 ---
---- @param frame Frame
+--- @param frame Frame&SecureHandlerBaseTemplate
 --- @param keybinds Keybind[]
 function Addon:SetupRestrictedEnvironmentVariables(frame, keybinds)
 	local keys = {}

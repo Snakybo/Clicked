@@ -99,7 +99,7 @@ function Drawer:Draw()
 		if not self.hasMixedValues then
 			if not self.status.expand then
 				do
-					local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+					local widget = AceGUI:Create("Label")
 					widget:SetText("")
 					widget:SetRelativeWidth(0.5)
 
@@ -112,7 +112,7 @@ function Drawer:Draw()
 						self.requestRedraw()
 					end
 
-					local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+					local widget = AceGUI:Create("Button")
 					widget:SetCallback("OnClick", OnClick)
 					widget:SetText(Addon.L["Select talents"])
 
@@ -156,7 +156,7 @@ function Drawer:DrawMiniTalentRow()
 			self.miniTalentRow:ReleaseChildren()
 		end
 
-		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+		local widget = AceGUI:Create("Label")
 		widget:SetRelativeWidth(0.5)
 
 		self.container:AddChild(widget)
@@ -172,25 +172,28 @@ function Drawer:DrawMiniTalentRow()
 	--- @type TalentLoadOption
 	local load = binding.load[self.fieldName] or self.condition.init()
 
-	if self.miniTalentRow == nil then
-		self.miniTalentRow = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
-		self.miniTalentRow:SetLayout("Flow")
-		self.miniTalentRow:SetRelativeWidth(0.5)
+	local miniTalentRow = self.miniTalentRow
 
-		self.container:AddChild(self.miniTalentRow)
+	if miniTalentRow == nil then
+		miniTalentRow = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
+		miniTalentRow:SetLayout("Flow")
+		miniTalentRow:SetRelativeWidth(0.5)
+
+		self.miniTalentRow = miniTalentRow
+		self.container:AddChild(miniTalentRow)
 	else
-		self.miniTalentRow:ReleaseChildren()
+		miniTalentRow:ReleaseChildren()
 	end
 
 	for i = 1, #load.entries do
 		local entry = load.entries[i]
 
 		if entry.operation == "OR" then
-			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local widget = AceGUI:Create("Label")
 			widget:SetText("")
 			widget:SetWidth(7)
 
-			self.miniTalentRow:AddChild(widget)
+			miniTalentRow:AddChild(widget)
 		end
 
 		do
@@ -237,7 +240,7 @@ function Drawer:DrawMiniTalentRow()
 			widget:SetCallback("OnEnter", OnEnter)
 			widget:SetCallback("OnLeave", OnLeave)
 
-			self.miniTalentRow:AddChild(widget)
+			miniTalentRow:AddChild(widget)
 		end
 	end
 end
@@ -245,7 +248,7 @@ end
 --- @private
 function Drawer:DrawTalentSelect()
 	local function AddSeparator()
-		local widget = AceGUI:Create("Heading") --[[@as AceGUIHeading]]
+		local widget = AceGUI:Create("Heading")
 		widget:SetFullWidth(true)
 		widget:SetText(Addon.L["Or"])
 
@@ -274,7 +277,7 @@ function Drawer:DrawTalentSelect()
 			self.requestRedraw()
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.5)
 		widget:SetText(text)
@@ -341,7 +344,7 @@ function Drawer:DrawTalentSelect()
 				self:DrawMiniTalentRow()
 			end
 
-			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			local widget = AceGUI:Create("Button")
 			widget:SetText(entry.negated and Addon.L["Not"] or "")
 			widget:SetCallback("OnClick", OnClick)
 
@@ -405,7 +408,7 @@ function Drawer:DrawTalentSelect()
 				self.requestRedraw()
 			end
 
-			local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+			local widget = AceGUI:Create("Button")
 			widget:SetText(Addon.L["X"])
 			widget:SetCallback("OnClick", OnClick)
 			widget:SetDisabled(#load.entries == 1)
@@ -437,7 +440,7 @@ function Drawer:DrawTalentSelect()
 					self.requestRedraw()
 				end
 
-				local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+				local widget = AceGUI:Create("Button")
 				widget:SetText(Addon.L["Remove compound"])
 				widget:SetCallback("OnClick", OnClick)
 				widget:SetDisabled(#load.entries <= 1)
@@ -457,7 +460,7 @@ function Drawer:DrawTalentSelect()
 			self.requestRedraw()
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Close"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.5)

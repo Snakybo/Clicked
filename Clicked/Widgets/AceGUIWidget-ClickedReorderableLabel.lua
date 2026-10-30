@@ -19,7 +19,7 @@ A reorderable label widget with up and down buttons for reordering, customizable
 text, and optional image support.
 -------------------------------------------------------------------------------]]
 
-local TYPE, VERSION = "ClickedReorderableLabel", 2
+local TYPE, VERSION = "ClickedReorderableLabel", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -31,8 +31,8 @@ end
 
 --- @class ClickedReorderableLabel : AceGUIWidget
 --- @field public frame Button&{obj: self}
---- @field protected label FontString&{obj: self}
---- @field protected image Texture&{obj: self}
+--- @field protected label FontString
+--- @field protected image Texture
 --- @field protected up Button&{obj: self}
 --- @field protected down Button&{obj: self}
 --- @field protected resizing boolean
@@ -161,7 +161,10 @@ end
 
 --- @protected
 function ClickedReorderableLabel:UpdateAnchor()
-	if self.resizing then return end
+	if self.resizing then
+		return
+	end
+
 	local frame = self.frame
 	local width = frame:GetWidth() or 0
 	local image = self.image
@@ -203,7 +206,7 @@ function ClickedReorderableLabel:UpdateAnchor()
 
 	self.resizing = true
 	frame:SetHeight(height)
-	frame.height = height --- @diagnostic disable-line: inject-field
+	frame.height = height
 	self.resizing = false
 end
 
@@ -230,15 +233,20 @@ function ClickedReorderableLabel.Down_OnClick(frame)
 end
 
 local function Constructor()
+	--- @class ClickedReorderableLabel
+	local widget = {}
+	widget.type = TYPE
+
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
-
 	frame:EnableMouse(true)
 	frame:SetScript("OnMouseDown", ClickedReorderableLabel.Frame_OnClick)
+	frame.obj = widget
 
 	local up = CreateFrame("Button", nil, frame)
 	up:SetSize(16, 16)
 	up:SetScript("OnClick", ClickedReorderableLabel.Up_OnClick)
+	up.obj = widget
 
 	local upImage = up:CreateTexture(nil, "BACKGROUND")
 	upImage:SetSize(16, 16)
@@ -248,6 +256,7 @@ local function Constructor()
 	local down = CreateFrame("Button", nil, frame)
 	down:SetSize(16, 16)
 	down:SetScript("OnClick", ClickedReorderableLabel.Down_OnClick)
+	down.obj = widget
 
 	local downImage = down:CreateTexture(nil, "BACKGROUND")
 	downImage:SetSize(16, 16)
@@ -258,26 +267,15 @@ local function Constructor()
 
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlightSmall")
 
-	--- @class ClickedReorderableLabel
-	local widget = {
-		label      = label,
-		image      = image,
-		up         = up,
-		down       = down,
-		frame      = frame,
-		imageShown = false,
-		resizing   = false,
-		type       = TYPE
-	}
+	widget.frame = frame
+	widget.label = label
+	widget.image = image
+	widget.up = up
+	widget.down = down
 
 	for method, func in pairs(ClickedReorderableLabel) do
 		widget[method] = func
 	end
-
-	widget.up.obj = widget
-	widget.down.obj = widget
-	widget.image.obj = widget
-	widget.label.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

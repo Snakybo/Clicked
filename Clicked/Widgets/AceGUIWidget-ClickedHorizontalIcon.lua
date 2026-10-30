@@ -18,7 +18,7 @@
 A simple icon with a horizontal label.
 -------------------------------------------------------------------------------]]
 
-local TYPE, VERSION = "ClickedHorizontalIcon", 2
+local TYPE, VERSION = "ClickedHorizontalIcon", 3
 local AceGUI = LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -30,8 +30,8 @@ end
 
 --- @class ClickedHorizontalIcon : AceGUIWidget
 --- @field public frame Button&{obj: self}
---- @field protected image Texture&{obj: self}
---- @field protected label FontString&{obj: self}
+--- @field protected image Texture
+--- @field protected label FontString
 local ClickedHorizontalIcon = {}
 
 --- @protected
@@ -53,7 +53,7 @@ function ClickedHorizontalIcon:SetLabel( text)
 	end
 end
 
---- @param path? string
+--- @param path? string|integer
 --- @param ... number
 function ClickedHorizontalIcon:SetImage(path, ...)
 	local image = self.image
@@ -99,13 +99,17 @@ function ClickedHorizontalIcon.Frame_OnClick(frame, button)
 end
 
 local function Constructor()
+	--- @class ClickedHorizontalIcon
+	local widget = {}
+	widget.type = TYPE
+
 	local frame = CreateFrame("Button", nil, UIParent)
 	frame:Hide()
-
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", ClickedHorizontalIcon.Frame_OnEnter)
 	frame:SetScript("OnLeave", ClickedHorizontalIcon.Frame_OnLeave)
 	frame:SetScript("OnClick", ClickedHorizontalIcon.Frame_OnClick)
+	frame.obj = widget
 
 	local image = frame:CreateTexture(nil, "BACKGROUND")
 	image:SetWidth(64)
@@ -118,20 +122,13 @@ local function Constructor()
 	label:SetJustifyV("MIDDLE")
 	label:SetHeight(18)
 
-	--- @class ClickedHorizontalIcon
-	local widget = {
-		label = label,
-		image = image,
-		frame = frame,
-		type = TYPE
-	}
+	widget.frame = frame
+	widget.label = label
+	widget.image = image
 
 	for method, func in pairs(ClickedHorizontalIcon) do
 		widget[method] = func
 	end
-
-	widget.image.obj = widget
-	widget.label.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

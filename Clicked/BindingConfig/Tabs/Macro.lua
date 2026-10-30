@@ -26,10 +26,12 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigMacroTab : BindingConfigTab
-Addon.BindingConfig.BindingMacroTab = {}
+local BindingMacroTab = {}
+
+Addon.BindingConfig.BindingMacroTab = BindingMacroTab
 
 --- @protected
-function Addon.BindingConfig.BindingMacroTab:Redraw()
+function BindingMacroTab:Redraw()
 	-- macro name
 	do
 		--- @param binding Binding
@@ -49,7 +51,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		local widget = AceGUI:Create("ClickedEditBox")
 		widget:SetFullWidth(true)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
@@ -78,7 +80,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		local widget = AceGUI:Create("ClickedEditBox")
 		widget:SetRelativeWidth(0.7)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
@@ -103,7 +105,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			Addon.BindingConfig.Window:PushPage(Addon.BindingConfig.Window.PAGE_ICON_SELECT, OnSelect)
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Select"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.3)
@@ -160,7 +162,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 			self.controller:RedrawTab()
 		end
 
-		local widget = AceGUI:Create("ClickedDropdown") --[[@as AceGUIDropdown]]
+		local widget = AceGUI:Create("ClickedDropdown")
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetList(items, order)
 		widget:SetFullWidth(true)
@@ -177,7 +179,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 		end)
 
 		if not hide then
-			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local widget = AceGUI:Create("Label")
 			widget:SetText("\n" .. Addon.L["This macro will only execute when hovering over unit frames, in order to interact with the selected target use the [@mouseover] conditional."] .. "\n")
 			widget:SetFullWidth(true)
 
@@ -197,7 +199,7 @@ function Addon.BindingConfig.BindingMacroTab:Redraw()
 				Addon.L["With this mode you're not writing a macro command. You're adding parts to an already existing command, so writing '/cast Holy Light' will not work, in order to cast Holy Light simply type 'Holy Light'."]
 			}
 
-			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
+			local widget = AceGUI:Create("Label")
 			widget:SetText("\n" .. table.concat(msg, "\n\n") .. "\n")
 			widget:SetFullWidth(true)
 

@@ -22,7 +22,7 @@ text, tooltips, and search term tracking.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedSearchBox", 3
+local TYPE, VERSION = "ClickedSearchBox", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -35,7 +35,7 @@ end
 --- @class ClickedSearchBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
---- @field protected label FontString&{obj: self}
+--- @field protected label FontString
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
 --- @field protected searchTerm string
 --- @field protected placeholder string
@@ -203,6 +203,11 @@ local function Constructor()
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
 
+	--- @private
+	widget.EditBoxOnAcquire = widget.OnAcquire
+	 --- @private
+	widget.EditBoxOnRelease = widget.OnRelease
+
 	local editbox = widget.editbox
 	editbox:SetScript("OnEscapePressed", ClickedSearchBox.EditBox_OnEscapePressed)
 	editbox:SetScript("OnEditFocusGained", ClickedSearchBox.EditBox_OnFocusGained)
@@ -211,17 +216,9 @@ local function Constructor()
 	editbox:SetScript("OnEnter", ClickedSearchBox.EditBox_OnEnter)
 	editbox:SetScript("OnLeave", ClickedSearchBox.EditBox_OnLeave)
 
-	--- @private
-	widget.EditBoxOnAcquire = widget.OnAcquire
-
-	--- @private
-	widget.EditBoxOnRelease = widget.OnRelease
-
 	for method, func in pairs(ClickedSearchBox) do
 		widget[method] = func
 	end
-
-	widget.label.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

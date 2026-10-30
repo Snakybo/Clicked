@@ -121,35 +121,36 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
+	--- @class ClickedTargetGroup
+	local widget = {}
+	widget.type = TYPE
+
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetFrameStrata("FULLSCREEN_DIALOG")
+	frame.obj = widget
 
 	local moveUp = CreateButton(frame, "ui_arrow_up", ClickedTargetGroup.MoveUp_OnClick)
 	moveUp:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -16, 0)
+	moveUp.obj = widget
 
 	local moveDown = CreateButton(frame, "ui_arrow_down", ClickedTargetGroup.MoveDown_OnClick)
 	moveDown:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+	moveDown.obj = widget
 
 	-- Container Support
 	local content = CreateFrame("Frame", nil, frame)
 	content:SetPoint("TOPLEFT", 0, 0)
 	content:SetPoint("BOTTOMRIGHT")
+	content.obj = widget
 
-	--- @class ClickedTargetGroup
-	local widget = {
-		frame = frame,
-		content = content,
-		moveUp = moveUp,
-		moveDown = moveDown,
-		type = TYPE
-	}
+	widget.frame = frame
+	widget.content = content
+	widget.moveUp = moveUp
+	widget.moveDown = moveDown
 
 	for method, func in pairs(ClickedTargetGroup) do
 		widget[method] = func
 	end
-
-	moveDown.obj = widget
-	moveUp.obj = widget
 
 	return AceGUI:RegisterAsContainer(widget)
 end

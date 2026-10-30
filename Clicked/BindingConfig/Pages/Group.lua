@@ -27,12 +27,14 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigGroupPage : BindingConfigPage
 --- @field public targets Group[]
-Addon.BindingConfig.GroupPage = {
+local GroupPage = {
 	keepTreeSelection = true
-}
+} --[[@as BindingConfigGroupPage]]
+
+Addon.BindingConfig.GroupPage = GroupPage
 
 --- @protected
-function Addon.BindingConfig.GroupPage:Redraw()
+function GroupPage:Redraw()
 	do
 		--- @param group Group
 		--- @return string
@@ -51,7 +53,7 @@ function Addon.BindingConfig.GroupPage:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		local widget = AceGUI:Create("ClickedEditBox")
 		widget:SetFullWidth(true)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
@@ -77,7 +79,7 @@ function Addon.BindingConfig.GroupPage:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox") --[[@as AceGUIEditBox]]
+		local widget = AceGUI:Create("ClickedEditBox")
 		widget:SetRelativeWidth(0.7)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
@@ -101,7 +103,7 @@ function Addon.BindingConfig.GroupPage:Redraw()
 			self.controller:PushPage(self.controller.PAGE_ICON_SELECT, OnSelect)
 		end
 
-		local widget = AceGUI:Create("Button") --[[@as AceGUIButton]]
+		local widget = AceGUI:Create("Button")
 		widget:SetText(Addon.L["Select"])
 		widget:SetCallback("OnClick", OnClick)
 		widget:SetRelativeWidth(0.3)

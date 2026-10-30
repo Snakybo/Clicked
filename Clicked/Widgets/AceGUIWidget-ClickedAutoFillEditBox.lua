@@ -24,7 +24,7 @@ local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookIte
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedAutoFillEditBox", 2
+local TYPE, VERSION = "ClickedAutoFillEditBox", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -53,6 +53,7 @@ local ATTACH_BELOW = "below"
 
 --- @class ClickedAutoFillEditBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
+--- @field public pullout Frame&{obj: self}
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
 --- @field protected values ClickedAutoFillEditBox.Option[]
 --- @field protected lasttext string
@@ -67,7 +68,6 @@ local ATTACH_BELOW = "below"
 --- @field protected isInputError boolean
 --- @field protected isShowingAll boolean
 --- @field protected strict boolean
---- @field protected pullout Frame
 local Methods = {}
 
 --- @protected
@@ -809,18 +809,6 @@ local function Constructor()
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
 
-	widget.values = {}
-	widget.matches = {}
-	widget.buttons = {}
-	widget.selected = 1
-	widget.selectedOption = nil
-	widget.numButtons = 10
-	widget.offset = 0
-	widget.highlight = true
-	widget.strict = true
-	widget.isInputError = false
-	widget.isShowingAll = false
-
 	--- @private
 	widget.EditBoxOnAcquire = widget.OnAcquire
 	--- @private
@@ -850,12 +838,16 @@ local function Constructor()
 	local pullout = CreateFrame("Frame", nil, UIParent, "TooltipBackdropTemplate") --[[@as Frame]]
 	pullout:SetFrameStrata("FULLSCREEN_DIALOG")
 	pullout:SetClampedToScreen(true)
-
-	widget.pullout = pullout
+	pullout.obj = widget
 
 	local helpText = pullout:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 	helpText:SetPoint("BOTTOMLEFT", 28, 10)
 	helpText:SetText(Addon.L["Use (shift-) tab to navigate"])
+
+	widget.pullout = pullout
+	widget.values = {}
+	widget.matches = {}
+	widget.buttons = {}
 
 	for method, func in pairs(Methods) do
 		widget[method] = func

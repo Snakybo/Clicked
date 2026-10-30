@@ -19,7 +19,7 @@ A multi-line editbox widget, similar to the standard AceGUI multi-line editbox
 but with an additional label color.
 -------------------------------------------------------------------------------]]
 
-local TYPE, VERSION = "ClickedMultiLineEditBox", 2
+local TYPE, VERSION = "ClickedMultiLineEditBox", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -33,10 +33,10 @@ end
 --- @field public frame Frame&{obj: self}
 --- @field protected editBox EditBox&{obj: self}
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
---- @field protected label FontString&{obj: self}
+--- @field protected label FontString
 --- @field protected scrollFrame ScrollFrame&UIPanelScrollFrameTemplate&{obj: self}
---- @field protected scrollBar UIPanelScrollFrameTemplate_ScrollBar&{obj: self}
---- @field protected scrollBG Frame&BackdropTemplate&{obj: self}
+--- @field protected scrollBar UIPanelScrollFrameTemplate_ScrollBar
+--- @field protected scrollBG Frame&BackdropTemplate
 --- @field protected entered boolean?
 local Methods = {}
 
@@ -62,10 +62,6 @@ local function Constructor()
 	for method, func in pairs(Methods) do
 		widget[method] = func
 	end
-
-	widget.label.obj = widget
-	widget.scrollBar.obj = widget
-	widget.scrollBG.obj = widget
 
 	return AceGUI:RegisterAsWidget(widget)
 end

@@ -22,7 +22,7 @@ icon, and action count.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedKeyVisualizerButton", 2
+local TYPE, VERSION = "ClickedKeyVisualizerButton", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -37,8 +37,8 @@ end
 
 --- @class ClickedKeyVisualizerButton : AceGUIWidget
 --- @field public frame Frame&{obj: self}
---- @field protected background Texture&{obj: self}
---- @field protected backgroundMask MaskTexture&{obj: self}?
+--- @field protected background Texture
+--- @field protected backgroundMask MaskTexture?
 --- @field protected key KeyButton?
 --- @field protected visible boolean
 --- @field protected highlight boolean
@@ -128,12 +128,18 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
+	--- @class ClickedKeyVisualizerButton
+	local widget = {}
+	widget.type = TYPE
+
 	local name = "ClickedKeyVisualizerButton" .. AceGUI:GetNextWidgetNum(TYPE)
 
 	local frame = CreateFrame("Frame", name, UIParent)
+	frame:Hide()
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", ClickedKeyVisualizerButton.Frame_OnEnter)
 	frame:SetScript("OnLeave", ClickedKeyVisualizerButton.Frame_OnLeave)
+	frame.obj = widget
 
 	local background = frame:CreateTexture(nil, "BACKGROUND")
 	background:SetAllPoints()
@@ -177,27 +183,15 @@ local function Constructor()
 	extraActionCount:SetHeight(10)
 	extraActionCount:SetJustifyH("RIGHT")
 
-	--- @class ClickedKeyVisualizerButton
-	local widget = {
-		type  = TYPE,
-		background = background,
-		backgroundMask = backgroundMask,
-		keyName  = keyName,
-		extraActionCount = extraActionCount,
-		image = image,
-		frame = frame,
-		highlight = false,
-		visible = false,
-	}
+	widget.frame = frame
+	widget.background = background
+	widget.backgroundMask = backgroundMask
+	widget.image = image
+	widget.keyName = keyName
+	widget.extraActionCount = extraActionCount
 
 	for method, func in pairs(ClickedKeyVisualizerButton) do
 		widget[method] = func
-	end
-
-	widget.background.obj = widget
-
-	if backgroundMask ~= nil then
-		backgroundMask.obj = widget
 	end
 
 	return AceGUI:RegisterAsWidget(widget)

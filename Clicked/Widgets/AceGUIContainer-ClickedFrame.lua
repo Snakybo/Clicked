@@ -33,6 +33,7 @@ end
 --- @field minHeight? integer
 
 --- @class ClickedFrame : AceGUIFrame
+--- @field public frame Frame&{obj: self}
 --- @field protected localstatus ClickedFrame.Status
 --- @field protected status? ClickedFrame.Status
 local ClickedFrame = {}
@@ -120,17 +121,15 @@ local function Constructor()
 	local widget = AceGUI:Create("Frame")
 	widget.type = TYPE
 
-	widget.frame:SetScript("OnKeyDown",  ClickedFrame.Frame_OnKeyDown)
-	widget.frame:SetScript("OnReceiveDrag", ClickedFrame.Frame_OnReceiveDrag)
-
 	--- @private
 	widget.FrameOnAcquire = widget.OnAcquire
-
 	--- @private
 	widget.FrameOnWidthSet = widget.OnWidthSet
-
 	--- @private
 	widget.FrameOnHeightSet = widget.OnHeightSet
+
+	widget.frame:SetScript("OnKeyDown",  ClickedFrame.Frame_OnKeyDown)
+	widget.frame:SetScript("OnReceiveDrag", ClickedFrame.Frame_OnReceiveDrag)
 
 	for method, func in pairs(ClickedFrame) do
 		widget[method] = func
