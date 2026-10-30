@@ -25,6 +25,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 * Support up to two years of profile upgrades, instead of forever
+* Use `/use` for item bindings instead of `/cast`
 
 ## [1.18.2] - 2026-10-14
 

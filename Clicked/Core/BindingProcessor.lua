@@ -1244,8 +1244,12 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		--- @param binding Binding
 		--- @return string|nil
 		local function GetPrefixForBinding(binding)
-			if binding.actionType == Clicked.ActionType.SPELL or binding.actionType == Clicked.ActionType.ITEM then
+			if binding.actionType == Clicked.ActionType.SPELL then
 				return "/cast "
+			end
+
+			if binding.actionType == Clicked.ActionType.ITEM then
+				return "/use "
 			end
 
 			if binding.actionType == Clicked.ActionType.CANCELAURA then

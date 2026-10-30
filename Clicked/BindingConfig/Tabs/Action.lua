@@ -513,8 +513,10 @@ function Addon.BindingConfig.BindingActionTab:RedrawActionGroups()
 					--- @param b Binding
 					--- @return string?
 					local function GetType(b)
-						if b.actionType == Clicked.ActionType.SPELL or b.actionType == Clicked.ActionType.ITEM then
+						if b.actionType == Clicked.ActionType.SPELL then
 							return "cast"
+						elseif b.actionType == Clicked.ActionType.ITEM then
+							return "use"
 						elseif b.actionType == Clicked.ActionType.CANCELAURA then
 							return "cancelaura"
 						end
