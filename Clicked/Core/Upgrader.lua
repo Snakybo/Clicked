@@ -284,16 +284,14 @@ function Addon:UpgradeDatabase(from)
 
 	local cache = {}
 
-	if not Addon.DISABLE_GLOBAL_SCOPE then
-		local src = from or Addon.db.global.version or Addon.DATA_VERSION
+	local src = from or Addon.db.global.version or Addon.DATA_VERSION
 
-		if type(src) == "string" then
-			local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
-			Clicked:LogError(message)
-		else
-			safecall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
-			Addon.db.global.version = Addon.DATA_VERSION
-		end
+	if type(src) == "string" then
+		local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
+		Clicked:LogError(message)
+	else
+		safecall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
+		Addon.db.global.version = Addon.DATA_VERSION
 	end
 
 	do

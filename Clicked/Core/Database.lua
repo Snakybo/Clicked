@@ -32,12 +32,6 @@ Clicked.DataObjectScope = {
 	GLOBAL = 2
 }
 
-Addon.DISABLE_GLOBAL_SCOPE = false
-
---@non-debug@
-  -- Addon.DISABLE_GLOBAL_SCOPE = false
---@end-non-debug@
-
 --- @class DataObjectLookup
 --- @field public uid table<integer,DataObject>
 --- @field public keybind table<string,Binding[]>
@@ -366,10 +360,8 @@ function Clicked:IterateGroups()
 		table.insert(result, group)
 	end
 
-	if not Addon.DISABLE_GLOBAL_SCOPE then
-		for _, group in ipairs(Addon.db.global.groups) do
-			table.insert(result, group)
-		end
+	for _, group in ipairs(Addon.db.global.groups) do
+		table.insert(result, group)
 	end
 
 	return ipairs(result)
@@ -388,10 +380,8 @@ function Clicked:IterateConfiguredBindings()
 		table.insert(result, binding)
 	end
 
-	if not Addon.DISABLE_GLOBAL_SCOPE then
-		for _, binding in ipairs(Addon.db.global.bindings) do
-			table.insert(result, binding)
-		end
+	for _, binding in ipairs(Addon.db.global.bindings) do
+		table.insert(result, binding)
 	end
 
 	return ipairs(result)
