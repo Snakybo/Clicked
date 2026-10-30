@@ -10,7 +10,7 @@ ignore:
   - CHANGELOG.md
   - CONTRIBUTING.md
   - RECENT_CHANGES.md
-  - "*/Definitions.lua"
+  - Definitions.lua
   - "*/Libs/LibDeflate/docs"
   - "*/Libs/LibDeflate/examples"
   - "*/Libs/LibDeflate/*.md"
