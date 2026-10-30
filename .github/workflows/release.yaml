@@ -3,7 +3,10 @@ name: Release
 on:
   push:
     tags:
-      - "**"
+      - v*
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -11,9 +14,9 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
-    - name: "Generate recent changes"
+    - name: Generate recent changes
       uses: kemayo/actions-recent-changelog@v1
       with:
         input: CHANGELOG.md

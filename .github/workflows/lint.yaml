@@ -1,0 +1,68 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "**.lua"
+      - ".wowluarc.json"
+      - ".pkgmeta"
+      - ".github/workflows/lint.yaml"
+      - ".github/scripts/lint-report.sh"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "**.lua"
+      - ".wowluarc.json"
+      - ".pkgmeta"
+      - ".github/workflows/lint.yaml"
+      - ".github/scripts/lint-report.sh"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+
+    - name: Fetch libraries
+      uses: BigWigsMods/packager@v2
+      with:
+        args: -cdz -r ${{ runner.temp }}/release
+
+    - name: Install libraries
+      run: mv "$RUNNER_TEMP/release/Clicked/Libs" Clicked/Libs
+
+    - name: Install wowlua-ls
+      run: |
+        url="https://github.com/TradeSkillMaster/wowlua-ls/releases/latest/download/wowlua_ls-x86_64-unknown-linux-gnu"
+        curl --silent --show-error --fail --location --remote-name "$url"
+        install --mode=755 wowlua_ls-x86_64-unknown-linux-gnu /usr/local/bin/wowlua_ls
+
+    - name: Check base
+      run: |
+        if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ || "$BASE_SHA" =~ ^0+$ ]] || ! git fetch --depth=1 origin "$BASE_SHA"; then
+          echo "No base commit to compare against"
+          exit 0
+        fi
+        git worktree add --detach "$RUNNER_TEMP/base" "$BASE_SHA"
+        ln --symbolic "$GITHUB_WORKSPACE/Clicked/Libs" "$RUNNER_TEMP/base/Clicked/Libs"
+        cd "$RUNNER_TEMP/base"
+        status=0
+        wowlua_ls check --severity hint . > "$RUNNER_TEMP/base.txt" || status=$?
+        if [[ $status -gt 1 ]]; then
+          echo "::warning::wowlua-ls failed on the base commit, skipping comparison"
+          rm "$RUNNER_TEMP/base.txt"
+        fi
+
+    - name: Generate report
+      run: wowlua_ls check --severity hint . | bash .github/scripts/lint-report.sh - "$RUNNER_TEMP/base.txt"
+
+    - name: Check
+      run: wowlua_ls check .
