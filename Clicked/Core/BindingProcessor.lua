@@ -993,8 +993,12 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		state.targets = Addon:IsHovercastEnabled(binding) or Addon:IsMacroCastEnabled(binding)
 	end
 
-	if ShouldPerformStateCheck("value") or ShouldPerformItemStateCheck() then
-		state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
+	if ShouldPerformStateCheck("value") then
+		if binding.actionType == Clicked.ActionType.ITEM then
+			state.value = not Addon:IsNilOrEmpty(binding.action.itemValue)
+		else
+			state.value = not Addon:IsNilOrEmpty(Addon:GetBindingValue(binding))
+		end
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW and Addon.db.global.options.disableInHouse and ShouldPerformStateCheck("housing", { "HOUSE_EDITOR_MODE_CHANGED" }) then
