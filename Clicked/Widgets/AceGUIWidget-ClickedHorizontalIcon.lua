@@ -53,7 +53,7 @@ function ClickedHorizontalIcon:SetLabel( text)
 	end
 end
 
---- @param path? string
+--- @param path? string|integer
 --- @param ... number
 function ClickedHorizontalIcon:SetImage(path, ...)
 	local image = self.image

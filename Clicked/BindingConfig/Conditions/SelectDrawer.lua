@@ -28,7 +28,16 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private dropdown? ClickedDropdown
 --- @field private dropdownCb? fun():boolean
 --- @field private negated? ClickedCheckBox
+--- @correlated dropdown, dropdownCb
 local Drawer = {}
+
+--- @protected
+function Drawer:Update()
+	if self.dropdown ~= nil then
+		self.dropdown:SetList(self.requestAvailableValues())
+		self.dropdownCb()
+	end
+end
 
 --- @protected
 function Drawer:Draw()
@@ -116,12 +125,6 @@ function Drawer:Draw()
 
 	-- negate
 	self.negated = Helpers:DrawNegateToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
-end
-
---- @protected
-function Drawer:Update()
-	self.dropdown:SetList(self.requestAvailableValues())
-	self.dropdownCb()
 end
 
 Addon.BindingConfig.BindingConditionDrawers = Addon.BindingConfig.BindingConditionDrawers or {}

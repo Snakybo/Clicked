@@ -27,12 +27,14 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigGroupPage : BindingConfigPage
 --- @field public targets Group[]
-Addon.BindingConfig.GroupPage = {
+local GroupPage = {
 	keepTreeSelection = true
-}
+} --[[@as BindingConfigGroupPage]]
+
+Addon.BindingConfig.GroupPage = GroupPage
 
 --- @protected
-function Addon.BindingConfig.GroupPage:Redraw()
+function GroupPage:Redraw()
 	do
 		--- @param group Group
 		--- @return string

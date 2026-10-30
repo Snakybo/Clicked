@@ -26,10 +26,12 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigTargetTab : BindingConfigTab
-Addon.BindingConfig.BindingTargetTab = {}
+local BindingTargetTab = {}
+
+Addon.BindingConfig.BindingTargetTab = BindingTargetTab
 
 --- @protected
-function Addon.BindingConfig.BindingTargetTab:Redraw()
+function BindingTargetTab:Redraw()
 	--- @param binding Binding
 	--- @return boolean
 	local function CanToggleRegularTargetMode(binding)
@@ -244,7 +246,7 @@ end
 
 --- @protected
 --- @param relevant boolean
-function Addon.BindingConfig.BindingTargetTab:OnBindingReload(relevant)
+function BindingTargetTab:OnBindingReload(relevant)
 	if relevant then
 		self.controller:RedrawTab()
 	end
@@ -255,7 +257,7 @@ end
 --- @param index integer
 --- @param canDelete boolean
 --- @return AceGUIDropdown
-function Addon.BindingConfig.BindingTargetTab:DrawTargetUnit(container, index, canDelete)
+function BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 	local items = {
 		[Addon.TargetUnit.DEFAULT] = Addon.L["Default"],
 		[Addon.TargetUnit.PLAYER] = Addon.L["Player (you)"],
@@ -385,7 +387,7 @@ end
 --- @param container AceGUIContainer
 --- @param index integer
 --- @return AceGUIDropdown
-function Addon.BindingConfig.BindingTargetTab:DrawTargetHostility(container, index)
+function BindingTargetTab:DrawTargetHostility(container, index)
 	local items = {
 		[Addon.TargetHostility.ANY] = Addon.L["Any"],
 		[Addon.TargetHostility.HELP] = Addon.L["Friendly"],
@@ -441,7 +443,7 @@ end
 --- @param container AceGUIContainer
 --- @param index integer
 --- @return AceGUIDropdown
-function Addon.BindingConfig.BindingTargetTab:DrawTargetVitals(container, index)
+function BindingTargetTab:DrawTargetVitals(container, index)
 	local items = {
 		[Addon.TargetVitals.ANY] = Addon.L["Any"],
 		[Addon.TargetVitals.ALIVE] = Addon.L["Alive"],

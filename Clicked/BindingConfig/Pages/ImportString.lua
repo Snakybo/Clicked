@@ -50,7 +50,7 @@ local function OnTextChanged(mode, text)
 		return true, data --[[@as ExportProfile]]
 	end
 
-	return false, "Invalid mode: " .. mode
+	return false, "Invalid mode: " .. tostring(mode)
 end
 
 -- Private addon API
@@ -69,12 +69,14 @@ Addon.BindingConfig.ImportStringModes = {
 --- @field private importText? string
 --- @field private reviewData? ExportProfile|ShareData
 --- @field private importKeybinds boolean
-Addon.BindingConfig.ImportStringPage = {}
+local ImportStringPage = {}
+
+Addon.BindingConfig.ImportStringPage = ImportStringPage
 
 --- @protected
 --- @param mode BindingConfigImportStringPageMode
 --- @param ... any
-function Addon.BindingConfig.ImportStringPage:Show(mode, ...)
+function ImportStringPage:Show(mode, ...)
 	assert(mode ~= nil)
 	self.mode = mode
 
@@ -87,14 +89,14 @@ function Addon.BindingConfig.ImportStringPage:Show(mode, ...)
 end
 
 --- @protected
-function Addon.BindingConfig.ImportStringPage:Hide()
+function ImportStringPage:Hide()
 	self.mode = nil
 	self.importText = nil
 	self.reviewData = nil
 end
 
 --- @protected
-function Addon.BindingConfig.ImportStringPage:Redraw()
+function ImportStringPage:Redraw()
 	do
 		local widget = AceGUI:Create("EditBox") --[[@as AceGUIEditBox]]
 		widget:SetFullWidth(true)
@@ -119,7 +121,6 @@ function Addon.BindingConfig.ImportStringPage:Redraw()
 
 			if not success then
 				--- @cast data string
-
 				local requireRedraw = self.reviewData ~= nil
 
 				self.importText = data
@@ -134,12 +135,10 @@ function Addon.BindingConfig.ImportStringPage:Redraw()
 				end
 			else
 				--- @cast data -string
-
 				self.reviewData = data
 
 				if self.mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
 					--- @cast data ShareData
-
 					if data.type == "group" then
 						self.importText = string.format(Addon.L["Importing group '%s' with %s bindings"], data.group.name, tostring(#data.group.bindings))
 					elseif data.type == "binding" then
@@ -147,7 +146,6 @@ function Addon.BindingConfig.ImportStringPage:Redraw()
 					end
 				elseif self.mode == Addon.BindingConfig.ImportStringModes.PROFILE then
 					--- @cast data ExportProfile
-
 					self.importText = string.format(Addon.L["Importing %d groups with a total of %d bindings"], #data.groups, #data.bindings)
 				end
 
@@ -162,7 +160,7 @@ function Addon.BindingConfig.ImportStringPage:Redraw()
 end
 
 --- @private
-function Addon.BindingConfig.ImportStringPage:RedrawToReview()
+function ImportStringPage:RedrawToReview()
 	local data = self.reviewData
 
 	if data == nil then
@@ -174,7 +172,6 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 
 	if data.type == "profile" then
 		--- @cast data ExportProfile
-
 		if not data.lightweight then
 			local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
 			widget:SetText("|cffe31919This is a full profile export, importing this will overwrite your user settings|r")
@@ -198,17 +195,14 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 			if not self.importKeybinds then
 				if review.type == "group" then
 					--- @cast data ShareData
-
 					for _, binding in ipairs(review.group.bindings) do
 						binding.keybind = ""
 					end
 				elseif review.type == "binding" then
 					--- @cast data ShareData
-
 					review.binding.keybind = ""
 				elseif review.type == "profile" then
 					--- @cast data ExportProfile
-
 					for _, binding in ipairs(review.bindings) do
 						binding.keybind = ""
 					end
@@ -258,11 +252,9 @@ function Addon.BindingConfig.ImportStringPage:RedrawToReview()
 
 		if self.mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
 			--- @cast data ShareData
-
 			items = { data }
 		elseif self.mode == Addon.BindingConfig.ImportStringModes.PROFILE or self.mode == Addon.BindingConfig.ImportStringModes.PROFILE_COMM then
 			--- @cast data ExportProfile
-
 			items = {}
 
 			--- @type table<string,ShareData.Group>

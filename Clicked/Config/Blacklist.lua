@@ -285,7 +285,7 @@ end
 --- @param name string
 --- @param enabled boolean
 function BlacklistOptions:SetSelectedItem(name, enabled)
-	local args = config.args
+	local args = config.args --[[@as table<string, AceConfig.OptionsTable>]]
 
 	if enabled then
 		args[name] = {

@@ -230,7 +230,7 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 
 
 	if importClassAbilitiesPerSpec and #genericSpells > 0 then
-		--- @type { specId: integer, groupId: integer }[]
+		--- @type { specId: integer, groupId: integer? }[]
 		local specs = {}
 
 		for i = 1, GetNumSpecializations() do
@@ -357,13 +357,15 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigNewPage : BindingConfigPage
 --- @field private importClassAbilitiesPerSpec boolean
-Addon.BindingConfig.NewPage = {
+local NewPage = {
 	keepTreeSelection = true,
 	importClassAbilitiesPerSpec = false
-}
+} --[[@as BindingConfigNewPage]]
+
+Addon.BindingConfig.NewPage = NewPage
 
 --- @protected
-function Addon.BindingConfig.NewPage:Redraw()
+function NewPage:Redraw()
 	local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
 	scrollFrame:SetLayout("Flow")
 	scrollFrame:SetFullWidth(true)
@@ -433,7 +435,7 @@ end
 --- @param container AceGUIContainer
 --- @param type integer
 --- @param label string
-function Addon.BindingConfig.NewPage:CreateTemplateButton(container, type, label)
+function NewPage:CreateTemplateButton(container, type, label)
 	do
 		local widget = AceGUI:Create("Label") --[[@as AceGUILabel]]
 		widget:SetText(label)
@@ -459,7 +461,7 @@ end
 
 --- @private
 --- @param type integer
-function Addon.BindingConfig.NewPage:CreateItem(type)
+function NewPage:CreateItem(type)
 	--- @type DataObject?
 	local target = nil
 

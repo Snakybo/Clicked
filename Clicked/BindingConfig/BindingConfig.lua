@@ -102,7 +102,6 @@ local function SortByName(left, right)
 		if leftObj.type == Clicked.DataObjectType.GROUP and rightObj.type == Clicked.DataObjectType.GROUP then
 			--- @cast leftObj Group
 			--- @cast rightObj Group
-
 			-- Enabled groups go above disabled groups
 			if left.isAnyChildEnabled and not right.isAnyChildEnabled then
 				return true
@@ -114,7 +113,6 @@ local function SortByName(left, right)
 		elseif leftObj.type == Clicked.DataObjectType.BINDING and rightObj.type == Clicked.DataObjectType.BINDING then
 			--- @cast leftObj Binding
 			--- @cast rightObj Binding
-
 			-- Enabled bindings go above disabled bindings
 			if left.enabled and not right.enabled then
 				return true
@@ -172,7 +170,6 @@ local function SortByKey(left, right)
 		if leftObj.type == Clicked.DataObjectType.GROUP and rightObj.type == Clicked.DataObjectType.GROUP then
 			--- @cast leftObj Group
 			--- @cast rightObj Group
-
 			-- Enabled groups go above disabled groups
 			if left.isAnyChildEnabled and not right.isAnyChildEnabled then
 				return true
@@ -184,7 +181,6 @@ local function SortByKey(left, right)
 		elseif leftObj.type == Clicked.DataObjectType.BINDING and rightObj.type == Clicked.DataObjectType.BINDING then
 			--- @cast leftObj Binding
 			--- @cast rightObj Binding
-
 			return Addon:CompareBindings(leftObj, rightObj, left.enabled, right.enabled)
 		end
 	end
@@ -946,7 +942,6 @@ function BindingConfig:CreateTreeFrame()
 			if ref.type == Clicked.DataObjectType.BINDING then
 				--- @cast objects Binding[]
 				--- @cast ref Binding
-
 				rootDescription:CreateButton(Addon.L["Copy Data"], function()
 					self.bindingCopyTarget = ref.uid
 				end):SetEnabled(#objects == 1)
@@ -1049,7 +1044,6 @@ function BindingConfig:CreateTreeFrame()
 			elseif ref.type == Clicked.DataObjectType.GROUP then
 				--- @cast objects Group[]
 				--- @cast ref Group
-
 				rootDescription:CreateButton(Addon.L["Duplicate"], function()
 					--- @type Group
 					local first

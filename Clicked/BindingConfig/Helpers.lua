@@ -172,7 +172,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 		local hasMixedValues, mixedValueText = self:GetMixedValues(targets, valueSelector)
 
-		if hasMixedValues then
+		if hasMixedValues and mixedValueText ~= nil then
 			table.insert(lines, "")
 			table.insert(lines, mixedValueText)
 		end
@@ -206,7 +206,6 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 		if widget.type == "ClickedCheckBox" then
 			--- @cast widget ClickedCheckBox|ClickedToggleHeading
-
 			widget:SetLabel(label)
 
 			if hasMixedValues then
@@ -219,7 +218,6 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" or
 			   widget.type == "ChroMacroEditBox" then
 			--- @cast widget ClickedAutoFillEditBox|ClickedEditBox|ClickedMultiLineEditBox|ChroMacroEditBox
-
 			widget:SetLabel(label)
 
 			if hasMixedValues then
@@ -231,7 +229,6 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			end
 		elseif widget.type == "ClickedKeybinding" then
 			--- @cast widget ClickedKeybinding
-
 			if hasMixedValues then
 				widget:SetKey(self.MIXED_VALUE_TEXT)
 			else
@@ -239,7 +236,6 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			end
 		elseif widget.type == "ClickedDropdown" then
 			--- @cast widget ClickedDropdown
-
 			widget:SetLabel(label)
 
 			if hasMixedValues then
@@ -264,7 +260,6 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 			end
 		elseif widget.type == "ClickedToggleHeading" then
 			--- @cast widget ClickedToggleHeading
-
 			widget:SetText(label)
 
 			if hasMixedValues then
@@ -342,7 +337,6 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 	--- @param value boolean|nil
 	local function OnValueChanged(_, _, value)
 		--- @cast value boolean
-
 		for _, binding in ipairs(bindings) do
 			--- @type SimpleLoadOption
 			local load = binding.load[fieldName] or condition.init()
@@ -445,7 +439,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	--- @type boolean
 	local hasMixedValues
 
-	--- @param state `0`|`1`|`2`
+	--- @param state 0|1|2
 	--- @return boolean?
 	local function IndexToValue(state)
 		if state == 1 then
@@ -458,7 +452,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	end
 
 	--- @param value? boolean
-	--- @return `0`|`1`|`2`
+	--- @return 0|1|2
 	local function ValueToIndex(value)
 		if value == false then
 			return 0
@@ -545,7 +539,7 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	local isAnyEnabled = FindInTableIf(bindings, function(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[fieldName] or condition.init()
-		return load.selected > 0
+		return load.selected ~= 0
 	end) ~= nil
 
 	if isAnyEnabled then

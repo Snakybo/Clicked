@@ -62,7 +62,7 @@ local function GetTreeLayout()
 		for _, size in ipairs(Addon.KeyLayouts:GetKeyboardSizes(layout)) do
 			table.insert(item.children, {
 				value = size,
-				text = size .. "%"
+				text = tostring(size) .. "%"
 			})
 		end
 
@@ -436,16 +436,16 @@ function KeyVisualizer:Open()
 				[GROUP_EXT] = Addon.L["External"]
 			}
 			--- @type { id: string, name: string }[]
-			local order = {}
+			local groups = {}
 
 			for _, group in Clicked:IterateGroups() do
 				items[group.uid] = Addon:GetTextureString(group.name, group.displayIcon)
-				table.insert(order, { id = group.uid, name = group.name })
+				table.insert(groups, { id = group.uid, name = group.name })
 			end
 
-			table.sort(order, function(a, b) return a.name < b.name end)
+			table.sort(groups, function(a, b) return a.name < b.name end)
 
-			order = Addon:TableSelect(order, function(v) return v.id end)
+			local order = Addon:TableSelect(groups, function(v) return v.id end)
 			table.insert(order, 1, GROUP_ALL)
 			table.insert(order, 2, GROUP_EXT)
 

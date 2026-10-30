@@ -381,7 +381,6 @@ function Addon.SpellLibrary:GetActionBarSpells()
 
 		if type == "spell" then
 			--- @cast id integer
-
 			local spell = self:GetSpellById(id)
 
 			if spell ~= nil then

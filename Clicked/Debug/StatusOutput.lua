@@ -89,7 +89,6 @@ local function GetLoadConditionState()
 
 	for _, condition in ipairs(conditions.config) do
 		--- @cast condition LoadCondition
-
 		if condition.state ~= nil then
 			local state = { select(2, Addon:SafeCall(condition.state)) }
 

@@ -27,13 +27,15 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigIconSelectPage : BindingConfigPage
 --- @field private onSelectCallback fun(targets: DataObject[], value: string)
-Addon.BindingConfig.IconSelectPage = {
+local IconSelectPage = {
 	keepTreeSelection = true
-}
+} --[[@as BindingConfigIconSelectPage]]
+
+Addon.BindingConfig.IconSelectPage = IconSelectPage
 
 --- @protected
 --- @param onSelectCallback fun(targets: DataObject[], value: string)
-function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
+function IconSelectPage:Show(onSelectCallback)
 	if not C_AddOns.IsAddOnLoaded(MEDIA_ADDON_NAME) then
 		local loaded, reason = C_AddOns.LoadAddOn(MEDIA_ADDON_NAME)
 
@@ -51,12 +53,12 @@ function Addon.BindingConfig.IconSelectPage:Show(onSelectCallback)
 end
 
 --- @protected
-function Addon.BindingConfig.IconSelectPage:Hide()
+function IconSelectPage:Hide()
 	self.onSelectCallback = nil
 end
 
 --- @protected
-function Addon.BindingConfig.IconSelectPage:Redraw()
+function IconSelectPage:Redraw()
 	--- @type ClickedSearchBox
 	local searchBox
 

@@ -48,6 +48,8 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private multiselectDropdown? ClickedDropdown
 --- @field private multiselectDropdownCb? fun():boolean
 --- @field private negated? ClickedCheckBox
+--- @correlated dropdown, dropdownCb
+--- @correlated multiselectDropdown, multiselectDropdownCb
 local Drawer = {}
 
 --- @protected
@@ -57,7 +59,7 @@ function Drawer:Draw()
 	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
-		return load.selected > 0
+		return load.selected ~= 0
 	end) ~= nil
 
 	self.checkbox = Helpers:DrawMultiselectConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)

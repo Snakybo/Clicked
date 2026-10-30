@@ -172,14 +172,17 @@ function Drawer:DrawMiniTalentRow()
 	--- @type TalentLoadOption
 	local load = binding.load[self.fieldName] or self.condition.init()
 
-	if self.miniTalentRow == nil then
-		self.miniTalentRow = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
-		self.miniTalentRow:SetLayout("Flow")
-		self.miniTalentRow:SetRelativeWidth(0.5)
+	local miniTalentRow = self.miniTalentRow
 
-		self.container:AddChild(self.miniTalentRow)
+	if miniTalentRow == nil then
+		miniTalentRow = AceGUI:Create("ClickedSimpleGroup") --[[@as ClickedSimpleGroup]]
+		miniTalentRow:SetLayout("Flow")
+		miniTalentRow:SetRelativeWidth(0.5)
+
+		self.miniTalentRow = miniTalentRow
+		self.container:AddChild(miniTalentRow)
 	else
-		self.miniTalentRow:ReleaseChildren()
+		miniTalentRow:ReleaseChildren()
 	end
 
 	for i = 1, #load.entries do
@@ -190,7 +193,7 @@ function Drawer:DrawMiniTalentRow()
 			widget:SetText("")
 			widget:SetWidth(7)
 
-			self.miniTalentRow:AddChild(widget)
+			miniTalentRow:AddChild(widget)
 		end
 
 		do
@@ -237,7 +240,7 @@ function Drawer:DrawMiniTalentRow()
 			widget:SetCallback("OnEnter", OnEnter)
 			widget:SetCallback("OnLeave", OnLeave)
 
-			self.miniTalentRow:AddChild(widget)
+			miniTalentRow:AddChild(widget)
 		end
 	end
 end

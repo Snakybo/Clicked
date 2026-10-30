@@ -26,19 +26,21 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @class BindingConfigStatusTab : BindingConfigTab
 --- @field private selected integer
 --- @field private references integer[]
-Addon.BindingConfig.BindingStatusTab = {
+local BindingStatusTab = {
 	selected = 1,
 	references = {}
-}
+} --[[@as BindingConfigStatusTab]]
+
+Addon.BindingConfig.BindingStatusTab = BindingStatusTab
 
 --- @protected
-function Addon.BindingConfig.BindingStatusTab:Hide()
+function BindingStatusTab:Hide()
 	self.selected = 1
 	table.wipe(self.references)
 end
 
 --- @protected
-function Addon.BindingConfig.BindingStatusTab:Redraw()
+function BindingStatusTab:Redraw()
 	if #self.bindings > 1 then
 		--- @param index integer
 		--- @return string
@@ -49,8 +51,7 @@ function Addon.BindingConfig.BindingStatusTab:Redraw()
 		--- @param str string
 		--- @return integer
 		local function StringToIndex(str)
-			--- @diagnostic disable-next-line: return-type-mismatch
-			return tonumber(string.sub(str, 6))
+			return tonumber(string.sub(str, 6)) --[[@as integer]]
 		end
 
 		local function OnValueChanged(_, _, value)
@@ -85,7 +86,7 @@ end
 --- @protected
 --- @param relevant boolean
 --- @param changed integer[]
-function Addon.BindingConfig.BindingStatusTab:OnBindingReload(relevant, changed)
+function BindingStatusTab:OnBindingReload(relevant, changed)
 	if relevant then
 		self.controller:RedrawTab()
 		return
@@ -111,7 +112,7 @@ function Addon.BindingConfig.BindingStatusTab:OnBindingReload(relevant, changed)
 end
 
 --- @private
-function Addon.BindingConfig.BindingStatusTab:RedrawPage()
+function BindingStatusTab:RedrawPage()
 	local binding = self.bindings[self.selected]
 	if binding == nil then
 		return

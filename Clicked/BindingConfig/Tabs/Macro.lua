@@ -26,10 +26,12 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigMacroTab : BindingConfigTab
-Addon.BindingConfig.BindingMacroTab = {}
+local BindingMacroTab = {}
+
+Addon.BindingConfig.BindingMacroTab = BindingMacroTab
 
 --- @protected
-function Addon.BindingConfig.BindingMacroTab:Redraw()
+function BindingMacroTab:Redraw()
 	-- macro name
 	do
 		--- @param binding Binding

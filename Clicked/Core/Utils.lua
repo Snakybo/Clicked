@@ -874,7 +874,7 @@ end
 
 --- Get the specialization index from the specified spec ID.
 ---
---- @param specId integer
+--- @param specId? integer
 --- @return integer?
 function Addon:GetSpecIndexFromId(specId)
 	if Addon.EXPANSION_LEVEL < Addon.Expansion.MOP then

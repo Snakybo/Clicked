@@ -125,7 +125,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local unit, needsExistsCheck = Addon:GetWoWUnitFromUnit(action.unit, true)
 
-	--- @param condition boolean|string
+	--- @param condition? boolean|string
 	--- @param value string
 	--- @param negated? string
 	--- @param isUnit? boolean
@@ -142,7 +142,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		end
 	end
 
-	--- @param condition Action.NegatableValueString
+	--- @param condition? Action.NegatableValueString
 	--- @param value string
 	--- @param negated string
 	local function ParseNegatableStringCondition(condition, value, negated)
@@ -325,14 +325,12 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 			if item.key == binding.keybind then
 				if item.type == "SPELL" then
 					--- @cast item SpellLibrarySpellResult
-
 					table.insert(actions, {
 						ability = C_Spell.GetSpellName(item.spellId),
 						type = binding.actionType
 					})
 				elseif item.type == "ITEM" then
 					--- @cast item SpellLibraryItemResult
-
 					table.insert(actions, {
 						ability = C_Item.GetItemNameByID(item.itemId),
 						type = binding.actionType
@@ -352,7 +350,7 @@ local function SortActions(actions, indexMap)
 	---@param right Action
 	---@return boolean
 	local function SortFunc(left, right)
-		--- @type { left: string?, right: string?, value: integer|boolean, comparison: "eq"|"gt"|"neq" }[]
+		--- @type { left: string?, right: string?, value: string|integer|boolean, comparison: "eq"|"gt"|"neq" }[]
 		local priority = {
 			-- 1. Mouseover targets always come first
 			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.MOUSEOVER, comparison = "eq" },
@@ -877,8 +875,7 @@ end
 --- Bindings are always bulk-reloaded once per frame, this function will queue a reload for the next frame.
 ---
 --- @param binding Binding
---- @param condition? string
---- @overload fun(binding:Binding, full:boolean)
+--- @param condition? string|boolean
 function Addon:ReloadBinding(binding, condition)
 	logger:LogDebug("Scheduling binding reload for binding with ID {uid} with condition {condition}", binding.uid, condition)
 
@@ -1006,7 +1003,6 @@ function Addon:UpdateBindingLoadState(binding, causes)
 
 	for _, condition in ipairs(conditions.config) do
 		--- @cast condition LoadCondition
-
 		if ShouldPerformStateCheck(condition.id, condition.testOnEvents) then
 			local load = binding.load[condition.id] or condition.init()
 			local selected = condition.unpack(load)
@@ -1052,7 +1048,7 @@ function Addon:IsBindingValidForCurrentState(binding)
 			return false
 		end
 
-		if binding.actionType == Clicked.ActionType.SPELL and not IsSpellKnown(id) then
+		if binding.actionType == Clicked.ActionType.SPELL and not IsSpellKnown(id, false) then
 			return false
 		end
 	end
@@ -1273,10 +1269,10 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		--- @type table<integer,Action[]>
 		local actions = {}
 
-		--- @type table<integer,string[]|integer[]>
+		--- @type table<integer,string[]>
 		local macros = {}
 
-		--- @type table<integer,string[]|integer[]>
+		--- @type table<integer,string[]>
 		local appends = {}
 
 		for _, binding in ipairs(bindings) do
@@ -1321,10 +1317,16 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 						end
 					elseif binding.actionType == Clicked.ActionType.MACRO then
 						local value = Addon:GetBindingValue(binding)
-						table.insert(macros[order], value)
+
+						if value ~= nil then
+							table.insert(macros[order], value)
+						end
 					elseif binding.actionType == Clicked.ActionType.APPEND then
 						local value = Addon:GetBindingValue(binding)
-						table.insert(appends[order], value)
+
+						if value ~= nil then
+							table.insert(appends[order], value)
+						end
 					elseif binding.actionType == Clicked.ActionType.CANCELAURA then
 						local target = Addon:GetNewBindingTargetTemplate()
 						target.unit = Addon.TargetUnit.DEFAULT

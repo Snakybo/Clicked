@@ -117,7 +117,6 @@ function Clicked:SerializeDataObject(obj)
 
 	if obj.type == Clicked.DataObjectType.BINDING then
 		--- @cast obj Binding
-
 		data = {
 			version = Addon.DATA_VERSION,
 			type = "binding",
@@ -128,7 +127,6 @@ function Clicked:SerializeDataObject(obj)
 		data.binding.parent = nil
 	elseif obj.type == Clicked.DataObjectType.GROUP then
 		--- @cast obj Group
-
 		data = {
 			version = Addon.DATA_VERSION,
 			type = "group",

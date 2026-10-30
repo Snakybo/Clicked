@@ -581,10 +581,10 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "ActiveTalentsChanged", "ActivePvpTalentsChanged", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "LEARNED_SPELL_IN_SKILL_LINE", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
-		--- @return integer
+		--- @return boolean
 		test = function(value)
 			local spell = C_Spell.GetSpellInfo(value)
-			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID) or false
+			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID, false) or false
 		end
 	},
 	{

@@ -79,7 +79,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private filteredTargets { [string]: Binding[] }
 --- @field private scrollFrame? AceGUIScrollFrame
 --- @field private scrollFrameStatus { scrollvalue: number }
-Addon.BindingConfig.BindingPage = {
+local BindingPage = {
 	keepTreeSelection = true,
 	tabStatus = {},
 	tabs = {
@@ -160,10 +160,12 @@ Addon.BindingConfig.BindingPage = {
 	},
 	filteredTargets = {},
 	scrollFrameStatus = {}
-}
+} --[[@as BindingConfigBindingPage]]
+
+Addon.BindingConfig.BindingPage = BindingPage
 
 --- @protected
-function Addon.BindingConfig.BindingPage:Hide()
+function BindingPage:Hide()
 	local currentTab = self.currentTab
 
 	if currentTab ~= nil then
@@ -184,7 +186,7 @@ function Addon.BindingConfig.BindingPage:Hide()
 end
 
 --- @protected
-function Addon.BindingConfig.BindingPage:Redraw()
+function BindingPage:Redraw()
 	do
 		--- @param binding Binding
 		--- @return string
@@ -256,7 +258,7 @@ end
 --- @protected
 --- @param relevant boolean
 --- @param changed integer[]
-function Addon.BindingConfig.BindingPage:OnBindingReload(relevant, changed)
+function BindingPage:OnBindingReload(relevant, changed)
 	self:UpdateTabGroup()
 
 	local currentTab = self.currentTab
@@ -270,7 +272,7 @@ end
 --- Redraw the currently active tab
 ---
 --- @param full? boolean
-function Addon.BindingConfig.BindingPage:RedrawTab(full)
+function BindingPage:RedrawTab(full)
 	local currentTab = self.currentTab
 
 	if currentTab ~= nil then
@@ -278,7 +280,7 @@ function Addon.BindingConfig.BindingPage:RedrawTab(full)
 		local createScrollFrame = full or self.scrollFrame == nil
 		local currentScrollValue = self.scrollFrameStatus.scrollvalue or 0
 
-		if createScrollFrame then
+		if full or self.scrollFrame == nil then
 			self.tabWidget:ReleaseChildren()
 
 			self.scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
@@ -308,7 +310,7 @@ end
 --- If there's a tab group currently active, it will be hidden and the new tab group will be shown.
 ---
 --- @param group string
-function Addon.BindingConfig.BindingPage:ActivateTabGroup(group)
+function BindingPage:ActivateTabGroup(group)
 	local currentTab = self.currentTab
 
 	if currentTab ~= nil then
@@ -335,7 +337,7 @@ end
 
 --- @private
 --- Update the available tabs in the tab group widget
-function Addon.BindingConfig.BindingPage:UpdateTabGroup()
+function BindingPage:UpdateTabGroup()
 	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
 
@@ -353,7 +355,7 @@ end
 
 --- @private
 --- Create the tab group widget.
-function Addon.BindingConfig.BindingPage:CreateTabGroup()
+function BindingPage:CreateTabGroup()
 	--- @param group string
 	local function OnTabGroupSelected(_, _, group)
 		local currentTab = self.currentTab
@@ -393,7 +395,7 @@ end
 --- Get all available tabs for the current targets.
 ---
 --- @return AceGUITabGroupTab[] tabs The available tabs for use in the `AceGUITabGroup` widget.
-function Addon.BindingConfig.BindingPage:GetAvailableTabs()
+function BindingPage:GetAvailableTabs()
 	--- @type { [string]: integer }
 	local keys = {}
 
@@ -429,7 +431,7 @@ end
 
 --- @private
 --- Filter bindings for all tabs.
-function Addon.BindingConfig.BindingPage:FilterBindings()
+function BindingPage:FilterBindings()
 	table.wipe(self.filteredTargets)
 
 	for id, tab in pairs(self.tabs) do

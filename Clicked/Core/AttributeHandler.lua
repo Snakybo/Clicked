@@ -38,9 +38,9 @@ local function EnsureCache(frame)
 end
 
 --- @param register table<string,string>
---- @param prefix string
+--- @param prefix? string
 --- @param type string
---- @param suffix string
+--- @param suffix? string
 --- @param value string
 local function CreateAttribute(register, prefix, type, suffix, value)
 	prefix = prefix or ""
@@ -125,8 +125,8 @@ end
 
 --- @param register table<string,string>
 --- @param command Command
---- @param prefix string
---- @param suffix string
+--- @param prefix? string
+--- @param suffix? string
 function Addon:CreateCommandAttributes(register, command, prefix, suffix)
 	if command.keybind == "" then
 		return

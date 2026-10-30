@@ -957,7 +957,6 @@ function ClickedTreeGroup.Button_OnDragStop(button)
 
 			if obj.type == Clicked.DataObjectType.BINDING then
 				--- @cast obj Binding
-
 				Addon:ChangeDataObjectParent(obj, newParent)
 
 				local parent = groupItem or scopeItem
@@ -970,7 +969,6 @@ function ClickedTreeGroup.Button_OnDragStop(button)
 				end
 			elseif obj.type == Clicked.DataObjectType.GROUP then
 				--- @cast obj Group
-
 				if item ~= nil and item ~= scopeItem then
 					Addon:TableRemoveItem(item.parent.children, item)
 					table.insert(scopeItem.children, item)

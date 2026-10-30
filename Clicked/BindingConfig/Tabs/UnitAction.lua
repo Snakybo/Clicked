@@ -26,10 +26,12 @@ local Helpers = Addon.BindingConfig.Helpers
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigUnitActionTab : BindingConfigTab
-Addon.BindingConfig.BindingUnitActionTab = {}
+local BindingUnitActionTab = {}
+
+Addon.BindingConfig.BindingUnitActionTab = BindingUnitActionTab
 
 --- @protected
-function Addon.BindingConfig.BindingUnitActionTab:Redraw()
+function BindingUnitActionTab:Redraw()
 	-- combat
 	do
 		local items = {

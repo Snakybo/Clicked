@@ -30,15 +30,17 @@ Addon.BindingConfig.ExportStringModes = {
 }
 
 --- @class BindingConfigExportStringPage : BindingConfigPage
---- @field private mode BindingConfigExportStringPageMode
---- @field private target DataObject|DBSchema.Profile
+--- @field private mode? BindingConfigExportStringPageMode
+--- @field private target? DataObject|DBSchema.Profile
 --- @field private serialized string
-Addon.BindingConfig.ExportStringPage = {}
+local ExportStringPage = {}
+
+Addon.BindingConfig.ExportStringPage = ExportStringPage
 
 --- @protected
 --- @param mode BindingConfigExportStringPageMode
 --- @param target DataObject|DBSchema.Profile
-function Addon.BindingConfig.ExportStringPage:Show(mode, target)
+function ExportStringPage:Show(mode, target)
 	assert(mode ~= nil)
 	assert(target ~= nil)
 
@@ -55,13 +57,13 @@ function Addon.BindingConfig.ExportStringPage:Show(mode, target)
 end
 
 --- @protected
-function Addon.BindingConfig.ExportStringPage:Hide()
+function ExportStringPage:Hide()
 	self.mode = nil
 	self.target = nil
 end
 
 --- @protected
-function Addon.BindingConfig.ExportStringPage:Redraw()
+function ExportStringPage:Redraw()
 	local target = self.target
 
 	do
@@ -72,7 +74,6 @@ function Addon.BindingConfig.ExportStringPage:Redraw()
 
 		if self.mode == Addon.BindingConfig.ExportStringModes.BINDING_GROUP then
 			--- @cast target DataObject
-
 			if target.type == Clicked.DataObjectType.BINDING then
 				--- @cast target Binding
 				widget:SetLabel(string.format(Addon.L["Exporting binding '%s'"], Addon:GetBindingNameAndIcon(target)))
