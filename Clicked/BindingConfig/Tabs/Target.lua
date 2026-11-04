@@ -322,7 +322,7 @@ function BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 		end
 
 		local target = binding.targets.regular[index]
-		return target and items[target.unit] or Helpers.IGNORE_VALUE
+		return target ~= nil and target.unit ~= nil and items[target.unit] or Helpers.IGNORE_VALUE
 	end
 
 	---@param binding Binding

@@ -285,10 +285,12 @@ end
 --- @param name string
 --- @param enabled boolean
 function BlacklistOptions:SetSelectedItem(name, enabled)
-	local args = config.args
+	if config.args == nil then
+		return
+	end
 
 	if enabled then
-		args[name] = {
+		config.args[name] = {
 			name = function()
 				local source = self:GetUnitFrameSource(name)
 				local numChildren = #self:GetBlacklistGroupItems(name) - 1
@@ -314,10 +316,11 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 			type = "toggle",
 			width = "full",
 			order = 30,
+			--- @param value boolean
 			set = function(_, value)
 				if not value then
 					Addon.db.global.blacklist[name] = nil
-					args[name] = nil
+					config.args[name] = nil
 
 					self:SetDropdownItem(name, true)
 
@@ -330,7 +333,7 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 			end
 		}
 	else
-		args[name] = nil
+		config.args[name] = nil
 	end
 end
 

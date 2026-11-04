@@ -336,6 +336,7 @@ end
 function Clicked:OnInitialize()
 	local defaultProfile = select(2, UnitClass("player"))
 
+	--- @type DBSchema & AceDBObject-3.0
 	Addon.db = AceDB:New("ClickedDB", self:GetDatabaseDefaults(), defaultProfile)
 	Addon.db.RegisterCallback(self, "OnProfileChanged", "ReloadDatabase")
 	Addon.db.RegisterCallback(self, "OnProfileCopied", "ReloadDatabase")

@@ -19,7 +19,7 @@ local Addon = select(2, ...)
 
 Addon.MACRO_FRAME_HANDLER_NAME = "ClickedMacroFrameHandler"
 
---- @type Button
+--- @type Button&SecureActionButtonTemplate&SecureHandlerStateTemplate&SecureHandlerShowHideTemplate
 local macroFrameHandler
 
 --- @type boolean
@@ -156,14 +156,16 @@ function Addon:ProcessCommands(commands)
 	requiresCombatProcess = false
 
 	for _, command in ipairs(commands) do
+		--- @type table<string, string>
 		local attributes = {}
 
 		local targetKeybinds
 		local targetAttributes
 
+		--- @type Keybind
 		local keybind = {
 			key = command.keybind,
-			identifier = command.suffix
+			identifier = command.suffix --[[@as string]]
 		}
 
 		Addon:CreateCommandAttributes(attributes, command, command.prefix, command.suffix)

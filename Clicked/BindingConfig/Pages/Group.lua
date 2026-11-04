@@ -53,7 +53,7 @@ function GroupPage:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox")
+		local widget = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
 		widget:SetFullWidth(true)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 
@@ -79,7 +79,7 @@ function GroupPage:Redraw()
 			Addon.BindingConfig.Window:RedrawTree()
 		end
 
-		local widget = AceGUI:Create("ClickedEditBox")
+		local widget = AceGUI:Create("ClickedEditBox") --[[@as ClickedEditBox]]
 		widget:SetRelativeWidth(0.7)
 		widget:SetCallback("OnEnterPressed", OnEnterPressed)
 

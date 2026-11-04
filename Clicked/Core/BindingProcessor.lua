@@ -504,7 +504,7 @@ end
 
 --- @param bindings Binding[]
 local function GenerateBuckets(bindings)
-	--- @param bucket table<string,Binding>
+	--- @param bucket Binding[]
 	--- @param binding Binding
 	local function Insert(bucket, binding)
 		if #bucket == 0 then
@@ -673,6 +673,8 @@ function Clicked:ReloadBindings(bindings)
 	elseif bindings[1] == nil then
 		bindings = { bindings }
 	end
+
+	--- @cast bindings Binding[]
 
 	ProcessReloadArguments(bindings, true, {}, {})
 	ReloadBindings()
@@ -1167,8 +1169,6 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 
 	-- Add all prefix shared binding options
 	do
-		--- @alias CommandSegment { command: string, index: integer?, conditions: string[]?, seen: integer? }
-
 		--- @type CommandSegment
 		local interrupt = { command = "/stopcasting" }
 		--- @type CommandSegment
@@ -1191,10 +1191,10 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				table.insert(lines, command.command)
 				command.index = #lines
 				command.conditions = {}
-				command.seen = 0
+				command.seen = 1
+			else
+				command.seen = command.seen + 1
 			end
-
-			command.seen = command.seen + 1
 
 			local action = ConstructAction(binding)
 			local conditions = GetMacroSegmentFromAction(action, -1, false)
@@ -1374,13 +1374,13 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 						table.insert(macroSegments, conditions .. action.ability)
 						table.insert(localSegments, conditions .. action.ability)
 					else
-						table.insert(macroSegments, action.ability)
-						table.insert(localSegments, action.ability)
+						table.insert(macroSegments, tostring(action.ability))
+						table.insert(localSegments, tostring(action.ability))
 					end
 				end
 			end
 
-			if #localSegments > 0 then
+			if #localSegments > 0 and group.prefix ~= nil then
 				local command = group.prefix .. table.concat(localSegments, ";")
 
 				-- Insert any APPEND bindings

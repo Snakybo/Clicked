@@ -50,8 +50,10 @@ function Addon.BindingConfig.Helpers:RegisterTooltip(widget, text)
 		local lines
 
 		if type(text) == "function" then
-			lines = text(widget)
-		elseif type(text) == "table" then
+			text = text(widget)
+		end
+
+		if type(text) == "table" then
 			lines = text
 		else
 			lines = { text }

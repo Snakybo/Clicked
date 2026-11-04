@@ -765,7 +765,7 @@ function BindingActionTab:UpdateCancelAuraValue(binding, value)
 	end
 
 	local newValue = id or value
-	if newValue == nil or newValue == binding.action.auraName then
+	if newValue == nil or issecretvalue(newValue) or newValue == binding.action.auraName then
 		return
 	end
 

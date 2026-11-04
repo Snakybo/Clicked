@@ -91,7 +91,7 @@ local function RegisterProfile(data)
 
 	for _, binding in ipairs(data.bindings) do
 		binding.uid = Addon:GetNextUid()
-		binding.parent = groupUidMap[binding.parent]
+		binding.parent = binding.parent ~= nil and groupUidMap[binding.parent] or nil
 	end
 
 	for key in pairs(data) do

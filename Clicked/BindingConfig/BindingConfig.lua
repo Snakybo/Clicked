@@ -372,7 +372,7 @@ function BindingConfig:GetSelection()
 	return result
 end
 
---- @param changed Binding[]
+--- @param changed integer[]
 function BindingConfig:OnBindingReload(changed)
 	if not self:IsOpen() then
 		return

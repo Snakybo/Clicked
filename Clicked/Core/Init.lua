@@ -14,6 +14,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+--- @class CommandSegment
+--- @field command string
+--- @field index integer?
+--- @field conditions string[]?
+--- @field seen integer?
+--- @correlated index, conditions, seen
+
 --- @class Addon
 local Addon = select(2, ...)
 
