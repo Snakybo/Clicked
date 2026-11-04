@@ -651,15 +651,19 @@ function Addon:ChangeDataObjectScope(item, scope)
 		end
 
 		if scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.GROUP then
+			--- @cast current Group
 			table.insert(Addon.db.profile.groups, current)
 			Addon:TableRemoveItem(Addon.db.global.groups, current)
 		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.GROUP then
+			--- @cast current Group
 			table.insert(Addon.db.global.groups, current)
 			Addon:TableRemoveItem(Addon.db.profile.groups, current)
 		elseif scope == Clicked.DataObjectScope.PROFILE and current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
 			table.insert(Addon.db.profile.bindings, current)
 			Addon:TableRemoveItem(Addon.db.global.bindings, current)
 		elseif scope == Clicked.DataObjectScope.GLOBAL and current.type == Clicked.DataObjectType.BINDING then
+			--- @cast current Binding
 			table.insert(Addon.db.global.bindings, current)
 			Addon:TableRemoveItem(Addon.db.profile.bindings, current)
 		end
