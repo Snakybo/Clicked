@@ -34,6 +34,7 @@ Addon.BindingConfig.BindingUnitActionTab = BindingUnitActionTab
 function BindingUnitActionTab:Redraw()
 	-- combat
 	do
+		--- @type table<string, string>
 		local items = {
 			always = Addon.L["Always"],
 			ic = Addon.L["In combat"],
@@ -83,7 +84,7 @@ function BindingUnitActionTab:Redraw()
 			self.controller:RedrawTab()
 		end
 
-		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetList(items, order)
 		widget:SetFullWidth(true)

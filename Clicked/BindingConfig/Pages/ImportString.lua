@@ -157,7 +157,7 @@ function ImportStringPage:RedrawToReview()
 	end
 
 	do
-		--- @param widget ClickedDropdown
+		--- @param widget ClickedDropdown<integer, string>
 		--- @param event string
 		--- @param key integer
 		--- @param checked boolean
@@ -218,13 +218,14 @@ function ImportStringPage:RedrawToReview()
 			return options, order
 		end
 
-		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<integer, string>]]
 		widget:SetList(CreateOptions())
 		widget:SetMultiselect(true)
 		widget:SetRelativeWidth(0.7)
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 
-		for _, item in widget.pullout:IterateItems() do
+		for _, item in widget:IterateItems() do
+			--- @type integer
 			local id = item.userdata.value
 
 			if id ~= nil then

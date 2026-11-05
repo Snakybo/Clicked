@@ -372,7 +372,7 @@ function BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 		self.controller:RedrawTab()
 	end
 
-	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 
@@ -428,7 +428,7 @@ function BindingTargetTab:DrawTargetHostility(container, index)
 		self.controller:RedrawTab()
 	end
 
-	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 
@@ -484,7 +484,7 @@ function BindingTargetTab:DrawTargetVitals(container, index)
 		self.controller:RedrawTab()
 	end
 
-	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
 	widget:SetList(items, order)
 	widget:SetCallback("OnValueChanged", OnValueChanged)
 

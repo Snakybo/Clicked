@@ -162,7 +162,7 @@ function BindingMacroTab:Redraw()
 			self.controller:RedrawTab()
 		end
 
-		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
 		widget:SetCallback("OnValueChanged", OnValueChanged)
 		widget:SetList(items, order)
 		widget:SetFullWidth(true)

@@ -19,7 +19,7 @@ A small extension to the standard AceGUI Dropdown widget that adds support
 for customizing the label color.
 -------------------------------------------------------------------------------]]
 
-local TYPE, VERSION = "ClickedDropdown", 2
+local TYPE, VERSION = "ClickedDropdown", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -29,7 +29,12 @@ end
 --- @alias AceGUIWidgetType
 --- | "ClickedDropdown"
 
---- @class ClickedDropdown : AceGUIDropdown
+--- @class ClickedDropdown<K, V> : AceGUIDropdown
+--- @field public SetValue fun(self: self, key: K)
+--- @field public SetList fun(self: self, list: table<K, V>, order: K[])
+--- @field public AddItem fun(self: self, key: K, value: V)
+--- @field public SetItemValue fun(self: self, key: K, value: V)
+--- @field public SetItemDisabled fun(self: self, key: K, flag: boolean)
 local ClickedDropdown = {}
 
 --- @protected
@@ -42,6 +47,13 @@ end
 --- @param color ColorMixin
 function ClickedDropdown:SetLabelColor(color)
 	self.label:SetTextColor(color:GetRGBA())
+end
+
+--- @return fun(table: AceGUIDropdownItemBase[], i?: integer): number, AceGUIDropdownItemBase
+--- @return AceGUIDropdownItemBase[]
+--- @return number
+function ClickedDropdown:IterateItems()
+	return self.pullout:IterateItems()
 end
 
 --[[-----------------------------------------------------------------------------

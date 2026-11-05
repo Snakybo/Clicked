@@ -251,7 +251,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 
 				-- assume it's an array if `[1]` is not nil
 				if widget:GetMultiselect() and value[1] ~= nil then
-					for _, item in widget.pullout:IterateItems() do
+					for _, item in widget:IterateItems() do
 						local id = item.userdata.value
 
 						widget:SetItemValue(id, tContains(value, id))
