@@ -180,14 +180,14 @@ local function Initialize()
 			end
 
 			local actionbars = E:GetModule("ActionBars")
-			local font, size, flags, _, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
+			local _, font, size, flags, _, _, _, _, _, color = actionbars:GetHotkeyConfig(actionbars.db["bar1"])
 
 			widget.keyName:SetPoint("TOP", 0, -3)
-			widget.keyName:SetFont(font, size, flags)
+			widget.keyName:FontTemplate(font, size, flags)
 			widget.keyName:SetTextColor(color[1], color[2], color[3])
 
 			widget.extraActionCount:SetPoint("BOTTOMRIGHT", -1, 3)
-			widget.extraActionCount:SetFont(font, size, flags)
+			widget.extraActionCount:FontTemplate(font, size, flags)
 			widget.extraActionCount:SetTextColor(color[1], color[2], color[3])
 
 			local origSetHighlight = widget.SetHighlight
