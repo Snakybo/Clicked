@@ -17,6 +17,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add macro length indicator to custom macros
 * Store addon options globally instead of per profile
 * Store blacklist options globally instead of per profile
+* Add option to reset the global profile
 * Add option to export the global profile [#273]
 * Add option to select what to import
   * Bindings (with or without keybinds)

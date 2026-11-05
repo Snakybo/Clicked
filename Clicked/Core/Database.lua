@@ -146,6 +146,7 @@ function Clicked:GetDatabaseDefaults()
 				minimap = {
 					hide = false,
 					lock = false,
+					showInCompartment = true,
 					minimapPos = 0
 				},
 				disableInHouse = true
@@ -203,11 +204,15 @@ function Clicked:ReloadDatabase()
 
 	Addon:UpgradeDatabase()
 
-	if Addon.db.global.options.minimap.hide then
-		LibDBIcon:Hide("Clicked")
+	LibDBIcon:Refresh("Clicked", Addon.db.global.options.minimap)
+
+	if LibDBIcon:IsButtonInCompartment("Clicked") then
+		LibDBIcon:AddButtonToCompartment("Clicked")
 	else
-		LibDBIcon:Show("Clicked")
+		LibDBIcon:RemoveButtonFromCompartment("Clicked")
 	end
+
+	self:SetLogLevelFromConfigTable(Addon.db.global)
 
 	Addon.BlacklistOptions:Refresh()
 	Addon:RequestItemLoadForBindings()

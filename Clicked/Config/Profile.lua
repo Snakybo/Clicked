@@ -57,6 +57,31 @@ function ProfileOptions:CreateOptionsTable()
 
 	local plugin = options.plugins["AceDBShare"]
 
+	plugin.resetGlobal = {
+		order = 12,
+		type = "execute",
+		name = Addon.L["Reset Global"],
+		desc = Addon.L["Reset the global profile to the default"],
+		confirm = true,
+		confirmText = Addon.L["Are you sure you want to reset the global profile? This will reset all addon settings, as well as remove all global bindings across your account."],
+		width = "default",
+		func = function()
+			local global = Addon.db.global
+			local nextUid = global.nextUid
+
+			wipe(global)
+
+			for key, value in pairs(Clicked:GetDatabaseDefaults().global) do
+				global[key] = value
+			end
+
+			global.version = Addon.DATA_VERSION
+			global.nextUid = nextUid
+
+			Clicked:ReloadDatabase()
+		end
+	}
+
 	plugin.importExportDesc = {
 		name = "\n" .. Addon.L["Import external profile data into your current profile, or export the current profile into a sharable format."],
 		type = "description",

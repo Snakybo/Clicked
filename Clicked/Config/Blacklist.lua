@@ -122,6 +122,15 @@ function BlacklistOptions:GetBlacklistGroupItems(group)
 end
 
 function BlacklistOptions:Refresh()
+	 for name, option in pairs(config.args) do
+        if option.type == "toggle" and not Addon.db.global.blacklist[name] then
+            self:SetSelectedItem(name, false)
+            self:SetDropdownItem(name, true)
+
+            Clicked:RegisterClickCastFrame(name)
+        end
+    end
+
 	for _, frame in Clicked:IterateClickCastFrames() do
 		self:RegisterFrame(frame)
 	end

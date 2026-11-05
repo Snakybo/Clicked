@@ -331,3 +331,6 @@ L["If enabled, all abilities on the action bar will automatically be appended to
 L["Disable bindings in house editor mode"] = true
 L["If enabled, bindings will be disabled whilst in the house editor."] = true
 L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."] = true
+L["Reset Global"] = true
+L["Reset the global profile to the default"] = true
+L["Are you sure you want to reset the global profile? This will reset all addon settings, as well as remove all global bindings across your account."] = true

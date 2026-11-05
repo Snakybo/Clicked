@@ -217,5 +217,5 @@
 --- @field public keyVisualizer? DBSchema.Global.KeyVisualizer
 --- @field public logLevel? LibLog.LogLevel
 --- @field public blacklist? table<string, boolean>
---- @field public isProfile boolean
+--- @field public isProfile? boolean
 --- @correlated isProfile, options, keyVisualizer, logLevel, blacklist
