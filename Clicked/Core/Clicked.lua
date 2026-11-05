@@ -346,6 +346,7 @@ function Clicked:OnInitialize()
 	LibTalentTome.RegisterCallback(self, "ActiveTalentsChanged", ON_ACTIVE_TALENTS_CHANGED)
 	LibTalentTome.RegisterCallback(self, "ActivePvpTalentsChanged", ON_ACTIVE_PVP_TALENTS_CHANGED)
 
+	self:AddLogEnum("DataObjectType", Clicked.DataObjectType)
 	self:SetLogLevelFromConfigTable(Addon.db.global)
 
 	Addon:UpgradeDatabase()

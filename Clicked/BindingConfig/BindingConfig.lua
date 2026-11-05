@@ -471,7 +471,7 @@ function BindingConfig:DrawHeader()
 	-- import button
 	do
 		local function OnClick()
-			self:SetPage(self.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.BINDING_GROUP)
+			self:SetPage(self.PAGE_IMPORT_STRING)
 		end
 
 		local widget = AceGUI:Create("Button")

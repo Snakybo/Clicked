@@ -47,12 +47,21 @@ function ExportStringPage:Show(mode, target)
 	self.mode = mode
 	self.target = target
 
+	--- @type boolean, string
+	local result, data
+
 	if mode == Addon.BindingConfig.ExportStringModes.BINDING_GROUP then
 		--- @cast target DataObject
-		self.serialized = Clicked:SerializeDataObject(target)
+		result, data = Clicked:SerializeDataObject(target)
 	elseif mode == Addon.BindingConfig.ExportStringModes.PROFILE then
 		--- @cast target DBSchema.Profile
-		self.serialized = Clicked:SerializeProfile(target, true, false)
+		result, data = Clicked:SerializeProfile(target)
+	end
+
+	if result then
+		self.serialized = data
+	else
+		Clicked:LogWarning(data)
 	end
 end
 

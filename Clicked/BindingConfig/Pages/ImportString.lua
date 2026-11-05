@@ -19,78 +19,30 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class Addon
 local Addon = select(2, ...)
 
---- @param mode BindingConfigImportStringPageMode
---- @param text string
---- @return boolean
---- @return ExportProfile|ShareData|string
-local function OnTextChanged(mode, text)
-	if mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
-		local success, data = Clicked:Deserialize(text, true)
-
-		if not success then
-			return false, data --[[@as string]]
-		end
-
-		if data.type ~= "binding" and data.type ~= "group" then
-			return false, Addon.L["Invalid import string: Expected a binding or group"]
-		end
-
-		return true, data --[[@as ShareData]]
-	elseif mode == Addon.BindingConfig.ImportStringModes.PROFILE then
-		local success, data = Clicked:Deserialize(text, true)
-
-		if not success then
-			return false, data --[[@as string]]
-		end
-
-		if data.type ~= "profile" then
-			return false, Addon.L["Invalid import string: Expected a profile"]
-		end
-
-		return true, data --[[@as ExportProfile]]
-	end
-
-	return false, "Invalid mode: " .. tostring(mode)
-end
-
 -- Private addon API
 
 Addon.BindingConfig = Addon.BindingConfig or {}
 
---- @enum BindingConfigImportStringPageMode
-Addon.BindingConfig.ImportStringModes = {
-	BINDING_GROUP = 0,
-	PROFILE = 1,
-	PROFILE_COMM = 2
-}
-
 --- @class BindingConfigImportStringPage : BindingConfigPage
---- @field private mode BindingConfigImportStringPageMode
 --- @field private importText? string
---- @field private reviewData? ExportProfile|ShareData
---- @field private importKeybinds boolean
+--- @field private reviewData? DataExport
 local ImportStringPage = {}
 
 Addon.BindingConfig.ImportStringPage = ImportStringPage
 
 --- @protected
---- @param mode BindingConfigImportStringPageMode
---- @param ... any
-function ImportStringPage:Show(mode, ...)
-	assert(mode ~= nil)
-	self.mode = mode
-
-	if mode == Addon.BindingConfig.ImportStringModes.PROFILE_COMM then
-		self.importText = string.format(Addon.L["Imported Clicked profile from %s"], select(2, ...))
-		self.reviewData = select(1, ...)
+--- @param data DataExport
+--- @param sender? string
+function ImportStringPage:Show(data, sender)
+	if sender ~= nil then
+		self.importText = string.format(Addon.L["Imported Clicked profile from %s"], sender)
 	end
 
-	self.importKeybinds = true
+	self.reviewData = data
 end
 
 --- @protected
 function ImportStringPage:Hide()
-	self.mode = nil
 	self.importText = nil
 	self.reviewData = nil
 end
@@ -98,29 +50,17 @@ end
 --- @protected
 function ImportStringPage:Redraw()
 	do
-		local widget = AceGUI:Create("EditBox")
-		widget:SetFullWidth(true)
-		widget:SetLabel(Addon.L["Paste import string here"])
-		widget:DisableButton(true)
-		widget:SetText(self.importText or "")
-		widget:SetDisabled(self.mode == Addon.BindingConfig.ImportStringModes.PROFILE_COMM)
-
-		if self.importText == nil then
-			widget:SetFocus()
-		elseif  self.importText ~= nil and self.reviewData == nil then
-			widget:HighlightText()
-			widget:SetFocus()
-		end
-
-		widget:SetCallback("OnTextChanged", function(_, _, text)
+		--- @param widget AceGUIEditBox
+		--- @param event string
+		--- @param text string
+		local function OnTextChanged(widget, event, text)
 			if text == self.importText then
 				return
 			end
 
-			local success, data = OnTextChanged(self.mode, text)
+			local success, data = Clicked:Deserialize(text)
 
 			if not success then
-				--- @cast data string
 				local requireRedraw = self.reviewData ~= nil
 
 				self.importText = data
@@ -134,24 +74,36 @@ function ImportStringPage:Redraw()
 					widget:SetFocus()
 				end
 			else
-				--- @cast data -string
 				self.reviewData = data
 
-				if self.mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
-					--- @cast data ShareData
-					if data.type == "group" then
-						self.importText = string.format(Addon.L["Importing group '%s' with %s bindings"], data.group.name, tostring(#data.group.bindings))
-					elseif data.type == "binding" then
-						self.importText = string.format(Addon.L["Importing binding '%s'"], Addon:GetBindingNameAndIcon(data.binding))
-					end
-				elseif self.mode == Addon.BindingConfig.ImportStringModes.PROFILE then
-					--- @cast data ExportProfile
+				if #data.groups == 1 then
+					self.importText = string.format(Addon.L["Importing group '%s' with %s bindings"], data.groups[1].name, tostring(#data.bindings))
+				elseif #data.groups > 1 then
 					self.importText = string.format(Addon.L["Importing %d groups with a total of %d bindings"], #data.groups, #data.bindings)
+				elseif #data.bindings == 1 then
+					self.importText = string.format(Addon.L["Importing binding '%s'"], Addon:GetBindingNameAndIcon(data.bindings[1]))
+				elseif #data.bindings > 1 then
+					self.importText = string.format(Addon.L["Importing %d bindings"], #data.bindings)
 				end
 
 				self.controller:RedrawPage()
 			end
-		end)
+		end
+
+		local widget = AceGUI:Create("EditBox")
+		widget:SetFullWidth(true)
+		widget:SetLabel(Addon.L["Paste import string here"])
+		widget:DisableButton(true)
+		widget:SetText(self.importText or "")
+
+		if self.importText == nil then
+			widget:SetFocus()
+		elseif  self.importText ~= nil and self.reviewData == nil then
+			widget:HighlightText()
+			widget:SetFocus()
+		end
+
+		widget:SetCallback("OnTextChanged", OnTextChanged)
 
 		self.container:AddChild(widget)
 	end
@@ -162,7 +114,6 @@ end
 --- @private
 function ImportStringPage:RedrawToReview()
 	local data = self.reviewData
-
 	if data == nil then
 		return
 	end
@@ -170,137 +121,125 @@ function ImportStringPage:RedrawToReview()
 	--- @type ClickedBindingImportList
 	local tree
 
-	if data.type == "profile" then
-		--- @cast data ExportProfile
-		if not data.lightweight then
-			local widget = AceGUI:Create("Label")
-			widget:SetText("|cffe31919This is a full profile export, importing this will overwrite your user settings|r")
-			widget:SetFullWidth(true)
-			widget:SetFontObject(GameFontHighlightSmall)
+	--- @type ImportFlags
+	local importFlags = bit.bor(Clicked.ImportFlags.KEYBINDS, Clicked.ImportFlags.BINDINGS)
 
-			self.container:AddChild(widget)
-		end
-	end
+	--- @type AceGUIButton
+	local importButton
 
 	do
-		local widget = AceGUI:Create("Button")
-		widget:SetText(Addon.L["Import"])
-		widget:SetAutoWidth(true)
-		widget:SetCallback("OnClick", function()
+		importButton = AceGUI:Create("Button")
+		importButton:SetText(Addon.L["Import"])
+		importButton:SetRelativeWidth(0.3)
+		importButton:SetCallback("OnClick", function()
 			local review = self.reviewData
 			if review == nil then
 				return
 			end
 
-			if not self.importKeybinds then
-				if review.type == "group" then
-					--- @cast data ShareData
-					for _, binding in ipairs(review.group.bindings) do
-						binding.keybind = ""
-					end
-				elseif review.type == "binding" then
-					--- @cast data ShareData
-					review.binding.keybind = ""
-				elseif review.type == "profile" then
-					--- @cast data ExportProfile
-					for _, binding in ipairs(review.bindings) do
-						binding.keybind = ""
-					end
-				else
-					return Clicked:LogFatal("Unknown data type: {dataType}", review.type)
-				end
-			end
-
-			local type = review.type
-			Clicked:Import(review)
-
-			if type == "group" then
-				Addon.BindingConfig.Window:Select(review.group.uid)
-			elseif type == "binding" then
-				Addon.BindingConfig.Window:Select(review.binding.uid)
-			elseif type == "profile" then
+			local success, result = Clicked:Import(review, importFlags)
+			if not success then
+				Clicked:LogWarning(result)
+			else
 				if #review.groups > 0 then
+					Addon.BindingConfig.Window:Select(result[review.groups[1].uid])
 					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_GROUP)
-					Addon.BindingConfig.Window:Select(review.groups[1].uid)
 				elseif #review.bindings > 0 then
+					Addon.BindingConfig.Window:Select(result[review.bindings[1].uid])
 					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_BINDING)
-					Addon.BindingConfig.Window:Select(review.bindings[1].uid)
 				else
 					Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_NEW)
 				end
 			end
 		end)
 
-		self.container:AddChild(widget)
+		self.container:AddChild(importButton)
 	end
 
 	do
-		local widget = AceGUI:Create("CheckBox")
-		widget:SetLabel(Addon.L["Import keybinds"])
-		widget:SetValue(self.importKeybinds)
-		widget:SetCallback("OnValueChanged", function(_, _, value)
-			self.importKeybinds = value
-			tree:ShowKeybinds(value)
-		end)
-
-		self.container:AddChild(widget)
-	end
-
-	do
-		--- @type ShareData[]
-		local items
-
-		if self.mode == Addon.BindingConfig.ImportStringModes.BINDING_GROUP then
-			--- @cast data ShareData
-			items = { data }
-		elseif self.mode == Addon.BindingConfig.ImportStringModes.PROFILE or self.mode == Addon.BindingConfig.ImportStringModes.PROFILE_COMM then
-			--- @cast data ExportProfile
-			items = {}
-
-			--- @type table<string,ShareData.Group>
-			local groups = {}
-
-			for _, current in ipairs(data.groups) do
-				local group = CopyTable(current) --[[@as ShareData.Group]]
-				group.bindings = {}
-
-				--- @type ShareData
-				local item = {
-					version = data.version,
-					type = "group",
-					group = group
-				}
-
-				groups[current.uid] = item.group
-				table.insert(items, item)
+		--- @param widget ClickedDropdown
+		--- @param event string
+		--- @param key integer
+		--- @param checked boolean
+		local function OnValueChanged(widget, event, key, checked)
+			if checked then
+				importFlags = bit.bor(importFlags, key)
+			else
+				importFlags = bit.band(importFlags, bit.bnot(key))
 			end
 
-			for _, current in ipairs(data.bindings) do
-				local group = current.parent ~= nil and groups[current.parent] or nil
+			if key == Clicked.ImportFlags.KEYBINDS then
+				tree:ShowKeybinds(checked)
+			elseif key == Clicked.ImportFlags.BINDINGS then
+				if not checked then
+					tree.frame:Hide()
 
-				if group ~= nil then
-					table.insert(group.bindings, current)
+					importFlags = bit.band(importFlags, bit.bnot(Clicked.ImportFlags.KEYBINDS))
+					importFlags = bit.band(importFlags, bit.bnot(Clicked.ImportFlags.OVERWRITE))
+
+					widget:SetItemValue(Clicked.ImportFlags.KEYBINDS, false)
+					widget:SetItemValue(Clicked.ImportFlags.OVERWRITE, false)
+
+					widget:SetItemDisabled(Clicked.ImportFlags.KEYBINDS, true)
+					widget:SetItemDisabled(Clicked.ImportFlags.OVERWRITE, true)
 				else
-					--- @type ShareData
-					local item = {
-						version = data.version,
-						type = "binding",
-						binding = current
-					}
+					tree.frame:Show()
 
-					table.insert(items, item)
+					widget:SetItemDisabled(Clicked.ImportFlags.KEYBINDS, false)
+					widget:SetItemDisabled(Clicked.ImportFlags.OVERWRITE, false)
 				end
+			end
+
+			importButton:SetDisabled(importFlags == 0)
+		end
+
+		--- @return table<integer, string>, integer[]
+		local function CreateOptions()
+			local options = {
+				[Clicked.ImportFlags.BINDINGS] = Addon.L["Import bindings"],
+				[Clicked.ImportFlags.KEYBINDS] = Addon.L["Import keybinds"],
+			}
+
+			local order = {
+				Clicked.ImportFlags.BINDINGS,
+				Clicked.ImportFlags.KEYBINDS,
+			}
+
+			if data.options ~= nil then
+				options[Clicked.ImportFlags.ADDON_OPTIONS] = Addon.L["Import addon options"]
+				table.insert(order, Clicked.ImportFlags.ADDON_OPTIONS)
+			end
+
+			if data.isProfile then
+				options[Clicked.ImportFlags.OVERWRITE] = Addon.L["Overwrite current profile (dangerous)"]
+				table.insert(order, Clicked.ImportFlags.OVERWRITE)
+			end
+
+			return options, order
+		end
+
+		local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown]]
+		widget:SetList(CreateOptions())
+		widget:SetMultiselect(true)
+		widget:SetRelativeWidth(0.7)
+		widget:SetCallback("OnValueChanged", OnValueChanged)
+
+		for _, item in widget.pullout:IterateItems() do
+			local id = item.userdata.value
+
+			if id ~= nil then
+				widget:SetItemValue(id, bit.band(importFlags, id) ~= 0)
 			end
 		end
 
+		self.container:AddChild(widget)
+	end
+
+	do
 		tree = AceGUI:Create("ClickedBindingImportList") --[[@as ClickedBindingImportList]]
 		tree:SetFullWidth(true)
 		tree:SetFullHeight(true)
-		tree:SetItems(items)
-
-		if not self.importKeybinds then
-			tree:ShowKeybinds(false)
-		end
+		tree:SetItems(data)
 
 		self.container:AddChild(tree)
 	end

@@ -209,17 +209,13 @@
 --- @field public icon integer
 --- @field public specId integer
 
---- @alias ShareType "group"|"binding"
-
---- @class ShareData
+--- @class DataExport
 --- @field public version integer
---- @field public type ShareType
---- @field public group ShareData.Group?
---- @field public binding Binding?
-
---- @class ShareData.Group : Group
 --- @field public bindings Binding[]
-
---- @class ExportProfile : DBSchema.Profile
---- @field public lightweight boolean
---- @field public type "profile"
+--- @field public groups Group[]
+--- @field public options? DBSchema.Global.Options
+--- @field public keyVisualizer? DBSchema.Global.KeyVisualizer
+--- @field public logLevel? LibLog.LogLevel
+--- @field public blacklist? table<string, boolean>
+--- @field public isProfile boolean
+--- @correlated isProfile, options, keyVisualizer, logLevel, blacklist

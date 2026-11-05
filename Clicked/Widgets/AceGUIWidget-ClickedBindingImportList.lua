@@ -21,7 +21,7 @@ A scrollable list that shows pending imports.
 --- @class Addon
 local Addon = select(2, ...)
 
-local TYPE, VERSION = "ClickedBindingImportList", 3
+local TYPE, VERSION = "ClickedBindingImportList", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
@@ -33,7 +33,8 @@ end
 
 --- @class ClickedBindingImportList.Status
 --- @field public scrollvalue number
---- @field public groups { [string]: boolean }
+--- @field public groups { [integer]: boolean }
+--- @field public bindings { [integer]: boolean }
 
 --- @alias ClickedBindingImportList.Button Button&OptionsListButtonTemplate&{obj: self, icon: Texture, keybind: FontString}
 
@@ -81,7 +82,7 @@ local ClickedBindingImportList = {}
 function ClickedBindingImportList:OnAcquire()
 	self.frame:SetScript("OnUpdate", ClickedBindingImportList.Frame_OnUpdate)
 
-	self.localstatus = { scrollvalue = 0, groups = {} }
+	self.localstatus = { scrollvalue = 0, groups = {}, bindings = {} }
 	self.showScroll = true
 	self.showKeybinds = true
 end
@@ -282,9 +283,29 @@ function ClickedBindingImportList:ShowScroll(show)
 	end
 end
 
---- @param data ShareData[]
+--- @param data DataExport
 function ClickedBindingImportList:SetItems(data)
 	local groups = (self.status or self.localstatus).groups
+	local bindings = (self.status or self.localstatus).bindings
+
+	wipe(groups)
+	wipe(bindings)
+
+	--- @type table<integer, Binding[]>
+	local relationMap = {}
+
+	for _, binding in ipairs(data.bindings) do
+		if binding.parent ~= nil then
+			local map = relationMap[binding.parent]
+
+			if map == nil then
+				map = {}
+				relationMap[binding.parent] = map
+			end
+
+			table.insert(map, binding)
+		end
+	end
 
 	self.tree = {}
 
@@ -303,11 +324,12 @@ function ClickedBindingImportList:SetItems(data)
 		}
 
 		table.insert(parent, item)
+
+		bindings[binding.uid] = true
 	end
 
-	--- @param group ShareData.Group
+	--- @param group Group
 	local function CreateGroupItem(group)
-
 		--- @type ClickedBindingImportList.GroupItem
 		local item = {
 			uid = group.uid,
@@ -317,8 +339,10 @@ function ClickedBindingImportList:SetItems(data)
 			children = {}
 		}
 
-		for _, binding in ipairs(group.bindings) do
-			CreateBindingItem(binding, item.children)
+		if relationMap[group.uid] ~= nil then
+			for _, binding in ipairs(relationMap[group.uid]) do
+				CreateBindingItem(binding, item.children)
+			end
 		end
 
 		table.sort(item.children, ClickedBindingImportList.TreeSortKeybind)
@@ -327,11 +351,15 @@ function ClickedBindingImportList:SetItems(data)
 		groups[group.uid] = true
 	end
 
-	for _, current in ipairs(data) do
-		if current.type == "group" then
-			CreateGroupItem(current.group)
-		elseif current.type == "binding" then
-			CreateBindingItem(current.binding, self.tree)
+	for _, group in ipairs(data.groups) do
+		if not groups[group.uid] then
+			CreateGroupItem(group)
+		end
+	end
+
+	for _, binding in ipairs(data.bindings) do
+		if not bindings[binding.uid] then
+			CreateBindingItem(binding, self.tree)
 		end
 	end
 

@@ -17,7 +17,6 @@
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
-local LibLog = LibStub("LibLog")
 
 --- @class Addon
 local Addon = select(2, ...)

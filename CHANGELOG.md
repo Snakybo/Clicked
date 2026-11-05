@@ -17,6 +17,11 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 * Add macro length indicator to custom macros
 * Store addon options globally instead of per profile
 * Store blacklist options globally instead of per profile
+* Add option to export the global profile [#273]
+* Add option to select what to import
+  * Bindings (with or without keybinds)
+  * Addon options
+  * Profile overwrite
 
 ### Fixed
 
@@ -2057,6 +2062,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 [#286]: https://github.com/Snakybo/Clicked/issues/286
 [#281]: https://github.com/Snakybo/Clicked/issues/281
 [#276]: https://github.com/Snakybo/Clicked/issues/276
+[#273]: https://github.com/Snakybo/Clicked/issues/273
 [#270]: https://github.com/Snakybo/Clicked/issues/270
 [#267]: https://github.com/Snakybo/Clicked/issues/267
 [#265]: https://github.com/Snakybo/Clicked/issues/265

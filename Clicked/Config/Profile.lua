@@ -68,16 +68,27 @@ function ProfileOptions:CreateOptionsTable()
 		type = "execute",
 		order = 62,
 		func = function()
-			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE)
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING)
 		end
 	}
 
 	plugin.export = {
-		name = Addon.L["Export"],
+		name = Addon.L["Export Profile"],
+		desc = Addon.L["Export the current profile into a sharable format, this will only include the profile-specific group and bindings."],
 		type = "execute",
 		order = 63,
 		func = function()
 			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.PROFILE, Addon.db.profile)
+		end
+	}
+
+	plugin.exportGlobal = {
+		name = Addon.L["Export Global"],
+		desc = Addon.L["Export the global profile into a sharable format, this will include global groups and bindings, as well as addon options."],
+		type = "execute",
+		order = 64,
+		func = function()
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_EXPORT_STRING, Addon.BindingConfig.ExportStringModes.PROFILE, Addon.db.global)
 		end
 	}
 
@@ -131,11 +142,17 @@ function ProfileOptions:CreateOptionsTable()
 
 			-- Just wait for the ACK timeout if we're currently in combat, to prevent stuttering
 			if not InCombatLockdown() then
-				shareMessage = Clicked:SerializeProfile(Addon.db.profile, false, false)
-				shareAckReceived = false
+				local result, data = Clicked:SerializeProfile(Addon.db.profile, true)
 
-				self:RegisterComm("Clicked", "OnCommReceived")
-				self:SendCommMessage("Clicked", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
+				if result then
+					shareMessage = data
+					shareAckReceived = false
+
+					self:RegisterComm("Clicked", "OnCommReceived")
+					self:SendCommMessage("Clicked", "ShareRequest", "WHISPER", shareTarget, "NORMAL")
+				else
+					Clicked:LogWarning(data)
+				end
 			end
 
 			C_Timer.After(5, OnTimeout)
@@ -207,9 +224,13 @@ function ProfileOptions:OnCommReceived(_, message, _, sender)
 
 		self:SendCommMessage("Clicked", shareMessage, "WHISPER", shareTarget, "NORMAL", self.OnCommProgress, self)
 	else
-		local success, data = Clicked:Deserialize(message, false)
+		local success, data = Clicked:Deserialize(message, true)
 
-		Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, Addon.BindingConfig.ImportStringModes.PROFILE_COMM, data, sender)
+		if success then
+			Addon.BindingConfig.Window:SetPage(Addon.BindingConfig.Window.PAGE_IMPORT_STRING, data, sender)
+		else
+			Clicked:LogWarning(data)
+		end
 
 		shareEnabled = not success
 	end

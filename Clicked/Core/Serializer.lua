@@ -14,9 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local AceSerializer = LibStub("AceSerializer-3.0")
-local LibDeflate = LibStub("LibDeflate")
-
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -24,221 +21,215 @@ local logger = Clicked:CreateSystemLogger("Serializer")
 
 -- Local support functions
 
---- @param data table
---- @param printable boolean
---- @return string
-local function SerializeTable(data, printable)
-	local serialized = AceSerializer:Serialize(data)
-	local compressed = LibDeflate:CompressDeflate(serialized)
-
-	if printable then
-		return LibDeflate:EncodeForPrint(compressed)
+--- @param data DataExport
+--- @param binary? boolean
+--- @return boolean, string
+local function SerializeTable(data, binary)
+	local result = C_EncodingUtil.SerializeCBOR(data)
+	if result == nil then
+		return false, Addon.L["Failed to serialize"]
 	end
 
-	return LibDeflate:EncodeForWoWAddonChannel(compressed)
+	result = C_EncodingUtil.CompressString(result, Enum.CompressionMethod.Deflate, Enum.CompressionLevel.OptimizeForSize)
+	if result == nil then
+		return false, Addon.L["Failed to compress"]
+	end
+
+	if not binary then
+		result = C_EncodingUtil.EncodeBase64(result)
+		if result == nil then
+			return false, Addon.L["Failed to encode"]
+		end
+	end
+
+	return true, result
 end
 
---- @param data ShareData
-local function RegisterGroup(data)
-	if data.type ~= "group" then
-		return logger:LogFatal("bad argument #1, expected group but got {type}", data.type)
-	end
+--- @param original Group
+--- @return Group
+local function RegisterGroup(original)
+	local copy = CopyTable(original) --[[@as Group]]
+	copy.uid = nil
 
-	local bindings = data.group.bindings
-	data.group.bindings = nil
-	data.group.uid = nil
+	Addon:RegisterDataObject(copy, Clicked.DataObjectScope.PROFILE)
 
-	Addon:RegisterDataObject(data.group)
-
-	for _, binding in ipairs(bindings) do
-		binding.parent = data.group.uid
-		binding.uid = nil
-
-		Addon:RegisterDataObject(binding)
-		Addon:ReloadBinding(binding, true)
-	end
+	return copy
 end
 
---- @param data ShareData
-local function RegisterBinding(data)
-	if data.type ~= "binding" then
-		return logger:LogFatal("bad argument #1, expected binding but got {type}", data.type)
-	end
+--- @param original Binding
+--- @return Binding
+local function RegisterBinding(original)
+	local copy = CopyTable(original) --[[@as Binding]]
+	copy.uid = nil
 
-	data.binding.uid = nil
-	Addon:RegisterDataObject(data.binding, Clicked.DataObjectScope.PROFILE)
-	Addon:ReloadBinding(data.binding, true)
-end
+	Addon:RegisterDataObject(copy, Clicked.DataObjectScope.PROFILE)
+	Addon:ReloadBinding(copy, true)
 
---- @param data ExportProfile
-local function RegisterProfile(data)
-	if not data.lightweight then
-		Addon.db.profile = wipe(Addon.db.profile)
-	end
-
-	data.lightweight = nil
-	data.type = nil
-
-	--- @type table<integer, integer>
-	local groupUidMap = {}
-
-	-- Assign new UIDs to all imported groups and bindings
-	for _, group in ipairs(data.groups) do
-		local uid = Addon:GetNextUid()
-		groupUidMap[group.uid] = uid
-		group.uid = uid
-	end
-
-	for _, binding in ipairs(data.bindings) do
-		binding.uid = Addon:GetNextUid()
-		binding.parent = binding.parent ~= nil and groupUidMap[binding.parent] or nil
-	end
-
-	for key in pairs(data) do
-		Addon.db.profile[key] = data[key]
-	end
-
-	Clicked:ReloadDatabase()
+	return copy
 end
 
 -- Public addon API
 
+--- @enum ImportFlags
+Clicked.ImportFlags = {
+	OVERWRITE = 1,
+	ADDON_OPTIONS = 2,
+	KEYBINDS = 4,
+	BINDINGS = 8,
+}
+
 --- Serialize the specified data object and generate a string that can be shared.
 ---
 --- @param obj DataObject
---- @return string
---- @see Clicked#SerializeGroup
---- @see Clicked#Deserialize
+--- @return boolean, string
 function Clicked:SerializeDataObject(obj)
 	assert(type(obj) == "table", "bad argument #1, expected table but got " .. type(obj))
 
-	--- @type ShareData
-	local data
+	logger:LogDebug("Serializing data object of type {type#DataObjectType}", obj.type)
+
+	--- @type DataExport
+	local data = {
+		version = Addon.DATA_VERSION,
+		bindings = {},
+		groups = {}
+	}
 
 	if obj.type == Clicked.DataObjectType.BINDING then
 		--- @cast obj Binding
-
-		data = {
-			version = Addon.DATA_VERSION,
-			type = "binding",
-			binding = CopyTable(obj)
-		}
-
-		-- Clear user-specific data
-		data.binding.parent = nil
+		data.bindings[1] = obj
 	elseif obj.type == Clicked.DataObjectType.GROUP then
 		--- @cast obj Group
+		data.groups[1] = obj
+		data.bindings = Clicked:GetByParent(obj.uid)
 
-		data = {
-			version = Addon.DATA_VERSION,
-			type = "group",
-			group = CopyTable(obj) --[[@as ShareData.Group]]
-		}
-
-		data.group.bindings = CopyTable(Clicked:GetByParent(obj.uid))
+		logger:LogDebug("Serializing {numChildren} children for group", #data.bindings)
 	end
 
-	logger:LogDebug("Serializing data object of type {type}", data.type)
-	return SerializeTable(data, true)
+	return SerializeTable(data)
 end
 
---- Serialize the specified profile and generate a string that can be shared via addon communication channels, or in plaintext format. By default this function
---- will only serialize the `bindings` and `groups` of a profile, however the `full` parameter can be specified to serialize the entire profile, including all
---- user settings.
+--- Serialize the specified profile and generate a string that can be shared via addon communication channels, or in plaintext format.
 ---
---- @param profile DBSchema.Profile|DBSchema.Global The profile to serialize.
---- @param printable boolean Whether the profile should be serialized in a printable format, `false` if the profile is shared via addon communication channels.
---- @param full boolean Whether the full profile should be serialized, or only a lightweight variant containing no user settings.
---- @return string
-function Clicked:SerializeProfile(profile, printable, full)
+--- @param profile DBSchema.Profile|DBSchema.Global
+--- @param binary? boolean
+--- @return boolean, string
+function Clicked:SerializeProfile(profile, binary)
 	assert(type(profile) == "table", "bad argument #1, expected table but got " .. type(profile))
-	assert(type(printable == "boolean"), "bad argument #2, expected boolean but got " .. type(printable))
-	assert(type(full == "boolean"), "bad argument #3, expected boolean but got " .. type(full))
+	assert(type(binary == "boolean"), "bad argument #2, expected boolean but got " .. type(binary))
 
-	local data
+	logger:LogDebug("Serializing profile with {numBindings} bindings and {numGroups} groups", #profile.bindings, #profile.groups)
 
-	if full then
-		--- @type ExportProfile
-		data = CopyTable(profile)
-		data.type = "profile"
-		data.lightweight = false
-	else
-		-- Construct a lightweight version of the database, only including the version, bindings, and groups.
-		-- So any user settings are not serialized (minimap, blacklist, options, etc)
-		--- @type ExportProfile
-		data = {
-			version = profile.version,
-			bindings = CopyTable(profile.bindings),
-			groups = CopyTable(profile.groups),
-			type = "profile",
-			lightweight = true
-		}
+	--- @type DataExport
+	local data = {
+		version = profile.version,
+		bindings = profile.bindings,
+		groups = profile.groups,
+		isProfile = true
+	}
+
+	if profile.options ~= nil then
+		logger:LogDebug("Serializing addon options")
+
+		data.options = profile.options
+		data.keyVisualizer = profile.keyVisualizer
+		data.logLevel = profile.logLevel
+		data.blacklist = profile.blacklist
 	end
 
-	logger:LogDebug("Serializing profile, lightweight: {lightweight}", data.lightweight)
-	return SerializeTable(data, printable)
+	return SerializeTable(data, binary)
 end
 
---- Deserialize the specifid string into readable data, this is the ingest counterpart of `SerializeDataObject`.
----
---- The deserialization process itself does not actually import the data, it simply makes it readable for a consumer. Use the `Clicked:Import` function to
---- import the deserialized data.
----
---- @param encoded string
---- @param printable boolean
---- @return boolean status The resulting decode and deserialize status, `false` if anything went wrong during the deserialization process.
---- @return ShareData|ExportProfile|string result A table containing the resulting data, or a `string` with an error message if `status` is `false`.
-function Clicked:Deserialize(encoded, printable)
-	local compressed
+--- @param data string
+--- @param binary? boolean
+--- @return (true, DataExport) | (false, string)
+function Clicked:Deserialize(data, binary)
+	--- @type boolean
+	local success
 
-	if printable then
-		compressed = LibDeflate:DecodeForPrint(encoded)
-	else
-		compressed = LibDeflate:DecodeForWoWAddonChannel(encoded)
+	--- @type string
+	local input = data
+
+	--- @type DataExport?|string
+	local result
+
+	if not binary then
+		success, input = pcall(C_EncodingUtil.DecodeBase64, input)
+		if not success then
+			return false, Addon.L["Failed to decode"]
+		end
 	end
 
-	if compressed == nil then
-		return false, Addon.L["Failed to decode"]
-	end
-
-	local serialized = LibDeflate:DecompressDeflate(compressed)
-
-	if serialized == nil then
+	success, input = pcall(C_EncodingUtil.DecompressString, input)
+	if not success then
 		return false, Addon.L["Failed to decompress"]
 	end
 
-	local success, data = AceSerializer:Deserialize(serialized)
-
+	success, result = pcall(C_EncodingUtil.DeserializeCBOR, input)
 	if not success then
 		return false, Addon.L["Failed to deserialize"]
 	end
 
+	--- @cast result DataExport
+
+	return true, result
+end
+
+--- @param data DataExport
+--- @param flags? ImportFlags
+--- @return (true, table<integer, integer>) | (false, string)
+function Clicked:Import(data, flags)
 	if data.version ~= Addon.DATA_VERSION and not Addon:IsDevelopmentBuild() then
 		return false, "Incompatible version: " .. data.version .. " vs. " .. Addon.DATA_VERSION
 	end
 
-	return true, data
-end
+	--- @type table<integer, integer>
+	local uidRemap = {}
 
---- Import deserialized data into the addon, this is step two of `Deserialize`.
----
---- @param data ShareData|ExportProfile
---- @return boolean
-function Clicked:Import(data)
-	if data.type == "group" then
-		--- @cast data ShareData
-		RegisterGroup(data)
-		return true
-	elseif data.type == "binding" then
-		--- @cast data ShareData
-		RegisterBinding(data)
-		return true
-	elseif data.type == "profile" then
-		--- @cast data ExportProfile
-		RegisterProfile(data)
-		return true
+	flags = flags or 0
+
+	if data.options ~= nil and bit.band(flags, Clicked.ImportFlags.ADDON_OPTIONS) ~= 0 then
+		logger:LogDebug("Importing addon options")
+
+		Addon.db.global.options = data.options
+		Addon.db.global.keyVisualizer = data.keyVisualizer
+		Addon.db.global.logLevel = data.logLevel
+		Addon.db.global.blacklist = data.blacklist
+
+		self:ReloadDatabase()
 	end
 
-	logger:LogWarning("Unknown data type: {type}", data.type)
-	return false
+	if bit.band(flags, Clicked.ImportFlags.BINDINGS) ~= 0 then
+		logger:LogDebug("Importing {numGroups} groups and {numBindings} bindings", #data.groups, #data.bindings)
+
+		if bit.band(flags, Clicked.ImportFlags.OVERWRITE) ~= 0 then
+			logger:LogDebug("Overwriting current profile")
+
+			wipe(Addon.db.profile.groups)
+			wipe(Addon.db.profile.bindings)
+		end
+
+		if bit.band(flags, Clicked.ImportFlags.KEYBINDS) ~= 0 then
+			logger:LogDebug("Importing keybinds")
+		end
+
+		for _, group in ipairs(data.groups) do
+			local imported = RegisterGroup(group)
+			uidRemap[group.uid] = imported.uid
+		end
+
+		for _, binding in ipairs(data.bindings) do
+			if binding.parent ~= nil then
+				binding.parent = uidRemap[binding.parent] ~= nil and uidRemap[binding.parent] or nil
+			end
+
+			if bit.band(flags, Clicked.ImportFlags.KEYBINDS) == 0 then
+				binding.keybind = ""
+			end
+
+			local imported = RegisterBinding(binding)
+			uidRemap[binding.uid] = imported.uid
+		end
+	end
+
+	return true, uidRemap
 end
