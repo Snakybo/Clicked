@@ -19,8 +19,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class Addon
 local Addon = select(2, ...)
 
-local DEFAULT_KEYBOARD_LAYOUT = Addon.KeyboardLayouts.QWERTY
-local DEFAULT_KEYBOARD_SIZE = Addon.KeyboardSizes.SIZE_80
+--- @type KeyboardLayout
+local DEFAULT_KEYBOARD_LAYOUT = "QWERTY"
+
+--- @type KeyboardSize
+local DEFAULT_KEYBOARD_SIZE = 80
 
 local MIN_FRAME_WIDTH = 900
 
@@ -84,7 +87,7 @@ local function SelectLayout(layout, size)
 	layout = layout or db.lastKeyboardLayout or DEFAULT_KEYBOARD_LAYOUT
 	size = size or db.lastKeyboardSize or DEFAULT_KEYBOARD_SIZE
 
-	tree:SelectByPath(layout, size)
+	tree:SelectByPath(layout, tostring(size))
 end
 
 --- @param key string
@@ -114,38 +117,11 @@ end
 local function BuildLayout(layout, size)
 	local keys, visible = Addon.KeyLayouts:GetKeyboardLayout(layout, size)
 
-	--- @param key KeyButton
-	local function GetOveride(key)
-		if key.overrides == nil then
-			return key
-		end
-
-		local bestOverride = nil
-		local bestOverrideDiff = math.huge
-
-		for overrideSize, override in pairs(key.overrides) do
-			if overrideSize >= size then
-				local diff = math.abs(size - overrideSize)
-
-				if diff < bestOverrideDiff then
-					bestOverride = override
-					bestOverrideDiff = diff
-				end
-			end
-		end
-
-		if bestOverride ~= nil then
-			return Mixin({}, key, bestOverride)
-		end
-
-		return key
-	end
-
 	buttonCache = {}
 
 	for _, key in ipairs(keys) do
 		local widget = AceGUI:Create("ClickedKeyVisualizerButton") --[[@as ClickedKeyVisualizerButton]]
-		widget:SetKey(GetOveride(key))
+		widget:SetKey(key)
 		widget:SetVisible(Addon:TableContains(visible, key:GetId()))
 
 		tree:AddChild(widget)
@@ -380,8 +356,6 @@ function KeyVisualizer:Open()
 			showGroup = GROUP_ALL
 
 			buttonCache = nil
-
-			frame = nil
 		end
 
 		frame = AceGUI:Create("ClickedFrame") --[[@as ClickedFrame]]

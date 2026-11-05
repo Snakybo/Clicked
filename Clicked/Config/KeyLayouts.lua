@@ -17,9 +17,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
---- @class KeyButton
---- @field private id? string
---- @field public key? string
+--- @class KeyButtonOverride
 --- @field public abbreviation? string
 --- @field public x? number
 --- @field public y? number
@@ -28,36 +26,42 @@ local Addon = select(2, ...)
 --- @field public width? number
 --- @field public height? number
 --- @field public relativeTo? string
---- @field public overrides? table<KeyboardSize,KeyButton>
 --- @field public disabled? boolean
 
+--- @class KeyButtonData : KeyButtonOverride
+--- @field public key string
+--- @field public overrides? table<KeyboardSize, KeyButtonOverride>
+--- @field private id? string
+
 --- @class KeyboardButtonLayout
---- @field public keys KeyButton[]
---- @field public sizes table<KeyboardSize,string[]>
+--- @field public keys KeyButtonData[]
+--- @field public sizes table<KeyboardSize, string[]>
 
---- @enum KeyboardLayout
-Addon.KeyboardLayouts = {
-	QWERTY = "QWERTY",
-	QWERTZ = "QWERTZ",
-	AZERTY = "AZERTY"
-}
+--- @alias KeyboardLayout
+--- | "QWERTY"
+--- | "QWERTZ"
+--- | "AZERTY"
 
---- @enum KeyboardSize
-Addon.KeyboardSizes = {
-	SIZE_100 = 100,
-	SIZE_80 = 80,
-	SIZE_60 = 60
-}
+--- @alias KeyboardSize
+--- | 100
+--- | 80
+--- | 60
 
---- @class KeyButton
+--- @class KeyButton : KeyButtonData
 local KeyButtonMixin = {}
 
---- @return string?
+--- @param data KeyButtonData
+--- @return KeyButton
+function KeyButtonMixin:New(data)
+	return setmetatable(CopyTable(data), { __index = KeyButtonMixin })
+end
+
+--- @return string
 function KeyButtonMixin:GetId()
 	return self.id or self.key
 end
 
---- @return string?
+--- @return string
 function KeyButtonMixin:GetAbbreviation()
 	return self.abbreviation or self.key
 end
@@ -81,7 +85,7 @@ local KeyboardLayoutQwerty = {
 		{ key="F12" },
 
 		{ key="`", x=0, yOffset=1.3, relativeTo="ESC" },
-		{ key="1", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo="ESC" } } },
+		{ key="1", overrides = { [60] = { relativeTo="ESC" } } },
 		{ key="2" },
 		{ key="3" },
 		{ key="4" },
@@ -95,7 +99,7 @@ local KeyboardLayoutQwerty = {
 		{ key="=" },
 		{ key="BACKSPACE", abbreviation="BACKSPACE", width=2 },
 
-		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="`", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo = "ESC" }} },
+		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="`", overrides = { [60] = { relativeTo = "ESC" }} },
 		{ key="Q" },
 		{ key="W" },
 		{ key="E" },
@@ -186,14 +190,14 @@ local KeyboardLayoutQwerty = {
 		{ key="NUMPADDECIMAL", abbreviation="." },
 	},
 	sizes = {
-		[Addon.KeyboardSizes.SIZE_100] = {
+		[100] = {
 			"NUMLOCK", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS",
 			"NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADPLUS",
 			"NUMPAD4", "NUMPAD5", "NUMPAD6",
 			"NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPADENTER",
 			"NUMPAD0", "NUMPADDECIMAL"
 		},
-		[Addon.KeyboardSizes.SIZE_80] = {
+		[80] = {
 			"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
 			"`",
 			"PRINTSCREEN", "SCROLLLOCK", "PAUSE",
@@ -201,7 +205,7 @@ local KeyboardLayoutQwerty = {
 			"DELETE", "END", "PAGEDOWN",
 			"UP", "LEFT", "DOWN", "RIGHT"
 		},
-		[Addon.KeyboardSizes.SIZE_60] = {
+		[60] = {
 			"ESC",
 			"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "BACKSPACE",
 			"TAB", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "\\",
@@ -231,7 +235,7 @@ local KeyboardLayoutQwertz = {
 		{ key="F12" },
 
 		{ key="^", x=0, yOffset=1.3, relativeTo="ESC" },
-		{ key="1", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo="ESC" } } },
+		{ key="1", overrides = { [60] = { relativeTo="ESC" } } },
 		{ key="2" },
 		{ key="3" },
 		{ key="4" },
@@ -245,7 +249,7 @@ local KeyboardLayoutQwertz = {
 		{ key="´" },
 		{ key="BACKSPACE", width=2 },
 
-		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="^", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo = "ESC" }} },
+		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="^", overrides = { [60] = { relativeTo = "ESC" }} },
 		{ key="Q" },
 		{ key="W" },
 		{ key="E" },
@@ -337,14 +341,14 @@ local KeyboardLayoutQwertz = {
 		{ key="NUMPADDECIMAL", abbreviation="." },
 	},
 	sizes = {
-		[Addon.KeyboardSizes.SIZE_100] = {
+		[100] = {
 			"NUMLOCK", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS",
 			"NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADPLUS",
 			"NUMPAD4", "NUMPAD5", "NUMPAD6",
 			"NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPADENTER",
 			"NUMPAD0", "NUMPADDECIMAL"
 		},
-		[Addon.KeyboardSizes.SIZE_80] = {
+		[80] = {
 			"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
 			"^",
 			"PRINTSCREEN", "SCROLLLOCK", "PAUSE",
@@ -352,7 +356,7 @@ local KeyboardLayoutQwertz = {
 			"DELETE", "END", "PAGEDOWN",
 			"UP", "LEFT", "DOWN", "RIGHT"
 		},
-		[Addon.KeyboardSizes.SIZE_60] = {
+		[60] = {
 			"ESC",
 			"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "ß", "´", "BACKSPACE",
 			"TAB", "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "ü", "+", "ENTER",
@@ -382,7 +386,7 @@ local KeyboardLayoutAzerty = {
 		{ key="F12" },
 
 		{ key="²", x=0, yOffset=1.3, relativeTo="ESC" },
-		{ key="1", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo="ESC" } } },
+		{ key="1", overrides = { [60] = { relativeTo="ESC" } } },
 		{ key="2" },
 		{ key="3" },
 		{ key="4" },
@@ -396,7 +400,7 @@ local KeyboardLayoutAzerty = {
 		{ key="=" },
 		{ key="BACKSPACE", width=2 },
 
-		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="²", overrides = { [Addon.KeyboardSizes.SIZE_60] = { relativeTo = "ESC" }} },
+		{ key="TAB", x=0, yOffset=1, width=1.5, relativeTo="²", overrides = { [60] = { relativeTo = "ESC" }} },
 		{ key="A" },
 		{ key="Z" },
 		{ key="E" },
@@ -488,14 +492,14 @@ local KeyboardLayoutAzerty = {
 		{ key="NUMPADDECIMAL", abbreviation="." },
 	},
 	sizes = {
-		[Addon.KeyboardSizes.SIZE_100] = {
+		[100] = {
 			"NUMLOCK", "NUMPADDIVIDE", "NUMPADMULTIPLY", "NUMPADMINUS",
 			"NUMPAD7", "NUMPAD8", "NUMPAD9", "NUMPADPLUS",
 			"NUMPAD4", "NUMPAD5", "NUMPAD6",
 			"NUMPAD1", "NUMPAD2", "NUMPAD3", "NUMPADENTER",
 			"NUMPAD0", "NUMPADDECIMAL"
 		},
-		[Addon.KeyboardSizes.SIZE_80] = {
+		[80] = {
 			"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
 			"²",
 			"PRINTSCREEN", "SCROLLLOCK", "PAUSE",
@@ -503,7 +507,7 @@ local KeyboardLayoutAzerty = {
 			"DELETE", "END", "PAGEDOWN",
 			"UP", "LEFT", "DOWN", "RIGHT"
 		},
-		[Addon.KeyboardSizes.SIZE_60] = {
+		[60] = {
 			"ESC",
 			"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")", "=", "BACKSPACE",
 			"TAB", "A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P", "^", "$", "ENTER",
@@ -514,17 +518,12 @@ local KeyboardLayoutAzerty = {
 	}
 }
 
+--- @type table<KeyboardLayout, KeyboardButtonLayout>
 local layouts = {
-	[Addon.KeyboardLayouts.QWERTY] = KeyboardLayoutQwerty,
-	[Addon.KeyboardLayouts.QWERTZ] = KeyboardLayoutQwertz,
-	[Addon.KeyboardLayouts.AZERTY] = KeyboardLayoutAzerty
+	QWERTY = KeyboardLayoutQwerty,
+	QWERTZ = KeyboardLayoutQwertz,
+	AZERTY = KeyboardLayoutAzerty
 }
-
-for _, layout in pairs(layouts) do
-	for i, key in ipairs(layout.keys) do
-		layout.keys[i] = Mixin(key, KeyButtonMixin)
-	end
-end
 
 --- @class KeyLayout
 local KeyLayouts = {}
@@ -567,14 +566,50 @@ end
 --- @return KeyButton[]
 --- @return string[]
 function KeyLayouts:GetKeyboardLayout(layout, size)
+	--- @param data KeyButtonData
+	--- @return KeyButtonData
+	local function ApplyOverride(data)
+		if data.overrides == nil then
+			return data
+		end
+
+		local bestOverride = nil
+		local bestOverrideDiff = math.huge
+
+		for overrideSize, override in pairs(data.overrides) do
+			--- TEMP: hopefully wowlua-ls understands this natively at some point
+			--- @cast overrideSize integer
+			--- @cast size integer
+
+			if overrideSize >= size then
+				local diff = size - overrideSize
+
+				if diff < bestOverrideDiff then
+					bestOverride = override
+					bestOverrideDiff = diff
+				end
+			end
+		end
+
+		if bestOverride ~= nil then
+			return Mixin({}, data, bestOverride)
+		end
+
+		return data
+	end
+
 	local keys = {}
 	local visible = {}
 
 	for _, data in ipairs(layouts[layout].keys) do
-		table.insert(keys, data)
+		table.insert(keys, KeyButtonMixin:New(ApplyOverride(data)))
 	end
 
 	for s, enabledKeys in pairs(layouts[layout].sizes) do
+		--- TEMP: hopefully wowlua-ls understands this natively at some point
+		--- @cast s integer
+		--- @cast size integer
+
 		if s <= size then
 			for _, key in ipairs(enabledKeys) do
 				table.insert(visible, key)
