@@ -227,7 +227,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetText("")
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
-				widget:SetText(GetRawValue())
+				widget:SetText(GetRawValue() --[[@as string]])
 				widget:SetLabelColor(NORMAL_FONT_COLOR)
 			end
 		elseif widget.type == "ClickedKeybinding" then
@@ -257,7 +257,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 						widget:SetItemValue(id, tContains(value, id))
 					end
 				else
-					widget:SetValue(GetRawValue())
+					widget:SetValue(value)
 					widget:SetLabelColor(NORMAL_FONT_COLOR)
 				end
 			end
@@ -270,7 +270,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue(false)
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
-				widget:SetValue(GetRawValue())
+				widget:SetValue(GetRawValue() --[[@as boolean]])
 				widget:SetLabelColor(NORMAL_FONT_COLOR)
 			end
 		end

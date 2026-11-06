@@ -26,7 +26,7 @@ local MEDIA_ADDON_NAME = "ClickedMedia"
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigIconSelectPage : BindingConfigPage
---- @field private onSelectCallback fun(targets: DataObject[], value: string)
+--- @field private onSelectCallback fun(targets: DataObject[], value: string)!
 local IconSelectPage = {
 	keepTreeSelection = true
 } --[[@as BindingConfigIconSelectPage]]
@@ -86,7 +86,10 @@ function IconSelectPage:Redraw()
 	end
 
 	do
-		local function OnIconSelected(_, _, value)
+		--- @param widget ClickedIconSelectorList
+		--- @param event string
+		--- @param value string
+		local function OnIconSelected(widget, event, value)
 			self.onSelectCallback(self.targets, value)
 			self.controller:PopPage(self)
 		end

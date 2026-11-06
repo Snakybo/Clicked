@@ -17,7 +17,7 @@
 --- @class BindingConfigPage
 --- @field public controller BindingConfigWindow
 --- @field public container AceGUIContainer
---- @field public targets? DataObject[]
+--- @field public targets DataObject[]
 --- @field public keepTreeSelection? boolean
 --- @field public Show? fun(self: BindingConfigPage)
 --- @field public Hide? fun(self: BindingConfigPage)

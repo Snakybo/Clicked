@@ -227,8 +227,6 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 		end
 	end
 
-
-
 	if importClassAbilitiesPerSpec and #genericSpells > 0 then
 		--- @type { specId: integer, groupId: integer? }[]
 		local specs = {}
@@ -462,22 +460,29 @@ end
 --- @private
 --- @param type integer
 function NewPage:CreateItem(type)
-	--- @type DataObject?
-	local target = nil
+	--- @type DataObject[]?
+	local targets = nil
 
 	if type == ItemTemplate.GROUP then
-		target = CreateGroup()
+		targets = { CreateGroup() }
 	elseif type >= ItemTemplate.BINDING_CAST_SPELL and type <= ItemTemplate.BINDING_UNIT_MENU then
-		target = CreateBinding(type, self.controller:GetSelection()[1])
+		targets = { CreateBinding(type, self.controller:GetSelection()[1]) }
 	elseif type == ItemTemplate.IMPORT_SPELLBOOK then
-		target = ImportSpellbook(self.importClassAbilitiesPerSpec)
+		targets = ImportSpellbook(self.importClassAbilitiesPerSpec)
 	elseif type == ItemTemplate.IMPORT_ACTIONBAR then
-		target = ImportActionbar()
+		targets = ImportActionbar()
 	elseif type == ItemTemplate.IMPORT_MACROS then
-		target = ImportMacros()
+		targets = ImportMacros()
 	end
 
-	if target ~= nil then
-		self.controller:Select(target.uid, true)
+	if targets ~= nil then
+		--- @type integer[]
+		local uids = {}
+
+		for i = 1, #targets do
+			table.insert(uids, targets[i].uid)
+		end
+
+		self.controller:Select(uids, true)
 	end
 end

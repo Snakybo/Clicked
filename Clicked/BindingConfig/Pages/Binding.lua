@@ -338,17 +338,23 @@ end
 --- @private
 --- Update the available tabs in the tab group widget
 function BindingPage:UpdateTabGroup()
+	--- @param tab AceGUITabGroupTab
+	--- @return boolean
+	local function Predicate(tab)
+		return tab.value == self.tabStatus.selected
+	end
+
 	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
 
 	local selected = self.tabStatus.selected
-	if selected == nil or not ContainsIf(tabs, function(tab) return tab.value == self.tabStatus.selected end) then
-		selected = tabs[1].value
+	if selected == nil or not ContainsIf(tabs, Predicate) then
+		selected = tabs[1].value --[[@as string]]
 	end
 
 	self.tabWidget:SetTabs(tabs)
 
-	if selected ~= self.tabStatus.selected then
+	if selected ~= nil and selected ~= self.tabStatus.selected then
 		self.tabWidget:SelectTab(selected)
 	end
 end
@@ -366,12 +372,18 @@ function BindingPage:CreateTabGroup()
 		self:ActivateTabGroup(group)
 	end
 
+	--- @param tab AceGUITabGroupTab
+	--- @return boolean
+	local function Predicate(tab)
+		return tab.value == self.tabStatus.selected
+	end
+
 	self:FilterBindings()
 	local tabs = self:GetAvailableTabs()
 
 	local selected = self.tabStatus.selected
-	if selected == nil or not ContainsIf(tabs, function(tab) return tab.value == self.tabStatus.selected end) then
-		selected = tabs[1].value
+	if selected == nil or not ContainsIf(tabs, Predicate) then
+		selected = tabs[1].value --[[@as string]]
 	end
 
 	self.tabWidget = AceGUI:Create("ClickedTabGroup") --[[@as ClickedTabGroup]]
@@ -382,10 +394,12 @@ function BindingPage:CreateTabGroup()
 	self.tabWidget:SetTabs(tabs)
 	self.tabWidget:SetCallback("OnGroupSelected", OnTabGroupSelected)
 
-	if selected ~= self.tabStatus.selected then
-		self.tabWidget:SelectTab(selected)
-	else
-		self:ActivateTabGroup(selected)
+	if selected ~= nil then
+		if selected ~= self.tabStatus.selected then
+			self.tabWidget:SelectTab(selected)
+		else
+			self:ActivateTabGroup(selected)
+		end
 	end
 
 	self.container:AddChild(self.tabWidget)
