@@ -14,6 +14,10 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 
 * Fix keyboard visualizer Lua error with ElvUI integration enabled
 
+### Changed
+
+* Always append `[harm]` to the `/startattack` command
+
 ## [v1.19.0] - 2026-11-05
 
 ### Added

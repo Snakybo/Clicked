@@ -1178,7 +1178,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		--- @type CommandSegment
 		local interrupt = { command = "/stopcasting" }
 		--- @type CommandSegment
-		local startAutoAttack = { command = "/startattack" }
+		local startAutoAttack = { command = "/startattack [harm]" }
 		--- @type CommandSegment
 		local startPetAttack = { command = "/petattack"}
 		--- @type CommandSegment
