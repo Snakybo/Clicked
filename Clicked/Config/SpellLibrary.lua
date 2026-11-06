@@ -155,35 +155,37 @@ local function GetSpells_TWW()
 		end
 	end
 
-	for _, talent in ipairs(LibTalentTome:GetTalents(specId)) do
-		if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
-			if result[talent.spellId] == nil then
-				--- @type SpellLibrarySpellResult
-				result[talent.spellId] = {
-					type = "SPELL",
-					name = talent.name,
-					spellId = talent.spellId,
-					icon = talent.icon,
-					tabName = activeTabName,
-					tabIcon = activetabIcon,
-					specId = specId
-				}
+	if specId ~= nil then
+		for _, talent in ipairs(LibTalentTome:GetTalents(specId)) do
+			if talent.spellId ~= nil and not C_Spell.IsSpellPassive(talent.spellId) then
+				if result[talent.spellId] == nil then
+					--- @type SpellLibrarySpellResult
+					result[talent.spellId] = {
+						type = "SPELL",
+						name = talent.name,
+						spellId = talent.spellId,
+						icon = talent.icon,
+						tabName = activeTabName,
+						tabIcon = activetabIcon,
+						specId = specId
+					}
+				end
 			end
 		end
-	end
 
-	for _, talent in ipairs(LibTalentTome:GetPvpTalents(specId)) do
-		if not C_Spell.IsSpellPassive(talent.spellId) then
-			if result[talent.spellId] == nil then
-				result[talent.spellId] = {
-					type = "SPELL",
-					name = talent.name,
-					spellId = talent.spellId,
-					icon = talent.icon,
-					tabName = activeTabName,
-					tabIcon = activetabIcon,
-					specId = specId
-				}
+		for _, talent in ipairs(LibTalentTome:GetPvpTalents(specId)) do
+			if not C_Spell.IsSpellPassive(talent.spellId) then
+				if result[talent.spellId] == nil then
+					result[talent.spellId] = {
+						type = "SPELL",
+						name = talent.name,
+						spellId = talent.spellId,
+						icon = talent.icon,
+						tabName = activeTabName,
+						tabIcon = activetabIcon,
+						specId = specId
+					}
+				end
 			end
 		end
 	end

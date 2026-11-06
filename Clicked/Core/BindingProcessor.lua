@@ -325,18 +325,24 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 			if item.key == binding.keybind then
 				if item.type == "SPELL" then
 					--- @cast item SpellLibrarySpellResult
+					local name = C_Spell.GetSpellName(item.spellId)
 
-					table.insert(actions, {
-						ability = C_Spell.GetSpellName(item.spellId),
-						type = binding.actionType
-					})
+					if name ~= nil then
+						table.insert(actions, {
+							ability = name,
+							type = binding.actionType
+						})
+					end
 				elseif item.type == "ITEM" then
 					--- @cast item SpellLibraryItemResult
+					local name = C_Item.GetItemNameByID(item.itemId)
 
-					table.insert(actions, {
-						ability = C_Item.GetItemNameByID(item.itemId),
-						type = binding.actionType
-					})
+					if name ~= nil then
+						table.insert(actions, {
+							ability = name,
+							type = binding.actionType
+						})
+					end
 				end
 			end
 		end

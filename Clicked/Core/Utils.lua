@@ -211,11 +211,15 @@ function Addon:GetTextureString(text, icon, iconSize)
 	end
 end
 
---- @param unit string
+--- @param unit? string
 --- @param addPrefix? boolean
---- @return string unit
+--- @return string? unit
 --- @return boolean needsExistsCheck
 function Addon:GetWoWUnitFromUnit(unit, addPrefix)
+	if unit == nil then
+		return nil, false
+	end
+
 	local units = {
 		[Addon.TargetUnit.PLAYER] = "player",
 		[Addon.TargetUnit.TARGET] = "target",

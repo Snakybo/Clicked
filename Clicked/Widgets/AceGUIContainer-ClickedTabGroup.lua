@@ -30,6 +30,7 @@ end
 --- | "ClickedTabGroup"
 
 --- @class ClickedTabGroup : AceGUITabGroup
+--- @field protected tabs (AceGUITabGroupTab&{SetSelected: fun(self: Button, selected: boolean)})[]
 local ClickedTabGroup = {}
 
 --- @param tabs AceGUITabGroupTab[]
