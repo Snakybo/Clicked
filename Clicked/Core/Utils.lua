@@ -777,8 +777,8 @@ function Addon:GetAvailableShapeshiftForms(binding)
 			--- @type integer[]
 			local result = {}
 
-			for _, spellIds in ipairs(all) do
-				for _, spellId in ipairs(spellIds) do
+			for _, current in ipairs(all) do
+				for _, spellId in ipairs(current.spellIds) do
 					if C_SpellBook.IsSpellKnown(spellId) then
 						table.insert(available, spellId)
 						break

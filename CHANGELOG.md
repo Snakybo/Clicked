@@ -13,6 +13,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Fixed
 
 * Fix keyboard visualizer Lua error with ElvUI integration enabled
+* Fix Druid forms not appearing in macros
 
 ### Changed
 
