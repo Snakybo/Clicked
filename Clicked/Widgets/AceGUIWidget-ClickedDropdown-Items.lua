@@ -141,6 +141,7 @@ do
 		self:Fire("OnValueChanged", self.value)
 	end
 
+	--- @return ClickedBlackListDropdownItem
 	local function Constructor()
 		--- @class ClickedBlackListDropdownItem
 		local widget = IBLib:GetItemBase().Create(TYPE)
@@ -163,7 +164,8 @@ do
 			widget[method] = func
 		end
 
-		return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+		return AceGUI:RegisterAsWidget(widget) --[[@as ClickedBlackListDropdownItem]]
 	end
 
 	AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION + IBLib:GetItemBase().version)

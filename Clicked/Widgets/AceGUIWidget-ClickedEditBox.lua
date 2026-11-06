@@ -143,6 +143,7 @@ function ClickedEditBox.Button_OnClick(frame)
 	ClickedEditBox.EditBox_OnEnterPressed(editbox)
 end
 
+--- @return ClickedEditBox
 local function Constructor()
 	--- @class ClickedEditBox
 	local widget = AceGUI:Create("EditBox")
@@ -165,7 +166,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedEditBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

@@ -116,6 +116,7 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 
+--- @return ClickedFrame
 local function Constructor()
 	--- @class ClickedFrame : AceGUIFrame
 	local widget = AceGUI:Create("Frame")
@@ -135,7 +136,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedFrame]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

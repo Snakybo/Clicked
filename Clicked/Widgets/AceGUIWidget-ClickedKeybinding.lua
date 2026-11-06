@@ -222,6 +222,7 @@ function ClickedKeybinding.Button_OnMouseWheel(frame, direction)
 	ClickedKeybinding.Button_OnKeyDown(frame, button)
 end
 
+--- @return ClickedKeybinding
 local function Constructor()
 	--- @class ClickedKeybinding
 	local widget = AceGUI:Create("Keybinding")
@@ -241,7 +242,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedKeybinding]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

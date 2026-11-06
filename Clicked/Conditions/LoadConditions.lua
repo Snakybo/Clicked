@@ -33,10 +33,12 @@ local config = {
 			return false
 		end,
 		--- @param option boolean
+		--- @return boolean
 		unpack = function(option)
 			return option
 		end,
 		--- @param value boolean
+		--- @return boolean
 		test = function(value)
 			return not value
 		end
@@ -70,6 +72,7 @@ local config = {
 		--- @param value string
 		--- @param fullName string
 		--- @param realm string
+		--- @return boolean
 		test = function(value, fullName, realm)
 			local name, surname = string.match(fullName, "^(%S+) (%S+)$")
 			name = name or fullName
@@ -120,6 +123,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param race string
+		--- @return boolean
 		test = function(value, race)
 			return tContains(value, race)
 		end
@@ -159,6 +163,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param class string
+		--- @return boolean
 		test = function(value, class)
 
 			return tContains(value, class)
@@ -170,6 +175,7 @@ local config = {
 			type = "multiselect",
 			label = "Talent specialization",
 			--- @param class string[]
+			--- @return table<integer, string>, integer[]
 			availableValues = function(class)
 				--- @type table<integer, string>
 				local items = {}
@@ -239,6 +245,7 @@ local config = {
 		end,
 		--- @param value number[]
 		--- @param spec integer
+		--- @return boolean
 		test = function(value, spec)
 			return tContains(value, spec)
 		end
@@ -273,6 +280,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param role string
+		--- @return boolean
 		test = function(value, role)
 			return tContains(value, role)
 		end
@@ -284,6 +292,7 @@ local config = {
 			label = "Talent",
 			--- @param class string[]
 			--- @param specialization integer[]
+			--- @return LibTalentTome.Talent[]
 			availableValues = function(class, specialization)
 				local specIds = Utils.GetRelevantSpecializationIds(class, specialization)
 
@@ -346,6 +355,7 @@ local config = {
 			label = "PvP talent",
 			--- @param class string[]
 			--- @param specialization integer[]
+			--- @return LibTalentTome.Talent[]|false
 			availableValues = function(class, specialization)
 				if not LibTalentTome:ArePvpTalentsInitialized() then
 					return false
@@ -379,6 +389,7 @@ local config = {
 		unpack = Utils.UnpackTalentLoadOption,
 		testOnEvents = { "ActivePvpTalentsChanged" },
 		--- @param value TalentLoadOptionEntry[][]
+		--- @return boolean
 		test = function(value)
 			for _, compound in ipairs(value) do
 				local valid = true
@@ -425,6 +436,7 @@ local config = {
 		end,
 		--- @param value boolean
 		--- @param warMode boolean
+		--- @return boolean
 		test = function(value, warMode)
 			return value == warMode
 		end
@@ -459,6 +471,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param current string
+		--- @return boolean
 		test = function(value, current)
 			return tContains(value, current)
 		end
@@ -509,6 +522,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param instanceType string
+		--- @return boolean
 		test = function(value, instanceType)
 			for _, current in ipairs(value) do
 				-- Convert to lowercase as that is what `IsInInstance` returns
@@ -547,6 +561,7 @@ local config = {
 		--- @param value string
 		--- @param realZoneText string
 		--- @param subZoneText string
+		--- @return boolean
 		test = function(value, realZoneText, subZoneText)
 			local zones = {
 				realZoneText,
@@ -581,6 +596,7 @@ local config = {
 		end,
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "ActiveTalentsChanged", "ActivePvpTalentsChanged", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "LEARNED_SPELL_IN_SKILL_LINE", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
+		--- @param value string
 		--- @return boolean
 		test = function(value)
 			local spell = C_Spell.GetSpellInfo(value)
@@ -619,6 +635,7 @@ local config = {
 		--- @param numGroupMembers integer
 		--- @param numSubGroupMembers integer
 		--- @param isInRaid boolean
+		--- @return boolean
 		test = function(value, numGroupMembers, numSubGroupMembers, isInRaid)
 			if value == Addon.GroupState.SOLO and numGroupMembers > 0 then
 				return false
@@ -664,6 +681,7 @@ local config = {
 		end,
 		--- @param value string[]
 		--- @param role string
+		--- @return boolean
 		test = function(value, role)
 			return tContains(value, role)
 		end
@@ -681,6 +699,7 @@ local config = {
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "GROUP_ROSTER_UPDATE" },
 		--- @param value string
+		--- @return boolean
 		test = function(value)
 			if value == UnitName("player") then
 				return true
@@ -726,6 +745,7 @@ local config = {
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "PLAYER_EQUIPMENT_CHANGED" },
 		--- @param value string
+		--- @return boolean
 		test = function(value)
 			return C_Item.IsEquippedItem(value)
 		end
@@ -762,6 +782,7 @@ local config = {
 		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
 		--- @param value string
+		--- @return boolean
 		test = function(value)
 			local spellId = tonumber(value)
 			if spellId == nil then

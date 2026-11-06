@@ -43,7 +43,7 @@ Addon.Expansion = {
 --- @type ExpansionLevel
 Addon.EXPANSION_LEVEL = nil
 
---- @param err any
+--- @param err string
 --- @return function
 local function errorhandler(err)
 	return geterrorhandler()(err)

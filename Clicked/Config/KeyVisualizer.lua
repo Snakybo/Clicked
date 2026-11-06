@@ -50,6 +50,8 @@ local showMeta = false
 local showMetaWidget
 local showShift = false
 local showShiftWidget
+
+--- @type string|integer
 local showGroup = GROUP_ALL
 
 local function GetTreeLayout()
@@ -377,36 +379,46 @@ function KeyVisualizer:Open()
 		})
 
 		do
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
+				GetDb().showOnlyLoadedBindings = value
+				SelectLayout()
+			end
+
 			local widget = AceGUI:Create("CheckBox")
 			widget:SetLabel(Addon.L["Show only loaded bindings"])
 			widget:SetValue(GetDb().showOnlyLoadedBindings)
-			widget:SetCallback("OnValueChanged", function(_, _, value)
-				GetDb().showOnlyLoadedBindings = value
-				SelectLayout()
-			end)
+			widget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(widget)
 		end
 
 		do
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
+				GetDb().highlightEmptyKeys = value
+				SelectLayout()
+			end
+
 			local widget = AceGUI:Create("CheckBox")
 			widget:SetLabel(Addon.L["Highlight empty keys"])
 			widget:SetValue(GetDb().highlightEmptyKeys)
-			widget:SetCallback("OnValueChanged", function(_, _, value)
-				GetDb().highlightEmptyKeys = value
-				SelectLayout()
-			end)
+			widget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(widget)
 		end
 
 		do
-			--- @type table<string,string>
+			--- @type table<string|integer,string>
 			local items = {
 				[GROUP_ALL] = Addon.L["All"],
 				[GROUP_EXT] = Addon.L["External"]
 			}
-			--- @type { id: string, name: string }[]
+			--- @type { id: integer, name: string }[]
 			local groups = {}
 
 			for _, group in Clicked:IterateGroups() do
@@ -414,20 +426,39 @@ function KeyVisualizer:Open()
 				table.insert(groups, { id = group.uid, name = group.name })
 			end
 
-			table.sort(groups, function(a, b) return a.name < b.name end)
+			--- @param a { id: integer, name: string }
+			--- @param b { id: integer, name: string }
+			--- @return boolean
+			local function SortFunc(a, b)
+				return a.name < b.name
+			end
 
-			local order = Addon:TableSelect(groups, function(v) return v.id end)
+			table.sort(groups, SortFunc)
+
+			--- @param group { id: integer, name: string }
+			--- @return string|integer
+			local function SelectId(group)
+				return group.id
+			end
+
+			--- @type (string|integer)[]
+			local order = Addon:TableSelect(groups, SelectId)
 			table.insert(order, 1, GROUP_ALL)
 			table.insert(order, 2, GROUP_EXT)
+
+			--- @param widget AceGUIDropdown
+			--- @param event string
+			--- @param value string|integer
+			local function OnValueChanged(widget, event, value)
+				showGroup = value
+				SelectLayout()
+			end
 
 			local widget = AceGUI:Create("Dropdown")
 			widget:SetLabel(Addon.L["Filter bindings"])
 			widget:SetList(items, order)
 			widget:SetValue(GROUP_ALL)
-			widget:SetCallback("OnValueChanged", function(_, _, value)
-				showGroup = value
-				SelectLayout()
-			end)
+			widget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(widget)
 		end
@@ -443,10 +474,15 @@ function KeyVisualizer:Open()
 			showCtrlWidget = AceGUI:Create("CheckBox")
 			showCtrlWidget:SetLabel(Addon:SanitizeKeybind("CTRL"))
 			showCtrlWidget:SetValue(showCtrl)
-			showCtrlWidget:SetCallback("OnValueChanged", function(_, _, value)
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
 				showCtrl = value
 				SelectLayout()
-			end)
+			end
+
+			showCtrlWidget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(showCtrlWidget)
 		end
@@ -455,10 +491,15 @@ function KeyVisualizer:Open()
 			showAltWidget = AceGUI:Create("CheckBox")
 			showAltWidget:SetLabel(Addon:SanitizeKeybind("ALT"))
 			showAltWidget:SetValue(showAlt)
-			showAltWidget:SetCallback("OnValueChanged", function(_, _, value)
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
 				showAlt = value
 				SelectLayout()
-			end)
+			end
+
+			showAltWidget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(showAltWidget)
 		end
@@ -467,10 +508,15 @@ function KeyVisualizer:Open()
 			showShiftWidget = AceGUI:Create("CheckBox")
 			showShiftWidget:SetLabel(Addon:SanitizeKeybind("SHIFT"))
 			showShiftWidget:SetValue(showShift)
-			showShiftWidget:SetCallback("OnValueChanged", function(_, _, value)
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
 				showShift = value
 				SelectLayout()
-			end)
+			end
+
+			showShiftWidget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(showShiftWidget)
 		end
@@ -479,10 +525,15 @@ function KeyVisualizer:Open()
 			showMetaWidget = AceGUI:Create("CheckBox")
 			showMetaWidget:SetLabel(Addon:SanitizeKeybind("META"))
 			showMetaWidget:SetValue(showMeta)
-			showMetaWidget:SetCallback("OnValueChanged", function(_, _, value)
+			--- @param widget AceGUICheckBox
+			--- @param event string
+			--- @param value boolean
+			local function OnValueChanged(widget, event, value)
 				showMeta = value
 				SelectLayout()
-			end)
+			end
+
+			showMetaWidget:SetCallback("OnValueChanged", OnValueChanged)
 
 			line:AddChild(showMetaWidget)
 		end
@@ -491,7 +542,10 @@ function KeyVisualizer:Open()
 	end
 
 	do
-		local function DrawTreeContainer(container, _, value)
+		--- @param container ClickedKeyVisualizerTreeGroup
+		--- @param event string
+		--- @param value string
+		local function DrawTreeContainer(container, event, value)
 			local group = { strsplit("\001", value) }
 			local layout = group[1] or DEFAULT_KEYBOARD_LAYOUT --[[@as KeyboardLayout]]
 			local size = tonumber(group[2]) or DEFAULT_KEYBOARD_SIZE --[[@as KeyboardSize]]
@@ -545,9 +599,11 @@ end
 
 Addon.KeyVisualizer = KeyVisualizer
 
-local modifierFrame = CreateFrame("Frame")
-modifierFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
-modifierFrame:SetScript("OnEvent", function(_, event, key, state)
+--- @param self Frame
+--- @param event FrameEvent
+--- @param key string
+--- @param state number
+local function OnEvent(self, event, key, state)
     if not Addon.KeyVisualizer:IsOpen() or event ~= "MODIFIER_STATE_CHANGED" then
 		return
 	end
@@ -569,4 +625,8 @@ modifierFrame:SetScript("OnEvent", function(_, event, key, state)
 	end
 
 	SelectLayout()
-end)
+end
+
+local modifierFrame = CreateFrame("Frame")
+modifierFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
+modifierFrame:SetScript("OnEvent", OnEvent)

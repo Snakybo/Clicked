@@ -170,6 +170,7 @@ function Addon:GetLocalizedTargetVitals()
 end
 
 --- @param scope DataObjectScope
+--- @return string?
 function Addon:GetLocalizedScope(scope)
 	if scope == Clicked.DataObjectScope.GLOBAL then
 		return Addon.L["Global"]

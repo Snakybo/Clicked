@@ -125,6 +125,8 @@ local function Initialize()
 			widget.pullout:SetTemplate("Transparent")
 		elseif widget.type == "ClickedBindingImportList" then
 			--- @cast widget ClickedBindingImportList
+			--- @param w ClickedBindingImportList
+			--- @param fromOnUpdate? boolean
 			local function RefreshTree(w, fromOnUpdate)
 				w.OrignalRefreshTree(w, fromOnUpdate)
 
@@ -193,6 +195,8 @@ local function Initialize()
 			local origSetHighlight = widget.SetHighlight
 			local bbr, bbg, bbb = widget.frame:GetBackdropBorderColor()
 
+			--- @param s ClickedKeyVisualizerButton
+			--- @param highlight boolean
 			widget.SetHighlight = function(s, highlight)
 				origSetHighlight(s, highlight)
 
@@ -206,7 +210,7 @@ local function Initialize()
 			end
 		end
 
-		return originalRegisterAsWidget(self, widget)
+		return originalRegisterAsWidget(self, widget) --[[@as AceGUIWidget]]
 	end
 
 	--- @param self AceGUI-3.0
@@ -240,7 +244,7 @@ local function Initialize()
 			end
 		end
 
-		return originalRegisterAsContainer(self, widget)
+		return originalRegisterAsContainer(self, widget) --[[@as AceGUIContainer]]
 	end
 end
 

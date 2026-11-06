@@ -60,6 +60,7 @@ function ClickedKeyVisualizerButton:SetKey(key)
 	self.frame:SetAlpha(key ~= nil and (key.disabled and 0.5 or 1) or 1)
 end
 
+--- @param count integer
 function ClickedKeyVisualizerButton:SetActionCount(count)
 	if count > 1 then
 		self.extraActionCount:SetText("+" .. (count - 1))
@@ -127,6 +128,7 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 
+--- @return ClickedKeyVisualizerButton
 local function Constructor()
 	--- @class ClickedKeyVisualizerButton
 	local widget = {}
@@ -194,7 +196,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedKeyVisualizerButton]]
 end
 
 --- @param content Frame&{ obj: AceGUIWidget&{ LayoutFinished: fun(self: AceGUIWidget, totalWidth: number, totalHeight: number)? } }

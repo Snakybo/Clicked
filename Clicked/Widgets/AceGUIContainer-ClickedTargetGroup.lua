@@ -120,6 +120,7 @@ end
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
+--- @return ClickedTargetGroup
 local function Constructor()
 	--- @class ClickedTargetGroup
 	local widget = {}
@@ -152,7 +153,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedTargetGroup]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

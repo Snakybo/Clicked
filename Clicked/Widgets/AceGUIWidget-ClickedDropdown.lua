@@ -60,6 +60,7 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 
+--- @return ClickedDropdown
 local function Constructor()
 	--- @class ClickedDropdown
 	local widget = AceGUI:Create("Dropdown")
@@ -72,7 +73,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedDropdown]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

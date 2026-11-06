@@ -62,8 +62,10 @@ function BindingUnitActionTab:Redraw()
 			return load.selected and (load.value and "ic" or "ooc") or "always"
 		end
 
+		--- @param widget ClickedDropdown<string, string>
+		--- @param event string
 		--- @param value string
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
 				local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
 
@@ -96,10 +98,14 @@ function BindingUnitActionTab:Redraw()
 
 	-- performance warning
 	do
-		local hide = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsCombatUnselected(binding)
 			local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
 			return not load.selected
-		end)
+		end
+
+		local hide = FindInTableIf(self.bindings, IsCombatUnselected)
 
 		if not hide then
 			local widget = AceGUI:Create("Label")

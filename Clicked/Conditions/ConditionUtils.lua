@@ -32,7 +32,7 @@
 --- @class TalentLoadOptionEntry
 --- @field public operation "AND"|"OR"
 --- @field public negated? boolean
---- @field public value any
+--- @field public value string
 
 local LibTalentTome = LibStub("LibTalentTome")
 
@@ -71,7 +71,7 @@ function Addon.Condition.Utils.CreateMultiselectLoadOption(default)
 	}
 end
 
---- @param default any
+--- @param default string
 --- @return TalentLoadOption
 function Addon.Condition.Utils.CreateTalentLoadOption(default)
 	--- @type TalentLoadOption

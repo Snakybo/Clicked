@@ -51,6 +51,7 @@ function Methods:SetLabelColor(color)
 	self.label:SetTextColor(color:GetRGBA())
 end
 
+--- @return ClickedMultiLineEditBox
 local function Constructor()
 	--- @class ClickedMultiLineEditBox
 	local widget = AceGUI:Create("MultiLineEditBox")
@@ -63,7 +64,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedMultiLineEditBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

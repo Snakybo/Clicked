@@ -42,7 +42,9 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 100,
 				width = "full",
-				set = function(_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.minimap.hide = not val
 
 					if val then
@@ -51,7 +53,8 @@ function AddonOptions:CreateOptionsTable()
 						LibDBIcon:Hide(Addon.L["Clicked"])
 					end
 				end,
-				get = function(_)
+				--- @param info table
+				get = function(info)
 					return not Addon.db.global.options.minimap.hide
 				end
 			},
@@ -62,14 +65,17 @@ function AddonOptions:CreateOptionsTable()
 				order = 101,
 				width = "full",
 				hidden = Addon.EXPANSION_LEVEL < Addon.Expansion.DF and not Addon:IsForever(),
-				set = function (_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					if val then
 						LibDBIcon:AddButtonToCompartment(Addon.L["Clicked"])
 					else
 						LibDBIcon:RemoveButtonFromCompartment(Addon.L["Clicked"])
 					end
 				end,
-				get = function(_)
+				--- @param info table
+				get = function(info)
 					return LibDBIcon:IsButtonInCompartment(Addon.L["Clicked"])
 				end
 			},
@@ -79,7 +85,9 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 200,
 				width = "full",
-				set = function(_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.onKeyDown = val
 
 					for _, frame in Clicked:IterateClickCastFrames() do
@@ -102,7 +110,9 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 300,
 				width = "full",
-				set = function(_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.tooltips = val
 				end,
 				get = function()
@@ -115,7 +125,9 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 400,
 				width = "full",
-				set = function (_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.bindUnassignedModifiers = val
 					Clicked:ProcessActiveBindings()
 				end,
@@ -129,7 +141,9 @@ function AddonOptions:CreateOptionsTable()
 				type = "toggle",
 				order = 500,
 				width = "full",
-				set = function (_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.autoBindActionBar = val
 					Clicked:ProcessActiveBindings()
 				end,
@@ -146,7 +160,9 @@ function AddonOptions:CreateOptionsTable()
 				hidden = function()
 					return Addon.EXPANSION_LEVEL < Addon.Expansion.TWW
 				end,
-				set = function (_, val)
+				--- @param info table
+				--- @param val boolean
+				set = function(info, val)
 					Addon.db.global.options.disableInHouse = val
 					Addon:ReloadBindings("HOUSE_EDITOR_MODE_CHANGED")
 				end,

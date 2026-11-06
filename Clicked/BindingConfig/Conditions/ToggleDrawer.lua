@@ -47,7 +47,7 @@ function Drawer:Draw()
 		--- @param binding Binding
 		--- @return boolean
 		local function GetEnabledState(binding)
-			return binding.load[self.fieldName]
+			return binding.load[self.fieldName] --[[@as boolean]]
 		end
 
 		--- @return string[]
@@ -79,8 +79,10 @@ function Drawer:Draw()
 			return { Addon.L[drawer.label], result }
 		end
 
+		--- @param widget ClickedCheckBox
+		--- @param event string
 		--- @param value boolean
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
 				binding.load[self.fieldName] = value
 				Addon:ReloadBinding(binding, self.fieldName)

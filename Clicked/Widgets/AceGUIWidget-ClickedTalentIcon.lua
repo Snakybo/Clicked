@@ -44,6 +44,8 @@ function ClickedTalentIcon:OnAcquire()
 	self:SetColor(1, 1, 1, 1)
 end
 
+--- @param path? string|integer
+--- @param ... number
 function ClickedTalentIcon:SetImage(path, ...)
 	local image = self.image
 	image:SetTexture(path)
@@ -85,11 +87,13 @@ end
 
 --- @protected
 --- @param frame Frame&{obj: ClickedTalentIcon}
+--- @param button string
 function ClickedTalentIcon.Frame_OnClick(frame, button)
 	frame.obj:Fire("OnClick", button)
 	AceGUI:ClearFocus()
 end
 
+--- @return ClickedTalentIcon
 local function Constructor()
 	--- @class ClickedTalentIcon
 	local widget = {}
@@ -126,7 +130,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedTalentIcon]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

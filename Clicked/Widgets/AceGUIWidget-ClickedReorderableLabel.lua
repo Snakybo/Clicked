@@ -100,15 +100,15 @@ function ClickedReorderableLabel:SetImage(path, ...)
 	self:UpdateAnchor()
 end
 
---- @param font any
---- @param height any
---- @param flags any
+--- @param font FontFile
+--- @param height uiUnit
+--- @param flags? TBFFlags
 function ClickedReorderableLabel:SetFont(font, height, flags)
 	self.label:SetFont(font, height, flags)
 	self:UpdateAnchor()
 end
 
---- @param font any
+--- @param font? Font
 function ClickedReorderableLabel:SetFontObject(font)
 	self:SetFont((font or GameFontHighlightSmall):GetFont())
 end
@@ -232,6 +232,7 @@ function ClickedReorderableLabel.Down_OnClick(frame)
 	AceGUI:ClearFocus()
 end
 
+--- @return ClickedReorderableLabel
 local function Constructor()
 	--- @class ClickedReorderableLabel
 	local widget = {}
@@ -277,7 +278,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedReorderableLabel]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

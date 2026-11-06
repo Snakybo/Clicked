@@ -804,6 +804,7 @@ end
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
+--- @return ClickedAutoFillEditBox
 local function Constructor()
 	--- @class ClickedAutoFillEditBox
 	local widget = AceGUI:Create("EditBox")
@@ -853,7 +854,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedAutoFillEditBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

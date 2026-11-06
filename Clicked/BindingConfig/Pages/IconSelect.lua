@@ -44,7 +44,8 @@ function IconSelectPage:Show(onSelectCallback)
 				C_AddOns.EnableAddOn(MEDIA_ADDON_NAME)
 				C_AddOns.LoadAddOn(MEDIA_ADDON_NAME)
 			else
-				return Clicked:LogFatal("Unable to load {mediaAddonName}: {reason}", MEDIA_ADDON_NAME, reason)
+				Clicked:LogFatal("Unable to load {mediaAddonName}: {reason}", MEDIA_ADDON_NAME, reason)
+				return
 			end
 		end
 	end

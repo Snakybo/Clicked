@@ -39,7 +39,7 @@ local nextId = 1
 --- @type table<string, string>
 local aliases = {}
 
---- @type table<string, any>
+--- @type table<string, string>
 local baseAttributes = {
 	["*type1"] = CLICK,
 	["*type2"] = CLICK,

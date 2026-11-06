@@ -117,6 +117,7 @@ end
 
 --- @param cache { [string]: Binding[] }
 --- @param spell SpellLibraryResult
+--- @return boolean
 local function DoesActionBarBindingExist(cache, spell)
 	local key = spell.key or ""
 	local collection = cache[key] or {}
@@ -145,6 +146,7 @@ end
 
 --- @param cache { name: string, content: string }[]
 --- @param spell SpellLibraryMacroResult
+--- @return boolean
 local function DoesMacroBindingExist(cache, spell)
 	for _, item in ipairs(cache) do
 		if item.name == spell.name and item.content == spell.content then
@@ -182,6 +184,7 @@ end
 
 --- @param spell SpellLibrarySpellResult
 --- @param parent? integer
+--- @return boolean
 local function DoesSpellBookBindingExist(spell, parent)
 	for _, binding in ipairs(Clicked:GetByActionType(Clicked.ActionType.SPELL)) do
 		if binding.action.spellValue == spell.spellId and binding.parent == parent then
@@ -385,8 +388,10 @@ function NewPage:Redraw()
 		label:SetRelativeWidth(0.79)
 		scrollFrame:AddChild(label)
 
-		---@param value boolean
-		local function OnValueChanged(_, _, value)
+		--- @param widget ClickedCheckBox
+		--- @param event string
+		--- @param value boolean
+		local function OnValueChanged(widget, event, value)
 			self.importClassAbilitiesPerSpec = value
 		end
 

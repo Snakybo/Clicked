@@ -1050,6 +1050,7 @@ local PaneBackdrop  = {
 	insets = { left = 3, right = 3, top = 5, bottom = 3 }
 }
 
+--- @return ClickedTreeGroup
 local function Constructor()
 	--- @class (exact) ClickedTreeGroup
 	local widget = {}
@@ -1110,7 +1111,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedTreeGroup]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

@@ -123,9 +123,14 @@ function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
 		return false
 	end
 
-	table.sort(values, function(left, right)
+	--- @param left { name: string, value: string }
+	--- @param right { name: string, value: string }
+	--- @return boolean
+	local function SortByName(left, right)
 		return left.name < right.name
-	end)
+	end
+
+	table.sort(values, SortByName)
 
 	local lines = {}
 
@@ -338,8 +343,10 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 		return { Addon.L[condition.drawer.label], result }
 	end
 
+	--- @param widget ClickedCheckBox
+	--- @param event string
 	--- @param value boolean|nil
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		--- @cast value boolean
 
 		for _, binding in ipairs(bindings) do
@@ -357,11 +364,15 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 	checkbox:SetType("checkbox")
 	checkbox:SetCallback("OnValueChanged", OnValueChanged)
 
-	local isAnyEnabled = FindInTableIf(bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type SimpleLoadOption
 		local load = binding.load[fieldName] or condition.init()
 		return load.selected
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(bindings, IsEnabled) ~= nil
 
 	if isAnyEnabled then
 		checkbox:SetRelativeWidth(0.5)
@@ -400,14 +411,18 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 			return load.negated and Addon.L["Inverted"] or Addon.L["Not inverted"]
 		end
 
+		--- @param binding Binding
+		--- @return boolean
 		local function GetEnabledState(binding)
 			--- @type NegatableLoadOption
 			local load = binding.load[fieldName] or condition.init()
 			return load.negated and true or false
 		end
 
+		--- @param widget ClickedCheckBox
+		--- @param event string
 		--- @param value boolean
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(bindings) do
 				--- @type NegatableLoadOption
 				local load = binding.load[fieldName] or condition.init()
@@ -521,8 +536,10 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 		return { Addon.L[condition.drawer.label], result }
 	end
 
+	--- @param widget ClickedCheckBox
+	--- @param event string
 	--- @param value boolean|nil
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		local index = ValueToIndex(value)
 
 		for _, binding in ipairs(bindings) do
@@ -541,11 +558,15 @@ function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, b
 	checkbox:SetCallback("OnValueChanged", OnValueChanged)
 	checkbox:SetTriState(true)
 
-	local isAnyEnabled = FindInTableIf(bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[fieldName] or condition.init()
 		return load.selected ~= 0
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(bindings, IsEnabled) ~= nil
 
 	if isAnyEnabled then
 		checkbox:SetRelativeWidth(0.5)

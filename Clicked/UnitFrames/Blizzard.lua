@@ -37,7 +37,7 @@ end
 --- @param parent Frame
 --- @param name string
 local function HookCompactUnitFramePart(parent, name)
-	local frame = _G[name]
+	local frame = _G[name] --[[@as Button?]]
 
 	if frame == nil then
 		return
@@ -115,10 +115,13 @@ function Addon:RegisterBlizzardUnitFrames()
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", HookCompactUnitFrame)
 
 	if _G.CompactUnitFrame_SetUnit ~= nil then
-		hooksecurefunc("CompactUnitFrame_SetUnit", function(frame)
+		--- @param frame CompactUnitFrameTemplate?
+		local function OnSetUnit(frame)
 			if frame ~= nil and Addon:GetSidecar(frame) ~= nil then
 				Addon:ReapplySidecar(frame)
 			end
-		end)
+		end
+
+		hooksecurefunc("CompactUnitFrame_SetUnit", OnSetUnit)
 	end
 end

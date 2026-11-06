@@ -33,11 +33,15 @@ local Drawer = {}
 function Drawer:Draw()
 	local drawer = self.condition.drawer --[[@as InputDrawerConfig]]
 
-	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type SimpleLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
 
 	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
@@ -47,6 +51,7 @@ function Drawer:Draw()
 
 	-- editbox
 	do
+		--- @type ClickedAutoFillEditBox.Option[]?
 		local items = self.requestAvailableValues()
 
 		--- @param binding Binding
@@ -67,10 +72,11 @@ function Drawer:Draw()
 			return load.value
 		end
 
-		--- @param widget ClickedEditBox
+		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
+		--- @param event string
 		--- @param value string
 		--- @param previousValue string
-		local function OnTextChanged(widget, _, value, previousValue)
+		local function OnTextChanged(widget, event, value, previousValue)
 			if drawer.validate ~= nil then
 				widget:SetText(drawer.validate(value, previousValue, false))
 			end
@@ -93,9 +99,11 @@ function Drawer:Draw()
 			return result
 		end
 
+		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
+		--- @param event string
 		--- @param value string
 		--- @param previousValue string
-		local function OnEnterPressed(_, _, value, previousValue)
+		local function OnEnterPressed(widget, event, value, previousValue)
 			value = string.trim(value)
 
 			if drawer.validate ~= nil then
@@ -116,7 +124,11 @@ function Drawer:Draw()
 			self.requestRedraw()
 		end
 
-		local function OnSelect(_, _, value, match)
+		--- @param widget ClickedAutoFillEditBox
+		--- @param event string
+		--- @param value string
+		--- @param match ClickedAutoFillEditBox.Option?
+		local function OnSelect(widget, event, value, match)
 			local spellId = (match ~= nil and match.spellId ~= nil) and tostring(match.spellId) or value
 
 			for _, binding in ipairs(self.bindings) do
@@ -132,14 +144,22 @@ function Drawer:Draw()
 		end
 
 		if items ~= nil then
-			local error = FindInTableIf(self.bindings, function(binding)
+			--- @param binding Binding
+			--- @return boolean
+			local function HasInvalidValue(binding)
 				--- @type SimpleLoadOption
 				local load = binding.load[self.fieldName] or self.condition.init()
 
-				return load.selected and FindInTableIf(items, function(item)
+				--- @param item ClickedAutoFillEditBox.Option
+				--- @return boolean
+				local function IsMatchingItem(item)
 					return item.spellId == load.value
-				end) == nil
-			end) == nil
+				end
+
+				return load.selected and FindInTableIf(items, IsMatchingItem) == nil
+			end
+
+			local error = FindInTableIf(self.bindings, HasInvalidValue) == nil
 
 			self.editbox = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
 			self.editbox:SetInputError(error)

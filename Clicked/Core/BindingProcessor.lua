@@ -462,7 +462,8 @@ local function ProcessBuckets()
 				command.data = reference.load.combat.value
 			end
 		else
-			return logger:LogError("Unhandled binding type: {actionType}", reference.actionType)
+			logger:LogError("Unhandled binding type: {actionType}", reference.actionType)
+			return nil
 		end
 
 		return command
@@ -536,9 +537,6 @@ local function GenerateBuckets(bindings)
 			end
 		end
 	end
-
-	table.sort(hovercastBucket, function(a, b) return a.uid < b.uid end)
-	table.sort(regularBucket, function(a, b) return a.uid < b.uid end)
 end
 
 --- @param str string
@@ -711,6 +709,9 @@ function Clicked:EvaluateBindingMacro(binding)
 end
 
 --- Iterate through all currently active bindings, this function can be used in a `for in` loop.
+--- @return fun(table: Binding[], i?: integer): number, Binding
+--- @return Binding[]
+--- @return number
 function Clicked:IterateActiveBindings()
 	return ipairs(activeBindings)
 end
@@ -951,6 +952,8 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		return ShouldPerformStateCheck(nil, { "PLAYER_EQUIPMENT_CHANGED" })
 	end
 
+	--- @param state table<string,boolean>?
+	--- @return boolean
 	local function IsStateValid(state)
 		if state == nil then
 			return false
@@ -1182,7 +1185,8 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				command.conditions = {}
 				command.seen = 1
 			else
-				command.seen = command.seen + 1
+				--- TEMP: The `or 0` can be removed once wowlua-ls is updated
+				command.seen = (command.seen or 0) + 1
 			end
 
 			local action = ConstructAction(binding)
@@ -1224,7 +1228,8 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 		end
 
 		for _, command in ipairs(all) do
-			if command.seen ~= #bindings and command.conditions ~= nil and #command.conditions > 0 then
+				--- TEMP: The `and command.index ~= nil` can be removed once wowlua-ls is updated
+			if command.seen ~= #bindings and command.index ~= nil and command.conditions ~= nil and #command.conditions > 0 then
 				lines[command.index] = command.command .. " [" .. table.concat(command.conditions, ",") .. "]"
 			end
 		end
@@ -1252,7 +1257,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 
 		-- Parse and sort action groups
 
-		--- @type { [integer]: { prefix: string|nil }}
+		--- @type { [integer]: Binding[] & { prefix: string|nil }}
 		local bindingGroups = {}
 
 		--- @type table<Action,integer>

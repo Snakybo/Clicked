@@ -277,6 +277,9 @@ local config = {
 			type = "input",
 			label = "Bonus bar",
 			negatable = true,
+			--- @param value string
+			--- @param previousValue string
+			--- @return string
 			validate = function(value, previousValue)
 				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
 			end,
@@ -294,6 +297,9 @@ local config = {
 			type = "input",
 			label = "Action bar page",
 			negatable = true,
+			--- @param value string
+			--- @param previousValue string
+			--- @return string
 			validate = function(value, previousValue)
 				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
 			end,

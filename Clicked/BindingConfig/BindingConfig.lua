@@ -439,9 +439,13 @@ function BindingConfig:HandleOnBindingReload()
 		local changed = CopyTable(self.reloadedBindings)
 		table.wipe(self.reloadedBindings)
 
-		local isRelevantReload = FindInTableIf(self.treeStatus.selected, function(uid)
+		--- @param uid integer
+		--- @return boolean
+		local function IsChanged(uid)
 			return tContains(changed, uid)
-		end) ~= nil
+		end
+
+		local isRelevantReload = FindInTableIf(self.treeStatus.selected, IsChanged) ~= nil
 
 		local currentPage = self.currentPage
 
@@ -497,7 +501,10 @@ function BindingConfig:DrawHeader()
 		--- @type TimerCallback?
 		local redrawTimer = nil
 
-		local function OnSearchTermChanged(_, _, text)
+		--- @param widget ClickedSearchBox
+		--- @param event string
+		--- @param text string
+		local function OnSearchTermChanged(widget, event, text)
 			if redrawTimer ~= nil then
 				redrawTimer:Cancel()
 				redrawTimer = nil
@@ -848,8 +855,10 @@ function BindingConfig:CreateTreeFrame()
 		return {}
 	end
 
+	--- @param widget ClickedTreeGroup
+	--- @param event string
 	--- @param selected integer[]
-	local function OnGroupSelected(_, _, selected)
+	local function OnGroupSelected(widget, event, selected)
 		local targets = FilterTargets(selected)
 
 		if #targets > 0 then
@@ -863,9 +872,11 @@ function BindingConfig:CreateTreeFrame()
 		end
 	end
 
+	--- @param widget ClickedTreeGroup
+	--- @param event string
 	--- @param uid integer
 	--- @param button Button
-	local function OnButtonEnter(_, _, uid, button)
+	local function OnButtonEnter(widget, event, uid, button)
 		local obj = Clicked:GetByUid(uid)
 		if obj == nil then
 			return
@@ -923,8 +934,10 @@ function BindingConfig:CreateTreeFrame()
 		Addon:ShowTooltip(button, text, subtext, "RIGHT", "LEFT")
 	end
 
+	--- @param widget ClickedTreeGroup
+	--- @param event string
 	--- @param ids integer[]
-	local function OnButtonContext(_, _, ids)
+	local function OnButtonContext(widget, event, ids)
 		--- @type DataObject[]
 		local objects = {}
 
@@ -981,9 +994,13 @@ function BindingConfig:CreateTreeFrame()
 					--- @param type string
 					--- @param label string
 					local function CreateOption(type, label)
-						local isAvailable = FindInTableIf(objects, function(obj)
+						--- @param obj Binding
+						--- @return boolean
+						local function HasActionType(obj)
 							return obj.actionType == type
-						end) == nil
+						end
+
+						local isAvailable = FindInTableIf(objects, HasActionType) == nil
 
 						if not isAvailable then
 							return
@@ -1066,10 +1083,16 @@ function BindingConfig:CreateTreeFrame()
 			do
 				local submenu = rootDescription:CreateButton(Addon.L["Change scope"])
 
+				--- @param scope DataObjectScope
+				--- @param label string
 				local function CreateOption(scope, label)
-					local hasMixedValues = FindInTableIf(objects, function(obj)
+					--- @param obj DataObject
+					--- @return boolean
+					local function HasDifferentScope(obj)
 						return obj.scope ~= objects[1].scope
-					end) ~= nil
+					end
+
+					local hasMixedValues = FindInTableIf(objects, HasDifferentScope) ~= nil
 
 					if not hasMixedValues then
 						submenu:CreateRadio(label, function()

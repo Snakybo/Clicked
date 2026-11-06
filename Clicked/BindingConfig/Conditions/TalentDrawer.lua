@@ -76,15 +76,21 @@ local Drawer = {}
 
 --- @protected
 function Drawer:Draw()
-	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type SimpleLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
 
 	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
 	if isAnyEnabled then
+		--- @param binding Binding
+		--- @return string
 		local function ValueSelector(binding)
 			--- @type TalentLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
@@ -129,6 +135,8 @@ end
 --- @protected
 function Drawer:Update()
 	if self.miniTalentRow ~= nil then
+		--- @param binding Binding
+		--- @return string
 		local function ValueSelector(binding)
 			--- @type TalentLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
@@ -163,11 +171,16 @@ function Drawer:DrawMiniTalentRow()
 		return
 	end
 
-	local _, binding = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type TalentLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected
-	end)
+	end
+
+	--- @type integer, Binding
+	local _, binding = FindInTableIf(self.bindings, IsEnabled)
 
 	--- @type TalentLoadOption
 	local load = binding.load[self.fieldName] or self.condition.init()
@@ -200,6 +213,7 @@ function Drawer:DrawMiniTalentRow()
 			local talent = self:GetTalentInfo(entry.value)
 			local ticker
 
+			--- @param widget ClickedTalentIcon
 			local function OnEnter(widget)
 				if talent == nil then
 					return
@@ -307,11 +321,16 @@ function Drawer:DrawTalentSelect()
 
 	local tableContainer = CreateTableGroup()
 
-	local _, binding = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type TalentLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected
-	end)
+	end
+
+	--- @type integer, Binding
+	local _, binding = FindInTableIf(self.bindings, IsEnabled)
 
 	self.inputFields = {}
 
@@ -352,7 +371,10 @@ function Drawer:DrawTalentSelect()
 		end
 
 		do
-			local function OnSelect(_, _, value)
+			--- @param widget ClickedAutoFillEditBox
+			--- @param event string
+			--- @param value string
+			local function OnSelect(widget, event, value)
 				value = string.trim(value)
 
 				for _, other in ipairs(self.bindings) do

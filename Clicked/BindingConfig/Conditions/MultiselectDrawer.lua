@@ -56,11 +56,15 @@ local Drawer = {}
 function Drawer:Draw()
 	local drawer = self.condition.drawer
 
-	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected ~= 0
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
 
 	self.checkbox = Helpers:DrawMultiselectConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
@@ -70,17 +74,24 @@ function Drawer:Draw()
 
 	-- dropdowns
 	do
-		local isAnySingleSelect = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsSingleSelect(binding)
 			--- @type MultiselectLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
 			return load.selected == 1
-		end) ~= nil
+		end
 
-		local isAnyMultiSelect = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsMultiSelect(binding)
 			--- @type MultiselectLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
 			return load.selected == 2
-		end) ~= nil
+		end
+
+		local isAnySingleSelect = FindInTableIf(self.bindings, IsSingleSelect) ~= nil
+		local isAnyMultiSelect = FindInTableIf(self.bindings, IsMultiSelect) ~= nil
 
 		--- @type table<unknown, string>, unknown[]
 		local items, order = self.requestAvailableValues()
@@ -101,6 +112,7 @@ end
 
 --- @protected
 function Drawer:Update()
+	--- @type table<unknown, string>, unknown[]
 	local items, order = self.requestAvailableValues()
 
 	if self.dropdown ~= nil then
@@ -150,8 +162,10 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 		return GetValueTooltipText(drawer)
 	end
 
+	--- @param widget ClickedDropdown
+	--- @param event string
 	--- @param value string
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		for _, binding in ipairs(self.bindings) do
 			--- @type MultiselectLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
@@ -239,9 +253,11 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 			return GetValueTooltipText(drawer)
 		end
 
+		--- @param widget ClickedDropdown
+		--- @param event string
 		--- @param value string
 		--- @param enabled boolean
-		local function OnValueChanged(_, _, value, enabled)
+		local function OnValueChanged(widget, event, value, enabled)
 			for _, binding in ipairs(self.bindings) do
 				--- @type MultiselectLoadOption
 				local load = binding.load[self.fieldName] or self.condition.init()

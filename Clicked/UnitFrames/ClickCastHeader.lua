@@ -19,13 +19,16 @@ local Addon = select(2, ...)
 
 -- Local support functions
 
+--- @param err string
 local function errorhandler(err)
-	return geterrorhandler()(err)
+	geterrorhandler()(err)
 end
 
+--- @param func? function
+--- @param ... any
 local function safecall(func, ...)
 	if func then
-		return xpcall(func, errorhandler, ...)
+		xpcall(func, errorhandler, ...)
 	end
 end
 
@@ -104,7 +107,10 @@ function Addon:RegisterClickCastHeader()
 		end
 	]])
 
-	Addon.ClickCastHeader:HookScript("OnAttributeChanged", function(_, name, value)
+	--- @param frame Frame
+	--- @param name string
+	--- @param value any
+	local function OnAttributeChanged(frame, name, value)
 		local frameName = value and value.GetName and value:GetName()
 
 		if frameName == nil then
@@ -116,15 +122,20 @@ function Addon:RegisterClickCastHeader()
 		elseif name == "export_unregister" then
 			Clicked:UnregisterClickCastFrame(frameName)
 		end
-	end)
+	end
+
+	Addon.ClickCastHeader:HookScript("OnAttributeChanged", OnAttributeChanged)
 
 	RegisterAttributeDriver(Addon.ClickCastHeader, "unit-exists", "[@mouseover,exists] true; false")
 
 	-- Hook into the global ClickCastFrames table
+	--- @type table<Button, boolean?>
 	local originalClickCastFrames = ClickCastFrames or {}
-
 	ClickCastFrames = setmetatable({}, {
-		__newindex = function(_, frame, options)
+		--- @param tbl table
+		--- @param frame Button
+		--- @param options boolean?
+		__newindex = function(tbl, frame, options)
 			if options ~= nil and options ~= false then
 				Clicked:RegisterClickCastFrame(frame)
 			else
@@ -140,11 +151,15 @@ function Addon:RegisterClickCastHeader()
 	ClickCastHeader = Addon.ClickCastHeader
 
 	-- Hook into Clique because a lot of (older) addons are hardcoded to add Clique-support
-	Clique = {}
-	Clique.header = ClickCastHeader
-	Clique.UpdateRegisteredClicks = function(_, frame)
+	--- @param clique table
+	--- @param frame Button
+	local function UpdateRegisteredClicks(clique, frame)
 		safecall(Clicked.RegisterFrameClicks, Clicked, frame, true)
 	end
+
+	Clique = {}
+	Clique.header = ClickCastHeader
+	Clique.UpdateRegisteredClicks = UpdateRegisteredClicks
 end
 
 --- @param keybinds Keybind[]

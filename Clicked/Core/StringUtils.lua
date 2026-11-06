@@ -17,8 +17,11 @@
 --- @class Addon
 local Addon = select(2, ...)
 
+--- @type table<string,table<integer,string>>
 local characterCache = {}
+--- @type table<string,integer>
 local byteCache = {}
+--- @type table<string,table<string,number>>
 local averageCache = {}
 
 --- @param str string
@@ -50,6 +53,7 @@ local function ByteAt(str, index)
 end
 
 --- @param input number[]
+--- @return number
 local function GetAverage(input)
 	local sum = 0
 
@@ -253,6 +257,7 @@ do
 	---@param target string
 	---@param sourceLength integer?
 	---@param targetLength integer?
+	---@return integer
 	function StringUtils:HammingDistance(source, target, sourceLength, targetLength)
 		sourceLength = sourceLength or strlenutf8(source)
 		targetLength = targetLength or strlenutf8(target)

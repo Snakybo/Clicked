@@ -40,8 +40,10 @@ function BindingMacroTab:Redraw()
 			return binding.action.macroName
 		end
 
+		--- @param widget ClickedEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			value = string.trim(value)
 
 			for _, binding in ipairs(self.bindings) do
@@ -68,8 +70,10 @@ function BindingMacroTab:Redraw()
 			return tostring(binding.action.macroIcon)
 		end
 
+		--- @param widget ClickedEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			value = string.trim(value)
 			local id = tonumber(value)
 
@@ -151,8 +155,10 @@ function BindingMacroTab:Redraw()
 			end
 		end
 
+		--- @param widget ClickedDropdown<string, string>
+		--- @param event string
 		--- @param value string
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
 				binding.targets.regularEnabled = value == "key" or value == "all"
 				binding.targets.hovercastEnabled = value == "unitframe" or value == "all"
@@ -174,9 +180,13 @@ function BindingMacroTab:Redraw()
 
 	-- hovercast-only warning
 	do
-		local hide = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsNotHovercastOnly(binding)
 			return binding.actionType ~= Clicked.ActionType.MACRO or Addon:IsMacroCastEnabled(binding)
-		end)
+		end
+
+		local hide = FindInTableIf(self.bindings, IsNotHovercastOnly)
 
 		if not hide then
 			local widget = AceGUI:Create("Label")
@@ -189,9 +199,13 @@ function BindingMacroTab:Redraw()
 
 	-- append mode instructions
 	do
-		local hide = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsMacroBinding(binding)
 			return binding.actionType == Clicked.ActionType.MACRO
-		end)
+		end
+
+		local hide = FindInTableIf(self.bindings, IsMacroBinding)
 
 		if not hide then
 			local msg = {
@@ -235,13 +249,16 @@ function BindingMacroTab:Redraw()
 		end
 
 		--- @param widget ChroMacroEditBox
+		--- @param event string
 		--- @param value string
-		local function OnTextChanged(widget, _, value)
+		local function OnTextChanged(widget, event, value)
 			widget:SetLabel(GetLabelText(value))
 		end
 
+		--- @param widget ChroMacroEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			value = string.trim(value)
 
 			for _, binding in ipairs(self.bindings) do

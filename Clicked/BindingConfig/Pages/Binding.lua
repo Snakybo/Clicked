@@ -223,8 +223,9 @@ function BindingPage:Redraw()
 		end
 
 		--- @param widget ClickedKeybinding
+		--- @param event string
 		--- @param key string
-		local function OnKeyChanged(widget, _, key)
+		local function OnKeyChanged(widget, event, key)
 			for _, target in ipairs(self.targets) do
 				target.keybind = key
 
@@ -362,8 +363,10 @@ end
 --- @private
 --- Create the tab group widget.
 function BindingPage:CreateTabGroup()
+	--- @param widget ClickedTabGroup
+	--- @param event string
 	--- @param group string
-	local function OnTabGroupSelected(_, _, group)
+	local function OnTabGroupSelected(widget, event, group)
 		local currentTab = self.currentTab
 		if currentTab == group then
 			return
@@ -421,9 +424,14 @@ function BindingPage:GetAvailableTabs()
 		table.insert(order, id)
 	end
 
-	table.sort(order, function(left, right)
+	--- @param left string
+	--- @param right string
+	--- @return boolean
+	local function SortByOrder(left, right)
 		return keys[left] < keys[right]
-	end)
+	end
+
+	table.sort(order, SortByOrder)
 
 	--- @type AceGUITabGroupTab[]
 	local tabs = {}
@@ -450,6 +458,7 @@ function BindingPage:FilterBindings()
 
 	for id, tab in pairs(self.tabs) do
 		if tab.filter ~= nil then
+			--- @type boolean, Binding[]
 			local _, filtered = Addon:SafeCall(tab.filter, self.targets)
 			self.filteredTargets[id] = filtered
 		end

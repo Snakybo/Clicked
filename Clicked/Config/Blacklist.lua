@@ -64,6 +64,7 @@ local UNIT_FRAME_ADDON_MAPPING = {
 local frameGroupMap = {}
 
 local config
+--- @type table<string, string[]>
 local values = {}
 
 -- Local support functions
@@ -83,6 +84,7 @@ end
 --- Set the name of the blacklist group the frame belongs to.
 ---
 --- @param frame Frame
+--- @param group string
 function BlacklistOptions:SetBlacklistGroup(frame, group)
 	if frame.GetName ~= nil then
 		frameGroupMap[frame:GetName()] = group
@@ -107,7 +109,7 @@ function BlacklistOptions:GetBlacklistGroup(frame)
 end
 
 --- Get the names of all frames within a blacklist group
---- @param group any
+--- @param group string
 --- @return string[]
 function BlacklistOptions:GetBlacklistGroupItems(group)
 	local result = {}
@@ -228,7 +230,9 @@ function BlacklistOptions:CreateOptionsTable()
 					return result
 				end,
 				itemControl = "Clicked-Blacklist-Dropdown-Item",
-				set = function(_, val)
+				--- @param info table
+				--- @param val string
+				set = function(info, val)
 					if val ~= "_NIL_" then
 						Addon.db.global.blacklist[val] = true
 
@@ -325,8 +329,9 @@ function BlacklistOptions:SetSelectedItem(name, enabled)
 			type = "toggle",
 			width = "full",
 			order = 30,
+			--- @param info table
 			--- @param value boolean
-			set = function(_, value)
+			set = function(info, value)
 				if not value then
 					Addon.db.global.blacklist[name] = nil
 					config.args[name] = nil

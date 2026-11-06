@@ -963,6 +963,7 @@ function Addon:GetUnusedModifierKeyKeybinds(keybind, bindings)
 		table.insert(combinations, modifier .. "-" .. keybind)
 	end
 
+	--- @param input string?
 	local function ValidateKeybind(input)
 		if input == nil then
 			return
@@ -1103,6 +1104,7 @@ end
 
 --- Sanitize the keybind to make it display properly for the current game platform (Windows, Mac)
 --- @param keybind string
+--- @return string
 function Addon:SanitizeKeybind(keybind)
 	if IsMacClient() then
 		return string.gsub(keybind, "META%-", "CMD%-")
@@ -1223,6 +1225,7 @@ end
 ---
 --- @param str string
 --- @param index integer
+--- @return string
 function Addon:CharAt(str, index)
 	assert(type(str) == "string", "bad argument #1, expected string but got " .. type(str))
 	assert(type(index) == "number", "bad argument #2, expected number but got " .. type(index))

@@ -118,12 +118,18 @@ function BindingActionTab:RedrawTargetSpell()
 	end
 
 	do
-		local hasMixedTypes = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function HasDifferentActionType(binding)
 			return binding.actionType ~= self.bindings[1].actionType
-		end) ~= nil
+		end
 
+		local hasMixedTypes = FindInTableIf(self.bindings, HasDifferentActionType) ~= nil
+
+		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			if LinkUtil.ExtractLink(value) ~= nil then
 				return
 			end
@@ -162,8 +168,9 @@ function BindingActionTab:RedrawTargetSpell()
 		end
 
 		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
+		--- @param event string
 		--- @param value string
-		local function OnTextChanged(widget, _, value)
+		local function OnTextChanged(widget, event, value)
 			local type, info = LinkUtil.ExtractLink(value)
 
 			if type ~= nil then
@@ -248,6 +255,20 @@ function BindingActionTab:RedrawTargetSpell()
 			return lines
 		end
 
+		--- @param widget ClickedAutoFillEditBox
+		--- @param event string
+		--- @param value string
+		--- @param match ClickedAutoFillEditBox.Match?
+		local function OnSelect(widget, event, value, match)
+			local spellId = match ~= nil and match.spellId or value
+
+			for _, binding in ipairs(self.bindings) do
+				self:UpdateSpellValue(binding, spellId)
+			end
+
+			self.controller:RedrawTab()
+		end
+
 		local widget
 
 		if not hasMixedTypes and self.bindings[1].actionType == Clicked.ActionType.SPELL then
@@ -272,17 +293,6 @@ function BindingActionTab:RedrawTargetSpell()
 				end
 
 				return selected, result
-			end
-
-			--- @param match ClickedAutoFillEditBox.Match?
-			local function OnSelect(_, _, value, match)
-				local spellId = match ~= nil and match.spellId or value
-
-				for _, binding in ipairs(self.bindings) do
-					self:UpdateSpellValue(binding, spellId)
-				end
-
-				self.controller:RedrawTab()
 			end
 
 			local function IsInputError()
@@ -321,6 +331,7 @@ function BindingActionTab:RedrawTargetSpell()
 		--- @type TickerCallback?
 		local ticker
 
+		--- @param widget ClickedHorizontalIcon
 		local function OnEnter(widget)
 			ticker = C_Timer.NewTimer(Addon.TOOLTIP_SHOW_DELAY, function()
 				GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
@@ -567,9 +578,13 @@ function BindingActionTab:RedrawKeyOptions()
 	group:SetFullWidth(true)
 	group:SetLayout("Flow")
 
-	local hasMixedKeys = FindInTableIf(self.bindings, function(obj)
-		return obj.keybind ~= self.bindings[1].keybind
-	end)
+	--- @param binding Binding
+	--- @return boolean
+	local function HasDifferentKeybind(binding)
+		return binding.keybind ~= self.bindings[1].keybind
+	end
+
+	local hasMixedKeys = FindInTableIf(self.bindings, HasDifferentKeybind)
 
 	--- @param binding Binding
 	--- @param option string
@@ -592,7 +607,7 @@ function BindingActionTab:RedrawKeyOptions()
 
 	--- @param label string
 	--- @param tooltipText string
-	--- @param key string
+	--- @param key "spellIncludeSubtext"|"interrupt"|"startAutoAttack"|"startPetAttack"|"cancelQueuedSpell"|"cancelForm"|"targetUnitAfterCast"|"preventToggle"|"stopSpellTarget"
 	local function CreateCheckbox(label, tooltipText, key)
 		--- @param binding Binding
 		--- @return string
@@ -631,16 +646,25 @@ function BindingActionTab:RedrawKeyOptions()
 
 		--- @return boolean?
 		local function GetEnabledState()
-			local anyEnabled = FindInTableIf(self.bindings, function(binding)
+			--- @param binding Binding
+			--- @return boolean
+			local function IsEnabled(binding)
 				return binding.action[key]
-			end)
+			end
+
+			local anyEnabled = FindInTableIf(self.bindings, IsEnabled)
 
 			if anyEnabled then
 				return true
 			else
-				local _, loaded = FindInTableIf(self.bindings, function(binding)
+				--- @param binding Binding
+				--- @return boolean
+				local function IsLoaded(binding)
 					return Clicked:IsBindingLoaded(binding)
-				end)
+				end
+
+				--- @type integer?, Binding?
+				local _, loaded = FindInTableIf(self.bindings, IsLoaded)
 
 				if loaded ~= nil and IsSharedDataSet(loaded, key) then
 					return nil
@@ -650,8 +674,10 @@ function BindingActionTab:RedrawKeyOptions()
 			return false
 		end
 
+		--- @param widget ClickedCheckBox
+		--- @param event string
 		--- @param value boolean?
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			if value == false then
 				value = true
 			elseif value == nil then
@@ -677,7 +703,13 @@ function BindingActionTab:RedrawKeyOptions()
 		group:AddChild(widget)
 	end
 
-	if FindInTableIf(self.bindings, function(binding) return binding.actionType == Clicked.ActionType.SPELL end) then
+	--- @param binding Binding
+	--- @return boolean
+	local function IsSpellBinding(binding)
+		return binding.actionType == Clicked.ActionType.SPELL
+	end
+
+	if FindInTableIf(self.bindings, IsSpellBinding) then
 		CreateCheckbox(Addon.L["Include spell subtext"], Addon.L["Append the spell subtext to the cast command, e.g. Whirling Surge(Skyriding). Enable this if the spell does not cast without it."], "spellIncludeSubtext")
 	end
 
@@ -705,17 +737,25 @@ end
 
 --- @private
 --- @param binding Binding
---- @param value string
+--- @param value string|integer
 function BindingActionTab:UpdateSpellValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.SPELL then
-		return Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
+		Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
+		return
 	end
 
-	value = string.trim(value)
+	--- @type string|integer
+	local newValue
 
-	local newValue = tonumber(value) or Addon:GetSpellId(value) or value
-	if newValue == binding.action.spellValue and not binding.action.spellMaxRank then
-		return
+	if type(value) == "string" then
+		value = string.trim(value)
+
+		newValue = tonumber(value) or Addon:GetSpellId(value) or value
+		if newValue == binding.action.spellValue and not binding.action.spellMaxRank then
+			return
+		end
+	else
+		newValue = value
 	end
 
 	binding.action.spellMaxRank = false
@@ -732,7 +772,8 @@ end
 --- @param value string
 function BindingActionTab:UpdateItemValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.ITEM then
-		return Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
+		Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
+		return
 	end
 
 	value = string.trim(value)
@@ -750,7 +791,8 @@ end
 --- @param value string
 function BindingActionTab:UpdateCancelAuraValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.CANCELAURA then
-		return Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
+		Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
+		return
 	end
 
 	value = string.trim(value)

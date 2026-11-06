@@ -69,6 +69,7 @@ function ClickedReadOnlyMultilineEditBox.EditBox_OnTextChanged(frame)
 	self.editBox:SetText(self.text)
 end
 
+--- @return ClickedReadOnlyMultilineEditBox
 local function Constructor()
 	--- @class ClickedReadOnlyMultilineEditBox
 	local widget = AceGUI:Create("ClickedMultiLineEditBox")
@@ -84,7 +85,8 @@ local function Constructor()
 
 	widget.DisableButton = nil
 
-	return widget
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedReadOnlyMultilineEditBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

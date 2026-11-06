@@ -98,6 +98,7 @@ function ClickedHorizontalIcon.Frame_OnClick(frame, button)
 	AceGUI:ClearFocus()
 end
 
+--- @return ClickedHorizontalIcon
 local function Constructor()
 	--- @class ClickedHorizontalIcon
 	local widget = {}
@@ -130,7 +131,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedHorizontalIcon]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

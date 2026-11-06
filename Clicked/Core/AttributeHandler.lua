@@ -19,6 +19,7 @@ local Addon = select(2, ...)
 
 local hasTypeRelease = Addon.EXPANSION_LEVEL >= Addon.Expansion.DF or Addon.EXPANSION_LEVEL == Addon.Expansion.TBC or Addon:IsForever()
 
+--- @type table<table,{ pending: table<string,string>, applied: table<string,string> }>
 local frameCache = {}
 
 local logger = Clicked:CreateSystemLogger("AttributeHandler")

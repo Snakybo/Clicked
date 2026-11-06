@@ -14,7 +14,14 @@
 			"unknown-return-type",
 			"unknown-field-type",
 			"unknown-local-type"
-		]
+		],
+		"severity": {
+			"incomplete-signature-doc": "warning",
+			"unknown-local-type": "warning",
+			"unknown-param-type": "warning",
+			"unknown-return-type": "warning",
+			"unknown-field-type": "warning"
+		}
 	},
 	"globals": {
 		"read": ["ElvUI", "ElvUISpellBookTooltip", "LibStub"],

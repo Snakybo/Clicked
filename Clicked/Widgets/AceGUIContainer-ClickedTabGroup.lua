@@ -48,6 +48,7 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 
+--- @return ClickedTabGroup
 local function Constructor()
 	--- @class ClickedTabGroup
 	local widget = AceGUI:Create("TabGroup")
@@ -60,7 +61,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedTabGroup]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

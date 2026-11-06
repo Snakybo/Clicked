@@ -54,7 +54,10 @@ function BindingStatusTab:Redraw()
 			return tonumber(string.sub(str, 6)) --[[@as integer]]
 		end
 
-		local function OnValueChanged(_, _, value)
+		--- @param widget AceGUIDropdown
+		--- @param event string
+		--- @param value string
+		local function OnValueChanged(widget, event, value)
 			self.selected = StringToIndex(value)
 			self.controller:RedrawTab()
 		end
@@ -185,9 +188,14 @@ function BindingStatusTab:RedrawPage()
 	DrawStatus(regular, Addon.InteractionType.REGULAR)
 
 	if #all > 1 then
-		table.sort(all, function (left, right)
+		--- @param left Binding
+		--- @param right Binding
+		--- @return boolean
+		local function SortByName(left, right)
 			return Addon:GetBindingNameAndIcon(left) < Addon:GetBindingNameAndIcon(right)
-		end)
+		end
+
+		table.sort(all, SortByName)
 
 		do
 			local widget = AceGUI:Create("Heading")

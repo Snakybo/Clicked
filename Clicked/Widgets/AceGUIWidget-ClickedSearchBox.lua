@@ -198,6 +198,7 @@ function ClickedSearchBox.EditBox_OnLeave(frame)
 	end
 end
 
+--- @return ClickedSearchBox
 local function Constructor()
 	--- @class ClickedSearchBox
 	local widget = AceGUI:Create("EditBox")
@@ -220,7 +221,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedSearchBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

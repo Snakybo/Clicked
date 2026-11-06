@@ -93,8 +93,8 @@ end
 
 --- @param newAtributes table<string,string>
 function Addon:UpdateClickCastFrames(newAtributes)
-	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
-	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
+	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds") --[[@as string]]
+	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds") --[[@as string]]
 
 	for _, frame in ipairs(frames) do
 		local sidecar = Addon:GetSidecar(frame)
@@ -157,7 +157,8 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 
 	for _, existing in ipairs(frames) do
 		if existing == frame then
-			return logger:LogTrace("Frame {frameName} has already been registered!", frame:GetName())
+			logger:LogTrace("Frame {frameName} has already been registered!", frame:GetName())
+			return
 		end
 	end
 
@@ -203,10 +204,11 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			return
 		else
 			local name = frame --[[@as string]]
-			frame = _G[name]
+			frame = _G[name] --[[@as Button?]]
 
 			if frame == nil then
-				return logger:LogError("Unable to register frame: {frameName}", name)
+				logger:LogError("Unable to register frame: {frameName}", name)
+				return
 			end
 		end
 	end
@@ -215,19 +217,21 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 
 	-- Skip anything that is not clickable
 	if frame.RegisterForClicks == nil then
-		return logger:LogDebug("Ignoring frame {frameName} because it does not have a RegisterForClicks function", name)
+		logger:LogDebug("Ignoring frame {frameName} because it does not have a RegisterForClicks function", name)
+		return
 	end
 
 	if Addon:IsFrameBlacklisted(frame) then
-		return logger:LogDebug("Ignoring frame {frameName} because it has been blacklisted", name)
+		logger:LogDebug("Ignoring frame {frameName} because it has been blacklisted", name)
+		return
 	end
 
 	Clicked:RegisterFrameClicks(frame)
 
 	local sidecar = Addon:GetOrCreateSidecar(frame)
 
-	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds")
-	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds")
+	local setup = Addon.ClickCastHeader:GetAttribute("setup-keybinds") --[[@as string]]
+	local clear = Addon.ClickCastHeader:GetAttribute("clear-keybinds") --[[@as string]]
 	UpdateClickCastFrame(frame, sidecar, cachedAttributes, setup, clear)
 
 	table.insert(frames, frame)
@@ -250,10 +254,11 @@ function Clicked:UnregisterClickCastFrame(frame)
 
 	if type(frame) == "string" then
 		local name = frame --[[@as string]]
-		frame = _G[name]
+		frame = _G[name] --[[@as Button?]]
 
 		if frame == nil then
-			return logger:LogError("Unable to unregister frame: {frameName}", name)
+			logger:LogError("Unable to unregister frame: {frameName}", name)
+			return
 		end
 	end
 

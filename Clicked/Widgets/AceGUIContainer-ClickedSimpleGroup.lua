@@ -34,12 +34,14 @@ end
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
+--- @return ClickedSimpleGroup
 local function Constructor()
 	--- @class ClickedSimpleGroup : AceGUISimpleGroup
 	local widget = AceGUI:Create("SimpleGroup")
 	widget.type = TYPE
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedSimpleGroup]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

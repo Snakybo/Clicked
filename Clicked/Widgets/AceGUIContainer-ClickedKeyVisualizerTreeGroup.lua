@@ -64,6 +64,7 @@ end
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
+--- @return ClickedKeyVisualizerTreeGroup
 local function Constructor()
 	--- @class ClickedKeyVisualizerTreeGroup
 	local widget = AceGUI:Create("TreeGroup")
@@ -76,7 +77,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsContainer(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsContainer(widget) --[[@as ClickedKeyVisualizerTreeGroup]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

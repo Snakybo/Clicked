@@ -53,7 +53,7 @@ local KeyButtonMixin = {}
 --- @param data KeyButtonData
 --- @return KeyButton
 function KeyButtonMixin:New(data)
-	return setmetatable(CopyTable(data), { __index = KeyButtonMixin })
+	return setmetatable(CopyTable(data), { __index = KeyButtonMixin }) --[[@as KeyButton]]
 end
 
 --- @return string
@@ -536,6 +536,9 @@ function KeyLayouts:GetKeyboardLayouts()
 		table.insert(result, key)
 	end
 
+	--- @param l KeyboardLayout
+	--- @param r KeyboardLayout
+	--- @return boolean
 	local function SortFunc(l, r)
 		return l < r
 	end
@@ -553,6 +556,9 @@ function KeyLayouts:GetKeyboardSizes(layout)
 		table.insert(result, size)
 	end
 
+	--- @param l number
+	--- @param r number
+	--- @return boolean
 	local function SortFunc(l, r)
 		return l > r
 	end

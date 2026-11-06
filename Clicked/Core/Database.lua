@@ -255,6 +255,9 @@ end
 function Clicked:DeleteDataObject(object)
 	assert(type(object) == "table", "bad argument #1, expected table but got " .. type(object))
 
+	--- @param tbl DataObject[]
+	--- @param uid integer
+	--- @return boolean
 	local function Delete(tbl, uid)
 		for i, obj in ipairs(tbl) do
 			if obj.uid == uid then
@@ -356,6 +359,9 @@ function Clicked:GetByActionType(type)
 end
 
 --- Iterate trough all configured groups. This function can be used in a `for in` loop.
+--- @return fun(table: Group[], i?: integer): number, Group
+--- @return Group[]
+--- @return number
 function Clicked:IterateGroups()
 	--- @type Group[]
 	local result = {}
@@ -459,7 +465,8 @@ function Addon:UpdateLookupTable(obj)
 		end
 	end
 
-	--- @param tbl table<any,DataObject[]>
+	--- @generic K
+	--- @param tbl table<K,DataObject[]>
 	--- @param value DataObject
 	local function DeleteFromLookupTable(tbl, value)
 		for _, array in pairs(tbl) do
@@ -607,6 +614,7 @@ function Addon:GetNewBindingTargetTemplate()
 	return template
 end
 
+--- @return integer
 function Addon:GetNextUid()
 	local uid = Addon.db.global.nextUid
 	Addon.db.global.nextUid = uid + 1
@@ -623,7 +631,8 @@ function Addon:ChangeDataObjectScope(item, scope)
 	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
 
 	if item.uid == nil then
-		return Clicked:LogFatal("Can only change the scope of a binding or group")
+		Clicked:LogFatal("Can only change the scope of a binding or group")
+		return
 	end
 
 	if item.scope == scope then

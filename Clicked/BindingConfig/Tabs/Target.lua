@@ -59,8 +59,10 @@ function BindingTargetTab:Redraw()
 			return binding.targets.hovercastEnabled
 		end
 
+		--- @param widget ClickedToggleHeading
+		--- @param event string
 		--- @param value boolean
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
 				if CanToggleUnitFrameTargetMode(binding) then
 					binding.targets.hovercastEnabled = value
@@ -91,9 +93,13 @@ function BindingTargetTab:Redraw()
 			self.container:AddChild(widget)
 		end
 
-		local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+		--- @param binding Binding
+		--- @return boolean
+		local function IsHovercastEnabled(binding)
 			return binding.targets.hovercastEnabled
-		end)
+		end
+
+		local isAnyEnabled = FindInTableIf(self.bindings, IsHovercastEnabled)
 
 		if isAnyEnabled then
 			do
@@ -123,8 +129,10 @@ function BindingTargetTab:Redraw()
 				return binding.targets.regularEnabled
 			end
 
+			--- @param widget ClickedToggleHeading
+			--- @param event string
 			--- @param value boolean
-			local function OnValueChanged(_, _, value)
+			local function OnValueChanged(widget, event, value)
 				for _, binding in ipairs(self.bindings) do
 					if CanToggleRegularTargetMode(binding) then
 						binding.targets.regularEnabled = value
@@ -145,9 +153,13 @@ function BindingTargetTab:Redraw()
 				self.container:AddChild(widget)
 			end
 
-			local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+			--- @param binding Binding
+			--- @return boolean
+			local function IsRegularEnabled(binding)
 				return binding.targets.regularEnabled
-			end)
+			end
+
+			local isAnyEnabled = FindInTableIf(self.bindings, IsRegularEnabled)
 
 			if isAnyEnabled then
 				local maxTargets = 0
@@ -157,7 +169,9 @@ function BindingTargetTab:Redraw()
 				end
 
 				for i = 1, maxTargets + 1 do
-					local function OnMove(_, event)
+					--- @param widget ClickedTargetGroup
+					--- @param event string
+					local function OnMove(widget, event)
 						for _, binding in ipairs(self.bindings) do
 							if event == "OnMoveUp" then
 								local temp = binding.targets.regular[i - 1]
@@ -191,15 +205,23 @@ function BindingTargetTab:Redraw()
 					group:SetCallback("OnMoveDown", OnMove)
 					group:SetCallback("OnMoveUp", OnMove)
 
-					local canAnyBeHostile = FindInTableIf(self.bindings, function(binding)
+					--- @param binding Binding
+					--- @return boolean
+					local function CanBeHostile(binding)
 						local target = binding.targets.regular[i]
 						return target ~= nil and Addon:CanUnitBeHostile(target.unit)
-					end)
+					end
 
-					local canAnyBeDead = FindInTableIf(self.bindings, function(binding)
+					local canAnyBeHostile = FindInTableIf(self.bindings, CanBeHostile)
+
+					--- @param binding Binding
+					--- @return boolean
+					local function CanBeDead(binding)
 						local target = binding.targets.regular[i]
 						return target ~= nil and Addon:CanUnitBeDead(target.unit)
-					end)
+					end
+
+					local canAnyBeDead = FindInTableIf(self.bindings, CanBeDead)
 
 					do
 						local widget = self:DrawTargetUnit(group, index, maxTargets > 1)
@@ -230,9 +252,13 @@ function BindingTargetTab:Redraw()
 		end
 	end
 
-	local hasUnrestrictedKeybind = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsUnrestrictedKeybind(binding)
 		return not Addon:IsRestrictedKeybind(binding.keybind)
-	end)
+	end
+
+	local hasUnrestrictedKeybind = FindInTableIf(self.bindings, IsUnrestrictedKeybind)
 
 	if not hasUnrestrictedKeybind then
 		local widget = AceGUI:Create("Label")
@@ -336,8 +362,10 @@ function BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 		return target ~= nil and target.unit or Helpers.IGNORE_VALUE
 	end
 
+	--- @param widget ClickedDropdown<string, string>
+	--- @param event string
 	--- @param value string
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		if value == "_NONE_" then
 			return
 		elseif value == "_DELETE_" then
@@ -414,8 +442,10 @@ function BindingTargetTab:DrawTargetHostility(container, index)
 		return target and target.hostility or Helpers.IGNORE_VALUE
 	end
 
+	--- @param widget ClickedDropdown<string, string>
+	--- @param event string
 	--- @param value string
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		for _, binding in ipairs(self.bindings) do
 			local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
 
@@ -470,8 +500,10 @@ function BindingTargetTab:DrawTargetVitals(container, index)
 		return target and target.vitals or Helpers.IGNORE_VALUE
 	end
 
+	--- @param widget ClickedDropdown<string, string>
+	--- @param event string
 	--- @param value string
-	local function OnValueChanged(_, _, value)
+	local function OnValueChanged(widget, event, value)
 		for _, binding in ipairs(self.bindings) do
 			local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
 

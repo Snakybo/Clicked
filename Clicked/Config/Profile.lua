@@ -133,7 +133,9 @@ function ProfileOptions:CreateOptionsTable()
 		get = function()
 			return shareTarget
 		end,
-		set = function(_, value)
+		--- @param info table
+		--- @param value string
+		set = function(info, value)
 			shareTarget = value
 		end
 	}
@@ -191,7 +193,9 @@ function ProfileOptions:CreateOptionsTable()
 		get = function()
 			return shareEnabled
 		end,
-		set = function(_, value)
+		--- @param info table
+		--- @param value boolean
+		set = function(info, value)
 			shareEnabled = value
 
 			if value then
@@ -229,9 +233,11 @@ function ProfileOptions:CreateOptionsTable()
 end
 
 --- @private
+--- @param prefix string
 --- @param message string
+--- @param distribution string
 --- @param sender string
-function ProfileOptions:OnCommReceived(_, message, _, sender)
+function ProfileOptions:OnCommReceived(prefix, message, distribution, sender)
 	if InCombatLockdown() then
 		return
 	end

@@ -136,9 +136,10 @@ local function PLAYER_REGEN_ENABLED()
 	end
 end
 
+--- @param event WowEvent
 --- @param isInitialLogin boolean
 --- @param isReloadingUi boolean
-local function PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
+local function PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
 	Clicked:LogTrace("Received event {eventName}", "PLAYER_ENTERING_WORLD")
 
 	isInitialized = true
@@ -175,7 +176,9 @@ local function ZONE_CHANGED_NEW_AREA()
 	Addon:ReloadBindings("ZONE_CHANGED_NEW_AREA")
 end
 
-local function PLAYER_FLAGS_CHANGED(_, unit)
+--- @param event WowEvent
+--- @param unit string
+local function PLAYER_FLAGS_CHANGED(event, unit)
 	if unit ~= "player" then
 		return
 	end
@@ -265,7 +268,10 @@ local function HOUSE_EDITOR_MODE_CHANGED()
 	end
 end
 
-local function ITEM_DATA_LOAD_RESULT(_, itemId, success)
+--- @param event WowEvent
+--- @param itemId number
+--- @param success boolean
+local function ITEM_DATA_LOAD_RESULT(event, itemId, success)
 	if not success then
 		return
 	end
@@ -325,6 +331,7 @@ end
 
 --- @param self AceEvent-3.0
 --- @param event WowEvent
+--- @param callback function
 local function UnregisterEvent(self, event, callback)
 	if C_EventUtils.IsEventValid(event) then
 		self:UnregisterEvent(event)

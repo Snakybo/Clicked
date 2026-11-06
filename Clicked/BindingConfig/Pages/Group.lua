@@ -42,8 +42,10 @@ function GroupPage:Redraw()
 			return group.name
 		end
 
+		--- @param widget ClickedEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			value = string.trim(value)
 
 			for _, group in ipairs(self.targets) do
@@ -70,8 +72,10 @@ function GroupPage:Redraw()
 			return tostring(group.displayIcon)
 		end
 
+		--- @param widget ClickedEditBox
+		--- @param event string
 		--- @param value string
-		local function OnEnterPressed(_, _, value)
+		local function OnEnterPressed(widget, event, value)
 			for _, group in ipairs(self.targets) do
 				group.displayIcon = value
 			end

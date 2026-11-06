@@ -43,11 +43,15 @@ end
 function Drawer:Draw()
 	local drawer = self.condition.drawer
 
-	local isAnyEnabled = FindInTableIf(self.bindings, function(binding)
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
 		--- @type SimpleLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
 		return load.selected
-	end) ~= nil
+	end
+
+	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
 
 	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
 
@@ -75,6 +79,7 @@ function Drawer:Draw()
 		--- @param binding Binding
 		--- @return any
 		local function GetRawValue(binding)
+			--- @type SimpleLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()
 			return load.value
 		end
@@ -96,8 +101,10 @@ function Drawer:Draw()
 			return result
 		end
 
+		--- @param widget ClickedDropdown
+		--- @param event string
 		--- @param value string
-		local function OnValueChanged(_, _, value)
+		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
 				--- @type SimpleLoadOption
 				local load = binding.load[self.fieldName] or self.condition.init()

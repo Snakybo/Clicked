@@ -398,6 +398,7 @@ end
 --- @param canExpand boolean
 --- @param isExpanded boolean
 function ClickedBindingImportList:UpdateButton(button, line, canExpand, isExpanded)
+	--- @type Button
 	local toggle = button.toggle
 
 	button.treeline = line
@@ -576,6 +577,7 @@ local PaneBackdrop  = {
 	insets = { left = 3, right = 3, top = 5, bottom = 3 }
 }
 
+--- @return ClickedBindingImportList
 local function Constructor()
 	--- @class ClickedBindingImportList
 	local widget = {}
@@ -621,7 +623,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedBindingImportList]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

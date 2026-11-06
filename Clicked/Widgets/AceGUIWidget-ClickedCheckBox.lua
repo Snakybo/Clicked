@@ -45,6 +45,7 @@ function ClickedCheckBox:SetLabelColor(color)
 	self.text:SetTextColor(color:GetRGBA())
 end
 
+--- @return ClickedCheckBox
 local function Constructor()
 	--- @class ClickedCheckBox
 	local widget = AceGUI:Create("CheckBox")
@@ -57,7 +58,8 @@ local function Constructor()
 		widget[method] = func
 	end
 
-	return AceGUI:RegisterAsWidget(widget)
+	--- TEMP: This cast can be removed once https://github.com/TradeSkillMaster/wowlua-ls/pull/65 is merged
+	return AceGUI:RegisterAsWidget(widget) --[[@as ClickedCheckBox]]
 end
 
 AceGUI:RegisterWidgetType(TYPE, Constructor, VERSION)

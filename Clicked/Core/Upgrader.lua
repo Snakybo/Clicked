@@ -34,7 +34,8 @@ local function Upgrade(db, global, from, type, cache)
 
 	if from < 12 then
 		local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
-		return Clicked:LogError(message)
+		Clicked:LogError(message)
+		return
 	end
 
 	if from < 13 then -- 2025-03-25
@@ -44,6 +45,8 @@ local function Upgrade(db, global, from, type, cache)
 		local orphans = {}
 
 		for i, binding in ipairs(db.bindings) do
+			--- @param group table
+			--- @return boolean
 			local function HasParent(group)
 				return binding.parent == group.uid
 			end
@@ -62,7 +65,14 @@ local function Upgrade(db, global, from, type, cache)
 			upgradeData[13].seen[binding.uid] = true
 		end
 
-		table.sort(orphans, function(a, b) return a > b end)
+		--- @param left integer
+		--- @param right integer
+		--- @return boolean
+		local function SortFunc(left, right)
+			return left > right
+		end
+
+		table.sort(orphans, SortFunc)
 		for _, i in ipairs(orphans) do
 			table.remove(db.bindings, i)
 		end
@@ -144,6 +154,8 @@ local function Upgrade(db, global, from, type, cache)
 				return template
 			end
 
+			--- @param type string
+			--- @param key string
 			local function CreateBinding(type, key)
 				local uid = global.nextUid
 				global.nextUid = global.nextUid + 1
