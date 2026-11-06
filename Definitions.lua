@@ -161,16 +161,16 @@
 --- @class Action
 --- @field public ability integer|string
 --- @field public type string
---- @field public combat? string
---- @field public pet? string
---- @field public stealth? string
---- @field public mounted? string
---- @field public outdoors? string
---- @field public flying? string
---- @field public dynamicFlying? string
---- @field public flyable? string
---- @field public advFlyable? string
---- @field public swimming? string
+--- @field public combat? boolean
+--- @field public pet? boolean
+--- @field public stealth? boolean
+--- @field public mounted? boolean
+--- @field public outdoors? boolean
+--- @field public flying? boolean
+--- @field public dynamicFlying? boolean
+--- @field public flyable? boolean
+--- @field public advflyable? boolean
+--- @field public swimming? boolean
 --- @field public channeling? Action.NegatableValueString
 --- @field public forms? Action.NegatableValueString
 --- @field public bonusbar? Action.NegatableValueString

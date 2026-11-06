@@ -3,7 +3,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 17
+Addon.DATA_VERSION = 18
 
 local upgradeData = {}
 
@@ -259,6 +259,12 @@ local function Upgrade(db, global, from, type, cache)
 		if type == "profile" then
 			db.options = nil
 			db.blacklist = nil
+		end
+	end
+
+	if from < 18 then -- 2026-11-06
+		for _, binding in ipairs(db.bindings) do
+			binding.load.advflyable = binding.load.advFlyable
 		end
 	end
 end

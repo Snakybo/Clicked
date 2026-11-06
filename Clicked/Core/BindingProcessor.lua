@@ -193,7 +193,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	ParseNegatableBooleanCondition(action.flying, "flying")
 	ParseNegatableBooleanCondition(action.dynamicFlying, "bonusbar:5")
 	ParseNegatableBooleanCondition(action.flyable, "flyable")
-	ParseNegatableBooleanCondition(action.advFlyable, "advflyable")
+	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
 	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
 	ParseNegatableStringCondition(action.bonusbar, "bonusbar", "nobonusbar")
 	ParseNegatableStringCondition(action.bar, "bar", "nobar")
@@ -202,7 +202,7 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		table.insert(flags, "exists")
 	end
 
-	if  action.forms ~= nil and #action.forms.value > 0 then
+	if action.forms ~= nil and #action.forms.value > 0 then
 		ParseNegatableStringCondition(action.forms, "form", "noform")
 	end
 
@@ -351,80 +351,63 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 	return actions
 end
 
+--- @param action Action
+--- @return boolean[]
+local function GetSortCriteria(action)
+	--- @type boolean[]
+	local criteria = {
+		-- 1. Mouseover targets always come first
+		action.unit == Addon.TargetUnit.MOUSEOVER,
+		action.unit == Addon.TargetUnit.MOUSEOVER_TARGET,
+
+		-- 2. Macro conditions take presedence over actions that don't specify them explicitly
+		not Addon:IsNilOrEmpty(action.hostility),
+		not Addon:IsNilOrEmpty(action.vitals),
+		action.combat == true,
+		action.forms ~= nil and #action.forms.value > 0,
+		action.pet == true,
+		action.stealth == true,
+		action.mounted == true,
+		action.outdoors == true,
+		action.swimming == true,
+		action.flying == true,
+		action.dynamicFlying == true,
+		action.flyable == true,
+		action.advflyable == true,
+		action.bonusbar ~= nil,
+		action.bar ~= nil,
+
+		-- 3. Any actions that do not meet any of the criteria in this list will be placed here
+
+		-- 4. The player, cursor, and default targets will always come last
+		action.unit ~= Addon.TargetUnit.DEFAULT,
+		action.unit ~= Addon.TargetUnit.CURSOR,
+		action.unit ~= Addon.TargetUnit.PLAYER
+	}
+
+	return criteria
+end
+
 --- @param actions Action[]
 --- @param indexMap table<Action,integer>
 local function SortActions(actions, indexMap)
-	---@param left Action
-	---@param right Action
-	---@return boolean
+	--- @type table<Action,boolean[]>
+	local criteria = {}
+
+	for _, action in ipairs(actions) do
+		criteria[action] = GetSortCriteria(action)
+	end
+
+	--- @param left Action
+	--- @param right Action
+	--- @return boolean
 	local function SortFunc(left, right)
-		--- @type { left: string?, right: string?, value: string|integer|boolean, comparison: "eq"|"gt"|"neq" }[]
-		local priority = {
-			-- 1. Mouseover targets always come first
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.MOUSEOVER, comparison = "eq" },
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.MOUSEOVER_TARGET, comparison = "eq"},
+		local l = criteria[left]
+		local r = criteria[right]
 
-			-- 2. Macro conditions take presedence over actions that don't specify them explicitly
-			{ left = left.hostility, right = right.hostility, value = 0, comparison = "gt" },
-			{ left = left.vitals, right = right.vitals, value = 0, comparison = "gt" },
-			{ left = left.combat, right = right.combat, value = true, comparison = "eq" },
-			{ left = left.forms and left.forms.value, right = right.forms and right.forms.value, value = 0, comparison = "gt" },
-			{ left = left.pet, right = right.pet, value = true, comparison = "eq" },
-			{ left = left.stealth, right = right.stealth, value = true, comparison = "eq" },
-			{ left = left.mounted, right = right.mounted, value = true, comparison = "eq" },
-			{ left = left.outdoors, right = right.outdoors, value = true, comparison = "eq" },
-			{ left = left.swimming, right = right.swimming, value = true, comparison = "eq" },
-			{ left = left.flying, right = right.flying, value = true, comparison = "eq" },
-			{ left = left.dynamicFlying, right = right.dynamicFlying, value = true, comparison = "eq" },
-			{ left = left.flyable, right = right.flyable, value = true, comparison = "eq" },
-			{ left = left.advFlyable, right = right.advFlyable, value = true, comparison = "eq" },
-			{ left = left.bonusbar and left.bonusbar.value, right = right.bonusbar and right.bonusbar.value, value = true, comparison = "eq" },
-			{ left = left.bar and left.bar.value, right = right.bar and right.bar.value, value = true, comparison = "eq" },
-
-			-- 3. Any actions that do not meet any of the criteria in this list will be placed here
-
-			-- 4. The player, cursor, and default targets will always come last
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.DEFAULT, comparison = "neq" },
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.CURSOR, comparison = "neq" },
-			{ left = left.unit, right = right.unit, value = Addon.TargetUnit.PLAYER, comparison = "neq" },
-		}
-
-		for _, item in ipairs(priority) do
-			--- @type string|integer
-			local l = item.left
-
-			--- @type string|integer
-			local r = item.right
-			local v = item.value
-			local c = item.comparison
-
-			if c == "neq" then
-				c = "eq"
-
-				local t = l
-				l = r
-				r = t
-			end
-
-			if c == "eq" then
-				if l == v and r ~= v then
-					return true
-				end
-
-				if l ~= v and r == v then
-					return false
-				end
-			elseif c == "gt" then
-				l = l and #l or 0
-				r = r and #r or 0
-
-				if l > v and r == v then
-					return true
-				end
-
-				if l == v and r > v then
-					return false
-				end
+		for i = 1, #l do
+			if l[i] ~= r[i] then
+				return l[i]
 			end
 		end
 
