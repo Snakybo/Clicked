@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, assign-type-mismatch, inject-field, missing-fields
+---@diagnostic disable: undefined-field, assign-type-mismatch, inject-field, missing-fields, unknown-local-type, unknown-param-type, unknown-return-type
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -277,6 +277,12 @@ local function Upgrade(db, global, from, type, cache)
 	if from < 18 then -- 2026-11-06
 		for _, binding in ipairs(db.bindings) do
 			binding.load.advflyable = binding.load.advFlyable
+		end
+	end
+
+	if from < 19 then -- 2026-11-09
+		for _, binding in ipairs(db.bindings) do
+			binding.load.advFlyable = nil
 		end
 	end
 end
