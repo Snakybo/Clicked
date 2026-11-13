@@ -144,15 +144,15 @@ local function Upgrade(db, global, from, type, cache)
 				return template
 			end
 
-			--- @param type string
+			--- @param actionType string
 			--- @param key string
-			local function CreateBinding(type, key)
+			local function CreateBinding(actionType, key)
 				local uid = global.nextUid
 				global.nextUid = global.nextUid + 1
 
 				return {
 					uid = uid,
-					actionType = type,
+					actionType = actionType,
 					type = 1,
 					scope = 1,
 					keybind = key,
@@ -309,7 +309,7 @@ function Addon:UpgradeDatabase(from)
 	end
 
 	do
-		local src = from or Addon.db.profile.version
+		src = from or Addon.db.profile.version
 
 		if type(src) == "string" then
 			local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]

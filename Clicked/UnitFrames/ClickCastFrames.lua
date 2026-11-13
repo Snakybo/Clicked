@@ -179,8 +179,8 @@ function Clicked:RegisterClickCastFrame(frame, addon)
 			frame = frame
 		})
 
-		logger:WithLogContext({ unitFrameAddon = addon }, function(logger)
-			logger:LogTrace("Delaying frame registration for {frameName} until combat ends or the addon is loaded", function()
+		logger:WithLogContext({ unitFrameAddon = addon }, function(l)
+			l:LogTrace("Delaying frame registration for {frameName} until combat ends or the addon is loaded", function()
 				return type(frame) == "string" and frame or frame:GetName()
 			end)
 		end)

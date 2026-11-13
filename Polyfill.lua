@@ -14,3 +14,6 @@
 --- @return EngravingData[] engravingInfo
 function C_Engraving.GetRunesForCategory(category, ownedOnly)
 end
+
+--- @class AceConfig.OptionsTable
+--- @field public plugins? table<string, table<string, AceConfig.OptionsTable>>

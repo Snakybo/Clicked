@@ -20,7 +20,12 @@
 			"unknown-local-type": "warning",
 			"unknown-param-type": "warning",
 			"unknown-return-type": "warning",
-			"unknown-field-type": "warning"
+			"unknown-field-type": "warning",
+			"unused-local": "warning",
+			"shadowed-local": "warning",
+			"missing-param-annotation": "warning",
+			"implicit-nil-return": "error",
+			"inject-field": "error"
 		}
 	},
 	"globals": {
