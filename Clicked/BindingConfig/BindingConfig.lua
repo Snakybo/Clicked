@@ -398,7 +398,7 @@ function BindingConfig:RedrawTree()
 			self.pendingSelection = nil
 		else
 			--- @type integer[]
-			local selected = CopyTable(self.treeStatus.selected or {})
+			local selected = CopyTable(self.treeStatus.selected)
 			local selecctionChanged = false
 
 			for i = #selected, 1, -1 do
@@ -977,7 +977,7 @@ function BindingConfig:CreateTreeFrame()
 				end):SetEnabled(self.bindingCopyTarget ~= nil)
 
 				rootDescription:CreateButton(Addon.L["Duplicate"], function()
-					--- @type Binding
+					--- @type Binding?
 					local first
 
 					for _, binding in ipairs(objects) do
@@ -985,7 +985,9 @@ function BindingConfig:CreateTreeFrame()
 						first = first or clone
 					end
 
-					self.treeWidget:Select(first.uid)
+					if first ~= nil then
+						self.treeWidget:Select(first.uid)
+					end
 				end)
 
 				do
@@ -1008,13 +1010,8 @@ function BindingConfig:CreateTreeFrame()
 
 						--- @cast objects Binding[]
 						submenu:CreateButton(label, function()
-							--- @type Binding
-							local first
-
 							for _, binding in ipairs(objects) do
 								if binding.actionType ~= type then
-									first = first or binding
-
 									-- When converting to any macro, try to fill in the macro name, value and icon
 									if type == Clicked.ActionType.MACRO and Addon:IsNilOrEmpty(binding.action.macroValue) then
 										local name = nil
@@ -1068,7 +1065,7 @@ function BindingConfig:CreateTreeFrame()
 				--- @cast ref Group
 
 				rootDescription:CreateButton(Addon.L["Duplicate"], function()
-					--- @type Group
+					--- @type Group?
 					local first
 
 					for _, group in ipairs(objects) do
@@ -1076,7 +1073,9 @@ function BindingConfig:CreateTreeFrame()
 						first = first or clone
 					end
 
-					self.treeWidget:Select(first.uid)
+					if first ~= nil then
+						self.treeWidget:Select(first.uid)
+					end
 				end)
 			end
 
@@ -1107,7 +1106,7 @@ function BindingConfig:CreateTreeFrame()
 						end)
 					else
 						submenu:CreateButton(label, function()
-							--- @type DataObject
+							--- @type DataObject?
 							local first
 
 							for _, obj in ipairs(objects) do
@@ -1117,8 +1116,10 @@ function BindingConfig:CreateTreeFrame()
 								end
 							end
 
-							self:CreateOrUpdateTree()
-							self.treeWidget:Select(first.uid)
+							if first ~= nil then
+								self:CreateOrUpdateTree()
+								self.treeWidget:Select(first.uid)
+							end
 						end)
 					end
 				end

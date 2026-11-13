@@ -19,9 +19,9 @@ A heading similar to AceGUI's Heading widget, but with an in-line togglable chec
 -------------------------------------------------------------------------------]]
 
 local TYPE, VERSION = "ClickedToggleHeading", 2
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 

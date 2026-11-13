@@ -20,9 +20,9 @@ text, and optional image support.
 -------------------------------------------------------------------------------]]
 
 local TYPE, VERSION = "ClickedReorderableLabel", 3
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
@@ -167,7 +167,7 @@ function ClickedReorderableLabel:UpdateAnchor()
 	end
 
 	local frame = self.frame
-	local width = frame:GetWidth() or 0
+	local width = frame:GetWidth()
 	local image = self.image
 	local label = self.label
 	local up = self.up

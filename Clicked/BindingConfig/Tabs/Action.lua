@@ -171,10 +171,10 @@ function BindingActionTab:RedrawTargetSpell()
 		--- @param event string
 		--- @param value string
 		local function OnTextChanged(widget, event, value)
-			local type, info = LinkUtil.ExtractLink(value)
+			local linkType, linkOptions = LinkUtil.ExtractLink(value)
 
-			if type ~= nil then
-				local segments = { string.split(":", info) }
+			if linkType ~= nil and linkOptions ~= nil then
+				local segments = { string.split(":", linkOptions) }
 
 				local linkId = tonumber(segments[1])
 				if linkId == nil then
@@ -184,9 +184,9 @@ function BindingActionTab:RedrawTargetSpell()
 				--- @param name string
 				local function UpdateValue(name)
 					for _, binding in ipairs(self.bindings) do
-						if binding.actionType == Clicked.ActionType.SPELL and type == "spell" then
+						if binding.actionType == Clicked.ActionType.SPELL and linkType == "spell" then
 							SetBindingValue(binding, linkId)
-						elseif binding.actionType == Clicked.ActionType.ITEM and type == "item" then
+						elseif binding.actionType == Clicked.ActionType.ITEM and linkType == "item" then
 							SetBindingValue(binding, linkId)
 						elseif binding.actionType == Clicked.ActionType.CANCELAURA then
 							SetBindingValue(binding, name)
@@ -201,13 +201,13 @@ function BindingActionTab:RedrawTargetSpell()
 					self.loadCallback = nil
 				end
 
-				if type == "item" then
+				if linkType == "item" then
 					local item = Item:CreateFromItemID(linkId)
 
 					self.loadCallback = item:ContinueWithCancelOnItemLoad(function()
 						UpdateValue(item:GetItemName() --[[@as string]])
 					end)
-				elseif type == "spell" then
+				elseif linkType == "spell" then
 					local spell = Spell:CreateFromSpellID(linkId)
 
 					self.loadCallback = spell:ContinueWithCancelOnSpellLoad(function()

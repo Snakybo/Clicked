@@ -23,9 +23,9 @@ icon, and action count.
 local Addon = select(2, ...)
 
 local TYPE, VERSION = "ClickedKeyVisualizerButton", 3
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 

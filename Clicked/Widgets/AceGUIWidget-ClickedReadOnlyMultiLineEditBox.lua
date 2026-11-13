@@ -19,9 +19,9 @@ A simple multi-line editbox that is read-only.
 -------------------------------------------------------------------------------]]
 
 local TYPE, VERSION = "ClickedReadOnlyMultilineEditBox", 2
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 

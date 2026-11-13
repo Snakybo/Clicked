@@ -17,3 +17,16 @@ end
 
 --- @class AceConfig.OptionsTable
 --- @field public plugins? table<string, table<string, AceConfig.OptionsTable>>
+
+--- @param text string
+--- @return ...string?
+function LinkUtil.ExtractLink(text)
+end
+
+--- @class AceGUI-3.0
+local AceGUI = {}
+
+--- @param type string
+--- @return number?
+function AceGUI:GetWidgetVersion(type)
+end

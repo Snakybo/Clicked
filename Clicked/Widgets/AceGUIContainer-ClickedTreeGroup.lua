@@ -22,8 +22,9 @@ A tree group container that displays bindings.
 local Addon = select(2, ...)
 
 local TYPE, VERSION = "ClickedTreeGroup", 3
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+local AceGUI = LibStub("AceGUI-3.0")
+
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
@@ -209,7 +210,7 @@ function ClickedTreeGroup:RefreshTree(scrollToSelection, fromOnUpdate)
 	local lines = self:UpdateLines()
 
 	local numlines = #lines
-	local maxlines = math.floor(((self.treeFrame:GetHeight() or 0) - 20) / 28)
+	local maxlines = math.floor((self.treeFrame:GetHeight() - 20) / 28)
 
 	if maxlines <= 0 then
 		return
@@ -770,7 +771,7 @@ function ClickedTreeGroup.Button_OnClick(button, key)
 	local status = self.status or self.localstatus
 
 	if key == "RightButton" then
-		local ids = status.selected or {}
+		local ids = status.selected
 
 		if not tContains(ids, button.uid) then
 			ids = { button.uid }
