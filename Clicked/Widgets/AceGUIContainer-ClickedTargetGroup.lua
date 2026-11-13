@@ -48,8 +48,9 @@ end
 --- | "ClickedTargetGroup"
 
 --- @class ClickedTargetGroup : AceGUIContainer
---- @field public frame Frame&{obj: self}
 --- @field public content Frame&{obj: self}
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected moveUp Button&{obj: self}
 --- @field protected moveDown Button&{obj: self}
 local ClickedTargetGroup = {}

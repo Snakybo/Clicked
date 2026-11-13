@@ -29,6 +29,8 @@ end
 --- | "ClickedReadOnlyMultilineEditBox"
 
 --- @class ClickedReadOnlyMultilineEditBox : ClickedMultiLineEditBox
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected text string
 local ClickedReadOnlyMultilineEditBox = {}
 

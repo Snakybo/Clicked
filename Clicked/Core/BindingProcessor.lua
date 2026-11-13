@@ -14,9 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- Added in 12.0.0
-local issecretvalue = issecretvalue or function(val) return false end
-
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -441,7 +438,7 @@ local function ProcessBuckets()
 			command.action = Addon.CommandType.MACRO
 			command.data = Addon:GetMacroForBindings(bindings, interactionType)
 
-			if strlenutf8(command.data) > 255 and not macroTooLongNotified[command.data] then
+			if strlenutf8(command.data --[[@as string]]) > 255 and not macroTooLongNotified[command.data] then
 				macroTooLongNotified[command.data] = true
 
 				local message = Addon.L["The generated macro for binding {name} is too long and will not function, please adjust your bindings."]
@@ -1001,6 +998,7 @@ function Addon:UpdateBindingLoadState(binding, causes)
 		--- @cast condition LoadCondition
 
 		if ShouldPerformStateCheck(condition.id, condition.testOnEvents) then
+			--- @diagnostic disable-next-line: unknown-local-type
 			local load = binding.load[condition.id] or condition.init()
 			local selected = condition.unpack(load)
 

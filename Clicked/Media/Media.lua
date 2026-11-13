@@ -30,20 +30,21 @@ LSM:Register("font", Addon.Media.FONT_MONO, fontPath .. "JetBrainsMonoNL-Regular
 
 -- Private addon API
 
---- @param object any
+--- @param object EditBox|AceGUIEditBox|AceGUIMultiLineEditBox
 function Addon.Media:UseMonoFont(object)
 	local path = LSM:Fetch("font", Addon.Media.FONT_MONO)
-
 	if path == nil then
 		return
 	end
 
-	-- AceGUIWidget
 	if object.editBox ~= nil then
+		--- @cast object AceGUIMultiLineEditBox
 		object = object.editBox
+	elseif object.editbox ~= nil then
+		--- @cast object AceGUIEditBox
+		object = object.editbox
 	end
 
-	-- EditBox
 	if object.SetFont ~= nil then
 		--- @cast object EditBox
 		object:SetFont(path, 12, "")

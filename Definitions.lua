@@ -97,47 +97,47 @@
 
 --- @class Binding.Load
 --- @field public never boolean
---- @field public class Binding.TriStateLoadOption
---- @field public race Binding.TriStateLoadOption
---- @field public playerNameRealm Binding.LoadOption
---- @field public combat Binding.LoadOption
---- @field public spellKnown Binding.LoadOption
---- @field public inGroup Binding.LoadOption
---- @field public playerInGroup Binding.LoadOption
---- @field public form Binding.NegatableTriStateLoadOption
---- @field public pet Binding.LoadOption
---- @field public stealth Binding.LoadOption
---- @field public mounted Binding.LoadOption
---- @field public outdoors Binding.LoadOption
---- @field public swimming Binding.LoadOption
---- @field public flying Binding.LoadOption
---- @field public dynamicFlying Binding.LoadOption
---- @field public flyable Binding.LoadOption
---- @field public advancedFlyable Binding.LoadOption
---- @field public instanceType Binding.TriStateLoadOption
---- @field public zoneName Binding.LoadOption
---- @field public equipped Binding.LoadOption
---- @field public specialization Binding.TriStateLoadOption
---- @field public specRole Binding.TriStateLoadOption
---- @field public talent Binding.TriStateLoadOption|Binding.MutliFieldLoadOption
+--- @field public class Binding.TriStateLoadOption<string>
+--- @field public race Binding.TriStateLoadOption<string>
+--- @field public playerNameRealm Binding.LoadOption<string>
+--- @field public combat Binding.LoadOption<boolean>
+--- @field public spellKnown Binding.LoadOption<string>
+--- @field public inGroup Binding.LoadOption<string>
+--- @field public playerInGroup Binding.LoadOption<string>
+--- @field public form Binding.NegatableTriStateLoadOption<integer>
+--- @field public pet Binding.LoadOption<boolean>
+--- @field public stealth Binding.LoadOption<boolean>
+--- @field public mounted Binding.LoadOption<boolean>
+--- @field public outdoors Binding.LoadOption<boolean>
+--- @field public swimming Binding.LoadOption<boolean>
+--- @field public flying Binding.LoadOption<boolean>
+--- @field public dynamicFlying Binding.LoadOption<boolean>
+--- @field public flyable Binding.LoadOption<boolean>
+--- @field public advancedFlyable Binding.LoadOption<boolean>
+--- @field public instanceType Binding.TriStateLoadOption<string>
+--- @field public zoneName Binding.LoadOption<string>
+--- @field public equipped Binding.LoadOption<string>
+--- @field public specialization Binding.TriStateLoadOption<integer>
+--- @field public specRole Binding.TriStateLoadOption<integer>
+--- @field public talent Binding.MutliFieldLoadOption
 --- @field public pvpTalent Binding.MutliFieldLoadOption
---- @field public warMode Binding.LoadOption
---- @field public ruleset Binding.TriStateLoadOption
---- @field public groupRole Binding.TriStateLoadOption
+--- @field public warMode Binding.LoadOption<boolean>
+--- @field public ruleset Binding.TriStateLoadOption<string>
+--- @field public groupRole Binding.TriStateLoadOption<string>
 --- @field public channeling Binding.NegatableStringLoadOption
 --- @field public bonusbar Binding.NegatableStringLoadOption
 --- @field public bar Binding.NegatableStringLoadOption
 
---- @class Binding.LoadOption<T>
+--- @class Binding.LoadOption<T: string|boolean|integer>
 --- @field public selected boolean
 --- @field public value T
 
---- @class Binding.TriStateLoadOption<T>
+--- @class Binding.TriStateLoadOption<T: string|boolean|integer>
 --- @field public selected integer
 --- @field public single T
 --- @field public multiple T[]
 
---- @class Binding.NegatableTriStateLoadOption<T> : Binding.TriStateLoadOption<T>
+--- @class Binding.NegatableTriStateLoadOption<T: string|boolean|integer> : Binding.TriStateLoadOption<T>
 --- @field public negated boolean
 
 --- @class Binding.MutliFieldLoadOption
@@ -187,7 +187,7 @@
 --- @field public keybind string
 --- @field public hovercast boolean
 --- @field public action? string
---- @field public data? any
+--- @field public data? string|boolean
 --- @field public prefix? string
 --- @field public suffix? string
 

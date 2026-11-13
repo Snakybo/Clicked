@@ -30,7 +30,11 @@ end
 --- | "ClickedTabGroup"
 
 --- @class ClickedTabGroup : AceGUITabGroup
+--- @field public content Frame&{obj: self}
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected tabs (AceGUITabGroupTab&{SetSelected: fun(self: Button, selected: boolean)})[]
+--- @field private TabGroupSetTabs fun(self: AceGUITabGroup, tabs: AceGUITabGroupTab[])
 local ClickedTabGroup = {}
 
 --- @param tabs AceGUITabGroupTab[]
@@ -53,8 +57,6 @@ local function Constructor()
 	--- @class ClickedTabGroup
 	local widget = AceGUI:Create("TabGroup")
 	widget.type = TYPE
-
-	--- @private
 	widget.TabGroupSetTabs = widget.SetTabs
 
 	for method, func in pairs(ClickedTabGroup) do

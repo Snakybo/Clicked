@@ -34,6 +34,7 @@ end
 
 --- @class ClickedSearchBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
 --- @field protected label FontString
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
@@ -43,6 +44,8 @@ end
 --- @field protected tooltipHeader? string
 --- @field protected tooltipSubtext? string
 --- @field protected tooltipShown boolean
+--- @field private EditBoxOnAcquire fun(self: ClickedSearchBox)
+--- @field private EditBoxOnRelease fun(self: ClickedSearchBox)
 local ClickedSearchBox = {}
 
 --- @protected
@@ -203,10 +206,7 @@ local function Constructor()
 	--- @class ClickedSearchBox
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
-
-	--- @private
 	widget.EditBoxOnAcquire = widget.OnAcquire
-	 --- @private
 	widget.EditBoxOnRelease = widget.OnRelease
 
 	local editbox = widget.editbox

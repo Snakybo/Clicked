@@ -451,6 +451,7 @@ function Addon.SpellLibrary:GetActionBarSpells()
 		for i = 1, 180 do
 			local bar = math.ceil(i / 12)
 			local button = 1 + (i - 1) % 12
+			--- @diagnostic disable-next-line: unknown-local-type
 			local frame = _G["ElvUI_Bar" .. bar .. "Button" .. button]
 
 			if frame ~= nil and _G["ElvUI_Bar" .. bar] and _G["ElvUI_Bar" .. bar].db.enabled then

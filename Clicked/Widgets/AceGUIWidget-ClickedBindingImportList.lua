@@ -66,6 +66,7 @@ end
 
 --- @class ClickedBindingImportList : AceGUIWidget
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected lines ClickedBindingImportList.Line[]
 --- @field protected buttons ClickedBindingImportList.Button[]
 --- @field protected status ClickedBindingImportList.Status?

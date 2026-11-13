@@ -19,23 +19,23 @@
 --- @field public label string
 --- @field public tooltip? string|string[]
 --- @field public negatable? boolean
---- @field public availableValues? fun(...):...
+--- @field public availableValues? fun(...): ...
 
 --- @class InputDrawerConfig : DrawerConfig
---- @field public validate? fun(value: string, previousValue: string, final: boolean):string
+--- @field public validate? fun(value: string, previousValue: string, final: boolean): string
 
 --- @class Condition
 --- @field public id string
---- @field public init fun():any
+--- @field public init fun(): any
 --- @field public drawer DrawerConfig
 --- @field public dependencies? string[]
---- @field public disabled? boolean|fun():boolean
---- @field public unpack fun(option: any):any?
+--- @field public disabled? boolean|fun(): boolean
+--- @field public unpack fun(option: any): string|boolean|integer|nil
 
 --- @class LoadCondition : Condition
 --- @field public testOnEvents? string[]
---- @field public test fun(value: any, ...: any):boolean
---- @field public state? fun():...
+--- @field public test fun(value: any, ...: any): boolean
+--- @field public state? fun(): ...
 
 --- @class RuntimeConditionSet
 --- @field public config Condition[]

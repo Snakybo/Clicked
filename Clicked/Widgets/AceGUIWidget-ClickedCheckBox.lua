@@ -30,6 +30,9 @@ end
 --- | "ClickedCheckBox"
 
 --- @class ClickedCheckBox : AceGUICheckBox
+--- @field public frame Button&{obj: self}
+--- @field public type string
+--- @field private CheckBoxOnAcquire fun(self: AceGUICheckBox)
 local ClickedCheckBox = {}
 
 --- @protected
@@ -50,8 +53,6 @@ local function Constructor()
 	--- @class ClickedCheckBox
 	local widget = AceGUI:Create("CheckBox")
 	widget.type = TYPE
-
-	--- @private
 	widget.CheckBoxOnAcquire = widget.OnAcquire
 
 	for method, func in pairs(ClickedCheckBox) do

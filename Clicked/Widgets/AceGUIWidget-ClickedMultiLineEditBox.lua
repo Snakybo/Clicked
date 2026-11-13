@@ -31,6 +31,7 @@ end
 
 --- @class ClickedMultiLineEditBox : AceGUIMultiLineEditBox
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected editBox EditBox&{obj: self}
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
 --- @field protected label FontString
@@ -38,6 +39,7 @@ end
 --- @field protected scrollBar UIPanelScrollFrameTemplate_ScrollBar
 --- @field protected scrollBG Frame&BackdropTemplate
 --- @field protected entered boolean?
+--- @field private MultiLineEditBoxOnAcquire fun(self: AceGUIMultiLineEditBox)
 local Methods = {}
 
 function Methods:OnAcquire()
@@ -56,8 +58,6 @@ local function Constructor()
 	--- @class ClickedMultiLineEditBox
 	local widget = AceGUI:Create("MultiLineEditBox")
 	widget.type = TYPE
-
-	--- @private
 	widget.MultiLineEditBoxOnAcquire = widget.OnAcquire
 
 	for method, func in pairs(Methods) do

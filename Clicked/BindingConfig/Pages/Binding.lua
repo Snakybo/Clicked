@@ -27,7 +27,7 @@
 --- @field public title string
 --- @field public order integer
 --- @field public implementation BindingConfigTab
---- @field public filter? fun(bindings: Binding[]):Binding[]
+--- @field public filter? fun(bindings: Binding[]): Binding[]
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -458,7 +458,6 @@ function BindingPage:FilterBindings()
 
 	for id, tab in pairs(self.tabs) do
 		if tab.filter ~= nil then
-			--- @type boolean, Binding[]
 			local _, filtered = Addon:SafeCall(tab.filter, self.targets)
 			self.filteredTargets[id] = filtered
 		end

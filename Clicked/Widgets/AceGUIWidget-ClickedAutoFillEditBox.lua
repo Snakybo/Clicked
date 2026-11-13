@@ -18,9 +18,6 @@
 A simple edit box with auto-fill and text completion capabilities.
 -------------------------------------------------------------------------------]]
 
--- Deprecated in 11.0.0
-local GetSpellBookItemName = C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
-
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -53,6 +50,7 @@ local ATTACH_BELOW = "below"
 
 --- @class ClickedAutoFillEditBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field public pullout Frame&{obj: self}
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
 --- @field protected values ClickedAutoFillEditBox.Option[]
@@ -68,6 +66,13 @@ local ATTACH_BELOW = "below"
 --- @field protected isInputError boolean
 --- @field protected isShowingAll boolean
 --- @field protected strict boolean
+--- @field private EditBoxOnAcquire fun(self: AceGUIEditBox)
+--- @field private EditBoxOnRelease fun(self: AceGUIEditBox)
+--- @field private EditBoxSetText fun(self: AceGUIEditBox, text: string)
+--- @field private EditBoxGetText fun(self: AceGUIEditBox): string
+--- @field private EditBoxOnFocusGained fun(frame: EditBox&InputBoxTemplate)
+--- @field private EditBoxOnEnterPressed fun(frame: EditBox&InputBoxTemplate)
+--- @field private EditBoxOnTextChanged fun(frame: EditBox&InputBoxTemplate, userInput: boolean)
 local Methods = {}
 
 --- @protected
@@ -729,10 +734,20 @@ function Methods.EditBox_OnReceiveDrag(frame)
 		name = info
 	elseif type == "spell" then
 		--- @cast id number
-		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or BOOKTYPE_SPELL)
+
+		if C_SpellBook.GetSpellBookItemName ~= nil then
+			name = C_SpellBook.GetSpellBookItemName(id, Enum.SpellBookSpellBank.Player)
+		else
+			name = GetSpellBookItemName(id, BOOKTYPE_SPELL)
+		end
 	elseif type == "petaction" then
 		--- @cast id number
-		name = GetSpellBookItemName(id, Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet or BOOKTYPE_PET)
+
+		if C_SpellBook.GetSpellBookItemName ~= nil then
+			name = C_SpellBook.GetSpellBookItemName(id, Enum.SpellBookSpellBank.Pet)
+		else
+			name = GetSpellBookItemName(id, BOOKTYPE_PET)
+		end
 	end
 
 	if name then
@@ -809,20 +824,12 @@ local function Constructor()
 	--- @class ClickedAutoFillEditBox
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
-
-	--- @private
 	widget.EditBoxOnAcquire = widget.OnAcquire
-	--- @private
 	widget.EditBoxOnRelease = widget.OnRelease
-	--- @private
 	widget.EditBoxSetText = widget.SetText
-	--- @private
 	widget.EditBoxGetText = widget.GetText
-	--- @private
 	widget.EditBoxOnFocusGained = widget.editbox:GetScript("OnEditFocusGained")
-	--- @private
 	widget.EditBoxOnEnterPressed = widget.editbox:GetScript("OnEnterPressed")
-	--- @private
 	widget.EditBoxOnTextChanged = widget.editbox:GetScript("OnTextChanged")
 
 	widget.editbox:SetScript("OnTabPressed",  Methods.EditBox_OnTabPressed)

@@ -44,9 +44,9 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @class BindingMultiselectConditionDrawer : BindingConditionDrawer
 --- @field private checkbox ClickedCheckBox
 --- @field private dropdown? ClickedDropdown
---- @field private dropdownCb? fun():boolean
+--- @field private dropdownCb? fun(): boolean
 --- @field private multiselectDropdown? ClickedDropdown
---- @field private multiselectDropdownCb? fun():boolean
+--- @field private multiselectDropdownCb? fun(): boolean
 --- @field private negated? ClickedCheckBox
 --- @correlated dropdown, dropdownCb
 --- @correlated multiselectDropdown, multiselectDropdownCb
@@ -144,8 +144,9 @@ function Drawer:DrawMultiSelectSingle(drawer, items, order)
 		return Helpers.IGNORE_VALUE
 	end
 
+	--- @generic T
 	--- @param binding Binding
-	--- @return unknown?
+	--- @return "\001"|T
 	local function GetRawValue(binding)
 		--- @type MultiselectLoadOption
 		local load = binding.load[self.fieldName] or self.condition.init()
@@ -235,8 +236,9 @@ function Drawer:DrawMultiSelectMultiple(drawer, items, order, offset)
 			return Helpers.IGNORE_VALUE
 		end
 
+		--- @generic T
 		--- @param binding Binding
-		--- @return unknown?
+		--- @return "\001"|T[]
 		local function GetRawValue(binding)
 			--- @type MultiselectLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()

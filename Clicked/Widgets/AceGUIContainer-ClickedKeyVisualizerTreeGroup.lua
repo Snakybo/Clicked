@@ -34,8 +34,12 @@ end
 --- @field contentHeight? integer
 
 --- @class ClickedKeyVisualizerTreeGroup : AceGUITreeGroup
+--- @field public content Frame&{obj: self}
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected localstatus ClickedKeyVisualizerTreeGroup.Status
 --- @field protected status? ClickedKeyVisualizerTreeGroup.Status
+--- @field private TreeGroupLayoutFinished fun(self: AceGUITreeGroup, width: integer?, height: integer?)
 local ClickedKeyVisualizerTreeGroup = {}
 
 --- @return integer
@@ -69,8 +73,6 @@ local function Constructor()
 	--- @class ClickedKeyVisualizerTreeGroup
 	local widget = AceGUI:Create("TreeGroup")
 	widget.type = TYPE
-
-	--- @private
 	widget.TreeGroupLayoutFinished = widget.LayoutFinished
 
 	for method, func in pairs(ClickedKeyVisualizerTreeGroup) do

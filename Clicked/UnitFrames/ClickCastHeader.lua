@@ -17,21 +17,6 @@
 --- @class Addon
 local Addon = select(2, ...)
 
--- Local support functions
-
---- @param err string
-local function errorhandler(err)
-	geterrorhandler()(err)
-end
-
---- @param func? function
---- @param ... any
-local function safecall(func, ...)
-	if func then
-		xpcall(func, errorhandler, ...)
-	end
-end
-
 -- Private addon API
 
 function Addon:RegisterClickCastHeader()
@@ -110,9 +95,10 @@ function Addon:RegisterClickCastHeader()
 	--- @param frame Frame
 	--- @param name string
 	--- @param value any
+	--- @diagnostic disable-next-line: unknown-param-type
 	local function OnAttributeChanged(frame, name, value)
+		--- @type string?
 		local frameName = value and value.GetName and value:GetName()
-
 		if frameName == nil then
 			return
 		end
@@ -154,7 +140,7 @@ function Addon:RegisterClickCastHeader()
 	--- @param clique table
 	--- @param frame Button
 	local function UpdateRegisteredClicks(clique, frame)
-		safecall(Clicked.RegisterFrameClicks, Clicked, frame, true)
+		Addon:SafeCall(Clicked.RegisterFrameClicks, Clicked, frame, true)
 	end
 
 	Clique = {}

@@ -30,6 +30,7 @@ end
 
 --- @class ClickedHorizontalIcon : AceGUIWidget
 --- @field public frame Button&{obj: self}
+--- @field public type string
 --- @field protected image Texture
 --- @field protected label FontString
 local ClickedHorizontalIcon = {}

@@ -37,6 +37,7 @@ end
 
 --- @class ClickedKeyVisualizerButton : AceGUIWidget
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected background Texture
 --- @field protected backgroundMask MaskTexture?
 --- @field protected key KeyButton?
@@ -245,10 +246,10 @@ local function Layout(content, children)
 				local padH = (relH - 1) * PADDING_SIZE
 
 				-- Convert relative position to absolute position
-				local x = Round(relX * GRID_SIZE + padX)
-				local y = Round(relY * GRID_SIZE + padY)
-				local w = Round(relW * GRID_SIZE + padW)
-				local h = Round(relH * GRID_SIZE + padH)
+				local x = Round(relX * GRID_SIZE + padX) --[[@as number]]
+				local y = Round(relY * GRID_SIZE + padY) --[[@as number]]
+				local w = Round(relW * GRID_SIZE + padW) --[[@as number]]
+				local h = Round(relH * GRID_SIZE + padH) --[[@as number]]
 
 				last = {
 					frame = frame,

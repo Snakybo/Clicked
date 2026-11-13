@@ -35,6 +35,7 @@ end
 
 --- @class ClickedKeybinding : AceGUIKeybinding
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
 --- @field protected label FontString
 --- @field protected msgframe Frame&BackdropTemplate
@@ -43,6 +44,7 @@ end
 --- @field protected hasMarker boolean
 --- @field protected waitingForKey boolean
 --- @field protected lastClickTime number
+--- @field private KeybindingOnAcquire fun(self: AceGUIKeybinding)
 local ClickedKeybinding = {}
 
 ClickedKeybinding.IGNORE_KEYS = {
@@ -227,8 +229,6 @@ local function Constructor()
 	--- @class ClickedKeybinding
 	local widget = AceGUI:Create("Keybinding")
 	widget.type = TYPE
-
-	--- @private
 	widget.KeybindingOnAcquire = widget.OnAcquire
 
 	local button = widget.button

@@ -33,9 +33,14 @@ end
 --- @field minHeight? integer
 
 --- @class ClickedFrame : AceGUIFrame
+--- @field public content Frame&{obj: self}
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected localstatus ClickedFrame.Status
 --- @field protected status? ClickedFrame.Status
+--- @field private FrameOnAcquire fun(self: AceGUIFrame)
+--- @field private FrameOnWidthSet fun(self: AceGUIFrame, width: integer)
+--- @field private FrameOnHeightSet fun(self: AceGUIFrame, height: integer)
 local ClickedFrame = {}
 
 --- @protected
@@ -118,15 +123,11 @@ Constructor
 
 --- @return ClickedFrame
 local function Constructor()
-	--- @class ClickedFrame : AceGUIFrame
+	--- @class ClickedFrame
 	local widget = AceGUI:Create("Frame")
 	widget.type = TYPE
-
-	--- @private
 	widget.FrameOnAcquire = widget.OnAcquire
-	--- @private
 	widget.FrameOnWidthSet = widget.OnWidthSet
-	--- @private
 	widget.FrameOnHeightSet = widget.OnHeightSet
 
 	widget.frame:SetScript("OnKeyDown",  ClickedFrame.Frame_OnKeyDown)

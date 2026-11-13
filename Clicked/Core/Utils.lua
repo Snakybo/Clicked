@@ -17,6 +17,9 @@
 local AceGUI = LibStub("AceGUI-3.0")
 local LibStanceDance = LibStub("LibStanceDance")
 
+--- @class ParameterizedStaticPopupTemplate : StaticPopupTemplate
+--- @field public data table<string, any>
+
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -108,16 +111,12 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 	text = "",
 	button1 = string.format(Addon.L["Keep %s"], Addon.L["Clicked"]),
 	button2 = "",
+	--- @param self ParameterizedStaticPopupTemplate
 	OnShow = function(self)
-		-- deprecated in 11.2.0
-		if self.text ~= nil then
-			self.text:SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
-			self.button2:SetFormattedText(Addon.L["Keep %s"],self.data.addon)
-		else
-			self:GetTextFontString():SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
-			self:GetButton2():SetFormattedText(Addon.L["Keep %s"],self.data.addon)
-		end
+		self:GetTextFontString():SetFormattedText(Addon.L["Clicked is not compatible with %s and requires one of the two to be disabled."], self.data.addon)
+		self:GetButton2():SetFormattedText(Addon.L["Keep %s"], self.data.addon)
 	end,
+	--- @param self ParameterizedStaticPopupTemplate
 	OnAccept = function(self)
 		C_AddOns.DisableAddOn(self.data.addon)
 		ReloadUI()
@@ -134,12 +133,9 @@ StaticPopupDialogs["CLICKED_INCOMPATIBLE_ADDON"] = {
 StaticPopupDialogs["CLICKED_MESSAGE"] = {
 	text = "",
 	button1 = Addon.L["Continue"],
+	--- @param self ParameterizedStaticPopupTemplate
 	OnShow = function(self)
-		if self.text ~= nil then
-			self.text:SetText(self.data.text)
-		else
-			self:GetTextFontString():SetText(self.data.text)
-		end
+		self:GetTextFontString():SetText(self.data.text)
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -150,16 +146,15 @@ StaticPopupDialogs["CLICKED_CONFIRM"] = {
 	text = "",
 	button1 = Addon.L["Yes"],
 	button2 = Addon.L["No"],
+	--- @param self ParameterizedStaticPopupTemplate
 	OnShow = function(self)
-		if self.text ~= nil then
-			self.text:SetText(self.data.text)
-		else
-			self:GetTextFontString():SetText(self.data.text)
-		end
+		self:GetTextFontString():SetText(self.data.text)
 	end,
+	--- @param self ParameterizedStaticPopupTemplate
 	OnAccept = function(self)
 		Addon:SafeCall(self.data.onAccept)
 	end,
+	--- @param self ParameterizedStaticPopupTemplate
 	OnCancel = function(self)
 		Addon:SafeCall(self.data.onCancel)
 	end,
@@ -568,12 +563,12 @@ function Addon:GetItemId(name)
 	assert(type(name) == "string", "bad argument #1, expected string but got " .. type(name))
 
 	local itemName, link = Addon:GetItemInfo(name)
-
 	if itemName == nil then
 		return nil
 	end
 
 	--- @cast link string
+	--- @type number, number, any, any, string
 	local _, _, _, _, id = string.find(link, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 	return tonumber(id)
 end
@@ -665,13 +660,14 @@ end
 ---
 --- @param value? any
 --- @return boolean
+--- @diagnostic disable-next-line: unknown-param-type
 function Addon:IsNilOrEmpty(value)
 	if value == nil then
 		return true
 	end
 
 	if type(value) == "string" then
-		return #value == 0
+		return value == ""
 	elseif type(value) == "table" then
 		return next(value) == nil
 	end

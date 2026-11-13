@@ -14,15 +14,15 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class SimpleLoadOption
+--- @class SimpleLoadOption<T: string|boolean|integer>
 --- @field public selected boolean
---- @field public value any
+--- @field public value T
 --- @field public negated? boolean
 
---- @class MultiselectLoadOption
+--- @class MultiselectLoadOption<T: string|boolean|integer>
 --- @field public selected 0|1|2
---- @field public single any
---- @field public multiple any[]
+--- @field public single T
+--- @field public multiple T[]
 --- @field public negated? boolean
 
 --- @class TalentLoadOption
@@ -48,8 +48,9 @@ Addon.Condition.Utils = {}
 
 --- @alias NegatableLoadOption SimpleLoadOption|MultiselectLoadOption
 
---- @param default any
---- @return SimpleLoadOption
+--- @generic T
+--- @param default T
+--- @return SimpleLoadOption<T>
 function Addon.Condition.Utils.CreateLoadOption(default)
 	--- @type SimpleLoadOption
 	return {
@@ -58,8 +59,9 @@ function Addon.Condition.Utils.CreateLoadOption(default)
 	}
 end
 
---- @param default any
---- @return MultiselectLoadOption
+--- @generic T
+--- @param default T
+--- @return MultiselectLoadOption<T>
 function Addon.Condition.Utils.CreateMultiselectLoadOption(default)
 	--- @type MultiselectLoadOption
 	return {
@@ -86,8 +88,9 @@ function Addon.Condition.Utils.CreateTalentLoadOption(default)
 	}
 end
 
---- @param option SimpleLoadOption
---- @return any?
+--- @generic T
+--- @param option SimpleLoadOption<T>
+--- @return T?
 function Addon.Condition.Utils.UnpackSimpleLoadOption(option)
 	if option.selected then
 		return option.value
@@ -96,8 +99,9 @@ function Addon.Condition.Utils.UnpackSimpleLoadOption(option)
 	return nil
 end
 
---- @param option MultiselectLoadOption
---- @return any[]?
+--- @generic T
+--- @param option MultiselectLoadOption<T>
+--- @return T[]?
 function Addon.Condition.Utils.UnpackMultiselectLoadOption(option)
 	if option.selected == 1 then
 		return { option.single }
