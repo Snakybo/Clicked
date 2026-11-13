@@ -30,6 +30,7 @@ end
 
 --- @class ClickedToggleHeading : AceGUIWidget
 --- @field public frame Button&{obj: self}
+--- @field public type string
 --- @field protected label FontString&{obj: self}
 --- @field protected checkbg Texture&{obj: self}
 --- @field protected check Texture&{obj: self}

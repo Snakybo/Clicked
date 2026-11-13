@@ -270,6 +270,7 @@ local function PopulateKeys()
 			elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
 				for i = 2, 6 do
 					for b = 1, 12 do
+						--- @diagnostic disable-next-line: unknown-local-type
 						local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
 						local slot = tonumber(btn._state_action)
 

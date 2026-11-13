@@ -31,6 +31,7 @@ end
 
 --- @class ClickedReorderableLabel : AceGUIWidget
 --- @field public frame Button&{obj: self}
+--- @field public type string
 --- @field protected label FontString
 --- @field protected image Texture
 --- @field protected up Button&{obj: self}

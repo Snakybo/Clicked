@@ -60,6 +60,7 @@ local baseAttributes = {
 --- @param frame Button
 --- @param attribute string
 --- @param value any
+--- @diagnostic disable-next-line: unknown-param-type
 local function SetAttribute(frame, attribute, value)
 	local sidecar = sidecars[frame]
 	if sidecar == nil then
@@ -67,6 +68,7 @@ local function SetAttribute(frame, attribute, value)
 	end
 
 	if sidecar.originalValues[attribute] == nil then
+		--- @diagnostic disable-next-line: unknown-local-type
 		local original = frame:GetAttribute(attribute)
 		sidecar.originalValues[attribute] = original == nil and NOOP or original
 	end
@@ -82,6 +84,7 @@ local function ClearAttribute(frame, attribute)
 		return
 	end
 
+	--- @diagnostic disable-next-line: unknown-local-type
 	local original = sidecar.originalValues[attribute]
 	if original == nil then
 		return

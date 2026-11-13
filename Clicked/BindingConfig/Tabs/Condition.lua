@@ -20,7 +20,7 @@
 --- @field public bindings Binding[]
 --- @field public container AceGUIContainer
 --- @field public status table
---- @field public requestAvailableValues fun():...
+--- @field public requestAvailableValues fun(): ...
 --- @field public requestRedraw fun(dependendsOnly?: boolean)
 --- @field public Draw? fun(self: BindingConditionDrawer)
 --- @field public Update? fun(self: BindingConditionDrawer)
@@ -116,6 +116,7 @@ end
 
 --- @private
 --- @param condition Condition
+--- @return any[]
 function BindingConditionTab:GetAvailableValues(condition)
 	--- @type any[]
 	local dependencies = {}
@@ -128,6 +129,7 @@ function BindingConditionTab:GetAvailableValues(condition)
 
 			if dependency ~= nil then
 				for _, binding in ipairs(self.bindings) do
+					--- @diagnostic disable-next-line: unknown-local-type
 					local load = binding.load[dependencyId] or dependency.init()
 					local value = dependency.unpack(load)
 
@@ -150,5 +152,6 @@ function BindingConditionTab:GetAvailableValues(condition)
 	local result = { Addon:SafeCall(condition.drawer.availableValues, SafeUnpack(dependencies)) }
 	table.remove(result, 1)
 
+	--- @diagnostic disable-next-line: unknown-return-type
 	return SafeUnpack(result)
 end

@@ -26,7 +26,7 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @class BindingSelectConditionDrawer : BindingConditionDrawer
 --- @field private checkbox ClickedCheckBox
 --- @field private dropdown? ClickedDropdown
---- @field private dropdownCb? fun():boolean
+--- @field private dropdownCb? fun(): boolean
 --- @field private negated? ClickedCheckBox
 --- @correlated dropdown, dropdownCb
 local Drawer = {}
@@ -77,7 +77,7 @@ function Drawer:Draw()
 		end
 
 		--- @param binding Binding
-		--- @return any
+		--- @return any --- @diagnostic disable-line: unknown-return-type
 		local function GetRawValue(binding)
 			--- @type SimpleLoadOption
 			local load = binding.load[self.fieldName] or self.condition.init()

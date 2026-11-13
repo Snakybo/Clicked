@@ -102,7 +102,10 @@ function Addon:RegisterBlizzardUnitFrames()
 
 	local partyFrameIndex = 1
 
-	for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+	--- @type ObjectPool<PartyMemberFrameTemplate>
+	local pool = PartyFrame.PartyMemberFramePool
+
+	for frame in pool:EnumerateActive() do
 		Clicked:RegisterClickCastFrame(frame)
 		Clicked:SetFrameDisplayName(frame, "PartyMemberFrame" .. partyFrameIndex)
 

@@ -822,7 +822,8 @@ function Addon:GetContainingDatabase(item)
 		return Addon.db.global
 	elseif item.scope == Clicked.DataObjectScope.PROFILE then
 		return Addon.db.profile
-	else
-		return Clicked:LogFatal("Unknown binding scope {scope}", item.scope)
 	end
+
+	Clicked:LogFatal("Unknown binding scope {scope}", item.scope)
+	return {}
 end

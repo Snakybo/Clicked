@@ -19,6 +19,7 @@ local IBLib = LibStub("AceGUI-3.0-DropDown-ItemBase")
 
 --- @class AceGUIDropdownItemBase : AceGUIWidget
 --- @field public frame Button&{obj: self}
+--- @field public type string
 --- @field protected check Texture
 --- @field protected text FontString
 --- @field protected highlight Texture

@@ -31,12 +31,17 @@ end
 --- @alias AceGUIWidgetType
 --- | "ClickedSimpleGroup"
 
+--- @class ClickedSimpleGroup : AceGUISimpleGroup
+--- @field public content Frame&{obj: self}
+--- @field public frame Frame&{obj: self}
+--- @field public type string
+
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 --- @return ClickedSimpleGroup
 local function Constructor()
-	--- @class ClickedSimpleGroup : AceGUISimpleGroup
+	--- @class ClickedSimpleGroup
 	local widget = AceGUI:Create("SimpleGroup")
 	widget.type = TYPE
 

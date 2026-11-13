@@ -31,11 +31,14 @@ end
 
 --- @class ClickedEditBox : AceGUIEditBox
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected editbox EditBox&InputBoxTemplate&{obj: self}
 --- @field protected label FontString
 --- @field protected button Button&UIPanelButtonTemplate&{obj: self}
 --- @field protected startText string
 --- @field protected lasttext string
+--- @field private EditBoxOnAcquire fun(self: AceGUIEditBox)
+--- @field private EditBoxSetText fun(self: AceGUIEditBox, text: string)
 local ClickedEditBox = {}
 
 function ClickedEditBox:OnAcquire()
@@ -79,7 +82,7 @@ end
 --- @param frame EditBox&InputBoxTemplate&{obj: ClickedEditBox}
 function ClickedEditBox.EditBox_OnEnterPressed(frame)
 	local self = frame.obj
-	local cancel = self:Fire("OnEnterPressed", frame:GetText(), self.startText)
+	local cancel = self:Fire("OnEnterPressed", frame:GetText(), self.startText) --[[@as boolean]]
 
 	if not cancel then
 		PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
@@ -148,10 +151,7 @@ local function Constructor()
 	--- @class ClickedEditBox
 	local widget = AceGUI:Create("EditBox")
 	widget.type = TYPE
-
-	--- @private
 	widget.EditBoxOnAcquire = widget.OnAcquire
-	--- @private
 	widget.EditBoxSetText = widget.SetText
 
 	widget.editbox:SetScript("OnEnterPressed", ClickedEditBox.EditBox_OnEnterPressed)

@@ -30,11 +30,14 @@ end
 --- | "ClickedDropdown"
 
 --- @class ClickedDropdown<K, V> : AceGUIDropdown
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field public SetValue fun(self: self, key: K)
 --- @field public SetList fun(self: self, list: table<K, V>, order: K[])
 --- @field public AddItem fun(self: self, key: K, value: V)
 --- @field public SetItemValue fun(self: self, key: K, value: V)
 --- @field public SetItemDisabled fun(self: self, key: K, flag: boolean)
+--- @field private DropDownOnAcquire fun(self: AceGUIDropdown)
 local ClickedDropdown = {}
 
 --- @protected
@@ -53,6 +56,7 @@ end
 --- @return AceGUIDropdownItemBase[]
 --- @return number
 function ClickedDropdown:IterateItems()
+	--- @diagnostic disable-next-line: unknown-return-type
 	return self.pullout:IterateItems()
 end
 
@@ -65,8 +69,6 @@ local function Constructor()
 	--- @class ClickedDropdown
 	local widget = AceGUI:Create("Dropdown")
 	widget.type = TYPE
-
-	--- @private
 	widget.DropDownOnAcquire = widget.OnAcquire
 
 	for method, func in pairs(ClickedDropdown) do

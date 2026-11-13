@@ -31,6 +31,7 @@ end
 
 --- @class ClickedTalentIcon : AceGUIWidget
 --- @field public frame Button&{obj: self}
+--- @field public type string
 --- @field protected label FontString&{obj: self}
 --- @field protected image Texture&{obj: self}
 local ClickedTalentIcon = {}

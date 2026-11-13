@@ -16,7 +16,9 @@
 
 local AceGUI = LibStub("AceGUI-3.0")
 
---- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget):string|string[]
+--- @alias TooltipTextValue string|string[]|fun(widget: AceGUIWidget): string|string[]
+
+--- @alias RawValue string|boolean|integer|string[]|boolean[]|integer[]
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -77,7 +79,7 @@ end
 ---
 --- @generic T : DataObject
 --- @param targets T[]
---- @param valueSelector fun(target: T):string?
+--- @param valueSelector fun(target: T): string?
 --- @return boolean hasMixedValues `true` if the targets have mixed values; `false` otherwise.
 --- @return string? mixedValueText The text to display in a tooltip, if there are mixed values.
 function Addon.BindingConfig.Helpers:GetMixedValues(targets, valueSelector)
@@ -155,11 +157,11 @@ end
 --- @generic T : DataObject
 --- @param widget AceGUIWidget
 --- @param targets T[]
---- @param valueSelector fun(target: T):string?
+--- @param valueSelector fun(target: T): string?
 --- @param tooltip TooltipTextValue
---- @param rawValueSelector? fun(target: T):any
+--- @param rawValueSelector? fun(target: T): RawValue
 --- @return boolean
---- @return fun():boolean
+--- @return fun(): boolean
 function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector, tooltip, rawValueSelector)
 	--- @return string[]
 	local function GetTooltipText()
@@ -186,7 +188,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 		return lines
 	end
 
-	--- @return any
+	--- @return RawValue?
 	local function GetRawValue()
 		for _, obj in ipairs(targets) do
 			if rawValueSelector ~= nil then
@@ -219,7 +221,7 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue(false)
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
-				widget:SetValue(GetRawValue())
+				widget:SetValue(GetRawValue() --[[@as boolean]])
 				widget:SetLabelColor(WHITE_FONT_COLOR)
 			end
 		elseif widget.type == "ClickedAutoFillEditBox" or widget.type == "ClickedEditBox" or widget.type == "ClickedMultiLineEditBox" or
@@ -252,13 +254,12 @@ function Addon.BindingConfig.Helpers:HandleWidget(widget, targets, valueSelector
 				widget:SetValue("")
 				widget:SetLabelColor(self.MIXED_VALUE_TEXT_COLOR)
 			else
-				local value = GetRawValue()
+				local value = GetRawValue() --[[@as string[]|integer[]|boolean[] ]]
 
 				-- assume it's an array if `[1]` is not nil
 				if widget:GetMultiselect() and value[1] ~= nil then
 					for _, item in widget:IterateItems() do
-						local id = item.userdata.value
-
+						local id = item.userdata.value --[[@as string|integer|boolean]]
 						widget:SetItemValue(id, tContains(value, id))
 					end
 				else

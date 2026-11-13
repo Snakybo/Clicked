@@ -619,7 +619,7 @@ function BindingActionTab:RedrawKeyOptions()
 			return binding.action[key] and Addon.L["Enabled"] or Addon.L["Disabled"]
 		end
 
-		--- @type boolean, fun():boolean
+		--- @type boolean, fun(): boolean
 		local hasMixedValues, updateCb
 
 		local function GetTooltipText()

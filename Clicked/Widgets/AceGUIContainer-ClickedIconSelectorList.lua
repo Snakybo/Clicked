@@ -47,6 +47,9 @@ local ICON_SIZE = 32
 --- @field public numColumns number
 
 --- @class ClickedIconSelectorList : AceGUIContainer
+--- @field public content Frame&{obj: self}
+--- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field protected status ClickedIconSelectorList.Status?
 --- @field protected localstatus ClickedIconSelectorList.Status
 --- @field protected scrollframe ScrollFrame&{obj: self}
@@ -56,10 +59,7 @@ local ICON_SIZE = 32
 --- @field protected loadQueue ClickedIconSelectorList.LoadQueue[]
 --- @field protected scrollbar Slider&{obj: self}
 --- @field protected searchHandler ClickedSearchBox?
---- @field protected content Frame
---- @field protected frame Frame
 --- @field protected originalWidth number
---- @field protected type string
 --- @field protected updateLock boolean?
 --- @field protected scrollBarShown boolean?
 local ClickedIconSelectorList = {}
@@ -395,9 +395,11 @@ local function Constructor()
 
 	-- Respect ElvUI skinning
 	if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
+		--- @diagnostic disable-next-line: unknown-local-type
 		local E = unpack(ElvUI);
 
 		if E and E.private.skins and E.private.skins.ace3Enable then
+			--- @diagnostic disable-next-line: unknown-local-type
 			local S = E:GetModule("Skins")
 			S:HandleScrollBar(scrollbar)
 		end

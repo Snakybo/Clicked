@@ -67,7 +67,9 @@ local MAX_FLOATING_BUTTONS = 3
 --- @field public selected boolean
 
 --- @class ClickedTreeGroup : AceGUIContainer
+--- @field public content Frame&{obj: self}
 --- @field public frame Frame&{obj: self}
+--- @field public type string
 --- @field private status? ClickedTreeGroup.Status
 --- @field private localstatus ClickedTreeGroup.Status
 --- @field private tree? ClickedTreeGroup.RuntimeItem[]
@@ -1052,7 +1054,7 @@ local PaneBackdrop  = {
 
 --- @return ClickedTreeGroup
 local function Constructor()
-	--- @class (exact) ClickedTreeGroup
+	--- @class ClickedTreeGroup
 	local widget = {}
 	widget.type = TYPE
 

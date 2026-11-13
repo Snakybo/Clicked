@@ -46,25 +46,29 @@ Addon.EXPANSION_LEVEL = nil
 --- @param err string
 --- @return function
 local function errorhandler(err)
+	--- @diagnostic disable-next-line: unknown-return-type
 	return geterrorhandler()(err)
 end
 
---- @param func? function
---- @param ... any
---- @return boolean status
---- @return ...
+--- @generic F : function
+--- @param func? F
+--- @param ... params<F>
+--- @return boolean, returns<F>? --- @diagnostic disable-line: unknown-return-type
 function Addon:SafeCall(func, ...)
 	if func ~= nil then
+		--- @diagnostic disable-next-line: unknown-return-type
 		return xpcall(func, errorhandler, ...)
 	end
 
 	return false
 end
 
+--- @return boolean
 function Addon:IsStandard()
 	return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 end
 
+--- @return boolean
 function Addon:IsForever()
 	return WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
 end

@@ -9,16 +9,6 @@ local upgradeData = {}
 
 -- Local support functions
 
-local function errorhandler(err)
-	return geterrorhandler()(err)
-end
-
-local function safecall(func, ...)
-	if func then
-		return xpcall(func, errorhandler, ...)
-	end
-end
-
 --- @param db table
 --- @param global table
 --- @param from integer
@@ -314,7 +304,7 @@ function Addon:UpgradeDatabase(from)
 		local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
 		Clicked:LogError(message)
 	else
-		safecall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
+		Addon:SafeCall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
 		Addon.db.global.version = Addon.DATA_VERSION
 	end
 
@@ -325,7 +315,7 @@ function Addon:UpgradeDatabase(from)
 			local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
 			Clicked:LogError(message)
 		else
-			safecall(Upgrade, Addon.db.profile, Addon.db.global, src, "profile", cache)
+			Addon:SafeCall(Upgrade, Addon.db.profile, Addon.db.global, src, "profile", cache)
 			Addon.db.profile.version = Addon.DATA_VERSION
 		end
 	end

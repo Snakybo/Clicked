@@ -73,6 +73,7 @@ local function HandleChatCommand(input)
 	local start = 1
 
 	while true do
+		--- @type string, integer
 		local arg, next = AceConsole:GetArgs(input, 1, start)
 		table.insert(args, arg)
 
