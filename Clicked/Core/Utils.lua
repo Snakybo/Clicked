@@ -381,7 +381,7 @@ function Addon:GetSimpleSpellOrItemInfo(binding)
 	end
 
 	if binding.actionType == Clicked.ActionType.ITEM then
-		local name, _, _, _, _, _, _, _, _, icon = Addon:GetItemInfo(binding.action.itemValue)
+		local name, _, icon = Addon:GetItemInfo(binding.action.itemValue)
 
 		if name == nil then
 			return nil, nil, nil
@@ -499,23 +499,9 @@ function Addon:GetGroupNameAndIcon(group)
 end
 
 --- @param input string|integer
---- @return string? itemName
---- @return string? itemLink
---- @return number? itemQuality
---- @return number? itemLevel
---- @return number? itemMinLevel
---- @return string? itemType
---- @return string? itemSubType
---- @return number? itemStackCount
---- @return string? itemEquipLoc
---- @return number? itemTexture
---- @return number? sellPrice
---- @return number? classID
---- @return number? subclassID
---- @return number? bindType
---- @return number? expacID
---- @return number? setID
---- @return boolean? isCraftingReagent
+--- @return string?
+--- @return string?
+--- @return number?
 function Addon:GetItemInfo(input)
 	assert(type(input) == "string" or type(input) == "number", "bad argument #1, expected string or number but got " .. type(input))
 
@@ -528,12 +514,13 @@ function Addon:GetItemInfo(input)
 			input = GetInventoryItemID("player", itemId)
 
 			if input == nil then
-				return
+				return nil, nil, nil
 			end
 		end
 	end
 
-	return C_Item.GetItemInfo(input)
+	local name, link, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(input)
+	return name, link, icon
 end
 
 --- @param input string|integer

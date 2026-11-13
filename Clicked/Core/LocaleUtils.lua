@@ -14,9 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local LibTalentTome = LibStub("LibTalentTome")
-local LibStanceDance = LibStub("LibStanceDance")
-
 --- @class Addon
 local Addon = select(2, ...)
 

@@ -393,26 +393,35 @@ function Addon.SpellLibrary:GetActionBarSpells()
 			end
 		elseif type == "item" then
 			--- @cast id integer
-			--- @type SpellLibraryItemResult
-			table.insert(result, {
-				type = "ITEM",
-				key = key,
-				name = C_Item.GetItemNameByID(id),
-				icon = C_Item.GetItemIconByID(id),
-				itemId = id
-			})
+			local name = C_Item.GetItemNameByID(id)
+			local icon = C_Item.GetItemIconByID(id)
+
+			if name ~= nil and icon ~= nil then
+				--- @type SpellLibraryItemResult
+				local value = {
+					type = "ITEM",
+					key = key,
+					name = name,
+					icon = icon,
+					itemId = id
+				}
+
+				table.insert(result, value)
+			end
 		elseif type == "macro" then
 			--- @cast id integer
 			local name, icon, content = GetMacroInfo(id)
 
 			--- @type SpellLibraryMacroResult
-			table.insert(result, {
+			local value = {
 				type = "MACRO",
 				key = key,
 				name = name,
 				icon = icon,
 				content = content
-			})
+			}
+
+			table.insert(result, value)
 		end
 	end
 

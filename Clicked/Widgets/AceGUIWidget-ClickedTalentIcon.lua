@@ -61,6 +61,8 @@ function ClickedTalentIcon:SetImage(path, ...)
 	end
 end
 
+--- @param width integer
+--- @param height integer
 function ClickedTalentIcon:SetImageSize(width, height)
 	self.image:SetWidth(width)
 	self.image:SetHeight(height)

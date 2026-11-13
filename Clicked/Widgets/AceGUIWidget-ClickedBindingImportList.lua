@@ -317,7 +317,6 @@ function ClickedBindingImportList:SetItems(data)
 
 		--- @type ClickedBindingImportList.BindingItem
 		local item = {
-			uid = binding.uid,
 			binding = binding,
 			title = title,
 			icon = icon,
@@ -333,7 +332,6 @@ function ClickedBindingImportList:SetItems(data)
 	local function CreateGroupItem(group)
 		--- @type ClickedBindingImportList.GroupItem
 		local item = {
-			uid = group.uid,
 			group = group,
 			title = group.name,
 			icon = group.displayIcon,
