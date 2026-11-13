@@ -19,9 +19,9 @@ Simple frame widget extension to add support for closing the frame on escape.
 -------------------------------------------------------------------------------]]
 
 local TYPE, VERSION = "ClickedFrame", 1
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 

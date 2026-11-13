@@ -20,9 +20,9 @@ re-selection of tabs once they become available again.
 -------------------------------------------------------------------------------]]
 
 local TYPE, VERSION = "ClickedTabGroup", 3
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 

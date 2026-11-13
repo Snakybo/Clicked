@@ -23,9 +23,9 @@ time to improve performance.
 local Addon = select(2, ...)
 
 local TYPE, VERSION = "ClickedIconSelectorList", 3
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
@@ -261,8 +261,8 @@ function ClickedIconSelectorList:FixScroll()
 end
 
 --- @protected
---- @param width integer
---- @param height integer
+--- @param width? integer
+--- @param height? integer
 function ClickedIconSelectorList:LayoutFinished(width, height)
 	self.content:SetHeight(height or 20)
 

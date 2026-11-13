@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --- @class ClickedMedia
-ClickedMedia = ClickedMedia or {}
+ClickedMedia = {}
 
 --- @class ClickedMediaInternal
 local Addon = select(2, ...)

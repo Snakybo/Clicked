@@ -24,9 +24,9 @@ where the button has to be activated prior to listening for inputs.
 local Addon = select(2, ...)
 
 local TYPE, VERSION = "ClickedKeybinding", 5
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
@@ -59,6 +59,7 @@ function ClickedKeybinding:OnAcquire()
 	self:KeybindingOnAcquire()
 	self.key = ""
 	self.hasMarker = false
+	self.lastClickTime = 0
 end
 
 --- @param key string
@@ -84,7 +85,7 @@ function ClickedKeybinding:UpdateText()
 	local hasMarker = self.hasMarker
 	local button = self.button
 
-	if (key or "") == "" then
+	if key == "" then
 		button:SetText(NOT_BOUND)
 		button:SetNormalFontObject("GameFontNormal")
 	else
@@ -151,7 +152,7 @@ end
 --- @param button string
 function ClickedKeybinding.Button_OnClick(frame, button)
 	local self = frame.obj
-	local passed = GetTime() - (self.lastClickTime or 0)
+	local passed = GetTime() - self.lastClickTime
 
 	if button == "LeftButton" then
 		if not self.waitingForKey and passed > 0.01 then

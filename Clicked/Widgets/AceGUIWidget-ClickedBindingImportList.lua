@@ -22,9 +22,9 @@ A scrollable list that shows pending imports.
 local Addon = select(2, ...)
 
 local TYPE, VERSION = "ClickedBindingImportList", 4
-local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
 
-if not AceGUI or (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
+if (AceGUI:GetWidgetVersion(TYPE) or 0) >= VERSION then
 	return
 end
 
@@ -126,7 +126,7 @@ function ClickedBindingImportList:RefreshTree(fromOnUpdate)
 	self:BuildLevel(self.tree, 1)
 
 	local numlines = #lines
-	local maxlines = math.floor(((self.treeframe:GetHeight() or 0) - 15) / 28)
+	local maxlines = math.floor((self.treeframe:GetHeight() - 15) / 28)
 
 	if maxlines <= 0 then
 		return
@@ -410,7 +410,7 @@ function ClickedBindingImportList:UpdateButton(button, line, canExpand, isExpand
 
 	button.text:ClearAllPoints()
 	button.text:SetPoint("TOPLEFT", (line.icon and 28 or 0) + 8 * line.level, -1)
-	button.text:SetText(line.title or "")
+	button.text:SetText(line.title)
 
 	if line.showKeybinds and not Addon:IsNilOrEmpty(line.keybind) then
 		button.keybind:SetPoint("BOTTOMLEFT", (line.icon and 28 or 0) + 8 * line.level, 1)
