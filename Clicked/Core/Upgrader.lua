@@ -14,6 +14,7 @@ local upgradeData = {}
 --- @param from integer
 --- @param type "profile"|"global"
 --- @param cache table
+--- @return boolean
 local function Upgrade(db, global, from, type, cache)
 	-- Clicked maintains a two year profile upgrade policy, meaning that it is only capable of upgrading profiles from versions released within the last two
 	-- years. If a profile is older than that, the user can either use an intermediate version to upgrade their profile step by step, or delete the profile and
@@ -25,7 +26,7 @@ local function Upgrade(db, global, from, type, cache)
 	if from < 12 then
 		local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
 		Clicked:LogError(message)
-		return
+		return false
 	end
 
 	if from < 13 then -- 2025-03-25
@@ -275,6 +276,8 @@ local function Upgrade(db, global, from, type, cache)
 			binding.load.advFlyable = nil
 		end
 	end
+
+	return true
 end
 
 -- Private addon API
@@ -304,8 +307,10 @@ function Addon:UpgradeDatabase(from)
 		local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
 		Clicked:LogError(message)
 	else
-		Addon:SafeCall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
-		Addon.db.global.version = Addon.DATA_VERSION
+		local _, success = Addon:SafeCall(Upgrade, Addon.db.global, Addon.db.global, src, "global", cache)
+		if success then
+			Addon.db.global.version = Addon.DATA_VERSION
+		end
 	end
 
 	do
@@ -315,8 +320,10 @@ function Addon:UpgradeDatabase(from)
 			local message = Addon.L["Cannot upgrade profile. Clicked supports profile upgrades for all versions released in the last two years, you can either revert to an earlier version to upgrade your profile, before updating to this version, or delete the profile and create a new one."]
 			Clicked:LogError(message)
 		else
-			Addon:SafeCall(Upgrade, Addon.db.profile, Addon.db.global, src, "profile", cache)
-			Addon.db.profile.version = Addon.DATA_VERSION
+			local _, success = Addon:SafeCall(Upgrade, Addon.db.profile, Addon.db.global, src, "profile", cache)
+			if success then
+				Addon.db.profile.version = Addon.DATA_VERSION
+			end
 		end
 	end
 end
