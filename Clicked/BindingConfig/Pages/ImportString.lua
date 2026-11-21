@@ -157,7 +157,7 @@ function ImportStringPage:RedrawToReview()
 	end
 
 	do
-		--- @param widget ClickedDropdown<integer, string>
+		--- @param widget ClickedDropdown<integer, boolean>
 		--- @param event string
 		--- @param key integer
 		--- @param checked boolean
