@@ -757,9 +757,11 @@ function Addon:RegisterDataObject(object, scope)
 	local db = self:GetContainingDatabase(object)
 
 	if object.type == Clicked.DataObjectType.GROUP then
+		--- @cast object Group
 		Clicked:LogDebug("Registering group {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.groups, object)
 	elseif object.type == Clicked.DataObjectType.BINDING then
+		--- @cast object Binding
 		Clicked:LogDebug("Registering binding {uid} in scope {scope}", object.uid, object.scope)
 		table.insert(db.bindings, object)
 	end
@@ -813,7 +815,7 @@ function Addon:CloneDataObject(original)
 end
 
 --- @param item DataObject
---- @return table
+--- @return DBSchema.Global|DBSchema.Profile
 function Addon:GetContainingDatabase(item)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
 
