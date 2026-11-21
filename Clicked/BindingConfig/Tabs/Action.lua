@@ -741,7 +741,6 @@ end
 function BindingActionTab:UpdateSpellValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.SPELL then
 		Clicked:LogFatal("Cannot set spell value for a binding that is not a spell binding")
-		return
 	end
 
 	--- @type string|integer
@@ -773,7 +772,6 @@ end
 function BindingActionTab:UpdateItemValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.ITEM then
 		Clicked:LogFatal("Cannot set item value for a binding that is not an item binding")
-		return
 	end
 
 	value = string.trim(value)
@@ -792,7 +790,6 @@ end
 function BindingActionTab:UpdateCancelAuraValue(binding, value)
 	if binding.actionType ~= Clicked.ActionType.CANCELAURA then
 		Clicked:LogFatal("Cannot set cancelaura value for a binding that is not a cancelaura binding")
-		return
 	end
 
 	value = string.trim(value)

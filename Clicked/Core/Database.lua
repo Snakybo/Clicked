@@ -628,11 +628,10 @@ end
 ---@param scope DataObjectScope
 function Addon:ChangeDataObjectScope(item, scope)
 	assert(type(item) == "table", "bad argument #1, expected table but got " .. type(item))
-	assert(type(scope) == "number", "bad argument #1, expected number but got " .. type(scope))
+	assert(type(scope) == "number", "bad argument #2, expected number but got " .. type(scope))
 
 	if item.uid == nil then
 		Clicked:LogFatal("Can only change the scope of a binding or group")
-		return
 	end
 
 	if item.scope == scope then
@@ -825,5 +824,4 @@ function Addon:GetContainingDatabase(item)
 	end
 
 	Clicked:LogFatal("Unknown binding scope {scope}", item.scope)
-	return {}
 end
