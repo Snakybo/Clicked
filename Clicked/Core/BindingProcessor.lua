@@ -1183,8 +1183,7 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 				command.conditions = {}
 				command.seen = 1
 			else
-				--- TEMP: The `or 0` can be removed once wowlua-ls is updated
-				command.seen = (command.seen or 0) + 1
+				command.seen = command.seen + 1
 			end
 
 			local action = ConstructAction(binding)

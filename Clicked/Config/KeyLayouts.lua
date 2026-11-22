@@ -583,10 +583,6 @@ function KeyLayouts:GetKeyboardLayout(layout, size)
 		local bestOverrideDiff = math.huge
 
 		for overrideSize, override in pairs(data.overrides) do
-			--- TEMP: hopefully wowlua-ls understands this natively at some point
-			--- @cast overrideSize integer
-			--- @cast size integer
-
 			if overrideSize >= size then
 				local diff = size - overrideSize
 
@@ -612,10 +608,6 @@ function KeyLayouts:GetKeyboardLayout(layout, size)
 	end
 
 	for s, enabledKeys in pairs(layouts[layout].sizes) do
-		--- TEMP: hopefully wowlua-ls understands this natively at some point
-		--- @cast s integer
-		--- @cast size integer
-
 		if s <= size then
 			for _, key in ipairs(enabledKeys) do
 				table.insert(visible, key)
