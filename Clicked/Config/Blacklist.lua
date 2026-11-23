@@ -124,6 +124,13 @@ function BlacklistOptions:GetBlacklistGroupItems(group)
 end
 
 function BlacklistOptions:Refresh()
+	-- The options table is created in Initialize, which runs after the database
+	-- is created. A new profile fires OnNewProfile before that point, and
+	-- Initialize calls Refresh itself once the table exists.
+	if config == nil then
+		return
+	end
+
 	 for name, option in pairs(config.args) do
         if option.type == "toggle" and not Addon.db.global.blacklist[name] then
             self:SetSelectedItem(name, false)
