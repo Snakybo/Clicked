@@ -11,6 +11,7 @@ ignore:
   - CONTRIBUTING.md
   - RECENT_CHANGES.md
   - Definitions.lua
+  - Polyfill.lua
 
 manual-changelog:
   filename: RECENT_CHANGES.md
