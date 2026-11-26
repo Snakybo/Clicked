@@ -285,8 +285,6 @@ function ClickedIconSelectorList:OnHeightSet(height)
 	content.height = height
 end
 
-
-
 --- @protected
 --- @param frame Frame&{obj: ClickedIconSelectorList}
 function ClickedIconSelectorList.Frame_Update(frame)
@@ -394,7 +392,7 @@ local function Constructor()
 	content.obj = widget
 
 	-- Respect ElvUI skinning
-	if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) > 0 then
+	if C_AddOns.GetAddOnEnableState("ElvUI", UnitName("player")) > 0 and ElvUI ~= nil then
 		--- @diagnostic disable-next-line: unknown-local-type
 		local E = unpack(ElvUI);
 
