@@ -477,11 +477,11 @@ function Addon:GetNewBindingTemplate()
 		},
 		targets = {
 			hovercast = {
-				hostility = Addon.TargetHostility.ANY,
-				vitals = Addon.TargetVitals.ANY
+				flags = 0
 			},
 			regular = {
-				Addon:GetNewBindingTargetTemplate()
+				unit = Addon.TargetUnit.DEFAULT,
+				flags = 0
 			},
 			hovercastEnabled = false,
 			regularEnabled = true
@@ -498,8 +498,7 @@ function Addon:GetNewBindingTargetTemplate()
 	--- @type Binding.Target
 	local template = {
 		unit = Addon.TargetUnit.DEFAULT,
-		hostility = Addon.TargetHostility.ANY,
-		vitals = Addon.TargetVitals.ANY
+		flags = 0
 	}
 
 	return template

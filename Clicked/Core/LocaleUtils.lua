@@ -44,14 +44,20 @@ function Addon:GetLocalizedTargetString(target)
 	--- @type string[]
 	local result = {}
 
-	if Addon:CanUnitBeHostile(target.unit) and target.hostility ~= Addon.TargetHostility.ANY then
-		local hostility = Addon:GetLocalizedTargetHostility()
-		table.insert(result, hostility[target.hostility])
+	if Addon:CanUnitBeHostile(target.unit) then
+		if bit.band(target.flags, Addon.TargetFlags.Friendly) > 0 then
+			table.insert(result, Addon.L["Friendly"])
+		elseif bit.band(target.flags, Addon.TargetFlags.Hostile) > 0 then
+			table.insert(result, Addon.L["Hostile"])
+		end
 	end
 
-	if Addon:CanUnitBeDead(target.unit) and target.vitals ~= Addon.TargetVitals.ANY then
-		local vitals = Addon:GetLocalizedTargetVitals()
-		table.insert(result, vitals[target.vitals])
+	if Addon:CanUnitBeDead(target.unit) then
+		if bit.band(target.flags, Addon.TargetFlags.Alive) > 0 then
+			table.insert(result, Addon.L["Alive"])
+		elseif bit.band(target.flags, Addon.TargetFlags.Dead) > 0 then
+			table.insert(result, Addon.L["Dead"])
+		end
 	end
 
 	if target.unit ~= nil then
@@ -118,50 +124,6 @@ function Addon:GetLocalizedTargetUnits()
 		table.insert(order, Addon.TargetUnit.ARENA_2)
 		table.insert(order, Addon.TargetUnit.ARENA_3)
 	end
-
-	return items, order
-end
-
---- Get a localized list of all available target hostility settings.
----
---- @return table<string,string> items
---- @return string[] order
-function Addon:GetLocalizedTargetHostility()
-	--- @type table<string,string>
-	local items = {
-		[Addon.TargetHostility.ANY] = Addon.L["Friendly, Hostile"],
-		[Addon.TargetHostility.HELP] = Addon.L["Friendly"],
-		[Addon.TargetHostility.HARM] = Addon.L["Hostile"]
-	}
-
-	--- @type string[]
-	local order = {
-		Addon.TargetHostility.ANY,
-		Addon.TargetHostility.HELP,
-		Addon.TargetHostility.HARM
-	}
-
-	return items, order
-end
-
---- Get a localized list of all available target vitals settings.
----
---- @return table<string,string> items
---- @return string[] order
-function Addon:GetLocalizedTargetVitals()
-	--- @type table<string,string>
-	local items = {
-		[Addon.TargetVitals.ANY] = Addon.L["Alive, Dead"],
-		[Addon.TargetVitals.ALIVE] = Addon.L["Alive"],
-		[Addon.TargetVitals.DEAD] = Addon.L["Dead"]
-	}
-
-	--- @type string[]
-	local order = {
-		Addon.TargetVitals.ANY,
-		Addon.TargetVitals.ALIVE,
-		Addon.TargetVitals.DEAD
-	}
 
 	return items, order
 end

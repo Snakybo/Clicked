@@ -57,20 +57,6 @@ Addon.TargetUnit = {
 	CURSOR = "CURSOR"
 }
 
---- @enum TargetHostility
-Addon.TargetHostility = {
-	ANY = "ANY",
-	HELP = "HELP",
-	HARM = "HARM"
-}
-
---- @enum TargetVitals
-Addon.TargetVitals = {
-	ANY = "ANY",
-	ALIVE = "ALIVE",
-	DEAD = "DEAD"
-}
-
 --- @enum InteractionType
 Addon.InteractionType = {
 	REGULAR = 1,
@@ -179,11 +165,13 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		table.insert(flags, unit)
 	end
 
-	if Addon:CanUnitBeHostile(action.unit) then
-		if action.hostility == Addon.TargetHostility.HELP then
+	if Addon:CanUnitBeHostile(action.unit) and action.flags ~= nil then
+		if bit.band(action.flags, Addon.TargetFlags.Friendly) > 0 then
 			table.insert(flags, "help")
 			needsExistsCheck = false
-		elseif action.hostility == Addon.TargetHostility.HARM then
+		end
+
+		if bit.band(action.flags, Addon.TargetFlags.Hostile) > 0 then
 			table.insert(flags, "harm")
 			needsExistsCheck = false
 		end
@@ -192,10 +180,12 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	-- The overriding of the `needsExistsCheck` boolean only happens on the non-negated version of macro flags: `dead`, `pet`, etc. and NOT on the `nodead`,
 	-- `nopet` version. Apperantly the `exists` check is implied for the standard variants but not for the negated variants.
 
-	if Addon:CanUnitBeDead(action.unit) then
-		if action.vitals == Addon.TargetVitals.ALIVE then
+	if Addon:CanUnitBeDead(action.unit) and action.flags ~= nil then
+		if bit.band(action.flags, Addon.TargetFlags.Alive) > 0 then
 			table.insert(flags, "nodead")
-		elseif action.vitals == Addon.TargetVitals.DEAD then
+		end
+
+		if bit.band(action.flags, Addon.TargetFlags.Dead) > 0 then
 			table.insert(flags, "dead")
 			needsExistsCheck = false
 		end
@@ -248,8 +238,7 @@ local function ConstructAction(binding, target)
 
 	if target ~= nil then
 		action.unit = (Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil) and Addon.TargetUnit.MOUSEOVER or target.unit
-		action.hostility = target.hostility ~= Addon.TargetHostility.ANY and target.hostility or ""
-		action.vitals = target.vitals ~= Addon.TargetVitals.ANY and target.vitals or ""
+		action.flags = target.flags
 	end
 
 	return action
@@ -344,8 +333,7 @@ local function GetSortCriteria(action)
 		action.unit == Addon.TargetUnit.MOUSEOVER_TARGET,
 
 		-- 2. Macro conditions take presedence over actions that don't specify them explicitly
-		not Addon:IsNilOrEmpty(action.hostility),
-		not Addon:IsNilOrEmpty(action.vitals)
+		action.flags ~= nil and action.flags ~= 0
 	}
 
 	for _, id in ipairs(SORTED_MACRO_CONDITIONS) do
@@ -698,7 +686,7 @@ end
 --- @param unit string
 --- @return Binding[]
 function Clicked:GetBindingsForUnit(unit)
-	assert(type(unit) == "string", "bad argument #1, expected table but got " .. type(unit))
+	assert(type(unit) == "string", "bad argument #1, expected string but got " .. type(unit))
 
 	--- @type Binding[]
 	local result = {}
@@ -721,13 +709,13 @@ function Clicked:GetBindingsForUnit(unit)
 	--- @param target Binding.Target
 	--- @return boolean
 	local function IsTargetValid(target)
-		if target.hostility == Addon.TargetHostility.HELP and not UnitIsFriend("player", unit) or
-		   target.hostility == Addon.TargetHostility.HARM and UnitIsFriend("player", unit) then
+		if bit.band(target.flags, Addon.TargetFlags.Friendly) > 0 and not UnitIsFriend("player", unit) or
+		   bit.band(target.flags, Addon.TargetFlags.Hostile) > 0 and UnitIsFriend("player", unit) then
 			return false
 		end
 
-		if target.vitals == Addon.TargetVitals.DEAD and not UnitIsDeadOrGhost(unit) or
-		   target.vitals == Addon.TargetVitals.ALIVE and UnitIsDeadOrGhost(unit) then
+		if bit.band(target.flags, Addon.TargetFlags.Dead) > 0 and not UnitIsDeadOrGhost(unit) or
+		   bit.band(target.flags, Addon.TargetFlags.Alive) > 0 and UnitIsDeadOrGhost(unit) then
 			return false
 		end
 
@@ -1288,8 +1276,6 @@ function Addon:GetMacroForBindings(bindings, interactionType, ignoreActionBar)
 					elseif binding.actionType == Clicked.ActionType.CANCELAURA then
 						local target = Addon:GetNewBindingTargetTemplate()
 						target.unit = Addon.TargetUnit.DEFAULT
-						target.hostility = Addon.TargetHostility.ANY
-						target.vitals = Addon.TargetVitals.ANY
 
 						local action = ConstructAction(binding, target)
 

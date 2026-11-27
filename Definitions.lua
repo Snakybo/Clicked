@@ -74,8 +74,7 @@
 
 --- @class Binding.Target
 --- @field public unit? string
---- @field public hostility string
---- @field public vitals string
+--- @field public flags TargetFlags
 
 --- @class Binding.Action
 --- @field public spellValue string|integer
@@ -155,8 +154,7 @@
 --- @field public type string
 --- @field public conditionals table<string, LoadCondition>
 --- @field public unit? string
---- @field public hostility? string
---- @field public vitals? string
+--- @field public flags? TargetFlags
 
 --- @class Command
 --- @field public keybind string

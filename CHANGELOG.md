@@ -18,6 +18,7 @@ The format of this changelog is based on [Keep a Changelog](https://keepachangel
 ### Changed
 
 * Make all load and macro conditions multi-select, removing the tri-state toggles
+* Combine target hostility and vitals into a single dropdown
 * Rename the "Skyriding" macro condition to "Dynamic flying"
 
 ### Removed

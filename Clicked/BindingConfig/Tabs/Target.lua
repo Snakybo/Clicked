@@ -23,6 +23,14 @@ local Helpers = Addon.BindingConfig.Helpers
 
 -- Private addon API
 
+--- @enum TargetFlags
+Addon.TargetFlags = {
+	Friendly = 1,
+	Hostile = 2,
+	Alive = 4,
+	Dead = 8,
+}
+
 Addon.BindingConfig = Addon.BindingConfig or {}
 
 --- @class BindingConfigTargetTab : BindingConfigTab
@@ -103,13 +111,11 @@ function BindingTargetTab:Redraw()
 
 		if isAnyEnabled then
 			do
-				local widget = self:DrawTargetHostility(self.container, -1)
-				widget:SetRelativeWidth(0.5)
-			end
+				local widget = self:DrawTargetStates(self.container, -1)
 
-			do
-				local widget = self:DrawTargetVitals(self.container, -1)
-				widget:SetRelativeWidth(0.5)
+				if widget ~= nil then
+					widget:SetFullWidth(true)
+				end
 			end
 		end
 	end
@@ -205,45 +211,14 @@ function BindingTargetTab:Redraw()
 					group:SetCallback("OnMoveDown", OnMove)
 					group:SetCallback("OnMoveUp", OnMove)
 
-					--- @param binding Binding
-					--- @return boolean
-					local function CanBeHostile(binding)
-						local target = binding.targets.regular[i]
-						return target ~= nil and Addon:CanUnitBeHostile(target.unit)
-					end
+					local unit = self:DrawTargetUnit(group, index, maxTargets > 1)
+					local states = self:DrawTargetStates(group, index)
 
-					local canAnyBeHostile = FindInTableIf(self.bindings, CanBeHostile)
-
-					--- @param binding Binding
-					--- @return boolean
-					local function CanBeDead(binding)
-						local target = binding.targets.regular[i]
-						return target ~= nil and Addon:CanUnitBeDead(target.unit)
-					end
-
-					local canAnyBeDead = FindInTableIf(self.bindings, CanBeDead)
-
-					do
-						local widget = self:DrawTargetUnit(group, index, maxTargets > 1)
-						widget:SetRelativeWidth(0.33)
-					end
-
-					do
-						local widget = self:DrawTargetHostility(group, index)
-						widget:SetRelativeWidth(0.33)
-
-						if index == 0 or not canAnyBeHostile then
-							widget:SetDisabled(true)
-						end
-					end
-
-					do
-						local widget = self:DrawTargetVitals(group, index)
-						widget:SetRelativeWidth(0.33)
-
-						if index == 0 or not canAnyBeDead then
-							widget:SetDisabled(true)
-						end
+					if states == nil then
+						unit:SetRelativeWidth(1)
+					else
+						unit:SetRelativeWidth(0.5)
+						states:SetRelativeWidth(0.5)
 					end
 
 					self.container:AddChild(group)
@@ -380,8 +355,7 @@ function BindingTargetTab:DrawTargetUnit(container, index, canDelete)
 
 				local new = Addon:GetNewBindingTargetTemplate()
 				new.unit = value
-				new.hostility = last.hostility or new.hostility
-				new.vitals = last.vitals or new.vitals
+				new.flags = last.flags
 
 				table.insert(binding.targets.regular, new)
 				Addon:ReloadBinding(binding)
@@ -414,113 +388,158 @@ end
 --- @private
 --- @param container AceGUIContainer
 --- @param index integer
---- @return AceGUIDropdown
-function BindingTargetTab:DrawTargetHostility(container, index)
-	local items = {
-		[Addon.TargetHostility.ANY] = Addon.L["Any"],
-		[Addon.TargetHostility.HELP] = Addon.L["Friendly"],
-		[Addon.TargetHostility.HARM] = Addon.L["Hostile"]
-	}
-
-	local order = {
-		Addon.TargetHostility.ANY,
-		Addon.TargetHostility.HELP,
-		Addon.TargetHostility.HARM
-	}
+--- @return AceGUIDropdown?
+function BindingTargetTab:DrawTargetStates(container, index)
+	--- @param binding Binding
+	--- @return boolean
+	local function CanBeHostile(binding)
+		local target = binding.targets.regular[index]
+		return target ~= nil and Addon:CanUnitBeHostile(target.unit)
+	end
 
 	--- @param binding Binding
-	--- @return string?
+	--- @return boolean
+	local function CanBeDead(binding)
+		local target = binding.targets.regular[index]
+		return target ~= nil and Addon:CanUnitBeDead(target.unit)
+	end
+
+	--- @type table<integer, string>
+	local items = {}
+
+	--- @type integer[]
+	local order = {}
+
+	if index == -1 or FindInTableIf(self.bindings, CanBeHostile) then
+		items[Addon.TargetFlags.Friendly] = Addon.L["Friendly"]
+		items[Addon.TargetFlags.Hostile] = Addon.L["Hostile"]
+		table.insert(order, Addon.TargetFlags.Friendly)
+		table.insert(order, Addon.TargetFlags.Hostile)
+	end
+
+	if index == -1 or FindInTableIf(self.bindings, CanBeDead) then
+		items[Addon.TargetFlags.Alive] = Addon.L["Alive"]
+		items[Addon.TargetFlags.Dead] = Addon.L["Dead"]
+		table.insert(order, Addon.TargetFlags.Alive)
+		table.insert(order, Addon.TargetFlags.Dead)
+	end
+
+	local changed = false
+
+	--- @param binding Binding
+	--- @return string
 	local function ValueSelector(binding)
 		local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
-		return target and items[target.hostility] or Helpers.IGNORE_VALUE
+		if target == nil then
+			return Helpers.IGNORE_VALUE
+		end
+
+		local values = {}
+
+		for _, flag in ipairs(order) do
+			if bit.band(target.flags, flag) > 0 then
+				table.insert(values, flag)
+			end
+		end
+
+		if #values == 0 then
+			return Addon.L["Nothing"]
+		elseif #values == #order then
+			return Addon.L["Everything"]
+		end
+
+		--- @type string[]
+		local result = {}
+
+		for _, value in ipairs(values) do
+			table.insert(result, items[value] or tostring(value))
+		end
+
+		return table.concat(result, ", ")
 	end
 
-	---@param binding Binding
-	---@return string
+	--- @param binding Binding
+	--- @return "\001"|integer[]
 	local function GetRawValue(binding)
 		local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
-		return target and target.hostility or Helpers.IGNORE_VALUE
+		if target == nil then
+			return Helpers.IGNORE_VALUE
+		end
+
+		local result = {}
+
+		for _, flag in ipairs(order) do
+			if bit.band(target.flags, flag) > 0 then
+				table.insert(result, flag)
+			end
+		end
+
+		return result
 	end
 
-	--- @param widget ClickedDropdown<string, string>
+	--- @param widget ClickedDropdown<integer, string>
 	--- @param event string
-	--- @param value string
-	local function OnValueChanged(widget, event, value)
+	--- @param value integer
+	--- @param enabled boolean
+	local function OnValueChanged(widget, event, value, enabled)
 		for _, binding in ipairs(self.bindings) do
 			local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
 
 			if target ~= nil then
-				target.hostility = value
-				Addon:ReloadBinding(binding)
+				local values = {}
+
+				for _, flag in ipairs(order) do
+					if bit.band(target.flags, flag) > 0 then
+						table.insert(values, flag)
+					end
+				end
+
+				if enabled then
+					if not tContains(values, value) then
+						table.insert(values, value)
+					end
+				else
+					for i = #values, 1, -1 do
+						if values[i] == value then
+							table.remove(values, i)
+						end
+					end
+				end
+
+				local mask = 0
+
+				for _, flag in ipairs(values) do
+					mask = bit.bor(mask, flag)
+				end
+
+				target.flags = mask
+				changed = true
 			end
 		end
-
-		self.controller:RedrawTab()
 	end
 
-	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
-	widget:SetList(items, order)
-	widget:SetCallback("OnValueChanged", OnValueChanged)
-
-	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Hostility"], GetRawValue)
-
-	container:AddChild(widget)
-
-	return widget
-end
-
---- @private
---- @param container AceGUIContainer
---- @param index integer
---- @return AceGUIDropdown
-function BindingTargetTab:DrawTargetVitals(container, index)
-	local items = {
-		[Addon.TargetVitals.ANY] = Addon.L["Any"],
-		[Addon.TargetVitals.ALIVE] = Addon.L["Alive"],
-		[Addon.TargetVitals.DEAD] = Addon.L["Dead"]
-	}
-
-	local order = {
-		Addon.TargetVitals.ANY,
-		Addon.TargetVitals.ALIVE,
-		Addon.TargetVitals.DEAD
-	}
-
-	--- @param binding Binding
-	--- @return string?
-	local function ValueSelector(binding)
-		local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
-		return target and items[target.vitals] or Helpers.IGNORE_VALUE
-	end
-
-	---@param binding Binding
-	---@return string
-	local function GetRawValue(binding)
-		local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
-		return target and target.vitals or Helpers.IGNORE_VALUE
-	end
-
-	--- @param widget ClickedDropdown<string, string>
-	--- @param event string
-	--- @param value string
-	local function OnValueChanged(widget, event, value)
-		for _, binding in ipairs(self.bindings) do
-			local target = index == -1 and binding.targets.hovercast or binding.targets.regular[index]
-
-			if target ~= nil then
-				target.vitals = value
+	local function OnClosed()
+		if changed then
+			for _, binding in ipairs(self.bindings) do
 				Addon:ReloadBinding(binding)
 			end
-		end
 
-		self.controller:RedrawTab()
+			self.controller:RedrawTab()
+			changed = false
+		end
 	end
 
-	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<string, string>]]
-	widget:SetList(items, order)
-	widget:SetCallback("OnValueChanged", OnValueChanged)
+	if #order == 0 then
+		return nil
+	end
 
-	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Vitals"], GetRawValue)
+	local widget = AceGUI:Create("ClickedDropdown") --[[@as ClickedDropdown<integer, string>]]
+	widget:SetCallback("OnValueChanged", OnValueChanged)
+	widget:SetCallback("OnClosed", OnClosed)
+	widget:SetList(items, order)
+	widget:SetMultiselect(true)
+
+	Helpers:HandleWidget(widget, self.bindings, ValueSelector, Addon.L["Flags"], GetRawValue)
 
 	container:AddChild(widget)
 

@@ -3,7 +3,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 20
+Addon.DATA_VERSION = 21
 
 local upgradeData = {}
 
@@ -506,6 +506,41 @@ local function Upgrade(db, global, from, type, cache)
 				equipped = FromLoadOption(load.equipped),
 				runeEquipped = FromLoadOption(load.runeEquipped)
 			}
+		end
+	end
+
+	if from < 21 then -- 2029-11-27
+		local function UpgradeTargetState(target)
+			local FLAG_FRIENDLY = 1
+			local FLAG_HOSTILE = 2
+			local FLAG_ALIVE = 4
+			local FLAG_DEAD = 8
+
+			local mask = 0
+
+			if target.hostility == "HELP" then
+				mask = bit.bor(mask, FLAG_FRIENDLY)
+			elseif target.hostility == "HARM" then
+				mask = bit.bor(mask, FLAG_HOSTILE)
+			end
+
+			if target.vitals == "ALIVE" then
+				mask = bit.bor(mask, FLAG_ALIVE)
+			elseif target.vitals == "DEAD" then
+				mask = bit.bor(mask, FLAG_DEAD)
+			end
+
+			target.state = mask
+			target.hostility = nil
+			target.vitals = nil
+		end
+
+		for _, binding in ipairs(db.bindings) do
+			UpgradeTargetState(binding.targets.hovercast)
+
+			for _, target in ipairs(binding.targets.regular) do
+				UpgradeTargetState(target)
+			end
 		end
 	end
 
