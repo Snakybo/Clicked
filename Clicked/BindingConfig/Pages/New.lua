@@ -195,6 +195,23 @@ local function DoesSpellBookBindingExist(spell, parent)
 	return false
 end
 
+--- Enable a load condition on a binding with the specified value, if the condition is available.
+---
+--- @param binding Binding
+--- @param id string
+--- @param value? SimpleConditionValue
+local function EnableLoadCondition(binding, id, value)
+	local condition = Addon.Condition.Registry:GetConditionSet("load").map[id]
+	if condition == nil or value == nil then
+		return
+	end
+
+	local load = Clicked:CreateLoadCondition(value)
+	load.state = Clicked.LoadConditionStates.ENABLED
+
+	Addon.Condition.Utils.SetLoadCondition(binding, condition, load)
+end
+
 --- @param importClassAbilitiesPerSpec boolean
 --- @return Binding[]
 local function ImportSpellbook(importClassAbilitiesPerSpec)
@@ -216,14 +233,8 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 				binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
 				binding.action.spellValue = spell.spellId
 
-				binding.load.class.selected = 1
-				binding.load.class.single = select(2, UnitClass("player"))
-
-				local spec = Addon:GetSpecIndexFromId(spell.specId)
-				if spec ~= nil then
-					binding.load.specialization.selected = 1
-					binding.load.specialization.single = spec
-				end
+				EnableLoadCondition(binding, "class", select(2, UnitClass("player")))
+				EnableLoadCondition(binding, "specialization", Addon:GetSpecIndexFromId(spell.specId))
 
 				Addon:ReloadBinding(binding, true)
 			end
@@ -253,11 +264,8 @@ local function ImportSpellbook(importClassAbilitiesPerSpec)
 					binding.parent = spec.groupId
 					binding.action.spellValue = spell.spellId
 
-					binding.load.class.selected = 1
-					binding.load.class.single = select(2, UnitClass("player"))
-
-					binding.load.specialization.selected = 1
-					binding.load.specialization.single = spec.specId
+					EnableLoadCondition(binding, "class", select(2, UnitClass("player")))
+					EnableLoadCondition(binding, "specialization", spec.specId)
 
 					Addon:ReloadBinding(binding, true)
 				end
@@ -288,15 +296,12 @@ local function ImportActionbar()
 				--- @cast spell SpellLibrarySpellResult
 				binding.parent = FindGroupId(spell.tabName, spell.tabIcon)
 
-				binding.load.class.selected = 1
-				binding.load.class.single = select(2, UnitClass("player"))
+				EnableLoadCondition(binding, "class", select(2, UnitClass("player")))
 
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-					binding.load.specialization.selected = 1
-					binding.load.specialization.single = C_SpecializationInfo.GetSpecialization()
+					EnableLoadCondition(binding, "specialization", C_SpecializationInfo.GetSpecialization())
 				elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-					binding.load.specialization.selected = 1
-					binding.load.specialization.single = GetPrimaryTalentTree()
+					EnableLoadCondition(binding, "specialization", GetPrimaryTalentTree())
 				end
 
 				binding.actionType = Clicked.ActionType.SPELL

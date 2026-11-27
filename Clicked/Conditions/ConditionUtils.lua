@@ -14,26 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
---- @class SimpleLoadOption<T: string|boolean|integer>
---- @field public selected boolean
---- @field public value T
---- @field public negated? boolean
-
---- @class MultiselectLoadOption<T: string|boolean|integer>
---- @field public selected 0|1|2
---- @field public single T
---- @field public multiple T[]
---- @field public negated? boolean
-
---- @class TalentLoadOption
---- @field public selected boolean
---- @field public entries TalentLoadOptionEntry[]
-
---- @class TalentLoadOptionEntry
---- @field public operation "AND"|"OR"
---- @field public negated? boolean
---- @field public value string
-
 local LibTalentTome = LibStub("LibTalentTome")
 
 --- @class Addon
@@ -46,96 +26,149 @@ Addon.Condition = Addon.Condition or {}
 --- @class ConditionUtilities
 Addon.Condition.Utils = {}
 
---- @alias NegatableLoadOption SimpleLoadOption|MultiselectLoadOption
-
---- @generic T
---- @param default T
---- @return SimpleLoadOption<T>
-function Addon.Condition.Utils.CreateLoadOption(default)
-	--- @type SimpleLoadOption
-	return {
-		selected = false,
-		value = default
-	}
-end
-
---- @generic T
---- @param default T
---- @return MultiselectLoadOption<T>
-function Addon.Condition.Utils.CreateMultiselectLoadOption(default)
-	--- @type MultiselectLoadOption
-	return {
-		selected = 0,
-		single = default,
-		multiple = {
-			default
-		}
-	}
-end
-
---- @param default string
---- @return TalentLoadOption
-function Addon.Condition.Utils.CreateTalentLoadOption(default)
-	--- @type TalentLoadOption
-	return {
-		selected = false,
-		entries = {
-			{
-				operation = "AND",
-				value = default
-			}
-		}
-	}
-end
-
---- @generic T
---- @param option SimpleLoadOption<T>
---- @return T?
-function Addon.Condition.Utils.UnpackSimpleLoadOption(option)
-	if option.selected then
-		return option.value
+--- @param flags LoadConditionStates|LoadCondition?
+--- @param flag LoadConditionStates
+--- @return boolean
+local function HasFlag(flags, flag)
+	if flags == nil then
+		return false
 	end
 
-	return nil
+	if type(flags) == "table" then
+		flags = flags.state or 0
+	end
+
+	return bit.band(flags, flag) > 0
+end
+
+--- @param option LoadCondition
+--- @param flag LoadConditionStates
+--- @param enabled boolean
+function Addon.Condition.Utils.SetFlag(option, flag, enabled)
+	if enabled then
+		option.state = bit.bor(option.state or 0, flag)
+	else
+		option.state = bit.band(option.state or 0, bit.bnot(flag))
+	end
+end
+
+--- @param flags LoadConditionStates|LoadCondition?
+--- @return boolean
+function Addon.Condition.Utils.HasEnabledFlag(flags)
+	return HasFlag(flags, Clicked.LoadConditionStates.ENABLED)
+end
+
+--- @param flags LoadConditionStates|LoadCondition?
+--- @return boolean
+function Addon.Condition.Utils.HasNegatedFlag(flags)
+	return HasFlag(flags, Clicked.LoadConditionStates.NEGATED)
+end
+
+--- Get the selected values of a load condition as a list, regardless of whether it is enabled.
+---
+--- @generic T
+--- @param option LoadCondition<T>
+--- @return T[]
+function Addon.Condition.Utils.UnpackLoadOption(option)
+	assert(option ~= nil, "bad argument #1, expected LoadCondition but got nil")
+
+	local values = option.value
+
+	if values == nil then
+		return {}
+	elseif type(values) == "table" then
+		return CopyTable(values)
+	end
+
+	return { values }
+end
+
+--- Store a list of values in the `value` field of a load condition. A list containing a single non-table value is stored as that value.
+---
+--- @generic T
+--- @param option LoadCondition<T>
+--- @param values T[]
+function Addon.Condition.Utils.SetLoadOptionValues(option, values)
+	if #values == 1 and type(values[1]) ~= "table" then
+		option.value = values[1]
+	else
+		option.value = values
+	end
+end
+
+--- Get the effective value of a boolean condition, taking negation into account. Returns `nil` if the condition is not enabled.
+---
+--- @param option? LoadCondition<boolean>
+--- @return boolean?
+function Addon.Condition.Utils.GetBooleanValue(option)
+	if not Addon.Condition.Utils.HasEnabledFlag(option) then
+		return nil
+	end
+
+	--- @cast option LoadCondition<boolean>
+	local value = Addon.Condition.Utils.UnpackLoadOption(option)[1] ~= false
+	return value ~= Addon.Condition.Utils.HasNegatedFlag(option)
 end
 
 --- @generic T
---- @param option MultiselectLoadOption<T>
---- @return T[]?
-function Addon.Condition.Utils.UnpackMultiselectLoadOption(option)
-	if option.selected == 1 then
-		return { option.single }
-	elseif option.selected == 2 then
-		return option.multiple
+--- @param condition Condition<T>
+--- @return T
+function Addon.Condition.Utils.GetDefaultValue(condition)
+	if type(condition.init) == "function" then
+		return condition.init()
 	end
 
-	return nil
+	return condition.init
 end
 
---- @param option TalentLoadOption
---- @return TalentLoadOptionEntry[][]?
-function Addon.Condition.Utils.UnpackTalentLoadOption(option)
-	if option.selected then
-		--- @type TalentLoadOptionEntry[][]
-		local result = {}
+--- Create a new, disabled, load condition with the default value of the specified condition.
+---
+--- @generic T
+--- @param condition Condition<T>
+--- @return LoadCondition<T>
+function Addon.Condition.Utils.CreateLoadCondition(condition)
+	return Clicked:CreateLoadCondition(Addon.Condition.Utils.GetDefaultValue(condition))
+end
 
-		--- @type TalentLoadOptionEntry[]
-		local current = {}
-		table.insert(result, current)
+--- Get the stored load condition of a binding. If the binding does not have a value for this condition, a new default value is returned, which is not stored
+--- in the binding. Use `SetLoadCondition` to store it.
+---
+--- @generic T
+--- @param binding Binding
+--- @param condition Condition<T>
+--- @return LoadCondition<T>
+function Addon.Condition.Utils.GetLoadCondition(binding, condition)
+	--- @type table<string, LoadCondition>?
+	local storage
 
-		for _, entry in ipairs(option.entries) do
-			if entry.operation == "OR" and #current > 0 then
-				current = {}
-				table.insert(result, current)
-			end
-
-			table.insert(current, entry)
-		end
-
-		return result
+	if condition.storage == "conditionals" then
+		storage = binding.conditionals --[[@as table<string, LoadCondition>?]]
+	else
+		storage = binding.load --[[@as table<string, LoadCondition>?]]
 	end
 
-	return nil
+	--- @type LoadCondition?
+	local result = storage ~= nil and storage[condition.id] or nil
+
+	if result == nil then
+		return Addon.Condition.Utils.CreateLoadCondition(condition)
+	end
+
+	return result
+end
+
+--- @generic T
+--- @param binding Binding
+--- @param condition Condition<T>
+--- @param option LoadCondition<T>
+function Addon.Condition.Utils.SetLoadCondition(binding, condition, option)
+	if condition.storage == "conditionals" then
+		binding.conditionals = binding.conditionals or {}
+		binding.conditionals[condition.id] = option
+	else
+		binding.load = binding.load or {}
+		binding.load[condition.id] = option
+	end
 end
 
 --- @param classNames string[]

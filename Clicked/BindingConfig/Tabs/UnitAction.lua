@@ -20,6 +20,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
+local Utils = Addon.Condition.Utils
 
 -- Private addon API
 
@@ -32,6 +33,8 @@ Addon.BindingConfig.BindingUnitActionTab = BindingUnitActionTab
 
 --- @protected
 function BindingUnitActionTab:Redraw()
+	local combat = Addon.Condition.Registry:GetConditionById("combat")
+
 	-- combat
 	do
 		--- @type table<string, string>
@@ -46,10 +49,10 @@ function BindingUnitActionTab:Redraw()
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
+			local value = Utils.GetBooleanValue(Utils.GetLoadCondition(binding, combat))
 
-			if load.selected then
-				return load.value and Addon.L["In combat"] or Addon.L["Not in combat"]
+			if value ~= nil then
+				return value and Addon.L["In combat"] or Addon.L["Not in combat"]
 			end
 
 			return Addon.L["Always"]
@@ -58,8 +61,13 @@ function BindingUnitActionTab:Redraw()
 		--- @param binding Binding
 		--- @return string
 		local function GetRawValue(binding)
-			local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
-			return load.selected and (load.value and "ic" or "ooc") or "always"
+			local value = Utils.GetBooleanValue(Utils.GetLoadCondition(binding, combat))
+
+			if value == nil then
+				return "always"
+			end
+
+			return value and "ic" or "ooc"
 		end
 
 		--- @param widget ClickedDropdown<string, string>
@@ -67,19 +75,16 @@ function BindingUnitActionTab:Redraw()
 		--- @param value string
 		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(self.bindings) do
-				local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
+				local load = Utils.GetLoadCondition(binding, combat)
 
-				if value == "always" then
-					load.selected = false
-				elseif value == "ic" then
-					load.selected = true
-					load.value = true
-				elseif value == "ooc" then
-					load.selected = true
-					load.value = false
+				Utils.SetFlag(load, Clicked.LoadConditionStates.ENABLED, value ~= "always")
+				Utils.SetFlag(load, Clicked.LoadConditionStates.NEGATED, false)
+
+				if value ~= "always" then
+					load.value = value == "ic"
 				end
 
-				binding.load.combat = load
+				Utils.SetLoadCondition(binding, combat, load)
 				Addon:ReloadBinding(binding)
 			end
 
@@ -101,8 +106,7 @@ function BindingUnitActionTab:Redraw()
 		--- @param binding Binding
 		--- @return boolean
 		local function IsCombatUnselected(binding)
-			local load = binding.load.combat or Addon.Condition.Utils.CreateLoadOption(true)
-			return not load.selected
+			return not Utils.HasEnabledFlag(Utils.GetLoadCondition(binding, combat))
 		end
 
 		local hide = FindInTableIf(self.bindings, IsCombatUnselected)

@@ -20,6 +20,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
+local Utils = Addon.Condition.Utils
 
 Addon.BindingConfig = Addon.BindingConfig or {}
 
@@ -36,9 +37,40 @@ function Drawer:Draw()
 	--- @param binding Binding
 	--- @return boolean
 	local function IsEnabled(binding)
-		--- @type SimpleLoadOption
-		local load = binding.load[self.fieldName] or self.condition.init()
-		return load.selected
+		return Utils.HasEnabledFlag(Utils.GetLoadCondition(binding, self.condition))
+	end
+
+	--- @param binding Binding
+	--- @return string
+	local function GetText(binding)
+		local load = Utils.GetLoadCondition(binding, self.condition)
+
+		if drawer.format ~= nil then
+			return drawer.format(load)
+		end
+
+		--- @type SimpleConditionValue|SimpleConditionValue[]?
+		local value = load.value
+		return type(value) == "table" and table.concat(value, "/") or tostring(value or "")
+	end
+
+	--- @param binding Binding
+	--- @param value string
+	local function SetText(binding, value)
+		local load = Utils.GetLoadCondition(binding, self.condition)
+
+		if not Utils.HasEnabledFlag(load) then
+			return
+		end
+
+		if drawer.parse ~= nil then
+			drawer.parse(load, value)
+		else
+			load.value = value
+		end
+
+		Utils.SetLoadCondition(binding, self.condition, load)
+		Addon:ReloadBinding(binding, self.fieldName)
 	end
 
 	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
@@ -57,9 +89,8 @@ function Drawer:Draw()
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			--- @type SimpleLoadOption
-			local load = binding.load[self.fieldName] or self.condition.init()
-			local spellId = tonumber(load.value)
+			local text = GetText(binding)
+			local spellId = tonumber(text)
 
 			if items ~= nil and spellId ~= nil then
 				for _, item in ipairs(items) do
@@ -69,7 +100,7 @@ function Drawer:Draw()
 				end
 			end
 
-			return load.value
+			return text
 		end
 
 		--- @param widget ClickedEditBox|ClickedAutoFillEditBox
@@ -111,14 +142,7 @@ function Drawer:Draw()
 			end
 
 			for _, binding in ipairs(self.bindings) do
-				--- @type SimpleLoadOption
-				local load = binding.load[self.fieldName] or self.condition.init()
-
-				if load.selected then
-					load.value = value
-					binding.load[self.fieldName] = load
-					Addon:ReloadBinding(binding, self.fieldName)
-				end
+				SetText(binding, value)
 			end
 
 			self.requestRedraw()
@@ -132,14 +156,7 @@ function Drawer:Draw()
 			local spellId = (match ~= nil and match.spellId ~= nil) and tostring(match.spellId) or value
 
 			for _, binding in ipairs(self.bindings) do
-				--- @type SimpleLoadOption
-				local load = binding.load[self.fieldName] or self.condition.init()
-
-				if load.selected then
-					load.value = spellId
-					binding.load[self.fieldName] = load
-					Addon:ReloadBinding(binding, self.fieldName)
-				end
+				SetText(binding, spellId)
 			end
 		end
 
@@ -147,22 +164,21 @@ function Drawer:Draw()
 			--- @param binding Binding
 			--- @return boolean
 			local function HasInvalidValue(binding)
-				--- @type SimpleLoadOption
-				local load = binding.load[self.fieldName] or self.condition.init()
+				local text = GetText(binding)
 
 				--- @param item ClickedAutoFillEditBox.Option
 				--- @return boolean
 				local function IsMatchingItem(item)
-					return item.spellId == load.value
+					return tostring(item.spellId) == text
 				end
 
-				return load.selected and FindInTableIf(items, IsMatchingItem) == nil
+				return IsEnabled(binding) and FindInTableIf(items, IsMatchingItem) == nil
 			end
 
-			local error = FindInTableIf(self.bindings, HasInvalidValue) == nil
+			local hasInvalidValue = FindInTableIf(self.bindings, HasInvalidValue) ~= nil
 
 			self.editbox = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
-			self.editbox:SetInputError(error)
+			self.editbox:SetInputError(hasInvalidValue)
 			self.editbox:SetValues(items)
 			self.editbox:SetCallback("OnSelect", OnSelect)
 		else

@@ -63,7 +63,8 @@
 --- @field public parent integer?
 --- @field public action Binding.Action
 --- @field public targets Binding.Targets
---- @field public load Binding.Load
+--- @field public load LoadConditionSet
+--- @field public conditionals MacroConditionSet
 
 --- @class Binding.Targets
 --- @field public hovercast Binding.Target
@@ -95,64 +96,55 @@
 --- @field public targetUnitAfterCast boolean
 --- @field public preventToggle boolean
 
---- @class Binding.Load
---- @field public never boolean
---- @field public class Binding.TriStateLoadOption<string>
---- @field public race Binding.TriStateLoadOption<string>
---- @field public playerNameRealm Binding.LoadOption<string>
---- @field public combat Binding.LoadOption<boolean>
---- @field public spellKnown Binding.LoadOption<string>
---- @field public inGroup Binding.LoadOption<string>
---- @field public playerInGroup Binding.LoadOption<string>
---- @field public form Binding.NegatableTriStateLoadOption<integer>
---- @field public pet Binding.LoadOption<boolean>
---- @field public stealth Binding.LoadOption<boolean>
---- @field public mounted Binding.LoadOption<boolean>
---- @field public outdoors Binding.LoadOption<boolean>
---- @field public swimming Binding.LoadOption<boolean>
---- @field public flying Binding.LoadOption<boolean>
---- @field public dynamicFlying Binding.LoadOption<boolean>
---- @field public flyable Binding.LoadOption<boolean>
---- @field public advancedFlyable Binding.LoadOption<boolean>
---- @field public instanceType Binding.TriStateLoadOption<string>
---- @field public zoneName Binding.LoadOption<string>
---- @field public equipped Binding.LoadOption<string>
---- @field public specialization Binding.TriStateLoadOption<integer>
---- @field public specRole Binding.TriStateLoadOption<integer>
---- @field public talent Binding.MutliFieldLoadOption
---- @field public pvpTalent Binding.MutliFieldLoadOption
---- @field public warMode Binding.LoadOption<boolean>
---- @field public ruleset Binding.TriStateLoadOption<string>
---- @field public groupRole Binding.TriStateLoadOption<string>
---- @field public channeling Binding.NegatableStringLoadOption
---- @field public bonusbar Binding.NegatableStringLoadOption
---- @field public bar Binding.NegatableStringLoadOption
+--- A load or macro condition. `value` contains either a single value, or a list of values. If `T` is a table type, `value` is always a list.
+---
+--- @class LoadCondition<T>
+--- @field public state LoadConditionStates
+--- @field public value T|T[]
 
---- @class Binding.LoadOption<T: string|boolean|integer>
---- @field public selected boolean
---- @field public value T
+--- @class TalentValue
+--- @field public name string
+--- @field public id? integer
+--- @field public negate boolean
 
---- @class Binding.TriStateLoadOption<T: string|boolean|integer>
---- @field public selected integer
---- @field public single T
---- @field public multiple T[]
+--- @class ZoneNameValue
+--- @field public name string
+--- @field public negate boolean
 
---- @class Binding.NegatableTriStateLoadOption<T: string|boolean|integer> : Binding.TriStateLoadOption<T>
---- @field public negated boolean
+--- @class LoadConditionSet
+--- @field public never? LoadCondition<boolean>
+--- @field public class? LoadCondition<string>
+--- @field public race? LoadCondition<string>
+--- @field public nameRealm? LoadCondition<string>
+--- @field public spellKnown? LoadCondition<string>
+--- @field public groupType? LoadCondition<integer>
+--- @field public playerInGroup? LoadCondition<string>
+--- @field public instanceType? LoadCondition<integer>
+--- @field public specialization? LoadCondition<integer>
+--- @field public specRole? LoadCondition<integer>
+--- @field public groupRole? LoadCondition<integer>
+--- @field public zoneName? LoadCondition<ZoneNameValue>
+--- @field public talent? LoadCondition<TalentValue[]>
+--- @field public pvpTalent? LoadCondition<TalentValue[]>
+--- @field public warMode? LoadCondition<boolean>
+--- @field public ruleset? LoadCondition<integer>
+--- @field public runeEquipped? LoadCondition<string>
+--- @field public equipped? LoadCondition<string>
 
---- @class Binding.MutliFieldLoadOption
---- @field public selected boolean
---- @field public entries Binding.MutliFieldLoadOption.Entry[]
-
---- @class Binding.MutliFieldLoadOption.Entry
---- @field public operation "AND"|"OR"
---- @field public negated boolean
---- @field public value string
-
---- @class Binding.NegatableStringLoadOption
---- @field public selected boolean
---- @field public negated boolean
---- @field public value string
+--- @class MacroConditionSet
+--- @field public form? LoadCondition<integer>
+--- @field public combat? LoadCondition<boolean>
+--- @field public pet? LoadCondition<boolean>
+--- @field public stealth? LoadCondition<boolean>
+--- @field public mounted? LoadCondition<boolean>
+--- @field public outdoors? LoadCondition<boolean>
+--- @field public swimming? LoadCondition<boolean>
+--- @field public channeling? LoadCondition<string>
+--- @field public flying? LoadCondition<boolean>
+--- @field public flyable? LoadCondition<boolean>
+--- @field public dynamicFlying? LoadCondition<boolean>
+--- @field public bonusbar? LoadCondition<string>
+--- @field public bar? LoadCondition<string>
 
 --- @class Group : DataObject
 --- @field public name string
@@ -161,27 +153,10 @@
 --- @class Action
 --- @field public ability integer|string
 --- @field public type string
---- @field public combat? boolean
---- @field public pet? boolean
---- @field public stealth? boolean
---- @field public mounted? boolean
---- @field public outdoors? boolean
---- @field public flying? boolean
---- @field public dynamicFlying? boolean
---- @field public flyable? boolean
---- @field public advflyable? boolean
---- @field public swimming? boolean
---- @field public channeling? Action.NegatableValueString
---- @field public forms? Action.NegatableValueString
---- @field public bonusbar? Action.NegatableValueString
---- @field public bar? Action.NegatableValueString
+--- @field public conditionals table<string, LoadCondition>
 --- @field public unit? string
 --- @field public hostility? string
 --- @field public vitals? string
-
---- @class Action.NegatableValueString
---- @field public negated boolean
---- @field public value string
 
 --- @class Command
 --- @field public keybind string

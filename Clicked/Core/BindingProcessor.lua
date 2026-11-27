@@ -71,14 +71,6 @@ Addon.TargetVitals = {
 	DEAD = "DEAD"
 }
 
---- @enum GroupState
-Addon.GroupState = {
-	PARTY_OR_RAID = "IN_GROUP_PARTY_OR_RAID",
-	PARTY = "IN_GROUP_PARTY",
-	RAID = "IN_GROUP_RAID",
-	SOLO = "IN_GROUP_SOLO"
-}
-
 --- @enum InteractionType
 Addon.InteractionType = {
 	REGULAR = 1,
@@ -122,36 +114,64 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 	local flags = {}
 	local unit, needsExistsCheck = Addon:GetWoWUnitFromUnit(action.unit, true)
 
-	--- @param condition? boolean|string
-	--- @param value string
-	--- @param negated? string
-	--- @param isUnit? boolean
-	local function ParseNegatableBooleanCondition(condition, value, negated, isUnit)
-		if condition == true then
-			table.insert(flags, value)
-
-			if isUnit then
-				needsExistsCheck = false
-			end
-		elseif condition == false then
-			negated = negated or ("no" .. value)
-			table.insert(flags, negated)
+	--- @param config MacroCondition
+	--- @param conditional LoadCondition
+	local function ParseConditional(config, conditional)
+		--- @type string[]|number[]|boolean[]
+		local values
+		if config.unpack ~= nil then
+			values = config.unpack(conditional)
+		else
+			values = Addon.Condition.Utils.UnpackLoadOption(conditional)
 		end
-	end
 
-	--- @param condition? Action.NegatableValueString
-	--- @param value string
-	--- @param negated string
-	local function ParseNegatableStringCondition(condition, value, negated)
-		if condition ~= nil then
-			local key = condition.negated and negated or value
-			local macro = key
+		local valueType = type(values[1])
 
-			if not Addon:IsNilOrEmpty(condition.value) then
-				macro = macro .. ":" .. condition.value
+		local id, negatedId
+		if type(config.conditionals) == "function" then
+			id, negatedId = config.conditionals()
+		else
+			id, negatedId = config.conditionals, "no" .. config.conditionals
+		end
+
+		if Addon.Condition.Utils.HasNegatedFlag(conditional) then
+			id, negatedId = negatedId, id
+		end
+
+		local result = false
+
+		if valueType == "boolean" then
+			--- @cast values boolean[]
+
+			if values[1] then
+				table.insert(flags, id)
+			else
+				table.insert(flags, negatedId)
 			end
 
-			table.insert(flags, macro)
+			result = values[1] ~= Addon.Condition.Utils.HasNegatedFlag(conditional)
+		elseif valueType == "string" or valueType == "number" then
+			--- @type (string|number)[]
+			local list = values --[[@as (string|number)[] ]]
+
+			--- @type (string|number)[]
+			local nonEmpty = {}
+
+			for _, value in ipairs(list) do
+				if value ~= "" then
+					table.insert(nonEmpty, value)
+				end
+			end
+
+			if #nonEmpty > 0 then
+				table.insert(flags, id .. ":" .. table.concat(nonEmpty, "/"))
+			elseif not config.ignoreEmptyValues then
+				table.insert(flags, id)
+			end
+		end
+
+		if config.isUnit and result then
+			needsExistsCheck = false
 		end
 	end
 
@@ -181,26 +201,17 @@ local function GetMacroSegmentFromAction(action, interactionType, isLast)
 		end
 	end
 
-	ParseNegatableBooleanCondition(action.pet, "pet", "nopet", true)
-	ParseNegatableBooleanCondition(action.combat, "combat")
-	ParseNegatableBooleanCondition(action.stealth, "stealth")
-	ParseNegatableBooleanCondition(action.mounted, "mounted")
-	ParseNegatableBooleanCondition(action.outdoors, "outdoors", "indoors")
-	ParseNegatableBooleanCondition(action.swimming, "swimming")
-	ParseNegatableBooleanCondition(action.flying, "flying")
-	ParseNegatableBooleanCondition(action.dynamicFlying, "bonusbar:5")
-	ParseNegatableBooleanCondition(action.flyable, "flyable")
-	ParseNegatableBooleanCondition(action.advflyable, "advflyable")
-	ParseNegatableStringCondition(action.channeling, "channeling", "nochanneling")
-	ParseNegatableStringCondition(action.bonusbar, "bonusbar", "nobonusbar")
-	ParseNegatableStringCondition(action.bar, "bar", "nobar")
+	for _, config in ipairs(Addon.Condition.Registry:GetConditionSet("macro").config) do
+		--- @cast config MacroCondition
+		local conditional = action.conditionals[config.id]
+
+		if conditional ~= nil then
+			ParseConditional(config, conditional)
+		end
+	end
 
 	if interactionType == Addon.InteractionType.REGULAR and not isLast and needsExistsCheck then
 		table.insert(flags, "exists")
-	end
-
-	if action.forms ~= nil and #action.forms.value > 0 then
-		ParseNegatableStringCondition(action.forms, "form", "noform")
 	end
 
 	return table.concat(flags, ",")
@@ -213,86 +224,32 @@ local function ConstructAction(binding, target)
 	--- @type Action
 	local action = {
 		ability = Addon:GetBindingValue(binding, true) --[[@as string|integer]],
-		type = binding.actionType
+		type = binding.actionType,
+		conditionals = {}
 	}
 
 	if action.ability ~= nil and binding.action.preventToggle then
 		action.ability = "!" .. action.ability
 	end
 
-	--- @param condition Binding.LoadOption
 	--- @param key string
-	local function AppendCondition(condition, key)
-		if condition.selected then
-			action[key] = condition.value
+	--- @param condition? LoadCondition
+	local function AppendCondition(key, condition)
+		if not Addon.Condition.Utils.HasEnabledFlag(condition) then
+			return
 		end
+
+		action.conditionals[key] = condition
 	end
 
-	--- @param condition Binding.NegatableStringLoadOption
-	--- @param key string
-	--- @param ignoreEmptyValue? boolean
-	local function AppendNegatableStringCondition(condition, key, ignoreEmptyValue)
-		if condition.selected and (not ignoreEmptyValue or not Addon:IsNilOrEmpty(condition.value)) then
-			action[key] = {
-				negated = condition.negated,
-				value = condition.value
-			}
-		end
-	end
-
-	AppendCondition(binding.load.combat, "combat")
-	AppendCondition(binding.load.pet, "pet")
-	AppendCondition(binding.load.stealth, "stealth")
-	AppendCondition(binding.load.mounted, "mounted")
-	AppendCondition(binding.load.outdoors, "outdoors")
-	AppendCondition(binding.load.swimming, "swimming")
-	AppendNegatableStringCondition(binding.load.channeling, "channeling")
-	AppendNegatableStringCondition(binding.load.bar, "bar", true)
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-		AppendCondition(binding.load.flying, "flying")
-		AppendCondition(binding.load.flyable, "flyable")
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA or Addon:IsForever() then
-		AppendNegatableStringCondition(binding.load.bonusbar, "bonusbar")
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF then
-		AppendCondition(binding.load.advancedFlyable, "advflyable")
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.TWW then
-		AppendCondition(binding.load.dynamicFlying, "dynamicFlying")
-	end
-
-	do
-		local forms = Addon:GetAvailableShapeshiftForms(binding)
-
-		action.forms = {
-			negated = binding.load.form.negated,
-			value = table.concat(forms, "/")
-		}
+	for key, condition in pairs(binding.conditionals or {}) do
+		AppendCondition(key, condition)
 	end
 
 	if target ~= nil then
-		if Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil then
-			action.unit = Addon.TargetUnit.MOUSEOVER
-		else
-			action.unit = target.unit
-		end
-
-		if target.hostility ~= Addon.TargetHostility.ANY then
-			action.hostility = target.hostility
-		else
-			action.hostility = ""
-		end
-
-		if target.vitals ~= Addon.TargetVitals.ANY then
-			action.vitals = target.vitals
-		else
-			action.vitals = ""
-		end
+		action.unit = (Addon:IsRestrictedKeybind(binding.keybind) or target.unit == nil) and Addon.TargetUnit.MOUSEOVER or target.unit
+		action.hostility = target.hostility ~= Addon.TargetHostility.ANY and target.hostility or ""
+		action.vitals = target.vitals ~= Addon.TargetVitals.ANY and target.vitals or ""
 	end
 
 	return action
@@ -327,7 +284,8 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 					if name ~= nil then
 						table.insert(actions, {
 							ability = name,
-							type = binding.actionType
+							type = binding.actionType,
+							conditionals = {}
 						})
 					end
 				elseif item.type == "ITEM" then
@@ -337,7 +295,8 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 					if name ~= nil then
 						table.insert(actions, {
 							ability = name,
-							type = binding.actionType
+							type = binding.actionType,
+							conditionals = {}
 						})
 					end
 				end
@@ -346,6 +305,33 @@ local function ConstructActions(binding, interactionType, actionBarItems)
 	end
 
 	return actions
+end
+
+--- The macro conditions that cause an action to be prioritized, in order of precedence.
+local SORTED_MACRO_CONDITIONS = { "combat", "form", "pet", "stealth", "mounted", "outdoors", "swimming", "flying", "dynamicFlying", "flyable", "bonusbar", "bar" }
+
+--- @param action Action
+--- @param id string
+--- @return boolean
+local function IsMacroConditionPrioritized(action, id)
+	local conditional = action.conditionals[id]
+	if conditional == nil then
+		return false
+	end
+
+	local config = Addon.Condition.Registry:GetConditionSet("macro").map[id] --[[@as MacroCondition?]]
+	if config == nil then
+		return false
+	end
+
+	local values = config.unpack ~= nil and config.unpack(conditional) or Addon.Condition.Utils.UnpackLoadOption(conditional)
+
+	-- Only the positive variant of boolean conditions takes precedence, i.e. `[combat]` but not `[nocombat]`
+	if type(values[1]) == "boolean" then
+		return values[1] ~= Addon.Condition.Utils.HasNegatedFlag(conditional)
+	end
+
+	return #values > 0
 end
 
 --- @param action Action
@@ -359,28 +345,19 @@ local function GetSortCriteria(action)
 
 		-- 2. Macro conditions take presedence over actions that don't specify them explicitly
 		not Addon:IsNilOrEmpty(action.hostility),
-		not Addon:IsNilOrEmpty(action.vitals),
-		action.combat == true,
-		action.forms ~= nil and #action.forms.value > 0,
-		action.pet == true,
-		action.stealth == true,
-		action.mounted == true,
-		action.outdoors == true,
-		action.swimming == true,
-		action.flying == true,
-		action.dynamicFlying == true,
-		action.flyable == true,
-		action.advflyable == true,
-		action.bonusbar ~= nil,
-		action.bar ~= nil,
-
-		-- 3. Any actions that do not meet any of the criteria in this list will be placed here
-
-		-- 4. The player, cursor, and default targets will always come last
-		action.unit ~= Addon.TargetUnit.DEFAULT,
-		action.unit ~= Addon.TargetUnit.CURSOR,
-		action.unit ~= Addon.TargetUnit.PLAYER
+		not Addon:IsNilOrEmpty(action.vitals)
 	}
+
+	for _, id in ipairs(SORTED_MACRO_CONDITIONS) do
+		table.insert(criteria, IsMacroConditionPrioritized(action, id))
+	end
+
+	-- 3. Any actions that do not meet any of the criteria in this list will be placed here
+
+	-- 4. The player, cursor, and default targets will always come last
+	table.insert(criteria, action.unit ~= Addon.TargetUnit.DEFAULT)
+	table.insert(criteria, action.unit ~= Addon.TargetUnit.CURSOR)
+	table.insert(criteria, action.unit ~= Addon.TargetUnit.PLAYER)
 
 	return criteria
 end
@@ -448,16 +425,10 @@ local function ProcessBuckets()
 			end
 		elseif reference.actionType == Clicked.ActionType.UNIT_SELECT then
 			command.action = Addon.CommandType.TARGET
-
-			if reference.load.combat.selected then
-				command.data = reference.load.combat.value
-			end
+			command.data = Addon.Condition.Utils.GetBooleanValue(reference.conditionals.combat)
 		elseif reference.actionType == Clicked.ActionType.UNIT_MENU then
 			command.action = Addon.CommandType.MENU
-
-			if reference.load.combat.selected then
-				command.data = reference.load.combat.value
-			end
+			command.data = Addon.Condition.Utils.GetBooleanValue(reference.conditionals.combat)
 		else
 			logger:LogError("Unhandled binding type: {actionType}", reference.actionType)
 			return nil
@@ -995,16 +966,17 @@ function Addon:UpdateBindingLoadState(binding, causes)
 	end
 
 	for _, condition in ipairs(conditions.config) do
-		--- @cast condition LoadCondition
+		--- @cast condition RuntimeLoadCondition
 
 		if ShouldPerformStateCheck(condition.id, condition.testOnEvents) then
-			--- @diagnostic disable-next-line: unknown-local-type
-			local load = binding.load[condition.id] or condition.init()
-			local selected = condition.unpack(load)
+			--- @type LoadCondition?
+			local load = binding.load[condition.id]
 
-			if selected ~= nil then
+			if Addon.Condition.Utils.HasEnabledFlag(load) then
+				--- @cast load LoadCondition
+				local values = Addon.Condition.Utils.UnpackLoadOption(load)
 				local currentState = condition.state ~= nil and { select(2, Addon:SafeCall(condition.state)) } or {}
-				local _, result = Addon:SafeCall(condition.test, selected, unpack(currentState))
+				local _, result = Addon:SafeCall(condition.test, values, unpack(currentState))
 				state[condition.id] = result
 			else
 				state[condition.id] = true
@@ -1033,7 +1005,7 @@ end
 --- @param binding Binding
 --- @return boolean
 function Addon:IsBindingValidForCurrentState(binding)
-	local load = binding.load
+	local conditionals = binding.conditionals or {}
 
 	-- known
 	do
@@ -1048,47 +1020,39 @@ function Addon:IsBindingValidForCurrentState(binding)
 		end
 	end
 
-	-- cobmat
+	-- combat
 	do
-		local combat = load.combat
+		local combat = Addon.Condition.Utils.GetBooleanValue(conditionals.combat)
 
-		if combat.selected then
-			if combat.value == true and not Addon:IsPlayerInCombat() or
-			   combat.value == false and Addon:IsPlayerInCombat() then
-				return false
-			end
+		if combat ~= nil and combat ~= Addon:IsPlayerInCombat() then
+			return false
 		end
 	end
 
 	-- form
 	do
-		local forms = Addon:GetAvailableShapeshiftForms(binding)
-		local active = GetShapeshiftForm()
-		local valid = false
+		local form = conditionals.form
 
-		if #forms > 0 then
-			for _, formId in ipairs(forms) do
-				if formId == active then
-					valid = true
-					break
+		if Addon.Condition.Utils.HasEnabledFlag(form) then
+			--- @cast form LoadCondition<integer>
+			local forms = Addon:GetAvailableShapeshiftForms(form)
+
+			if #forms > 0 then
+				local active = tContains(forms, GetShapeshiftForm())
+
+				if active == Addon.Condition.Utils.HasNegatedFlag(form) then
+					return false
 				end
-			end
-
-			if not valid then
-				return false
 			end
 		end
 	end
 
 	-- pet
 	do
-		local pet = load.pet
+		local pet = Addon.Condition.Utils.GetBooleanValue(conditionals.pet)
 
-		if pet.selected then
-			if pet.value == true and not UnitIsVisible("pet") or
-			   pet.value == false and UnitIsVisible("pet") then
-				return false
-			end
+		if pet ~= nil and pet ~= UnitIsVisible("pet") then
+			return false
 		end
 	end
 

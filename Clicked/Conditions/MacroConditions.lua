@@ -21,12 +21,44 @@ local LibStanceDance = LibStub("LibStanceDance")
 
 local Utils = Addon.Condition.Utils
 
---- @type Condition[]
+--- @param option LoadCondition<string>
+--- @return string
+local function FormatMultipleValues(option)
+	return table.concat(Utils.UnpackLoadOption(option), "/")
+end
+
+--- @param option LoadCondition<string>
+--- @param text string
+local function ParseMultipleValues(option, text)
+	--- @type string[]
+	local result = {}
+
+	for value in string.gmatch(text, "([^/]+)") do
+		value = string.trim(value)
+
+		if #value > 0 then
+			table.insert(result, value)
+		end
+	end
+
+	Utils.SetLoadOptionValues(option, #result > 0 and result or { "" })
+end
+
+--- @param value string
+--- @param previousValue string
+--- @return string
+local function ValidatePageNumbers(value, previousValue)
+	return string.find(value, "^[%d/]*$") ~= nil and value or previousValue
+end
+
+--- @type MacroCondition[]
 local config = {
 	{
 		id = "form",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "multiple",
 			label = "Form / Stance",
 			negatable = true,
 			availableValues = function(class, specialization)
@@ -78,10 +110,11 @@ local config = {
 			end
 		},
 		dependencies = { "class", "specialization" },
-		init = function()
-			return Utils.CreateMultiselectLoadOption(1)
+		init = 1,
+		unpack = function(option)
+			return Addon:GetAvailableShapeshiftForms(option)
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
+		conditionals = "form"
 	},
 	{
 		id = "combat",
@@ -90,15 +123,13 @@ local config = {
 			label = "Combat",
 			availableValues = function()
 				return {
-					[true] = Addon.L["In combat"],
-					[false] = Addon.L["Not in combat"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "combat"
 	},
 	{
 		id = "pet",
@@ -107,15 +138,14 @@ local config = {
 			label = "Pet",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Pet"],
-					[false] = Addon.L["No pet"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "pet",
+		isUnit = true
 	},
 	{
 		id = "stealth",
@@ -124,15 +154,13 @@ local config = {
 			label = "Stealth",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Stealthed"],
-					[false] = Addon.L["Not stealthed"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "stealth"
 	},
 	{
 		id = "mounted",
@@ -141,15 +169,13 @@ local config = {
 			label = "Mounted",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Mounted"],
-					[false] = Addon.L["Not mounted"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "mounted"
 	},
 	{
 		id = "outdoors",
@@ -158,15 +184,15 @@ local config = {
 			label = "Outdoors",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Outdoors"],
-					[false] = Addon.L["Indoors"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = function()
+			return "outdoors", "indoors"
+		end
 	},
 	{
 		id = "swimming",
@@ -175,27 +201,27 @@ local config = {
 			label = "Swimming",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Swimming"],
-					[false] = Addon.L["Not swimming"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "swimming"
 	},
 	{
 		id = "channeling",
+		--- @type InputDrawerConfig
 		drawer = {
 			type = "input",
 			label = "Channeling",
-			negatable = true
+			negatable = true,
+			tooltip = Addon.L["Separate multiple values with a slash (/)."],
+			format = FormatMultipleValues,
+			parse = ParseMultipleValues
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = "",
+		conditionals = "channeling"
 	},
 	{
 		id = "flying",
@@ -205,33 +231,13 @@ local config = {
 			label = "Flying",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Flying"],
-					[false] = Addon.L["Not flying"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
-	},
-	{
-		id = "dynamicFlying",
-		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
-		drawer = {
-			type = "select",
-			label = "Skyriding",
-			availableValues = function()
-				return {
-					[true] = Addon.L["Skyriding"],
-					[false] = Addon.L["Not skyriding"]
-				}, { true, false }
-			end
-		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "flying"
 	},
 	{
 		id = "flyable",
@@ -241,33 +247,29 @@ local config = {
 			label = "Flyable",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Flyable"],
-					[false] = Addon.L["Not flyable"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "flyable"
 	},
 	{
-		id = "advancedFlyable",
+		id = "dynamicFlying",
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.DF,
 		drawer = {
 			type = "select",
-			label = "Advanced flyable",
+			label = "Dynamic flying",
 			availableValues = function()
 				return {
-					[true] = Addon.L["Advanced flyable"],
-					[false] = Addon.L["Not advanced flyable"]
+					[true] = Addon.L["Yes"],
+					[false] = Addon.L["No"]
 				}, { true, false }
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = true,
+		conditionals = "bonusbar:5"
 	},
 	{
 		id = "bonusbar",
@@ -277,18 +279,16 @@ local config = {
 			type = "input",
 			label = "Bonus bar",
 			negatable = true,
-			--- @param value string
-			--- @param previousValue string
-			--- @return string
-			validate = function(value, previousValue)
-				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
-			end,
-			tooltip = "Enter the bonus bar page number."
+			validate = ValidatePageNumbers,
+			tooltip = {
+				Addon.L["Enter the bonus bar page number."],
+				Addon.L["Separate multiple values with a slash (/)."]
+			},
+			format = FormatMultipleValues,
+			parse = ParseMultipleValues
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = "",
+		conditionals = "bonusbar"
 	},
 	{
 		id = "bar",
@@ -297,19 +297,18 @@ local config = {
 			type = "input",
 			label = "Action bar page",
 			negatable = true,
-			--- @param value string
-			--- @param previousValue string
-			--- @return string
-			validate = function(value, previousValue)
-				return (#value == 0 or tonumber(value) ~= nil) and value or previousValue
-			end,
-			tooltip = "Enter the action bar page number."
+			validate = ValidatePageNumbers,
+			tooltip = {
+				Addon.L["Enter the action bar page number."],
+				Addon.L["Separate multiple values with a slash (/)."]
+			},
+			format = FormatMultipleValues,
+			parse = ParseMultipleValues
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption
+		init = "",
+		ignoreEmptyValues = true,
+		conditionals = "bar"
 	}
 }
 
-Addon.Condition.Registry:RegisterConditionConfig("macro", config)
+Addon.Condition.Registry:RegisterConditionConfig("macro", "conditionals", config)

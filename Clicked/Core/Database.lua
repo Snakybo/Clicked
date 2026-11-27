@@ -48,83 +48,6 @@ local lookupTable = {
 	deleted = {}
 }
 
--- Local support functions
-
---- @generic T
---- @param default T
---- @return Binding.LoadOption<T>
-local function GetLoadOptionTemplate(default)
-	--- @type Binding.LoadOption<T>
-	local template = {
-		selected = false,
-		value = default
-	}
-
-	return template
-end
-
---- @return Binding.LoadOption
-local function GetNegatableLoadOptionTemplate()
-	return GetLoadOptionTemplate(true)
-end
-
---- @generic T
---- @param default T
---- @return Binding.TriStateLoadOption<T>
-local function GetTriStateLoadOptionTemplate(default)
-	--- @type Binding.TriStateLoadOption<T>
-	local template = {
-		selected = 0,
-		single = default,
-		multiple = {
-			default
-		}
-	}
-
-	return template
-end
-
---- @generic T
---- @param default T
---- @return Binding.NegatableTriStateLoadOption<T>
-local function GetNegatableTriStateLoadOptionTemplate(default)
-	--- @type Binding.NegatableTriStateLoadOption<T>
-	local template = GetTriStateLoadOptionTemplate(default)
-	template.negated = false
-
-	return template
-end
-
---- @param default string
---- @return Binding.MutliFieldLoadOption
-local function GetMultiFieldLoadOptionTemplate(default)
-	--- @type Binding.MutliFieldLoadOption
-	local template = {
-		selected = false,
-		entries = {
-			{
-				operation = "AND",
-				negated = false,
-				value = default
-			}
-		}
-	}
-
-	return template
-end
-
---- @return Binding.NegatableStringLoadOption
-local function GetNegatableStringLoadOptionTemplate()
-	--- @type Binding.NegatableStringLoadOption
-	local template = {
-		selected = false,
-		negated = false,
-		value = ""
-	}
-
-	return template
-end
-
 -- Public addon API
 
 --- Get the default values for a Clicked profile.
@@ -246,6 +169,21 @@ function Clicked:CreateBinding(scope)
 
 	Addon:RegisterDataObject(binding, scope)
 	return binding
+end
+
+--- Create a new, disabled, load condition with the specified default value(s).
+---
+--- @generic T
+--- @param default T|T[]
+--- @return LoadCondition<T>
+function Clicked:CreateLoadCondition(default)
+	--- @type LoadCondition<T>
+	local result = {
+		state = 0,
+		value = type(default) == "table" and CopyTable(default) or default
+	}
+
+	return result
 end
 
 --- Delete a data object and all children.
@@ -548,56 +486,9 @@ function Addon:GetNewBindingTemplate()
 			hovercastEnabled = false,
 			regularEnabled = true
 		},
-		load = {
-			never = false,
-			class = GetTriStateLoadOptionTemplate(select(2, UnitClass("player"))),
-			race = GetTriStateLoadOptionTemplate(select(2, UnitRace("player"))),
-			playerNameRealm = GetLoadOptionTemplate(Addon:GetPlayerName()),
-			combat = GetNegatableLoadOptionTemplate(),
-			spellKnown = GetLoadOptionTemplate(""),
-			inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
-			playerInGroup = GetLoadOptionTemplate(""),
-			form = GetNegatableTriStateLoadOptionTemplate(1),
-			pet = GetNegatableLoadOptionTemplate(),
-			stealth = GetNegatableLoadOptionTemplate(),
-			mounted = GetNegatableLoadOptionTemplate(),
-			outdoors = GetNegatableLoadOptionTemplate(),
-			swimming = GetNegatableLoadOptionTemplate(),
-			instanceType = GetTriStateLoadOptionTemplate("NONE"),
-			zoneName = GetLoadOptionTemplate(""),
-			equipped = GetLoadOptionTemplate(""),
-			bonusbar = GetNegatableStringLoadOptionTemplate(),
-			bar = GetNegatableStringLoadOptionTemplate(),
-			channeling = GetNegatableStringLoadOptionTemplate(),
-			flying = GetNegatableLoadOptionTemplate(),
-			dynamicFlying = GetNegatableLoadOptionTemplate(),
-			flyable = GetNegatableLoadOptionTemplate(),
-			advancedFlyable = GetNegatableLoadOptionTemplate(),
-			specialization = GetTriStateLoadOptionTemplate(1),
-			specRole = GetTriStateLoadOptionTemplate(""),
-			talent = GetMultiFieldLoadOptionTemplate(""),
-			pvpTalent = GetMultiFieldLoadOptionTemplate(""),
-			warMode = GetNegatableLoadOptionTemplate(),
-			ruleset = GetTriStateLoadOptionTemplate("NORMAL"),
-			groupRole = GetTriStateLoadOptionTemplate("NONE")
-		}
+		load = {},
+		conditionals = {}
 	}
-
-	if Addon:IsForever() then
-		template.load.ruleset = GetTriStateLoadOptionTemplate(Addon:GetRuleset())
-		template.load.groupRole = GetTriStateLoadOptionTemplate(UnitGroupRolesAssigned("player"))
-	end
-
-	if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-		local specIndex = C_SpecializationInfo.GetSpecialization()
-		specIndex = specIndex == 5 and 1 or specIndex -- Initial spec
-		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-		template.load.specRole = GetTriStateLoadOptionTemplate(specIndex)
-	elseif Addon.EXPANSION_LEVEL >= Addon.Expansion.CATA then
-		--- @type number
-		local specIndex = GetPrimaryTalentTree()
-		template.load.specialization = GetTriStateLoadOptionTemplate(specIndex)
-	end
 
 	return template
 end

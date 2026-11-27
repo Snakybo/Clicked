@@ -3,7 +3,7 @@
 --- @class Addon
 local Addon = select(2, ...)
 
-Addon.DATA_VERSION = 19
+Addon.DATA_VERSION = 20
 
 local upgradeData = {}
 
@@ -120,7 +120,6 @@ local function Upgrade(db, global, from, type, cache)
 			end
 
 			local function GetMultiFieldLoadOptionTemplate(default)
-				--- @type Binding.MutliFieldLoadOption
 				local template = {
 					selected = false,
 					entries = {
@@ -194,7 +193,7 @@ local function Upgrade(db, global, from, type, cache)
 						playerNameRealm = GetLoadOptionTemplate(UnitName("player") --[[@as string]]),
 						combat = GetNegatableLoadOptionTemplate(),
 						spellKnown = GetLoadOptionTemplate(""),
-						inGroup = GetLoadOptionTemplate(Addon.GroupState.PARTY_OR_RAID),
+						inGroup = GetLoadOptionTemplate("IN_GROUP_PARTY_OR_RAID"),
 						playerInGroup = GetLoadOptionTemplate(""),
 						form = GetNegatableTriStateLoadOptionTemplate(1),
 						pet = GetNegatableLoadOptionTemplate(),
@@ -274,6 +273,239 @@ local function Upgrade(db, global, from, type, cache)
 	if from < 19 then -- 2026-11-09
 		for _, binding in ipairs(db.bindings) do
 			binding.load.advFlyable = nil
+		end
+	end
+
+	if from < 20 then -- 2026-11-15
+		local FLAG_LOAD_ENABLED = 1
+		local FLAG_LOAD_NEGATED = 2
+
+		local function GetSelectedValues(value)
+			if value.selected == 2 then
+				return value.multiple or {}
+			end
+
+			return { value.single }
+		end
+
+		local function ToFlags(values, map)
+			local result = 0
+
+			for _, item in ipairs(values) do
+				if map[item] ~= nil then
+					result = bit.bor(result, map[item])
+				end
+			end
+
+			return result
+		end
+
+		local function FromBoolean(value)
+			if not value then
+				return nil
+			end
+
+			return {
+				state = FLAG_LOAD_ENABLED,
+				value = true
+			}
+		end
+
+		local function FromLoadOption(value)
+			if value == nil or not value.selected then
+				return nil
+			end
+
+			return {
+				state = FLAG_LOAD_ENABLED,
+				value = value.value
+			}
+		end
+
+		local function FromNegatableStringLoadOption(value)
+			if value == nil or not value.selected then
+				return nil
+			end
+
+			local values = {}
+
+			for item in string.gmatch(value.value or "", "([^/]+)") do
+				item = string.trim(item)
+
+				if #item > 0 then
+					table.insert(values, item)
+				end
+			end
+
+			return {
+				state = value.negated and bit.bor(FLAG_LOAD_ENABLED, FLAG_LOAD_NEGATED) or FLAG_LOAD_ENABLED,
+				value = #values > 1 and values or (values[1] or "")
+			}
+		end
+
+		local function FromInGroup(value)
+			if value == nil or not value.selected then
+				return nil
+			end
+
+			local FLAG_SOLO = 1
+			local FLAG_PARTY = 2
+			local FLAG_RAID = 4
+
+			local map = {
+				IN_GROUP_PARTY_OR_RAID = bit.bor(FLAG_PARTY, FLAG_RAID),
+				IN_GROUP_PARTY = FLAG_PARTY,
+				IN_GROUP_RAID = FLAG_RAID,
+				IN_GROUP_SOLO = FLAG_SOLO
+			}
+
+			return {
+				state = FLAG_LOAD_ENABLED,
+				value = map[value.value] or bit.bor(FLAG_PARTY, FLAG_RAID)
+			}
+		end
+
+		local function FromTriStateFlags(value, map)
+			if value == nil or value.selected == nil or value.selected == 0 then
+				return nil
+			end
+
+			return {
+				state = FLAG_LOAD_ENABLED,
+				value = ToFlags(GetSelectedValues(value), map)
+			}
+		end
+
+		local function FromInstanceType(value)
+			return FromTriStateFlags(value, {
+				NONE = 1,
+				PARTY = 2,
+				RAID = 4,
+				PVP = 8,
+				ARENA = 16,
+				SCENARIO = 32
+			})
+		end
+
+		local function FromRole(value)
+			return FromTriStateFlags(value, {
+				NONE = 1,
+				DAMAGER = 2,
+				TANK = 4,
+				HEALER = 8
+			})
+		end
+
+		local function FromRuleset(value)
+			return FromTriStateFlags(value, {
+				NORMAL = 1,
+				PVP = 2,
+				RP = 4,
+				HARDCORE = 8
+			})
+		end
+
+		local function FromTriStateLoadOption(value)
+			if value == nil or value.selected == nil or value.selected == 0 then
+				return nil
+			end
+
+			local values = GetSelectedValues(value)
+
+			return {
+				state = value.negated and bit.bor(FLAG_LOAD_ENABLED, FLAG_LOAD_NEGATED) or FLAG_LOAD_ENABLED,
+				value = #values == 1 and values[1] or CopyTable(values)
+			}
+		end
+
+		local function FromZoneNames(value)
+			if value == nil or not value.selected then
+				return nil
+			end
+
+			local result = {
+				state = FLAG_LOAD_ENABLED,
+				value = {}
+			}
+
+			for name in string.gmatch(value.value or "", "([^;]+)") do
+				local negate = string.sub(name, 1, 1) == "!"
+
+				table.insert(result.value, {
+					name = negate and string.sub(name, 2) or name,
+					negate = negate
+				})
+			end
+
+			return result
+		end
+
+		local function FromTalent(value)
+			if value == nil or not value.selected then
+				return nil
+			end
+
+			local current = {}
+
+			local result = {
+				state = FLAG_LOAD_ENABLED,
+				value = { current }
+			}
+
+			for _, entry in ipairs(value.entries or {}) do
+				if entry.operation == "OR" and #current > 0 then
+					current = {}
+					table.insert(result.value, current)
+				end
+
+				table.insert(current, {
+					name = entry.value or "",
+					negate = entry.negated and true or false
+				})
+			end
+
+			return result
+		end
+
+		for _, binding in ipairs(db.bindings) do
+			local load = binding.load or {}
+
+			binding.conditionals = {
+				form = FromTriStateLoadOption(load.form),
+				combat = FromLoadOption(load.combat),
+				pet = FromLoadOption(load.pet),
+				stealth = FromLoadOption(load.stealth),
+				mounted = FromLoadOption(load.mounted),
+				outdoors = FromLoadOption(load.outdoors),
+				swimming = FromLoadOption(load.swimming),
+				flying = FromLoadOption(load.flying),
+				dynamicFlying = FromLoadOption(load.dynamicFlying),
+				flyable = FromLoadOption(load.flyable),
+				channeling = FromNegatableStringLoadOption(load.channeling),
+				bonusbar = FromNegatableStringLoadOption(load.bonusbar),
+				bar = FromNegatableStringLoadOption(load.bar)
+			}
+
+			binding.load = {
+				never = FromBoolean(load.never),
+				class = FromTriStateLoadOption(load.class),
+				race = FromTriStateLoadOption(load.race),
+				nameRealm = FromLoadOption(load.playerNameRealm),
+				spellKnown = FromLoadOption(load.spellKnown),
+				groupType = FromInGroup(load.inGroup),
+				playerInGroup = FromLoadOption(load.playerInGroup),
+				instanceType = FromInstanceType(load.instanceType),
+				specialization = FromTriStateLoadOption(load.specialization),
+				specRole = FromRole(load.specRole),
+				groupRole = FromRole(load.groupRole),
+				zoneName = FromZoneNames(load.zoneName),
+				talent = FromTalent(load.talent),
+				pvpTalent = FromTalent(load.pvpTalent),
+				warMode = FromLoadOption(load.warMode),
+				ruleset = FromRuleset(load.ruleset),
+				equipped = FromLoadOption(load.equipped),
+				runeEquipped = FromLoadOption(load.runeEquipped)
+			}
 		end
 	end
 

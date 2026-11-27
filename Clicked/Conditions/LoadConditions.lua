@@ -21,7 +21,130 @@ local LibTalentTome = LibStub("LibTalentTome")
 
 local Utils = Addon.Condition.Utils
 
---- @type LoadCondition[]
+--- @enum GroupTypes
+Addon.GroupTypes = {
+	SOLO = 1,
+	PARTY = 2,
+	RAID = 4
+}
+
+--- @enum InstanceTypes
+Addon.InstanceTypes = {
+	NONE = 1,
+	PARTY = 2,
+	RAID = 4,
+	PVP = 8,
+	ARENA = 16,
+	SCENARIO = 32
+}
+
+--- @enum Roles
+Addon.Roles = {
+	NONE = 1,
+	DAMAGER = 2,
+	TANK = 4,
+	HEALER = 8
+}
+
+--- @enum Rulesets
+Addon.Rulesets = {
+	NORMAL = 1,
+	PVP = 2,
+	RP = 4,
+	HARDCORE = 8
+}
+
+--- @param value integer
+--- @param flag? integer
+--- @return boolean
+local function HasValueFlag(value, flag)
+	return flag ~= nil and bit.band(value, flag) > 0
+end
+
+--- @param flags table<string, integer>
+--- @param key? string
+--- @return integer?
+local function GetFlag(flags, key)
+	if key == nil then
+		return nil
+	end
+
+	--- @type integer?
+	local result = flags[key]
+	return result
+end
+
+--- @param option LoadCondition<ZoneNameValue>
+--- @return string
+local function FormatZoneNames(option)
+	--- @type string[]
+	local result = {}
+
+	for _, zone in ipairs(Utils.UnpackLoadOption(option)) do
+		if not Addon:IsNilOrEmpty(zone.name) then
+			table.insert(result, (zone.negate and "!" or "") .. zone.name)
+		end
+	end
+
+	return table.concat(result, ";")
+end
+
+--- @param option LoadCondition<ZoneNameValue>
+--- @param text string
+local function ParseZoneNames(option, text)
+	--- @type ZoneNameValue[]
+	local result = {}
+
+	for zone in string.gmatch(text, "([^;]+)") do
+		local negate = string.sub(zone, 1, 1) == "!"
+
+		table.insert(result, {
+			name = negate and string.sub(zone, 2) or zone,
+			negate = negate
+		})
+	end
+
+	option.value = result
+end
+
+--- @return TalentValue[][]
+local function CreateTalentCompounds()
+	return {
+		{
+			{
+				name = "",
+				negate = false
+			}
+		}
+	}
+end
+
+--- @param compounds TalentValue[][]
+--- @param getActiveTalent fun(self: LibTalentTome, name: string): LibTalentTome.ActiveTalent?
+--- @return boolean
+local function TestTalentCompounds(compounds, getActiveTalent)
+	for _, compound in ipairs(compounds) do
+		local valid = true
+
+		for _, talent in ipairs(compound) do
+			local name = talent.name
+			local selected = getActiveTalent(LibTalentTome, name)
+
+			if #name > 0 and (selected ~= nil and talent.negate or selected == nil and not talent.negate) then
+				valid = false
+				break
+			end
+		end
+
+		if valid then
+			return true
+		end
+	end
+
+	return false
+end
+
+--- @type RuntimeLoadCondition[]
 local config = {
 	{
 		id = "never",
@@ -29,22 +152,14 @@ local config = {
 			type = "toggle",
 			label = "Never",
 		},
-		init = function()
+		init = true,
+		--- @return boolean
+		test = function()
 			return false
-		end,
-		--- @param option boolean
-		--- @return boolean
-		unpack = function(option)
-			return option
-		end,
-		--- @param value boolean
-		--- @return boolean
-		test = function(value)
-			return not value
 		end
 	},
 	{
-		id = "playerNameRealm",
+		id = "nameRealm",
 		drawer = { --- @type InputDrawerConfig
 			type = "input",
 			negatable = false,
@@ -59,21 +174,21 @@ local config = {
 		},
 		init = function()
 			if Addon:IsForever() then
-				return Utils.CreateLoadOption(Addon:GetPlayerName())
+				return Addon:GetPlayerName()
 			else
-				return Utils.CreateLoadOption(Addon:GetPlayerName() .. "-" .. GetRealmName())
+				return Addon:GetPlayerName() .. "-" .. GetRealmName()
 			end
 		end,
-		unpack = Utils.UnpackSimpleLoadOption,
 		--- @return string, string
 		state = function()
 			return Addon:GetPlayerName(), GetRealmName() or ""
 		end,
-		--- @param value string
+		--- @param values string[]
 		--- @param fullName string
 		--- @param realm string
 		--- @return boolean
-		test = function(value, fullName, realm)
+		test = function(values, fullName, realm)
+			local value = values[1]
 			local name, surname = string.match(fullName, "^(%S+) (%S+)$")
 			name = name or fullName
 
@@ -91,8 +206,10 @@ local config = {
 	},
 	{
 		id = "race",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "multiple",
 			label = "Race",
 			availableValues = function()
 				--- @type table<string, string>
@@ -113,9 +230,8 @@ local config = {
 		},
 		init = function()
 			local _, englishName = UnitRace("player")
-			return Utils.CreateMultiselectLoadOption(englishName)
+			return englishName
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
 		--- @return string
 		state = function()
 			local _, raceName = UnitRace("player")
@@ -130,8 +246,10 @@ local config = {
 	},
 	{
 		id = "class",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "multiple",
 			label = "Class",
 			availableValues = function()
 				--- @type table<string, string>
@@ -153,9 +271,8 @@ local config = {
 		},
 		init = function()
 			local _, classFileName = UnitClass("player")
-			return Utils.CreateMultiselectLoadOption(classFileName)
+			return classFileName
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
 		--- @return string
 		state = function()
 			local _, classFileName = UnitClass("player")
@@ -165,14 +282,15 @@ local config = {
 		--- @param class string
 		--- @return boolean
 		test = function(value, class)
-
 			return tContains(value, class)
 		end
 	},
 	{
 		id = "specialization",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "multiple",
 			label = "Talent specialization",
 			--- @param class string[]
 			--- @return table<integer, string>, integer[]
@@ -227,12 +345,11 @@ local config = {
 		init = function()
 			if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
 				local specIndex = C_SpecializationInfo.GetSpecialization()
-				return Utils.CreateMultiselectLoadOption(specIndex == 5 and 1 or specIndex)
+				return specIndex == 5 and 1 or specIndex
 			else
-				return Utils.CreateMultiselectLoadOption(GetPrimaryTalentTree())
+				return GetPrimaryTalentTree()
 			end
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "ActiveTalentsChanged" },
 		--- @return integer
 		state = function()
@@ -252,37 +369,38 @@ local config = {
 	},
 	{
 		id = "specRole",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "bitmask",
 			label = "Specialization role",
 			availableValues = function()
 				return {
-					DAMAGER = Addon.L["DPS"],
-					TANK = Addon.L["Tank"],
-					HEALER = Addon.L["Healer"]
+					[Addon.Roles.DAMAGER] = Addon.L["DPS"],
+					[Addon.Roles.TANK] = Addon.L["Tank"],
+					[Addon.Roles.HEALER] = Addon.L["Healer"]
 				}, {
-					"DAMAGER",
-					"TANK",
-					"HEALER"
+					Addon.Roles.DAMAGER,
+					Addon.Roles.TANK,
+					Addon.Roles.HEALER
 				}
 			end
 		},
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.MOP,
 		init = function()
-			local role = GetSpecializationRole(C_SpecializationInfo.GetSpecialization()) or "DAMAGER"
-			return Utils.CreateMultiselectLoadOption(role)
+			local role = GetSpecializationRole(C_SpecializationInfo.GetSpecialization())
+			return GetFlag(Addon.Roles, role) or Addon.Roles.DAMAGER
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "ActiveTalentsChanged" },
-		--- @return string
+		--- @return integer?
 		state = function()
-			return GetSpecializationRole(C_SpecializationInfo.GetSpecialization())
+			return GetFlag(Addon.Roles, GetSpecializationRole(C_SpecializationInfo.GetSpecialization()))
 		end,
-		--- @param value string[]
-		--- @param role string
+		--- @param value integer[]
+		--- @param role? integer
 		--- @return boolean
 		test = function(value, role)
-			return tContains(value, role)
+			return HasValueFlag(value[1], role)
 		end
 	},
 	{
@@ -315,37 +433,16 @@ local config = {
 			end
 		},
 		dependencies = { "class", "specialization" },
-		init = function()
-			return Utils.CreateTalentLoadOption("")
-		end,
-		unpack = Utils.UnpackTalentLoadOption,
+		init = CreateTalentCompounds,
 		testOnEvents = { "ActiveTalentsChanged" },
-		--- @param value TalentLoadOptionEntry[][]
+		--- @param value TalentValue[][]
 		--- @return boolean
 		test = function(value)
 			if not LibTalentTome:AreTalentsInitialized() then
 				return false
 			end
 
-			for _, compound in ipairs(value) do
-				local valid = true
-
-				for _, talent in ipairs(compound) do
-					local name = talent.value
-					local selected = LibTalentTome:GetActiveTalentByName(name)
-
-					if #name > 0 and (selected ~= nil and talent.negated or selected == nil and not talent.negated) then
-						valid = false
-						break
-					end
-				end
-
-				if valid then
-					return true
-				end
-			end
-
-			return false
+			return TestTalentCompounds(value, LibTalentTome.GetActiveTalentByName)
 		end
 	},
 	{
@@ -383,33 +480,12 @@ local config = {
 		},
 		dependencies = { "class", "specialization" },
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
-		init = function()
-			return Utils.CreateTalentLoadOption("")
-		end,
-		unpack = Utils.UnpackTalentLoadOption,
+		init = CreateTalentCompounds,
 		testOnEvents = { "ActivePvpTalentsChanged" },
-		--- @param value TalentLoadOptionEntry[][]
+		--- @param value TalentValue[][]
 		--- @return boolean
 		test = function(value)
-			for _, compound in ipairs(value) do
-				local valid = true
-
-				for _, talent in ipairs(compound) do
-					local name = talent.value
-					local selected = LibTalentTome:GetActivePvpTalentByName(name)
-
-					if #name > 0 and (selected ~= nil and talent.negated or selected == nil and not talent.negated) then
-						valid = false
-						break
-					end
-				end
-
-				if valid then
-					return true
-				end
-			end
-
-			return false
+			return TestTalentCompounds(value, LibTalentTome.GetActivePvpTalentByName)
 		end
 	},
 	{
@@ -421,119 +497,111 @@ local config = {
 				return {
 					[true] = Addon.L["War Mode enabled"],
 					[false] = Addon.L["War Mode disabled"]
-				}, { true, false}
+				}, { true, false }
 			end
 		},
 		disabled = Addon.EXPANSION_LEVEL < Addon.Expansion.BFA,
-		init = function()
-			return Utils.CreateLoadOption(true)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = true,
 		testOnEvents = { "PLAYER_FLAGS_CHANGED" },
 		--- @return boolean
 		state = function()
 			return C_PvP.IsWarModeDesired()
 		end,
-		--- @param value boolean
+		--- @param value boolean[]
 		--- @param warMode boolean
 		--- @return boolean
 		test = function(value, warMode)
-			return value == warMode
+			return value[1] == warMode
 		end
 	},
 	{
 		id = "ruleset",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "bitmask",
 			label = "Ruleset",
 			availableValues = function()
 				return {
-					NORMAL = Addon.L["Normal"],
-					PVP = Addon.L["PvP"],
-					RP = Addon.L["RP"],
-					HARDCORE = Addon.L["Hardcore"]
+					[Addon.Rulesets.NORMAL] = Addon.L["Normal"],
+					[Addon.Rulesets.PVP] = Addon.L["PvP"],
+					[Addon.Rulesets.RP] = Addon.L["RP"],
+					[Addon.Rulesets.HARDCORE] = Addon.L["Hardcore"]
 				}, {
-					"NORMAL",
-					"PVP",
-					"RP",
-					"HARDCORE"
+					Addon.Rulesets.NORMAL,
+					Addon.Rulesets.PVP,
+					Addon.Rulesets.RP,
+					Addon.Rulesets.HARDCORE
 				}
 			end
 		},
 		disabled = not Addon:IsForever(),
 		init = function()
-			return Utils.CreateMultiselectLoadOption(Addon:GetRuleset())
+			return GetFlag(Addon.Rulesets, Addon:GetRuleset())
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
-		--- @return string
+		--- @return integer?
 		state = function()
-			return Addon:GetRuleset()
+			return GetFlag(Addon.Rulesets, Addon:GetRuleset())
 		end,
-		--- @param value string[]
-		--- @param current string
+		--- @param value integer[]
+		--- @param current? integer
 		--- @return boolean
 		test = function(value, current)
-			return tContains(value, current)
+			return HasValueFlag(value[1], current)
 		end
 	},
 	{
 		id = "instanceType",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "bitmask",
 			label = "Instance type",
 			availableValues = function()
+				--- @type table<integer, string>
 				local items = {
-					NONE = Addon.L["No Instance"],
-					PARTY = Addon.L["Dungeon"],
-					RAID = Addon.L["Raid"]
+					[Addon.InstanceTypes.NONE] = Addon.L["No Instance"],
+					[Addon.InstanceTypes.PARTY] = Addon.L["Dungeon"],
+					[Addon.InstanceTypes.RAID] = Addon.L["Raid"]
 				}
 
+				--- @type integer[]
 				local order = {
-					"NONE",
-					"PARTY",
-					"RAID"
+					Addon.InstanceTypes.NONE,
+					Addon.InstanceTypes.PARTY,
+					Addon.InstanceTypes.RAID
 				}
 
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.TBC then
-					items["PVP"] = Addon.L["Battleground"]
-					items["ARENA"] = Addon.L["Arena"]
+					items[Addon.InstanceTypes.PVP] = Addon.L["Battleground"]
+					items[Addon.InstanceTypes.ARENA] = Addon.L["Arena"]
 
-					table.insert(order, "PVP")
-					table.insert(order, "ARENA")
+					table.insert(order, Addon.InstanceTypes.PVP)
+					table.insert(order, Addon.InstanceTypes.ARENA)
 				end
 
 				if Addon.EXPANSION_LEVEL >= Addon.Expansion.MOP then
-					items["SCENARIO"] = Addon.L["Scenario"]
-					table.insert(order, 2, "SCENARIO")
+					items[Addon.InstanceTypes.SCENARIO] = Addon.L["Scenario"]
+					table.insert(order, 2, Addon.InstanceTypes.SCENARIO)
 				end
 
 				return items, order
 			end
 		},
-		init = function()
-			return Utils.CreateMultiselectLoadOption("NONE")
-		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
+		init = Addon.InstanceTypes.NONE,
 		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
-		--- @return string
+		--- @return integer?
 		state = function()
 			local _, instanceType = IsInInstance()
-			return instanceType
+
+			-- `IsInInstance` returns lowercase values
+			return GetFlag(Addon.InstanceTypes, instanceType ~= nil and string.upper(instanceType) or nil)
 		end,
-		--- @param value string[]
-		--- @param instanceType string
+		--- @param value integer[]
+		--- @param instanceType? integer
 		--- @return boolean
 		test = function(value, instanceType)
-			for _, current in ipairs(value) do
-				-- Convert to lowercase as that is what `IsInInstance` returns
-				current = string.lower(current)
-
-				if current == instanceType then
-					return true
-				end
-			end
-
-			return false
+			return HasValueFlag(value[1], instanceType)
 		end
 	},
 	{
@@ -547,18 +615,20 @@ local config = {
 				"",
 				string.format(Addon.L["%s will be active if you're not in Oribos"], "|r!" .. Addon.L["Oribos"] .. "|cffffffff"),
 				string.format(Addon.L["%s will be active if you're in Durotar or Orgrimmar"], "|r" .. Addon.L["Durotar"] .. ";" .. Addon.L["Orgrimmar"] .. "|cffffffff")
-			}
+			},
+			format = FormatZoneNames,
+			parse = ParseZoneNames
 		},
+		--- @return ZoneNameValue[]
 		init = function()
-			return Utils.CreateLoadOption("")
+			return {}
 		end,
-		unpack = Utils.UnpackSimpleLoadOption,
 		testOnEvents = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
 		--- @return string, string
 		state = function()
 			return GetRealZoneText(), GetSubZoneText() or ""
 		end,
-		--- @param value string
+		--- @param value ZoneNameValue[]
 		--- @param realZoneText string
 		--- @param subZoneText string
 		--- @return boolean
@@ -568,15 +638,8 @@ local config = {
 				subZoneText
 			}
 
-			for zone in string.gmatch(value, "([^;]+)") do
-				local negate = false
-
-				if string.sub(zone, 0, 1) == "!" then
-					negate = true
-					zone = string.sub(zone, 2)
-				end
-
-				if (negate and not tContains(zones, zone)) or (not negate and tContains(zones, zone)) then
+			for _, zone in ipairs(value) do
+				if not Addon:IsNilOrEmpty(zone.name) and tContains(zones, zone.name) ~= zone.negate then
 					return true
 				end
 			end
@@ -591,99 +654,88 @@ local config = {
 			type = "input",
 			label = "Spell known"
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = "",
 		testOnEvents = { "ActiveTalentsChanged", "ActivePvpTalentsChanged", "PLAYER_LEVEL_CHANGED", "LEARNED_SPELL_IN_TAB", "LEARNED_SPELL_IN_SKILL_LINE", "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
-		--- @param value string
+		--- @param value string[]
 		--- @return boolean
 		test = function(value)
-			local spell = C_Spell.GetSpellInfo(value)
+			local spell = C_Spell.GetSpellInfo(value[1])
 			return spell ~= nil and IsSpellKnownOrOverridesKnown(spell.spellID, false) or false
 		end
 	},
 	{
-		id = "inGroup",
+		id = "groupType",
+		--- @type SelectDrawerConfig
 		drawer = {
 			type = "select",
+			mode = "bitmask",
 			label = "In group",
 			availableValues = function()
 				return {
-					IN_GROUP_PARTY_OR_RAID = Addon.L["In a party or raid group"],
-					IN_GROUP_PARTY = Addon.L["In a party"],
-					IN_GROUP_RAID = Addon.L["In a raid group"],
-					IN_GROUP_SOLO = Addon.L["Not in a group"]
+					[Addon.GroupTypes.SOLO] = Addon.L["Not in a group"],
+					[Addon.GroupTypes.PARTY] = Addon.L["In a party"],
+					[Addon.GroupTypes.RAID] = Addon.L["In a raid group"]
 				}, {
-					"IN_GROUP_PARTY_OR_RAID",
-					"IN_GROUP_PARTY",
-					"IN_GROUP_RAID",
-					"IN_GROUP_SOLO"
+					Addon.GroupTypes.SOLO,
+					Addon.GroupTypes.PARTY,
+					Addon.GroupTypes.RAID
 				}
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption(Addon.GroupState.PARTY_OR_RAID)
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = bit.bor(Addon.GroupTypes.PARTY, Addon.GroupTypes.RAID),
 		testOnEvents = { "GROUP_ROSTER_UPDATE" },
-		--- @return integer, integer, boolean
+		--- @return integer
 		state = function()
-			return GetNumGroupMembers(), GetNumSubgroupMembers(), IsInRaid()
-		end,
-		--- @param value GroupState
-		--- @param numGroupMembers integer
-		--- @param numSubGroupMembers integer
-		--- @param isInRaid boolean
-		--- @return boolean
-		test = function(value, numGroupMembers, numSubGroupMembers, isInRaid)
-			if value == Addon.GroupState.SOLO and numGroupMembers > 0 then
-				return false
-			elseif value == Addon.GroupState.PARTY_OR_RAID and numGroupMembers == 0 then
-				return false
-			elseif value == Addon.GroupState.PARTY and (numSubGroupMembers == 0 or isInRaid) then
-				return false
-			elseif value == Addon.GroupState.RAID and not isInRaid then
-				return false
+			if IsInRaid() then
+				return Addon.GroupTypes.RAID
+			elseif GetNumSubgroupMembers() > 0 then
+				return Addon.GroupTypes.PARTY
 			end
 
-			return true
+			return Addon.GroupTypes.SOLO
+		end,
+		--- @param value integer[]
+		--- @param groupType integer
+		--- @return boolean
+		test = function(value, groupType)
+			return HasValueFlag(value[1], groupType)
 		end
 	},
 	{
 		id = "groupRole",
+		--- @type SelectDrawerConfig
 		drawer = {
-			type = "multiselect",
+			type = "select",
+			mode = "bitmask",
 			label = "Group role",
 			availableValues = function()
 				return {
-					NONE = Addon.L["No role"],
-					DAMAGER = Addon.L["DPS"],
-					TANK = Addon.L["Tank"],
-					HEALER = Addon.L["Healer"]
+					[Addon.Roles.NONE] = Addon.L["No role"],
+					[Addon.Roles.DAMAGER] = Addon.L["DPS"],
+					[Addon.Roles.TANK] = Addon.L["Tank"],
+					[Addon.Roles.HEALER] = Addon.L["Healer"]
 				}, {
-					"NONE",
-					"DAMAGER",
-					"TANK",
-					"HEALER"
+					Addon.Roles.NONE,
+					Addon.Roles.DAMAGER,
+					Addon.Roles.TANK,
+					Addon.Roles.HEALER
 				}
 			end
 		},
 		disabled = not Addon:IsForever(),
 		init = function()
-			return Utils.CreateMultiselectLoadOption(UnitGroupRolesAssigned("player"))
+			return GetFlag(Addon.Roles, UnitGroupRolesAssigned("player")) or Addon.Roles.NONE
 		end,
-		unpack = Utils.UnpackMultiselectLoadOption,
 		testOnEvents = { "PLAYER_ROLES_ASSIGNED", "GROUP_ROSTER_UPDATE" },
-		--- @return string
+		--- @return integer?
 		state = function()
-			return UnitGroupRolesAssigned("player")
+			return GetFlag(Addon.Roles, UnitGroupRolesAssigned("player"))
 		end,
-		--- @param value string[]
-		--- @param role string
+		--- @param value integer[]
+		--- @param role? integer
 		--- @return boolean
 		test = function(value, role)
-			return tContains(value, role)
+			return HasValueFlag(value[1], role)
 		end
 	},
 	{
@@ -693,14 +745,13 @@ local config = {
 			type = "input",
 			label = "Player in group"
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = "",
 		testOnEvents = { "GROUP_ROSTER_UPDATE" },
-		--- @param value string
+		--- @param values string[]
 		--- @return boolean
-		test = function(value)
+		test = function(values)
+			local value = values[1]
+
 			if value == UnitName("player") then
 				return true
 			else
@@ -739,15 +790,12 @@ local config = {
 				return value
 			end
 		},
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = "",
 		testOnEvents = { "PLAYER_EQUIPMENT_CHANGED" },
-		--- @param value string
+		--- @param value string[]
 		--- @return boolean
 		test = function(value)
-			return C_Item.IsEquippedItem(value)
+			return C_Item.IsEquippedItem(value[1])
 		end
 	},
 	{
@@ -776,15 +824,12 @@ local config = {
 			end
 		},
 		disabled = Addon.EXPANSION_LEVEL > Addon.Expansion.CLASSIC or C_Engraving == nil,
-		init = function()
-			return Utils.CreateLoadOption("")
-		end,
-		unpack = Utils.UnpackSimpleLoadOption,
+		init = "",
 		testOnEvents = { "RUNE_UPDATED", "PLAYER_EQUIPMENT_CHANGED" },
-		--- @param value string
+		--- @param value string[]
 		--- @return boolean
 		test = function(value)
-			local spellId = tonumber(value)
+			local spellId = tonumber(value[1])
 			if spellId == nil then
 				return false
 			end
@@ -794,4 +839,4 @@ local config = {
 	}
 }
 
-Addon.Condition.Registry:RegisterConditionConfig("load", config)
+Addon.Condition.Registry:RegisterConditionConfig("load", "load", config)

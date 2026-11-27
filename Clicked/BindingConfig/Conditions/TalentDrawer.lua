@@ -20,30 +20,92 @@ local AceGUI = LibStub("AceGUI-3.0")
 local Addon = select(2, ...)
 
 local Helpers = Addon.BindingConfig.Helpers
+local Utils = Addon.Condition.Utils
 
---- @param load TalentLoadOption
---- @return string
-local function TalentValueSelector(load)
-	if load.selected then
-		--- @type any[]
-		local segments = {{}}
+--- @class TalentDrawerEntry
+--- @field public operation "AND"|"OR"
+--- @field public negate boolean
+--- @field public name string
 
-		for _, value in ipairs(load.entries) do
-			if value.operation == "OR" and #segments[#segments] > 0 then
-				table.insert(segments, {})
-			end
+--- @param load LoadCondition<TalentValue[]>
+--- @return TalentDrawerEntry[]
+local function GetEntries(load)
+	--- @type TalentDrawerEntry[]
+	local result = {}
 
-			table.insert(segments[#segments], value.value)
+	--- @type TalentValue[][]
+	local compounds = Utils.UnpackLoadOption(load)
+
+	for i, compound in ipairs(compounds) do
+		for j, talent in ipairs(compound) do
+			table.insert(result, {
+				operation = (i > 1 and j == 1) and "OR" or "AND",
+				negate = talent.negate and true or false,
+				name = talent.name or ""
+			})
 		end
-
-		for i = 1, #segments do
-			segments[i] = table.concat(segments[i], ", ")
-		end
-
-		return table.concat(segments, " OR ")
 	end
 
-	return Helpers.IGNORE_VALUE
+	if #result == 0 then
+		table.insert(result, {
+			operation = "AND",
+			negate = false,
+			name = ""
+		})
+	end
+
+	return result
+end
+
+--- @param load LoadCondition<TalentValue[]>
+--- @param entries TalentDrawerEntry[]
+local function SetEntries(load, entries)
+	--- @type TalentValue[][]
+	local compounds = {}
+
+	--- @type TalentValue[]?
+	local current = nil
+
+	for i, entry in ipairs(entries) do
+		if i == 1 or entry.operation == "OR" or current == nil then
+			current = {}
+			table.insert(compounds, current)
+		end
+
+		table.insert(current, {
+			name = entry.name,
+			negate = entry.negate
+		})
+	end
+
+	load.value = compounds
+end
+
+--- @param load LoadCondition<TalentValue[]>
+--- @return string
+local function TalentValueSelector(load)
+	if not Utils.HasEnabledFlag(load) then
+		return Helpers.IGNORE_VALUE
+	end
+
+	--- @type string[]
+	local segments = {}
+
+	--- @type TalentValue[][]
+	local compounds = Utils.UnpackLoadOption(load)
+
+	for _, compound in ipairs(compounds) do
+		--- @type string[]
+		local names = {}
+
+		for _, talent in ipairs(compound) do
+			table.insert(names, talent.name)
+		end
+
+		table.insert(segments, table.concat(names, ", "))
+	end
+
+	return table.concat(segments, " OR ")
 end
 
 --- @param talents LibTalentTome.Talent[]
@@ -74,14 +136,55 @@ Addon.BindingConfig = Addon.BindingConfig or {}
 --- @field private hasMixedValues boolean
 local Drawer = {}
 
+--- @private
+--- @param binding Binding
+--- @return boolean
+function Drawer:IsEnabled(binding)
+	return Utils.HasEnabledFlag(Utils.GetLoadCondition(binding, self.condition))
+end
+
+--- @private
+--- @return TalentDrawerEntry[]
+function Drawer:GetReferenceEntries()
+	--- @param binding Binding
+	--- @return boolean
+	local function IsEnabled(binding)
+		return self:IsEnabled(binding)
+	end
+
+	--- @type integer?, Binding?
+	local _, binding = FindInTableIf(self.bindings, IsEnabled)
+
+	if binding == nil then
+		return GetEntries(Utils.CreateLoadCondition(self.condition))
+	end
+
+	return GetEntries(Utils.GetLoadCondition(binding, self.condition))
+end
+
+--- @private
+--- @param modifier fun(entries: TalentDrawerEntry[])
+function Drawer:ModifyEntries(modifier)
+	for _, binding in ipairs(self.bindings) do
+		local load = Utils.GetLoadCondition(binding, self.condition)
+
+		if Utils.HasEnabledFlag(load) then
+			local entries = GetEntries(load)
+			modifier(entries)
+
+			SetEntries(load, entries)
+			Utils.SetLoadCondition(binding, self.condition, load)
+			Addon:ReloadBinding(binding, self.fieldName)
+		end
+	end
+end
+
 --- @protected
 function Drawer:Draw()
 	--- @param binding Binding
 	--- @return boolean
 	local function IsEnabled(binding)
-		--- @type SimpleLoadOption
-		local load = binding.load[self.fieldName] or self.condition.init()
-		return load.selected
+		return self:IsEnabled(binding)
 	end
 
 	local isAnyEnabled = FindInTableIf(self.bindings, IsEnabled) ~= nil
@@ -92,9 +195,7 @@ function Drawer:Draw()
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			--- @type TalentLoadOption
-			local load = binding.load[self.fieldName] or self.condition.init()
-			return TalentValueSelector(load)
+			return TalentValueSelector(Utils.GetLoadCondition(binding, self.condition))
 		end
 
 		self.hasMixedValues = Helpers:GetMixedValues(self.bindings, ValueSelector)
@@ -138,9 +239,7 @@ function Drawer:Update()
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			--- @type TalentLoadOption
-			local load = binding.load[self.fieldName] or self.condition.init()
-			return TalentValueSelector(load)
+			return TalentValueSelector(Utils.GetLoadCondition(binding, self.condition))
 		end
 
 		self.hasMixedValues = Helpers:GetMixedValues(self.bindings, ValueSelector)
@@ -171,19 +270,7 @@ function Drawer:DrawMiniTalentRow()
 		return
 	end
 
-	--- @param binding Binding
-	--- @return boolean
-	local function IsEnabled(binding)
-		--- @type TalentLoadOption
-		local load = binding.load[self.fieldName] or self.condition.init()
-		return load.selected
-	end
-
-	--- @type integer, Binding
-	local _, binding = FindInTableIf(self.bindings, IsEnabled)
-
-	--- @type TalentLoadOption
-	local load = binding.load[self.fieldName] or self.condition.init()
+	local entries = self:GetReferenceEntries()
 
 	local miniTalentRow = self.miniTalentRow
 
@@ -198,8 +285,8 @@ function Drawer:DrawMiniTalentRow()
 		miniTalentRow:ReleaseChildren()
 	end
 
-	for i = 1, #load.entries do
-		local entry = load.entries[i]
+	for i = 1, #entries do
+		local entry = entries[i]
 
 		if entry.operation == "OR" then
 			local widget = AceGUI:Create("Label")
@@ -210,7 +297,7 @@ function Drawer:DrawMiniTalentRow()
 		end
 
 		do
-			local talent = self:GetTalentInfo(entry.value)
+			local talent = self:GetTalentInfo(entry.name)
 			local ticker
 
 			--- @param widget ClickedTalentIcon
@@ -247,7 +334,7 @@ function Drawer:DrawMiniTalentRow()
 			widget:SetWidth(18)
 			widget:SetHeight(18)
 
-			if entry.negated then
+			if entry.negate then
 				widget:SetColor(1, 0, 0, 1)
 			end
 
@@ -274,19 +361,13 @@ function Drawer:DrawTalentSelect()
 	--- @param text string
 	local function AddAddButton(operation, position, text)
 		local function OnClick()
-			for _, binding in ipairs(self.bindings) do
-				--- @type TalentLoadOption
-				local load = binding.load[self.fieldName] or self.condition.init()
-
-				if load.selected then
-					table.insert(load.entries, position, {
-						operation = operation,
-						value = ""
-					})
-
-					binding.load[self.fieldName] = load
-				end
-			end
+			self:ModifyEntries(function(entries)
+				table.insert(entries, math.min(position, #entries + 1), {
+					operation = operation,
+					negate = false,
+					name = ""
+				})
+			end)
 
 			self.requestRedraw()
 		end
@@ -321,24 +402,12 @@ function Drawer:DrawTalentSelect()
 
 	local tableContainer = CreateTableGroup()
 
-	--- @param binding Binding
-	--- @return boolean
-	local function IsEnabled(binding)
-		--- @type TalentLoadOption
-		local load = binding.load[self.fieldName] or self.condition.init()
-		return load.selected
-	end
-
-	--- @type integer, Binding
-	local _, binding = FindInTableIf(self.bindings, IsEnabled)
-
 	self.inputFields = {}
 
-	--- @type TalentLoadOption
-	local load = binding.load[self.fieldName] or self.condition.init()
+	local entries = self:GetReferenceEntries()
 
-	for i = 1, #load.entries do
-		local entry = load.entries[i]
+	for i = 1, #entries do
+		local entry = entries[i]
 
 		if entry.operation == "OR" then
 			AddSeparator()
@@ -348,23 +417,21 @@ function Drawer:DrawTalentSelect()
 		do
 			--- @param widget AceGUIButton
 			local function OnClick(widget)
-				for _, other in ipairs(self.bindings) do
-					--- @type TalentLoadOption
-					local otherLoad = other.load[self.fieldName] or self.condition.init()
+				entry.negate = not entry.negate
 
-					if otherLoad.selected then
-						otherLoad.entries[i].negated = not otherLoad.entries[i].negated
-						Addon:ReloadBinding(binding, self.fieldName)
+				self:ModifyEntries(function(other)
+					if other[i] ~= nil then
+						other[i].negate = entry.negate
 					end
-				end
+				end)
 
-				widget:SetText(entry.negated and Addon.L["Not"] or "")
+				widget:SetText(entry.negate and Addon.L["Not"] or "")
 
 				self:DrawMiniTalentRow()
 			end
 
 			local widget = AceGUI:Create("Button")
-			widget:SetText(entry.negated and Addon.L["Not"] or "")
+			widget:SetText(entry.negate and Addon.L["Not"] or "")
 			widget:SetCallback("OnClick", OnClick)
 
 			tableContainer:AddChild(widget)
@@ -377,22 +444,18 @@ function Drawer:DrawTalentSelect()
 			local function OnSelect(widget, event, value)
 				value = string.trim(value)
 
-				for _, other in ipairs(self.bindings) do
-					--- @type TalentLoadOption
-					local otherLoad = other.load[self.fieldName] or self.condition.init()
-
-					if otherLoad.selected then
-						otherLoad.entries[i].value = value
-						Addon:ReloadBinding(binding, self.fieldName)
+				self:ModifyEntries(function(other)
+					if other[i] ~= nil then
+						other[i].name = value
 					end
-				end
+				end)
 
 				self:DrawMiniTalentRow()
 			end
 
 			local widget = AceGUI:Create("ClickedAutoFillEditBox") --[[@as ClickedAutoFillEditBox]]
-			widget:SetText(entry.value)
-			widget:SetInputError(not self:DoesTalentExist(entry.value))
+			widget:SetText(entry.name)
+			widget:SetInputError(not self:DoesTalentExist(entry.name))
 			widget:SetValues(CreateValues(self.talents))
 			widget:SetFullWidth(true)
 			widget:SetCallback("OnSelect", OnSelect)
@@ -404,28 +467,21 @@ function Drawer:DrawTalentSelect()
 
 		do
 			local function OnClick()
-				for _, other in ipairs(self.bindings) do
-					--- @type TalentLoadOption
-					local otherLoad = other.load[self.fieldName] or self.condition.init()
-
-					if otherLoad.selected then
-						table.remove(otherLoad.entries, i)
-
-						do
-							local first = otherLoad.entries[1]
-							first.operation = "AND"
-						end
-
-						do
-							local next = otherLoad.entries[i]
-							if next ~= nil and entry.operation == "OR" and next.operation == "AND" then
-								next.operation = "OR"
-							end
-						end
-
-						Addon:ReloadBinding(binding, self.fieldName)
+				self:ModifyEntries(function(other)
+					if #other <= 1 or other[i] == nil then
+						return
 					end
-				end
+
+					local operation = other[i].operation
+					table.remove(other, i)
+
+					other[1].operation = "AND"
+
+					local next = other[i]
+					if next ~= nil and operation == "OR" and next.operation == "AND" then
+						next.operation = "OR"
+					end
+				end)
 
 				self.requestRedraw()
 			end
@@ -433,31 +489,34 @@ function Drawer:DrawTalentSelect()
 			local widget = AceGUI:Create("Button")
 			widget:SetText(Addon.L["X"])
 			widget:SetCallback("OnClick", OnClick)
-			widget:SetDisabled(#load.entries == 1)
+			widget:SetDisabled(#entries == 1)
 
 			tableContainer:AddChild(widget)
 		end
 
-		if i == #load.entries or load.entries[i + 1].operation == "OR" then
+		if i == #entries or entries[i + 1].operation == "OR" then
 			AddAddButton("AND", i + 1, Addon.L["Add condition"])
 
 			do
 				local function OnClick()
-					for j = i, 1, -1 do
-						if j == 1 then
-							load.entries[1] = {
-								operation = "AND",
-								value = ""
-							}
-						else
-							local operation = load.entries[j].operation
-							table.remove(load.entries, j)
+					self:ModifyEntries(function(other)
+						for j = math.min(i, #other), 1, -1 do
+							if j == 1 then
+								other[1] = {
+									operation = "AND",
+									negate = false,
+									name = ""
+								}
+							else
+								local operation = other[j].operation
+								table.remove(other, j)
 
-							if operation == "OR" then
-								break
+								if operation == "OR" then
+									break
+								end
 							end
 						end
-					end
+					end)
 
 					self.requestRedraw()
 				end
@@ -465,7 +524,7 @@ function Drawer:DrawTalentSelect()
 				local widget = AceGUI:Create("Button")
 				widget:SetText(Addon.L["Remove compound"])
 				widget:SetCallback("OnClick", OnClick)
-				widget:SetDisabled(#load.entries <= 1)
+				widget:SetDisabled(#entries <= 1)
 				widget:SetRelativeWidth(0.5)
 
 				self.container:AddChild(widget)
@@ -474,7 +533,7 @@ function Drawer:DrawTalentSelect()
 	end
 
 	AddSeparator()
-	AddAddButton(#load.entries == 0 and "AND" or "OR", #load.entries + 1, Addon.L["Add compound"])
+	AddAddButton(#entries == 0 and "AND" or "OR", #entries + 1, Addon.L["Add compound"])
 
 	do
 		local function OnClick()

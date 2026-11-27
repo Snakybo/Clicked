@@ -14,8 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local AceGUI = LibStub("AceGUI-3.0")
-
 --- @class Addon
 local Addon = select(2, ...)
 
@@ -29,77 +27,8 @@ local Drawer = {}
 
 --- @protected
 function Drawer:Draw()
-	local drawer = self.condition.drawer
-
-	-- toggle
-	do
-		--- @type boolean
-		local hasMixedValues
-
-		--- @param binding Binding
-		--- @return string
-		local function ValueSelector(binding)
-			--- @type boolean
-			local load = binding.load[self.fieldName]
-			return load and Addon.L["Enabled"] or Addon.L["Disabled"]
-		end
-
-		--- @param binding Binding
-		--- @return boolean
-		local function GetEnabledState(binding)
-			return binding.load[self.fieldName] --[[@as boolean]]
-		end
-
-		--- @return string[]
-		local function GetTooltipText()
-			if hasMixedValues then
-				return { Addon.L[drawer.label] }
-			end
-
-			local options = {
-				["false"] = Addon.L["Off"],
-				["true"] = Addon.L["On"]
-			}
-
-			local order = { "false", "true" }
-
-			local selectedStr = tostring(GetEnabledState(self.bindings[1]))
-			options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
-
-			local result = ""
-
-			for _, v in ipairs(order) do
-				if not Addon:IsNilOrEmpty(result) then
-					result = result .. " - "
-				end
-
-				result = result .. options[v]
-			end
-
-			return { Addon.L[drawer.label], result }
-		end
-
-		--- @param widget ClickedCheckBox
-		--- @param event string
-		--- @param value boolean
-		local function OnValueChanged(widget, event, value)
-			for _, binding in ipairs(self.bindings) do
-				binding.load[self.fieldName] = value
-				Addon:ReloadBinding(binding, self.fieldName)
-			end
-
-			self.requestRedraw()
-		end
-
-		self.checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
-		self.checkbox:SetType("checkbox")
-		self.checkbox:SetCallback("OnValueChanged", OnValueChanged)
-		self.checkbox:SetFullWidth(true)
-
-		hasMixedValues = Helpers:HandleWidget(self.checkbox, self.bindings, ValueSelector, GetTooltipText, GetEnabledState)
-
-		self.container:AddChild(self.checkbox)
-	end
+	self.checkbox = Helpers:DrawConditionToggle(self.container, self.bindings, self.fieldName, self.condition, self.requestRedraw)
+	self.checkbox:SetFullWidth(true)
 end
 
 Addon.BindingConfig.BindingConditionDrawers = Addon.BindingConfig.BindingConditionDrawers or {}

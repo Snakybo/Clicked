@@ -21,26 +21,50 @@
 --- @field public negatable? boolean
 --- @field public availableValues? fun(...): ...
 
+--- @alias SelectDrawerMode "single"|"multiple"|"bitmask"
+
+--- @class SelectDrawerConfig : DrawerConfig
+--- @field public mode? SelectDrawerMode
+
 --- @class InputDrawerConfig : DrawerConfig
 --- @field public validate? fun(value: string, previousValue: string, final: boolean): string
+--- @field public format? fun(option: LoadCondition): string
+--- @field public parse? fun(option: LoadCondition, text: string)
 
---- @class Condition
+--- @alias ConditionStorage "load"|"conditionals"
+
+--- @alias SimpleConditionValue string|boolean|integer
+
+--- @class Condition<T>
 --- @field public id string
---- @field public init fun(): any
+--- @field public init (fun(): T|T[])|T|T[]
 --- @field public drawer DrawerConfig
 --- @field public dependencies? string[]
 --- @field public disabled? boolean|fun(): boolean
---- @field public unpack fun(option: any): string|boolean|integer|nil
+--- @field public storage? ConditionStorage
 
---- @class LoadCondition : Condition
+--- @class MacroCondition<T> : Condition<T>
+--- @field public unpack? fun(option: LoadCondition<T>): T[]
+--- @field public ignoreEmptyValues? boolean
+--- @field public conditionals string|fun(): string,string
+--- @field public isUnit? boolean
+
+--- @class RuntimeLoadCondition<T> : Condition<T>
 --- @field public testOnEvents? string[]
---- @field public test fun(value: any, ...: any): boolean
+--- @field public test fun(value: T[], ...: any): boolean
 --- @field public state? fun(): ...
 
 --- @class RuntimeConditionSet
+--- @field public storage ConditionStorage
 --- @field public config Condition[]
 --- @field public map table<string, Condition>
 --- @field public dependencyGraph table<string, string[]>
+
+--- @enum LoadConditionStates
+Clicked.LoadConditionStates = {
+	ENABLED = 1,
+	NEGATED = 2
+}
 
 --- @class Addon
 local Addon = select(2, ...)
@@ -80,19 +104,23 @@ local ConditionRegistry = {
 Addon.Condition.Registry = ConditionRegistry
 
 --- @param id string
+--- @param storage ConditionStorage The binding field the values of this set are stored in
 --- @param config Condition[]
-function ConditionRegistry:RegisterConditionConfig(id, config)
+function ConditionRegistry:RegisterConditionConfig(id, storage, config)
 	local enabled = {}
 	local map = {}
 
 	for _, condition in ipairs(config) do
 		if not condition.disabled then
+			condition.storage = storage
+
 			table.insert(enabled, condition)
 			map[condition.id] = condition
 		end
 	end
 
 	self.registry[id] = {
+		storage = storage,
 		config = enabled,
 		map = map,
 		dependencyGraph = BuildDependencyGraph(enabled)
@@ -120,7 +148,7 @@ function ConditionRegistry:GetConditionSets()
 end
 
 --- @param id string
---- @return Condition?
+--- @return Condition
 function ConditionRegistry:GetConditionById(id)
 	for _, set in pairs(self.registry) do
 		local condition = set.map[id]
@@ -130,5 +158,5 @@ function ConditionRegistry:GetConditionById(id)
 		end
 	end
 
-	return nil
+	error("Condition with ID " .. id .. " does not exist")
 end

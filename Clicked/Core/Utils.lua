@@ -731,21 +731,14 @@ function Addon:CompareBindings(left, right, leftCanLoad, rightCanLoad)
 	return GetKeybindIndex(left.keybind) < GetKeybindIndex(right.keybind)
 end
 
----@param binding Binding
+---@param option LoadCondition<integer>
 ---@return integer[]
-function Addon:GetAvailableShapeshiftForms(binding)
-	local form = binding.load.form
-
-	--- @type integer[]
-	local forms = {}
+function Addon:GetAvailableShapeshiftForms(option)
+	local forms = Addon.Condition.Utils.UnpackLoadOption(option)
 
 	-- Forms need to be zero-indexed
-	if form.selected == 1 then
-		forms[1] = form.single - 1
-	elseif form.selected == 2 then
-		for i = 1, #form.multiple do
-			forms[i] = form.multiple[i] - 1
-		end
+	for i = 1, #forms do
+		forms[i] = forms[i] - 1
 	end
 
 	if Addon.EXPANSION_LEVEL >= Addon.Expansion.DF and select(2, UnitClass("player")) == "DRUID" then

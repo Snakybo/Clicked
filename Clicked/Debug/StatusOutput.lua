@@ -80,6 +80,35 @@ local function GetBasicinfoString()
 	return table.concat(lines, "\n")
 end
 
+--- Format a bitmask value using the labels of the condition's select drawer, for example `Healer (8)`.
+---
+--- @param condition RuntimeLoadCondition
+--- @param value integer
+--- @return string
+local function FormatBitmaskState(condition, value)
+	--- @type boolean, table<integer, string>?, integer[]?
+	local _, items, order = Addon:SafeCall(condition.drawer.availableValues)
+
+	if type(items) ~= "table" or type(order) ~= "table" then
+		return tostring(value)
+	end
+
+	--- @type string[]
+	local labels = {}
+
+	for _, flag in ipairs(order) do
+		if bit.band(value, flag) > 0 then
+			table.insert(labels, items[flag])
+		end
+	end
+
+	if #labels == 0 then
+		return tostring(value)
+	end
+
+	return table.concat(labels, "/")
+end
+
 local function GetLoadConditionState()
 	local conditions = Addon.Condition.Registry:GetConditionSet("load")
 
@@ -88,13 +117,21 @@ local function GetLoadConditionState()
 	}
 
 	for _, condition in ipairs(conditions.config) do
-		--- @cast condition LoadCondition
+		--- @cast condition RuntimeLoadCondition
 
 		if condition.state ~= nil then
 			local state = { select(2, Addon:SafeCall(condition.state)) }
+			local isBitmask = condition.drawer.type == "select" and (condition.drawer --[[@as SelectDrawerConfig]]).mode == "bitmask"
 
 			for i = 1, #state do
-				state[i] = tostring(state[i])
+				--- @type SimpleConditionValue?
+				local value = state[i]
+
+				if isBitmask and type(value) == "number" then
+					state[i] = FormatBitmaskState(condition, value)
+				else
+					state[i] = tostring(value)
+				end
 			end
 
 			table.insert(lines, condition.id .. ": " .. table.concat(state, ", "))

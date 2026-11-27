@@ -127,19 +127,11 @@ function BindingConditionTab:GetAvailableValues(condition)
 
 			dependencies[i] = dependencies[i] or {}
 
-			if dependency ~= nil then
-				for _, binding in ipairs(self.bindings) do
-					--- @diagnostic disable-next-line: unknown-local-type
-					local load = binding.load[dependencyId] or dependency.init()
-					local value = dependency.unpack(load)
+			for _, binding in ipairs(self.bindings) do
+				local load = Addon.Condition.Utils.GetLoadCondition(binding, dependency)
 
-					if type(value) == "table" and value[1] ~= nil then
-						for j = 1, #value do
-							if not tContains(dependencies[i], value[j]) then
-								table.insert(dependencies[i], value[j])
-							end
-						end
-					elseif value ~= nil then
+				if Addon.Condition.Utils.HasEnabledFlag(load) then
+					for _, value in ipairs(Addon.Condition.Utils.UnpackLoadOption(load)) do
 						if not tContains(dependencies[i], value) then
 							table.insert(dependencies[i], value)
 						end

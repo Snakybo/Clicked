@@ -23,6 +23,9 @@ local AceGUI = LibStub("AceGUI-3.0")
 --- @class Addon
 local Addon = select(2, ...)
 
+local Utils = Addon.Condition.Utils
+local Flags = Clicked.LoadConditionStates
+
 local MIXED_TEXT_COLOR =  BLUE_FONT_COLOR
 local MAX_MIXED_VALUES_DISPLAYED = 9
 
@@ -302,17 +305,15 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 	--- @param binding Binding
 	--- @return string
 	local function ValueSelector(binding)
-		--- @type SimpleLoadOption
-		local load = binding.load[fieldName] or condition.init()
-		return load.selected and Addon.L["Enabled"] or Addon.L["Disabled"]
+		local load = Utils.GetLoadCondition(binding, condition)
+		return Utils.HasEnabledFlag(load) and Addon.L["Enabled"] or Addon.L["Disabled"]
 	end
 
 	--- @param binding Binding
-	--- @return boolean?
+	--- @return boolean
 	local function GetEnabledState(binding)
-		--- @type SimpleLoadOption
-		local load = binding.load[fieldName] or condition.init()
-		return load.selected
+		local load = Utils.GetLoadCondition(binding, condition)
+		return Utils.HasEnabledFlag(load)
 	end
 
 	--- @return string[]
@@ -351,10 +352,9 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 		--- @cast value boolean
 
 		for _, binding in ipairs(bindings) do
-			--- @type SimpleLoadOption
-			local load = binding.load[fieldName] or condition.init()
-			load.selected = value
-			binding.load[fieldName] = load
+			local load = Utils.GetLoadCondition(binding, condition)
+			Utils.SetFlag(load, Flags.ENABLED, value)
+			Utils.SetLoadCondition(binding, condition, load)
 			Addon:ReloadBinding(binding, fieldName)
 		end
 
@@ -368,9 +368,7 @@ function Addon.BindingConfig.Helpers:DrawConditionToggle(container, bindings, fi
 	--- @param binding Binding
 	--- @return boolean
 	local function IsEnabled(binding)
-		--- @type SimpleLoadOption
-		local load = binding.load[fieldName] or condition.init()
-		return load.selected
+		return Utils.HasEnabledFlag(Utils.GetLoadCondition(binding, condition))
 	end
 
 	local isAnyEnabled = FindInTableIf(bindings, IsEnabled) ~= nil
@@ -407,17 +405,15 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 		--- @param binding Binding
 		--- @return string
 		local function ValueSelector(binding)
-			--- @type NegatableLoadOption
-			local load = binding.load[fieldName] or condition.init()
-			return load.negated and Addon.L["Inverted"] or Addon.L["Not inverted"]
+			local load = Utils.GetLoadCondition(binding, condition)
+			return Utils.HasNegatedFlag(load) and Addon.L["Inverted"] or Addon.L["Not inverted"]
 		end
 
 		--- @param binding Binding
 		--- @return boolean
 		local function GetEnabledState(binding)
-			--- @type NegatableLoadOption
-			local load = binding.load[fieldName] or condition.init()
-			return load.negated and true or false
+			local load = Utils.GetLoadCondition(binding, condition)
+			return Utils.HasNegatedFlag(load)
 		end
 
 		--- @param widget ClickedCheckBox
@@ -425,13 +421,11 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 		--- @param value boolean
 		local function OnValueChanged(widget, event, value)
 			for _, binding in ipairs(bindings) do
-				--- @type NegatableLoadOption
-				local load = binding.load[fieldName] or condition.init()
+				local load = Utils.GetLoadCondition(binding, condition)
 
-				if load.selected then
-					-- TODO: Set this to nil if false
-					load.negated = value
-					binding.load[fieldName] = load
+				if Utils.HasEnabledFlag(load) then
+					Utils.SetFlag(load, Flags.NEGATED, value)
+					Utils.SetLoadCondition(binding, condition, load)
 					Addon:ReloadBinding(binding, fieldName)
 				end
 			end
@@ -448,134 +442,4 @@ function Addon.BindingConfig.Helpers:DrawNegateToggle(container, bindings, field
 		container:AddChild(negated)
 		return negated
 	end
-end
-
---- @param container AceGUIContainer
---- @param bindings Binding[]
---- @param fieldName string
---- @param condition Condition
---- @param onValueChanged fun()
---- @return ClickedCheckBox
-function Addon.BindingConfig.Helpers:DrawMultiselectConditionToggle(container, bindings, fieldName, condition, onValueChanged)
-	--- @type boolean
-	local hasMixedValues
-
-	--- @param state 0|1|2
-	--- @return boolean?
-	local function IndexToValue(state)
-		if state == 1 then
-			return true
-		elseif state == 2 then
-			return nil
-		end
-
-		return false
-	end
-
-	--- @param value? boolean
-	--- @return 0|1|2
-	local function ValueToIndex(value)
-		if value == false then
-			return 0
-		elseif value == true then
-			return 1
-		else
-			return 2
-		end
-	end
-
-	--- @param binding Binding
-	--- @return string
-	local function ValueSelector(binding)
-		--- @type MultiselectLoadOption
-		local load = binding.load[fieldName] or condition.init()
-
-		if load.selected == 0 then
-			return Addon.L["Disabled"]
-		elseif load.selected == 1 then
-			return Addon.L["Single"]
-		else
-			return Addon.L["Multiple"]
-		end
-	end
-
-	--- @param binding Binding
-	--- @return boolean?
-	local function GetEnabledState(binding)
-		--- @type MultiselectLoadOption
-		local load = binding.load[fieldName] or condition.init()
-		return IndexToValue(load.selected)
-	end
-
-	--- @return string[]
-	local function GetTooltipText()
-		if hasMixedValues then
-			return { Addon.L[condition.drawer.label] }
-		end
-
-		local options = {
-			["0"] = Addon.L["Off"],
-			["1"] = Addon.L["Single"],
-			["2"] = Addon.L["Multiple"]
-		}
-
-		local order = { "0", "1", "2" }
-
-		local selectedStr = tostring(bindings[1].load[fieldName].selected)
-		options[selectedStr] = "|cff00ff00" .. options[selectedStr] .. "|r"
-
-		local result = ""
-
-		for _, v in ipairs(order) do
-			if not Addon:IsNilOrEmpty(result) then
-				result = result .. " - "
-			end
-
-			result = result .. options[v]
-		end
-
-		return { Addon.L[condition.drawer.label], result }
-	end
-
-	--- @param widget ClickedCheckBox
-	--- @param event string
-	--- @param value boolean|nil
-	local function OnValueChanged(widget, event, value)
-		local index = ValueToIndex(value)
-
-		for _, binding in ipairs(bindings) do
-			--- @type MultiselectLoadOption
-			local load = binding.load[fieldName] or condition.init()
-			load.selected = index
-			binding.load[fieldName] = load
-			Addon:ReloadBinding(binding, fieldName)
-		end
-
-		onValueChanged()
-	end
-
-	local checkbox = AceGUI:Create("ClickedCheckBox") --[[@as ClickedCheckBox]]
-	checkbox:SetType("checkbox")
-	checkbox:SetCallback("OnValueChanged", OnValueChanged)
-	checkbox:SetTriState(true)
-
-	--- @param binding Binding
-	--- @return boolean
-	local function IsEnabled(binding)
-		--- @type MultiselectLoadOption
-		local load = binding.load[fieldName] or condition.init()
-		return load.selected ~= 0
-	end
-
-	local isAnyEnabled = FindInTableIf(bindings, IsEnabled) ~= nil
-
-	if isAnyEnabled then
-		checkbox:SetRelativeWidth(0.5)
-	else
-		checkbox:SetFullWidth(true)
-	end
-
-	hasMixedValues = self:HandleWidget(checkbox, bindings, ValueSelector, GetTooltipText, GetEnabledState)
-	container:AddChild(checkbox)
-	return checkbox
 end
